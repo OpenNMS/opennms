@@ -87,16 +87,7 @@ public class LinkdTopologyProviderTest {
     }
 
     @Test
-    public void isIsLinksShouldMatchCorrectly_NewMethod() {
-        matchisIsLinks(provider::matchIsIsLinksNew);
-    }
-
-    @Test
-    public void isIsLinksShouldMatchCorrectly_OldMethod() {
-        matchisIsLinks(provider::matchIsIsLinks);
-    }
-
-    private void matchisIsLinks(BiFunction<List<IsIsElement>, List<IsIsLink>, List<Pair<IsIsLink, IsIsLink>>> matchLinksFunction) {
+    public void isIsLinksShouldMatchCorrectly() {
 
         // 1 and 3 will match
         // 4 and 5 will match
@@ -120,39 +111,13 @@ public class LinkdTopologyProviderTest {
                 createIsIsLink(5, "2.3", 22, nodes.get(5))
         );
 
-        List<Pair<IsIsLink, IsIsLink>> matchedLinks = matchLinksFunction.apply(elements, allLinks);
+        List<Pair<IsIsLink, IsIsLink>> matchedLinks = provider.matchIsIsLinks(elements, allLinks);
 
         assertMatching(allLinks, matchedLinks);
     }
 
     @Test
-    public void isIsMappingShouldProvideSameOutputAsOldMethod() {
-        List<OnmsNode> nodes = createNodes();
-        List<IsIsElement> elements = createIsIsElements(nodes);
-        List<IsIsLink> allLinks = createIsIsLinks(elements);
-
-        Instant start = Instant.now();
-        List<Pair<IsIsLink, IsIsLink>> matchesOld = provider.matchIsIsLinks(elements, allLinks);
-        LOG.info("Finished matchIsIsLinksOld() in {} ms, found {} matches", Duration.between(start, Instant.now()).toMillis(), matchesOld.size());
-
-        start = Instant.now();
-        List<Pair<IsIsLink, IsIsLink>> matchesNew = provider.matchIsIsLinksNew(elements, allLinks);
-        LOG.info("Finished matchIsIsLinksNew() in {} ms, found {} matches", Duration.between(start, Instant.now()).toMillis(), matchesNew.size());
-
-        sortAndAssertEquals(matchesOld, matchesNew);
-    }
-
-    @Test
-    public void cdpLinksShouldMatchCorrectly_NewMethod() {
-        matchCdpLinks(provider::matchCdpLinksNew);
-    }
-
-    @Test
-    public void cdpLinksShouldMatchCorrectly_OldMethod() {
-        matchCdpLinks(provider::matchCdpLinks);
-    }
-
-    private void matchCdpLinks(BiFunction<List<CdpElement>, List<CdpLink>, List<Pair<CdpLink, CdpLink>>> matchLinksFunction) {
+    public void cdpLinksShouldMatchCorrectly() {
 
         // 1 and 3 will match
         // 4 and 5 will match
@@ -176,42 +141,14 @@ public class LinkdTopologyProviderTest {
                 createCdpLink(5, nodes.get(5), "match2.4", "match2.2", "match2.1")
         );
 
-        List<Pair<CdpLink, CdpLink>> matchedLinks = matchLinksFunction.apply(elements, allLinks);
+        List<Pair<CdpLink, CdpLink>> matchedLinks = provider.matchCdpLinks(elements, allLinks);
 
         assertMatching(allLinks, matchedLinks);
 
     }
 
     @Test
-    public void cdpMappingShouldProvideSameOutputAsOldMethod() {
-        List<OnmsNode> nodes = createNodes();
-        List<CdpElement> cdpElements = createCdpElements(nodes);
-        List<CdpLink> allLinks = createCdpLinks(cdpElements);
-
-        Instant start = Instant.now();
-        List<Pair<CdpLink, CdpLink>> matchesOld = provider.matchCdpLinks(cdpElements, allLinks);
-        LOG.info("Finished matchCdpLinksOld() in {} ms, found {} matches", Duration.between(start, Instant.now()).toMillis(), matchesOld.size());
-
-        assertTrue("In order to perform the test we need to have at least 3 matches", matchesOld.size() > 2);
-
-        start = Instant.now();
-        List<Pair<CdpLink, CdpLink>> matchesNew = provider.matchCdpLinksNew(cdpElements, allLinks);
-        LOG.info("Finished matchCdpLinksNew() in {} ms, found {} matches", Duration.between(start, Instant.now()).toMillis(), matchesNew.size());
-
-        sortAndAssertEquals(matchesOld, matchesNew);
-    }
-
-    @Test
-    public void ospfLinksShouldMatchCorrectly_NewMethod() {
-        matchOspfLinks(provider::matchOspfLinksNew);
-    }
-
-    @Test
-    public void ospfLinksShouldMatchCorrectly_OldMethod() {
-        matchOspfLinks(provider::matchOspfLinks);
-    }
-
-    private void matchOspfLinks(Function<List<OspfLink>, List<Pair<OspfLink, OspfLink>>> matchLinksFunction) {
+    public void ospfLinksShouldMatchCorrectly() {
 
         // 1 and 3 will match
         // 4 and 5 will match
@@ -228,39 +165,12 @@ public class LinkdTopologyProviderTest {
                 createOspfLink(5, nodes.get(5), addresses.get(5), addresses.get(4))
         );
 
-        List<Pair<OspfLink, OspfLink>> matchedLinks = matchLinksFunction.apply(allLinks);
+        List<Pair<OspfLink, OspfLink>> matchedLinks = provider.matchOspfLinks(allLinks);
         assertMatching(allLinks, matchedLinks);
     }
 
     @Test
-    public void ospfMappingShouldProvideSameOutputAsOldMethod() {
-
-        List<OspfLink> allLinks = createOspfLinks();
-
-        Instant start = Instant.now();
-        List<Pair<OspfLink, OspfLink>> matchesOld = provider.matchOspfLinks(allLinks);
-        LOG.info("Finished matchOspfLinksOld() in {} ms, found {} matches", Duration.between(start, Instant.now()).toMillis(), matchesOld.size());
-
-        assertTrue("In order to perform the test we need to have at least 3 matches", matchesOld.size() > 2);
-
-        start = Instant.now();
-        List<Pair<OspfLink, OspfLink>> matchesNew = provider.matchOspfLinksNew(allLinks);
-        LOG.info("Finished matchOspfLinksNew() in {} ms, found {} matches", Duration.between(start, Instant.now()).toMillis(), matchesNew.size());
-
-        sortAndAssertEquals(matchesOld, matchesNew);
-    }
-
-    @Test
-    public void lldpLinksShouldMatchCorrectly_NewMethod() {
-        matchLldpLinks(provider::matchLldpLinksNew);
-    }
-
-    @Test
-    public void lldpLinksShouldMatchCorrectly_OldMethod() {
-        matchLldpLinks(provider::matchLldpLinks);
-    }
-
-    private void matchLldpLinks(BiFunction<Map<Integer, LldpElement>, List<LldpLink>, List<Pair<LldpLink, LldpLink>>> matchLinksFunction) {
+    public void lldpLinksShouldMatchCorrectly() {
 
         // 1 and 3 will match
         // 4 and 5 will match
@@ -282,27 +192,8 @@ public class LinkdTopologyProviderTest {
                 createLldpLink(4, nodes.get(4), "match2.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID,  "match2.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, "match2.2"),
                 createLldpLink(5, nodes.get(5), "match2.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS,  "match2.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID, "match2.1")
         );
-        List<Pair<LldpLink, LldpLink>> matchedLinks = matchLinksFunction.apply(elements, allLinks);
+        List<Pair<LldpLink, LldpLink>> matchedLinks = provider.matchLldpLinks(elements, allLinks);
         assertMatching(allLinks, matchedLinks);
-    }
-
-    @Test
-    public void lldpMappingShouldProvideSameOutputAsOldMethod() {
-        List<OnmsNode> nodes = createNodes();
-        Map<Integer, LldpElement> elements = createLldpElements(nodes);
-        List<LldpLink> allLinks = createLldpLinks(elements);
-
-        Instant start = Instant.now();
-        List<Pair<LldpLink, LldpLink>> matchesOld = provider.matchLldpLinks(elements, allLinks);
-        LOG.info("Finished matchLldpLinksOld() in {} ms, found {} matches", Duration.between(start, Instant.now()).toMillis(), matchesOld.size());
-
-        assertTrue("In order to perform the test we need to have at least 3 matches", matchesOld.size() > 2);
-
-        start = Instant.now();
-        List<Pair<LldpLink, LldpLink>> matchesNew = provider.matchLldpLinksNew(elements, allLinks);
-        LOG.info("Finished matchLldpLinksNew() in {} ms, found {} matches", Duration.between(start, Instant.now()).toMillis(), matchesNew.size());
-
-        sortAndAssertEquals(matchesOld, matchesNew);
     }
 
     private <E extends Topology> void sortAndAssertEquals(List<Pair<E, E>> matchesOld, List<Pair<E, E>> matchesNew){
