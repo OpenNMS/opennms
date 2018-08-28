@@ -69,7 +69,10 @@
             <version>${eclipseGeminiVersion}</version>
         </dependency>
     </dependencies>
-    <!-- TODO MVR why do we need this below? -->
+    <!--
+        By default Eclipse Gemini uses Spring 4.2.5.RELEASE_1, but we use 4.2.9.RELEASE_1.
+        In order to enforce this, we manually overwrite the spring dependencies here.
+    -->
     <dependencyManagement>
         <dependencies>
             <dependency>
