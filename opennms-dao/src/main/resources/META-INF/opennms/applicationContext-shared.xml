@@ -345,7 +345,9 @@
     <onmsgi:service interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor" ref="genericHibernateAccessor" />
 
     <bean id="topologyDao" class="org.opennms.netmgt.dao.hibernate.TopologyDaoHibernate">
-        <property name="sessionFactory" ref="sessionFactory" />
+        <property name="nodeDao" ref="nodeDao" />
+        <property name="cdpElementDao" ref="cdpElementDao" />
+        <property name="cdpLinkDao" ref="cdpLinkDao" />
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyDao" ref="topologyDao" />
 

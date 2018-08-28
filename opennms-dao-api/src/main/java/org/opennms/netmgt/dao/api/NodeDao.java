@@ -290,4 +290,6 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
     void markHavingFlows(final Collection<Integer> nodeIds);
 
     List<OnmsNode> findAllHavingFlows();
+    
+    OnmsNode getTopIfSpeed();
 }

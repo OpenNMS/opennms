@@ -29,9 +29,16 @@
 package org.opennms.netmgt.dao.api;
 
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsTopology;
+import org.opennms.netmgt.model.topology.Topology.ProtocolSupported;
 
 public interface TopologyDao {
 
     OnmsNode getDefaultFocusPoint();
+    
+    OnmsTopology getTopology(ProtocolSupported protocolSupported);
+
+    OnmsTopology getTopology();
+
 
 }

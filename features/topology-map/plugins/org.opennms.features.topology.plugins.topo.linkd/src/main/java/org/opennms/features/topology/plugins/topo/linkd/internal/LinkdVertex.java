@@ -37,13 +37,11 @@ import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.topology.Topology;
-import org.opennms.netmgt.model.topology.Topology.ProtocolSupported;
 
 public class LinkdVertex extends SimpleLeafVertex {
 
     private static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
     private static final String HTML_TOOLTIP_TAG_END  = "</p>";
-
     private static final EnumMap<OnmsNode.NodeType, String> s_nodeStatusMap;
 
     static {

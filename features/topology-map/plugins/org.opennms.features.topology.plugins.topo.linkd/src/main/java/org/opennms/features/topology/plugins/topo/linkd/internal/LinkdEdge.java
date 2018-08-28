@@ -36,7 +36,6 @@ import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.topology.Topology;
-import org.opennms.netmgt.model.topology.Topology.ProtocolSupported;
 
 public class LinkdEdge extends AbstractEdge implements Edge {
 
