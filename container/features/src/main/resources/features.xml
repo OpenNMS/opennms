@@ -1240,7 +1240,6 @@
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.shell/${project.version}</bundle>
     </feature>
 
-    <!-- TODO MVR this is distributed only and should probably go somewhere else -->
     <feature name="opennms-persistence" description="OpenNMS :: Persistence" version="${project.version}">
         <feature>opennms-model</feature>
         <feature>opennms-dao</feature>

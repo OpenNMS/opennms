@@ -10,7 +10,6 @@
         http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
 ">
 
-    <!-- TODO MVR this is very similar to features/minion/core/impl and may be refactored somehow -->
     <cm:property-placeholder id="sentinelProperties" persistent-id="org.opennms.sentinel.controller" placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="reload">
         <cm:default-properties>
             <cm:property name="location" value="SENTINEL"/>
