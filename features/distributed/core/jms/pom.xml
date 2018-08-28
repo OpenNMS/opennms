@@ -22,7 +22,7 @@
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Export-Package>org.opennms.distribute.jms.impl</Export-Package>
+                        <Export-Package>org.opennms.distributed.jms.impl</Export-Package>
                         <Private-Package></Private-Package>
                     </instructions>
                 </configuration>
