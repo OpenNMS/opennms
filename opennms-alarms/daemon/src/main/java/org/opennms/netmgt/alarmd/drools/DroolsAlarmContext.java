@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.hibernate.Hibernate;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -136,6 +137,8 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 
     private void handleNewOrUpdatedAlarmNoLock(OnmsAlarm alarm) {
         final KieSession kieSession = getKieSession();
+        // Initialize any related objects that are needed for rule execution
+        Hibernate.initialize(alarm.getRelatedAlarms());
         final AlarmAndFact alarmAndFact = alarmsById.get(alarm.getId());
         if (alarmAndFact == null) {
             LOG.debug("Inserting alarm into session: {}", alarm);

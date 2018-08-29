@@ -109,7 +109,8 @@ rule "unclear"
                          OnmsSeverity.get(lastEvent.getEventSeverity()).isGreaterThan(OnmsSeverity.CLEARED),
                          lastEventTime > lastAutomationTime)
   then
-    alarmService.unclearAlarm($trigger);
+    Date now = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
+    alarmService.unclearAlarm($trigger, now);
 end
 
 /*
