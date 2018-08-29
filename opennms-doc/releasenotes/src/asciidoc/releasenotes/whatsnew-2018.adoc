@@ -1,0 +1,94 @@
+[releasenotes-2018]
+=== OpenNMS Meridian 2018
+
+==== System Requirements
+
+* *Java 8*: OpenNMS Meridian 2018 requires Java 8 as the runtime environment.
+  To run Meridian 2018, we recommend the most recent version of Oracle JDK 8 for your platform.
+* *PostgreSQL 9*: Meridian 2018 requires PostgreSQL 9.x, version 9.2 or higher.
+
+[releasenotes-whatsnew-2018]
+==== What's New in Meridian 2018
+
+The biggest addition in Meridian 2018 is official support for link:https://meridian.opennms.com/docs/2018/latest/guide-install/guide-install.html#gi-minion[the Minion].
+Minion is an agent-like tool for remote monitoring isolated networks as if OpenNMS could reach them locally.
+
+On top of that, there have been many smaller improvements and enhancements since Meridian 2017.
+
+Meridian 2018 roughly matches the feature set available in Horizon 21 and parts of Horizon 22.
+
+===== Important Upgrade Notes
+
+* *org.opennms.newts.nan_on_counter_wrap*: If you are using Newts, returning NaN when a counter-wrap is encountered now defaults to true.
+  If you relied on the old behavior, you can change it back by setting `org.opennms.newts.nan_on_counter_wrap=false` in a file in `opennms.properties.d`.
+* Event parameters have been moved to their own table, rather than being embedded (preformatted) in the `events` table.
+  If you have a large number of events and/or event parameters in your database, the conversion while running `install` may take as long as an hour or even more.
+  It is recommended that you archive and delete old events you do not need anymore before upgrading.
+
+===== Breaking Changes
+
+* link:https://issues.opennms.org/browse/NMS-9303[NMS-9303]: Deprecated Capsd and Linkd event definitions are removed.
+  Otherwise unused event definitions are also cleaned up and removed from the code and configurations.
+  For a detailed list of all removed events see link:https://issues.opennms.org/browse/NMS-9303[NMS-9303].
+* *Elasticsearch 1 API*: The old Elasticsearch API has been removed in favor of the Elasticsearch ReST plugin, which should support most Elasticsearch API versions.
+  Instructions on configuring the Elasticsearch ReST plugin are available in link:http://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#_elasticsearch_rest_plugin[the Administrators Guide].
+* Property format change of `opennms.alarmTroubleTicketLinkTemplate`:
+  Originally the `opennms.alarmTroubleTicketLinkTemplate` defined in `$OPENNMS_HOME/etc/opennms.properties` requires the full `<a href="...">${id}</a>` link to be configured.
+  This is changed to the ticketer system url, e.g. `https://issues.opennms.org/browse/${id}` instead of `<a href="https://issues.opennms.org/browse/${id}">${id}</a>`.
+  If the `opennms.alarmTroubleTicketEnabled` is `true` then the `opennms.alarmTroubleTicketLinkTemplate` must be updated as well in order to not break the link to an external ticketing system on the Alarm Details Page.
+* Event parameters:
+  There are a few side-effects of the event parameter changes.
+  ** When you view or retrieve an alarm it will always have the parameters of the newest event associated with it.
+  ** Vacuumd no longer honors the `add-all-parms` attribute on an `action-event`.
+* Changes to `TCPAddress` and `UDPAddress` format in `eventd-configuration.xml`:
+  When Eventd was converted to use Camel under the covers, the format for listening on all interfaces changed from a wildcard (`*`) to `0.0.0.0`.
+  Note that despite looking like an IPv4 format, the JVM interprets `0.0.0.0` as listening on _all_ interfaces, IPv4 and IPv6.
+
+===== New Features
+
+* *Minion*: OpenNMS Meridian now supports running Minions.
+* *IBM Tivoli Event Integration Facility*: Support has been added to bridge EIF events into OpenNMS Horizon.
+  link:https://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#ga-events-sources-eif[(more details)]
+* *Asset Topology Provider*: The Asset Topology Provider generates a GraphML topology based on node metadata including asset fields.
+  link:http://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#_asset_topology_provider[(more details)].
+* *Alarm Sounds*: The web UI can now optionally flash and play an alert sound when alarms are created and optionally updated.
+  link:http://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#ga-alarm-sounds[(more details)].
+* *ReST Updates*: A new experimental ReST API (`/opennms/api/v2`) has been enabled which supports https://commons.apache.org/proper/commons-jexl/[JEXL].
+* The topology UI now supports link:http://docs.opennms.org/opennms/releases/latest/guide-development/guide-development.html#gd-topology-graphml-vertex-status-provider[scriptable vertex status].
+* *Alarm Northbounders*: There are link:https://issues.opennms.org/browse/NMS-9513[new alarm northbounders] for running arbitrary BSF scripts or forwarding to Drools.
+* *Web UI*: It is now possible to link:https://issues.opennms.org/browse/NMS-10072[customize the date format] used in the UI.
+  You can configure it by overriding the `org.opennms.ui.datettimeformat` property in `opennms.properties`.
+* *Hawtio*: Hawtio is now included as an optional webapp package (`opennms-webapp-hawtio`) for convenience.
+* *IFTTT*: Support has been added for triggering IFTTT events based on alarms.
+
+===== Events
+
+New or updated trap definitions have been added for the following classes of devices:
+
+* IBM EIF
+* IETF DLSW
+* IETF DOCSIS
+* Other IETF traps
+
+===== Other Improvements
+
+* The Karaf OSGi container has been upgraded from 2.x to 4.1.5.
+* The IPLIKE C and Pl/pgsql versions have been cleaned up and normalized to work the same between implementations.
+* Many ActiveMQ/Camel/Kafka/etc. RPC-related APIs have been cleaned up and improved.
+* Much of the data collection infrastructure has been updated and cleaned up as part of adding and improving Minion support.
+* Asset addresses are now resolved to coordinates during provisioning, rather than at runtime.
+* A number of improvements have been made to RADIUS support.
+* It is now possible to reload Drools configuration without restarting OpenNMS.
+* Many improvements were made to Enlinkd, especially in the bridge discovery code.
+* Drools has been updated to 7.x.
+  It should be backwards compatible with existing 6.x-based Drools configurations.
+* Many other small enhancements and fixes for the topology UI.
+
+[releasenotes-changelog-Meridian-2018.1.0]
+
+==== Release Meridian-2018.1.0
+
+Release 2018.1.0 is the first release in the Meridian 2018 series.
+
+The codename for 2018.1.0 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_0[Calm]_.
+
