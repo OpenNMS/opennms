@@ -19,7 +19,9 @@ The following package repositories are available:
 | `testing`                 | Release candidate for the next stable release.
 | `snapshot`                | Latest successful development build, the "nightly" build.
 | `branches/${BRANCH-NAME}` | Install from a specific branch name for testing a specific feature that is under development.
+ifndef::opennms-prime[]
                               Available branches can be found in https://yum.opennms.org/branches/ or https://debian.opennms.org/dists/branches/.
+endif::opennms-prime[]
 |===
 
 To install a different release the repository files have to be installed and manually modified.
@@ -35,6 +37,7 @@ rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
 
 <1> Replace `${RELEASE}` with a release name like `stable` (recommended), `testing`, or `snapshot`.
 
+ifndef::opennms-prime[]
 === Debian APT Repository
 
 Create a new apt source file (eg: `/etc/apt/sources.list.d/opennms.list`), and add the following 2 lines:
@@ -55,3 +58,4 @@ Import the packages' authentication key with the following command:
 ----
 wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
 ----
+endif::opennms-prime[]
