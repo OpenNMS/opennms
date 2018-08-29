@@ -31,7 +31,9 @@ package org.opennms.features.kafka.producer;
 import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.Callable;
@@ -77,15 +79,21 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     private boolean forwardEvents;
     private boolean forwardAlarms;
+    private boolean suppressIncrementalAlarms;
     private boolean forwardNodes;
     private Expression eventFilterExpression;
     private Expression alarmFilterExpression;
 
     private final CountDownLatch forwardedEvent = new CountDownLatch(1);
     private final CountDownLatch forwardedAlarm = new CountDownLatch(1);
+    private final CountDownLatch suppressedAlarm = new CountDownLatch(1);
     private final CountDownLatch forwardedNode = new CountDownLatch(1);
 
     private KafkaProducer<String, byte[]> producer;
+    
+    private final Map<String, OpennmsModelProtos.Alarm> outstandingAlarms = new HashMap<>();
+    private final AlarmEqualityChecker alarmEqualityChecker =
+            AlarmEqualityChecker.with(AlarmEqualityChecker.Exclusions::defaultExclusions);
 
     public OpennmsKafkaProducer(ProtobufMapper protobufMapper, NodeCache nodeCache,
                                 ConfigurationAdmin configAdmin, EventSubscriptionService eventSubscriptionService) {
@@ -191,7 +199,25 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         return true;
     }
 
+    private boolean isIncrementalAlarm(String reductionKey, OnmsAlarm alarm) {
+        return outstandingAlarms.containsKey(reductionKey) &&
+                alarmEqualityChecker.equalsExcludingOnFirst(protobufMapper.toAlarm(alarm).build(),
+                        outstandingAlarms.get(reductionKey));
+    }
+
+    private void recordIncrementalAlarm(String reductionKey, OnmsAlarm alarm) {
+        // Apply the excluded fields when putting to the map so we do not have to perform this calculation
+        // on each equality check
+        outstandingAlarms.put(reductionKey,
+                AlarmEqualityChecker.Exclusions.defaultExclusions(protobufMapper.toAlarm(alarm)).build());
+    }
+
     private void updateAlarm(String reductionKey, OnmsAlarm alarm) {
+        if (suppressIncrementalAlarms && isIncrementalAlarm(reductionKey, alarm)) {
+            suppressedAlarm.countDown();
+            return;
+        }
+        
         // Always push null records, no good way to perform filtering on these
         if (alarm == null) {
             // The alarm was deleted, push a null record to the reduction key
@@ -220,6 +246,9 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         sendRecord(() -> {
             final OpennmsModelProtos.Alarm mappedAlarm = protobufMapper.toAlarm(alarm).build();
             LOG.debug("Sending alarm with reduction key: {}", reductionKey);
+            if (suppressIncrementalAlarms) {
+                recordIncrementalAlarm(reductionKey, alarm);
+            }
             return new ProducerRecord<>(alarmTopic, reductionKey, mappedAlarm.toByteArray());
         }, recordMetadata -> {
             // We've got an ACK from the server that the alarm was forwarded
@@ -375,7 +404,15 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         return forwardedAlarm;
     }
 
+    public CountDownLatch getAlarmSuppressedLatch() {
+        return suppressedAlarm;
+    }
+
     public CountDownLatch getNodeForwardedLatch() {
         return forwardedNode;
+    }
+
+    public void setSuppressIncrementalAlarms(boolean suppressIncrementalAlarms) {
+        this.suppressIncrementalAlarms = suppressIncrementalAlarms;
     }
 }

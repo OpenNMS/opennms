@@ -60,6 +60,7 @@ import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
+import org.opennms.features.kafka.producer.AlarmEqualityChecker;
 import org.opennms.features.kafka.producer.OpennmsKafkaProducer;
 import org.opennms.features.kafka.producer.ProtobufMapper;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
@@ -91,6 +92,10 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
     private ScheduledExecutorService scheduler;
     private KTable<String, byte[]> alarmBytesKtable;
     private KTable<String, OpennmsModelProtos.Alarm> alarmKtable;
+
+    private final AlarmEqualityChecker alarmEqualityChecker =
+            AlarmEqualityChecker.with(AlarmEqualityChecker.Exclusions::defaultExclusions);
+    private boolean suppressIncrementalAlarms;
 
     public KafkaAlarmDataSync(ConfigurationAdmin configAdmin, OpennmsKafkaProducer kafkaProducer, ProtobufMapper protobufMapper) {
         this.configAdmin = Objects.requireNonNull(configAdmin);
@@ -223,7 +228,10 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
                 final OnmsAlarm dbAlarm = alarmsInDbByReductionKey.get(rkey);
                 final OpennmsModelProtos.Alarm mappedDbAlarm = protobufMapper.toAlarm(dbAlarm).build();
                 final OpennmsModelProtos.Alarm alarmFromKtable = alarmsInKtableByReductionKey.get(rkey);
-                if (!Objects.equals(mappedDbAlarm, alarmFromKtable)) {
+
+                if ((suppressIncrementalAlarms && !alarmEqualityChecker.equalsExcludingOnBoth(mappedDbAlarm,
+                        alarmFromKtable)) || (!suppressIncrementalAlarms && !Objects.equals(mappedDbAlarm,
+                        alarmFromKtable))) {
                     kafkaProducer.handleNewOrUpdatedAlarm(dbAlarm);
                     reductionKeysUpdated.add(rkey);
                 }
@@ -328,4 +336,7 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
         }
     }
 
+    public void setSuppressIncrementalAlarms(boolean suppressIncrementalAlarms) {
+        this.suppressIncrementalAlarms = suppressIncrementalAlarms;
+    }
 }

@@ -23,6 +23,7 @@
       <cm:property name="eventFilter" value=""/>
       <cm:property name="alarmFilter" value=""/>
       <cm:property name="nodeIdToCriteriaMaxCacheSize" value="10000"/>
+      <cm:property name="suppressIncrementalAlarms" value="true"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -60,6 +61,7 @@
     <property name="nodeTopic" value="${nodeTopic}"/>
     <property name="eventFilter" value="${eventFilter}"/>
     <property name="alarmFilter" value="${alarmFilter}"/>
+    <property name="suppressIncrementalAlarms" value="${suppressIncrementalAlarms}"/>
   </bean>
 
   <service ref="kafkaProducer" interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener">
@@ -75,6 +77,7 @@
     <argument ref="protobufMapper" />
     <property name="alarmTopic" value="${alarmTopic}"/>
     <property name="alarmSync" value="${alarmSync}"/>
+    <property name="suppressIncrementalAlarms" value="${suppressIncrementalAlarms}"/>
   </bean>
 
   <bean factory-ref="kafkaProducer" factory-method="setDataSync">
