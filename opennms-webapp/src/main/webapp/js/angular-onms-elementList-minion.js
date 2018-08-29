@@ -91,6 +91,31 @@
 			});
 		};
 
+        $scope.$parent.deleteItem = function(item) {
+            var saveMe = minionFactory.get({id: item.id}, function() {
+                if ($window.confirm('Are you sure you want to remove minion \"' + item['id'] + '\"?')) {
+                    saveMe.$delete({id: item['id']}, function() {
+                        var cancelWatch = $scope.$watch('items', function() {
+                            for (var i = 0; i < $scope.items.length; i++) {
+                                // If it still contains the deleted item, then call refresh()
+                                if ($scope.items[i]['id'] === item['id']) {
+                                    $scope.refresh();
+                                    return;
+                                }
+                            }
+                            cancelWatch();
+                        });
+                    }, function (response) {
+                        $window.alert('Deletion of minion \"' +  item['id'] + '\" failed.');
+                    });
+                }
+            }, function(response) {
+                if (response.status === 404) {
+                    $scope.refresh();
+                }
+            });
+        };
+
 		// Save an item by using $resource.$update
 		$scope.$parent.update = function(item) {
 			var saveMe = minionFactory.get({id: item.id}, function() {
