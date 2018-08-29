@@ -19,4 +19,6 @@ endif::opennms-prime[]
 * _{opennms-product-name}_ needs to be installed and the communication to the _ReST_ and _ActiveMQ_ endpoints is possible
 
 include::rhel.adoc[]
+ifndef::opennms-prime[]
 include::debian.adoc[]
+endif::opennms-prime[]
