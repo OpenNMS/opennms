@@ -70,13 +70,20 @@ public final class ZookeeperDomainManager extends ConnectionBasedDomainManager {
      */
     private final LeaderSelectorListener leaderSelectorListener = new LeaderSelectorListenerAdapter() {
         @Override
-        public void takeLeadership(CuratorFramework client) throws InterruptedException {
+        public void takeLeadership(CuratorFramework client) {
             LOG.trace("calling becomeActive()");
             becomeActive();
 
             // This blocks the thread to prevent relinquishing leadership
             synchronized (this) {
-                this.wait();
+                while(true) {
+                    try {
+                        this.wait();
+                    } catch (InterruptedException e) {
+                        LOG.debug("Leadership thread was interrupted");
+                        break;
+                    }
+                }
             }
         }
 
