@@ -105,6 +105,11 @@ public class AlarmEntityNotifierImpl implements AlarmEntityNotifier {
         forEachListener(l -> l.onLastAutomationTimeUpdated(alarm, previousLastAutomationTime));
     }
 
+    @Override
+    public void didUpdateRelatedAlarms(OnmsAlarm alarm, Set<OnmsAlarm> previousRelatedAlarms) {
+        forEachListener(l -> l.onRelatedAlarmsUpdated(alarm, previousRelatedAlarms));
+    }
+
     private void forEachListener(Consumer<AlarmEntityListener> callback) {
         for (AlarmEntityListener listener : listeners) {
             try {
@@ -124,4 +129,5 @@ public class AlarmEntityNotifierImpl implements AlarmEntityNotifier {
         LOG.debug("onListenerUnregistered: {} with properties: {}", listener, properties);
         listeners.remove(listener);
     }
+
 }

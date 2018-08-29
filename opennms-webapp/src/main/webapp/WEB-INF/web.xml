@@ -48,6 +48,7 @@
         classpath*:/META-INF/opennms/component-measurement.xml
         classpath*:/META-INF/opennms/component-service.xml
         classpath*:/META-INF/opennms/component-reporting.xml
+        classpath*:/META-INF/opennms/component-timeformat.xml
 
         <!-- WARMERGE: insert contextConfigLocation -->
     </param-value>
@@ -82,6 +83,11 @@
   <filter>
     <filter-name>jettyUserIdentityFilter</filter-name>
     <filter-class>org.opennms.web.springframework.security.JettyUserIdentityFilter</filter-class>
+  </filter>
+
+  <filter>
+    <filter-name>userSettingsFilter</filter-name>
+    <filter-class>org.opennms.web.account.UserSettingsFilter</filter-class>
   </filter>
 
   <!-- filter out invalid file:// Origin: header to avoid CORS issues with Compass -->
@@ -231,6 +237,11 @@
   <filter-mapping>
     <filter-name>StoreRequestProperties</filter-name>
     <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>userSettingsFilter</filter-name>
+    <url-pattern>*.jsp</url-pattern>
   </filter-mapping>
 
   <filter-mapping>

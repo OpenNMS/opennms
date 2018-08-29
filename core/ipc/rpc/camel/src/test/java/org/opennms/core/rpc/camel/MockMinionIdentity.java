@@ -28,7 +28,8 @@
 
 package org.opennms.core.rpc.camel;
 
-import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.SystemType;
 
 public class MockMinionIdentity implements MinionIdentity {
 
@@ -46,5 +47,10 @@ public class MockMinionIdentity implements MinionIdentity {
     @Override
     public String getLocation() {
         return location;
+    }
+
+    @Override
+    public String getType() {
+        return SystemType.Minion.name();
     }
 }

@@ -38,8 +38,8 @@
 <form name="fsForm" class="mt-4 row" novalidate>
   <div class="col-md-6">
     <div class="form-group">
-      <label class="col-form-label">Last Modified</label>
-      <span class="form-control">{{ foreignSourceDef['date-stamp'] | date:'dd-MM-yy hh:mm:ss' }}</span>
+      <label class="control-label">Last Modified</label>
+      <span class="col-form-label">{{ foreignSourceDef['date-stamp'] | onmsDate }}</span>
     </div>
   </div>
   <div class="col-md-6">

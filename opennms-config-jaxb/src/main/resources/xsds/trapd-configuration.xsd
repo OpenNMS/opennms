@@ -43,6 +43,7 @@
         <simpleType>
           <restriction base="int">
             <minInclusive value="1"/>
+            <maxInclusive value="65535"/>
           </restriction>
         </simpleType>      
       </attribute>

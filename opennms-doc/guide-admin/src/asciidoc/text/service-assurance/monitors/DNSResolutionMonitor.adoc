@@ -11,6 +11,7 @@ It can be used to test a client behavior for a given host name.
 For example: Create a node with the node label www.google.com and an IP interface.
 Assigning the DNS resolution monitor on the IP interface will test if www.google.com can be resolved using the DNS configuration defined by the poller.
 The response from the A record lookup can be any address, it is not verified with the IP address on the {opennms-product-name} IP interface where the monitor is assigned to.
+This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
 ===== Monitor facts
 
@@ -25,21 +26,21 @@ The response from the A record lookup can be any address, it is not verified wit
 .Monitor specific parameters for the DNSResolutionMonitor
 [options="header, autowidth"]
 |===
-| Parameter         | Description                                       | Required | Default value
+| Parameter         | Description                                       | Required | Default value | Placeholder substitution
 | `resolution-type` | Type of record for the node label test. +
                       Allowed values +
                       `v4` for _A records_, +
                       `v6` for _AAAA record_, +
                       `both` _A_ and _AAAA record_ must be available, +
-                      `either` _A_ or _AAAA record_ must be available.  | optional | `either`
+                      `either` _A_ or _AAAA record_ must be available.  | optional | `either` | No
 | `record-types`    | Alternate DNS record types to search for. +
                       The comma separated list can contain `A`, +
                       `AAAA`, `CNAME`, `NS`, `MX`, `PTR`, `SOA`, +
-                      `SRV`, or `TXT`.                                  | optional | ``
-| `lookup`          | Alternate DNS record to lookup                    | optional | The node label.
+                      `SRV`, or `TXT`.                                  | optional | `` | No
+| `lookup`          | Alternate DNS record to lookup                    | optional | The node label. | Yes
 | `nameserver`      | The DNS server to query for the records. +
                       The string can be in the form of hostname, +
-                      hostname:port, or [ipv6address]:port.             | optional | Use name server from host system running _{opennms-product-name}_
+                      hostname:port, or [ipv6address]:port.             | optional | Use name server from host system running _{opennms-product-name}_ | Yes
 |===
 
 This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
@@ -79,6 +80,18 @@ The following example shows the possibilities monitoring IPv4 and/or IPv6 for th
     <parameter key="nameserver" value="8.8.8.8"/>
 </service>
 
+<!-- Use parameter substitution for nameserver and lookup parameter values -->
+<service name="DNS-Resolution-Sub" interval="300000" user-defined="false" status="on">
+    <parameter key="retry" value="2"/>
+    <parameter key="timeout" value="2000"/>
+    <parameter key="resolution-type" value="v6"/>
+    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+    <parameter key="rrd-base-name" value="dns-res-v6"/>
+    <parameter key="ds-name" value="dns-res-v6"/>
+    <parameter key="nameserver" value="{ipAddr}"/>
+    <parameter key="lookup" value="{nodeLabel}"/>
+</service>
+
 <!-- Assigned service test if the node label is resolved for an AAAA record AND A record -->
 <service name="DNS-Resolution-v4-and-v6" interval="300000" user-defined="false" status="on">
     <parameter key="retry" value="2"/>
@@ -113,6 +126,7 @@ The following example shows the possibilities monitoring IPv4 and/or IPv6 for th
 <monitor service="DNS-Resolution-v4" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
 <monitor service="DNS-Resolution-v4-lookup" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
 <monitor service="DNS-Resolution-v6" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
+<monitor service="DNS-Resolution-Sub" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
 <monitor service="DNS-Resolution-v4-and-v6" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
 <monitor service="DNS-Resolution-v4-or-v6" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
 <monitor service="DNS-Resolution-CNAME-and-MX" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />

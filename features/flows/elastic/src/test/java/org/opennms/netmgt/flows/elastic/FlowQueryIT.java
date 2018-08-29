@@ -66,6 +66,7 @@ import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.filter.api.Filter;
+import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
@@ -324,6 +325,8 @@ public class FlowQueryIT {
     private List<Filter> getFilters(Filter... filters) {
         final List<Filter> filterList = Lists.newArrayList(filters);
         filterList.add(new TimeRangeFilter(0, System.currentTimeMillis()));
+        // Match the SNMP interface id in the flows
+        filterList.add(new SnmpInterfaceIdFilter(98));
         return filterList;
     }
 }

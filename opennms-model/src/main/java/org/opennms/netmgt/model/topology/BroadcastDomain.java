@@ -445,8 +445,12 @@ public class BroadcastDomain implements Topology {
 
     public BridgePortWithMacs getForwarder(BridgePort port) {
         Set<BridgePortWithMacs> links = new HashSet<BridgePortWithMacs>();
-        m_forwarding.stream().filter( bp -> 
-            bp.equals(port)).forEach(bpmi -> {
+        m_forwarding.stream().filter( bp -> {
+            if (bp == null || bp.getPort() == null) {
+                return false;
+            }
+            return bp.getPort().equals(port);
+        }).forEach(bpmi -> {
                 links.add(bpmi);
             });
         return links.iterator().next();

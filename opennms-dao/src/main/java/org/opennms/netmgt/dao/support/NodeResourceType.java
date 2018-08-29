@@ -39,6 +39,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
@@ -105,7 +106,7 @@ public final class NodeResourceType extends AbstractTopLevelResourceType {
     public List<OnmsResource> getTopLevelResources() {
         return m_nodeDao.findAll().stream()
                 // Only return non-deleted nodes - see NMS-2977
-                .filter(node -> node.getType() == null || !node.getType().equals("D"))
+                .filter(node -> node.getType() == null || !node.getType().equals(NodeType.DELETED))
                 .map(this::createResourceForNode)
                 .collect(Collectors.toList());
     }

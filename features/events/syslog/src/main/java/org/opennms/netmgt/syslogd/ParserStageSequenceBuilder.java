@@ -50,6 +50,8 @@ import org.opennms.core.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableList;
+
 /**
  * <p>This class is used to construct a sequence of {@link ParserStage} objects
  * that can parse {@link ByteBuffer} objects into tokens.</p>
@@ -62,6 +64,24 @@ import org.slf4j.LoggerFactory;
 public class ParserStageSequenceBuilder {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ParserStageSequenceBuilder.class);
+
+	// There's no builtin predicate for char primitives... so here's one
+	// Using Predicate<Character> would require autoboxing since we are dealing with primitives
+	@FunctionalInterface
+	private interface CharPredicate {
+		boolean test(char c);
+		default CharPredicate negate() {
+			return (c) -> !test(c);
+		}
+		default CharPredicate and(CharPredicate other) {
+			Objects.requireNonNull(other);
+			return (c) -> test(c) && other.test(c);
+		}
+		default CharPredicate or(CharPredicate other) {
+			Objects.requireNonNull(other);
+			return (c) -> test(c) || other.test(c);
+		}
+	}
 
 	/**
 	 * The state of an individual {@link ParserStage} operation.
@@ -152,6 +172,38 @@ public class ParserStageSequenceBuilder {
 		m_stages.add(stage);
 	}
 
+	/**
+	 * Gets the correct predicate for matching the given type of host.
+	 * 
+	 * @param pattern the pattern representing the type of host
+	 * @return the predicate
+	 */
+	private static CharPredicate getHostMatcherForPattern(GrokParserStageSequenceBuilder.GrokPattern pattern) {
+		// Match only valid hostname characters ('_' is technically invalid but we use it in tests)
+		final List<Character> hostNameCharacters = ImmutableList.of('-', '.', '_');
+		final CharPredicate hostNameMatcher = c -> Character.isDigit(c) || Character.isLetter(c) ||
+				hostNameCharacters.contains(c);
+		// Match only valid IPv4 address characters
+		final CharPredicate ipV4AddressMatcher = c -> Character.isDigit(c) || c == '.';
+		// Match only valid IPv6 address characters
+		final CharPredicate ipV6AddressMatcher = c -> Character.digit(c, 16) >= 0 || c == ':';
+		// Match IPv4 or IPv6 address characters
+		final CharPredicate ipV4OrV6AddressMatcher = ipV4AddressMatcher.or(ipV6AddressMatcher);
+		// Match any characters valid in a hostname or an IPv4 or IPv6 address
+		final CharPredicate hostnameOrIPMatcher = hostNameMatcher.or(ipV4OrV6AddressMatcher);
+
+		switch (pattern) {
+			case HOSTNAME:
+				return hostNameMatcher;
+			case HOSTNAMEORIP:
+				return hostnameOrIPMatcher;
+			case IPADDRESS:
+				return ipV4OrV6AddressMatcher;
+			default:
+				throw new IllegalArgumentException("Unsupported host pattern '" + pattern + "'");
+		}
+	}
+	
 	public ParserStageSequenceBuilder whitespace() {
 		addStage(new MatchWhitespace());
 		return this;
@@ -172,8 +224,24 @@ public class ParserStageSequenceBuilder {
 		return this;
 	}
 
+	public ParserStageSequenceBuilder hostMatcherForPattern(GrokParserStageSequenceBuilder.GrokPattern pattern,
+															BiConsumer<ParserState, String> consumer) {
+		// Note: This isn't perfect, it only checks to see if the characters are valid and isn't aware of any other
+		// format rules (192.168.0.1 would match, 12345.12345.12345.12345 would also match)
+		addStage(new MatchOnly(consumer, Integer.MAX_VALUE, getHostMatcherForPattern(pattern)));
+		return this;
+	}
+
 	public ParserStageSequenceBuilder monthString(BiConsumer<ParserState, Integer> consumer) {
 		addStage(new MatchMonth(consumer));
+		return this;
+	}
+
+	public ParserStageSequenceBuilder hostUntilForPattern(GrokParserStageSequenceBuilder.GrokPattern pattern,
+														  String ends, BiConsumer<ParserState, String> consumer) {
+		// Note: This isn't perfect, it only checks to see if the characters are valid and isn't aware of any other
+		// format rules (192.168.0.1 would match, 12345.12345.12345.12345 would also match)
+		addStage(new MatchOnlyStringUntil(consumer, ends, getHostMatcherForPattern(pattern)));
 		return this;
 	}
 
@@ -393,8 +461,7 @@ public class ParserStageSequenceBuilder {
 	static class MatchWhitespace extends AbstractParserStage<Void> {
 		@Override
 		public AcceptResult acceptChar(ParserStageState state, char c) {
-			// TODO: Make this more efficient
-			if ("".equals(String.valueOf(c).trim())) {
+			if ((c == ' ' || c == '\t')) {
 				return AcceptResult.CONTINUE;
 			} else {
 				return AcceptResult.COMPLETE_WITHOUT_CONSUMING;
@@ -650,6 +717,45 @@ public class ParserStageSequenceBuilder {
 	}
 
 	/**
+	 * Matches a sequence of characters that contains only characters matching the given predicate.
+	 */
+	static class MatchOnly extends MatchAny {
+		private final CharPredicate m_charMatcher;
+
+		public MatchOnly(BiConsumer<ParserState, String> consumer, int length, CharPredicate charMatcher) {
+			super(consumer, length);
+			m_charMatcher = charMatcher;
+		}
+
+		@Override
+		public AcceptResult acceptChar(ParserStageState state, char c) {
+			if (getAccumulatedSize(state) >= getLength()) {
+				return AcceptResult.COMPLETE_AFTER_CONSUMING;
+			} else if (m_charMatcher.test(c)) {
+				accumulate(state, c);
+				return AcceptResult.CONTINUE;
+			} else {
+				// If any characters were accumulated, complete
+				if (getAccumulatedSize(state) > 0) {
+					return AcceptResult.COMPLETE_WITHOUT_CONSUMING;
+				} else {
+					return AcceptResult.CANCEL;
+				}
+			}
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == null) return false;
+			if (o == this) return true;
+			if (!(o instanceof MatchOnly)) return false;
+			MatchOnly other = (MatchOnly) o;
+			return Objects.equals(getLength(), other.getLength()) &&
+					Objects.equals(m_resultConsumer, other.m_resultConsumer);
+		}
+	}
+
+	/**
 	 * Match a string terminated by a character in a list of end tokens.
 	 */
 	static abstract class MatchUntil<R> extends AbstractParserStage<R> {
@@ -686,8 +792,7 @@ public class ParserStageSequenceBuilder {
 					return AcceptResult.COMPLETE_WITHOUT_CONSUMING;
 				}
 			}
-			// TODO: Make this more efficient?
-			if (m_endOnwhitespace && "".equals(String.valueOf(c).trim())) {
+			if (m_endOnwhitespace && (c == ' ' || c == '\t')) {
 				return AcceptResult.COMPLETE_WITHOUT_CONSUMING;
 			}
 			accumulate(state, c);
@@ -715,6 +820,45 @@ public class ParserStageSequenceBuilder {
 		}
 	}
 
+	/**
+	 * Match a string terminated by a character in a list of end tokens containing only characters matching the given
+	 * predicate.
+	 */
+	static abstract class MatchOnlyUntil<R> extends MatchUntil<R> {
+		private final CharPredicate m_charMatcher;
+
+		MatchOnlyUntil(BiConsumer<ParserState,R> consumer, String end, CharPredicate charMatcher) {
+			super(consumer, end);
+			m_charMatcher = charMatcher;
+		}
+
+		@Override
+		public AcceptResult acceptChar(ParserStageState state, char c) {
+			for (char end : getEnd()) {
+				if (end == c || ! m_charMatcher.test(c)) {
+					return AcceptResult.COMPLETE_WITHOUT_CONSUMING;
+				}
+			}
+			if (isEndOnWhitespace() && (c == ' ' || c == '\t')) {
+				return AcceptResult.COMPLETE_WITHOUT_CONSUMING;
+			}
+			accumulate(state, c);
+			return AcceptResult.CONTINUE;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == null) return false;
+			if (o == this) return true;
+			if (!(o instanceof MatchOnlyUntil)) return false;
+			MatchOnlyUntil<?> other = (MatchOnlyUntil<?>)o;
+			return Arrays.equals(getEnd(), other.getEnd()) &&
+					Objects.equals(isEndOnWhitespace(), other.isEndOnWhitespace() &&
+							Objects.equals(m_resultConsumer, other.m_resultConsumer)
+					);
+		}
+	}
+	
 	static class MatchStringUntil extends MatchUntil<String> {
 		public MatchStringUntil(BiConsumer<ParserState,String> consumer, char end) {
 			super(consumer, end);
@@ -734,6 +878,25 @@ public class ParserStageSequenceBuilder {
 			if (o == null) return false;
 			if (o == this) return true;
 			if (!(o instanceof MatchStringUntil)) return false;
+			return super.equals(o);
+		}
+	}
+
+	static class MatchOnlyStringUntil extends MatchOnlyUntil<String> {
+		public MatchOnlyStringUntil(BiConsumer<ParserState,String> consumer, String ends, CharPredicate charMatcher) {
+			super(consumer, ends, charMatcher);
+		}
+
+		@Override
+		public String getValue(ParserStageState state) {
+			return getAccumulatedValue(state);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == null) return false;
+			if (o == this) return true;
+			if (!(o instanceof MatchOnlyStringUntil)) return false;
 			return super.equals(o);
 		}
 	}

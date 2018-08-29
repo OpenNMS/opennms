@@ -5,11 +5,12 @@ const MODULE_NAME = 'onms.elementList.minion';
 const angular = require('vendor/angular-js');
 const elementList = require('../lib/elementList');
 require('../lib/restResources');
+require('../../onms-date-formatter');
 
 const mainTemplate = require('./main.html');
 
 // $filters that can be used to create human-readable versions of filter values
-angular.module('minionListFilters', [ 'onmsListFilters' ])
+angular.module('minionListFilters', [ 'onmsListFilters', 'onmsDateFormatter' ])
 .directive('onmsMinionList', () => {
 	return {
 		restrict: 'E',
@@ -43,7 +44,7 @@ angular.module('minionListFilters', [ 'onmsListFilters' ])
 		switch (property) {
 		case 'lastUpdated':
 			// Return the date in our preferred format
-			return $filter('date')(input, 'MMM d, yyyy h:mm:ss a');
+			return $filter('onmsDate')(input);
 		default:
 			return input;
 		}
@@ -51,12 +52,12 @@ angular.module('minionListFilters', [ 'onmsListFilters' ])
 });
 
 // Minion list module
-angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'minionListFilters' ])
+angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'minionListFilters', 'onmsDateFormatter' ])
 
 /**
  * Minion list controller
  */
-.controller('MinionListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'minionFactory', function($scope, $location, $window, $log, $filter, minionFactory) {
+.controller('MinionListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'DateFormatterService', 'minionFactory', function($scope, $location, $window, $log, $filter, DateFormatterService, minionFactory) {
 	$log.debug('MinionListCtrl initializing...');
 
 	// Set the default sort and set it on $scope.$parent.query
@@ -65,6 +66,7 @@ angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'minionL
 
 	// Reload all resources via REST
 	$scope.$parent.refresh = function() {
+		DateFormatterService.formatter.finally(function() {
 		// Fetch all of the items
 		minionFactory.query(
 			{
@@ -104,6 +106,7 @@ angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'minionL
 				return undefined;
 			}
 		);
+		});
 	};
 
 	// Save an item by using $resource.$update

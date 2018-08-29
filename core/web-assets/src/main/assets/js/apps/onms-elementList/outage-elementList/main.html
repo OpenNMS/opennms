@@ -253,16 +253,14 @@
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'serviceType.name',operator:'NE',value:item.monitoredService.serviceType.name})"><i class="fa fa-minus-square-o fa-lg"/></a>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
-						{{item.ifLostService | date:'MMM d, yyyy h:mm:ss a'}}
+						{{item.ifLostService | onmsDate:'DOWN'}}
 						<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'ifLostService',operator:'GE',value:item.ifLostService})"><i class="fa fa-toggle-left fa-lg"/></a>
 						<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'ifLostService',operator:'LE',value:item.ifLostService})"><i class="fa fa-toggle-right fa-lg"/></a>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
-						<span ng-show="item.ifRegainedService | isNotEmpty">
-							{{item.ifRegainedService | date:'MMM d, yyyy h:mm:ss a'}}
-							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'ifRegainedService',operator:'GE',value:item.ifRegainedService})"><i class="fa fa-toggle-left fa-lg"/></a>
-							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'ifRegainedService',operator:'LE',value:item.ifRegainedService})"><i class="fa fa-toggle-right fa-lg"/></a>
-						</span>
+						{{item.ifRegainedService | onmsDate:'DOWN'}}
+						<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'ifRegainedService',operator:'GE',value:item.ifRegainedService})"><i class="fa fa-toggle-left fa-lg"/></a>
+						<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'ifRegainedService',operator:'LE',value:item.ifRegainedService})"><i class="fa fa-toggle-right fa-lg"/></a>
 					</td>
 				</tr>
 			</tbody>

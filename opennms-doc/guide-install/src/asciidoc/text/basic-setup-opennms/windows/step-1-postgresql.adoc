@@ -1,0 +1,17 @@
+
+==== Step 1: Install PostgreSQL
+
+_PostgreSQL_ is available for _Microsoft Windows_ and latest version can be downloaded from link:http://www.enterprisedb.com/products-services-training/pgdownload#windows[Download PostgreSQL] page.
+Follow the on-screen instructions of the graphical installer.
+
+NOTE: The placeholder `{PG-VERSION}` represents the _PostgreSQL_ version number.
+      Check the link:https://wiki.opennms.org/wiki/Installation_and_Upgrades#Compatibility_Matrix[Compatibility Matrix] to find a suited _PostgreSQL_ version.
+
+During the installation of _PostgreSQL_ the following information need to be provided:
+
+* Installation directory for _PostgreSQL_, e.g. `C:\Program Files\PostgreSQL\{PG-VERSION}`
+* Password for the database superuser (_postgres_), this password will be used during the _OpenNMS_ setup.
+* Port to listen for _PostgreSQL_ connections, default is `5432` and can normally be used.
+* Locale for the database, keep `[Default locale]`, if you change the locale, _OpenNMS_ may not be able to initialize the database.
+
+TIP: It is not required to install anything additional from the _PostgreSQL Stack Builder_.

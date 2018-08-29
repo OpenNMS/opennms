@@ -1,4 +1,5 @@
 require('lib/onms-http');
+require('../../onms-date-formatter');
 require('../lib/scripts/controllers/Asset.js');
 require('../lib/scripts/controllers/CloneForeignSource.js');
 require('../lib/scripts/controllers/Detector.js');

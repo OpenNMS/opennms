@@ -49,6 +49,8 @@ import org.slf4j.LoggerFactory;
 public class CentralizedDateTimeFormat {
 
     public final static String SYSTEM_PROPERTY_DATE_FORMAT = "org.opennms.ui.datettimeformat";
+    public final static String SESSION_PROPERTY_TIMEZONE_ID = "org.opennms.ui.timezoneid";
+    public final static String DEFAULT_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ssxxx";
 
     public static final Logger LOG = LoggerFactory.getLogger(CentralizedDateTimeFormat.class);
 
@@ -59,23 +61,27 @@ public class CentralizedDateTimeFormat {
     }
 
     private DateTimeFormatter createFormatter() {
-        String format = System.getProperty(SYSTEM_PROPERTY_DATE_FORMAT);
+        String format = getFormatPattern();
         DateTimeFormatter formatter;
-        if (format == null) {
-            formatter = getDefaultFormatter();
-        } else {
-            try {
-                formatter = DateTimeFormatter.ofPattern(format).withZone(ZoneId.systemDefault());
-            } catch (IllegalArgumentException e) {
-                LOG.warn(String.format("Can not use System Property %s=%s as dateformat, will fall back to default." +
+        try {
+            formatter = DateTimeFormatter.ofPattern(format);
+        } catch (IllegalArgumentException e) {
+            LOG.warn(String.format("Can not use System Property %s=%s as dateformat, will fall back to default." +
                                 " Please see also java.time.format.DateTimeFormatter for the correct syntax",
-                        SYSTEM_PROPERTY_DATE_FORMAT,
-                        format)
-                        , e);
-                formatter = getDefaultFormatter();
+                SYSTEM_PROPERTY_DATE_FORMAT,
+                format)
+                    , e);
+            formatter = getDefaultFormatter();
             }
-        }
         return formatter;
+    }
+
+    public String getFormatPattern(){
+        String format = System.getProperty(SYSTEM_PROPERTY_DATE_FORMAT);
+        if(format == null) {
+            format = DEFAULT_FORMAT_PATTERN;
+        }
+        return format;
     }
 
     private DateTimeFormatter getDefaultFormatter() {
@@ -90,22 +96,23 @@ public class CentralizedDateTimeFormat {
                 .optionalStart()
                 .appendLiteral(':')
                 .appendValue(SECOND_OF_MINUTE, 2)
-                .appendOffsetId().toFormatter()
-                .withZone(ZoneId.systemDefault());
+                .appendOffsetId().toFormatter();
     }
 
-    public String format(Instant instant) {
+    public String format(Instant instant, ZoneId timeZoneId) {
         if(instant == null){
             return null;
         }
-        return formatter.format(instant);
+        if(timeZoneId == null){
+            timeZoneId = ZoneId.systemDefault();
+        }
+        return formatter.withZone(timeZoneId).format(instant);
     }
 
-    @Deprecated // please use format(Instant) instead
-    public String format(Date date) {
+    public String format(Date date, ZoneId timeZoneId) {
         if (date == null) {
             return null;
         }
-        return format(date.toInstant());
+        return format(date.toInstant(), timeZoneId);
     }
 }

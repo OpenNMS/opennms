@@ -30,6 +30,7 @@
           <instructions>
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Karaf-Commands>*</Karaf-Commands>
+            <Bundle-Activator>org.opennms.features.kafka.producer.collection.KafkaPersisterActivator</Bundle-Activator>
           </instructions>
         </configuration>
       </plugin>
@@ -60,7 +61,10 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-api</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.api</artifactId>
+    </dependency>
     <!-- Kafka -->
     <dependency>
       <groupId>org.apache.kafka</groupId>
@@ -131,6 +135,11 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.daemon</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.collection</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -33,6 +33,7 @@ import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -53,6 +54,16 @@ import org.slf4j.LoggerFactory;
 public abstract class InetAddressUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(InetAddressUtils.class);
+
+    /**
+     * Always print at least one digit after the decimal point,
+     * and at most three digits after the decimal point.
+     */
+    protected static final DecimalFormat NO_DIGITS_AFTER_DECIMAL = new DecimalFormat("0.0##");
+    /**
+     * Print no digits after the decimal point (heh, nor a decimal point).
+     */
+    protected static final DecimalFormat ONE_DIGIT_AFTER_DECIMAL = new DecimalFormat("0");
 
     public static final String INVALID_BRIDGE_ADDRESS = "000000000000";
     public static final String INVALID_STP_BRIDGE_ID  = "0000000000000000";
@@ -542,5 +553,55 @@ public abstract class InetAddressUtils {
 
         return InetAddressUtils.getInetAddress(bytes);
    }
+
+    /**
+     * Method used to convert an integer bits-per-second value to a more
+     * readable vale using commonly recognized abbreviation for network
+     * interface speeds. Feel free to expand it as necessary to accommodate
+     * different values.
+     *
+     * @param ifSpeed
+     *            The bits-per-second value to be converted into a string
+     *            description
+     * @return A string representation of the speed (&quot;100 Mbps&quot; for
+     *         example)
+     */
+    public static String getHumanReadableIfSpeed(long ifSpeed) {
+        DecimalFormat formatter;
+        double displaySpeed;
+        String units;
+
+        if (ifSpeed >= 1000000000L) {
+            if ((ifSpeed % 1000000000L) == 0) {
+                formatter = NO_DIGITS_AFTER_DECIMAL;
+            } else {
+                formatter = ONE_DIGIT_AFTER_DECIMAL;
+            }
+            displaySpeed = ((double) ifSpeed) / 1000000000.0;
+            units = "Gbps";
+        } else if (ifSpeed >= 1000000L) {
+            if ((ifSpeed % 1000000L) == 0) {
+                formatter = NO_DIGITS_AFTER_DECIMAL;
+            } else {
+                formatter = ONE_DIGIT_AFTER_DECIMAL;
+            }
+            displaySpeed = ((double) ifSpeed) / 1000000.0;
+            units = "Mbps";
+        } else if (ifSpeed >= 1000L) {
+            if ((ifSpeed % 1000L) == 0) {
+                formatter = NO_DIGITS_AFTER_DECIMAL;
+            } else {
+                formatter = ONE_DIGIT_AFTER_DECIMAL;
+            }
+            displaySpeed = ((double) ifSpeed) / 1000.0;
+            units = "kbps";
+        } else {
+            formatter = NO_DIGITS_AFTER_DECIMAL;
+            displaySpeed = (double) ifSpeed;
+            units = "bps";
+        }
+
+        return formatter.format(displaySpeed) + " " + units;
+    }
 
 }

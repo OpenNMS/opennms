@@ -43,8 +43,8 @@ import org.apache.camel.Component;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
@@ -57,7 +57,8 @@ import org.opennms.core.ipc.sink.camel.itests.heartbeat.HeartbeatModule;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
-import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.SystemType;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -91,6 +92,7 @@ import com.google.common.util.concurrent.RateLimiter;
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-client.xml"
 })
 @JUnitConfigurationEnvironment
+@Ignore("TODO MVR enable when merging sentinel back to develop")
 public class HeartbeatSinkPerfIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
@@ -128,6 +130,10 @@ public class HeartbeatSinkPerfIT extends CamelBlueprintTest {
                     @Override
                     public String getLocation() {
                         return REMOTE_LOCATION_NAME;
+                    }
+                    @Override
+                    public String getType() {
+                        return SystemType.Minion.name();
                     }
                 }, new Properties()));
 

@@ -28,6 +28,7 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
+import org.opennms.features.timeformat.api.TimeformatService;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashletFactory;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
@@ -56,17 +57,21 @@ public class AlarmDetailsDashletFactory extends AbstractDashletFactory {
 
     private final TransactionOperations m_transactionTemplate;
 
+    private final TimeformatService m_timeformatService;
+
     /**
      * Constructor used for instantiating a new factory.
      *
      * @param alarmDao the {@link AlarmDao} to be used
      * @param nodeDao  the {@link NodeDao} to be used
      */
-    public AlarmDetailsDashletFactory(AlarmDao alarmDao, NodeDao nodeDao, AlarmRepository alarmRepository, TransactionOperations transactionTemplate) {
+    public AlarmDetailsDashletFactory(AlarmDao alarmDao, NodeDao nodeDao, AlarmRepository alarmRepository,
+                                      TransactionOperations transactionTemplate, TimeformatService timeformatService) {
         m_alarmDao = alarmDao;
         m_nodeDao = nodeDao;
         m_alarmRepository = alarmRepository;
         m_transactionTemplate = transactionTemplate;
+        m_timeformatService = timeformatService;
     }
 
     /**
@@ -76,7 +81,8 @@ public class AlarmDetailsDashletFactory extends AbstractDashletFactory {
      * @return a new {@link Dashlet} instance
      */
     public Dashlet newDashletInstance(DashletSpec dashletSpec) {
-        return new AlarmDetailsDashlet(getName(), dashletSpec, m_alarmDao, m_nodeDao, m_alarmRepository, m_transactionTemplate);
+        return new AlarmDetailsDashlet(getName(), dashletSpec, m_alarmDao, m_nodeDao, m_alarmRepository, m_transactionTemplate
+        , m_timeformatService);
     }
 
     /**

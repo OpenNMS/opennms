@@ -37,8 +37,10 @@ import static org.junit.Assume.assumeTrue;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -50,6 +52,13 @@ import org.opennms.core.test.http.JUnitHttpServerExecutionListener;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.poller.Parameter;
+import org.opennms.netmgt.dao.mock.MockMonitoringLocationDao;
+import org.opennms.netmgt.dao.mock.MockNodeDao;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -60,13 +69,23 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
+@ContextConfiguration(locations={
+    "classpath:/META-INF/opennms/applicationContext-soa.xml",
+    "classpath:/META-INF/opennms/applicationContext-mockDao.xml"
+})
 @JUnitConfigurationEnvironment
 @DirtiesContext
 public class HttpMonitorIT {
+    @Autowired
+    private MockMonitoringLocationDao m_locationDao;
+
+    @Autowired
+    private MockNodeDao m_nodeDao;
+
     private boolean m_runTests = true;
 
     @Before
@@ -586,4 +605,232 @@ public class HttpMonitorIT {
         assertTrue(status.isAvailable());
     }
 
+    @Test
+    @JUnitHttpServer()
+    public void testParameterSubstitution() throws UnknownHostException {
+        HttpMonitor monitor = new HttpMonitor();
+        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        final int port = JUnitHttpServerExecutionListener.getPort();
+        if (port > 0) {
+            parameters.put("port", String.valueOf(port));
+        } else {
+            throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
+        }
+        parameters.put("url", "/test-NMS2702.html");
+        parameters.put("retry", "1");
+        parameters.put("timeout", "500");
+        parameters.put("verbose", "true");
+        parameters.put("user-agent", "Hello from {ipAddr} {ipAddress} {nodeId} {nodeLabel}");
+        parameters.put("response-text", "~.*OK.*");
+        MockMonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "HTTP");
+        svc.setNodeLabel("localhost.localdomain");
+        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        assertTrue(subbedParams.get("subbed-user-agent").toString().equals("Hello from 127.0.0.1 127.0.0.1 3 localhost.localdomain"));
+    }
+
+    @Test
+    @JUnitHttpServer()
+    public void testParameterSubstitutionWithNodeAssets() throws UnknownHostException {
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "devjam2018nodelabel");
+        node.setForeignSource("AlienSource");
+        node.setForeignId("31337");
+        node.setId(m_nodeDao.getNextNodeId());
+
+        OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 1);
+        snmpInterface.setId(1);
+        snmpInterface.setIfAlias("Connection to OpenNMS Wifi");
+        snmpInterface.setIfDescr("en1");
+        snmpInterface.setIfName("en1/0");
+        snmpInterface.setPhysAddr("00:00:00:00:00:01");
+
+        Set<OnmsIpInterface> ipInterfaces = new LinkedHashSet<OnmsIpInterface>(1);
+        InetAddress address = InetAddress.getByName("10.0.1.1");
+        OnmsIpInterface onmsIf = new OnmsIpInterface(address, node);
+        onmsIf.setSnmpInterface(snmpInterface);
+        onmsIf.setId(1);
+        onmsIf.setIfIndex(1);
+        onmsIf.setIpHostName("devjam2018nodelabel");
+        onmsIf.setIsSnmpPrimary(PrimaryType.PRIMARY);
+
+        ipInterfaces.add(onmsIf);
+
+        node.setIpInterfaces(ipInterfaces);
+        m_nodeDao.save(node);
+        m_nodeDao.flush();
+        HttpMonitor monitor = new HttpMonitor();
+        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        final int port = JUnitHttpServerExecutionListener.getPort();
+        if (port > 0) {
+            parameters.put("port", String.valueOf(port));
+        } else {
+            throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
+        }
+        parameters.put("url", "/test-NMS2702.html");
+        parameters.put("retry", "1");
+        parameters.put("timeout", "500");
+        parameters.put("verbose", "true");
+        parameters.put("user-agent", "Hello from {foreignId} {foreignSource} {nodeLabel}");
+        parameters.put("response-text", "~.*OK.*");
+        MockMonitoredService svc = MonitorTestUtils.getMonitoredService(Integer.parseInt(node.getNodeId()), "devjam2018nodelabel", InetAddress.getByName("10.0.1.1"), "HTTP");
+        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        assertTrue(subbedParams.get("subbed-user-agent").toString().equals("Hello from 31337 AlienSource devjam2018nodelabel"));
+    }
+
+    @Test
+    @JUnitHttpServer()
+    public void testUserPasswordParameterSubstitution() throws UnknownHostException {
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "devjam2018nodelabel2");
+        node.setForeignSource("AlienSource");
+        node.setForeignId("31338");
+        node.setId(m_nodeDao.getNextNodeId());
+        OnmsAssetRecord oar = node.getAssetRecord();
+        oar.setUsername("peterman");
+        oar.setPassword("nine");
+
+        OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 2);
+        snmpInterface.setId(2);
+        snmpInterface.setIfAlias("Connection to OpenNMS Wifi");
+        snmpInterface.setIfDescr("en1");
+        snmpInterface.setIfName("en1/0");
+        snmpInterface.setPhysAddr("00:00:00:00:00:02");
+
+        Set<OnmsIpInterface> ipInterfaces = new LinkedHashSet<OnmsIpInterface>(1);
+        InetAddress address = InetAddress.getByName("10.0.1.2");
+        OnmsIpInterface onmsIf = new OnmsIpInterface(address, node);
+        onmsIf.setSnmpInterface(snmpInterface);
+        onmsIf.setId(2);
+        onmsIf.setIfIndex(1);
+        onmsIf.setIpHostName("devjam2018nodelabel2");
+        onmsIf.setIsSnmpPrimary(PrimaryType.PRIMARY);
+
+        ipInterfaces.add(onmsIf);
+
+        node.setIpInterfaces(ipInterfaces);
+        m_nodeDao.save(node);
+        m_nodeDao.flush();
+        HttpMonitor monitor = new HttpMonitor();
+        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        final int port = JUnitHttpServerExecutionListener.getPort();
+        if (port > 0) {
+            parameters.put("port", String.valueOf(port));
+        } else {
+            throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
+        }
+        parameters.put("url", "/test-NMS2702.html");
+        parameters.put("retry", "1");
+        parameters.put("timeout", "500");
+        parameters.put("verbose", "true");
+        parameters.put("user", "dude{username}");
+        parameters.put("password", "channel{password}");
+        parameters.put("response-text", "~.*OK.*");
+        MockMonitoredService svc = MonitorTestUtils.getMonitoredService(Integer.parseInt(node.getNodeId()), "devjam2018nodelabel2", InetAddress.getByName("10.0.1.2"), "HTTP");
+        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        assertTrue(subbedParams.get("subbed-user").toString().equals("dudepeterman"));
+        assertTrue(subbedParams.get("subbed-password").toString().equals("channelnine"));
+    }
+
+    @Test
+    @JUnitHttpServer()
+    public void testUrlParameterSubstitution() throws UnknownHostException {
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "devjam2018nodelabel3");
+        node.setForeignSource("AlienSource");
+        node.setForeignId("31339");
+        node.setId(m_nodeDao.getNextNodeId());
+        OnmsAssetRecord oar = node.getAssetRecord();
+        oar.setCity("NMS2702");
+
+        OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 3);
+        snmpInterface.setId(3);
+        snmpInterface.setIfAlias("Connection to OpenNMS Wifi");
+        snmpInterface.setIfDescr("en1");
+        snmpInterface.setIfName("en1/0");
+        snmpInterface.setPhysAddr("00:00:00:00:00:03");
+
+        Set<OnmsIpInterface> ipInterfaces = new LinkedHashSet<OnmsIpInterface>(1);
+        InetAddress address = InetAddress.getByName("127.0.0.1");
+        OnmsIpInterface onmsIf = new OnmsIpInterface(address, node);
+        onmsIf.setSnmpInterface(snmpInterface);
+        onmsIf.setId(3);
+        onmsIf.setIfIndex(1);
+        onmsIf.setIpHostName("devjam2018nodelabel3");
+        onmsIf.setIsSnmpPrimary(PrimaryType.PRIMARY);
+
+        ipInterfaces.add(onmsIf);
+
+        node.setIpInterfaces(ipInterfaces);
+        m_nodeDao.save(node);
+        m_nodeDao.flush();
+        HttpMonitor monitor = new HttpMonitor();
+        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        final int port = JUnitHttpServerExecutionListener.getPort();
+        if (port > 0) {
+            parameters.put("port", String.valueOf(port));
+        } else {
+            throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
+        }
+        parameters.put("url", "/test-{city}.html");
+        parameters.put("retry", "1");
+        parameters.put("timeout", "500");
+        parameters.put("verbose", "true");
+        parameters.put("response-text", "~.*OK.*");
+        MockMonitoredService svc = MonitorTestUtils.getMonitoredService(Integer.parseInt(node.getNodeId()), "devjam2018nodelabel3", InetAddress.getByName("127.0.0.1"), "HTTP");
+        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        // this would normally happen in the poller request builder implementation
+        subbedParams.forEach((k, v) -> {
+            parameters.put(k, v);
+        });
+        PollStatus status = monitor.poll(svc, parameters);
+        assertTrue(status.isAvailable());
+    }
+
+    @Test
+    @JUnitHttpServer()
+    public void testBasicAuthParameterSubstitution() throws UnknownHostException {
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "devjam2018nodelabel4");
+        node.setForeignSource("AlienSource");
+        node.setForeignId("31340");
+        node.setId(m_nodeDao.getNextNodeId());
+        OnmsAssetRecord oar = node.getAssetRecord();
+        oar.setUsername("nimda");
+        oar.setPassword("@dm1n");
+
+        OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 4);
+        snmpInterface.setId(4);
+        snmpInterface.setIfAlias("Connection to OpenNMS Wifi");
+        snmpInterface.setIfDescr("en1");
+        snmpInterface.setIfName("en1/0");
+        snmpInterface.setPhysAddr("00:00:00:00:00:04");
+
+        Set<OnmsIpInterface> ipInterfaces = new LinkedHashSet<OnmsIpInterface>(1);
+        InetAddress address = InetAddress.getByName("10.0.1.4");
+        OnmsIpInterface onmsIf = new OnmsIpInterface(address, node);
+        onmsIf.setSnmpInterface(snmpInterface);
+        onmsIf.setId(4);
+        onmsIf.setIfIndex(1);
+        onmsIf.setIpHostName("devjam2018nodelabel4");
+        onmsIf.setIsSnmpPrimary(PrimaryType.PRIMARY);
+
+        ipInterfaces.add(onmsIf);
+
+        node.setIpInterfaces(ipInterfaces);
+        m_nodeDao.save(node);
+        m_nodeDao.flush();
+        HttpMonitor monitor = new HttpMonitor();
+        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        final int port = JUnitHttpServerExecutionListener.getPort();
+        if (port > 0) {
+            parameters.put("port", String.valueOf(port));
+        } else {
+            throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
+        }
+        parameters.put("url", "/test-NMS2702.html");
+        parameters.put("retry", "1");
+        parameters.put("timeout", "500");
+        parameters.put("verbose", "true");
+        parameters.put("basic-authentication", "{username}:{password}");
+        parameters.put("response-text", "~.*OK.*");
+        MockMonitoredService svc = MonitorTestUtils.getMonitoredService(Integer.parseInt(node.getNodeId()), "devjam2018nodelabel2", InetAddress.getByName("10.0.1.2"), "HTTP");
+        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        assertTrue(subbedParams.get("subbed-basic-authentication").toString().equals("nimda:@dm1n"));
+    }
 }

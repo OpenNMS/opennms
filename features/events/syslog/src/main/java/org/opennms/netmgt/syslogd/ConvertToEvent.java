@@ -34,6 +34,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -113,6 +114,11 @@ public class ConvertToEvent {
     }
 
     public static final EventBuilder toEventBuilder(SyslogMessage message, String systemId, String location) {
+        return toEventBuilder(message, systemId, location, null);
+    }
+
+    public static final EventBuilder toEventBuilder(SyslogMessage message, String systemId, String location,
+                                                    Date receivedTimestamp) {
         if (message == null) {
             return null;
         }
@@ -139,6 +145,9 @@ public class ConvertToEvent {
 
         bldr.addParam("hostname", message.getHostName());
 
+        // Add any syslog message parameters as event parameters.
+        message.getParameters().forEach((k, v) -> bldr.addParam(k.toString(), v));
+
         final InetAddress hostAddress = message.getHostAddress();
         if (hostAddress != null) {
             // Set nodeId
@@ -151,17 +160,49 @@ public class ConvertToEvent {
             bldr.setInterface(hostAddress);
         }
 
-        if (message.getDate() == null) {
-            if (message.getYear() != null) bldr.setYear(message.getYear());
-            if (message.getMonth() != null) bldr.setMonth(message.getMonth());
-            if (message.getDayOfMonth() != null) bldr.setDayOfMonth(message.getDayOfMonth());
-            if (message.getHourOfDay() != null) bldr.setHourOfDay(message.getHourOfDay());
-            if (message.getMinute() != null) bldr.setMinute(message.getMinute());
-            if (message.getSecond() != null) bldr.setSecond(message.getSecond());
-            if (message.getMillisecond() != null) bldr.setMillisecond(message.getMillisecond());
-            if (message.getZoneId() != null) bldr.setZoneId(message.getZoneId());
-        } else {
+        if (message.getDate() != null) {
+            // The message has a date, transfer it to the event
             bldr.setTime(message.getDate());
+        } else {
+            boolean didSetPartialDate = false;
+
+            if (message.getYear() != null) {
+                bldr.setYear(message.getYear());
+                didSetPartialDate = true;
+            }
+            if (message.getMonth() != null) {
+                bldr.setMonth(message.getMonth());
+                didSetPartialDate = true;
+            }
+            if (message.getDayOfMonth() != null) {
+                bldr.setDayOfMonth(message.getDayOfMonth());
+                didSetPartialDate = true;
+            }
+            if (message.getHourOfDay() != null) {
+                bldr.setHourOfDay(message.getHourOfDay());
+                didSetPartialDate = true;
+            }
+            if (message.getMinute() != null) {
+                bldr.setMinute(message.getMinute());
+                didSetPartialDate = true;
+            }
+            if (message.getSecond() != null) {
+                bldr.setSecond(message.getSecond());
+                didSetPartialDate = true;
+            }
+            if (message.getMillisecond() != null) {
+                bldr.setMillisecond(message.getMillisecond());
+                didSetPartialDate = true;
+            }
+            if (message.getZoneId() != null) {
+                bldr.setZoneId(message.getZoneId());
+                didSetPartialDate = true;
+            }
+
+            if (!didSetPartialDate && receivedTimestamp != null) {
+                // We did not set *any* date information on the event - use the received timestamp
+                bldr.setTime(receivedTimestamp);
+            }
         }
 
         bldr.setLogMessage(message.getMessage());
@@ -196,9 +237,34 @@ public class ConvertToEvent {
      *
      * @param systemId
      * @param location
+     * @param addr     The remote agent's address.
+     * @param port     The remote agent's port
+     * @param incoming The syslog datagram in {@link StandardCharsets#US_ASCII} encoding.
+     * @param config   The Syslogd configuration
+     * @throws MessageDiscardedException
+     */
+    public ConvertToEvent(
+            final String systemId,
+            final String location,
+            final InetAddress addr,
+            final int port,
+            final ByteBuffer incoming,
+            final SyslogdConfig config
+    ) throws MessageDiscardedException {
+        this(systemId, location, addr, port, incoming, null, config);
+    }
+
+    /**
+     * Constructs a new event encapsulation instance based upon the
+     * information passed to the method. The passed byte array is decoded into
+     * a string using the {@link StandardCharsets#US_ASCII} character encoding.
+     *
+     * @param systemId
+     * @param location
      * @param addr The remote agent's address.
      * @param port The remote agent's port
      * @param incoming The syslog datagram in {@link StandardCharsets#US_ASCII} encoding.
+     * @param receivedTimestamp the time the message was received
      * @param config The Syslogd configuration
      * @throws MessageDiscardedException 
      */
@@ -208,6 +274,7 @@ public class ConvertToEvent {
         final InetAddress addr,
         final int port,
         final ByteBuffer incoming,
+        final Date receivedTimestamp,
         final SyslogdConfig config
     ) throws MessageDiscardedException {
 
@@ -241,6 +308,12 @@ public class ConvertToEvent {
             LOG.trace("got syslog message {}", SyslogParser.fromByteBuffer(buffer));
         }
 
+        // If no host name was provided we will use the source IP address
+        if(message.getHostName() == null)
+        {
+            message.setHostName(addr.getHostAddress());
+        }
+
         final String priorityTxt = message.getSeverity().toString();
         final String facilityTxt = message.getFacility().toString();
 
@@ -265,7 +338,7 @@ public class ConvertToEvent {
 
         // Time to verify UEI matching.
 
-        EventBuilder bldr = toEventBuilder(message, systemId, location);
+        EventBuilder bldr = toEventBuilder(message, systemId, location, receivedTimestamp);
 
         final List<UeiMatch> ueiMatch = (config.getUeiList() == null ? Collections.emptyList() : config.getUeiList());
         for (final UeiMatch uei : ueiMatch) {

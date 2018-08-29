@@ -128,7 +128,6 @@
     <module>opennms-config-tester</module>
     <module>opennms-dao-api</module>
     <module>opennms-dao</module>
-    <module>opennms-dao-minion</module>
     <module>opennms-dao-mock</module>
     <module>opennms-icmp</module>
     <module>opennms-javamail</module>
@@ -1254,6 +1253,9 @@
    <updatePolicy>interval:60</updatePolicy> <!-- 60 minutes -->
    <maven.clover.licenseLocation>${user.home}/.m2/clover.license</maven.clover.licenseLocation>
 
+   <karaf.servicemix.specs.version>2.9.0</karaf.servicemix.specs.version>
+   <hawtio.version>2.0.0</hawtio.version>
+
     <!-- dependency versions -->
     <oldAsmVersion>99.99.99-exclude-and-use-org.ow2.asm.asm-all-instead</oldAsmVersion>
     <args4jVersion>2.32</args4jVersion>
@@ -1301,6 +1303,7 @@
     <guavaOldVersion>17.0</guavaOldVersion>
     <gwtVersion>2.6.1</gwtVersion>
     <gwtPluginVersion>2.6.1</gwtPluginVersion>
+    <hawtioVersion>1.4.68</hawtioVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
     <hikaricpVersion>2.5.1</hikaricpVersion>
     <httpcoreVersion>4.4.4</httpcoreVersion>
@@ -2028,6 +2031,11 @@
       <dependency>
         <groupId>org.opennms.features.collection</groupId>
         <artifactId>org.opennms.features.collection.client-rpc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.collection</groupId>
+        <artifactId>org.opennms.features.collection.persistence.osgi</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

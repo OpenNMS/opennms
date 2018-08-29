@@ -6,6 +6,7 @@
 
 The _JDBCMonitor_ checks that it is able to connect to a database and checks if it is able to get the database catalog from that database management system (DBMS).
 It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html[JDBC] technology to connect and communicate with the database.
+This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
 ===== Monitor facts
 
@@ -20,12 +21,12 @@ It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html
 .Monitor specific parameters for the JDBCMonitor
 [options="header, autowidth"]
 |===
-| Parameter  | Description                                                        | Required | Default value
-| `driver`   | JDBC driver class to use                                           | required | `org.postgresql.Driver`
-| `url`      | JDBC Url to connect to.                                            | required | `jdbc:postgresql://:OPENNMS_JDBC_HOSTNAME/opennms`
-| `user`     | Database user                                                      | required | `postgres`
-| `password` | Database password                                                  | required | `empty string`
-| `retries`  | How many retries should be performed before failing the test       | optional | `0`
+| Parameter  | Description                                                        | Required | Default value | Placeholder substitution
+| `driver`   | JDBC driver class to use                                           | required | `org.postgresql.Driver` | No
+| `url`      | JDBC Url to connect to.                                            | required | `jdbc:postgresql://:OPENNMS_JDBC_HOSTNAME/opennms` | Yes
+| `user`     | Database user                                                      | required | `postgres` | Yes
+| `password` | Database password                                                  | required | `empty string` | Yes
+| `retries`  | How many retries should be performed before failing the test       | optional | `0` | No
 |===
 
 NOTE: The _OPENNMS_JDBC_HOSTNAME_ is replaced in the _url_ parameter with the IP or resolved hostname of the interface the monitored service is assigned to.

@@ -17,7 +17,10 @@
     <bean id="kafkaMessageConsumerManager" class="org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager" />
 
     <bean id="kafkaLocalMessageDispatcherFactory" class="org.opennms.core.ipc.sink.kafka.client.KafkaLocalMessageDispatcherFactory" />
-  
-	<bean id="kafkaOffsetProvider" class="org.opennms.core.ipc.sink.kafka.server.offset.KafkaOffsetProvider"/>
+
+    <bean id="kafkaConfigProvider" class="org.opennms.core.ipc.sink.kafka.server.config.OnmsKafkaConfigProvider"/>
+	<bean id="kafkaOffsetProvider" class="org.opennms.core.ipc.sink.kafka.server.offset.KafkaOffsetProvider">
+        <constructor-arg ref="kafkaConfigProvider"/>
+    </bean>
 
 </beans>

@@ -736,4 +736,9 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		installFeature("internal-plugins-descriptor");
 		System.out.println(executeCommand("feature:list -i"));
 	}
+    @Test
+    public void testInstallFeatureOpennmsSituationFeedback() {
+        installFeature("opennms-dao-api"); // System classpath
+        installFeature("opennms-situation-feedback");
+    }
 }

@@ -36,6 +36,11 @@ Then choose _Configure Event Notifications_.
 NOTE: The event notification configuration is stored in the `notifications.xml` file.
 Changes to this file are picked up on the fly with no need to restart or send an event.
 
+NOTE: By default, OpenNMS executes the destination path of all notifications matching the event's uei.
+You can configure OpenNMS to only execute the destination path of the first matching notification by editing the `notifd-configuration.xml` file and setting `match-all="false"` in
+the top-level `notifd-configuration` element.
+This configuration file change is picked up on the fly with no need to restart or send an event.
+
 // TODO: Document event notification editor
 
 // TODO: Document path-outage feature

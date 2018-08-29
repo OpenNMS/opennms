@@ -49,7 +49,7 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</a>
  */
 @Distributable(DistributionContext.DAEMON)
-final public class JolokiaBeanMonitor extends AbstractServiceMonitor {
+final public class JolokiaBeanMonitor extends ParameterSubstitutingMonitor {
 
     /**
      * Default port.
@@ -119,13 +119,13 @@ final public class JolokiaBeanMonitor extends AbstractServiceMonitor {
         int port = ParameterMap.getKeyedInteger(parameters, PARAMETER_PORT, DEFAULT_PORT);
 
         //URL
-        String strURL = ParameterMap.getKeyedString(parameters, PARAMETER_URL, DEFAULT_URL);
+        String strURL = resolveKeyedString(parameters, PARAMETER_URL, DEFAULT_URL);
 
         //Username
-        String strUser = ParameterMap.getKeyedString(parameters, PARAMETER_USERNAME, null);
+        String strUser = resolveKeyedString(parameters, PARAMETER_USERNAME, null);
 
         //Password
-        String strPasswd = ParameterMap.getKeyedString(parameters, PARAMETER_PASSWORD, null);
+        String strPasswd = resolveKeyedString(parameters, PARAMETER_PASSWORD, null);
 
         //AttrName
         String strAttrName = ParameterMap.getKeyedString(parameters, PARAMETER_ATTRNAME, null);
@@ -137,14 +137,14 @@ final public class JolokiaBeanMonitor extends AbstractServiceMonitor {
         String strBeanName = ParameterMap.getKeyedString(parameters, PARAMETER_BEANNAME, null);
 
         //MethodName
-        String strMethodName = ParameterMap.getKeyedString(parameters, PARAMETER_METHODNAME, null);
+        String strMethodName = resolveKeyedString(parameters, PARAMETER_METHODNAME, null);
 
         //Optional Inputs
-        String strInput1 = ParameterMap.getKeyedString(parameters, PARAMETER_METHODINPUT1, null);
-        String strInput2 = ParameterMap.getKeyedString(parameters, PARAMETER_METHODINPUT2, null);
+        String strInput1 = resolveKeyedString(parameters, PARAMETER_METHODINPUT1, null);
+        String strInput2 = resolveKeyedString(parameters, PARAMETER_METHODINPUT2, null);
 
         // BannerMatch
-        String strBannerMatch = ParameterMap.getKeyedString(parameters, PARAMETER_BANNER, null);
+        String strBannerMatch = resolveKeyedString(parameters, PARAMETER_BANNER, null);
 
         // Get the address instance.
         InetAddress ipAddr = svc.getAddress();

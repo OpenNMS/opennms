@@ -74,7 +74,7 @@
           Node: <strong><a href="element/node.jsp?node=${nodeId}">{{ nodeLabel }}</a></strong>
         </h4>
         <p>
-          Last modified by {{ master['lastModifiedBy'] }} at {{ master['lastModifiedDate'] | date }}
+          Last modified by {{ (master['lastModifiedBy'] || 'no one') }} at {{ master['lastModifiedDate'] | onmsDate }}
         </p>
 
         <form name="assetForm" novalidate>

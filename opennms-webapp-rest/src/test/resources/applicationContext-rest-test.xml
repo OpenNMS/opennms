@@ -28,5 +28,8 @@
 		<constructor-arg value="org.opennms.netmgt.config.poller.PollerConfiguration" />
 		<constructor-arg value="file:target/test-classes/poller-configuration.xml" />
 	</bean>
-	
+
+	<bean name="timeformatService" class="org.opennms.features.timeformat.impl.DefaultTimeformatService">
+	</bean>
+
 </beans>

@@ -12,11 +12,11 @@
     <name>OpenNMS :: Features :: Minion</name>
 
     <modules>
-        <module>container</module>
         <module>core</module>
         <module>heartbeat</module>
         <module>repository</module>
         <module>shell</module>
+        <module>status</module>
     </modules>
 
     <build>

@@ -5,6 +5,7 @@ const MODULE_NAME = 'onms.elementList.notification';
 const angular = require('vendor/angular-js');
 const elementList = require('../lib/elementList');
 require('../lib/restResources');
+require('../../onms-date-formatter');
 
 const mainTemplate = require('./main.html');
 
@@ -18,7 +19,7 @@ const getSearchProperty = (searchProperties, id) => {
 };
 
 // $filters that can be used to create human-readable versions of filter values
-angular.module('notificationListFilters', [ 'onmsListFilters' ])
+angular.module('notificationListFilters', [ 'onmsListFilters', 'onmsDateFormatter' ])
 .directive('onmsNotificationList', () => {
 	return {
 		restrict: 'E',
@@ -41,7 +42,7 @@ angular.module('notificationListFilters', [ 'onmsListFilters' ])
 				return 'null';
 			}
 			// Return the date in our preferred format
-			return $filter('date')(input, 'MMM d, yyyy h:mm:ss a');
+			return $filter('onmsDate')(input);
 		default:
 			// otherwise, do nothing
 			break;

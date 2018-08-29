@@ -1,0 +1,27 @@
+
+== Monitor isolated location with Minion
+
+This section describes how to install the _Minion_ to monitor devices and services in a location which can't be reached from an _{opennms-product-name}_ instance.
+
+=== Objectives
+
+* Install a _Minion_ to monitor devices and services unreachable from an _{opennms-product-name}_ instance
+* Configure an authenticated unencrypted communication between _Minion_ and _{opennms-product-name}_ using _ActiveMQ_ and _REST_
+
+=== Before you begin
+
+Setting up a _{opennms-product-name}_ with _Minions_ requires:
+
+* Instance of _{opennms-product-name}_ needs to be exact same version as _Minion_ packages
+* Packages are available as _RPMs_ for _RHEL_-based systems and _DEBs_ for _Debian_-based systems
+* _{opennms-product-name}_ needs to be installed and communication to the _REST (8980/tcp)_ and _ActiveMQ (616161/tcp)_ endpoints is possible
+
+Depending on the installed operating system, the path for _Minion_ is different.
+If the instruction refers to `${MINION_HOME}`, the path is resolved to the following directories:
+
+.Directory Structure
+[width="100%", cols="1,4"]
+|===
+| _RHEL_              | `/opt/minion`
+| _Debian_            | `/usr/share/minion`
+|===
