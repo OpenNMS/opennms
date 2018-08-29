@@ -73,7 +73,7 @@ public class MapBasedProtocolDef implements Protocol {
 
     @Override
     public Optional<Integer> getQueueSize() {
-        return threads;
+        return queueSize;
     }
 
     @Override
