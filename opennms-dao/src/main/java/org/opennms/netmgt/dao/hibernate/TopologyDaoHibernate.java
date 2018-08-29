@@ -80,6 +80,7 @@ public class TopologyDaoHibernate implements TopologyDao {
         return new OnmsTopology();
     }
 
+    //FIXME what about ifspeed?
     public OnmsTopology getCdpTopology() {
         Map<Integer, OnmsNode> nodeMap=new HashMap<Integer, OnmsNode>();
         m_nodeDao.findAll().stream().forEach(node -> nodeMap.put(node.getId(), node));
@@ -87,7 +88,9 @@ public class TopologyDaoHibernate implements TopologyDao {
         OnmsTopology topology = new OnmsTopology();
         m_cdpElementDao.findAll().stream().forEach(cdpelement -> {
             cdpelementmap.put(cdpelement.getNode().getId(), cdpelement);
-            topology.getVertices().add(OnmsTopologyVertex.create(nodeMap.get(cdpelement.getNode().getId())));
+            OnmsTopologyVertex vertex = OnmsTopologyVertex.create(nodeMap.get(cdpelement.getNode().getId()));
+            vertex.getProtocolSupported().add(ProtocolSupported.CDP);
+            topology.getVertices().add(vertex);
         });
         List<CdpLink> allLinks = m_cdpLinkDao.findAll();
         Set<Integer> parsed = new HashSet<Integer>();
@@ -132,8 +135,11 @@ public class TopologyDaoHibernate implements TopologyDao {
             OnmsTopologyEdge edge = OnmsTopologyEdge.create(source, target);
             edge.setSourcePort(sourceLink.getCdpInterfaceName());
             edge.setSourceIfIndex(sourceLink.getCdpCacheIfIndex());
+            edge.setSourceAddr(targetLink.getCdpCacheAddress());
             edge.setTargetPort(targetLink.getCdpInterfaceName());
             edge.setTargetIfIndex(targetLink.getCdpCacheIfIndex());
+            edge.setTargetAddr(sourceLink.getCdpCacheAddress());
+            edge.setDiscoveredBy(ProtocolSupported.CDP);
             topology.getEdges().add(edge);
        }
         
