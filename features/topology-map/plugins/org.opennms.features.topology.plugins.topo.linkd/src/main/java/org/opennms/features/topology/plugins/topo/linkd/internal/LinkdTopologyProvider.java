@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAware;
@@ -275,6 +276,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
 
     private void getLldpLinks() {
+
+        List<LldpLink> allLinks = m_lldpLinkDao.findAll();
         // Index the LLDP elements by node id
         Map<Integer, LldpElement> nodelldpelementidMap = new HashMap<Integer, LldpElement>();
         Map<Integer, LinkdVertex> nodeVertexMap = new HashMap<Integer, LinkdVertex>();
@@ -286,17 +289,41 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             System.err.println(vertex.getId());
         }
 
-        // Pull all of the LLDP links and index them by remote chassis id
-        Map<String, List<LldpLink>> lldpRemoteIdLinksMap = new HashMap<>();
-        List<LldpLink> allLinks = m_lldpLinkDao.findAll();
-        for (LldpLink link : allLinks) {
-            final String remoteChassisId = link.getLldpRemChassisId();
-            if (!lldpRemoteIdLinksMap.containsKey(remoteChassisId)) {
-                lldpRemoteIdLinksMap.put(remoteChassisId, new ArrayList<>());
-            }
-            lldpRemoteIdLinksMap.get(remoteChassisId).add(link);
+        List<Pair<LldpLink, LldpLink>> matchedLinks = matchLldpLinks(nodelldpelementidMap, allLinks);
+
+        for (Pair<LldpLink, LldpLink> pair : matchedLinks) {
+            LldpLink sourceLink = pair.getLeft();
+            LldpLink targetLink = pair.getRight();
+            LinkdVertex source = nodeVertexMap.get(sourceLink.getNode().getId());
+            LinkdVertex target = nodeVertexMap.get(targetLink.getNode().getId());
+            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNode().getId(), sourceLink.getLldpPortIfindex());
+            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNode().getId(), targetLink.getLldpPortIfindex());
+            connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
+                    source,target,
+                    sourceSnmpInterface,targetSnmpInterface,
+                    sourceLink.getLldpPortDescr(),targetLink.getLldpPortDescr(),
+                    ProtocolSupported.LLDP);
+        }
+    }
+
+    List<Pair<LldpLink, LldpLink>> matchLldpLinks(Map<Integer, LldpElement> nodelldpelementidMap, List<LldpLink> allLinks) {
+        List<Pair<LldpLink, LldpLink>> results = new ArrayList<>();
+
+        // 1.) create mapping
+        Map<CompositeKey, LldpLink> targetLinkMap = new HashMap<>();
+        for(LldpLink targetLink : allLinks){
+
+            CompositeKey key = new CompositeKey(
+                    targetLink.getLldpRemChassisId(),
+                    nodelldpelementidMap.get(targetLink.getNode().getId()).getLldpChassisId(),
+                    targetLink.getLldpPortId(),
+                    targetLink.getLldpPortIdSubType(),
+                    targetLink.getLldpRemPortId(),
+                    targetLink.getLldpRemPortIdSubType());
+            targetLinkMap.put(key, targetLink);
         }
 
+        // 2.) iterate
         Set<Integer> parsed = new HashSet<Integer>();
         for (LldpLink sourceLink : allLinks) {
             if (parsed.contains(sourceLink.getId())) {
@@ -313,59 +340,67 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getLldpLinks: source: {}",sourceLink.printTopology());
             }
-            LldpLink targetLink = null;
 
-            // Limit the candidate links by only choosing those have a remote chassis id matching the chassis id of the source link
-            for (LldpLink link : lldpRemoteIdLinksMap.getOrDefault(sourceLldpChassisId, Collections.emptyList())) {
-                if (parsed.contains(link.getId())) {
-                    continue;
-                }
-
-                String targetchassisId = nodelldpelementidMap.get(link.getNode().getId()).getLldpChassisId();
-                // Compare the chassis id on the other end of the link
-                if (!sourceLink.getLldpRemChassisId().equals(targetchassisId)) {
-                    continue;
-                }
-                // no match if source Rem Port is not 'link' Local Port
-                if (!(sourceLink.getLldpRemPortId().equals(link.getLldpPortId())) || !(sourceLink.getLldpRemPortIdSubType() == link.getLldpPortIdSubType())) {
-                    continue;
-                }
-                // no match if source Local Port is not 'link Remote Port
-                if (!(link.getLldpRemPortId().equals(sourceLink.getLldpPortId()))|| !(link.getLldpRemPortIdSubType() == sourceLink.getLldpPortIdSubType())) {
-                    continue;
-                }
-                // biderection link found 
-                targetLink=link;
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("getLldpLinks: lldp: {} target: {}", targetchassisId, link.printTopology());
-                }
-                break;
-            }
+            CompositeKey key = new CompositeKey(
+                    nodelldpelementidMap.get(sourceLink.getNode().getId()).getLldpChassisId(),
+                    sourceLink.getLldpRemChassisId(),
+                    sourceLink.getLldpRemPortId(),
+                    sourceLink.getLldpRemPortIdSubType(),
+                    sourceLink.getLldpPortId(),
+                    sourceLink.getLldpPortIdSubType());
+            LldpLink targetLink = targetLinkMap.get(key);
 
             if (targetLink == null) {
                 LOG.debug("getLldpLinks: cannot found target for source: '{}'", sourceLink.getId());
                 continue;
             }
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getLldpLinks: lldp: {} target: {}", sourceLink.getLldpRemChassisId(), targetLink.printTopology());
+            }
+
             parsed.add(sourceLink.getId());
             parsed.add(targetLink.getId());
-            LinkdVertex source = nodeVertexMap.get(sourceLink.getNode().getId());
-            LinkdVertex target = nodeVertexMap.get(targetLink.getNode().getId());
-            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNode().getId(), sourceLink.getLldpPortIfindex());
-            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNode().getId(), targetLink.getLldpPortIfindex());
-            connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
-                            source,target,
-                            sourceSnmpInterface,targetSnmpInterface,
-                            sourceLink.getLldpPortDescr(),targetLink.getLldpPortDescr(),
-                            ProtocolSupported.LLDP);
-
+            results.add(Pair.of(sourceLink, targetLink));
         }
-
+        return results;
     }
 
     private void getOspfLinks() {
-        List<OspfLink> allLinks =  getOspfLinkDao().findAll();
+
+        List<OspfLink> allLinks = getOspfLinkDao().findAll();
+        List<Pair<OspfLink, OspfLink>> matchedLinks = matchOspfLinks(allLinks);
+
+        for (Pair<OspfLink, OspfLink> pair : matchedLinks) {
+            OspfLink sourceLink = pair.getLeft();
+            OspfLink targetLink = pair.getRight();
+
+            LinkdVertex source = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
+            source.getProtocolSupported().add(ProtocolSupported.OSPF);
+            LinkdVertex target = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
+            target.getProtocolSupported().add(ProtocolSupported.OSPF);
+            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNode().getId(), sourceLink.getOspfIfIndex());
+            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNode().getId(), targetLink.getOspfIfIndex());
+            connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
+                    source,target,
+                    sourceSnmpInterface,targetSnmpInterface,
+                    InetAddressUtils.str(targetLink.getOspfRemIpAddr()),
+                    InetAddressUtils.str(sourceLink.getOspfRemIpAddr()),
+                    ProtocolSupported.OSPF);
+        }
+    }
+
+    List<Pair<OspfLink, OspfLink>> matchOspfLinks(List<OspfLink> allLinks){
+        List<Pair<OspfLink, OspfLink>> results = new ArrayList<>();
         Set<Integer> parsed = new HashSet<Integer>();
-SOURCE:        for(OspfLink sourceLink : allLinks) {
+
+        // build mapping:
+        Map<CompositeKey, OspfLink> targetLinks = new HashMap<>();
+        for(OspfLink targetLink : allLinks){
+            targetLinks.put(new CompositeKey(targetLink.getOspfIpAddr(), targetLink.getOspfRemIpAddr()) , targetLink);
+        }
+
+        for(OspfLink sourceLink : allLinks) {
             if (parsed.contains(sourceLink.getId())) {
                 continue;
             }
@@ -373,154 +408,176 @@ SOURCE:        for(OspfLink sourceLink : allLinks) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getOspfLinks: source: {}", sourceLink.printTopology());
             }
-            for (OspfLink targetLink : allLinks) {
-                if (sourceLink.getId().intValue() == targetLink.getId().intValue() || parsed.contains(targetLink.getId())) { 
-                    continue;
-                }
-                if(sourceLink.getOspfRemIpAddr().equals(targetLink.getOspfIpAddr()) && targetLink.getOspfRemIpAddr().equals(sourceLink.getOspfIpAddr())) {
-                    LOG.info("getOspfLinks: target: {}", targetLink.printTopology());
-                    parsed.add(targetLink.getId());
-                    LinkdVertex source = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
-                    source.getProtocolSupported().add(ProtocolSupported.OSPF);
-                    LinkdVertex target = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
-                    target.getProtocolSupported().add(ProtocolSupported.OSPF);
-                    OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNode().getId(), sourceLink.getOspfIfIndex());
-                    OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNode().getId(), targetLink.getOspfIfIndex());
-                    connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
-                                    source,target,
-                                    sourceSnmpInterface,targetSnmpInterface,
-                                    InetAddressUtils.str(targetLink.getOspfRemIpAddr()),
-                                    InetAddressUtils.str(sourceLink.getOspfRemIpAddr()),
-                                    ProtocolSupported.OSPF);
-                    continue SOURCE;
-                }
+            OspfLink targetLink = targetLinks.get(new CompositeKey(sourceLink.getOspfRemIpAddr() , sourceLink.getOspfIpAddr()));
+            if(targetLink == null) {
+                LOG.debug("getOspfLinks: cannot find target for source: '{}'", sourceLink.getId());
+                continue;
             }
-            LOG.debug("getOspfLinks: cannot found target for source: '{}'", sourceLink.getId());
+
+            if (sourceLink.getId().equals(targetLink.getId()) || parsed.contains(targetLink.getId())) {
+                    continue;
+            }
+
+            LOG.debug("getOspfLinks: target: {}", targetLink.printTopology());
+            parsed.add(targetLink.getId());
+           results.add(Pair.of(sourceLink, targetLink));
+        }
+        return results;
+    }
+
+
+
+
+    private void getCdpLinks() {
+        List<CdpElement> cdpElements = m_cdpElementDao.findAll();
+        List<CdpLink> allLinks = m_cdpLinkDao.findAll();
+        List<Pair<CdpLink, CdpLink>> matchedCdpLinks = matchCdpLinks(cdpElements, allLinks);
+
+        for(Pair<CdpLink, CdpLink> pair : matchedCdpLinks) {
+            CdpLink sourceLink = pair.getLeft();
+            CdpLink targetLink = pair.getRight();
+            LinkdVertex source = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
+            source.getProtocolSupported().add(ProtocolSupported.CDP);
+            LinkdVertex target = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
+            target.getProtocolSupported().add(ProtocolSupported.CDP);
+            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNode().getId(), sourceLink.getCdpCacheIfIndex());
+            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNode().getId(), targetLink.getCdpCacheIfIndex());
+            connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
+                source, target,
+                sourceSnmpInterface, targetSnmpInterface,
+                targetLink.getCdpCacheAddress(),
+                sourceLink.getCdpCacheAddress(),
+                ProtocolSupported.CDP);
         }
     }
 
-    private void getCdpLinks() {
+    List<Pair<CdpLink, CdpLink>> matchCdpLinks(final List<CdpElement> cdpElements, final List<CdpLink> allLinks) {
+
+        // 1. create lookup maps:
         Map<Integer, CdpElement> cdpelementmap = new HashMap<Integer, CdpElement>();
-        for (CdpElement cdpelement: m_cdpElementDao.findAll()) {
+        for (CdpElement cdpelement: cdpElements) {
             cdpelementmap.put(cdpelement.getNode().getId(), cdpelement);
         }
-
-        List<CdpLink> allLinks = m_cdpLinkDao.findAll();
+        Map<CompositeKey, CdpLink> targetLinkMap = new HashMap<>();
+        for (CdpLink targetLink : allLinks) {
+            CompositeKey key = new CompositeKey(targetLink.getCdpCacheDevicePort(),
+                    targetLink.getCdpInterfaceName(),
+                    cdpelementmap.get(targetLink.getNode().getId()).getCdpGlobalDeviceId(),
+                    targetLink.getCdpCacheDeviceId());
+            targetLinkMap.put(key, targetLink);
+        }
         Set<Integer> parsed = new HashSet<Integer>();
 
+        // 2. iterate
+        List<Pair<CdpLink, CdpLink>> results = new ArrayList<>();
         for (CdpLink sourceLink : allLinks) {
-            if (parsed.contains(sourceLink.getId())) { 
+            if (parsed.contains(sourceLink.getId())) {
                 continue;
             }
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getCdpLinks: source: {} ", sourceLink.printTopology());
             }
             CdpElement sourceCdpElement = cdpelementmap.get(sourceLink.getNode().getId());
-            CdpLink targetLink = null;
-            for (CdpLink link : allLinks) {
-                if (sourceLink.getId().intValue() == link.getId().intValue()|| parsed.contains(link.getId())) {
-                    continue;
-                }
-                CdpElement element = cdpelementmap.get(link.getNode().getId());
-                //Compare the remote data to the targetNode element data
-                if (!sourceLink.getCdpCacheDeviceId().equals(element.getCdpGlobalDeviceId()) || !link.getCdpCacheDeviceId().equals(sourceCdpElement.getCdpGlobalDeviceId())) {
-                    continue;
-                }
 
-                if (sourceLink.getCdpInterfaceName().equals(link.getCdpCacheDevicePort()) && link.getCdpInterfaceName().equals(sourceLink.getCdpCacheDevicePort())) {
-                    targetLink=link;
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("getCdpLinks: cdp: {}, target: {} ", link.getCdpCacheDevicePort(), targetLink.printTopology());
-                    }
-                    break;
-                }
-            }
-                        
+            CdpLink targetLink = targetLinkMap.get(new CompositeKey(sourceLink.getCdpInterfaceName(),
+                    sourceLink.getCdpCacheDevicePort(),
+                    sourceLink.getCdpCacheDeviceId(),
+                    sourceCdpElement.getCdpGlobalDeviceId()));
+
             if (targetLink == null) {
                 LOG.debug("getCdpLinks: cannot found target for source: '{}'", sourceLink.getId());
                 continue;
             }
-                
+
+            if (sourceLink.getId().equals(targetLink.getId()) || parsed.contains(targetLink.getId())) {
+                continue;
+            }
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getCdpLinks: cdp: {}, target: {} ", sourceLink.getCdpCacheDevicePort(), targetLink.printTopology());
+            }
+
             parsed.add(sourceLink.getId());
             parsed.add(targetLink.getId());
-            LinkdVertex source = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
-            source.getProtocolSupported().add(ProtocolSupported.CDP);
-            LinkdVertex target = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
-            target.getProtocolSupported().add(ProtocolSupported.CDP);
-            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNode().getId(), sourceLink.getCdpCacheIfIndex());
-            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNode().getId(), targetLink.getCdpCacheIfIndex());
+            results.add(Pair.of(sourceLink, targetLink));
+        }
+        return results;
+    }
+
+    private void getIsIsLinks() {
+
+        List<IsIsElement> elements = m_isisElementDao.findAll();
+        List<IsIsLink> allLinks = m_isisLinkDao.findAll();
+
+        List<Pair<IsIsLink, IsIsLink>> results = matchIsIsLinks(elements, allLinks);
+
+        for(Pair<IsIsLink, IsIsLink> pair : results) {
+            IsIsLink sourceLink = pair.getLeft();
+            IsIsLink targetLink = pair.getRight();
+            LinkdVertex source = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
+            source.getProtocolSupported().add(ProtocolSupported.ISIS);
+            LinkdVertex target = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
+            target.getProtocolSupported().add(ProtocolSupported.ISIS);
+            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNode().getId(), sourceLink.getIsisCircIfIndex());
+            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNode().getId(), targetLink.getIsisCircIfIndex());
             connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
-                            source,target,
-                            sourceSnmpInterface,targetSnmpInterface,
-                            targetLink.getCdpCacheAddress(),
-                            sourceLink.getCdpCacheAddress(),
-                            ProtocolSupported.CDP);
+                source, target,
+                sourceSnmpInterface, targetSnmpInterface,
+                targetLink.getIsisISAdjNeighSNPAAddress(),
+                sourceLink.getIsisISAdjNeighSNPAAddress(),
+                ProtocolSupported.ISIS);
         }
     }
-    
-    private void getIsIsLinks(){
 
+    List<Pair<IsIsLink, IsIsLink>> matchIsIsLinks(final List<IsIsElement> elements, final List<IsIsLink> allLinks) {
+
+        // 1.) create lookupMaps
         Map<Integer, IsIsElement> elementmap = new HashMap<Integer, IsIsElement>();
-        for (IsIsElement element: m_isisElementDao.findAll()) {
+        for (IsIsElement element: elements) {
             elementmap.put(element.getNode().getId(), element);
         }
 
-        List<IsIsLink> isislinks = m_isisLinkDao.findAll();
-        Set<Integer> parsed = new HashSet<Integer>();
+        Map<CompositeKey, IsIsLink> targetLinkMap = new HashMap<>();
+        for (IsIsLink targetLink : allLinks) {
+            IsIsElement targetElement = elementmap.get(targetLink.getNode().getId());
+            targetLinkMap.put(new CompositeKey(targetLink.getIsisISAdjIndex(),
+                      targetElement.getIsisSysID(),
+                      targetLink.getIsisISAdjNeighSysID()), targetLink);
+        }
 
-        for (IsIsLink sourceLink : isislinks) {
-            if (parsed.contains(sourceLink.getId())) { 
+        // 2. iterate
+        Set<Integer> parsed = new HashSet<Integer>();
+        List<Pair<IsIsLink, IsIsLink>> results = new ArrayList<>();
+
+        for (IsIsLink sourceLink : allLinks) {
+            if (parsed.contains(sourceLink.getId())) {
                 continue;
             }
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getIsIsLinks: source: {}", sourceLink.printTopology());
             }
             IsIsElement sourceElement = elementmap.get(sourceLink.getNode().getId());
-            IsIsLink targetLink = null;
-            for (IsIsLink link : isislinks) {
-                if (sourceLink.getId().intValue() == link.getId().intValue()|| parsed.contains(link.getId())) {
-                    continue;
-                }
-                IsIsElement targetElement = elementmap.get(link.getNode().getId());
-                //Compare the remote data to the targetNode element data
-                if (!sourceLink.getIsisISAdjNeighSysID().equals(targetElement.getIsisSysID())  
-                        || !link.getIsisISAdjNeighSysID().equals(sourceElement.getIsisSysID())) { 
-                    continue;
-                }
+            IsIsLink targetLink = targetLinkMap.get(new CompositeKey(sourceLink.getIsisISAdjIndex(),
+                    sourceLink.getIsisISAdjNeighSysID(),
+                    sourceElement.getIsisSysID()));
 
-                if (sourceLink.getIsisISAdjIndex().intValue() == 
-                        link.getIsisISAdjIndex().intValue()  ) {
-                    targetLink=link;
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("getIsIsLinks: target: {}", targetLink.printTopology());
-                    }
-                    break;
-                }
-            }
-            
             if (targetLink == null) {
                 LOG.debug("getIsIsLinks: cannot found target for source: '{}'", sourceLink.getId());
                 continue;
             }
-
+            if (sourceLink.getId().intValue() == targetLink.getId().intValue()|| parsed.contains(targetLink.getId())) {
+                continue;
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getIsIsLinks: target: {}", targetLink.printTopology());
+            }
+            results.add(Pair.of(sourceLink, targetLink));
             parsed.add(sourceLink.getId());
             parsed.add(targetLink.getId());
-            LinkdVertex source = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
-            source.getProtocolSupported().add(ProtocolSupported.ISIS);
-            LinkdVertex target = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
-            target.getProtocolSupported().add(ProtocolSupported.ISIS);
-            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNode().getId(), sourceLink.getIsisCircIfIndex());
-            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNode().getId(), targetLink.getIsisCircIfIndex());
-            connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
-                            source,target,
-                            sourceSnmpInterface,targetSnmpInterface,
-                            targetLink.getIsisISAdjNeighSNPAAddress(),
-                            sourceLink.getIsisISAdjNeighSNPAAddress(),
-                            ProtocolSupported.ISIS);
         }
-
+        return results;
     }
-    
+
     private void getBridgeLinks() throws BridgeTopologyException {
         
         for (BroadcastDomain domain: m_bridgeTopologyDao.load()) {
