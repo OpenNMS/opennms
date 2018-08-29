@@ -1196,9 +1196,11 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         if (m_relatedAlarms == null || m_relatedAlarms.isEmpty()) {
             return 1;
         }
-        Set<Integer> nodes = m_relatedAlarms.stream().map(OnmsAlarm::getNode).map(OnmsNode::getId).collect(Collectors.toSet());
+        Set<Integer> nodes = m_relatedAlarms.stream().map(OnmsAlarm::getNode).filter(Objects::nonNull).map(OnmsNode::getId).collect(Collectors.toSet());
         // count the Situtation's node if it is different
-        nodes.add(m_node.getId());
+        if (m_node != null) {
+            nodes.add(m_node.getId());
+        }
         return nodes.size();
     }
 

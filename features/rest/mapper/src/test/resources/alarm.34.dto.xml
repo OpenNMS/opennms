@@ -42,4 +42,6 @@
   </parameters>
   <lastEventTime>##DATE##</lastEventTime>
   <x733ProbableCause>0</x733ProbableCause>
+  <affectedNodeCount>1</affectedNodeCount>
+  <inSituation>false</inSituation>
 </alarm>

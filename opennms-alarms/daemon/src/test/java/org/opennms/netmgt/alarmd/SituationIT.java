@@ -43,7 +43,9 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -70,23 +72,34 @@ public class SituationIT {
     @Autowired
     private DistPollerDao m_distPollerDao;
 
+    @Autowired
+    private NodeDao m_nodeDao;
+
     private OnmsAlarm linkDownAlarmOnR1;
     private OnmsAlarm linkDownAlarmOnR2;
     
+    private OnmsNode testNode;
     
     @Before
     public void setup() {
+        // Create a Test Node
+        testNode = new OnmsNode();
+        testNode.setLabel("TEST NODE");
+        m_nodeDao.save(testNode);
+
         // Create first alarm
         linkDownAlarmOnR1 = new OnmsAlarm();
         linkDownAlarmOnR1.setDistPoller(m_distPollerDao.whoami());
         linkDownAlarmOnR1.setCounter(1);
         linkDownAlarmOnR1.setUei("linkDown");
+        linkDownAlarmOnR1.setNode(testNode);
 
         // Create second alarm
         linkDownAlarmOnR2 = new OnmsAlarm();
         linkDownAlarmOnR2.setDistPoller(m_distPollerDao.whoami());
         linkDownAlarmOnR2.setCounter(1);
         linkDownAlarmOnR2.setUei("linkDown");
+        linkDownAlarmOnR2.setNode(testNode);
 
         m_alarmDao.save(linkDownAlarmOnR2);
         m_alarmDao.save(linkDownAlarmOnR1);
@@ -139,6 +152,10 @@ public class SituationIT {
 
         OnmsAlarm retrieved2 = m_alarmDao.findByReductionKey("situation/reduction/key");
         assertThat(retrieved2.getRelatedAlarms().size(), is(3));
+        // Assert alarms are 'inSituations;
+
+        assertThat(retrieved2.getAffectedNodeCount(), is(1));
+        assertThat(retrieved2.isInSituation(), is(false));
    }
 
     @Test

@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest.model.v2;
 
+import java.beans.Transient;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -55,11 +56,13 @@ public class AlarmSummaryDTO {
     @XmlElement(name="description")
     private String description;
 
-    @XmlElement(name="eventLabel")
-    private String eventLabel;
+    @XmlElement(name="label")
+    private String label;
 
     @XmlElement(name="logMessage")
     private String logMessage;
+
+    private String uei;
 
     public Integer getId() {
         return id;
@@ -101,12 +104,12 @@ public class AlarmSummaryDTO {
         this.description = description;
     }
 
-    public String getEventLabel() {
-        return eventLabel;
+    public String getLabel() {
+        return label;
     }
 
-    public void setEventLabel(String eventLabel) {
-        this.eventLabel = eventLabel;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public String getLogMessage() {
@@ -115,6 +118,15 @@ public class AlarmSummaryDTO {
 
     public void setLogMessage(String logMessage) {
         this.logMessage = logMessage;
+    }
+
+    @Transient
+    public String getUei() {
+        return uei;
+    }
+
+    public void setUei(String uei) {
+        this.uei = uei;
     }
 
     @Override
@@ -127,12 +139,13 @@ public class AlarmSummaryDTO {
                 Objects.equals(type, alarmDTO.type) &&
                 Objects.equals(severity, alarmDTO.severity) &&
                 Objects.equals(description, alarmDTO.description) &&
-                Objects.equals(eventLabel, alarmDTO.eventLabel) &&
+                Objects.equals(label, alarmDTO.label) &&
                 Objects.equals(logMessage, alarmDTO.logMessage);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, reductionKey, type, severity, description, eventLabel, logMessage);
+        return Objects.hash(id, reductionKey, type, severity, description, label, logMessage);
     }
+
 }
