@@ -6,12 +6,20 @@
 == Installation Overview
 
 The _OpenNMS_ platform can be installed in several ways.
+ifndef::opennms-prime[]
 This guide describes the installation of the platform on _Red Hat Enterprise Linux (RHEL)_-based, _Debian_-based and _Microsoft Windows_
-operating systems. The following abbreviations will be used to refer to the following operating systems:
+endif::opennms-prime[]
+ifdef::opennms-prime[]
+This guide describes the installation of the platform on _Red Hat Enterprise Linux (RHEL)_-based
+endif::opennms-prime[]
+operating systems.
+ifndef::opennms-prime[]
+The following abbreviations will be used to refer to the following operating systems:
 
 * _RHEL_: Red Hat Enterprise Linux 6 or higher, CentOS 6 or higher, Fedora 20 or higher
 * _Debian_: Debian 7 or higher, Ubuntu 14.04 or higher
 * _Microsoft Windows_: Windows 8.1, Windows Server 2012, Windows 10
+endif::opennms-prime[]
 
 Installable, precompiled software packages are provided through _RHEL Yum_ and _Debian APT_ repository servers and from the
 link:https://sourceforge.net/projects/opennms/files/OpenNMS/[OpenNMS Sourceforge project page].
@@ -34,12 +42,18 @@ NOTE: _OpenJDK 8_ can be used, but for production and critical environments _Ora
 
 [NOTE]
 ====
+ifdef::opennms-prime[]
+`${OPENNMS_HOME}` will be used to refer to the path where _OpenNMS_ is installed.
+By default, this will be `/opt/opennms`.
+endif::opennms-prime[]
+ifndef::opennms-prime[]
 `${OPENNMS_HOME}` will be used to refer to the path where _OpenNMS_ is installed. It is different
 depending on your platform:
 
 * _RHEL_: `/opt/opennms`
 * _Debian_: `/usr/share/opennms`
 * _Microsoft Windows_: `C:\Program Files\opennms`
+endif::opennms-prime[]
 ====
 
 With the _opennms_ meta package all dependencies needed for the components mentioned above are maintained.

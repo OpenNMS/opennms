@@ -20,6 +20,7 @@ _RRDtool_ can be installed from the official package repositories provided by _R
 yum install rrdtool
 ----
 
+ifndef::opennms-prime[]
 [[gi-rrdtool-install-debian]]
 === Debian
 
@@ -28,6 +29,7 @@ yum install rrdtool
 ----
 apt-get install rrdtool
 ----
+endif::opennms-prime[]
 
 [[gi-rrdtool-install-source]]
 === Source
@@ -55,11 +57,13 @@ You can install it from the _OpenNMS_ package repository with:
 yum install jrrd2
 ----
 
+ifndef::opennms-prime[]
 .Installation of _jrrd2_ on Debian/Ubuntu
 [source, shell]
 ----
 apt-get install jrrd2
 ----
+endif::opennms-prime[]
 
 NOTE: With OpenNMS 17.0.0 it is preferred to use _jrrd2_ instead of _jrrd_.
       The _jrrd2_ module is improved for performance by adding multithreading capabilities.
@@ -77,6 +81,7 @@ org.opennms.rrd.interfaceJar=/usr/share/java/jrrd2.jar
 opennms.library.jrrd2=/usr/lib64/libjrrd2.so
 ----
 
+ifndef::opennms-prime[]
 .Configuration of RRDtool in OpenNMS on Debian/Ubuntu
 [source]
 ----
@@ -84,6 +89,7 @@ org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrd
 org.opennms.rrd.interfaceJar=/usr/share/java/jrrd2.jar
 opennms.library.jrrd2=/usr/lib/jni/libjrrd2.so
 ----
+endif::opennms-prime[]
 
 TIP: _OpenNMS_ expects the _RRDtool_ binary in `/usr/bin/rrdtool`.
 
