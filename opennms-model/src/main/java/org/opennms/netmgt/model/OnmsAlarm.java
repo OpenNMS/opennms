@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -66,6 +67,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
 import org.springframework.core.style.ToStringCreator;
@@ -1186,6 +1188,30 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     @XmlTransient
     public boolean isSituation() {
         return ! m_relatedAlarms.isEmpty();
+    }
+
+    @Transient
+    @XmlTransient
+    public Integer getAffectedNodeCount() {
+        if (m_relatedAlarms == null || m_relatedAlarms.isEmpty()) {
+            return 1;
+        }
+        Set<Integer> nodes = m_relatedAlarms.stream().map(OnmsAlarm::getNode).map(OnmsNode::getId).collect(Collectors.toSet());
+        // count the Situtation's node if it is different
+        nodes.add(m_node.getId());
+        return nodes.size();
+    }
+
+    // Transient bean property. retuurns True if this OnmsAlarm exists as a relatedAlarm in the alarm_situations table.
+    @Formula("(select cast(count(1) as bit) from alarm_situations where related_alarm_id = 'id')))")
+    @Transient
+    @XmlTransient
+    private boolean inSituation;
+
+    @Transient
+    @XmlTransient
+    public boolean isInSituation() {
+        return inSituation;
     }
 
     @Transient

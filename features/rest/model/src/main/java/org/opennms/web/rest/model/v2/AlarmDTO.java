@@ -170,7 +170,13 @@ public class AlarmDTO {
 
     @XmlElement(name="relatedAlarms")
     private List<AlarmSummaryDTO> relatedAlarms;
-    
+
+    @XmlElement(name="affectedNodeCount")
+    private Integer affectedNodeCount;
+
+    @XmlElement(name="isInSituation")
+    private Boolean isInSituation;
+
     public Integer getId() {
         return id;
     }
@@ -498,7 +504,23 @@ public class AlarmDTO {
     public void setRelatedAlarms(List<AlarmSummaryDTO> relatedAlarms) {
         this.relatedAlarms = relatedAlarms;
     }
-    
+
+    public Integer getAffectedNodeCount() {
+        return affectedNodeCount;
+    }
+
+    public void setAffectedNodeCount(Integer affectedNodeCount) {
+        this.affectedNodeCount = affectedNodeCount;
+    }
+
+    public Boolean getIsInSituation() {
+        return isInSituation;
+    }
+
+    public void setIsInSituation(Boolean isInSituation) {
+        this.isInSituation = isInSituation;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -544,7 +566,9 @@ public class AlarmDTO {
                 Objects.equals(ifIndex, alarmDTO.ifIndex) &&
                 Objects.equals(reductionKeyMemo, alarmDTO.reductionKeyMemo) &&
                 Objects.equals(stickyMemo, alarmDTO.stickyMemo) &&
-                Objects.equals(relatedAlarms, alarmDTO.relatedAlarms);
+                Objects.equals(relatedAlarms, alarmDTO.relatedAlarms) &&
+                Objects.equals(affectedNodeCount, alarmDTO.affectedNodeCount) &&
+                Objects.equals(isInSituation, alarmDTO.isInSituation);
     }
 
     @Override
@@ -554,6 +578,6 @@ public class AlarmDTO {
                             troubleTicketLink, mouseOverText, suppressedUntil, suppressedBy, suppressedTime, ackUser, ackTime,
                             clearKey, lastEvent, parameters, lastEventTime, applicationDN, managedObjectInstance, managedObjectType,
                             ossPrimaryKey, x733AlarmType, x733ProbableCause, qosAlarmState, firstAutomationTime, lastAutomationTime,
-                            ifIndex, reductionKeyMemo, stickyMemo, relatedAlarms);
+                            ifIndex, reductionKeyMemo, stickyMemo, relatedAlarms, affectedNodeCount, isInSituation);
     }
 }

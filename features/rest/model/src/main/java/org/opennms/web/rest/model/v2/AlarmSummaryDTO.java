@@ -55,6 +55,12 @@ public class AlarmSummaryDTO {
     @XmlElement(name="description")
     private String description;
 
+    @XmlElement(name="eventLabel")
+    private String eventLabel;
+
+    @XmlElement(name="logMessage")
+    private String logMessage;
+
     public Integer getId() {
         return id;
     }
@@ -95,6 +101,22 @@ public class AlarmSummaryDTO {
         this.description = description;
     }
 
+    public String getEventLabel() {
+        return eventLabel;
+    }
+
+    public void setEventLabel(String eventLabel) {
+        this.eventLabel = eventLabel;
+    }
+
+    public String getLogMessage() {
+        return logMessage;
+    }
+
+    public void setLogMessage(String logMessage) {
+        this.logMessage = logMessage;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -104,11 +126,13 @@ public class AlarmSummaryDTO {
                 Objects.equals(reductionKey, alarmDTO.reductionKey) &&
                 Objects.equals(type, alarmDTO.type) &&
                 Objects.equals(severity, alarmDTO.severity) &&
-                Objects.equals(description, alarmDTO.description);
+                Objects.equals(description, alarmDTO.description) &&
+                Objects.equals(eventLabel, alarmDTO.eventLabel) &&
+                Objects.equals(logMessage, alarmDTO.logMessage);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, reductionKey, type, severity, description);
+        return Objects.hash(id, reductionKey, type, severity, description, eventLabel, logMessage);
     }
 }
