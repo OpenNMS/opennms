@@ -55,7 +55,7 @@ public class ZookeeperDomainManagerIT {
     public final TemporaryFolder tempFolder = new TemporaryFolder();
     private final CompletableFuture<String> activeFuture = new CompletableFuture<>();
     private final CompletableFuture<String> standbyFuture = new CompletableFuture<>();
-    private final AlwaysZookeeperDomainManagerFactory managerFactory = new AlwaysZookeeperDomainManagerFactory();
+    private final ZookeeperDomainManagerFactory managerFactory = new ZookeeperDomainManagerFactory();
     private TestingServer testServer;
     private DomainManager manager;
 

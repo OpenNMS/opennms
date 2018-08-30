@@ -195,7 +195,6 @@ public final class ZookeeperDomainManager extends ConnectionBasedDomainManager {
         }
 
         if (leaderSelector == null) {
-            // TODO: Not sure if the leading slash is necessary
             leaderSelector = new LeaderSelector(client, "/" + getDomain(),
                     leaderSelectorListener);
         }

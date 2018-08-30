@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>coordination-shell</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS :: Features :: Distributed :: Coordination :: SHELL</name>
+    <name>OpenNMS :: Features :: Distributed :: Coordination :: Shell</name>
     <build>
         <plugins>
             <plugin>
@@ -22,7 +22,6 @@
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Export-Package>org.opennms.features.distributed.coordination.shell</Export-Package>
                         <Karaf-Commands>*</Karaf-Commands>
                     </instructions>
                 </configuration>
@@ -37,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
-            <artifactId>zookeeper-impl</artifactId>
+            <artifactId>coordination-zookeeper-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

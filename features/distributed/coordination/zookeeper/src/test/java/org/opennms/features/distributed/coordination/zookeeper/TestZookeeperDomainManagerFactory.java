@@ -34,15 +34,15 @@ import org.junit.Test;
 import org.opennms.features.distributed.coordination.api.DomainManagerFactory;
 
 /**
- * Tests for {@link AlwaysZookeeperDomainManagerFactory}.
+ * Tests for {@link ZookeeperDomainManagerFactory}.
  */
-public class TestAlwaysZookeeperDomainManagerFactory {
+public class TestZookeeperDomainManagerFactory {
     /**
      * Verifies the factory generates the correct instance type.
      */
     @Test
     public void checkInstance() {
-        DomainManagerFactory managerFactory = new AlwaysZookeeperDomainManagerFactory()
+        DomainManagerFactory managerFactory = new ZookeeperDomainManagerFactory()
                 .buildWithConnectString("127.0.0.1:2181").buildWithNamespace("coordination");
         assertTrue(managerFactory.getManagerForDomain("test.domain") instanceof ZookeeperDomainManager);
     }

@@ -90,7 +90,8 @@ public class TestZookeeperDomainManager {
 
         // We want to wait until the connection from above actually occurred
         await().atMost(10, TimeUnit.SECONDS).until(manager::isConnected);
-        // TODO: This has potential to false positive since we could theoretically have another thread connecting
+        // Wait some extra time to avoid a race condition where a thread was connecting right after we became connected
+        Thread.sleep(1000);
         assertEquals(1, connectionAttempts.get());
 
         // Simulate ZooKeeper telling our client it is leader
@@ -123,7 +124,9 @@ public class TestZookeeperDomainManager {
 
         manager.getRoleChangeHandlers().keySet().parallelStream().forEach(manager::deregister);
         await().atMost(10, TimeUnit.SECONDS).until(() -> !manager.isConnected());
-        // TODO: This has potential to false positive since we could theoretically have another thread disconnecting
+        // Wait some extra time to avoid a race condition where a thread was disconnecting right after we became 
+        // disconnected
+        Thread.sleep(1000);
         assertEquals(1, disconnectionAttempts.get());
         assertFalse(manager.isAnythingRegistered());
     }

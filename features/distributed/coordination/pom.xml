@@ -17,10 +17,4 @@
         <module>shell</module>
         <module>base</module>
     </modules>
-    <properties>
-        <zookeeper.version>3.4.7</zookeeper.version>
-        <guava16.version>16.0.1</guava16.version>
-        <jackson.version>2.9.6</jackson.version>
-        <curator.version>2.9.1</curator.version>
-    </properties>
 </project>

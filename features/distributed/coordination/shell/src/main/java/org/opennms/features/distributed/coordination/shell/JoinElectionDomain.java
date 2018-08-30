@@ -46,7 +46,7 @@ public class JoinElectionDomain implements Action, RoleChangeHandler {
     @Argument(index = 0, name = "domain", description = "The domain to join", required = true, multiValued = false)
     private String domain;
     @Reference
-    private static DomainManagerFactory domainManagerFactory;
+    private DomainManagerFactory domainManagerFactory;
     private static final String testId = "test.id";
 
     @Override

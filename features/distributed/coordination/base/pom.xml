@@ -8,9 +8,9 @@
         <version>23.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>base-impl</artifactId>
+    <artifactId>coordination-base-impl</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS :: Features :: Distributed :: Coordination :: BASE</name>
+    <name>OpenNMS :: Features :: Distributed :: Coordination :: Base</name>
     <build>
         <plugins>
             <plugin>

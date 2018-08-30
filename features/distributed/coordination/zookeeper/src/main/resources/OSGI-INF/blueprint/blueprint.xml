@@ -7,14 +7,12 @@
         <cm:default-properties>
             <cm:property name="connectString" value="127.0.0.1:2181"/>
             <cm:property name="namespace" value="coordination"/>
-            <!--<cm:property name="auths" value=""/>-->
         </cm:default-properties>
     </cm:property-placeholder>
     <service interface="org.opennms.features.distributed.coordination.api.DomainManagerFactory">
-        <bean class="org.opennms.features.distributed.coordination.zookeeper.AlwaysZookeeperDomainManagerFactory">
+        <bean class="org.opennms.features.distributed.coordination.zookeeper.ZookeeperDomainManagerFactory">
             <property name="connectString" value="${connectString}"/>
             <property name="namespace" value="${namespace}"/>
-            <!--<property name="auths" value="${auths}"/>-->
         </bean>
     </service>
 </blueprint>

@@ -40,7 +40,7 @@ import org.opennms.features.distributed.coordination.base.AbstractDomainManagerF
 /**
  * A {@link DomainManagerFactory} that uses Apache ZooKeeper to manage all domains.
  */
-public class AlwaysZookeeperDomainManagerFactory extends AbstractDomainManagerFactory {
+public class ZookeeperDomainManagerFactory extends AbstractDomainManagerFactory {
     /**
      * The connection string to connect to ZooKeeper with.
      */
@@ -70,17 +70,17 @@ public class AlwaysZookeeperDomainManagerFactory extends AbstractDomainManagerFa
         return ZookeeperDomainManager.of(domain, builder);
     }
 
-    public AlwaysZookeeperDomainManagerFactory buildWithConnectString(String connectString) {
+    public ZookeeperDomainManagerFactory buildWithConnectString(String connectString) {
         setConnectString(connectString);
         return this;
     }
 
-    public AlwaysZookeeperDomainManagerFactory buildWithNamespace(String namespace) {
+    public ZookeeperDomainManagerFactory buildWithNamespace(String namespace) {
         setNamespace(namespace);
         return this;
     }
 
-    public AlwaysZookeeperDomainManagerFactory buildWithAuths(List<AuthInfo> auths) {
+    public ZookeeperDomainManagerFactory buildWithAuths(List<AuthInfo> auths) {
         this.auths = auths;
         return this;
     }
@@ -99,6 +99,6 @@ public class AlwaysZookeeperDomainManagerFactory extends AbstractDomainManagerFa
 
     @Override
     public String toString() {
-        return "AlwaysZookeeperDomainManagerFactory{} " + super.toString();
+        return "ZookeeperDomainManagerFactory{} " + super.toString();
     }
 }

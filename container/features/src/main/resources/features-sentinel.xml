@@ -116,21 +116,21 @@
     </feature>
 
     <feature name="sentinel-coordination-base-impl"
-             description="OpenNMS :: Features :: Distributed :: Coordination :: BASE" version="${project.version}">
+             description="OpenNMS :: Features :: Distributed :: Coordination :: Base" version="${project.version}">
         <feature version="${project.version}">sentinel-coordination-api</feature>
-        <bundle>mvn:org.opennms.features.distributed/base-impl/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/coordination-base-impl/${project.version}</bundle>
     </feature>
 
     <feature name="sentinel-coordination-zookeeper-impl"
-             description="OpenNMS :: Features :: Distributed :: Coordination :: ZOOKEEPER" version="${project.version}">
+             description="OpenNMS :: Features :: Distributed :: Coordination :: Zookeeper" version="${project.version}">
         <feature version="${project.version}">sentinel-coordination-api</feature>
         <feature version="${project.version}">sentinel-coordination-base-impl</feature>
         <feature version="${project.version}">zookeeper-dependencies</feature>
-        <bundle>mvn:org.opennms.features.distributed/zookeeper-impl/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/coordination-zookeeper-impl/${project.version}</bundle>
     </feature>
 
     <feature name="sentinel-coordination-shell"
-             description="OpenNMS :: Features :: Distributed :: Coordination :: SHELL" version="${project.version}">
+             description="OpenNMS :: Features :: Distributed :: Coordination :: Shell" version="${project.version}">
         <feature version="${project.version}">sentinel-coordination-api</feature>
         <bundle>mvn:org.opennms.features.distributed/coordination-shell/${project.version}</bundle>
     </feature>
