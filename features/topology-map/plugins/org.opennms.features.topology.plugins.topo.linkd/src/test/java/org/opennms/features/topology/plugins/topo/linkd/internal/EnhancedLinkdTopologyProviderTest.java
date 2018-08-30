@@ -59,7 +59,6 @@ import org.opennms.netmgt.model.FilterManager;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.topology.Topology;
-import org.opennms.netmgt.model.topology.Topology.ProtocolSupported;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;

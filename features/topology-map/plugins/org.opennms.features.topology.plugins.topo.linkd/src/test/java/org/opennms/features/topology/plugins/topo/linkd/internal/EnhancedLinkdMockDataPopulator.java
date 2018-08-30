@@ -73,7 +73,6 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.Topology;
-import org.opennms.netmgt.model.topology.Topology.ProtocolSupported;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class EnhancedLinkdMockDataPopulator {
