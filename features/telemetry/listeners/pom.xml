@@ -11,9 +11,7 @@
   <packaging>pom</packaging>
   <name>OpenNMS :: Features :: Telemetry :: Listeners</name>
   <modules>
-    <module>api</module>
-    <module>flow</module>
-    <module>sflow</module>
-    <module>udp</module>
+    <module>simple</module>
+    <module>smart</module>
   </modules>
 </project>

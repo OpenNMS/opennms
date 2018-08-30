@@ -39,12 +39,13 @@ import java.util.stream.Collectors;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.logging.Logging;
-import org.opennms.features.telemetry.adapters.registry.api.TelemetryAdapterRegistry;
-import org.opennms.netmgt.telemetry.adapters.api.Adapter;
-import org.opennms.netmgt.telemetry.config.model.Protocol;
-import org.opennms.netmgt.telemetry.ipc.TelemetryProtos;
-import org.opennms.netmgt.telemetry.ipc.TelemetrySinkModule;
-import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
+import org.opennms.features.telemetry.protocols.registry.api.TelemetryAdapterRegistry;
+import org.opennms.netmgt.telemetry.api.adapter.Adapter;
+import org.opennms.netmgt.telemetry.config.api.QueueDefinition;
+import org.opennms.netmgt.telemetry.config.model.QueueConfig;
+import org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos;
+import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
+import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,21 +57,21 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     @Autowired
     private TelemetryAdapterRegistry adapterRegistry;
 
-    private final org.opennms.netmgt.telemetry.config.api.Protocol protocolDef;
+    private final QueueDefinition protocolDef;
     private final TelemetrySinkModule sinkModule;
-    private final List<org.opennms.netmgt.telemetry.config.api.Adapter> adapterDefs = new ArrayList<>();
+    private final List<org.opennms.netmgt.telemetry.config.api.AdapterDefinition> adapterDefs = new ArrayList<>();
 
     // Actual adapters implementing the logic
     private final List<Adapter> adapters;
 
-    public TelemetryMessageConsumer(Protocol protocol, TelemetrySinkModule sinkModule) throws Exception {
+    public TelemetryMessageConsumer(QueueDefinition protocol, TelemetrySinkModule sinkModule) throws Exception {
         this(protocol,
-                protocol.getAdapters().stream().map(adapter -> (org.opennms.netmgt.telemetry.config.api.Adapter) adapter).collect(Collectors.toList()),
+                protocol.getAdapters().stream().map(adapter -> (org.opennms.netmgt.telemetry.config.api.AdapterDefinition) adapter).collect(Collectors.toList()),
                 sinkModule);
     }
 
-    public TelemetryMessageConsumer(org.opennms.netmgt.telemetry.config.api.Protocol protocolDef,
-                                        List<org.opennms.netmgt.telemetry.config.api.Adapter> adapterDef,
+    public TelemetryMessageConsumer(QueueDefinition protocolDef,
+                                        List<org.opennms.netmgt.telemetry.config.api.AdapterDefinition> adapterDef,
                                         TelemetrySinkModule sinkModule) {
         this.protocolDef = Objects.requireNonNull(protocolDef);
         this.sinkModule = Objects.requireNonNull(sinkModule);
@@ -82,10 +83,10 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     @PostConstruct
     public void init() throws Exception {
         // Pre-emptively instantiate the adapters
-        for (org.opennms.netmgt.telemetry.config.api.Adapter adapterDef : adapterDefs) {
+        for (org.opennms.netmgt.telemetry.config.api.AdapterDefinition adapterDef : adapterDefs) {
             final Adapter adapter;
             try {
-                adapter = adapterRegistry.getAdapter(adapterDef.getClassName(), protocolDef, adapterDef.getParameterMap());
+                adapter = adapterRegistry.getAdapter(adapterDef);
             } catch (Exception e) {
                 throw new Exception("Failed to create adapter from definition: " + adapterDef, e);
             }
@@ -123,7 +124,7 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
         return sinkModule;
     }
 
-    public org.opennms.netmgt.telemetry.config.api.Protocol getProtocol() {
+    public QueueDefinition getProtocol() {
         return protocolDef;
     }
 

@@ -11,7 +11,7 @@
     <context:annotation-config />
     <bean id="jtiAdapterFactory" class="org.opennms.netmgt.telemetry.adapters.jti.JtiAdapterFactory" />
 
-    <onmsgi:service interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory" ref="jtiAdapterFactory" >
+    <onmsgi:service interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory" ref="jtiAdapterFactory" >
         <onmsgi:service-properties>
             <entry key="registration.export" value="true" />
             <entry key="type" value="org.opennms.netmgt.telemetry.adapters.jti.JtiGpbAdapter" />

@@ -56,7 +56,7 @@
                                 <feature>minion-poller</feature>
                                 <feature>minion-collection</feature>
                                 <feature>minion-icmp-proxy</feature>
-                                <feature>minion-telemetryd-listeners</feature>
+                                <feature>minion-telemetryd-receivers</feature>
                                 <feature>hawtio-offline</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
@@ -235,13 +235,13 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.telemetry.listeners</groupId>
-            <artifactId>org.opennms.features.telemetry.listeners.flow</artifactId>
+            <groupId>org.opennms.features.telemetry.protocols</groupId>
+            <artifactId>org.opennms.features.telemetry.protocols.netflow</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.telemetry.listeners</groupId>
-            <artifactId>org.opennms.features.telemetry.listeners.sflow</artifactId>
+            <groupId>org.opennms.features.telemetry.protocols</groupId>
+            <artifactId>org.opennms.features.telemetry.protocols.sflow</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

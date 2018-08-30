@@ -28,9 +28,11 @@
 
 package org.opennms.netmgt.telemetry.distributed.common;
 
+import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.telemetry.listeners.api.ListenerDefinition;
+import org.opennms.netmgt.telemetry.config.api.ListenerDefinition;
+import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
 
 public class MapBasedListenerDef implements ListenerDefinition {
     private final String name;
@@ -57,6 +59,12 @@ public class MapBasedListenerDef implements ListenerDefinition {
     @Override
     public Map<String, String> getParameterMap() {
         return parameters;
+    }
+
+    @Override
+    public List<? extends ParserDefinition> getParsers() {
+        // FIXME: Implement
+        return null;
     }
 
 }

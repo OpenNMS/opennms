@@ -28,11 +28,13 @@
 
 package org.opennms.netmgt.telemetry.distributed.common;
 
+import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.telemetry.config.api.Adapter;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
 
-public class MapBasedAdapterDef implements Adapter {
+public class MapBasedAdapterDef implements AdapterDefinition {
     private final String name;
     private final String className;
     private final Map<String, String> parameters;
@@ -57,6 +59,12 @@ public class MapBasedAdapterDef implements Adapter {
     @Override
     public Map<String, String> getParameterMap() {
         return parameters;
+    }
+
+    @Override
+    public List<? extends PackageDefinition> getPackages() {
+        // FIXME: Implement
+        return null;
     }
 
 }

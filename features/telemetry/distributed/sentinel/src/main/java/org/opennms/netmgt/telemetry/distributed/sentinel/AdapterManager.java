@@ -35,16 +35,16 @@ import java.util.Map;
 
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
-import org.opennms.features.telemetry.adapters.registry.api.TelemetryAdapterRegistry;
+import org.opennms.features.telemetry.protocols.registry.api.TelemetryAdapterRegistry;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.telemetry.config.api.Adapter;
-import org.opennms.netmgt.telemetry.config.api.Protocol;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.config.api.QueueDefinition;
 import org.opennms.netmgt.telemetry.daemon.TelemetryMessageConsumer;
 import org.opennms.netmgt.telemetry.distributed.common.MapBasedAdapterDef;
 import org.opennms.netmgt.telemetry.distributed.common.MapBasedListenerDef;
-import org.opennms.netmgt.telemetry.distributed.common.MapBasedProtocolDef;
+import org.opennms.netmgt.telemetry.distributed.common.MapBasedQueueDef;
 import org.opennms.netmgt.telemetry.distributed.common.MapUtils;
-import org.opennms.netmgt.telemetry.ipc.TelemetrySinkModule;
+import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ManagedServiceFactory;
@@ -96,8 +96,8 @@ public class AdapterManager implements ManagedServiceFactory {
         final Map<String, String> parameters = MapUtils.fromDict(properties);
 
         // Build the protocol and listener definitions
-        final Protocol protocolDef = new MapBasedProtocolDef(parameters);
-        final Adapter adapterDef = new MapBasedAdapterDef(parameters);
+        final QueueDefinition protocolDef = new MapBasedQueueDef(parameters);
+        final AdapterDefinition adapterDef = new MapBasedAdapterDef(parameters);
 
         // Register health check
         final AdapterHealthCheck healthCheck = new AdapterHealthCheck(adapterDef);

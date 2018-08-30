@@ -37,13 +37,13 @@ import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.telemetry.common.Beans;
 import org.opennms.netmgt.telemetry.distributed.common.MapBasedListenerDef;
-import org.opennms.netmgt.telemetry.distributed.common.MapBasedProtocolDef;
+import org.opennms.netmgt.telemetry.distributed.common.MapBasedQueueDef;
 import org.opennms.netmgt.telemetry.distributed.common.MapUtils;
-import org.opennms.netmgt.telemetry.ipc.TelemetrySinkModule;
-import org.opennms.netmgt.telemetry.listeners.api.Listener;
-import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
-import org.opennms.netmgt.telemetry.utils.ListenerFactory;
+import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
+import org.opennms.netmgt.telemetry.api.receiver.Listener;
+import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ManagedServiceFactory;
@@ -90,7 +90,7 @@ public class ListenerManager implements ManagedServiceFactory {
         final Map<String, String> parameters = MapUtils.fromDict(properties);
 
         // Build the protocol and listener definitions
-        final MapBasedProtocolDef protocolDef = new MapBasedProtocolDef(parameters);
+        final MapBasedQueueDef protocolDef = new MapBasedQueueDef(parameters);
         final MapBasedListenerDef listenerDef = new MapBasedListenerDef(parameters);
 
         // Register health check
@@ -104,10 +104,11 @@ public class ListenerManager implements ManagedServiceFactory {
         final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
 
         try {
-            final Listener listener = ListenerFactory.buildListener(listenerDef, dispatcher);
-            listener.start();
-            listenersByPid.put(pid, listener);
-            dispatchersByPid.put(pid, dispatcher);
+            // FIXME: Reactivate
+//            final Listener listener = Beans.buildListener(listenerDef, dispatcher);
+//            listener.start();
+//            listenersByPid.put(pid, listener);
+//            dispatchersByPid.put(pid, dispatcher);
 
             // At this point the listener should be up and running,
             // so we mark the underlying health check as success
