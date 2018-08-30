@@ -353,4 +353,10 @@ public class MockNodeDao implements NodeDao {
     public List<OnmsNode> findAllHavingFlows() {
         return Collections.emptyList();
     }
+
+    @Override
+    public OnmsNode getTopIfSpeed() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
