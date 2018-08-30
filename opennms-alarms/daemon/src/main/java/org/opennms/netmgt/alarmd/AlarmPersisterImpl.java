@@ -64,6 +64,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private static final Logger LOG = LoggerFactory.getLogger(AlarmPersisterImpl.class);
 
     protected static final Integer NUM_STRIPE_LOCKS = Integer.getInteger("org.opennms.alarmd.stripe.locks", Alarmd.THREADS * 4);
+    protected static boolean NEW_IF_CLEARED = Boolean.getBoolean("org.opennms.alarmd.newIfClearedAlarmExists");
 
     private AlarmDao m_alarmDao;
     private EventDao m_eventDao;
@@ -71,6 +72,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private EventUtil m_eventUtil;
     private TransactionOperations m_transactionOperations;
     private Striped<Lock> lockStripes = StripedExt.fairLock(NUM_STRIPE_LOCKS);
+    private boolean m_createNewAlarmIfClearedAlarmExists = NEW_IF_CLEARED;
 
     private static class OnmsAlarmAndLifecycleEvent {
         private final OnmsAlarm m_alarm;
@@ -131,10 +133,19 @@ public class AlarmPersisterImpl implements AlarmPersister {
         OnmsAlarm alarm = m_alarmDao.findByReductionKey(reductionKey);
 
         final EventBuilder ebldr;
-        if (alarm == null) {
+        if (alarm == null || (m_createNewAlarmIfClearedAlarmExists && OnmsSeverity.CLEARED.equals(alarm.getSeverity()))) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} not found, instantiating new alarm", reductionKey);
             }
+
+            if (alarm != null) {
+                LOG.debug("addOrReduceEventAsAlarm: \"archiving\" cleared Alarm for problem: {}; " +
+                        "A new alarm will be instantiated to manage the problem.", reductionKey);
+                alarm.archive();
+                m_alarmDao.save(alarm);
+                m_alarmDao.flush();
+            }
+
             alarm = createNewAlarm(e, event);
 
             //FIXME: this should be a cascaded save
@@ -394,5 +405,13 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
+    }
+
+    public boolean isCreateNewAlarmIfClearedAlarmExists() {
+        return m_createNewAlarmIfClearedAlarmExists;
+    }
+
+    public void setCreateNewAlarmIfClearedAlarmExists(boolean createNewAlarmIfClearedAlarmExists) {
+        m_createNewAlarmIfClearedAlarmExists = createNewAlarmIfClearedAlarmExists;
     }
 }
