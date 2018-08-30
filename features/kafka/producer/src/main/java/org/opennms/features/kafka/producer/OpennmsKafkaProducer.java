@@ -31,12 +31,12 @@ package org.opennms.features.kafka.producer;
 import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
@@ -86,12 +86,11 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     private final CountDownLatch forwardedEvent = new CountDownLatch(1);
     private final CountDownLatch forwardedAlarm = new CountDownLatch(1);
-    private final CountDownLatch suppressedAlarm = new CountDownLatch(1);
     private final CountDownLatch forwardedNode = new CountDownLatch(1);
 
     private KafkaProducer<String, byte[]> producer;
     
-    private final Map<String, OpennmsModelProtos.Alarm> outstandingAlarms = new HashMap<>();
+    private final Map<String, OpennmsModelProtos.Alarm> outstandingAlarms = new ConcurrentHashMap<>();
     private final AlarmEqualityChecker alarmEqualityChecker =
             AlarmEqualityChecker.with(AlarmEqualityChecker.Exclusions::defaultExclusions);
 
@@ -213,11 +212,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     }
 
     private void updateAlarm(String reductionKey, OnmsAlarm alarm) {
-        if (suppressIncrementalAlarms && isIncrementalAlarm(reductionKey, alarm)) {
-            suppressedAlarm.countDown();
-            return;
-        }
-        
         // Always push null records, no good way to perform filtering on these
         if (alarm == null) {
             // The alarm was deleted, push a null record to the reduction key
@@ -234,6 +228,10 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
         // Filtering
         if (!shouldForwardAlarm(alarm)) {
+            return;
+        }
+
+        if (suppressIncrementalAlarms && isIncrementalAlarm(reductionKey, alarm)) {
             return;
         }
 
@@ -402,10 +400,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     public CountDownLatch getAlarmForwardedLatch() {
         return forwardedAlarm;
-    }
-
-    public CountDownLatch getAlarmSuppressedLatch() {
-        return suppressedAlarm;
     }
 
     public CountDownLatch getNodeForwardedLatch() {

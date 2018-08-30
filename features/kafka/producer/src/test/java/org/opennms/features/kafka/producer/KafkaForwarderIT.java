@@ -334,11 +334,6 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         // Fire up the consumer
         kafkaConsumer = startConsumer();
 
-        // The second alarm should have been suppressed since the only field that changed was the count
-        if (!kafkaProducer.getAlarmSuppressedLatch().await(1, TimeUnit.MINUTES)) {
-            throw new Exception("No alarm was suppressed!");
-        }
-
         // One alarm should have been consumed
         await().atMost(1, TimeUnit.MINUTES).until(() -> !kafkaConsumer.getAlarms().isEmpty());
         // Sleep an additional 10 seconds to verify a second alarm was not consumed
