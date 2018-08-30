@@ -26,25 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.alarmd.drools;
+package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import java.util.Date;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsSeverity;
+public final class CompositeKey {
 
-public interface AlarmService {
+    private List<Object> keys;
 
-    void clearAlarm(OnmsAlarm alarm, Date clearTime);
+    public CompositeKey(Object...keys){
+        if(keys.length<1){
+            throw new IllegalArgumentException("Need at least one key but was supplied with none");
+        }
+        this.keys = Arrays.asList(keys);
+    }
 
-    void deleteAlarm(OnmsAlarm alarm);
+    @Override
+    public String toString() {
+        return this.keys.toString();
+    }
 
-    void unclearAlarm(OnmsAlarm alarm, Date now);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CompositeKey that = (CompositeKey) o;
+        return Objects.equals(keys, that.keys);
+    }
 
-    void escalateAlarm(OnmsAlarm alarm, Date now);
-
-    void acknowledgeAlarm(OnmsAlarm alarm, Date now);
-
-    void setSeverity(OnmsAlarm alarm, OnmsSeverity severity, Date now);
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(keys);
+    }
 }

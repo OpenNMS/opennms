@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.hibernate.Hibernate;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,6 +55,8 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -75,6 +78,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
 public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, ActionVisitor, ScenarioHandler {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AlarmdDriver.class);
 
     @Autowired
     private Alarmd m_alarmd;
@@ -119,8 +124,12 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
         m_eventMgr.setEventWriter(m_database);
 
         // Events need to real nodes too
-        final OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
         node.setId(1);
+        m_nodeDao.save(node);
+
+        node = new OnmsNode(m_locationDao.getDefaultLocation(), "node2");
+        node.setId(2);
         m_nodeDao.save(node);
 
         // Use a pseudo-clock
@@ -143,49 +152,60 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
             return;
         }
 
-        final Map<Long,List<Action>> actionsByTick = scenario.getActions().stream()
-                .collect(Collectors.groupingBy(a -> roundToTick(a.getTime())));
+        try {
+            final Map<Long,List<Action>> actionsByTick = scenario.getActions().stream()
+                    .collect(Collectors.groupingBy(a -> roundToTick(a.getTime())));
 
-        final long start = Math.max(scenario.getActions().stream()
-                .min(Comparator.comparing(Action::getTime))
-                .map(e -> roundToTick(e.getTime()))
-                .get() - tickLength, 0);
-        final long end = scenario.getActions().stream()
-                .max(Comparator.comparing(Action::getTime))
-                .map(e -> roundToTick(e.getTime()))
-                .get() + tickLength;
+            final long start = Math.max(scenario.getActions().stream()
+                    .min(Comparator.comparing(Action::getTime))
+                    .map(e -> roundToTick(e.getTime()))
+                    .get() - tickLength, 0);
+            final long end = scenario.getActions().stream()
+                    .max(Comparator.comparing(Action::getTime))
+                    .map(e -> roundToTick(e.getTime()))
+                    .get() + tickLength;
 
-        if (start > 0) {
-            // Tick
-            m_droolsAlarmContext.getClock().advanceTime(tickLength, TimeUnit.MILLISECONDS);
-            m_droolsAlarmContext.tick();
-        }
-
-        for (long now = start; now <= end; now += tickLength) {
-            // Perform the actions
-            final List<Action> actions = actionsByTick.get(now);
-            if (actions != null) {
-                for (Action  a : actions) {
-                    a.visit(this);
-                }
+            if (start > 0) {
+                // Tick
+                m_droolsAlarmContext.getClock().advanceTime(tickLength, TimeUnit.MILLISECONDS);
+                m_droolsAlarmContext.tick();
             }
 
-            // Tick
-            m_droolsAlarmContext.getClock().advanceTime(tickLength, TimeUnit.MILLISECONDS);
-            m_droolsAlarmContext.tick();
+            for (long now = start; now <= end; now += tickLength) {
+                // Perform the actions
+                final List<Action> actions = actionsByTick.get(now);
+                if (actions != null) {
+                    for (Action  a : actions) {
+                        a.visit(this);
+                    }
+                }
 
-            results.addAlarms(now, m_alarmDao.findAll());
+                // Tick
+                m_droolsAlarmContext.getClock().advanceTime(tickLength, TimeUnit.MILLISECONDS);
+                m_droolsAlarmContext.tick();
+                results.addAlarms(now, m_transactionTemplate.execute((t) -> {
+                            final List<OnmsAlarm> alarms = m_alarmDao.findAll();
+                    alarms.forEach(a -> {
+                        Hibernate.initialize(a.getRelatedAlarms());
+
+                    });
+                            return alarms;
+                        }));
+            }
+
+            // Tick every 5 minutes for the next 24 hours
+            tickAtRateUntil(TimeUnit.MINUTES.toMillis(5),
+                    end,
+                    end + TimeUnit.DAYS.toMillis(1));
+
+            // Tick every hour for the next week
+            tickAtRateUntil(TimeUnit.HOURS.toMillis(1),
+                    end + TimeUnit.DAYS.toMillis(1),
+                    end + TimeUnit.DAYS.toMillis(8));
+        } catch (Exception e) {
+            LOG.error("Error occurred: {}", e.getMessage(), e);
+            throw e;
         }
-
-        // Tick every 5 minutes for the next 24 hours
-        tickAtRateUntil(TimeUnit.MINUTES.toMillis(5),
-                end,
-                end + TimeUnit.DAYS.toMillis(1));
-
-        // Tick every hour for the next week
-        tickAtRateUntil(TimeUnit.HOURS.toMillis(1),
-                end + TimeUnit.DAYS.toMillis(1),
-                end + TimeUnit.DAYS.toMillis(8));
     }
 
     private void tickAtRateUntil(long tickLength, long start, long end) {
@@ -194,7 +214,13 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
             // Tick
             m_droolsAlarmContext.getClock().advanceTime(tickLength, TimeUnit.MILLISECONDS);
             m_droolsAlarmContext.tick();
-            results.addAlarms(now, m_alarmDao.findAll());
+            results.addAlarms(now, m_transactionTemplate.execute((t) -> {
+                final List<OnmsAlarm> alarms = m_alarmDao.findAll();
+                alarms.forEach(a -> {
+                    Hibernate.initialize(a.getRelatedAlarms());
+                });
+                return alarms;
+            }));
         }
     }
 

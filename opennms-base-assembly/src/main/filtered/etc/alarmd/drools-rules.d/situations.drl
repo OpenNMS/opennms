@@ -29,22 +29,26 @@
 package org.opennms.netmgt.alarmd.drools;
 
 import java.util.Date;
-
+import org.kie.api.time.SessionClock;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.TroubleTicketState;
+import java.util.LinkedList;
 
-public interface AlarmService {
+global org.opennms.netmgt.alarmd.drools.AlarmService alarmService;
 
-    void clearAlarm(OnmsAlarm alarm, Date clearTime);
+declare org.opennms.netmgt.model.OnmsAlarm
+    @role(event)
+    @timestamp(lastUpdateTime)
+end
 
-    void deleteAlarm(OnmsAlarm alarm);
-
-    void unclearAlarm(OnmsAlarm alarm, Date now);
-
-    void escalateAlarm(OnmsAlarm alarm, Date now);
-
-    void acknowledgeAlarm(OnmsAlarm alarm, Date now);
-
-    void setSeverity(OnmsAlarm alarm, OnmsSeverity severity, Date now);
-
-}
+rule "setSituationSeverityToMaxAlarmSeverity"
+  when
+    $situation : OnmsAlarm( isSituation() == true, $relatedAlarmIds : relatedAlarmIds )
+    $relatedAlarms : LinkedList() from collect( OnmsAlarm($relatedAlarmIds contains id) )
+    $maxSeverity : OnmsSeverity() from accumulate( OnmsAlarm( $severity : severity ) from $relatedAlarms, maxSeverity( $severity ) )
+    OnmsAlarm( this == $situation, severity != $maxSeverity )
+  then
+    Date now = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
+    alarmService.setSeverity($situation, $maxSeverity, now);
+end
