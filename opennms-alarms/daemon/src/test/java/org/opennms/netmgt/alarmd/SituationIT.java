@@ -33,6 +33,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -46,6 +47,7 @@ import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -85,7 +87,9 @@ public class SituationIT {
         // Create a Test Node
         testNode = new OnmsNode();
         testNode.setLabel("TEST NODE");
-        m_nodeDao.save(testNode);
+        testNode.setCreateTime(new Date());
+        testNode.setLocation(new OnmsMonitoringLocation("Default", "Default"));
+        m_nodeDao.saveOrUpdate(testNode);
 
         // Create first alarm
         linkDownAlarmOnR1 = new OnmsAlarm();
