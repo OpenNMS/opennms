@@ -31,6 +31,7 @@ include::text/basic-setup-opennms/rhel/step-3-initialize-opennms.adoc[]
 include::text/basic-setup-opennms/rhel/step-4-change-admin-password.adoc[]
 include::text/_general/nextsteps.adoc[]
 
+ifndef::opennms-prime[]
 // Enable section numbers
 :sectnums:
 
@@ -60,6 +61,7 @@ include::text/basic-setup-opennms/windows/step-2-graphical-installer.adoc[]
 include::text/basic-setup-opennms/windows/step-3-configure-postgres-opennms.adoc[]
 include::text/basic-setup-opennms/windows/step-4-change-admin-password.adoc[]
 include::text/_general/nextsteps.adoc[]
+endif::opennms-prime[]
 
 // Enable section numbers
 :sectnums:
@@ -79,6 +81,7 @@ include::text/monitor-location-minion/rhel/step-3-starting-minion.adoc[]
 include::text/monitor-location-minion/rhel/step-4-configure-minion.adoc[]
 include::text/monitor-location-minion/rhel/step-5-verify-connectivity.adoc[]
 
+ifndef::opennms-prime[]
 // Enable section numbers
 :sectnums:
 
@@ -93,6 +96,7 @@ include::text/monitor-location-minion/debian/step-2-install-minion.adoc[]
 include::text/monitor-location-minion/debian/step-3-starting-minion.adoc[]
 include::text/monitor-location-minion/debian/step-4-configure-minion.adoc[]
 include::text/monitor-location-minion/debian/step-5-verify-connectivity.adoc[]
+endif::opennms-prime[]
 
 // Enable section numbers
 :sectnums:
@@ -100,7 +104,9 @@ include::text/monitor-location-minion/debian/step-5-verify-connectivity.adoc[]
 // Sentinel
 include::text/sentinel/setting-up-sentinel.adoc[]
 include::text/sentinel/rhel/rhel.adoc[]
+ifndef::opennms-prime[]
 include::text/sentinel/debian/debian.adoc[]
+endif::opennms-prime[]
 
 // Enable section numbers
 :sectnums:
@@ -117,10 +123,14 @@ include::text/r-statistical-computing.adoc[]
 include::text/time-series-storage/introduction.adoc[]
 include::text/time-series-storage/rrdtool/rrdtool.adoc[]
 include::text/time-series-storage/rrdtool/rhel.adoc[]
+ifndef::opennms-prime[]
 include::text/time-series-storage/rrdtool/debian.adoc[]
+endif::opennms-prime[]
 
 include::text/time-series-storage/newts/introduction.adoc[]
 include::text/time-series-storage/newts/rhel.adoc[]
+ifndef::opennms-prime[]
 include::text/time-series-storage/newts/debian.adoc[]
 include::text/time-series-storage/newts/windows.adoc[]
+endif::opennms-prime[]
 include::text/time-series-storage/newts/configure-opennms.adoc[]

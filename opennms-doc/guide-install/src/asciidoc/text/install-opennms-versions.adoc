@@ -15,12 +15,15 @@ The following package repositories are available:
 | `stable`                  | Latest stable release. This version is recommended for all users.
 | `testing`                 | Release candidate for the next stable release.
 | `snapshot`                | Latest successful development build, the "nightly" build.
+ifndef::opennms-prime[]
 | `branches/${BRANCH-NAME}` | Install from a specific branch name for testing a specific feature that is under development.
                               Available branches can be found in https://yum.opennms.org/branches/ or https://debian.opennms.org/dists/branches/.
+endif::opennms-prime[]
 |===
 
 To install a different release the repository files have to be installed and manually modified.
 
+ifndef::opennms-prime[]
 In _Debian_ systems modify the repository file in `/etc/apt/sources.list.d/opennms.list`.
 
 [source, bash]
@@ -32,6 +35,7 @@ wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
 apt update
 ----
 <1> Change from `stable` to `snapshot`
+endif::opennms-prime[]
 
 On _RHEL_ systems you can install a snapshot repository with:
 
