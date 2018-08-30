@@ -19,13 +19,17 @@ include::text/opennms/introduction.adoc[]
 include::text/opennms/compatibility-matrix.adoc[]
 include::text/opennms/repository.adoc[]
 include::text/opennms/rhel.adoc[]
+ifndef::opennms-prime[]
 include::text/opennms/debian.adoc[]
+endif::opennms-prime[]
 include::text/opennms/windows.adoc[]
 
 // Installation Guide for Java environment
 include::text/java/introduction.adoc[]
 include::text/java/rhel.adoc[]
+ifndef::opennms-prime[]
 include::text/java/debian.adoc[]
+endif::opennms-prime[]
 include::text/java/windows-server.adoc[]
 include::text/java/environment.adoc[]
 
@@ -35,16 +39,19 @@ include::text/rrdtool/installation.adoc[]
 // Installation Guide for Time Series Database Newts
 include::text/newts/introduction.adoc[]
 include::text/newts/cassandra-rhel.adoc[]
+ifndef::opennms-prime[]
 include::text/newts/cassandra-debian.adoc[]
+endif::opennms-prime[]
 include::text/newts/cassandra-windows.adoc[]
 include::text/newts/configure-opennms.adoc[]
 
 // Installation Guide for R
 include::text/r/introduction.adoc[]
 include::text/r/rhel.adoc[]
-include::text/r/debian.adoc[]
-
 ifndef::opennms-prime[]
+include::text/r/debian.adoc[]
+endif::opennms-prime[]
+
 // Installation Guide for Minion
 include::text/minion/introduction.adoc[]
 include::text/minion/install.adoc[]
@@ -52,4 +59,3 @@ include::text/minion/configure-opennms.adoc[]
 include::text/minion/configure-minion.adoc[]
 include::text/minion/advanced-configuration.adoc[]
 include::text/minion/troubleshooting.adoc[]
-endif::opennms-prime[]
