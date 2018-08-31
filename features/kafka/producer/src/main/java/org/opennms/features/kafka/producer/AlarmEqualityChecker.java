@@ -70,9 +70,9 @@ public class AlarmEqualityChecker {
      * @param b alarm b
      * @return true if equal, false otherwise
      */
-    public boolean equalsExcludingOnBoth(OpennmsModelProtos.Alarm a, OpennmsModelProtos.Alarm b) {
-        return applyExclusions.apply(Objects.requireNonNull(a).toBuilder()).build()
-                .equals(applyExclusions.apply(Objects.requireNonNull(b).toBuilder()).build());
+    public boolean equalsExcludingOnBoth(OpennmsModelProtos.Alarm.Builder a, OpennmsModelProtos.Alarm.Builder b) {
+        return applyExclusions.apply(Objects.requireNonNull(a)).build()
+                .equals(applyExclusions.apply(Objects.requireNonNull(b)).build());
     }
 
     /**
@@ -82,8 +82,8 @@ public class AlarmEqualityChecker {
      * @param b alarm b
      * @return true if equal, false otherwise
      */
-    public boolean equalsExcludingOnFirst(OpennmsModelProtos.Alarm a, OpennmsModelProtos.Alarm b) {
-        return applyExclusions.apply(Objects.requireNonNull(a).toBuilder()).build()
+    public boolean equalsExcludingOnFirst(OpennmsModelProtos.Alarm.Builder a, OpennmsModelProtos.Alarm b) {
+        return applyExclusions.apply(Objects.requireNonNull(a)).build()
                 .equals(Objects.requireNonNull(b));
     }
 

@@ -226,8 +226,9 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
             final Set<String> commonReductionKeys = Sets.intersection(reductionKeysInKtable, reductionKeysInDb);
             commonReductionKeys.forEach(rkey -> {
                 final OnmsAlarm dbAlarm = alarmsInDbByReductionKey.get(rkey);
-                final OpennmsModelProtos.Alarm mappedDbAlarm = protobufMapper.toAlarm(dbAlarm).build();
-                final OpennmsModelProtos.Alarm alarmFromKtable = alarmsInKtableByReductionKey.get(rkey);
+                final OpennmsModelProtos.Alarm.Builder mappedDbAlarm = protobufMapper.toAlarm(dbAlarm);
+                final OpennmsModelProtos.Alarm.Builder alarmFromKtable =
+                        alarmsInKtableByReductionKey.get(rkey).toBuilder();
 
                 if ((suppressIncrementalAlarms && !alarmEqualityChecker.equalsExcludingOnBoth(mappedDbAlarm,
                         alarmFromKtable)) || (!suppressIncrementalAlarms && !Objects.equals(mappedDbAlarm,

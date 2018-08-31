@@ -199,9 +199,9 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     }
 
     private boolean isIncrementalAlarm(String reductionKey, OnmsAlarm alarm) {
-        return outstandingAlarms.containsKey(reductionKey) &&
-                alarmEqualityChecker.equalsExcludingOnFirst(protobufMapper.toAlarm(alarm).build(),
-                        outstandingAlarms.get(reductionKey));
+        OpennmsModelProtos.Alarm existingAlarm = outstandingAlarms.get(reductionKey);
+        return existingAlarm != null && alarmEqualityChecker.equalsExcludingOnFirst(protobufMapper.toAlarm(alarm),
+                existingAlarm);
     }
 
     private void recordIncrementalAlarm(String reductionKey, OnmsAlarm alarm) {
