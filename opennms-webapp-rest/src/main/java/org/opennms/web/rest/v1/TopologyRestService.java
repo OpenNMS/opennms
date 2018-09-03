@@ -55,8 +55,6 @@ import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.OnmsTopology;
 import org.opennms.netmgt.model.topology.Topology;
 import org.opennms.netmgt.model.topology.Topology.ProtocolSupported;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -64,28 +62,6 @@ import org.springframework.stereotype.Component;
 @Path("topologies")
 public class TopologyRestService {
 
-//    private static final Logger LOG = LoggerFactory.getLogger(TopologyRestService.class);
-
-    /*
-    private final static String ID = "id";
-    private final static String DESCRIPTION = "description";
-    private final static String IP_ADDRESS = "ipAddr";
-    private final static String LOCKED = "locked";
-    private final static String FOREIGN_SOURCE = "foreignSource";
-    private final static String FOREIGN_ID = "foreignID";
-    private final static String SELECTED = "selected";
-    private final static String STYLE_NAME = "styleName";
-    private final static String X = "x";
-    private final static String Y = "y";
-    private final static String PREFERRED_LAYOUT = "preferred-layout";
-    private final static String FOCUS_STRATEGY = "focus-strategy";
-    private final static String FOCUS_IDS = "focus-ids";
-    private final static String SEMANTIC_ZOOM_LEVEL = "semantic-zoom-level";
-    private final static String VERTEX_STATUS_PROVIDER = "vertex-status-provider";
-    private final static String LEVEL = "level";
-    private final static String EDGE_PATH_OFFSET = "edge-path-offset";
-    private final static String BREADCRUMB_STRATEGY = "breadcrumb-strategy";
-  */  
     private final static String NAMESPACE = "namespace";
     private final static String ICON_KEY = "iconKey";
     private final static String LABEL = "label";
@@ -121,7 +97,7 @@ public class TopologyRestService {
             return Response.ok(getGraph(ProtocolSupported.valueOf(supportedProtocol))).build();
         } catch (IllegalArgumentException e) {
             return Response
-                    .status(Response.Status.NOT_FOUND).entity("no supported protocol: "+ supportedProtocol)
+                    .status(Response.Status.NOT_FOUND)
                     .build();                
         }        
     }
