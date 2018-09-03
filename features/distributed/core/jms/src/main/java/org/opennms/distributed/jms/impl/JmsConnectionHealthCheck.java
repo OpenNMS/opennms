@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.distribute.jms.impl;
+package org.opennms.distributed.jms.impl;
 
 import java.util.Objects;
 

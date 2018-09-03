@@ -83,6 +83,7 @@
                             org.opennms.netmgt.collection.core,
                             org.opennms.netmgt.collection.support,
 
+                            org.opennms.netmgt.config,
                             org.opennms.netmgt.config.ackd,
                             org.opennms.netmgt.config.api,
                             org.opennms.netmgt.config.collectd,

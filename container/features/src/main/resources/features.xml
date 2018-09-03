@@ -201,11 +201,11 @@
       <bundle>wrap:mvn:org.apache.xmlgraphics/fop/${fopVersion}</bundle>
     </feature>
 
-    <feature name="gemini-blueprint" description="Eclipse :: Gemini Blueprint" version="2.0.0.RELEASE">
+    <feature name="gemini-blueprint" description="Eclipse :: Gemini Blueprint" version="${eclipseGeminiVersion}">
       <feature version="[4.2,4.3)">spring</feature>
-      <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-core/2.0.0.RELEASE</bundle>
-      <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-extender/2.0.0.RELEASE</bundle>
-      <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-io/2.0.0.RELEASE</bundle>
+      <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-core/${eclipseGeminiVersion}</bundle>
+      <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-extender/${eclipseGeminiVersion}</bundle>
+      <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-io/${eclipseGeminiVersion}</bundle>
     </feature>
 
     <feature name="guava" description="Google :: Guava" version="${guavaVersion}">
@@ -1240,7 +1240,6 @@
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.shell/${project.version}</bundle>
     </feature>
 
-    <!-- TODO MVR this is distributed only and should probably go somewhere else -->
     <feature name="opennms-persistence" description="OpenNMS :: Persistence" version="${project.version}">
         <feature>opennms-model</feature>
         <feature>opennms-dao</feature>
