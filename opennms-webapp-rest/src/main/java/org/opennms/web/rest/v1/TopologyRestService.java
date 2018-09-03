@@ -28,10 +28,19 @@
 
 package org.opennms.web.rest.v1;
 
+import java.util.Arrays;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+
+
+
+
 
 
 
@@ -46,12 +55,18 @@ import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.OnmsTopology;
 import org.opennms.netmgt.model.topology.Topology;
 import org.opennms.netmgt.model.topology.Topology.ProtocolSupported;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-@Path("topology")
+@Path("topologies")
 public class TopologyRestService {
-/*
+
+//    private static final Logger LOG = LoggerFactory.getLogger(TopologyRestService.class);
+
+    /*
     private final static String ID = "id";
     private final static String DESCRIPTION = "description";
     private final static String IP_ADDRESS = "ipAddr";
@@ -71,7 +86,6 @@ public class TopologyRestService {
     private final static String EDGE_PATH_OFFSET = "edge-path-offset";
     private final static String BREADCRUMB_STRATEGY = "breadcrumb-strategy";
   */  
-    private final static String TOPOLOGY_NAMESPACE_PREFIX="Topology::";
     private final static String NAMESPACE = "namespace";
     private final static String ICON_KEY = "iconKey";
     private final static String LABEL = "label";
@@ -83,38 +97,40 @@ public class TopologyRestService {
     private final static String SOURCE_IFINDEX= "sourceifindex";
     private final static String TARGET_IFINDEX= "targetifindex";
     
+    @Autowired
     private TopologyDao m_topologyDao;
 
-
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getProtocolSupportedString() {
+        return Arrays.asList(Topology.ProtocolSupported.values()).toString();
+    }
+    
+    @GET
+    @Path("count")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getCount() {
+        return Integer.toString(Topology.ProtocolSupported.values().length);
+    }
+    
     @GET
     @Path("{supported-protocol}")
-    public Response getGraph(@PathParam("supported-protocol") String supportedprotocol) throws InvalidGraphException {
-        if (supportedprotocol.equals(Topology.ProtocolSupported.CDP.name())) {
-            return Response.ok(getGraph(ProtocolSupported.CDP)).build();
-        }
-        if (supportedprotocol.equals(Topology.ProtocolSupported.LLDP.name())) {
-            return Response.ok(getGraph(ProtocolSupported.LLDP)).build();
-        }
-        if (supportedprotocol.equals(Topology.ProtocolSupported.BRIDGE.name())) {
-            return Response.ok(getGraph(ProtocolSupported.BRIDGE)).build();
-        }
-        if (supportedprotocol.equals(Topology.ProtocolSupported.OSPF.name())) {
-            return Response.ok(getGraph(ProtocolSupported.OSPF)).build();
-        }
-        if (supportedprotocol.equals(Topology.ProtocolSupported.ISIS.name())) {
-            return Response.ok(getGraph(ProtocolSupported.ISIS)).build();
-        }
-        return Response
-                .status(Response.Status.SERVICE_UNAVAILABLE)
-                .entity("No service registered to handle your query. This is a temporary issue. Please try again later.")
-                .build();
+    @Produces({MediaType.APPLICATION_XML})
+    public Response getGraph(@PathParam("supported-protocol") String supportedProtocol) throws InvalidGraphException {
+        try {
+            return Response.ok(getGraph(ProtocolSupported.valueOf(supportedProtocol))).build();
+        } catch (IllegalArgumentException e) {
+            return Response
+                    .status(Response.Status.NOT_FOUND).entity("no supported protocol: "+ supportedProtocol)
+                    .build();                
+        }        
     }
 
     private GraphmlType getGraph(ProtocolSupported protocolSupported) throws InvalidGraphException {
         OnmsTopology topology = m_topologyDao.getTopology(protocolSupported);
         GraphML graphml = new GraphML();
         GraphMLGraph graph = new GraphMLGraph();
-        graph.setProperty(NAMESPACE,TOPOLOGY_NAMESPACE_PREFIX+protocolSupported.name());
+        graph.setProperty(NAMESPACE,protocolSupported.name());
         graph.setProperty(LABEL,protocolSupported.name() + " Topology");
         graph.setId(protocolSupported.name());
         topology.getVertices().stream().forEach(vertex -> {
