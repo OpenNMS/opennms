@@ -75,7 +75,9 @@ public class MockDocumentEnricherFactory {
 
         classificationEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(
                 new RuleBuilder().withName("http").withDstPort("80").withProtocol("tcp,udp").build(),
-                new RuleBuilder().withName("https").withDstPort("443").withProtocol("tcp,udp").build()
+                new RuleBuilder().withName("https").withDstPort("443").withProtocol("tcp,udp").build(),
+                new RuleBuilder().withName("http").withSrcPort("80").withProtocol("tcp,udp").build(),
+                new RuleBuilder().withName("https").withSrcPort("443").withProtocol("tcp,udp").build()
         ), FilterService.NOOP);
         enricher = new DocumentEnricher(
                 new MetricRegistry(), nodeDao, interfaceToNodeCache, transactionTemplate, classificationEngine,
