@@ -645,6 +645,13 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=alarm.affectedNodeCount==2", 1);
     }
 
+    @Test
+    public void testSituationAlarmCount() throws Exception {
+        executeQueryAndVerify("_s=alarm.situationAlarmCount==0", 8);
+        executeQueryAndVerify("_s=alarm.situationAlarmCount!=0", 1);
+        executeQueryAndVerify("_s=alarm.situationAlarmCount==2", 1);
+    }
+
     private void anticipateEvent(EventBuilder eventBuilder) {
         m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
     }
