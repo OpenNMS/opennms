@@ -29,10 +29,13 @@
 package org.opennms.netmgt.alarmd.driver;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.opennms.netmgt.alarmd.AlarmPersisterImpl;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -95,6 +98,24 @@ public class Scenario {
 
         public ScenarioBuilder withAcknowledgmentForNodeDownAlarm(long time, int nodeId) {
             actions.add(new AcknowledgeAlarmAction("test", new Date(time), String.format("%s:%d", EventConstants.NODE_DOWN_EVENT_UEI, nodeId)));
+            return this;
+        }
+
+        public ScenarioBuilder withSituationForNodeDownAlarms(long time, String situtationId, int... nodesIds) {
+            EventBuilder builder = new EventBuilder(EventConstants.SITUATION_EVENT_UEI, "test");
+            builder.setTime(new Date(time));
+            builder.setSeverity(OnmsSeverity.NORMAL.getLabel());
+            for (int k = 0; k < nodesIds.length; k++) {
+                final String reductionKey = String.format("%s:%d", EventConstants.NODE_DOWN_EVENT_UEI, nodesIds[k]);
+                builder.addParam(AlarmPersisterImpl.RELATED_REDUCTION_KEY_PREFIX + k, reductionKey);
+            }
+
+            AlarmData data = new AlarmData();
+            data.setAlarmType(3);
+            data.setReductionKey(String.format("%s:%s", EventConstants.SITUATION_EVENT_UEI, situtationId));
+            builder.setAlarmData(data);
+
+            actions.add(new SendEventAction(builder.getEvent()));
             return this;
         }
 

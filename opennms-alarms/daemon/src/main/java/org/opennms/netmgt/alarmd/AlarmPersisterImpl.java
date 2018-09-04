@@ -70,6 +70,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private static final Logger LOG = LoggerFactory.getLogger(AlarmPersisterImpl.class);
     private static boolean NEW_IF_CLEARED = Boolean.getBoolean("opennms.alarmd.newIfClearedAlarmExists");
 
+    public static final String RELATED_REDUCTION_KEY_PREFIX = "related-reductionKey";
+
     protected static final Integer NUM_STRIPE_LOCKS = Integer.getInteger("org.opennms.alarmd.stripe.locks", Alarmd.THREADS * 4);
 
     @Autowired
@@ -337,7 +339,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private static boolean isRelatedReductionKeyWithContent(Parm param) {
         return param.getParmName() != null
                 // TOOD revisit using equals() when event_parameters table supports multiple params with the same name (see NMS-10214)
-                && param.getParmName().startsWith("related-reductionKey")
+                && param.getParmName().startsWith(RELATED_REDUCTION_KEY_PREFIX)
                 && param.getValue() != null
                 && param.getValue().getContent() != null;
     }

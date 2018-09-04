@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -1179,7 +1180,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
 
     /**
-     * <p>getAlarms</p>
+     * <p>getRelatedAlarms</p>
      *
      * @return a {@link java.util.Set} object.
      */
@@ -1189,6 +1190,14 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     @Column(name="alarm_id", nullable=false)
     public Set<OnmsAlarm> getRelatedAlarms() {
         return m_relatedAlarms;
+    }
+
+    @Transient
+    @XmlTransient
+    public Set<Integer> getRelatedAlarmIds() {
+        return getRelatedAlarms().stream()
+                .map(OnmsAlarm::getId)
+                .collect(Collectors.toSet());
     }
 
     /**
