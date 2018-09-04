@@ -4090,6 +4090,30 @@ public final class OpennmsModelProtos {
      */
     com.google.protobuf.ByteString
         getManagedObjectTypeBytes();
+
+    /**
+     * <code>repeated .Alarm relatedAlarm = 22;</code>
+     */
+    java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm> 
+        getRelatedAlarmList();
+    /**
+     * <code>repeated .Alarm relatedAlarm = 22;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm getRelatedAlarm(int index);
+    /**
+     * <code>repeated .Alarm relatedAlarm = 22;</code>
+     */
+    int getRelatedAlarmCount();
+    /**
+     * <code>repeated .Alarm relatedAlarm = 22;</code>
+     */
+    java.util.List<? extends org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmOrBuilder> 
+        getRelatedAlarmOrBuilderList();
+    /**
+     * <code>repeated .Alarm relatedAlarm = 22;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmOrBuilder getRelatedAlarmOrBuilder(
+        int index);
   }
   /**
    * Protobuf type {@code Alarm}
@@ -4123,6 +4147,7 @@ public final class OpennmsModelProtos {
       clearKey_ = "";
       managedObjectInstance_ = "";
       managedObjectType_ = "";
+      relatedAlarm_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
@@ -4290,6 +4315,15 @@ public final class OpennmsModelProtos {
               managedObjectType_ = s;
               break;
             }
+            case 178: {
+              if (!((mutable_bitField0_ & 0x00200000) == 0x00200000)) {
+                relatedAlarm_ = new java.util.ArrayList<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm>();
+                mutable_bitField0_ |= 0x00200000;
+              }
+              relatedAlarm_.add(
+                  input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.parser(), extensionRegistry));
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -4298,6 +4332,9 @@ public final class OpennmsModelProtos {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00200000) == 0x00200000)) {
+          relatedAlarm_ = java.util.Collections.unmodifiableList(relatedAlarm_);
+        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
@@ -4421,6 +4458,7 @@ public final class OpennmsModelProtos {
       // @@protoc_insertion_point(enum_scope:Alarm.Type)
     }
 
+    private int bitField0_;
     public static final int ID_FIELD_NUMBER = 1;
     private long id_;
     /**
@@ -4923,6 +4961,41 @@ public final class OpennmsModelProtos {
       }
     }
 
+    public static final int RELATEDALARM_FIELD_NUMBER = 22;
+    private java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm> relatedAlarm_;
+    /**
+     * <code>repeated .Alarm relatedAlarm = 22;</code>
+     */
+    public java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm> getRelatedAlarmList() {
+      return relatedAlarm_;
+    }
+    /**
+     * <code>repeated .Alarm relatedAlarm = 22;</code>
+     */
+    public java.util.List<? extends org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmOrBuilder> 
+        getRelatedAlarmOrBuilderList() {
+      return relatedAlarm_;
+    }
+    /**
+     * <code>repeated .Alarm relatedAlarm = 22;</code>
+     */
+    public int getRelatedAlarmCount() {
+      return relatedAlarm_.size();
+    }
+    /**
+     * <code>repeated .Alarm relatedAlarm = 22;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm getRelatedAlarm(int index) {
+      return relatedAlarm_.get(index);
+    }
+    /**
+     * <code>repeated .Alarm relatedAlarm = 22;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmOrBuilder getRelatedAlarmOrBuilder(
+        int index) {
+      return relatedAlarm_.get(index);
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -4997,6 +5070,9 @@ public final class OpennmsModelProtos {
       }
       if (!getManagedObjectTypeBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 21, managedObjectType_);
+      }
+      for (int i = 0; i < relatedAlarm_.size(); i++) {
+        output.writeMessage(22, relatedAlarm_.get(i));
       }
       unknownFields.writeTo(output);
     }
@@ -5079,6 +5155,10 @@ public final class OpennmsModelProtos {
       if (!getManagedObjectTypeBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(21, managedObjectType_);
       }
+      for (int i = 0; i < relatedAlarm_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(22, relatedAlarm_.get(i));
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -5141,6 +5221,8 @@ public final class OpennmsModelProtos {
           .equals(other.getManagedObjectInstance());
       result = result && getManagedObjectType()
           .equals(other.getManagedObjectType());
+      result = result && getRelatedAlarmList()
+          .equals(other.getRelatedAlarmList());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -5203,6 +5285,10 @@ public final class OpennmsModelProtos {
       hash = (53 * hash) + getManagedObjectInstance().hashCode();
       hash = (37 * hash) + MANAGED_OBJECT_TYPE_FIELD_NUMBER;
       hash = (53 * hash) + getManagedObjectType().hashCode();
+      if (getRelatedAlarmCount() > 0) {
+        hash = (37 * hash) + RELATEDALARM_FIELD_NUMBER;
+        hash = (53 * hash) + getRelatedAlarmList().hashCode();
+      }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -5328,6 +5414,7 @@ public final class OpennmsModelProtos {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getRelatedAlarmFieldBuilder();
         }
       }
       public Builder clear() {
@@ -5382,6 +5469,12 @@ public final class OpennmsModelProtos {
 
         managedObjectType_ = "";
 
+        if (relatedAlarmBuilder_ == null) {
+          relatedAlarm_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00200000);
+        } else {
+          relatedAlarmBuilder_.clear();
+        }
         return this;
       }
 
@@ -5404,6 +5497,8 @@ public final class OpennmsModelProtos {
 
       public org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm buildPartial() {
         org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm result = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
         result.id_ = id_;
         result.uei_ = uei_;
         if (nodeCriteriaBuilder_ == null) {
@@ -5433,6 +5528,16 @@ public final class OpennmsModelProtos {
         result.clearKey_ = clearKey_;
         result.managedObjectInstance_ = managedObjectInstance_;
         result.managedObjectType_ = managedObjectType_;
+        if (relatedAlarmBuilder_ == null) {
+          if (((bitField0_ & 0x00200000) == 0x00200000)) {
+            relatedAlarm_ = java.util.Collections.unmodifiableList(relatedAlarm_);
+            bitField0_ = (bitField0_ & ~0x00200000);
+          }
+          result.relatedAlarm_ = relatedAlarm_;
+        } else {
+          result.relatedAlarm_ = relatedAlarmBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -5548,6 +5653,32 @@ public final class OpennmsModelProtos {
           managedObjectType_ = other.managedObjectType_;
           onChanged();
         }
+        if (relatedAlarmBuilder_ == null) {
+          if (!other.relatedAlarm_.isEmpty()) {
+            if (relatedAlarm_.isEmpty()) {
+              relatedAlarm_ = other.relatedAlarm_;
+              bitField0_ = (bitField0_ & ~0x00200000);
+            } else {
+              ensureRelatedAlarmIsMutable();
+              relatedAlarm_.addAll(other.relatedAlarm_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.relatedAlarm_.isEmpty()) {
+            if (relatedAlarmBuilder_.isEmpty()) {
+              relatedAlarmBuilder_.dispose();
+              relatedAlarmBuilder_ = null;
+              relatedAlarm_ = other.relatedAlarm_;
+              bitField0_ = (bitField0_ & ~0x00200000);
+              relatedAlarmBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getRelatedAlarmFieldBuilder() : null;
+            } else {
+              relatedAlarmBuilder_.addAllMessages(other.relatedAlarm_);
+            }
+          }
+        }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -5574,6 +5705,7 @@ public final class OpennmsModelProtos {
         }
         return this;
       }
+      private int bitField0_;
 
       private long id_ ;
       /**
@@ -6810,6 +6942,246 @@ public final class OpennmsModelProtos {
         managedObjectType_ = value;
         onChanged();
         return this;
+      }
+
+      private java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm> relatedAlarm_ =
+        java.util.Collections.emptyList();
+      private void ensureRelatedAlarmIsMutable() {
+        if (!((bitField0_ & 0x00200000) == 0x00200000)) {
+          relatedAlarm_ = new java.util.ArrayList<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm>(relatedAlarm_);
+          bitField0_ |= 0x00200000;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmOrBuilder> relatedAlarmBuilder_;
+
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm> getRelatedAlarmList() {
+        if (relatedAlarmBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(relatedAlarm_);
+        } else {
+          return relatedAlarmBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public int getRelatedAlarmCount() {
+        if (relatedAlarmBuilder_ == null) {
+          return relatedAlarm_.size();
+        } else {
+          return relatedAlarmBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm getRelatedAlarm(int index) {
+        if (relatedAlarmBuilder_ == null) {
+          return relatedAlarm_.get(index);
+        } else {
+          return relatedAlarmBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public Builder setRelatedAlarm(
+          int index, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm value) {
+        if (relatedAlarmBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureRelatedAlarmIsMutable();
+          relatedAlarm_.set(index, value);
+          onChanged();
+        } else {
+          relatedAlarmBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public Builder setRelatedAlarm(
+          int index, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.Builder builderForValue) {
+        if (relatedAlarmBuilder_ == null) {
+          ensureRelatedAlarmIsMutable();
+          relatedAlarm_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          relatedAlarmBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public Builder addRelatedAlarm(org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm value) {
+        if (relatedAlarmBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureRelatedAlarmIsMutable();
+          relatedAlarm_.add(value);
+          onChanged();
+        } else {
+          relatedAlarmBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public Builder addRelatedAlarm(
+          int index, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm value) {
+        if (relatedAlarmBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureRelatedAlarmIsMutable();
+          relatedAlarm_.add(index, value);
+          onChanged();
+        } else {
+          relatedAlarmBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public Builder addRelatedAlarm(
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.Builder builderForValue) {
+        if (relatedAlarmBuilder_ == null) {
+          ensureRelatedAlarmIsMutable();
+          relatedAlarm_.add(builderForValue.build());
+          onChanged();
+        } else {
+          relatedAlarmBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public Builder addRelatedAlarm(
+          int index, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.Builder builderForValue) {
+        if (relatedAlarmBuilder_ == null) {
+          ensureRelatedAlarmIsMutable();
+          relatedAlarm_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          relatedAlarmBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public Builder addAllRelatedAlarm(
+          java.lang.Iterable<? extends org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm> values) {
+        if (relatedAlarmBuilder_ == null) {
+          ensureRelatedAlarmIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, relatedAlarm_);
+          onChanged();
+        } else {
+          relatedAlarmBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public Builder clearRelatedAlarm() {
+        if (relatedAlarmBuilder_ == null) {
+          relatedAlarm_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00200000);
+          onChanged();
+        } else {
+          relatedAlarmBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public Builder removeRelatedAlarm(int index) {
+        if (relatedAlarmBuilder_ == null) {
+          ensureRelatedAlarmIsMutable();
+          relatedAlarm_.remove(index);
+          onChanged();
+        } else {
+          relatedAlarmBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.Builder getRelatedAlarmBuilder(
+          int index) {
+        return getRelatedAlarmFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmOrBuilder getRelatedAlarmOrBuilder(
+          int index) {
+        if (relatedAlarmBuilder_ == null) {
+          return relatedAlarm_.get(index);  } else {
+          return relatedAlarmBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public java.util.List<? extends org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmOrBuilder> 
+           getRelatedAlarmOrBuilderList() {
+        if (relatedAlarmBuilder_ != null) {
+          return relatedAlarmBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(relatedAlarm_);
+        }
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.Builder addRelatedAlarmBuilder() {
+        return getRelatedAlarmFieldBuilder().addBuilder(
+            org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.Builder addRelatedAlarmBuilder(
+          int index) {
+        return getRelatedAlarmFieldBuilder().addBuilder(
+            index, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.Builder> 
+           getRelatedAlarmBuilderList() {
+        return getRelatedAlarmFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmOrBuilder> 
+          getRelatedAlarmFieldBuilder() {
+        if (relatedAlarmBuilder_ == null) {
+          relatedAlarmBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmOrBuilder>(
+                  relatedAlarm_,
+                  ((bitField0_ & 0x00200000) == 0x00200000),
+                  getParentForChildren(),
+                  isClean());
+          relatedAlarm_ = null;
+        }
+        return relatedAlarmBuilder_;
       }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -14325,62 +14697,63 @@ public final class OpennmsModelProtos {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\034opennms-kafka-producer.proto\"F\n\014NodeCr" +
-      "iteria\022\n\n\002id\030\001 \001(\004\022\026\n\016foreign_source\030\002 \001" +
-      "(\t\022\022\n\nforeign_id\030\003 \001(\t\";\n\016EventParameter" +
-      "\022\014\n\004name\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\022\014\n\004type\030\003 " +
-      "\001(\t\"\245\002\n\005Event\022\n\n\002id\030\001 \001(\004\022\013\n\003uei\030\002 \001(\t\022\r" +
-      "\n\005label\030\003 \001(\t\022\014\n\004time\030\004 \001(\004\022\016\n\006source\030\005 " +
-      "\001(\t\022\"\n\tparameter\030\006 \003(\0132\017.EventParameter\022" +
-      "\023\n\013create_time\030\007 \001(\004\022\023\n\013description\030\010 \001(" +
-      "\t\022\023\n\013log_message\030\t \001(\t\022\033\n\010severity\030\n \001(\016" +
-      "2\t.Severity\022\013\n\003log\030\013 \001(\010\022\017\n\007display\030\014 \001(" +
-      "\010\022$\n\rnode_criteria\030\r \001(\0132\r.NodeCriteria\022" +
-      "\022\n\nip_address\030\016 \001(\t\"\263\004\n\005Alarm\022\n\n\002id\030\001 \001(" +
-      "\004\022\013\n\003uei\030\002 \001(\t\022$\n\rnode_criteria\030\003 \001(\0132\r." +
-      "NodeCriteria\022\022\n\nip_address\030\004 \001(\t\022\024\n\014serv" +
-      "ice_name\030\005 \001(\t\022\025\n\rreduction_key\030\006 \001(\t\022\031\n" +
-      "\004type\030\007 \001(\0162\013.Alarm.Type\022\r\n\005count\030\010 \001(\004\022" +
-      "\033\n\010severity\030\t \001(\0162\t.Severity\022\030\n\020first_ev" +
-      "ent_time\030\n \001(\004\022\023\n\013description\030\013 \001(\t\022\023\n\013l" +
-      "og_message\030\014 \001(\t\022\020\n\010ack_user\030\r \001(\t\022\020\n\010ac" +
-      "k_time\030\016 \001(\004\022\032\n\nlast_event\030\017 \001(\0132\006.Event" +
-      "\022\027\n\017last_event_time\030\020 \001(\004\022\020\n\010if_index\030\021 " +
-      "\001(\r\022\035\n\025operator_instructions\030\022 \001(\t\022\021\n\tcl" +
-      "ear_key\030\023 \001(\t\022\037\n\027managed_object_instance" +
-      "\030\024 \001(\t\022\033\n\023managed_object_type\030\025 \001(\t\"D\n\004T" +
-      "ype\022\026\n\022PROBLEM_WITH_CLEAR\020\000\022\t\n\005CLEAR\020\001\022\031" +
-      "\n\025PROBLEM_WITHOUT_CLEAR\020\002\"\275\001\n\013IpInterfac" +
-      "e\022\n\n\002id\030\001 \001(\004\022\022\n\nip_address\030\002 \001(\t\022\020\n\010if_" +
-      "index\030\003 \001(\r\022.\n\014primary_type\030\004 \001(\0162\030.IpIn" +
-      "terface.PrimaryType\022\017\n\007service\030\005 \003(\t\";\n\013" +
-      "PrimaryType\022\013\n\007PRIMARY\020\000\022\r\n\tSECONDARY\020\001\022" +
-      "\020\n\014NOT_ELIGIBLE\020\002\"\317\001\n\rSnmpInterface\022\n\n\002i" +
-      "d\030\001 \001(\004\022\020\n\010if_index\030\002 \001(\r\022\020\n\010if_descr\030\003 " +
-      "\001(\t\022\017\n\007if_type\030\004 \001(\r\022\017\n\007if_name\030\005 \001(\t\022\020\n" +
-      "\010if_speed\030\006 \001(\004\022\027\n\017if_phys_address\030\007 \001(\t" +
-      "\022\027\n\017if_admin_status\030\010 \001(\r\022\026\n\016if_oper_sta" +
-      "tus\030\t \001(\r\022\020\n\010if_alias\030\n \001(\t\"%\n\007HwAlias\022\r" +
-      "\n\005index\030\001 \001(\r\022\013\n\003oid\030\002 \001(\t\"\210\002\n\010HwEntity\022" +
-      "\032\n\022ent_physical_index\030\001 \001(\r\022\021\n\tentity_id" +
-      "\030\002 \001(\r\022\032\n\022ent_physical_class\030\003 \001(\t\022\032\n\022en" +
-      "t_physical_descr\030\004 \001(\t\022\033\n\023ent_physical_i" +
-      "s_fru\030\005 \001(\010\022\031\n\021ent_physical_name\030\006 \001(\t\022 " +
-      "\n\030ent_physical_vendor_type\030\007 \001(\t\022\036\n\014ent_" +
-      "hw_alias\030\010 \003(\0132\010.HwAlias\022\033\n\010children\030\t \003" +
-      "(\0132\t.HwEntity\"\270\002\n\004Node\022\n\n\002id\030\001 \001(\004\022\026\n\016fo" +
-      "reign_source\030\002 \001(\t\022\022\n\nforeign_id\030\003 \001(\t\022\020" +
-      "\n\010location\030\004 \001(\t\022\020\n\010category\030\005 \003(\t\022\r\n\005la" +
-      "bel\030\006 \001(\t\022\023\n\013create_time\030\007 \001(\004\022\023\n\013sys_co" +
-      "ntact\030\010 \001(\t\022\027\n\017sys_description\030\t \001(\t\022\025\n\r" +
-      "sys_object_id\030\n \001(\t\022\"\n\014ip_interface\030\013 \003(" +
-      "\0132\014.IpInterface\022&\n\016snmp_interface\030\014 \003(\0132" +
-      "\016.SnmpInterface\022\037\n\014hw_inventory\030\r \001(\0132\t." +
-      "HwEntity*g\n\010Severity\022\021\n\rINDETERMINATE\020\000\022" +
-      "\013\n\007CLEARED\020\001\022\n\n\006NORMAL\020\002\022\013\n\007WARNING\020\003\022\t\n" +
-      "\005MINOR\020\004\022\t\n\005MAJOR\020\005\022\014\n\010CRITICAL\020\006B?\n)org" +
-      ".opennms.features.kafka.producer.modelB\022" +
-      "OpennmsModelProtosb\006proto3"
+      "\n+src/main/proto/opennms-kafka-producer." +
+      "proto\"F\n\014NodeCriteria\022\n\n\002id\030\001 \001(\004\022\026\n\016for" +
+      "eign_source\030\002 \001(\t\022\022\n\nforeign_id\030\003 \001(\t\";\n" +
+      "\016EventParameter\022\014\n\004name\030\001 \001(\t\022\r\n\005value\030\002" +
+      " \001(\t\022\014\n\004type\030\003 \001(\t\"\245\002\n\005Event\022\n\n\002id\030\001 \001(\004" +
+      "\022\013\n\003uei\030\002 \001(\t\022\r\n\005label\030\003 \001(\t\022\014\n\004time\030\004 \001" +
+      "(\004\022\016\n\006source\030\005 \001(\t\022\"\n\tparameter\030\006 \003(\0132\017." +
+      "EventParameter\022\023\n\013create_time\030\007 \001(\004\022\023\n\013d" +
+      "escription\030\010 \001(\t\022\023\n\013log_message\030\t \001(\t\022\033\n" +
+      "\010severity\030\n \001(\0162\t.Severity\022\013\n\003log\030\013 \001(\010\022" +
+      "\017\n\007display\030\014 \001(\010\022$\n\rnode_criteria\030\r \001(\0132" +
+      "\r.NodeCriteria\022\022\n\nip_address\030\016 \001(\t\"\321\004\n\005A" +
+      "larm\022\n\n\002id\030\001 \001(\004\022\013\n\003uei\030\002 \001(\t\022$\n\rnode_cr" +
+      "iteria\030\003 \001(\0132\r.NodeCriteria\022\022\n\nip_addres" +
+      "s\030\004 \001(\t\022\024\n\014service_name\030\005 \001(\t\022\025\n\rreducti" +
+      "on_key\030\006 \001(\t\022\031\n\004type\030\007 \001(\0162\013.Alarm.Type\022" +
+      "\r\n\005count\030\010 \001(\004\022\033\n\010severity\030\t \001(\0162\t.Sever" +
+      "ity\022\030\n\020first_event_time\030\n \001(\004\022\023\n\013descrip" +
+      "tion\030\013 \001(\t\022\023\n\013log_message\030\014 \001(\t\022\020\n\010ack_u" +
+      "ser\030\r \001(\t\022\020\n\010ack_time\030\016 \001(\004\022\032\n\nlast_even" +
+      "t\030\017 \001(\0132\006.Event\022\027\n\017last_event_time\030\020 \001(\004" +
+      "\022\020\n\010if_index\030\021 \001(\r\022\035\n\025operator_instructi" +
+      "ons\030\022 \001(\t\022\021\n\tclear_key\030\023 \001(\t\022\037\n\027managed_" +
+      "object_instance\030\024 \001(\t\022\033\n\023managed_object_" +
+      "type\030\025 \001(\t\022\034\n\014relatedAlarm\030\026 \003(\0132\006.Alarm" +
+      "\"D\n\004Type\022\026\n\022PROBLEM_WITH_CLEAR\020\000\022\t\n\005CLEA" +
+      "R\020\001\022\031\n\025PROBLEM_WITHOUT_CLEAR\020\002\"\275\001\n\013IpInt" +
+      "erface\022\n\n\002id\030\001 \001(\004\022\022\n\nip_address\030\002 \001(\t\022\020" +
+      "\n\010if_index\030\003 \001(\r\022.\n\014primary_type\030\004 \001(\0162\030" +
+      ".IpInterface.PrimaryType\022\017\n\007service\030\005 \003(" +
+      "\t\";\n\013PrimaryType\022\013\n\007PRIMARY\020\000\022\r\n\tSECONDA" +
+      "RY\020\001\022\020\n\014NOT_ELIGIBLE\020\002\"\317\001\n\rSnmpInterface" +
+      "\022\n\n\002id\030\001 \001(\004\022\020\n\010if_index\030\002 \001(\r\022\020\n\010if_des" +
+      "cr\030\003 \001(\t\022\017\n\007if_type\030\004 \001(\r\022\017\n\007if_name\030\005 \001" +
+      "(\t\022\020\n\010if_speed\030\006 \001(\004\022\027\n\017if_phys_address\030" +
+      "\007 \001(\t\022\027\n\017if_admin_status\030\010 \001(\r\022\026\n\016if_ope" +
+      "r_status\030\t \001(\r\022\020\n\010if_alias\030\n \001(\t\"%\n\007HwAl" +
+      "ias\022\r\n\005index\030\001 \001(\r\022\013\n\003oid\030\002 \001(\t\"\210\002\n\010HwEn" +
+      "tity\022\032\n\022ent_physical_index\030\001 \001(\r\022\021\n\tenti" +
+      "ty_id\030\002 \001(\r\022\032\n\022ent_physical_class\030\003 \001(\t\022" +
+      "\032\n\022ent_physical_descr\030\004 \001(\t\022\033\n\023ent_physi" +
+      "cal_is_fru\030\005 \001(\010\022\031\n\021ent_physical_name\030\006 " +
+      "\001(\t\022 \n\030ent_physical_vendor_type\030\007 \001(\t\022\036\n" +
+      "\014ent_hw_alias\030\010 \003(\0132\010.HwAlias\022\033\n\010childre" +
+      "n\030\t \003(\0132\t.HwEntity\"\270\002\n\004Node\022\n\n\002id\030\001 \001(\004\022" +
+      "\026\n\016foreign_source\030\002 \001(\t\022\022\n\nforeign_id\030\003 " +
+      "\001(\t\022\020\n\010location\030\004 \001(\t\022\020\n\010category\030\005 \003(\t\022" +
+      "\r\n\005label\030\006 \001(\t\022\023\n\013create_time\030\007 \001(\004\022\023\n\013s" +
+      "ys_contact\030\010 \001(\t\022\027\n\017sys_description\030\t \001(" +
+      "\t\022\025\n\rsys_object_id\030\n \001(\t\022\"\n\014ip_interface" +
+      "\030\013 \003(\0132\014.IpInterface\022&\n\016snmp_interface\030\014" +
+      " \003(\0132\016.SnmpInterface\022\037\n\014hw_inventory\030\r \001" +
+      "(\0132\t.HwEntity*g\n\010Severity\022\021\n\rINDETERMINA" +
+      "TE\020\000\022\013\n\007CLEARED\020\001\022\n\n\006NORMAL\020\002\022\013\n\007WARNING" +
+      "\020\003\022\t\n\005MINOR\020\004\022\t\n\005MAJOR\020\005\022\014\n\010CRITICAL\020\006B?" +
+      "\n)org.opennms.features.kafka.producer.mo" +
+      "delB\022OpennmsModelProtosb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -14417,7 +14790,7 @@ public final class OpennmsModelProtos {
     internal_static_Alarm_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Alarm_descriptor,
-        new java.lang.String[] { "Id", "Uei", "NodeCriteria", "IpAddress", "ServiceName", "ReductionKey", "Type", "Count", "Severity", "FirstEventTime", "Description", "LogMessage", "AckUser", "AckTime", "LastEvent", "LastEventTime", "IfIndex", "OperatorInstructions", "ClearKey", "ManagedObjectInstance", "ManagedObjectType", });
+        new java.lang.String[] { "Id", "Uei", "NodeCriteria", "IpAddress", "ServiceName", "ReductionKey", "Type", "Count", "Severity", "FirstEventTime", "Description", "LogMessage", "AckUser", "AckTime", "LastEvent", "LastEventTime", "IfIndex", "OperatorInstructions", "ClearKey", "ManagedObjectInstance", "ManagedObjectType", "RelatedAlarm", });
     internal_static_IpInterface_descriptor =
       getDescriptor().getMessageTypes().get(4);
     internal_static_IpInterface_fieldAccessorTable = new
