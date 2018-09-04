@@ -213,10 +213,10 @@ public class GraphResultsController extends AbstractController implements Initia
             endLong = endCal.getTime().getTime();
         } else {
             if (relativeTime == null) {
-                relativeTime = s_periods[0].getId();
+                relativeTime = RelativeTimePeriod.DEFAULT_RELATIVE_TIME_PERIOD.getId();
             }
 
-            RelativeTimePeriod period = RelativeTimePeriod.getPeriodByIdOrDefault(s_periods, relativeTime, s_periods[0]);
+            RelativeTimePeriod period = RelativeTimePeriod.getPeriodByIdOrDefault(s_periods, relativeTime, RelativeTimePeriod.DEFAULT_RELATIVE_TIME_PERIOD);
 
             long[] times = period.getStartAndEndTimes();
             startLong = times[0];
