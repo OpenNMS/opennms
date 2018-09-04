@@ -35,6 +35,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.distributed.coordination.api.DomainManager;
 import org.opennms.features.distributed.coordination.api.DomainManagerFactory;
+import org.opennms.features.distributed.coordination.api.Role;
 import org.opennms.features.distributed.coordination.api.RoleChangeHandler;
 
 /**
@@ -70,12 +71,7 @@ public class JoinElectionDomain implements Action, RoleChangeHandler {
     }
 
     @Override
-    public void becomeActive(String domain) {
-        System.out.println("Active for domain " + domain);
-    }
-
-    @Override
-    public void becomeStandby(String domain) {
-        System.out.println("Standby for domain " + domain);
+    public void handleRoleChange(Role role, String domain) {
+        System.out.println(role + " for domain " + domain);
     }
 }

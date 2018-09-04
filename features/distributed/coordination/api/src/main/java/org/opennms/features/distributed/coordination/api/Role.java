@@ -32,7 +32,7 @@ package org.opennms.features.distributed.coordination.api;
  * The valid roles when participating in a redundant cluster.
  */
 public enum Role {
+    UNKNOWN,
     ACTIVE,
-    STANDBY,
-    UNKNOWN
+    STANDBY
 }

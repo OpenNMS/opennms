@@ -26,9 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.distributed.coordination.base;
+package org.opennms.features.distributed.coordination.common;
 
-import org.junit.Assert;
+import static junit.framework.TestCase.assertSame;
+import static org.junit.Assert.assertNotSame;
+
 import org.junit.Test;
 import org.opennms.features.distributed.coordination.api.DomainManager;
 import org.opennms.features.distributed.coordination.api.DomainManagerFactory;
@@ -36,7 +38,7 @@ import org.opennms.features.distributed.coordination.api.DomainManagerFactory;
 /**
  * Tests for {@link AbstractDomainManagerFactory}.
  */
-public class TestAbstractDomainManagerFactory {
+public class AbstractDomainManagerFactoryTest {
     /**
      * Tests the caching of domain managers.
      */
@@ -45,8 +47,7 @@ public class TestAbstractDomainManagerFactory {
         DomainManagerFactory managerFactory = new TestFactory();
         String testDomain = "test.domain";
         // The same manager should be returned since it should be cached after the first get
-        Assert.assertSame(managerFactory.getManagerForDomain(testDomain),
-                managerFactory.getManagerForDomain(testDomain));
+        assertSame(managerFactory.getManagerForDomain(testDomain), managerFactory.getManagerForDomain(testDomain));
     }
 
     /**
@@ -56,8 +57,7 @@ public class TestAbstractDomainManagerFactory {
     public void testDifferentManagers() {
         DomainManagerFactory managerFactory = new TestFactory();
         // Every separate domain must have a different domain manager
-        Assert.assertNotSame(managerFactory.getManagerForDomain("domain1"), managerFactory.getManagerForDomain(
-                "domain2"));
+        assertNotSame(managerFactory.getManagerForDomain("domain1"), managerFactory.getManagerForDomain("domain2"));
     }
 
     private static class TestFactory extends AbstractDomainManagerFactory {

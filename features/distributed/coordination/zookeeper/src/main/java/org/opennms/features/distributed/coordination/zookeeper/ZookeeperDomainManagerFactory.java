@@ -28,14 +28,11 @@
 
 package org.opennms.features.distributed.coordination.zookeeper;
 
-import java.util.List;
-
-import org.apache.curator.framework.AuthInfo;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.opennms.features.distributed.coordination.api.DomainManager;
 import org.opennms.features.distributed.coordination.api.DomainManagerFactory;
-import org.opennms.features.distributed.coordination.base.AbstractDomainManagerFactory;
+import org.opennms.features.distributed.coordination.common.AbstractDomainManagerFactory;
 
 /**
  * A {@link DomainManagerFactory} that uses Apache ZooKeeper to manage all domains.
@@ -44,17 +41,23 @@ public class ZookeeperDomainManagerFactory extends AbstractDomainManagerFactory 
     /**
      * The connection string to connect to ZooKeeper with.
      */
-    public String connectString;
+    private final String connectString;
 
     /**
      * The namespace to prefix all keys with.
      */
-    public String namespace;
+    private final String namespace;
 
     /**
-     * Authentication info.
+     * Constructor.
+     *
+     * @param connectString the connection string for Zookeeper
+     * @param namespace     the namespace to prefix the domain with
      */
-    private List<AuthInfo> auths;
+    public ZookeeperDomainManagerFactory(String connectString, String namespace) {
+        this.connectString = connectString;
+        this.namespace = namespace;
+    }
 
     @Override
     protected DomainManager createManagerForDomain(String domain) {
@@ -63,38 +66,7 @@ public class ZookeeperDomainManagerFactory extends AbstractDomainManagerFactory 
                 .namespace(namespace)
                 .retryPolicy(new ExponentialBackoffRetry(1000, 3));
 
-        if (auths != null) {
-            builder.authorization(auths);
-        }
-
         return ZookeeperDomainManager.of(domain, builder);
-    }
-
-    public ZookeeperDomainManagerFactory buildWithConnectString(String connectString) {
-        setConnectString(connectString);
-        return this;
-    }
-
-    public ZookeeperDomainManagerFactory buildWithNamespace(String namespace) {
-        setNamespace(namespace);
-        return this;
-    }
-
-    public ZookeeperDomainManagerFactory buildWithAuths(List<AuthInfo> auths) {
-        this.auths = auths;
-        return this;
-    }
-
-    public void setConnectString(String connectString) {
-        this.connectString = connectString;
-    }
-
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
-    }
-
-    public void setAuths(List<AuthInfo> auths) {
-        this.auths = auths;
     }
 
     @Override

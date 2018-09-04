@@ -29,9 +29,11 @@
 package org.opennms.features.distributed.coordination.zookeeper;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -54,11 +56,12 @@ import org.apache.curator.framework.recipes.leader.LeaderSelector;
 import org.apache.curator.framework.recipes.leader.LeaderSelectorListener;
 import org.apache.curator.framework.state.ConnectionState;
 import org.junit.Test;
+import org.opennms.features.distributed.coordination.api.Role;
 
 /**
  * Tests for {@link ZookeeperDomainManager}.
  */
-public class TestZookeeperDomainManager {
+public class ZookeeperDomainManagerTest {
     private final AtomicInteger connectionAttempts = new AtomicInteger(0);
     private final AtomicInteger disconnectionAttempts = new AtomicInteger(0);
     private final List<CompletableFuture<Void>> activeFutures = new CopyOnWriteArrayList<>();
@@ -115,7 +118,7 @@ public class TestZookeeperDomainManager {
             leaderSelectorListener.stateChanged(null, ConnectionState.LOST);
             fail("No cancel leadership exception was caught");
         } catch (Exception e) {
-            assertTrue(e instanceof CancelLeadershipException);
+            assertThat(e, instanceOf(CancelLeadershipException.class));
         }
 
         // Every registrant should have went standby
@@ -128,7 +131,7 @@ public class TestZookeeperDomainManager {
         // disconnected
         Thread.sleep(1000);
         assertEquals(1, disconnectionAttempts.get());
-        assertFalse(manager.isAnythingRegistered());
+        assertThat(manager.isAnythingRegistered(), is(equalTo(false)));
     }
 
     /**
@@ -142,7 +145,12 @@ public class TestZookeeperDomainManager {
         CompletableFuture<Void> standbyFuture = new CompletableFuture<>();
         standbyFutures.add(standbyFuture);
 
-        manager.register("test.id." + id, domain -> activeFuture.complete(null),
-                domain -> standbyFuture.complete(null));
+        manager.register("test.id." + id, (role, domain) -> {
+            if (role == Role.ACTIVE) {
+                activeFuture.complete(null);
+            } else if (role == Role.STANDBY) {
+                standbyFuture.complete(null);
+            }
+        });
     }
 }

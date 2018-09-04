@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.distributed.coordination.base;
+package org.opennms.features.distributed.coordination.common;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +49,7 @@ public abstract class AbstractDomainManagerFactory implements DomainManagerFacto
     /**
      * The map of domains to managers.
      */
-    private final Map<String, DomainManager> haManagers = new HashMap<>();
+    private final Map<String, DomainManager> domainManagers = new HashMap<>();
 
     /**
      * Creates the appropriate manager for the given domain.
@@ -61,14 +61,18 @@ public abstract class AbstractDomainManagerFactory implements DomainManagerFacto
 
     @Override
     public synchronized final DomainManager getManagerForDomain(String domain) {
-        if (haManagers.containsKey(Objects.requireNonNull(domain))) {
-            LOG.debug("Returning existing manager for domain '", domain, "'");
+        if (!Objects.requireNonNull(domain).matches("^[a-zA-Z0-9.-_]*$")) {
+            throw new IllegalArgumentException("Invalid domain");
+        }
 
-            return haManagers.get(domain);
+        if (domainManagers.containsKey(domain)) {
+            LOG.debug("Returning existing manager for domain {}", domain);
+
+            return domainManagers.get(domain);
         } else {
-            LOG.debug("Creating new manager for domain '", domain, "'");
+            LOG.debug("Creating new manager for domain {}", domain);
             DomainManager domainManager = createManagerForDomain(domain);
-            haManagers.put(domain, domainManager);
+            domainManagers.put(domain, domainManager);
 
             return domainManager;
         }
@@ -77,7 +81,7 @@ public abstract class AbstractDomainManagerFactory implements DomainManagerFacto
     @Override
     public String toString() {
         return "AbstractDomainManagerFactory{" +
-                "haManagers=" + haManagers +
+                "domainManagers=" + domainManagers +
                 '}';
     }
 }

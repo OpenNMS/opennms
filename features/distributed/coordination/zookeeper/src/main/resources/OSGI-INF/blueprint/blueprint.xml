@@ -11,8 +11,8 @@
     </cm:property-placeholder>
     <service interface="org.opennms.features.distributed.coordination.api.DomainManagerFactory">
         <bean class="org.opennms.features.distributed.coordination.zookeeper.ZookeeperDomainManagerFactory">
-            <property name="connectString" value="${connectString}"/>
-            <property name="namespace" value="${namespace}"/>
+            <argument value="${connectString}" />
+            <argument value="${namespace}" />
         </bean>
     </service>
 </blueprint>

@@ -34,7 +34,8 @@ package org.opennms.features.distributed.coordination.api;
  */
 public interface DomainManagerFactory {
     /**
-     * Get the {@link DomainManager} for the given domain.
+     * Get the {@link DomainManager} for the given domain. Domains must consist of only alphanumeric characters and
+     * '.-_'.
      *
      * @param domain the domain
      * @return the manager

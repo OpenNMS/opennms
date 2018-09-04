@@ -115,18 +115,18 @@
         <bundle>mvn:org.opennms.features.distributed/coordination-api/${project.version}</bundle>
     </feature>
 
-    <feature name="sentinel-coordination-base-impl"
-             description="OpenNMS :: Features :: Distributed :: Coordination :: Base" version="${project.version}">
+    <feature name="sentinel-coordination-common"
+             description="OpenNMS :: Features :: Distributed :: Coordination :: Common" version="${project.version}">
         <feature version="${project.version}">sentinel-coordination-api</feature>
-        <bundle>mvn:org.opennms.features.distributed/coordination-base-impl/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/coordination-common/${project.version}</bundle>
     </feature>
 
-    <feature name="sentinel-coordination-zookeeper-impl"
+    <feature name="sentinel-coordination-zookeeper"
              description="OpenNMS :: Features :: Distributed :: Coordination :: Zookeeper" version="${project.version}">
         <feature version="${project.version}">sentinel-coordination-api</feature>
-        <feature version="${project.version}">sentinel-coordination-base-impl</feature>
-        <feature version="${project.version}">zookeeper-dependencies</feature>
-        <bundle>mvn:org.opennms.features.distributed/coordination-zookeeper-impl/${project.version}</bundle>
+        <feature version="${project.version}">sentinel-coordination-common</feature>
+        <feature version="${zookeeper.version}">zookeeper-dependencies</feature>
+        <bundle>mvn:org.opennms.features.distributed/coordination-zookeeper/${project.version}</bundle>
     </feature>
 
     <feature name="sentinel-coordination-shell"
@@ -135,7 +135,7 @@
         <bundle>mvn:org.opennms.features.distributed/coordination-shell/${project.version}</bundle>
     </feature>
 
-    <feature name="zookeeper-dependencies" version="${project.version}" description="ZooKeeper Dependencies">
+    <feature name="zookeeper-dependencies" version="${zookeeper.version}" description="ZooKeeper Dependencies">
         <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/3.4.7</bundle>
         <bundle dependency="true">mvn:com.google.guava/guava/16.0.1</bundle>
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.6</bundle>

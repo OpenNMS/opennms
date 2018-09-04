@@ -8,7 +8,7 @@
         <version>23.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>coordination-zookeeper-impl</artifactId>
+    <artifactId>coordination-zookeeper</artifactId>
     <packaging>bundle</packaging>
     <name>OpenNMS :: Features :: Distributed :: Coordination :: Zookeeper</name>
     <properties>
@@ -42,7 +42,7 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
-            <artifactId>coordination-base-impl</artifactId>
+            <artifactId>coordination-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

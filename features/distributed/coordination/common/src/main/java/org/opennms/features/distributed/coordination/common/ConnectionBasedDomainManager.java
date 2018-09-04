@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.distributed.coordination.base;
+package org.opennms.features.distributed.coordination.common;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -109,7 +109,7 @@ public abstract class ConnectionBasedDomainManager extends AbstractDomainManager
      * @param exception the exception that caused the failure the connect
      */
     protected void failedToConnect(Throwable exception) {
-        LOG.warn("Failed to connect due to ", exception);
+        LOG.warn("Failed to connect due to exception", exception);
     }
 
     /**

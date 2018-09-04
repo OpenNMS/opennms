@@ -26,13 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.distributed.coordination.base;
+package org.opennms.features.distributed.coordination.common;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import org.opennms.features.distributed.coordination.api.DomainManager;
 import org.opennms.features.distributed.coordination.api.Role;
@@ -88,15 +88,14 @@ public abstract class AbstractDomainManager implements DomainManager {
      */
     protected synchronized final void becomeActive() {
         currentRole = Role.ACTIVE;
-        LOG.debug("Notifying all registrants of ", currentRole, " status");
+        LOG.debug("Notifying all registrants of {} role", currentRole);
 
         // Handlers must not block so that this happens in a timely manner
         for (Map.Entry<String, RoleChangeHandler> handler : roleChangeHandlers.entrySet()) {
             try {
-                handler.getValue().becomeActive(getDomain());
+                handler.getValue().handleRoleChange(Role.ACTIVE, getDomain());
             } catch (Exception e) {
-                LOG.warn("Got exception while notifying handler '", handler.getKey(), "' of role '",
-                        currentRole, "' ", e);
+                LOG.warn("Got exception while notifying handler {} of role {}", handler.getKey(), currentRole, e);
             }
         }
     }
@@ -108,15 +107,14 @@ public abstract class AbstractDomainManager implements DomainManager {
     protected synchronized final void becomeStandby() {
         if (currentRole != Role.STANDBY) {
             currentRole = Role.STANDBY;
-            LOG.debug("Notifying all registrants of ", currentRole, " status");
+            LOG.debug("Notifying all registrants of {} role", currentRole);
 
             // Handlers must not block so that this happens in a timely manner
             for (Map.Entry<String, RoleChangeHandler> handler : roleChangeHandlers.entrySet()) {
                 try {
-                    handler.getValue().becomeStandby(getDomain());
+                    handler.getValue().handleRoleChange(Role.STANDBY, getDomain());
                 } catch (Exception e) {
-                    LOG.warn("Got exception while notifying handler '", handler.getKey(), "' of role '",
-                            currentRole, "' ", e);
+                    LOG.warn("Got exception while notifying handler {} of role {}", handler.getKey(), currentRole, e);
                 }
             }
         }
@@ -147,56 +145,38 @@ public abstract class AbstractDomainManager implements DomainManager {
         Objects.requireNonNull(id);
 
         if (!isAnythingRegistered()) {
-            LOG.debug("Joined election pool for domain '", getDomain(), "'");
+            LOG.debug("Joined election pool for domain {}", getDomain());
             onFirstRegister();
         } else if (this.roleChangeHandlers.containsKey(id)) {
             throw new IllegalArgumentException(id + " is already registered");
         }
 
-        LOG.debug("Adding '", id, "' to domain '", getDomain(), "'");
+        LOG.debug("Adding {} to domain {}", id, getDomain());
         this.roleChangeHandlers.put(id, Objects.requireNonNull(roleChangeHandler));
 
         // If we are already active we can go ahead and trigger the callback for the first time
         if (getCurrentRole() == Role.ACTIVE) {
             LOG.debug("Already ACTIVE, notifying registrant");
-            roleChangeHandler.becomeActive(getDomain());
+            roleChangeHandler.handleRoleChange(Role.ACTIVE, getDomain());
         }
-    }
-
-    @Override
-    public final synchronized void register(String id, Consumer<String> onActive, Consumer<String> onStandby) {
-        Objects.requireNonNull(onActive);
-        Objects.requireNonNull(onStandby);
-
-        register(id, new RoleChangeHandler() {
-            @Override
-            public void becomeActive(String domain) {
-                onActive.accept(domain);
-            }
-
-            @Override
-            public void becomeStandby(String domain) {
-                onStandby.accept(domain);
-            }
-        });
     }
 
     @Override
     public final synchronized void deregister(String id) {
         if (!this.roleChangeHandlers.containsKey(Objects.requireNonNull(id))) {
-            throw new IllegalArgumentException(id + " is not registered");
+            throw new NoSuchElementException(id + " is not registered");
         }
 
-        LOG.debug("Removing '", id, "' from domain '", getDomain(), "'");
+        LOG.debug("Removing {} from domain {}", id, getDomain());
         this.roleChangeHandlers.remove(id);
 
         if (!isAnythingRegistered()) {
             if (currentRole == Role.ACTIVE) {
                 currentRole = Role.UNKNOWN;
-                LOG.debug("Surrendered leadership for domain '", getDomain(), "'");
+                LOG.debug("Surrendered leadership for domain {}", getDomain());
             }
 
-            LOG.debug("Left election pool for domain '", getDomain(), "'");
+            LOG.debug("Left election pool for domain {}", getDomain());
             onLastDeregister();
         }
     }

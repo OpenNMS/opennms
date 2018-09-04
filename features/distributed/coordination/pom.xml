@@ -15,6 +15,6 @@
         <module>api</module>
         <module>zookeeper</module>
         <module>shell</module>
-        <module>base</module>
+        <module>common</module>
     </modules>
 </project>

@@ -28,7 +28,8 @@
 
 package org.opennms.features.distributed.coordination.zookeeper;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.opennms.features.distributed.coordination.api.DomainManagerFactory;
@@ -36,14 +37,15 @@ import org.opennms.features.distributed.coordination.api.DomainManagerFactory;
 /**
  * Tests for {@link ZookeeperDomainManagerFactory}.
  */
-public class TestZookeeperDomainManagerFactory {
+public class ZookeeperDomainManagerFactoryTest {
     /**
      * Verifies the factory generates the correct instance type.
      */
     @Test
     public void checkInstance() {
-        DomainManagerFactory managerFactory = new ZookeeperDomainManagerFactory()
-                .buildWithConnectString("127.0.0.1:2181").buildWithNamespace("coordination");
-        assertTrue(managerFactory.getManagerForDomain("test.domain") instanceof ZookeeperDomainManager);
+        DomainManagerFactory managerFactory = new ZookeeperDomainManagerFactory("127.0.0.1:2181",
+                "coordination");
+        assertThat(managerFactory.getManagerForDomain("test.domain"),
+                instanceOf(ZookeeperDomainManager.class));
     }
 }

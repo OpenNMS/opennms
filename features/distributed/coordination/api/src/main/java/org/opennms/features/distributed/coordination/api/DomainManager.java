@@ -28,8 +28,6 @@
 
 package org.opennms.features.distributed.coordination.api;
 
-import java.util.function.Consumer;
-
 /**
  * A manager that is responsible for registering and deregistering clients for a given domain.
  */
@@ -45,19 +43,6 @@ public interface DomainManager {
      * @param roleChangeHandler the role change handler to register
      */
     void register(String id, RoleChangeHandler roleChangeHandler);
-
-    /**
-     * Register with the domain being managed. This is a non-blocking call.
-     * <p>
-     * Ids must be unique to this manager. Attempting to register the same Id twice will result in an exception.
-     * <p>
-     * The consumers passed to this register method must not block.
-     *
-     * @param id        the Id to register
-     * @param onActive  the callback to handle becoming active which must not block
-     * @param onStandby the callback to handle becoming standby which must not block
-     */
-    void register(String id, Consumer<String> onActive, Consumer<String> onStandby);
 
     /**
      * Deregister with the domain being managed. This is a non-blocking call.

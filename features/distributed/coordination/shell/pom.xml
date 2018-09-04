@@ -36,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
-            <artifactId>coordination-zookeeper-impl</artifactId>
+            <artifactId>coordination-zookeeper</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

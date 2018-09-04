@@ -35,7 +35,7 @@ import org.apache.curator.framework.recipes.leader.LeaderSelectorListener;
 import org.apache.curator.framework.recipes.leader.LeaderSelectorListenerAdapter;
 import org.apache.curator.framework.state.ConnectionState;
 import org.opennms.features.distributed.coordination.api.DomainManager;
-import org.opennms.features.distributed.coordination.base.ConnectionBasedDomainManager;
+import org.opennms.features.distributed.coordination.common.ConnectionBasedDomainManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,12 +186,16 @@ public final class ZookeeperDomainManager extends ConnectionBasedDomainManager {
 
         client.start();
 
-        try {
-            LOG.info("Connecting to ZooKeeper with client: ", client);
-            client.blockUntilConnected();
-            LOG.info("Connected to ZooKeeper");
-        } catch (InterruptedException e) {
-            LOG.warn("Interrupted while connecting to ZooKeeper", e);
+        boolean blocked = true;
+        while (blocked) {
+            try {
+                LOG.info("Connecting to ZooKeeper with client {}", client);
+                client.blockUntilConnected();
+                blocked = false;
+                LOG.info("Connected to ZooKeeper");
+            } catch (InterruptedException e) {
+                LOG.warn("Interrupted while connecting to ZooKeeper", e);
+            }
         }
 
         if (leaderSelector == null) {

@@ -44,6 +44,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.features.distributed.coordination.api.DomainManager;
+import org.opennms.features.distributed.coordination.api.Role;
 
 /**
  * Integration tests for {@link ZookeeperDomainManager}.
@@ -55,7 +56,7 @@ public class ZookeeperDomainManagerIT {
     public final TemporaryFolder tempFolder = new TemporaryFolder();
     private final CompletableFuture<String> activeFuture = new CompletableFuture<>();
     private final CompletableFuture<String> standbyFuture = new CompletableFuture<>();
-    private final ZookeeperDomainManagerFactory managerFactory = new ZookeeperDomainManagerFactory();
+    private ZookeeperDomainManagerFactory managerFactory;
     private TestingServer testServer;
     private DomainManager manager;
 
@@ -69,8 +70,7 @@ public class ZookeeperDomainManagerIT {
         }
 
         testServer = new TestingServer(freePort, tempFolder.getRoot());
-        managerFactory.buildWithConnectString(testServer.getConnectString());
-        managerFactory.buildWithNamespace("test.namespace");
+        managerFactory = new ZookeeperDomainManagerFactory(testServer.getConnectString(), "test.namespace");
         manager = managerFactory.getManagerForDomain(domain);
     }
 
@@ -88,7 +88,7 @@ public class ZookeeperDomainManagerIT {
     public void testRegisterAfterZookeeper() throws Exception {
         testServer.start();
 
-        manager.register(id, activeFuture::complete, standbyFuture::complete);
+        register();
         assertEquals(domain, activeFuture.get(10, TimeUnit.SECONDS));
 
         testServer.stop();
@@ -102,7 +102,7 @@ public class ZookeeperDomainManagerIT {
      */
     @Test
     public void testRegisterBeforeZookeeper() throws Exception {
-        manager.register(id, activeFuture::complete, standbyFuture::complete);
+        register();
 
         testServer.start();
         assertEquals(domain, activeFuture.get(10, TimeUnit.SECONDS));
@@ -120,10 +120,10 @@ public class ZookeeperDomainManagerIT {
     public void testReregister() throws Exception {
         testServer.start();
 
-        manager.register(id, domain -> {}, domain -> {});
+        manager.register(id, (role, domain) -> {});
         manager.deregister(id);
 
-        manager.register(id, activeFuture::complete, standbyFuture::complete);
+        register();
         assertEquals(domain, activeFuture.get(10, TimeUnit.SECONDS));
     }
 
@@ -140,8 +140,13 @@ public class ZookeeperDomainManagerIT {
         List<CompletableFuture<String>> standbyFutures = new ArrayList<>();
         AtomicInteger futureIndex = new AtomicInteger(0);
 
-        manager.register(id, domain -> activeFutures.get(futureIndex.get()).complete(domain),
-                domain -> standbyFutures.get(futureIndex.get()).complete(domain));
+        manager.register(id, (role, domain) -> {
+            if (role == Role.ACTIVE) {
+                activeFutures.get(futureIndex.get()).complete(domain);
+            } else if (role == Role.STANDBY) {
+                standbyFutures.get(futureIndex.get()).complete(domain);
+            }
+        });
 
         // There is no asserts here but failure will occur due to timeout exception if one of the active/standby calls
         // does not happen
@@ -155,5 +160,15 @@ public class ZookeeperDomainManagerIT {
             standbyFutures.get(futureIndex.get()).get(10, TimeUnit.SECONDS);
             futureIndex.incrementAndGet();
         }
+    }
+    
+    private void register() {
+        manager.register(id, (role, domain) -> {
+            if (role == Role.ACTIVE) {
+                activeFuture.complete(domain);
+            } else if (role == Role.STANDBY) {
+                standbyFuture.complete(domain);
+            }
+        });
     }
 }

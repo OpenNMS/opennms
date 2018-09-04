@@ -26,9 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.distributed.coordination.base;
+package org.opennms.features.distributed.coordination.common;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,14 +40,13 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.features.distributed.coordination.api.Role;
 
 /**
  * Tests for {@link AbstractDomainManager}.
  */
-public class TestAbstractDomainManager {
+public class AbstractDomainManagerTest {
     private static final String becomeActiveCallback = "becomeActive";
     private static final String becomeStandbyCallback = "becomeStandby";
     private static final String onRegisterCallback = "onFirstRegister";
@@ -62,21 +65,27 @@ public class TestAbstractDomainManager {
         String testId = id;
         TestDomainManager manager = new TestDomainManager(domain);
 
-        manager.register(testId, domain -> callbacksCalled.add(becomeActiveCallback),
-                domain -> callbacksCalled.add(becomeStandbyCallback));
-        Assert.assertTrue(manager.isAnythingRegistered());
-        Assert.assertTrue(manager.isRegistered(testId));
+        manager.register(testId, (role, domain) -> {
+            if (role == Role.ACTIVE) {
+                callbacksCalled.add(becomeActiveCallback);
+            } else if (role == Role.STANDBY) {
+                callbacksCalled.add(becomeStandbyCallback);
+            }
+        });
+
+        assertThat(manager.isAnythingRegistered(), is(equalTo(true)));
+        assertThat(manager.isRegistered(testId), is(equalTo(true)));
 
         manager.becomeActive();
-        Assert.assertSame(Role.ACTIVE, manager.getCurrentRole());
+        assertSame(Role.ACTIVE, manager.getCurrentRole());
 
         manager.becomeStandby();
-        Assert.assertSame(Role.STANDBY, manager.getCurrentRole());
+        assertSame(Role.STANDBY, manager.getCurrentRole());
 
         manager.deregister(testId);
-        Assert.assertFalse(manager.isAnythingRegistered());
-        Assert.assertFalse(manager.isRegistered(testId));
-        Assert.assertEquals(Arrays.asList(onRegisterCallback, becomeActiveCallback, becomeStandbyCallback,
+        assertThat(manager.isAnythingRegistered(), is(equalTo(false)));
+        assertThat(manager.isRegistered(testId), is(equalTo(false)));
+        assertEquals(Arrays.asList(onRegisterCallback, becomeActiveCallback, becomeStandbyCallback,
                 onDeregisterCallback), callbacksCalled);
     }
 
@@ -89,15 +98,21 @@ public class TestAbstractDomainManager {
         int numToRegister = 100;
 
         IntStream.range(0, numToRegister).parallel().forEach(i -> manager.register(id + i,
-                domain -> numNotifiedActive.incrementAndGet(), domain -> numNotifiedStandby.incrementAndGet()));
+                (role, domain) -> {
+                    if (role == Role.ACTIVE) {
+                        numNotifiedActive.incrementAndGet();
+                    } else if (role == Role.STANDBY) {
+                        numNotifiedStandby.incrementAndGet();
+                    }
+                }));
 
         assertEquals(numToRegister, manager.getRoleChangeHandlers().size());
 
         manager.becomeActive();
-        Assert.assertEquals(numToRegister, numNotifiedActive.get());
+        assertEquals(numToRegister, numNotifiedActive.get());
 
         manager.becomeStandby();
-        Assert.assertEquals(numToRegister, numNotifiedStandby.get());
+        assertEquals(numToRegister, numNotifiedStandby.get());
     }
 
     private class TestDomainManager extends AbstractDomainManager {

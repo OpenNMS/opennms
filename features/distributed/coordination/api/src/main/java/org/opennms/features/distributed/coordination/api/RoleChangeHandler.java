@@ -29,24 +29,15 @@
 package org.opennms.features.distributed.coordination.api;
 
 /**
- * Defines the callbacks invoked by a {@link DomainManager} when a registrant becomes ACTIVE or STANDBY.
+ * Defines the callbacks invoked by a {@link DomainManager} when a registrant changes roles.
  */
+@FunctionalInterface
 public interface RoleChangeHandler {
     /**
-     * Handle becoming ACTIVE.
-     * <p>
-     * Implementations of this method must not block.
+     * Handle role changing. Implementations of this method must not block.
      *
-     * @param domain the domain you are becoming ACTIVE for
+     * @param role   the new role
+     * @param domain the domain the role is being changed for
      */
-    void becomeActive(String domain);
-
-    /**
-     * Handle becoming STANDBY.
-     * <p>
-     * Implementations of this method must not block.
-     *
-     * @param domain the domain you are becoming STANDBY for
-     */
-    void becomeStandby(String domain);
+    void handleRoleChange(Role role, String domain);
 }

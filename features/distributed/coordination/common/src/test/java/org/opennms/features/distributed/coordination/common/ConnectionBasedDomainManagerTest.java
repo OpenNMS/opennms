@@ -26,23 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.distributed.coordination.base;
+package org.opennms.features.distributed.coordination.common;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertThat;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.features.distributed.coordination.api.Role;
 
 /**
  * Tests for {@link ConnectionBasedDomainManager}.
  */
-public class TestConnectionBasedDomainManager {
+public class ConnectionBasedDomainManagerTest {
     private static final String id = "test.id";
     private static final String domain = "test.domain";
     private final CompletableFuture<Thread> connectThreadFuture = new CompletableFuture<>();
@@ -57,7 +61,7 @@ public class TestConnectionBasedDomainManager {
     public void testNonBlockingConnectDisconnect() throws Exception {
         TestDomainManager manager = new TestDomainManager(domain);
 
-        manager.register(id, domain -> {}, domain -> {});
+        manager.register(id, (role, domain) -> {});
         waitForFuture(connectThreadFuture);
 
         manager.deregister(id);
@@ -74,9 +78,9 @@ public class TestConnectionBasedDomainManager {
     public void testExceptionPreventsConnection() throws Exception {
         ExceptionOnConnectDomainManager manager = new ExceptionOnConnectDomainManager(domain);
 
-        manager.register(id, domain -> {}, domain -> {});
+        manager.register(id, (role, domain) -> {});
         waitForFuture(connectThreadFuture);
-        Assert.assertFalse(manager.isConnected());
+        assertThat(manager.isConnected(), is(equalTo(false)));
     }
 
     /**
@@ -88,13 +92,19 @@ public class TestConnectionBasedDomainManager {
         AtomicInteger active = new AtomicInteger(0);
         AtomicInteger standby = new AtomicInteger(0);
 
-        manager.register(id, domain -> active.incrementAndGet(), domain -> standby.incrementAndGet());
+        manager.register(id, (role, domain) -> {
+            if (role == Role.ACTIVE) {
+                active.incrementAndGet();
+            } else if (role == Role.STANDBY) {
+                standby.incrementAndGet();
+            }
+        });
         await().atMost(10, TimeUnit.SECONDS).until(() -> active.get() > 0);
 
         manager.deregister(id);
         await().atMost(10, TimeUnit.SECONDS).until(() -> !manager.isConnected());
 
-        manager.register("dummyId", domain -> {}, domain -> {});
+        manager.register("dummyId", (role, domain) -> {});
         await().atMost(10, TimeUnit.SECONDS).until(manager::isConnected);
 
         assertEquals(1, active.get());
@@ -102,7 +112,7 @@ public class TestConnectionBasedDomainManager {
     }
 
     private static void waitForFuture(Future<Thread> threadFuture) throws Exception {
-        Assert.assertNotSame(Thread.currentThread(), threadFuture.get(100, TimeUnit.MILLISECONDS));
+        assertNotSame(Thread.currentThread(), threadFuture.get(100, TimeUnit.MILLISECONDS));
     }
 
     private class TestDomainManager extends ConnectionBasedDomainManager {
