@@ -202,8 +202,8 @@ public abstract class CriteriaBehaviors {
         // Situation Behaviours
         CriteriaBehavior<String> affectedNodeCount = new StringCriteriaBehavior(Aliases.alarm.prop("affectedNodeCount"), (b, v, c, w) -> {
             String op = stringForNumericCondition(c, "alarm.affectedNodeCount");
-            b.sql("((SELECT COUNT (DISTINCT NODEID) from (SELECT NODEID FROM alarms where alarmid in (SELECT related_alarm_id from alarm_situations where situation_id = {alias}.alarmid)) as Related_Alarms) "
-                    + op + " " + v + " )");
+            b.sql("((SELECT COUNT (DISTINCT NODEID) from (SELECT NODEID FROM alarms where alarmid in (SELECT related_alarm_id from alarm_situations where situation_id = {alias}.alarmid) or alarmid = {alias}.alarmid) as from_nodes) "
+                    + op + " " + v + " ) ");
         });
         affectedNodeCount.setSkipPropertyByDefault(true);
         ALARM_BEHAVIORS.put("affectedNodeCount", affectedNodeCount);

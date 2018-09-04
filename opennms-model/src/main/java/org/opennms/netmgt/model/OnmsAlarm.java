@@ -1194,7 +1194,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     @XmlTransient
     public Integer getAffectedNodeCount() {
         if (m_relatedAlarms == null || m_relatedAlarms.isEmpty()) {
-            return 1;
+            return m_node == null ? 0 : 1;
         }
         Set<Integer> nodes = m_relatedAlarms.stream().map(OnmsAlarm::getNode).filter(Objects::nonNull).map(OnmsNode::getId).collect(Collectors.toSet());
         // count the Situtation's node if it is different
@@ -1204,8 +1204,8 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         return nodes.size();
     }
 
-    // Transient bean property. retuurns True if this OnmsAlarm exists as a relatedAlarm in the alarm_situations table.
-    @Formula("(select cast(count(1) as bit) from alarm_situations where related_alarm_id = 'id')))")
+    // Transient bean property. returns True if this OnmsAlarm exists as a relatedAlarm in the alarm_situations table.
+    @Formula("(select cast(count(1) as bit) from alarm_situations where related_alarm_id = alarmid)")
     @Transient
     @XmlTransient
     private boolean inSituation;
