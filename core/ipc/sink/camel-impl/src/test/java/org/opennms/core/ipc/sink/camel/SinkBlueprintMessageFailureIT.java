@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.sink.camel;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
@@ -125,8 +127,11 @@ public class SinkBlueprintMessageFailureIT extends CamelBlueprintTest {
         };
         consumerManager.registerConsumer(consumer);
 
+        Thread.sleep(500);
+
         // Fetch the remote dispatcher from the blueprint context
         MessageDispatcherFactory remoteMessageDispatcherFactory = context.getRegistry().lookupByNameAndType("camelRemoteMessageDispatcherFactory", MessageDispatcherFactory.class);
+        assertNotNull(remoteMessageDispatcherFactory);
         SyncDispatcher<Heartbeat> dispatcher = remoteMessageDispatcherFactory.createSyncDispatcher(HeartbeatModule.INSTANCE);
 
         dispatcher.send(new Heartbeat());
