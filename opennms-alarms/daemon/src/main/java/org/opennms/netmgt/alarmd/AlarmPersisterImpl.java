@@ -135,9 +135,12 @@ public class AlarmPersisterImpl implements AlarmPersister {
             LOG.debug("addOrReduceEventAsAlarm: reductionKey:{}, instantiating new alarm", reductionKey);
             
             if (alarm != null) {
-                LOG.debug("addOrReduceEventAsAlarm: \"archiving\" cleared Alarm for problem: {}; A new Alarm will be instantiated to manage problem.", reductionKey);
-
-                alarm.archive();
+                LOG.debug("addOrReduceEventAsAlarm: altering reductionKey of currently cleared Alarm for problem: {}; A new Alarm will be instantiated to manage problem.", reductionKey);
+                
+                String uniqueReductionKey = alarm.getReductionKey() + ":ID: {}" + alarm.getId().toString();
+                LOG.debug("addOrReduceEventAsAlarm: created unique key for current Alarm: {}", uniqueReductionKey);
+                
+                alarm.setReductionKey(uniqueReductionKey);
                 m_alarmDao.save(alarm);
                 m_alarmDao.flush();
                 alarm = null;

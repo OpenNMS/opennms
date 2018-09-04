@@ -80,8 +80,6 @@ import org.springframework.core.style.ToStringCreator;
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsAlarm implements Acknowledgeable, Serializable {
-    private static final String ARCHIVED = "Archived";
-
     private static final long serialVersionUID = 7275548439687562161L;
     
     /** Constant <code>PROBLEM_TYPE=1</code> */
@@ -1112,27 +1110,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         m_severity = OnmsSeverity.escalate(m_severity);
 //        m_alarmAckUser = ackUser;
 //        m_alarmAckTime = Calendar.getInstance().getTime();
-    }
-
-    /**
-     * This marks an alarm as archived and prevents it from being used again in during reduction.
-     */
-    public void archive() {
-        m_qosAlarmState = ARCHIVED;
-        m_severity = OnmsSeverity.CLEARED;
-        m_reductionKey = getReductionKey() + ":ID:"+ getId();
-    }
-    
-    // Alarms that are archived
-    @Transient
-    @XmlTransient
-    public boolean isArchived() {
-        if (m_qosAlarmState == null || m_qosAlarmState != ARCHIVED) {
-            return false;
-        }
-        else {
-            return true;
-        }
     }
 
     /**
