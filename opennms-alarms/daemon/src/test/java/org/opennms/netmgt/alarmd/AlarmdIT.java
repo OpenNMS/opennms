@@ -28,7 +28,11 @@
 
 package org.opennms.netmgt.alarmd;
 
+import static com.jayway.awaitility.Awaitility.await;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
@@ -44,8 +48,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 
+import org.hamcrest.beans.HasPropertyWithValue;
+import org.hamcrest.core.Every;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,6 +66,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -161,6 +169,9 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
 
     @Autowired
     private ServiceRegistry m_registry;
+
+    @Autowired
+    private AlarmDao m_alarmDao;
 
     private MockDatabase m_database;
 
@@ -599,6 +610,52 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         assertNull(newAckUser);
         assertNull(newAckTime);
         
+    }
+
+    @Test
+    public void testArchiveAlarm() throws Exception {
+        // Enable the archiving functionality
+        AlarmPersisterImpl persisterImpl = (AlarmPersisterImpl)m_alarmd.getPersister();
+        persisterImpl.setCreateNewAlarmIfClearedAlarmExists(true);
+
+        final MockNode node = m_mockNetwork.getNode(1);
+
+        // There should be no alarms in the alarms table
+        assertEmptyAlarmTable();
+
+        //this should be the first occurrence of this alarm
+        //there should be 1 alarm now
+        sendNodeDownEvent("%nodeid%", node);
+
+        // Wait until we've create the node down alarm
+        await().atMost(10, SECONDS).until(getNumAlarmsCallable(), equalTo(1));
+
+        // Clear the existing alarm(s)
+        m_alarmDao.findAll().forEach(alarm -> {
+            alarm.setSeverity(OnmsSeverity.CLEARED);
+            m_alarmDao.update(alarm);
+            // Should not be archive
+            assertThat(alarm.isArchived(), equalTo(false));
+        });
+        m_alarmDao.flush();
+
+        // Trigger the alarm again
+        sendNodeDownEvent("%nodeid%", node);
+
+        // We should have two alarms now
+        await().atMost(10, SECONDS).until(getNumAlarmsCallable(), equalTo(2));
+
+        // One alarm should be cleared, and archived
+        assertThat(m_alarmDao.findAll().stream().filter(a -> a.isArchived()
+                && OnmsSeverity.CLEARED.equals(a.getSeverity())).count(), equalTo(1L));
+
+        // The other should not be cleared, and not be archived
+        assertThat(m_alarmDao.findAll().stream().filter(a -> !a.isArchived()
+                && !OnmsSeverity.CLEARED.equals(a.getSeverity())).count(), equalTo(1L));
+    }
+
+    private Callable<Integer> getNumAlarmsCallable() {
+        return () -> m_alarmDao.countAll();
     }
 
     //Supporting method for test

@@ -28,14 +28,23 @@
 
 package org.opennms.netmgt.dao;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -54,6 +63,7 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
@@ -381,5 +391,40 @@ public class AlarmDaoIT implements InitializingBean {
 		assertEquals(alarm.getId(), alarms.get(0).getId());
 		assertEquals(event.getEventTime(), alarms.get(0).getFirstEventTime());
 		assertEquals(event.getEventUei(), alarms.get(0).getUei());
+	}
+
+	@Test
+	@Transactional
+	public void testAlarmDetails() {
+		// Create some alarm without any details
+		OnmsNode node = m_nodeDao.findAll().iterator().next();
+		OnmsAlarm alarm = new OnmsAlarm();
+		alarm.setNode(node);
+		alarm.setUei(EventConstants.NODE_DOWN_EVENT_UEI);
+		alarm.setSeverityId(OnmsSeverity.CLEARED.getId());
+		alarm.setCounter(1);
+		alarm.setDistPoller(m_distPollerDao.whoami());
+		m_alarmDao.save(alarm);
+
+		// Retrieve it from the database and verify that there are no details
+		OnmsAlarm alarmFromDb = m_alarmDao.get(alarm.getId());
+		if (alarmFromDb.getDetails() == null) {
+			alarmFromDb.setDetails(new HashMap<>());
+		}
+		assertThat(alarmFromDb.getDetails().entrySet(), empty());
+
+		// Now add some properties
+		alarmFromDb.getDetails().put("k1", "v1");
+		alarmFromDb.getDetails().put("k2", "v2");
+		alarmFromDb.getDetails().put("k3", null);
+		m_alarmDao.update(alarmFromDb);
+		m_alarmDao.flush();
+
+		// Retrieve it back from the database and verify the properties
+		alarmFromDb = m_alarmDao.get(alarm.getId());
+		assertThat(alarmFromDb.getDetails().entrySet(), hasSize(3));
+		assertThat(alarmFromDb.getDetails().get("k1"), equalTo("v1"));
+		assertThat(alarmFromDb.getDetails().get("k2"), equalTo("v2"));
+		assertThat(alarmFromDb.getDetails().get("k3"), nullValue());
 	}
 }

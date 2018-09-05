@@ -88,6 +88,8 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     /** Constant <code>PROBLEM_WITHOUT_RESOLUTION_TYPE=3</code> */
     public static final int PROBLEM_WITHOUT_RESOLUTION_TYPE = 3;
 
+    public static final String ARCHIVED = "Archived";
+
     /** identifier field */
     private Integer m_id;
 
@@ -1016,7 +1018,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     @XmlTransient
     @ElementCollection
     @JoinTable(name="alarm_attributes", joinColumns = @JoinColumn(name="alarmId"))
-    @MapKeyColumn(name="attribute")
+    @MapKeyColumn(name="attributename")
     @Column(name="attributeValue", nullable=false)
     public Map<String, String> getDetails() {
         return m_details;
@@ -1101,6 +1103,22 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         m_severity = OnmsSeverity.escalate(m_severity);
 //        m_alarmAckUser = ackUser;
 //        m_alarmAckTime = Calendar.getInstance().getTime();
+    }
+
+    /**
+     * This marks an alarm as archived and prevents it from being used again in during reduction.
+     */
+    public void archive() {
+        m_qosAlarmState = ARCHIVED;
+        m_severity = OnmsSeverity.CLEARED;
+        m_reductionKey = getReductionKey() + ":ID:"+ getId();
+    }
+
+    // Alarms that are archived
+    @Transient
+    @XmlTransient
+    public boolean isArchived() {
+        return ARCHIVED.equals(m_qosAlarmState);
     }
 
     /**
