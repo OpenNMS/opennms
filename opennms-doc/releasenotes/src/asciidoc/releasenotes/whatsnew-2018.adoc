@@ -1,0 +1,150 @@
+[releasenotes-2018]
+=== OpenNMS Meridian 2018
+
+==== System Requirements
+
+* *Java 8*: OpenNMS Meridian 2018 requires Java 8 as the runtime environment.
+  To run Meridian 2018, we recommend the most recent version of Oracle JDK 8 for your platform.
+* *PostgreSQL 9*: Meridian 2018 requires PostgreSQL 9.x, version 9.2 or higher.
+
+[releasenotes-whatsnew-2018]
+==== What's New in Meridian 2018
+
+The biggest addition in Meridian 2018 is official support for link:https://meridian.opennms.com/docs/2018/latest/guide-install/guide-install.html#gi-minion[the Minion].
+Minion is an agent-like tool for remote monitoring isolated networks as if OpenNMS could reach them locally.
+
+On top of that, there have been many smaller improvements and enhancements since Meridian 2017.
+
+Meridian 2018 roughly matches the feature set available in Horizon 21 and parts of Horizon 22.
+
+===== Important Upgrade Notes
+
+* *org.opennms.newts.nan_on_counter_wrap*: If you are using Newts, returning NaN when a counter-wrap is encountered now defaults to true.
+  If you relied on the old behavior, you can change it back by setting `org.opennms.newts.nan_on_counter_wrap=false` in a file in `opennms.properties.d`.
+* Event parameters have been moved to their own table, rather than being embedded (preformatted) in the `events` table.
+  If you have a large number of events and/or event parameters in your database, the conversion while running `install` may take as long as an hour or even more.
+  It is recommended that you archive and delete old events you do not need anymore before upgrading.
+
+===== Breaking Changes
+
+* link:https://issues.opennms.org/browse/NMS-9303[NMS-9303]: Deprecated Capsd and Linkd event definitions are removed.
+  Otherwise unused event definitions are also cleaned up and removed from the code and configurations.
+  For a detailed list of all removed events see link:https://issues.opennms.org/browse/NMS-9303[NMS-9303].
+* *Elasticsearch 1 API*: The old Elasticsearch API has been removed in favor of the Elasticsearch ReST plugin, which should support most Elasticsearch API versions.
+  Instructions on configuring the Elasticsearch ReST plugin are available in link:http://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#_elasticsearch_rest_plugin[the Administrators Guide].
+* Property format change of `opennms.alarmTroubleTicketLinkTemplate`:
+  Originally the `opennms.alarmTroubleTicketLinkTemplate` defined in `$OPENNMS_HOME/etc/opennms.properties` requires the full `<a href="...">${id}</a>` link to be configured.
+  This is changed to the ticketer system url, e.g. `https://issues.opennms.org/browse/${id}` instead of `<a href="https://issues.opennms.org/browse/${id}">${id}</a>`.
+  If the `opennms.alarmTroubleTicketEnabled` is `true` then the `opennms.alarmTroubleTicketLinkTemplate` must be updated as well in order to not break the link to an external ticketing system on the Alarm Details Page.
+* Event parameters:
+  There are a few side-effects of the event parameter changes.
+  ** When you view or retrieve an alarm it will always have the parameters of the newest event associated with it.
+  ** Vacuumd no longer honors the `add-all-parms` attribute on an `action-event`.
+* Changes to `TCPAddress` and `UDPAddress` format in `eventd-configuration.xml`:
+  When Eventd was converted to use Camel under the covers, the format for listening on all interfaces changed from a wildcard (`*`) to `0.0.0.0`.
+  Note that despite looking like an IPv4 format, the JVM interprets `0.0.0.0` as listening on _all_ interfaces, IPv4 and IPv6.
+
+===== New Features
+
+* *Minion*: OpenNMS Meridian now supports running Minions.
+* *IBM Tivoli Event Integration Facility*: Support has been added to bridge EIF events into OpenNMS Horizon.
+  link:https://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#ga-events-sources-eif[(more details)]
+* *Asset Topology Provider*: The Asset Topology Provider generates a GraphML topology based on node metadata including asset fields.
+  link:http://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#_asset_topology_provider[(more details)].
+* *Alarm Sounds*: The web UI can now optionally flash and play an alert sound when alarms are created and optionally updated.
+  link:http://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#ga-alarm-sounds[(more details)].
+* *ReST Updates*: A new experimental ReST API (`/opennms/api/v2`) has been enabled which supports https://commons.apache.org/proper/commons-jexl/[JEXL].
+* The topology UI now supports link:http://docs.opennms.org/opennms/releases/latest/guide-development/guide-development.html#gd-topology-graphml-vertex-status-provider[scriptable vertex status].
+* *Alarm Northbounders*: There are link:https://issues.opennms.org/browse/NMS-9513[new alarm northbounders] for running arbitrary BSF scripts or forwarding to Drools.
+* *Web UI*: It is now possible to link:https://issues.opennms.org/browse/NMS-10072[customize the date format] used in the UI.
+  You can configure it by overriding the `org.opennms.ui.datettimeformat` property in `opennms.properties`.
+* *Hawtio*: Hawtio is now included as an optional webapp package (`opennms-webapp-hawtio`) for convenience.
+* *IFTTT*: Support has been added for triggering IFTTT events based on alarms.
+
+===== Events
+
+New or updated trap definitions have been added for the following classes of devices:
+
+* IBM EIF
+* IETF DLSW
+* IETF DOCSIS
+* Other IETF traps
+
+===== Other Improvements
+
+* The Karaf OSGi container has been upgraded from 2.x to 4.1.5.
+* The IPLIKE C and Pl/pgsql versions have been cleaned up and normalized to work the same between implementations.
+* Many ActiveMQ/Camel/Kafka/etc. RPC-related APIs have been cleaned up and improved.
+* Much of the data collection infrastructure has been updated and cleaned up as part of adding and improving Minion support.
+* Asset addresses are now resolved to coordinates during provisioning, rather than at runtime.
+* A number of improvements have been made to RADIUS support.
+* It is now possible to reload Drools configuration without restarting OpenNMS.
+* Many improvements were made to Enlinkd, especially in the bridge discovery code.
+* Drools has been updated to 7.x.
+  It should be backwards compatible with existing 6.x-based Drools configurations.
+* Many other small enhancements and fixes for the topology UI.
+
+[releasenotes-changelog-Meridian-2018.1.0]
+
+==== Release Meridian-2018.1.0
+
+Release 2018.1.0 is the first release in the Meridian 2018 series.
+
+The codename for 2018.1.0 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_0[Calm]_.
+
+===== Bug
+
+* maxRetCode in HttpDetector does not work (Issue http://issues.opennms.org/browse/NMS-3974[NMS-3974])
+* VMWare-Center-Monitoring make for every virtual machine a login/logout  (Issue http://issues.opennms.org/browse/NMS-8204[NMS-8204])
+* bridge topology is wrong on nodelink.jsp (Issue http://issues.opennms.org/browse/NMS-8295[NMS-8295])
+* The ReST API used to return XMLs with namespace, and now it doesn't (Issue http://issues.opennms.org/browse/NMS-8524[NMS-8524])
+* Content-Type tag wrong in emailed reports (Issue http://issues.opennms.org/browse/NMS-9027[NMS-9027])
+* The upgrade task for magic-users.properties fails because of the read-only attribute (Issue http://issues.opennms.org/browse/NMS-9267[NMS-9267])
+* Topology on Map is not properly displayed (Issue http://issues.opennms.org/browse/NMS-9288[NMS-9288])
+* Exceptions in Bridge Discovery (Issue http://issues.opennms.org/browse/NMS-9557[NMS-9557])
+* Config-tester not validating varbind matching in event files  (Issue http://issues.opennms.org/browse/NMS-9821[NMS-9821])
+* Wrong initial message displayed on AngularJS based tables. (Issue http://issues.opennms.org/browse/NMS-9932[NMS-9932])
+* Home Page Map does not display node details (Issue http://issues.opennms.org/browse/NMS-10008[NMS-10008])
+* Asset record is not being updated with user name that performed the update (Issue http://issues.opennms.org/browse/NMS-10087[NMS-10087])
+* wrong statement in event description for serviceDeleted (Issue http://issues.opennms.org/browse/NMS-10148[NMS-10148])
+* Radius Login Problem (Issue http://issues.opennms.org/browse/NMS-10212[NMS-10212])
+* Trapd does not validate config against XSD (Issue http://issues.opennms.org/browse/NMS-10242[NMS-10242])
+* Drools correlation engine do not always respond to targeted reloadDaemonConfig events (Issue http://issues.opennms.org/browse/NMS-10257[NMS-10257])
+* newSuspect events do not get processed when they reference a missing system id (aka distpoller) (Issue http://issues.opennms.org/browse/NMS-10261[NMS-10261])
+* Change in JMS NBI Date Format (Issue http://issues.opennms.org/browse/NMS-10282[NMS-10282])
+* NoClassDefFoundError for net/sf/json/JSONSerialize with the JSON collector on Minion (Issue http://issues.opennms.org/browse/NMS-10286[NMS-10286])
+* DefaultProvisionService logs noisily for monitored service having state "N" (Issue http://issues.opennms.org/browse/NMS-10291[NMS-10291])
+* Doughnut chart shows certain closed outages as "current" (Issue http://issues.opennms.org/browse/NMS-10293[NMS-10293])
+* KSC Report Changes Destroys Existing Reports (Issue http://issues.opennms.org/browse/NMS-10309[NMS-10309])
+* Minions can't be deleted from minion menu (Issue http://issues.opennms.org/browse/NMS-10321[NMS-10321])
+
+===== Enhancement
+
+* Remove Telemetryd from the configuration files to avoid confusions (Issue http://issues.opennms.org/browse/LTS-223[LTS-223])
+* Release notes in Help / Support links to 2015 (Issue http://issues.opennms.org/browse/LTS-214[LTS-214])
+* UI stack trace is truncated (Issue http://issues.opennms.org/browse/NMS-7555[NMS-7555])
+* Add Ironport AsyncOS Mail Gateway Events (Issue http://issues.opennms.org/browse/NMS-9794[NMS-9794])
+* Make hawtio available for OpenNMS as installable RPM/DEB (Issue http://issues.opennms.org/browse/NMS-9858[NMS-9858])
+* Upgrade Drools to 7.x (Issue http://issues.opennms.org/browse/NMS-9923[NMS-9923])
+* Subsume "Event Configuration How-To" from wiki into admin guide (Issue http://issues.opennms.org/browse/NMS-9926[NMS-9926])
+* Can't receive SNMP v3 Trap (Issue http://issues.opennms.org/browse/NMS-10009[NMS-10009])
+* Enhance AlarmPersisterImpl to support updating acknowledgment values on reduction (Issue http://issues.opennms.org/browse/NMS-10067[NMS-10067])
+* Normalize date formats across the WebUI (Issue http://issues.opennms.org/browse/NMS-10072[NMS-10072])
+* Support customizing the default time zone when parsing dates in syslog messages (Issue http://issues.opennms.org/browse/NMS-10164[NMS-10164])
+* Consolidate Kafka client library versions (Issue http://issues.opennms.org/browse/NMS-10165[NMS-10165])
+* Link to privacy policy from Data Choices UI elements (Issue http://issues.opennms.org/browse/NMS-10169[NMS-10169])
+* Karaf shell command to enumerate nodes that match a given filter  (Issue http://issues.opennms.org/browse/NMS-10172[NMS-10172])
+* Optionally persist the results when calling collectors:collect (Issue http://issues.opennms.org/browse/NMS-10173[NMS-10173])
+* Two Port Bridge - Topology mismatch  (Issue http://issues.opennms.org/browse/NMS-10225[NMS-10225])
+* use user defined time zone for date formatting (Issue http://issues.opennms.org/browse/NMS-10228[NMS-10228])
+* render date for Javascript with moment.js (Issue http://issues.opennms.org/browse/NMS-10233[NMS-10233])
+* plpgsql IPLIKE does not behave the same as the C version (Issue http://issues.opennms.org/browse/NMS-10238[NMS-10238])
+* apply centralized datetime rendering to freemarker template(s) (Issue http://issues.opennms.org/browse/NMS-10239[NMS-10239])
+* apply custom tag to ncs-alarms.jsp (Issue http://issues.opennms.org/browse/NMS-10243[NMS-10243])
+* Update log4j2.xml with kafka logging (Issue http://issues.opennms.org/browse/NMS-10269[NMS-10269])
+* Syslog messages should default to using the time at which they were received (Issue http://issues.opennms.org/browse/NMS-10271[NMS-10271])
+* Syslog messages should default to being associated with the hosts from which they were received (Issue http://issues.opennms.org/browse/NMS-10272[NMS-10272])
+* implement minion "status" field (Issue http://issues.opennms.org/browse/NMS-10295[NMS-10295])
+* expose datetimeformat in InfoService REST Endpoint (Issue http://issues.opennms.org/browse/NMS-10301[NMS-10301])
+* Set the default resource graph time range to "Last Day" (Issue http://issues.opennms.org/browse/NMS-10324[NMS-10324])
+
