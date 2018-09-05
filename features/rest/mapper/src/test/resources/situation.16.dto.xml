@@ -51,5 +51,4 @@
       <logMessage>logit</logMessage>
    </relatedAlarms>
    <affectedNodeCount>2</affectedNodeCount>
-   <inSituation>false</inSituation>
 </alarm>

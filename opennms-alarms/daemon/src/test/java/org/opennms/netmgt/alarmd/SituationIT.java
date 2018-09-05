@@ -156,10 +156,7 @@ public class SituationIT {
 
         OnmsAlarm retrieved2 = m_alarmDao.findByReductionKey("situation/reduction/key");
         assertThat(retrieved2.getRelatedAlarms().size(), is(3));
-        // Assert alarms are 'inSituations;
-
         assertThat(retrieved2.getAffectedNodeCount(), is(1));
-        assertThat(retrieved2.isInSituation(), is(false));
    }
 
     @Test

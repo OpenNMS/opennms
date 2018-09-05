@@ -54,7 +54,6 @@
 	"x733ProbableCause": 0,
 	"ifIndex": null,
 	"affectedNodeCount": 1,
-	"inSituation": false,
 	"troubleTicket": "NMS-9587",
 	"troubleTicketState": 0,
 	"troubleTicketLink": "https://issues.opennms.org/browse/NMS-9587"

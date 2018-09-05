@@ -67,7 +67,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
 import org.springframework.core.style.ToStringCreator;
@@ -1202,18 +1201,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
             nodes.add(m_node.getId());
         }
         return nodes.size();
-    }
-
-    // Transient bean property. returns True if this OnmsAlarm exists as a relatedAlarm in the alarm_situations table.
-    @Formula("(select cast(count(1) as bit) from alarm_situations where related_alarm_id = alarmid)")
-    @Transient
-    @XmlTransient
-    private boolean inSituation;
-
-    @Transient
-    @XmlTransient
-    public boolean isInSituation() {
-        return inSituation;
     }
 
     @Transient

@@ -174,9 +174,6 @@ public class AlarmDTO {
     @XmlElement(name="affectedNodeCount")
     private Integer affectedNodeCount;
 
-    @XmlElement(name="inSituation")
-    private Boolean inSituation;
-
     public Integer getId() {
         return id;
     }
@@ -513,14 +510,6 @@ public class AlarmDTO {
         this.affectedNodeCount = affectedNodeCount;
     }
 
-    public Boolean isInSituation() {
-        return inSituation;
-    }
-
-    public void setInSituation(Boolean inSituation) {
-        this.inSituation = inSituation;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -567,8 +556,7 @@ public class AlarmDTO {
                 Objects.equals(reductionKeyMemo, alarmDTO.reductionKeyMemo) &&
                 Objects.equals(stickyMemo, alarmDTO.stickyMemo) &&
                 Objects.equals(relatedAlarms, alarmDTO.relatedAlarms) &&
-                Objects.equals(affectedNodeCount, alarmDTO.affectedNodeCount) &&
-                Objects.equals(inSituation, alarmDTO.inSituation);
+                Objects.equals(affectedNodeCount, alarmDTO.affectedNodeCount);
     }
 
     @Override
@@ -578,6 +566,6 @@ public class AlarmDTO {
                             troubleTicketLink, mouseOverText, suppressedUntil, suppressedBy, suppressedTime, ackUser, ackTime,
                             clearKey, lastEvent, parameters, lastEventTime, applicationDN, managedObjectInstance, managedObjectType,
                             ossPrimaryKey, x733AlarmType, x733ProbableCause, qosAlarmState, firstAutomationTime, lastAutomationTime,
-                            ifIndex, reductionKeyMemo, stickyMemo, relatedAlarms, affectedNodeCount, inSituation);
+                            ifIndex, reductionKeyMemo, stickyMemo, relatedAlarms, affectedNodeCount);
     }
 }
