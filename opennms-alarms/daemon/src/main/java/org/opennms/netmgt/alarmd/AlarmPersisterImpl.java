@@ -68,7 +68,6 @@ import com.google.common.util.concurrent.Striped;
  */
 public class AlarmPersisterImpl implements AlarmPersister {
     private static final Logger LOG = LoggerFactory.getLogger(AlarmPersisterImpl.class);
-    private static boolean NEW_IF_CLEARED = Boolean.getBoolean("opennms.alarmd.newIfClearedAlarmExists");
 
     public static final String RELATED_REDUCTION_KEY_PREFIX = "related-reductionKey";
 
@@ -147,7 +146,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
                 m_alarmDao.flush();
             }
 
-            alarm = createNewAlarm(e, event);
+            alarm = createNewAlarm(persistedEvent, event);
 
             // Trigger extensions, allowing them to mangle the alarm
             try {
