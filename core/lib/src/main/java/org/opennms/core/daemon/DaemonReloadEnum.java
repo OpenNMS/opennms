@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.daemon;
+package org.opennms.core.daemon;
 
 public enum DaemonReloadEnum {
 

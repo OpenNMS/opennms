@@ -38,7 +38,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.daemon</artifactId>
+      <artifactId>org.opennms.core.lib</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
