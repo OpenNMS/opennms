@@ -981,6 +981,10 @@
     </feature>
 
     <feature name="opennms-xml-collector" version="${project.version}" description="OpenNMS :: Protocols :: XML Collector">
+      <bundle>wrap:mvn:com.jcraft/jsch/0.1.51</bundle>
+      <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.oro/2.0.8_6</bundle>
+      <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.ezmorph/1.0.6_1</bundle>
+      <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.json-lib/${jsonlibBundleVersion}</bundle>
       <feature>commons-io</feature>
       <feature>commons-jxpath</feature>
       <feature>commons-lang</feature>
