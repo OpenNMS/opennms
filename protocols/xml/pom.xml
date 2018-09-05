@@ -24,7 +24,6 @@
             <!-- Don't export any packages, expose services only. -->
             <Export-Package></Export-Package>
             <Import-Package>
-              net.sf.json;resolution:=optional,
               org.eclipse.persistence.internal.jaxb;resolution:=optional,
               org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
               org.opennms.core.network,
