@@ -60,6 +60,7 @@
                                 <feature>sentinel-coordination-common</feature>
                                 <feature>sentinel-coordination-zookeeper</feature>
                                 <feature>sentinel-coordination-shell</feature>
+                                <feature>sentinel-newts</feature>
 
                                 <!-- Other features -->
                                 <feature>hawtio-offline</feature>

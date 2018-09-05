@@ -68,6 +68,7 @@ public class AdapterConfigurationParser {
         final Set<String> numbers = adapterConfigurations.keySet()
                 .stream()
                 .map(key -> key.split("\\.")[0]) // We are only interested in the number indicator, e.g. 1, 2, etc.
+                .sorted()
                 .collect(Collectors.toSet());
         final List<Adapter> adapters = new ArrayList<>();
         for (String eachAdapterPrefix : numbers) {

@@ -1293,4 +1293,50 @@
         <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.netflow/${project.version}</bundle>
     </feature>
 
+    <feature name="cassandra" description="Cassandra" version="3.5.0">
+        <bundle>mvn:io.netty/netty-common/4.1.9.Final</bundle>
+        <bundle>mvn:io.netty/netty-buffer/4.1.9.Final</bundle>
+        <bundle>mvn:io.netty/netty-resolver/4.1.9.Final</bundle>
+        <bundle>mvn:io.netty/netty-transport/4.1.9.Final</bundle>
+        <bundle>mvn:io.netty/netty-codec/4.1.9.Final</bundle>
+        <bundle>mvn:io.netty/netty-handler/4.1.9.Final</bundle>
+
+        <bundle>wrap:mvn:com.github.jnr/jffi/1.2.16</bundle>
+        <bundle>mvn:org.ow2.asm/asm/5.0.3</bundle>
+        <bundle>mvn:org.ow2.asm/asm-commons/5.0.3</bundle>
+        <bundle>mvn:org.ow2.asm/asm-analysis/5.0.3</bundle>
+        <bundle>mvn:org.ow2.asm/asm-tree/5.0.3</bundle>
+        <bundle>mvn:org.ow2.asm/asm-util/5.0.3</bundle>
+        <bundle>wrap:mvn:com.github.jnr/jnr-x86asm/1.0.2</bundle>
+        <bundle>mvn:com.github.jnr/jnr-constants/0.9.9</bundle>
+        <bundle>mvn:com.github.jnr/jnr-ffi/2.1.7</bundle>
+        <bundle>mvn:com.github.jnr/jnr-posix/3.0.44</bundle>
+
+        <bundle>mvn:io.dropwizard.metrics/metrics-core/3.2.0</bundle>
+        <bundle>mvn:com.datastax.cassandra/cassandra-driver-core/3.5.0</bundle>
+    </feature>
+
+    <feature name="opennms-newts" description="OpenNMS :: Newts" version="${newtsVersion}">
+        <feature>cassandra</feature>
+        <feature>guava</feature>
+
+        <!-- Newts Cassandra -->
+        <bundle dependency="true">mvn:org.apache.commons/commons-jexl/2.1.1</bundle>
+        <bundle dependency="true">wrap:mvn:javax.inject/javax.inject/1</bundle>
+        <bundle dependency="true">wrap:mvn:aopalliance/aopalliance/1.0</bundle>
+        <bundle dependency="true">mvn:com.google.inject/guice/4.0</bundle>
+        <bundle>mvn:org.opennms.newts/newts-api/${newtsVersion}</bundle>
+        <bundle>mvn:org.opennms.newts/newts-aggregate/${newtsVersion}</bundle>
+        <bundle>mvn:org.opennms.newts/newts-cassandra-common/${newtsVersion}</bundle>
+        <bundle>mvn:org.opennms.newts/newts-cassandra/${newtsVersion}</bundle>
+
+        <!-- Newts Cassandra Search -->
+        <bundle dependency="true">wrap:mvn:org.apache.lucene/lucene-core/4.9.0</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.lucene/lucene-analyzers-common/4.9.0</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.lucene/lucene-queryparser/4.9.0</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.lucene/lucene-queries/4.9.0</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.lucene/lucene-sandbox/4.9.0</bundle>
+        <bundle>mvn:org.opennms.newts/newts-cassandra-search/${newtsVersion}</bundle>
+    </feature>
+
 </features>
