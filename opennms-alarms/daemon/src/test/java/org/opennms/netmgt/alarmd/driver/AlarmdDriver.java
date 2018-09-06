@@ -45,6 +45,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.alarmd.AlarmPersisterImpl;
 import org.opennms.netmgt.alarmd.Alarmd;
 import org.opennms.netmgt.alarmd.drools.DroolsAlarmContext;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -103,6 +104,9 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
 
     @Autowired
     private DroolsAlarmContext m_droolsAlarmContext;
+    
+    @Autowired
+    private AlarmPersisterImpl m_alarmPersister;
 
     @Override
     public void setTemporaryDatabase(final MockDatabase database) {
@@ -137,6 +141,11 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
         // Drive the ticks ourselves
         m_droolsAlarmContext.setUseManualTick(true);
 
+        // Set the behavior        
+        if (scenario.getLegacyAlarmBehavior()) {
+            m_alarmPersister.setLegacyAlarmState(true);
+        }
+        
         // Start alarmd
         m_alarmd.start();
     }
