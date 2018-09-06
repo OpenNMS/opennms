@@ -35,10 +35,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -214,6 +216,9 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private void updateAlarm(String reductionKey, OnmsAlarm alarm) {
         // Always push null records, no good way to perform filtering on these
         if (alarm == null) {
+            // The alarm has been deleted so we shouldn't track it in the map of outstanding alarms any longer
+            outstandingAlarms.remove(reductionKey);
+            
             // The alarm was deleted, push a null record to the reduction key
             sendRecord(() -> {
                 LOG.debug("Deleting alarm with reduction key: {}", reductionKey);
@@ -319,6 +324,13 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             // Ignore
             return;
         }
+        
+        // Remove any outstanding alarms that are not present in the snapshot
+        Set<String> reductionKeysInSnapshot = alarms.stream()
+                .map(OnmsAlarm::getReductionKey)
+                .collect(Collectors.toSet());
+        outstandingAlarms.keySet().removeIf(reductionKey -> !reductionKeysInSnapshot.contains(reductionKey));
+
         dataSync.handleAlarmSnapshot(alarms);
     }
 
