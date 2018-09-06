@@ -22,8 +22,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz ASIIP27780 Event: faultboardStatusFalse trap received
             faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/evertz/asiip27780/faultboardStatusTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultboardStatusTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -74,8 +74,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz ASIIP27780 Event: faultasiInputPresentAsi1False trap received
             faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputPresentAsi1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputPresentAsi1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -126,8 +126,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz ASIIP27780 Event: faultasiInputPresentAsi2False trap received
             faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputPresentAsi2True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputPresentAsi2True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -178,8 +178,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz ASIIP27780 Event: faultasiInputSyncErrorAsi1False trap received
             faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputSyncErrorAsi1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputSyncErrorAsi1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -230,8 +230,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz ASIIP27780 Event: faultasiInputSyncErrorAsi2False trap received
             faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputSyncErrorAsi2True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputSyncErrorAsi2True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -282,8 +282,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz ASIIP27780 Event: faultasiInputContinuityErrorAsi1False trap
             received faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputContinuityErrorAsi1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputContinuityErrorAsi1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -334,8 +334,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz ASIIP27780 Event: faultasiInputContinuityErrorAsi2False trap
             received faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputContinuityErrorAsi2True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputContinuityErrorAsi2True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>

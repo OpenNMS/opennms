@@ -109,7 +109,7 @@
       <logmsg dest="logndisplay">&lt;p> A10 trap received Description=%parm[#1]% VirtualServer=%parm[#2]%
             Port=%parm[#3]% Type=%parm[#4]%&lt;/p></logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/A10/axVirtualServerPortDown:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/traps/A10/axVirtualServerPortDown:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -161,7 +161,7 @@
       <descr>Indicates that an SLB service has come up.</descr>
       <logmsg dest="logndisplay">&lt;p> A10 trap received Description=%parm[#1]% Server=%parm[#2]% Port=%parm[#3]%&lt;/p></logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/A10/axServiceDown:%parm[#2]%:%parm[#3]%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/traps/A10/axServiceDown:%parm[#2]%:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -215,7 +215,7 @@
       <logmsg dest="logndisplay">&lt;p> A10 trap received Description=%parm[#1]%
             Server=%parm[#2]%&lt;/p></logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/A10/axServerDown:%parm[#2]%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/A10/axServerDown:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>

@@ -19,7 +19,7 @@
             A wide spread outage of the service: %service% has been resolved.
         </logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/correlation/remote/wideSpreadOutage:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2" clear-key="uei.opennms.org/correlation/remote/wideSpreadOutage:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false"/>
    </event>
    <event>
       <uei>uei.opennms.org/correlation/serviceFlapping</uei>

@@ -190,7 +190,7 @@ c. Multiple interfaces are associated with this VRF, and the
 			mplsL3VpnVrfOperStatus=%parm[#2]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/ietf/mplsL3vpnStdMib/traps/mplsL3VpnVrfDown:%dpname%:%nodeid%:%interface%:%parm[name-#1]%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[name-#1]%" alarm-type="2" clear-key="uei.opennms.org/ietf/mplsL3vpnStdMib/traps/mplsL3VpnVrfDown:%dpname%:%nodeid%:%interface%:%parm[name-#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -504,7 +504,7 @@ mplsXCOperStatus objects MUST be the identical.&lt;/p>&lt;table>
 			mplsXCOperStatus=%parm[#2]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/ietf/mplsLsrStdMib/traps/mplsXCDown:%dpname%:%nodeid%:%parm[name-#1.14:]%:%parm[name-#2.14:]%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[name-#1.14:]%:%parm[name-#2.14:]%" alarm-type="2" clear-key="uei.opennms.org/ietf/mplsLsrStdMib/traps/mplsXCDown:%dpname%:%nodeid%:%parm[name-#1.14:]%:%parm[name-#2.14:]%" auto-clean="false"/>
    </event>
    <event>
       <mask>

@@ -34,7 +34,7 @@ object in this MIB has changed to 'operational(3)'.&lt;/p>&lt;table>
 			sysOperationalStatus=%parm[#1]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/pcube/traps/operationalStatusNotOperational:%dpname%:%nodeid%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/vendor/pcube/traps/operationalStatusNotOperational:%dpname%:%nodeid%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -206,7 +206,7 @@ MIB has changed to the 'off(2)' state
 			pchassisTempAlarm=%parm[#1]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/pcube/traps/chassisTempAlarmOnTrap:%dpname%:%nodeid%" auto-clean="true"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/vendor/pcube/traps/chassisTempAlarmOnTrap:%dpname%:%nodeid%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -417,7 +417,7 @@ object in this MIB has changed to 'up(2)'.&lt;/p>&lt;table>
 			rdrFormatterDestConnectionStatus=%parm[#2]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/pcube/traps/rdrConnectionDownTrap:%dpname%:%nodeid%:%parm[#1]%" auto-clean="true"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/pcube/traps/rdrConnectionDownTrap:%dpname%:%nodeid%:%parm[#1]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -673,7 +673,7 @@ in this MIB has changed to 'forwarding(3)'.&lt;/p>&lt;table>
 			linkOperMode=%parm[#1]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="linkMode:%dpname%:%nodeid%" auto-clean="true"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="linkMode:%dpname%:%nodeid%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -1040,7 +1040,7 @@ is up and working.&lt;/p>&lt;table>
 			pmoduleIndex=%parm[#1]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/pcube/traps/moduleSmConnectionDownTrap:%dpname%:%nodeid%:%parm[#1]%" auto-clean="true"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/pcube/traps/moduleSmConnectionDownTrap:%dpname%:%nodeid%:%parm[#1]%" auto-clean="true"/>
    </event>
    <event>
       <mask>

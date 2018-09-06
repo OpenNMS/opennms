@@ -19,7 +19,7 @@
             The disconnected remote poller %parm[locationMonitorId]% in location %parm[location]% has reconnected.
         </logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/remote/locationMonitorDisconnected:%parm[locationMonitorId]%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%parm[locationMonitorId]%" alarm-type="2" clear-key="uei.opennms.org/remote/locationMonitorDisconnected:%parm[locationMonitorId]%" auto-clean="false"/>
    </event>
    <event>
       <uei>uei.opennms.org/remote/locationMonitorRegistered</uei>

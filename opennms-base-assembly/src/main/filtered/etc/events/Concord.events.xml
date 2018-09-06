@@ -894,7 +894,7 @@ the corresponding alarm no longer exist.&lt;/p>&lt;table>
          <decode varbindvalue="4" varbinddecodedstring="major"/>
          <decode varbindvalue="5" varbinddecodedstring="critical"/>
       </varbindsdecode>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/Concord/traps/nhLiveAlarm:%nodeid%:%dpname%:%parm[#2]%:%parm[#24]%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#2]%:%parm[#24]%" alarm-type="2" clear-key="uei.opennms.org/vendor/Concord/traps/nhLiveAlarm:%nodeid%:%dpname%:%parm[#2]%:%parm[#24]%" auto-clean="false"/>
    </event>
    <event>
       <mask>

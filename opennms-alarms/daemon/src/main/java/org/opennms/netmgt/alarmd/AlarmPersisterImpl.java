@@ -73,6 +73,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     protected static final Integer NUM_STRIPE_LOCKS = Integer.getInteger("org.opennms.alarmd.stripe.locks", Alarmd.THREADS * 4);
     protected static boolean NEW_IF_CLEARED = Boolean.getBoolean("org.opennms.alarmd.newIfClearedAlarmExists");
+    protected static boolean LEGACY_ALARM_STATE = Boolean.getBoolean("org.opennms.alarmd.legacyAlarmState");
 
     @Autowired
     private AlarmDao m_alarmDao;
@@ -93,7 +94,9 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     private final Set<AlarmPersisterExtension> extensions = Sets.newConcurrentHashSet();
 
-    private boolean m_createNewAlarmIfClearedAlarmExists = NEW_IF_CLEARED;
+    private boolean m_createNewAlarmIfClearedAlarmExists = LEGACY_ALARM_STATE == true ? false : NEW_IF_CLEARED;
+    
+    private boolean m_legacyAlarmState = LEGACY_ALARM_STATE;
 
     @Override
     public OnmsAlarm persist(Event event) {
@@ -123,15 +126,23 @@ public class AlarmPersisterImpl implements AlarmPersister {
     }
 
     private OnmsAlarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
+        
         final OnmsEvent persistedEvent = m_eventDao.get(event.getDbid());
         if (persistedEvent == null) {
             throw new IllegalStateException("Event with id " + event.getDbid() + " was deleted before we could retrieve it and create an alarm.");
         }
 
         final String reductionKey = event.getAlarmData().getReductionKey();
-        LOG.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);           
+        LOG.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
         
-        OnmsAlarm alarm = m_alarmDao.findByReductionKey(reductionKey);
+        String key = reductionKey;
+        String clearKey = event.getAlarmData().getClearKey();
+        
+        if (!m_legacyAlarmState && clearKey != null && event.getAlarmData().getAlarmType() == 2) {
+            key = clearKey;
+        }
+
+        OnmsAlarm alarm = m_alarmDao.findByReductionKey(key);
 
         if (alarm == null || (m_createNewAlarmIfClearedAlarmExists && OnmsSeverity.CLEARED.equals(alarm.getSeverity()))) {
             if (LOG.isDebugEnabled()) {
@@ -463,5 +474,12 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     public void setCreateNewAlarmIfClearedAlarmExists(boolean createNewAlarmIfClearedAlarmExists) {
         m_createNewAlarmIfClearedAlarmExists = createNewAlarmIfClearedAlarmExists;
+    }
+    public boolean islegacyAlarmState() {
+        return m_legacyAlarmState;
+    }
+
+    public void setLegacyAlarmState(boolean legacyAlarmState) {
+        m_legacyAlarmState = legacyAlarmState;
     }
 }

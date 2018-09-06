@@ -39,7 +39,7 @@
       and has been resolved
     </logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/internal/ncs/componentImpacted:%parm[componentType]%:%parm[componentForeignSource]%:%parm[componentForeignId]%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%parm[componentType]%:%parm[componentForeignSource]%:%parm[componentForeignId]%" alarm-type="2" clear-key="uei.opennms.org/internal/ncs/componentImpacted:%parm[componentType]%:%parm[componentForeignSource]%:%parm[componentForeignId]%" auto-clean="false"/>
    </event>
    <event>
       <uei>uei.opennms.org/internal/ncs/componentAdded</uei>

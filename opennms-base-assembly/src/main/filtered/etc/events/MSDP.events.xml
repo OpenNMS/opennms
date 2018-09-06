@@ -27,7 +27,7 @@ FSM enters the ESTABLISHED state.&lt;/p>&lt;table>
 			msdpPeerFsmEstablishedTransitions=%parm[#1]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/ietf/msdpMib/traps/msdpBackwardTransition:%dpname%:%nodeid%:%interface%:%parm[name-#1.-4:]%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[name-#1.-4:]%" alarm-type="2" clear-key="uei.opennms.org/ietf/msdpMib/traps/msdpBackwardTransition:%dpname%:%nodeid%:%interface%:%parm[name-#1.-4:]%" auto-clean="false"/>
    </event>
    <event>
       <mask>

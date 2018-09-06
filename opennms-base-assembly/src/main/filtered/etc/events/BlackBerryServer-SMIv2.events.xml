@@ -25,7 +25,7 @@
 			besSRPConnectEvent trap received&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="1" reduction-key="uei.opennms.org/vendor/RIM/BES/besSRPDisconnectEvent:%nodeid%:%dpname%" auto-clean="true"/>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" clear-key="uei.opennms.org/vendor/RIM/BES/besSRPDisconnectEvent:%nodeid%:%dpname%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -154,7 +154,7 @@ back up.&lt;/p>
 			besMailServerUpEvent trap received&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="1" reduction-key="uei.opennms.org/vendor/RIM/BES/besMailServerDownEvent:%nodeid%:%dpname%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" clear-key="uei.opennms.org/vendor/RIM/BES/besMailServerDownEvent:%nodeid%:%dpname%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -213,7 +213,7 @@ as indicating that the connection is back up.&lt;/p>
 			besMDStoBESConnectionUpEvent trap received&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/RIM/BES/besMDStoBESConnectionEvent:%nodeid%:%dpname%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/besMDStoBESConnectionEvent:%nodeid%:%dpname%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -241,7 +241,7 @@ as indicating that the connection is back up.&lt;/p>
 			besMDSStartEvent trap received&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/RIM/BES/besMDSStopEvent:%nodeid%:%dpname%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/besMDSStopEvent:%nodeid%:%dpname%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -299,7 +299,7 @@ it as indicating that the MDS has started.&lt;/p>
 			besMDStoDBConnectionEvent trap received&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/RIM/BES/besMDStoDBDisconnectionEvent:%nodeid%:%dpname%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/besMDStoDBDisconnectionEvent:%nodeid%:%dpname%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -388,7 +388,7 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p>
 			besSRPConnectionEstablished trap received&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/RIM/BES/besSRPConnectionDropped:%nodeid%:%dpname%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/besSRPConnectionDropped:%nodeid%:%dpname%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -444,7 +444,7 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p>
 			besMailServerUp trap received&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/RIM/BES/besMailServerDown:%nodeid%:%dpname%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/besMailServerDown:%nodeid%:%dpname%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -500,7 +500,7 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p>
 			besMDStoBESConnectionEstablished trap received&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/RIM/BES/besMDStoBESConnectionDropped:%nodeid%:%dpname%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/besMDStoBESConnectionDropped:%nodeid%:%dpname%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -556,7 +556,7 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p>
 			mdsStarted trap received&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/RIM/BES/mdsStopped:%nodeid%:%dpname%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/mdsStopped:%nodeid%:%dpname%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -612,7 +612,7 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p>
 			mdsDBConnectionEstablished trap received&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/RIM/BES/mdsDBConnectionDropped:%nodeid%:%dpname%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/mdsDBConnectionDropped:%nodeid%:%dpname%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -668,7 +668,7 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p>
 			besMailAgentStarted trap received&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/RIM/BES/besMailAgentStopped:%nodeid%:%dpname%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/besMailAgentStopped:%nodeid%:%dpname%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -752,7 +752,7 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p>
 			dispSRPConnectionEstablished trap received&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/RIM/BES/dispSRPConnectionDropped:%nodeid%:%dpname%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/dispSRPConnectionDropped:%nodeid%:%dpname%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -808,7 +808,7 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p>
 			dispStarted trap received&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/RIM/BES/dispStopped:%nodeid%:%dpname%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/dispStopped:%nodeid%:%dpname%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -864,7 +864,7 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p>
 			dispDBConnectionEstablished trap received&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/RIM/BES/dispDBConnectionDropped:%nodeid%:%dpname%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/dispDBConnectionDropped:%nodeid%:%dpname%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -920,7 +920,7 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p>
 			routSRPConnectionEstablished trap received&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/RIM/BES/routSRPConnectionDropped:%nodeid%:%dpname%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/routSRPConnectionDropped:%nodeid%:%dpname%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -976,7 +976,7 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p>
 			routStarted trap received&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/RIM/BES/routStopped:%nodeid%:%dpname%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/routStopped:%nodeid%:%dpname%" auto-clean="false"/>
    </event>
    <event>
       <mask>

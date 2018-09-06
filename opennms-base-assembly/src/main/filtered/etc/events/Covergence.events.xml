@@ -13079,8 +13079,8 @@
 			sipServerEventServer=%parm[#2]% 
 			sipServerEventState=%parm[#3]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -13127,8 +13127,8 @@
 			sipServerEventServer=%parm[#2]% 
 			sipServerEventState=%parm[#3]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -14828,7 +14828,7 @@
 			webServiceAvailablityChangeNewState=%parm[#2]% 
 			webServiceAvailablityChangeOldState=%parm[#3]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/webServiceAvailablityChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/webServiceAvailablityChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendors/Covergence/CXC-MIB/webServiceAvailablityChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
    </event>
 </events>

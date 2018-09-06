@@ -63,7 +63,7 @@
             applied.&lt;/p>
         </logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/internal/reloadDaemonConfigFailed:%dpname%:%parm[daemonName]%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/internal/reloadDaemonConfigFailed:%dpname%:%parm[daemonName]%" auto-clean="false"/>
    </event>
    <event>
       <uei>uei.opennms.org/internal/thresholdConfigChange</uei>

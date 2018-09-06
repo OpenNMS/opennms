@@ -69,7 +69,7 @@ the BGP FSM enters the ESTABLISHED state.&lt;/p>&lt;table>
 			jnxBgpM2PeerState=%parm[#6]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/Juniper/traps/jnxBgpM2BackwardTransition:%dpname%:%nodeid%:%parm[#4]%" auto-clean="true"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxBgpM2BackwardTransition:%dpname%:%nodeid%:%parm[#4]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -705,7 +705,7 @@ inserted into the chassis.&lt;/p>&lt;table>
 			jnxFruSlot=%parm[#7]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/Juniper/traps/jnxFruRemoval:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="true"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFruRemoval:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -939,7 +939,7 @@ powered on in the chassis.&lt;/p>&lt;table>
 			jnxFruLastPowerOn=%parm[#10]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/Juniper/traps/jnxFruPowerOff:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="true"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFruPowerOff:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -1210,7 +1210,7 @@ gone online in the chassis.&lt;/p>&lt;table>
 			jnxFruSlot=%parm[#7]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/Juniper/traps/jnxFruOffLine:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="true"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFruOffLine:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -1591,7 +1591,7 @@ condition.&lt;/p>&lt;table>
 			jnxOperatingState=%parm[#6]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/Juniper/traps/jnxPowerSupplyFailure:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="true"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxPowerSupplyFailure:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -1656,7 +1656,7 @@ has recovered from the failure (not spinning) condition.&lt;/p>&lt;table>
 			jnxOperatingState=%parm[#6]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/Juniper/traps/jnxFanFailure:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="true"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFanFailure:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -1714,7 +1714,7 @@ condition.&lt;/p>&lt;table>
 			jnxOperatingTemp=%parm[#6]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/Juniper/traps/jnxOverTemperature:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="true"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxOverTemperature:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -1794,7 +1794,7 @@ is in ok state in the chassis.&lt;/p>&lt;table>
 			jnxFruSlot=%parm[#7]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/Juniper/traps/jnxFruFailed:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="true"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFruFailed:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -6303,7 +6303,7 @@ jnxJsFwAuthReason=%parm[#4]%&lt;/p>
 jnxJsFwAuthServiceUp trap received&lt;/p>
 	</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/Juniper/traps/jnxJsFwAuthServiceDown:%dpname%:%nodeid%:%ipaddr%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%ipaddr%" alarm-type="2" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxJsFwAuthServiceDown:%dpname%:%nodeid%:%ipaddr%" auto-clean="false"/>
    </event>
    <event>
       <mask>

@@ -147,8 +147,8 @@
 			adTrapInformSeqNum=%parm[#1]% 
 			sysName=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adCtrpRmtAlm:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adCtrpRmtAlm:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -215,8 +215,8 @@
 			adTrapInformSeqNum=%parm[#1]% 
 			sysName=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adCtrpExt1Alm:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adCtrpExt1Alm:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -283,8 +283,8 @@
 			adTrapInformSeqNum=%parm[#1]% 
 			sysName=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adCtrpExt2Alm:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adCtrpExt2Alm:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -351,8 +351,8 @@
 			adTrapInformSeqNum=%parm[#1]% 
 			sysName=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adCtrpBusApowerAlm:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adCtrpBusApowerAlm:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -419,8 +419,8 @@
 			adTrapInformSeqNum=%parm[#1]% 
 			sysName=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adCtrpBusBpowerAlm:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adCtrpBusBpowerAlm:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -492,8 +492,8 @@
 			sysName=%parm[#2]% 
 			adGenSlotInfoIndex=%parm[#3]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adCtrpOutOfService:%dpname%:%nodeid%:%interface%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adCtrpOutOfService:%dpname%:%nodeid%:%interface%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>

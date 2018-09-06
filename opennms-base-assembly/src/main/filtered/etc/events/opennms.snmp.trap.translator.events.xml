@@ -104,7 +104,7 @@
             ifDescr:%parm[ifDescr]%; ifName:%parm[ifName]%; IfAlias:%parm[ifAlias]%
         </logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/translator/traps/SNMP_Link_Down:%dpname%:%nodeid%:%parm[#1]%"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/translator/traps/SNMP_Link_Down:%dpname%:%nodeid%:%parm[#1]%"/>
    </event>
    <event>
       <mask>

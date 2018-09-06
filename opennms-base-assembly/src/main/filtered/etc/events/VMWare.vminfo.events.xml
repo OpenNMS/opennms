@@ -40,7 +40,7 @@ poll the vmwVmTable to obtain current status.&lt;/p>&lt;table>
 			vmwVmDisplayName=%parm[#3]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendor/vmware/traps/vmwVmPoweredOff:%dpname%:%nodeid%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/vmware/traps/vmwVmPoweredOff:%dpname%:%nodeid%:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -167,7 +167,7 @@ poll the vmwVmTable to obtain current status.&lt;/p>&lt;table>
 			vmwVmDisplayName=%parm[#3]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendor/vmware/traps/vmwVmHBLost:%dpname%:%nodeid%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/vmware/traps/vmwVmHBLost:%dpname%:%nodeid%:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>

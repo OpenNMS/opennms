@@ -237,8 +237,8 @@
       <event-label>Generic AlarmChangeNotifier Alarm Clear %parm[testParam]%</event-label>
       <descr>Generic AlarmChangeNotifier Alarm Clear %parm[testParam]%</descr>
       <logmsg dest="logndisplay">Generic AlarmChangeNotifier Alarm Clear %parm[testParam]%</logmsg>
-      <severity>Normal</severity>
+      <severity>Cleared</severity>
       <operinstruct></operinstruct>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/plugin/AlarmChangeNotificationTest/TestAlarm/genericAlarmRaise:%parm[testParam]%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%nodeid%:%interface%:%parm[testParam]%" alarm-type="2" clear-key="uei.opennms.org/plugin/AlarmChangeNotificationTest/TestAlarm/genericAlarmRaise:%parm[testParam]%" auto-clean="false"/>
    </event>
 </events>

@@ -75,8 +75,8 @@ of the Atlas 550.&lt;/p>&lt;table>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			adATLAS550ExtAlarmInactive trap received&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLAS550ExtAlarmActive:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLAS550ExtAlarmActive:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -178,8 +178,8 @@ manually reactivated it.&lt;/p>&lt;table>
 			adATLASModuleInfoFPStatus=%parm[#4]% 
 			adATLASUnitFPStatus=%parm[#5]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLASHSSIV35IfceDeact:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLASHSSIV35IfceDeact:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -256,8 +256,8 @@ manually reactivated it.&lt;/p>&lt;table>
 			adATLASModuleInfoFPStatus=%parm[#2]% 
 			adATLASUnitFPStatus=%parm[#3]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLASModuleOffline:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLASModuleOffline:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -405,7 +405,7 @@ and is attempting a backup call.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="3" auto-clean="true"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -453,8 +453,8 @@ and is attempting a backup call.&lt;/p>&lt;table>
 			adATLASModuleInfoFPStatus=%parm[#4]% 
 			adATLASUnitFPStatus=%parm[#5]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLASCbuBackupActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLASCbuBackupActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -757,8 +757,8 @@ and is attempting a backup call.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]% 
 			dsx1LineStatus=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLAST1RxYellowActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLAST1RxYellowActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -865,8 +865,8 @@ and is attempting a backup call.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]% 
 			dsx1LineStatus=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLAST1RxAISActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLAST1RxAISActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -973,8 +973,8 @@ and is attempting a backup call.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]% 
 			dsx1LineStatus=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLAST1RedAlarmActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLAST1RedAlarmActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -1081,8 +1081,8 @@ and is attempting a backup call.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]% 
 			dsx1LineStatus=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLAST1LOSActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLAST1LOSActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -1189,8 +1189,8 @@ and is attempting a backup call.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]% 
 			dsx1LineStatus=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLAST1TxAISActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLAST1TxAISActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -1297,8 +1297,8 @@ and is attempting a backup call.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]% 
 			dsx1LineStatus=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLAST1TxYellowActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLAST1TxYellowActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -2242,8 +2242,8 @@ Circuit has been restored to the primary state.&lt;/p>&lt;table>
 			frCircuitIfIndex=%parm[#1]% 
 			frCircuitDlci=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLASFrSwToBkup:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLASFrSwToBkup:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -2350,8 +2350,8 @@ Circuit has been restored to the primary state.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]% 
 			adATLASV35NxIfAlarmStatus=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxSlipAlarmActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxSlipAlarmActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -2458,8 +2458,8 @@ Circuit has been restored to the primary state.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]% 
 			adATLASV35NxIfAlarmStatus=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxPLLAlarmActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxPLLAlarmActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -2566,8 +2566,8 @@ Circuit has been restored to the primary state.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]% 
 			adATLASV35NxIfAlarmStatus=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxZeroAlarmActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxZeroAlarmActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -2674,8 +2674,8 @@ Circuit has been restored to the primary state.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]% 
 			adATLASV35NxIfAlarmStatus=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxExtClkAlarmActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxExtClkAlarmActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -2728,8 +2728,8 @@ Circuit has been restored to the primary state.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]% 
 			adATLASV35NxIfDTEStatus=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxRTSInActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxRTSInActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -2836,8 +2836,8 @@ Circuit has been restored to the primary state.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]% 
 			adATLASV35NxIfDTEStatus=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxCTSInActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxCTSInActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -2944,8 +2944,8 @@ Circuit has been restored to the primary state.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]% 
 			adATLASV35NxIfDTEStatus=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxDTRInActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxDTRInActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -3052,8 +3052,8 @@ Circuit has been restored to the primary state.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]% 
 			adATLASV35NxIfDTEStatus=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxDSRInActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxDSRInActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -3160,8 +3160,8 @@ Circuit has been restored to the primary state.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]% 
 			adATLASV35NxIfDTEStatus=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxDCDInActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxDCDInActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -3268,8 +3268,8 @@ Circuit has been restored to the primary state.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]% 
 			adATLASV35NxIfDTEStatus=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxRIInActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxRIInActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -3376,8 +3376,8 @@ Circuit has been restored to the primary state.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]% 
 			adATLASV35NxIfDTEStatus=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxTDInActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxTDInActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -3484,8 +3484,8 @@ Circuit has been restored to the primary state.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]% 
 			adATLASV35NxIfDTEStatus=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxRDInActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxRDInActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -3592,8 +3592,8 @@ Circuit has been restored to the primary state.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]% 
 			adATLASV35NxIfDTEStatus=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxECInActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adATLASV35NxECInActive:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -3646,7 +3646,7 @@ Circuit has been restored to the primary state.&lt;/p>&lt;table>
 			adATLASUnitFPStatus=%parm[#5]% 
 			adATLASV35NxIfDTEStatus=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Warning</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="3" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="true"/>
    </event>
 </events>

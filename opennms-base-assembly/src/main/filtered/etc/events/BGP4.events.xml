@@ -20,7 +20,7 @@
 the BGP FSM enters the ESTABLISHED state.&lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>bgpPeerLastError&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>bgpPeerState&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>idle(1) connect(2) active(3) opensent(4) openconfirm(5) established(6)&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>bgpEstablished trap received bgpPeerLastError=%parm[#1]% bgpPeerState=%parm[#2]%&lt;/p></logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/standard/rfc1657/traps/bgpBackwardTransition:%dpname%:%nodeid%:%parm[names-all]%" auto-clean="true"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%" alarm-type="2" clear-key="uei.opennms.org/standard/rfc1657/traps/bgpBackwardTransition:%dpname%:%nodeid%:%parm[names-all]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -91,7 +91,7 @@ the BGP FSM enters the ESTABLISHED state. &lt;/p>&lt;table>
 			bgpPeerState=%parm[#3]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/standard/rfc1269/traps/bgpBackwardTransition:%dpname%:%nodeid%:%parm[#1]%" auto-clean="true"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/standard/rfc1269/traps/bgpBackwardTransition:%dpname%:%nodeid%:%parm[#1]%" auto-clean="true"/>
    </event>
    <event>
       <mask>

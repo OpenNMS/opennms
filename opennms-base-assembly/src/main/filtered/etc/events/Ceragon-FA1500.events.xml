@@ -248,8 +248,8 @@
             gnGenStatDeviceODUStatus=%parm[#3]%
             gnGenCfgIDUSerialNumber=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnODUTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnODUTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -299,8 +299,8 @@
             gnGenStatDeviceIDUStatus=%parm[#3]%
             gnGenCfgIDUSerialNumber=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnIDUTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnIDUTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -351,8 +351,8 @@
             gnGenStatDeviceRSTStatus=%parm[#3]%
             gnGenCfgIDUSerialNumber=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnSDHTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnSDHTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -397,8 +397,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgIDUSerialNumber=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnACCESSTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnACCESSTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4169,8 +4169,8 @@
             gnOduStatusPowerSupply=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLODUPowerFailTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLODUPowerFailTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4220,8 +4220,8 @@
             gnOduStatusSynthesizerVCOLock=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLODUSynthUnLockTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLODUSynthUnLockTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4271,8 +4271,8 @@
             gnOduStatusTransmitLevel=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLODUTxLevelOutOfRangeTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLODUTxLevelOutOfRangeTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4322,8 +4322,8 @@
             gnOduStatusReceiveLevel=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLODURxLevelOutOfRangeTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLODURxLevelOutOfRangeTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4373,8 +4373,8 @@
             gnOduStatusFahrenheitTemp=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLODUExtremeTempTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLODUExtremeTempTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4424,8 +4424,8 @@
             gnGenStatDevicePowerSupply=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLIDUPowerFailTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLIDUPowerFailTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4479,8 +4479,8 @@
             gnGenStatDeviceCable=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLCableFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLCableFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4525,8 +4525,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLModemFailTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLModemFailTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4576,8 +4576,8 @@
             gnGenStatDeviceFahrenheitTemp=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLIDUExtremeTempTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLIDUExtremeTempTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4622,8 +4622,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLLoopbackOnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLLoopbackOnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4668,8 +4668,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLRemoteCommFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLRemoteCommFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4719,8 +4719,8 @@
             gnRstCfgTestActivate=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLTestRunningTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLTestRunningTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4770,8 +4770,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLLOFTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLLOFTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4821,8 +4821,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLLOSTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLLOSTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4872,8 +4872,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLTIMTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLTIMTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4941,8 +4941,8 @@
             gnRstStatBERCur=%parm[#5]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLEXCTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLEXCTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5010,8 +5010,8 @@
             gnRstStatBERCur=%parm[#5]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLSDTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLSDTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5061,8 +5061,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLRcvAisTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLRcvAisTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5112,8 +5112,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLUnExpTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLUnExpTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5163,8 +5163,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLLocTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLLocTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5214,8 +5214,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLLopTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLLopTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5266,8 +5266,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLRdiTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLRdiTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5317,8 +5317,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLSlmTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLSlmTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5368,8 +5368,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLUnqTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLUnqTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5419,8 +5419,8 @@
             gnGenStatDeviceDryContact=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLExternalAlarm1OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLExternalAlarm1OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5470,8 +5470,8 @@
             gnGenStatDeviceDryContact=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLExternalAlarm2OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLExternalAlarm2OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5521,8 +5521,8 @@
             gnGenStatDeviceDryContact=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLExternalAlarm3OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLExternalAlarm3OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5572,8 +5572,8 @@
             gnGenStatDeviceDryContact=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLExternalAlarm4OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLExternalAlarm4OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5623,8 +5623,8 @@
             gnGenStatDeviceDryContact=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLExternalAlarm5OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLExternalAlarm5OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5674,8 +5674,8 @@
             gnGenStatDeviceDryContact=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLExternalAlarm6OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLExternalAlarm6OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5725,8 +5725,8 @@
             gnGenStatDeviceDryContact=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLExternalAlarm7OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLExternalAlarm7OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5776,8 +5776,8 @@
             gnGenStatDeviceDryContact=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLExternalAlarm8OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLExternalAlarm8OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5827,8 +5827,8 @@
             gnGenDrawerXInternalCommunication=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLSystemFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLSystemFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5873,8 +5873,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLTftpFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLTftpFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5919,8 +5919,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLInternalDownloadFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLInternalDownloadFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5965,8 +5965,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLIntralinkFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLIntralinkFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6011,8 +6011,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLConfMismatchTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLConfMismatchTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6057,8 +6057,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLProtectSwitchFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLProtectSwitchFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6103,8 +6103,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLProtectCableFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLProtectCableFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6154,8 +6154,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLLomTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLLomTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6200,8 +6200,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLHitlessProblemTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLHitlessProblemTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6246,8 +6246,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLHitlessRadioLofTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLHitlessRadioLofTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6292,8 +6292,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLHitlessCableDisconnectTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLHitlessCableDisconnectTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6343,8 +6343,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLPamTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLPamTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6394,8 +6394,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLScmTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLScmTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6445,8 +6445,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLInvTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLInvTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6496,8 +6496,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLInbandTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLInbandTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6542,8 +6542,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnWSLOSTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnWSLOSTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6588,8 +6588,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnODUtoODUCableFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnODUtoODUCableFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6634,8 +6634,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnNoSignalReceivedFromODUTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnNoSignalReceivedFromODUTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6680,8 +6680,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnProtectionLockoutConfiguredTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnProtectionLockoutConfiguredTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6726,8 +6726,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRFUPowerFailureTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRFUPowerFailureTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6772,8 +6772,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRFURxLevelPathOutOfRangeTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRFURxLevelPathOutOfRangeTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6818,8 +6818,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRFUExtremeTemperatureTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRFUExtremeTemperatureTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6864,8 +6864,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRFUFanFailureTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRFUFanFailureTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6910,8 +6910,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLowSignalToRFUTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLowSignalToRFUTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6956,8 +6956,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRFUXPICClockFailureTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRFUXPICClockFailureTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7002,8 +7002,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRFUDelayCalibrationFailure1Trap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRFUDelayCalibrationFailure1Trap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7048,8 +7048,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRFUDelayCalibrationFailure2Trap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRFUDelayCalibrationFailure2Trap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7099,8 +7099,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLSFPFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLSFPFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7150,8 +7150,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnEncryptionFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnEncryptionFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7201,8 +7201,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnEncryptionSyncLosTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnEncryptionSyncLosTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7252,8 +7252,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnEncryptionKepTimout:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnEncryptionKepTimout:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7303,8 +7303,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnEncryptionSkTimerElapsed:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnEncryptionSkTimerElapsed:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7354,8 +7354,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnEncryptionPowerUpSelfTestFail:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnEncryptionPowerUpSelfTestFail:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7405,8 +7405,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnEncryptionConditionalTestFail:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnEncryptionConditionalTestFail:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7456,8 +7456,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnEncryptionWillTurnOffOnNextRest:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnEncryptionWillTurnOffOnNextRest:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7507,8 +7507,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnEncryptionEventReport:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnEncryptionEventReport:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7558,8 +7558,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnEncryptionTechCardWasDetected:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnEncryptionTechCardWasDetected:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7609,8 +7609,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnAdminPasswordInDefaultState:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnAdminPasswordInDefaultState:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7655,8 +7655,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLinkGroupingProtectionFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLinkGroupingProtectionFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7701,8 +7701,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnLossOfProtectionTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnLossOfProtectionTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7747,8 +7747,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnTempLicenseTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnTempLicenseTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7793,8 +7793,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnMultiRadioProblemTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnMultiRadioProblemTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10017,8 +10017,8 @@
             gnOduStatusPowerSupply=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRODUPowerFailTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRODUPowerFailTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10068,8 +10068,8 @@
             gnOduStatusSynthesizerVCOLock=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRODUSynthUnLockTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRODUSynthUnLockTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10119,8 +10119,8 @@
             gnOduStatusTransmitLevel=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRODUTxLevelOutOfRangeTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRODUTxLevelOutOfRangeTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10170,8 +10170,8 @@
             gnOduStatusReceiveLevel=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRODURxLevelOutOfRangeTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRODURxLevelOutOfRangeTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10221,8 +10221,8 @@
             gnOduStatusFahrenheitTemp=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRODUExtremeTempTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRODUExtremeTempTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10272,8 +10272,8 @@
             gnGenStatDevicePowerSupply=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRIDUPowerFailTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRIDUPowerFailTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10327,8 +10327,8 @@
             gnGenStatDeviceCable=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRCableFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRCableFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10373,8 +10373,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRModemFailTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRModemFailTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10424,8 +10424,8 @@
             gnGenStatDeviceFahrenheitTemp=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRIDUExtremeTempTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRIDUExtremeTempTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10470,8 +10470,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRLoopbackOnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRLoopbackOnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10516,8 +10516,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRRemoteCommFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRRemoteCommFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10567,8 +10567,8 @@
             gnRstCfgTestActivate=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRTestRunningTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRTestRunningTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10618,8 +10618,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRLOFTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRLOFTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10669,8 +10669,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRLOSTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRLOSTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10720,8 +10720,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRTIMTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRTIMTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10789,8 +10789,8 @@
             gnRstStatBERCur=%parm[#5]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnREXCTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnREXCTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10858,8 +10858,8 @@
             gnRstStatBERCur=%parm[#5]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRSDTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRSDTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10909,8 +10909,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRAisTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRAisTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10960,8 +10960,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRUnExpTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRUnExpTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -11011,8 +11011,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRLocTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRLocTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -11062,8 +11062,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRLopTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRLopTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -11114,8 +11114,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRRdiTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRRdiTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -11165,8 +11165,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRSlmTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRSlmTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -11216,8 +11216,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRUnqTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRUnqTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -11267,8 +11267,8 @@
             gnGenStatDeviceDryContact=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRExternalAlarm1OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRExternalAlarm1OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -11318,8 +11318,8 @@
             gnGenStatDeviceDryContact=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRExternalAlarm2OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRExternalAlarm2OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -11369,8 +11369,8 @@
             gnGenStatDeviceDryContact=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRExternalAlarm3OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRExternalAlarm3OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -11420,8 +11420,8 @@
             gnGenStatDeviceDryContact=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRExternalAlarm4OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRExternalAlarm4OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -11471,8 +11471,8 @@
             gnGenStatDeviceDryContact=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRExternalAlarm5OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRExternalAlarm5OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -11522,8 +11522,8 @@
             gnGenStatDeviceDryContact=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRExternalAlarm6OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRExternalAlarm6OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -11573,8 +11573,8 @@
             gnGenStatDeviceDryContact=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRExternalAlarm7OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRExternalAlarm7OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -11624,8 +11624,8 @@
             gnGenStatDeviceDryContact=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRExternalAlarm8OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRExternalAlarm8OnTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -11675,8 +11675,8 @@
             gnGenStatInternalCommunication=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRSystemFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRSystemFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -11721,8 +11721,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRTftpFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRTftpFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -11767,8 +11767,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRInternalDownloadFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRInternalDownloadFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -11813,8 +11813,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRIntralinkFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRIntralinkFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -11859,8 +11859,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRConfMismatchTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRConfMismatchTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -11905,8 +11905,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRProtectCableFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRProtectCableFaultTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -11956,8 +11956,8 @@
             gnGenCfgAlarmText=%parm[#3]%
             gnGenCfgCLLI=%parm[#4]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRLomTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRLomTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -12002,8 +12002,8 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRHitlessRadioLofTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRHitlessRadioLofTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -12048,7 +12048,7 @@
             gnGenCfgAlarmText=%parm[#2]%
             gnGenCfgCLLI=%parm[#3]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/ceragon/fa1500/gnRHitlessCableDisconnectTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/traps/ceragon/fa1500/gnRHitlessCableDisconnectTrap:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
    </event>
 </events>

@@ -97,7 +97,7 @@
 			snaNodeOperState=%parm[#2]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/standard/rfc1666/traps/snaNodeStateChangeTrapNotActive:%dpname%:%nodeid%:%parm[#1]%" auto-clean="true"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/standard/rfc1666/traps/snaNodeStateChangeTrapNotActive:%dpname%:%nodeid%:%parm[#1]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -257,7 +257,7 @@ state after change.&lt;/p>&lt;table>
 			snaLuOperState=%parm[#3]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/standard/rfc1666/traps/snaLuStateChangeTrap:%dpname%:%nodeid%:%parm[#2]%" auto-clean="true"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/standard/rfc1666/traps/snaLuStateChangeTrap:%dpname%:%nodeid%:%parm[#2]%" auto-clean="true"/>
    </event>
    <event>
       <mask>

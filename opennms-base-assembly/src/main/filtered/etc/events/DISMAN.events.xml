@@ -182,7 +182,7 @@ The error message is &lt;strong>%parm[#7]%&lt;/strong>.
                         %parm[#6]%&lt;/p>
                 </logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/standard/netsnmp/traps/procTableAlertRising:%dpname%:%nodeid%:%parm[#6]%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" alarm-type="2" clear-key="uei.opennms.org/standard/netsnmp/traps/procTableAlertRising:%dpname%:%nodeid%:%parm[#6]%" auto-clean="false"/>
    </event>
    <event>
       <mask>

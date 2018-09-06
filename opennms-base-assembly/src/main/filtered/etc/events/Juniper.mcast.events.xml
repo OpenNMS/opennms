@@ -60,7 +60,7 @@ value on the port.&lt;/p>&lt;table>
 			juniMRouteIfLocIndex=%parm[#1]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/juniper/juniperMRouterMib/traps/juniMRoutePortBwExceded:%nodeid%:%dpname%:%interface%:%parm[#1]%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendors/juniper/juniperMRouterMib/traps/juniMRoutePortBwExceded:%nodeid%:%dpname%:%interface%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -123,6 +123,6 @@ value on the port.&lt;/p>&lt;table>
 			juniMRouteIfLocIndex=%parm[#1]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/juniper/juniperMRouterMib/traps/juniMRoutePortPriorityBwExceded:%nodeid%:%dpname%:%interface%:%parm[#1]%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendors/juniper/juniperMRouterMib/traps/juniMRoutePortPriorityBwExceded:%nodeid%:%dpname%:%interface%:%parm[#1]%" auto-clean="false"/>
    </event>
 </events>

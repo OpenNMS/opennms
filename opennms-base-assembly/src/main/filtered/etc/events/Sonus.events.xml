@@ -257,7 +257,7 @@ situation to be quickly identified and resolved.&lt;/p>&lt;table>
 			sonusEventTime=%parm[#6]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendor/sonus/traps/sonusTrunkDisabledNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/sonus/traps/sonusTrunkDisabledNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -393,7 +393,7 @@ situation to be quickly identified and resolved.&lt;/p>&lt;table>
 			sonusEventTime=%parm[#6]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendor/sonus/traps/sonusTrunkOutOfServiceNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/sonus/traps/sonusTrunkOutOfServiceNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1641,7 +1641,7 @@ is now operational.&lt;/p>&lt;table>
 			sonusEventTime=%parm[#7]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendor/sonus/traps/sonusSystemTimingMTAFailedNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/sonus/traps/sonusSystemTimingMTAFailedNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1971,8 +1971,8 @@ and adds a string interpretation of the source type.&lt;/p>&lt;table>
 			sonusSequenceId=%parm[#7]% 
 			sonusEventTime=%parm[#8]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendor/sonus/traps/sonusSscsOutOfServiceNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
+      <severity>Indeterminate</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/sonus/traps/sonusSscsOutOfServiceNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2624,7 +2624,7 @@ established (ISUP or TCAP).&lt;/p>&lt;table>
 			sonusEventTime=%parm[#8]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectionFailedNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectionFailedNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2814,7 +2814,7 @@ of the node, and the reason for the state change.&lt;/p>&lt;table>
 			sonusEventTime=%parm[#10]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectionStateChangeNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectionStateChangeNotification" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -3527,7 +3527,7 @@ resides, the updated MTP state, and the DPC affected by this event.&lt;/p>&lt;ta
 			sonusEventTime=%parm[#10]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeMtpStateChangeNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[%5]%" alarm-type="2" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[%5]%" alarm-type="2" clear-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeMtpStateChangeNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[%5]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4041,7 +4041,7 @@ CONNECTED or DISCONNECTED.&lt;/p>&lt;table>
 			sonusEventTime=%parm[#7]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectivityChangeNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectivityChangeNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4287,7 +4287,7 @@ can be one of PAUSE, RESUME, CONGESTED, or UPU&lt;/p>&lt;table>
 			sonusEventTime=%parm[#9]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeRpcStateChangeNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#4]%" alarm-type="2" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeRpcStateChangeNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#4]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4900,8 +4900,8 @@ entered IN-SERVICE state.&lt;/p>&lt;table>
 			sonusSequenceId=%parm[#5]% 
 			sonusEventTime=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendor/sonus/traps/sonusSs7Mtp2LinkOutOfServiceNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
+      <severity>Indeterminate</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/sonus/traps/sonusSs7Mtp2LinkOutOfServiceNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>

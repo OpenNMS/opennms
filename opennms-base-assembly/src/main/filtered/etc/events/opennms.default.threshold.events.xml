@@ -64,7 +64,7 @@
             %interface%, parms: %parm[all]%
         </logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/threshold/highThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" alarm-type="2" clear-key="uei.opennms.org/threshold/highThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" auto-clean="false"/>
    </event>
    <event>
       <uei>uei.opennms.org/threshold/lowThresholdRearmed</uei>
@@ -86,7 +86,7 @@
             %interface%, parms: %parm[all]%
         </logmsg>
       <severity>Normal</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/threshold/lowThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" alarm-type="2" clear-key="uei.opennms.org/threshold/lowThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" auto-clean="false"/>
    </event>
    <event>
       <uei>uei.opennms.org/threshold/relativeChangeExceeded</uei>

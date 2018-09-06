@@ -14,6 +14,7 @@ However, these attributes have long since been functionally deprecated now that 
 IMPORTANT: A significant change occurred with the release of Horizon 23.0.0 (H23).
 Prior to H23 and since the introduction of Alarms in OpenNMS, Alarmd was designed and configured to track the state of a problem using two Alarms; a _Down_ and an _Up_ Alarm.
 Now, OpenNMS is designed with the intention to use a single Alarm to track the state of a problem.
+The old behavior can be re-enabled by setting the system property org.opennms.alarmd.legacyAlarmState = true.
 
 === Single Alarm Tracking Problem States
 .First occurrence of a Service Down problem (SNMP), Alarm instantiated

@@ -315,7 +315,7 @@
 			nqaaTestType=%parm[#7]%&lt;/p>
 		</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendor/swissqual/traps/nqAgentAlarm:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="2" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="2" clear-key="uei.opennms.org/vendor/swissqual/traps/nqAgentAlarm:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
