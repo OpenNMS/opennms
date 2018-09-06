@@ -40,7 +40,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cxf.jaxrs.ext.search.ConditionType;
-import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
@@ -200,6 +199,15 @@ public abstract class CriteriaBehaviors {
         ALARM_BEHAVIORS.put("troubleTicketState", new CriteriaBehavior<TroubleTicketState>(TroubleTicketState::valueOf));
         ALARM_BEHAVIORS.put("x733ProbableCause", new CriteriaBehavior<Integer>(INT_CONVERTER));
 
+        // Situation Behaviours
+        CriteriaBehavior<String> affectedNodeCount = new StringCriteriaBehavior(Aliases.alarm.prop("affectedNodeCount"), (b, v, c, w) -> {
+            String op = stringForNumericCondition(c, "alarm.affectedNodeCount");
+            b.sql("((SELECT COUNT (DISTINCT NODEID) from (SELECT NODEID FROM alarms where alarmid in (SELECT related_alarm_id from alarm_situations where situation_id = {alias}.alarmid) or alarmid = {alias}.alarmid) as from_nodes) "
+                    + op + " " + v + " ) ");
+        });
+        affectedNodeCount.setSkipPropertyByDefault(true);
+        ALARM_BEHAVIORS.put("affectedNodeCount", affectedNodeCount);
+
         CriteriaBehavior<String> isSituation = new StringCriteriaBehavior(Aliases.alarm.prop("isSituation"), (b, v, c, w) -> {
             switch (c) {
             case EQUALS:
@@ -215,6 +223,31 @@ public abstract class CriteriaBehaviors {
         });
         isSituation.setSkipPropertyByDefault(true);
         ALARM_BEHAVIORS.put("isSituation", isSituation);
+
+        CriteriaBehavior<String> isInSituation = new StringCriteriaBehavior(Aliases.alarm.prop("isInSituation"), (b, v, c, w) -> {
+            switch (c) {
+            case EQUALS:
+                if (Boolean.valueOf((String) v)) {
+                    b.sql("exists (select related_alarm_id from alarm_situations where related_alarm_id = {alias}.alarmid)");
+                } else {
+                    b.sql("not exists (select related_alarm_id from alarm_situations where related_alarm_id = {alias}.alarmid)");
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal condition type when filtering alarm.isInSituation: " + c.toString());
+            }
+        });
+        isInSituation.setSkipPropertyByDefault(true);
+        ALARM_BEHAVIORS.put("isInSituation", isInSituation);
+
+        CriteriaBehavior<String> situationAlarmCount = new StringCriteriaBehavior(Aliases.alarm.prop("situationAlarmCount"), (b, v, c, w) -> {
+            String op = stringForNumericCondition(c, "alarm.situationAlarmCount");
+            b.sql("((SELECT COUNT (DISTINCT related_alarm_id) from alarm_situations where situation_id = {alias}.alarmid ) "
+                    + op + " " + v + " )");
+        });
+        situationAlarmCount.setSkipPropertyByDefault(true);
+        ALARM_BEHAVIORS.put("situationAlarmCount", situationAlarmCount);
+
 
         ALARM_LASTEVENT_PARAMETER_BEHAVIORS.put("name", new EventParameterBehavior("lastEvent.eventParameters", "lasteventid", "name"));
         ALARM_LASTEVENT_PARAMETER_BEHAVIORS.put("value", new EventParameterBehavior("lastEvent.eventParameters", "lasteventid", "value"));
@@ -340,5 +373,32 @@ public abstract class CriteriaBehaviors {
         SNMP_INTERFACE_BEHAVIORS.put("ifSpeed", new CriteriaBehavior<Long>(LONG_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("lastCapsdPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("lastSnmpPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
+    }
+
+    private static String stringForNumericCondition(ConditionType c, String property) {
+        String op = "";
+        switch (c) {
+        case EQUALS:
+            op = " = ";
+            break;
+        case NOT_EQUALS:
+            op = " != ";
+            break;
+        case LESS_THAN:
+            op = " < ";
+            break;
+        case GREATER_THAN:
+            op = " > ";
+            break;
+        case LESS_OR_EQUALS:
+            op = " <= ";
+            break;
+        case GREATER_OR_EQUALS:
+            op = " >= ";
+            break;
+        default:
+            throw new IllegalArgumentException("Illegal condition type when filtering " + property + ": " + c.toString());
+        }
+        return op;
     }
 }
