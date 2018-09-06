@@ -19,4 +19,12 @@
          <update-field field-name="severity" update-on-reduction="true"/>
       </alarm-data>
    </event>
+   <event>
+      <uei>uei.opennms.org/alarms/situation</uei>
+      <event-label>Alarm: Situation</event-label>
+      <descr>%parm[situationDescr]%</descr>
+      <logmsg dest="logndisplay">%parm[situationLogMsg]%</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%parm[situationId]%" alarm-type="3" auto-clean="true" />
+   </event>
 </events>

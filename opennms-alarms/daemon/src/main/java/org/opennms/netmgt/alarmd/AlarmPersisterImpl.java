@@ -138,7 +138,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         String key = reductionKey;
         String clearKey = event.getAlarmData().getClearKey();
         
-        if (!m_legacyAlarmState && clearKey != null && event.getAlarmData().getAlarmType() == 2) {
+        if (!m_legacyAlarmState && clearKey != null && isResolutionEvent(event)) {
             key = clearKey;
         }
 

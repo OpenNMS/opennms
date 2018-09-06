@@ -40,16 +40,3 @@ image:alarms/single_alarm_7.png[]
 
 .Both Service Down and restored Events
 image:alarms/single_alarm_8.png[]
-
-The previous design of having two Alarms to track the state of problems can be re-enabled by copying the files from the $OPENNMS_ETC/examples/events-with-legacy-alarm-data/ folder to the $OPENNMS_ETC/events/ folder.
-
-TIP: This new design for Alarms is enabled by configuring what was previously the clear-key to now be the reduction-key of Alarm resolving Events (Events with the alarm-type attribute = ''2'').
-
-.Example of new reduction-key and no longer using a clear-key
-[source,XML]
-<event>
-    <uei>uei.opennms.org/nodes/nodeRegainedService</uei>
-...
-    <severity>Normal</severity>
-    <alarm-data alarm-type="2" reduction-key="uei.opennms.org/nodes/nodeLostService:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false"/>
- </event>

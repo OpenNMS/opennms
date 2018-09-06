@@ -560,8 +560,6 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
 
         //this should be the first occurrence of this alarm
         //there should be 1 alarm now
-        String dbname = m_database.getTestDatabase();
-        System.out.println(dbname);
         sendNodeDownEvent(node);
 
         // Wait until we've create the node down alarm
@@ -575,9 +573,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         numAlarmsCallable = getNumAlarmsCallable();
         await().atMost(10, SECONDS).until(numAlarmsCallable, equalTo(2));
 
-        Thread.sleep(1000);
-        // One alarm should be cleared, and not archived
-        assertThat(m_alarmDao.findAll().stream().filter(a -> !a.isArchived()
+        await().atMost(10, SECONDS).until(() -> m_alarmDao.findAll().stream().filter(a -> !a.isArchived()
                 && OnmsSeverity.CLEARED.equals(a.getSeverity())).count(), equalTo(1L));
 
         // The other should be Normal, and not be archived
@@ -599,8 +595,6 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
 
         //this should be the first occurrence of this alarm
         //there should be 1 alarm now
-        String dbname = m_database.getTestDatabase();
-        System.out.println(dbname);
         sendNodeDownEvent(node);
 
         // Wait until we've create the node down alarm
@@ -619,12 +613,9 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
                 && OnmsSeverity.CLEARED.equals(a.getSeverity())).count(), equalTo(1L));
 
     }
-
+    
     private Callable<Integer> getNumAlarmsCallable() {
-        return () -> {
-            int countAll = m_alarmDao.countAll();
-            return countAll;
-        };
+        return () -> m_alarmDao.countAll();
     }
 
     //Supporting method for test
