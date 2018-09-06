@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.netflows;
+package org.opennms.netmgt.telemetry.protocols.flows;
 
 import java.util.LinkedList;
 import java.util.List;

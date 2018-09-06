@@ -46,10 +46,10 @@ import com.google.common.base.MoreObjects;
 @XmlRootElement(name="adapter")
 @XmlAccessorType(XmlAccessType.NONE)
 public class AdapterConfig implements AdapterDefinition {
-    @XmlAttribute(name="name")
+    @XmlAttribute(name="name", required=true)
     private String name;
 
-    @XmlAttribute(name="class-name")
+    @XmlAttribute(name="class-name", required=true)
     private String className;
 
     @XmlAttribute(name="enabled")

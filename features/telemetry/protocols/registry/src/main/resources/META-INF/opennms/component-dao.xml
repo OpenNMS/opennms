@@ -9,11 +9,11 @@
        ">
 
     <context:annotation-config />
-	<bean id="adapterRegistry" class="org.opennms.features.telemetry.adapters.registry.impl.TelemetryAdapterRegistryImpl" />
+	<bean id="adapterRegistry" class="org.opennms.features.telemetry.protocols.registry.impl.TelemetryAdapterRegistryImpl" />
 
-	<onmsgi:service interface="org.opennms.features.telemetry.adapters.registry.api.TelemetryAdapterRegistry" ref="adapterRegistry" />
+	<onmsgi:service interface="org.opennms.features.telemetry.protocols.registry.api.TelemetryAdapterRegistry" ref="adapterRegistry" />
 
-	<onmsgi:list id="adapterFactoryList" interface="org.opennms.netmgt.telemetry.api.AdapterFactory">
+	<onmsgi:list id="adapterFactoryList" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
 		<onmsgi:listener ref="adapterRegistry" bind-method="onBind" unbind-method="onUnbind" />
 	</onmsgi:list>
 

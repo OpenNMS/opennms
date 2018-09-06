@@ -41,6 +41,7 @@ import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.logging.Logging;
 import org.opennms.features.telemetry.protocols.registry.api.TelemetryAdapterRegistry;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.config.api.QueueDefinition;
 import org.opennms.netmgt.telemetry.config.model.QueueConfig;
 import org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos;
@@ -83,7 +84,7 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     @PostConstruct
     public void init() throws Exception {
         // Pre-emptively instantiate the adapters
-        for (org.opennms.netmgt.telemetry.config.api.AdapterDefinition adapterDef : adapterDefs) {
+        for (AdapterDefinition adapterDef : adapterDefs) {
             final Adapter adapter;
             try {
                 adapter = adapterRegistry.getAdapter(adapterDef);

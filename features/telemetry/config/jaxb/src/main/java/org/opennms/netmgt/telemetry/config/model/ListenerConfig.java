@@ -47,10 +47,10 @@ import com.google.common.base.MoreObjects;
 @XmlAccessorType(XmlAccessType.NONE)
 public class ListenerConfig implements ListenerDefinition {
 
-    @XmlAttribute(name="name")
+    @XmlAttribute(name="name", required=true)
     private String name;
 
-    @XmlAttribute(name="class-name")
+    @XmlAttribute(name="class-name", required=true)
     private String className;
 
     @XmlAttribute(name="enabled")

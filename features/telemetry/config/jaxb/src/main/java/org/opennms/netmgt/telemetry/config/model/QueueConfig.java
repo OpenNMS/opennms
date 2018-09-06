@@ -47,7 +47,7 @@ import com.google.common.base.MoreObjects;
 @XmlRootElement(name="queue")
 @XmlAccessorType(XmlAccessType.NONE)
 public class QueueConfig implements QueueDefinition {
-    @XmlAttribute(name="name")
+    @XmlAttribute(name="name", required=true)
     @XmlID
     private String name;
 

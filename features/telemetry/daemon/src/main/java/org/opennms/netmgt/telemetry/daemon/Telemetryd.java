@@ -37,6 +37,7 @@ import org.opennms.netmgt.telemetry.common.Beans;
 import org.opennms.netmgt.telemetry.config.dao.TelemetrydConfigDao;
 import org.opennms.netmgt.telemetry.config.model.AdapterConfig;
 import org.opennms.netmgt.telemetry.config.model.ListenerConfig;
+import org.opennms.netmgt.telemetry.config.model.ParserConfig;
 import org.opennms.netmgt.telemetry.config.model.QueueConfig;
 import org.opennms.netmgt.telemetry.config.model.TelemetrydConfig;
 import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
@@ -133,13 +134,18 @@ public class Telemetryd implements SpringServiceDaemon {
         }
 
         for (final ListenerConfig listenerConfig : config.getListeners()) {
+            if (!listenerConfig.isEnabled()) {
+                LOG.debug("Skipping disabled listener: {}", listenerConfig.getName());
+                continue;
+            }
+
             final Listener.Factory listenerFactory = Beans.createFactory(Listener.Factory.class, listenerConfig.getClassName());
 
             // Create all parsers for this listener
             final Set<Parser> parsers = listenerConfig.getParsers().stream()
-                    .map(parserConfig ->
-                            listenerFactory.parser(parserConfig)
-                                .create(this.dispatchers.get(parserConfig.getQueue())))
+                    .filter(ParserConfig::isEnabled)
+                    .map(parserConfig -> listenerFactory.parser(parserConfig)
+                            .create(this.dispatchers.get(parserConfig.getQueue())))
                     .collect(Collectors.toSet());
 
             final Listener listener = listenerFactory.create(listenerConfig.getName(), listenerConfig.getParameterMap(), parsers);

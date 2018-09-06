@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.listeners.simple;
 
-import java.io.File;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,9 +37,6 @@ import org.opennms.netmgt.telemetry.common.Beans;
 import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 public class Udp implements Listener.Factory {
 

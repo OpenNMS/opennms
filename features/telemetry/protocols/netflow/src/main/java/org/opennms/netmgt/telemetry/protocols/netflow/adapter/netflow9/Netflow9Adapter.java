@@ -32,7 +32,7 @@ import org.bson.BsonDocument;
 import org.bson.RawBsonDocument;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
-import org.opennms.netmgt.telemetry.protocols.netflows.AbstractFlowAdapter;
+import org.opennms.netmgt.telemetry.protocols.flows.AbstractFlowAdapter;
 
 import com.codahale.metrics.MetricRegistry;
 

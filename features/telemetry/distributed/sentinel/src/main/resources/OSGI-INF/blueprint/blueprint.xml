@@ -13,7 +13,7 @@
 
     <reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
     <reference id="messageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager" />
-    <reference id="telemetryAdapterRegistry" interface="org.opennms.features.telemetry.adapters.registry.api.TelemetryAdapterRegistry" />
+    <reference id="telemetryAdapterRegistry" interface="org.opennms.features.telemetry.protocols.registry.api.TelemetryAdapterRegistry" />
     <reference id="transactionManager" interface="org.springframework.transaction.PlatformTransactionManager" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" />

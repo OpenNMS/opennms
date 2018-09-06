@@ -30,7 +30,7 @@ package org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5;
 
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
-import org.opennms.netmgt.telemetry.protocols.netflows.AbstractFlowAdapter;
+import org.opennms.netmgt.telemetry.protocols.flows.AbstractFlowAdapter;
 import org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.proto.NetflowPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
