@@ -5,7 +5,7 @@
     <listener name="JTI-UDP-50000" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="false">
         <parameter key="port" value="50000"/>
 
-        <parser name="JTI-Parser" class-name="" enabled="true" queue="JTI" />
+        <parser name="JTI-Parser" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" enabled="true" queue="JTI" />
     </listener>
 
     <queue name="JTI">
@@ -28,7 +28,7 @@
     <listener name="Netflow-5-UDP-8877" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="false">
         <parameter key="port" value="8877"/>
 
-        <parser name="Netflow-5-Parser" class-name="" enabled="true" queue="Netflow-5" />
+        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" enabled="true" queue="Netflow-5" />
     </listener>
 
     <queue name="Netflow-5">
@@ -96,7 +96,7 @@
     <listener name="NXOS-UDP-50001" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="false">
         <parameter key="port" value="50001"/>
 
-        <parser name="NXOS-GPB" class-name="" enabled="true" queue="NXOS" />
+        <parser name="NXOS-GPB" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" enabled="true" queue="NXOS" />
     </listener>
 
     <queue name="NXOS">
