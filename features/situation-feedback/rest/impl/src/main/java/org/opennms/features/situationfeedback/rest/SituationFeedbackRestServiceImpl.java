@@ -89,7 +89,7 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
         runInTransaction(status -> {
             // Update Situation in case of false_neg and false_pos
             feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_NEGATIVE)).forEach(c -> addCorrelation(c, alarmDao, alarmEntityNotifier));
-            feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_POSITVE)).forEach(c -> removeCorrelation(c, alarmDao, alarmEntityNotifier));
+            feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_POSITIVE)).forEach(c -> removeCorrelation(c, alarmDao, alarmEntityNotifier));
             try {
                 repository.persist(feedback);
             } catch (Exception e) {
