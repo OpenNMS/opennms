@@ -42,8 +42,10 @@
 	/**
 	 * Minion list controller
 	 */
-	.controller('MinionListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'DateFormatterService', 'minionFactory', function($scope, $location, $window, $log, $filter, DateFormatterService, minionFactory) {
+	.controller('MinionListCtrl', ['$scope', '$http', '$location', '$window', '$log', '$filter', 'DateFormatterService', 'minionFactory', function($scope, $http, $location, $window, $log, $filter, DateFormatterService, minionFactory) {
 		$log.debug('MinionListCtrl initializing...');
+
+		$scope.minionNodes = {};
 
 		// Set the default sort and set it on $scope.$parent.query
 		$scope.$parent.defaults.orderBy = 'label';
@@ -64,6 +66,29 @@
 				function(value, headers) {
 					$scope.$parent.items = value;
 
+					if (value && value.length > 0) {
+						var query = '(' + value.map(function(minion) {
+							return 'foreignId==' + minion.id;
+						}).join(',') + ')';
+
+						$http.get('api/v2/nodes', {
+							params: {
+								_s: query
+							}
+						}).then(function(response) {
+							var minionNodes = {}, node;
+							if (response && response.data && response.data.node) {
+								if (!angular.isArray(response.data.node)) {
+									response.data.node = [response.data.node];
+								}
+								for (var i=0; i < response.data.node.length; i++) {
+									node = response.data.node[i];
+									minionNodes[node.foreignId] = node;
+								}
+								$scope.minionNodes = minionNodes;
+							}
+						});
+					}
 					var contentRange = parseContentRange(headers('Content-Range'));
 					$scope.$parent.query.lastOffset = contentRange.end;
 					// Subtract 1 from the value since offsets are zero-based
