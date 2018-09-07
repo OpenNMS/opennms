@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.common.parser;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
@@ -44,46 +45,56 @@ import io.netty.channel.EventLoopGroup;
 public class ForwardParser implements SimpleUdpParser.Factory {
     private static final Logger LOG = LoggerFactory.getLogger(ForwardParser.class);
 
-    @Override
-    public SimpleUdpParser createUdpParser(final String name,
-                                           final Map<String, String> parameters,
-                                           final AsyncDispatcher<TelemetryMessage> dispatcher) {
-        return new SimpleUdpParser() {
+    public static class Parser implements SimpleUdpParser {
+        private final String name;
+        private final AsyncDispatcher<TelemetryMessage> dispatcher;
 
-            public String getName() {
-                return name;
-            }
+        public Parser(final String name,
+                      final AsyncDispatcher<TelemetryMessage> dispatcher) {
+            this.name = Objects.requireNonNull(name);
+            this.dispatcher = Objects.requireNonNull(dispatcher);
+        }
 
-            @Override
-            public void start(EventLoopGroup eventLoopGroup) {
-            }
+        public String getName() {
+            return name;
+        }
 
-            @Override
-            public void stop() {
-            }
+        @Override
+        public void start(EventLoopGroup eventLoopGroup) {
+        }
 
-            @Override
-            public void parse(final ByteBuffer buffer,
-                              final InetSocketAddress remoteAddress,
-                              final InetSocketAddress localAddress) throws Exception {
-                LOG.trace("Got packet from: {}", remoteAddress);
+        @Override
+        public void stop() {
+        }
 
-                // Build the message to dispatch
-                final TelemetryMessage msg = new TelemetryMessage(remoteAddress, buffer);
+        @Override
+        public void parse(final ByteBuffer buffer,
+                          final InetSocketAddress remoteAddress,
+                          final InetSocketAddress localAddress) throws Exception {
+            LOG.trace("Got packet from: {}", remoteAddress);
 
-                // Dispatch and retain a reference to the packet
-                // in the case that we are sharing the underlying byte array
-                final CompletableFuture<TelemetryMessage> future = dispatcher.send(msg);
+            // Build the message to dispatch
+            final TelemetryMessage msg = new TelemetryMessage(remoteAddress, buffer);
 
-                // Pass exception if dispatching fails
-                // FIXME: fooker - use futures everywhere
+            // Dispatch and retain a reference to the packet
+            // in the case that we are sharing the underlying byte array
+            final CompletableFuture<TelemetryMessage> future = dispatcher.send(msg);
+
+            // Pass exception if dispatching fails
+            // FIXME: fooker - use futures everywhere
 //        future.handle((result, ex) -> {
 //            if (ex != null) {
 //                ctx.fireExceptionCaught(ex);
 //            }
 //            return result;
 //        });
-            }
-        };
+        }
+    }
+
+    @Override
+    public SimpleUdpParser createUdpParser(final String name,
+                                           final Map<String, String> parameters,
+                                           final AsyncDispatcher<TelemetryMessage> dispatcher) {
+        return new Parser(name, dispatcher);
     }
 }

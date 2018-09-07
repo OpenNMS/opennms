@@ -108,10 +108,6 @@ public class SimpleTcpListener implements Listener {
                                         ctx.close();
                                     }
                                 });
-
-                        // TODO: fooker: Implement.
-//                                .addLast(new TcpPacketDecoder(ch.remoteAddress(), ch.localAddress(), session))
-//.addLast(new PacketHandler(Protocol.IPFIX, TcpListener.this.dispatcher))
                     }
                 })
                 .bind(address)
