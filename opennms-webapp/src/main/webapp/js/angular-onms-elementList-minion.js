@@ -67,7 +67,7 @@
 					$scope.$parent.items = value;
 
 					if (value && value.length > 0) {
-						var query = '(' + value.map(function(minion) {
+						var query = 'foreignSource=Minions;(' + value.map(function(minion) {
 							return 'foreignId==' + minion.id;
 						}).join(',') + ')';
 
