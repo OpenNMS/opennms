@@ -47,6 +47,13 @@
 
 		$scope.minionNodes = {};
 
+		$scope.getLink = function(minion) {
+			if (minion && $scope.minionNodes[minion.id + '\0' + minion.location]) {
+				return 'element/node.jsp?node=' + $scope.minionNodes[minion.id + '\0' + minion.location].id;
+			}
+			return undefined;
+		};
+
 		// Set the default sort and set it on $scope.$parent.query
 		$scope.$parent.defaults.orderBy = 'label';
 		$scope.$parent.query.orderBy = 'label';
@@ -67,7 +74,7 @@
 					$scope.$parent.items = value;
 
 					if (value && value.length > 0) {
-						var query = 'foreignSource=Minions;(' + value.map(function(minion) {
+						var query = '(' + value.map(function(minion) {
 							return 'foreignId==' + minion.id;
 						}).join(',') + ')';
 
@@ -83,7 +90,7 @@
 								}
 								for (var i=0; i < response.data.node.length; i++) {
 									node = response.data.node[i];
-									minionNodes[node.foreignId] = node;
+									minionNodes[node.foreignId + '\0' + node.location] = node;
 								}
 								$scope.minionNodes = minionNodes;
 							}

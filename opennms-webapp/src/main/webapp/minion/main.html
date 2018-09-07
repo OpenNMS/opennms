@@ -207,10 +207,10 @@
 
 				<tr ng-repeat="item in items">
 					<td class="text-nowrap" style="line-height:24px;">
-						<span ng-if="minionNodes[item.id]">
-							<a href="element/node.jsp?node={{minionNodes[item.id].id}}">{{item.id}}</a>
+						<span ng-if="getLink(item)">
+							<a href="{{getLink(item)}}">{{item.id}}</a>
 						</span>
-						<span ng-if="!minionNodes[item.id]">
+						<span ng-if="!getLink(item)">
 							{{item.id}}
 						</span>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'EQ',value:item.id})"><i class="fa fa-plus-square-o fa-lg"/></a>
