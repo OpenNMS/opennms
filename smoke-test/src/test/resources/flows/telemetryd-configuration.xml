@@ -4,7 +4,7 @@
         <parameter key="port" value="50000"/>
         <parameter key="host" value="0.0.0.0"/>
 
-        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" enabled="true" queue="Netflow-5" />
+        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5" enabled="true" queue="Netflow-5" />
     </listener>
 
     <queue name="Netflow-5">
