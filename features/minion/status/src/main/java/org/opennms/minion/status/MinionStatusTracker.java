@@ -225,8 +225,7 @@ public class MinionStatusTracker implements InitializingBean {
             if (minion != null) {
                 final String minionId = minion.getId();
                 LOG.debug("Minion node {}({}) deleted.", nodeId, minionId);
-                updateStateIfChanged(minion, AggregateMinionStatus.down(), m_state.get(minionId));
-                m_minions.remove(minionId);
+                updateStateIfChanged(minion, null, m_state.get(minionId));
                 m_state.remove(minionId);
             }
         });
@@ -303,7 +302,6 @@ public class MinionStatusTracker implements InitializingBean {
             dbMinions.forEach(minion -> {
                 final String minionId = minion.getId();
                 minions.put(minionId, minion);
-                state.put(minionId, upStatus);
             });
 
             // populate the nodeId -> minion map
@@ -323,6 +321,9 @@ public class MinionStatusTracker implements InitializingBean {
                 final OnmsMinion m = minions.get(node.getForeignId());
                 if (m.getLocation().equals(node.getLocation().getLocationName())) {
                     minionNodes.put(node.getId(), m);
+                    // if the minion has an associated node, give it a default "up" status
+                    // this will get marked "down" if there are associated outages
+                    state.put(node.getForeignId(), upStatus);
                 }
             });
 
@@ -391,9 +392,20 @@ public class MinionStatusTracker implements InitializingBean {
 
     private void updateStateIfChanged(final OnmsMinion minion, final AggregateMinionStatus current, final AggregateMinionStatus previous) {
         final String minionId = minion.getId();
-        m_state.put(minionId, current);
-
         final String currentMinionStatus = minion.getStatus();
+
+        if (current == null) {
+            LOG.debug("Minion {} does not have a state. This is likely because it does not have a monitored node in the 'Minions' requisition.", minionId);
+            if (!"unknown".equals(currentMinionStatus)) {
+                minion.setStatus("unknown");
+                LOG.info("Minion {} status changed: {} -> {}", minionId, currentMinionStatus, minion.getStatus());
+                m_minionDao.saveOrUpdate(minion);
+            }
+            m_state.remove(minionId);
+            return;
+        }
+
+        m_state.put(minionId, current);
         final String newMinionStatus = current.isUp()? "up":"down";
 
         if (newMinionStatus.equals(currentMinionStatus)) {
