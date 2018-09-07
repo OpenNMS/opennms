@@ -320,7 +320,7 @@ public class NodeMapsApplication extends UI {
                 URL pageUrl = Page.getCurrent().getLocation().toURL();
                 setHeaderHtml(m_headerProvider.getHeaderHtml(new HttpServletRequestVaadinImpl(m_request, pageUrl)));
             } catch (final Exception e) {
-                LOG.error("failed to get header HTML for request " + m_request.getPathInfo(), e.getCause());
+                LOG.error("failed to get header HTML for request " + m_request.getPathInfo(), e);
             }
         }
         if (m_headerHtml != null) {
