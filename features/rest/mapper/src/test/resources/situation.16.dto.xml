@@ -41,9 +41,14 @@
   <x733ProbableCause>0</x733ProbableCause>
    <relatedAlarms id="32" type="2" severity="MAJOR">
       <reductionKey>ALARM2</reductionKey>
+      <label>OpenNMS-defined node event: interfaceDown</label>
+      <logMessage>logit again</logMessage>
    </relatedAlarms>
    <relatedAlarms id="34" type="2" severity="CRITICAL">
       <reductionKey>ALARM1</reductionKey>
       <description>ALARM1-DESC</description>
+      <label>OpenNMS-defined node event: interfaceDown</label>
+      <logMessage>logit</logMessage>
    </relatedAlarms>
+   <affectedNodeCount>2</affectedNodeCount>
 </alarm>

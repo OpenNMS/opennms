@@ -1217,6 +1217,20 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 
     @Transient
     @XmlTransient
+    public Integer getAffectedNodeCount() {
+        if (m_relatedAlarms == null || m_relatedAlarms.isEmpty()) {
+            return m_node == null ? 0 : 1;
+        }
+        Set<Integer> nodes = m_relatedAlarms.stream().map(OnmsAlarm::getNode).filter(Objects::nonNull).map(OnmsNode::getId).collect(Collectors.toSet());
+        // count the Situtation's node if it is different
+        if (m_node != null) {
+            nodes.add(m_node.getId());
+        }
+        return nodes.size();
+    }
+
+    @Transient
+    @XmlTransient
     public Date getLastUpdateTime() {
         if (getLastAutomationTime() != null && getLastAutomationTime().compareTo(getLastEventTime()) > 0) {
             return getLastAutomationTime();
