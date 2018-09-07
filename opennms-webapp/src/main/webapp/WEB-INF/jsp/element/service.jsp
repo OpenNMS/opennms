@@ -77,9 +77,11 @@
 
     Map<String,String> parameters = new TreeMap<String,String>();
     Map<String,String> xmlParams  = new TreeMap<String,String>();
+    Long interval = null;
     if (lastPkg != null) {
         for (Service s : lastPkg.getServices()) {
             if (s.getName().equalsIgnoreCase(serviceName)) {
+                interval = s.getInterval();
                 for (Parameter p : s.getParameters()) {
                     if (p.getKey().toLowerCase().contains("password")) {
                         continue; // Hide passwords for security reasons
@@ -96,6 +98,7 @@
         }
         pageContext.setAttribute("parameters", parameters);
         pageContext.setAttribute("xmlParams", xmlParams);
+        pageContext.setAttribute("interval", interval);
     }
 %>
 
@@ -198,6 +201,13 @@ function doDelete() {
                 <th>Monitor Class</th>
                 <td>${monitorClass}</td>
               </tr>
+                <tr>
+                    <th>Interval</th>
+                    <c:choose>
+                        <c:when test="${interval != null}"><td>${interval}</td></c:when>
+                        <c:otherwise><td>Unknown</td></c:otherwise>
+                    </c:choose>
+                </tr>
             </table>
             </div>
             <!-- simple parameters box -->
