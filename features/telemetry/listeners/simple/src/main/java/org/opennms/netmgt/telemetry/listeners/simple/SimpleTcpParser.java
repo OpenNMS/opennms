@@ -38,7 +38,6 @@ import org.opennms.netmgt.telemetry.api.receiver.Parser;
 
 public interface SimpleTcpParser extends Parser {
     interface Handler {
-        // TODO: Use a more specific exception?
         void parse(final ByteBuffer buffer) throws Exception;
     }
 

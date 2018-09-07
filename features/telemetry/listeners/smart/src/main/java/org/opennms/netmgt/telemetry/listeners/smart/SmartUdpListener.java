@@ -113,7 +113,6 @@ public class SmartUdpListener implements Listener {
                                     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
                                         LOG.warn("Invalid packet: {}", cause.getMessage());
                                         LOG.debug("", cause);
-                                        // FIXME was: AbstractUdpListener.this.sessionManager.drop(ch.remoteAddress(), ch.localAddress());
                                     }
                                 });
                     }

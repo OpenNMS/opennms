@@ -58,7 +58,13 @@ public abstract class UdpParserBase extends ParserBase {
 
     public final void parse(final ByteBuffer buffer, final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) throws Exception {
         final Session session = this.sessionManager.getSession(remoteAddress, localAddress);
-        this.transmit(this.parse(session, buffer), remoteAddress);
+
+        try {
+            this.transmit(this.parse(session, buffer), remoteAddress);
+        } catch (Exception e) {
+            this.sessionManager.drop(remoteAddress, localAddress);
+            throw e;
+        }
     }
 
     public void start(final EventLoopGroup eventLoopGroup) {

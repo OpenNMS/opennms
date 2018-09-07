@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.telemetry.api.receiver;
 
-import java.util.Set;
-
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 
 import io.netty.channel.EventLoopGroup;
