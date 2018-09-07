@@ -28,7 +28,9 @@
 
 package org.opennms.features.distributed.coordination.zookeeper;
 
+import static com.jayway.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.net.ServerSocket;
 import java.util.ArrayList;
@@ -45,6 +47,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.features.distributed.coordination.api.DomainManager;
 import org.opennms.features.distributed.coordination.api.Role;
+
+import com.jayway.awaitility.core.ConditionTimeoutException;
 
 /**
  * Integration tests for {@link ZookeeperDomainManager}.
@@ -69,7 +73,7 @@ public class ZookeeperDomainManagerIT {
             freePort = socket.getLocalPort();
         }
 
-        testServer = new TestingServer(freePort, tempFolder.getRoot());
+        testServer = new TestingServer(freePort, tempFolder.getRoot(), false);
         managerFactory = new ZookeeperDomainManagerFactory(testServer.getConnectString(), "test.namespace");
         manager = managerFactory.getManagerForDomain(domain);
     }
@@ -77,6 +81,16 @@ public class ZookeeperDomainManagerIT {
     @After
     public void cleanup() throws Exception {
         testServer.stop();
+    }
+
+    /**
+     * Tests to make sure we do not become active if Zookeeper is not available.
+     */
+    @Test(expected = ConditionTimeoutException.class)
+    public void testWithZookeeperDown() {
+        register();
+        await().atMost(10, TimeUnit.SECONDS).until(activeFuture::isDone);
+        fail("Became active when we shouldn't have");
     }
 
     /**
