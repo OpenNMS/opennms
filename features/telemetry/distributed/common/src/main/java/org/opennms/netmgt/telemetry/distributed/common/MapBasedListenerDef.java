@@ -69,8 +69,7 @@ public class MapBasedListenerDef implements ListenerDefinition {
 
     @Override
     public List<? extends ParserDefinition> getParsers() {
-        // FIXME: Implement
-        return null;
+        return this.parsers;
     }
 
 }
