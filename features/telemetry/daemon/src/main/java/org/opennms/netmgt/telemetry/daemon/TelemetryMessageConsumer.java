@@ -35,6 +35,8 @@ import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.core.ipc.sink.api.MessageConsumer;
@@ -52,6 +54,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.Sets;
+
 
 public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessage, TelemetryProtos.TelemetryMessageLog> {
     private final Logger LOG = LoggerFactory.getLogger(TelemetryMessageConsumer.class);
@@ -61,10 +65,10 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
 
     private final QueueDefinition protocolDef;
     private final TelemetrySinkModule sinkModule;
-    private final List<AdapterDefinition> adapterDefs = new ArrayList<>();
+    private final List<AdapterDefinition> adapterDefs;
 
     // Actual adapters implementing the logic
-    private final List<Adapter> adapters;
+    private final Set<Adapter> adapters = Sets.newHashSet();
 
     public TelemetryMessageConsumer(QueueConfig queueConfig, TelemetrySinkModule sinkModule) throws Exception {
         this(queueConfig,
@@ -77,8 +81,7 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
                                         TelemetrySinkModule sinkModule) {
         this.protocolDef = Objects.requireNonNull(protocolDef);
         this.sinkModule = Objects.requireNonNull(sinkModule);
-        this.adapters = new ArrayList(adapterDefs);
-
+        this.adapterDefs = new ArrayList(adapterDefs);
     }
 
     @PostConstruct
