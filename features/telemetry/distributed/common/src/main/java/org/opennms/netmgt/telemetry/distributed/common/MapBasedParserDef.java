@@ -28,28 +28,26 @@
 
 package org.opennms.netmgt.telemetry.distributed.common;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import org.opennms.netmgt.telemetry.config.api.ListenerDefinition;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
 import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
 
-public class MapBasedListenerDef implements ListenerDefinition {
+public class MapBasedParserDef implements ParserDefinition {
     private final String name;
     private final String className;
+    private final String queue;
     private final Map<String, String> parameters;
-    private final List<MapBasedParserDef> parsers;
 
-    public MapBasedListenerDef(final PropertyTree definition) {
+    public MapBasedParserDef(final PropertyTree definition) {
         this.name = definition.getRequiredString("name");
         this.className = definition.getRequiredString("class-name");
+        this.queue = definition.getRequiredString("queue");
 
-        this.parameters = definition.getMap("listener");
-
-        this.parsers = definition.getSubTrees("parsers").values().stream()
-                .map(MapBasedParserDef::new)
-                .collect(Collectors.toList());
+        this.parameters = definition.getMap("parser");
     }
 
     @Override
@@ -63,14 +61,12 @@ public class MapBasedListenerDef implements ListenerDefinition {
     }
 
     @Override
-    public Map<String, String> getParameterMap() {
-        return parameters;
-    }
-
-    @Override
-    public List<? extends ParserDefinition> getParsers() {
-        // FIXME: Implement
+    public String getQueue() {
         return null;
     }
 
+    @Override
+    public Map<String, String> getParameterMap() {
+        return parameters;
+    }
 }

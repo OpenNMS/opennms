@@ -43,8 +43,8 @@ import org.opennms.netmgt.telemetry.daemon.TelemetryMessageConsumer;
 import org.opennms.netmgt.telemetry.distributed.common.MapBasedAdapterDef;
 import org.opennms.netmgt.telemetry.distributed.common.MapBasedListenerDef;
 import org.opennms.netmgt.telemetry.distributed.common.MapBasedQueueDef;
-import org.opennms.netmgt.telemetry.distributed.common.MapUtils;
 import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
+import org.opennms.netmgt.telemetry.distributed.common.PropertyTree;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ManagedServiceFactory;
@@ -93,11 +93,11 @@ public class AdapterManager implements ManagedServiceFactory {
         }
 
         // Convert the dictionary to a map
-        final Map<String, String> parameters = MapUtils.fromDict(properties);
+        final PropertyTree definition = PropertyTree.from(properties);
 
         // Build the protocol and listener definitions
-        final QueueDefinition protocolDef = new MapBasedQueueDef(parameters);
-        final AdapterDefinition adapterDef = new MapBasedAdapterDef(parameters);
+        final QueueDefinition protocolDef = new MapBasedQueueDef(definition);
+        final AdapterDefinition adapterDef = new MapBasedAdapterDef(definition); // FIXME: This is wrong!
 
         // Register health check
         final AdapterHealthCheck healthCheck = new AdapterHealthCheck(adapterDef);

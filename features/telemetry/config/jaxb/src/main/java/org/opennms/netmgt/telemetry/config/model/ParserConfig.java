@@ -57,7 +57,7 @@ public class ParserConfig implements ParserDefinition {
 
     @XmlAttribute(name="queue", required=true)
     @XmlIDREF()
-    private QueueConfig queue;
+    private QueueConfig queueRef;
 
     @XmlAttribute(name="enabled")
     private boolean enabled;
@@ -81,12 +81,12 @@ public class ParserConfig implements ParserDefinition {
         this.className = className;
     }
 
-    public QueueConfig getQueue() {
-        return this.queue;
+    public QueueConfig getQueueRef() {
+        return this.queueRef;
     }
 
-    public void setQueue(final QueueConfig queue) {
-        this.queue = queue;
+    public void setQueueRef(final QueueConfig queueRef) {
+        this.queueRef = queueRef;
     }
 
     public boolean isEnabled() {
@@ -112,20 +112,25 @@ public class ParserConfig implements ParserDefinition {
     }
 
     @Override
+    public String getQueue() {
+        return this.queueRef.getName();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final ParserConfig that = (ParserConfig) o;
         return Objects.equals(this.name, that.name) &&
                 Objects.equals(this.className, that.className) &&
-                Objects.equals(this.queue, that.queue) &&
+                Objects.equals(this.queueRef, that.queueRef) &&
                 Objects.equals(this.enabled, that.enabled) &&
                 Objects.equals(this.parameters, that.parameters);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.name, this.className, this.queue, this.enabled, this.parameters);
+        return Objects.hash(this.name, this.className, this.queueRef, this.enabled, this.parameters);
     }
 
     @Override
@@ -133,7 +138,7 @@ public class ParserConfig implements ParserDefinition {
         return MoreObjects.toStringHelper(this)
                 .add("name", this.name)
                 .add("class-name", this.className)
-                .add("queue", this.queue)
+                .add("queue", this.queueRef.getName())
                 .add("enabled", this.enabled)
                 .add("parameters", this.parameters)
                 .toString();

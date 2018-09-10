@@ -28,9 +28,11 @@
 
 package org.opennms.netmgt.telemetry.distributed.common;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.MapUtils;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
 
@@ -39,11 +41,11 @@ public class MapBasedAdapterDef implements AdapterDefinition {
     private final String className;
     private final Map<String, String> parameters;
 
-    public MapBasedAdapterDef(Map<String, String> parameters) {
-        name = MapUtils.getRequiredString("name", parameters);
-        className = MapUtils.getRequiredString("class-name", parameters);
-        // Extract the keys from the map that are prefixed with "listener."
-        this.parameters = MapUtils.filterKeysByPrefix(parameters, "adapter.");
+    public MapBasedAdapterDef(final PropertyTree definition) {
+        this.name = definition.getRequiredString("name");
+        this.className = definition.getRequiredString("class-name");
+
+        this.parameters = definition.getMap("adapter");
     }
 
     @Override
@@ -63,8 +65,7 @@ public class MapBasedAdapterDef implements AdapterDefinition {
 
     @Override
     public List<? extends PackageDefinition> getPackages() {
-        // FIXME: Implement
-        return null;
+        return Collections.emptyList();
     }
 
 }

@@ -145,7 +145,7 @@ public class Telemetryd implements SpringServiceDaemon {
             final Set<Parser> parsers = listenerConfig.getParsers().stream()
                     .filter(ParserConfig::isEnabled)
                     .map(parserConfig -> listenerFactory.parser(parserConfig)
-                            .create(this.dispatchers.get(parserConfig.getQueue())))
+                            .create(this.dispatchers.get(parserConfig.getQueueRef())))
                     .collect(Collectors.toSet());
 
             final Listener listener = listenerFactory.create(listenerConfig.getName(), listenerConfig.getParameterMap(), parsers);

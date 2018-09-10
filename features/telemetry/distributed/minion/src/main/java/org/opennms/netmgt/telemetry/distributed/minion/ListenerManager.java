@@ -37,13 +37,12 @@ import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.telemetry.common.Beans;
 import org.opennms.netmgt.telemetry.distributed.common.MapBasedListenerDef;
 import org.opennms.netmgt.telemetry.distributed.common.MapBasedQueueDef;
-import org.opennms.netmgt.telemetry.distributed.common.MapUtils;
 import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
+import org.opennms.netmgt.telemetry.distributed.common.PropertyTree;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ManagedServiceFactory;
@@ -87,11 +86,11 @@ public class ListenerManager implements ManagedServiceFactory {
         }
 
         // Convert the dictionary to a map
-        final Map<String, String> parameters = MapUtils.fromDict(properties);
+        final PropertyTree definition = PropertyTree.from(properties);
 
         // Build the protocol and listener definitions
-        final MapBasedQueueDef protocolDef = new MapBasedQueueDef(parameters);
-        final MapBasedListenerDef listenerDef = new MapBasedListenerDef(parameters);
+        final MapBasedQueueDef protocolDef = new MapBasedQueueDef(definition);
+        final MapBasedListenerDef listenerDef = new MapBasedListenerDef(definition); // FIXME: This is wrong!
 
         // Register health check
         final ListenerHealthCheck healthCheck = new ListenerHealthCheck(listenerDef);

@@ -31,7 +31,9 @@ package org.opennms.netmgt.telemetry.distributed.common;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections.MapUtils;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.config.api.QueueDefinition;
 
@@ -41,13 +43,19 @@ public class MapBasedQueueDef implements QueueDefinition {
     private final Optional<Integer> queueSize;
     private final Optional<Integer> batchSize;
     private final Optional<Integer> batchInterval;
+    private final List<MapBasedAdapterDef> adapters;
 
-    public MapBasedQueueDef(Map<String, String> parameters) {
-        name = MapUtils.getRequiredString("name", parameters);
-        threads = MapUtils.getOptionalInteger("threads", parameters);
-        queueSize = MapUtils.getOptionalInteger("queue.size", parameters);
-        batchSize = MapUtils.getOptionalInteger("batch.size", parameters);
-        batchInterval = MapUtils.getOptionalInteger("batch.interval", parameters);
+    public MapBasedQueueDef(final PropertyTree definition) {
+        this.name = definition.getRequiredString("name");
+
+        this.threads = definition.getOptionalInteger("threads");
+        this.queueSize = definition.getOptionalInteger("queue.size");
+        this.batchSize = definition.getOptionalInteger("batch.size");
+        this.batchInterval = definition.getOptionalInteger("batch.interval");
+
+        this.adapters = definition.getSubTrees("adapters").values().stream()
+                .map(MapBasedAdapterDef::new)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -77,8 +85,7 @@ public class MapBasedQueueDef implements QueueDefinition {
 
     @Override
     public List<? extends AdapterDefinition> getAdapters() {
-        // FIXME: Implement
-        return null;
+        return this.adapters;
     }
 
 }
