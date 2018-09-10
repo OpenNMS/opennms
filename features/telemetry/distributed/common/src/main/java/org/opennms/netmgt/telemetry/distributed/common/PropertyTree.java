@@ -115,12 +115,6 @@ public class PropertyTree {
                 .orElseGet(Collections::emptyMap);
     }
 
-    public PropertyTree getSubTree(final String... path) {
-        return this.find(path)
-                .map(PropertyTree::new)
-                .orElseGet(PropertyTree::new);
-    }
-
     public Map<String, PropertyTree> getSubTrees(final String... path) {
         return this.find(path)
                 .map(node -> Maps.transformValues(node.children, PropertyTree::new))

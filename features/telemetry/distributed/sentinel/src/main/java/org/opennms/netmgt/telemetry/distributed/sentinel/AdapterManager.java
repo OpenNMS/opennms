@@ -95,8 +95,8 @@ public class AdapterManager implements ManagedServiceFactory {
         final PropertyTree definition = PropertyTree.from(properties);
 
         // Build the protocol and listener definitions
-        final QueueDefinition protocolDef = new MapBasedQueueDef(definition);
-        final AdapterDefinition adapterDef = new MapBasedAdapterDef(definition); // FIXME: This is wrong!
+//        final QueueDefinition queueDef = new MapBasedQueueDef(definition);
+        final MapBasedAdapterDef adapterDef = new MapBasedAdapterDef(definition);
 
         // Register health check
         final AdapterHealthCheck healthCheck = new AdapterHealthCheck(adapterDef);
@@ -105,11 +105,11 @@ public class AdapterManager implements ManagedServiceFactory {
 
         try {
             // Create the Module
-            final TelemetrySinkModule sinkModule = new TelemetrySinkModule(protocolDef);
+            final TelemetrySinkModule sinkModule = new TelemetrySinkModule(adapterDef);
             sinkModule.setDistPollerDao(distPollerDao);
 
             // Create the consumer
-            final TelemetryMessageConsumer consumer = new TelemetryMessageConsumer(protocolDef, Lists.newArrayList(adapterDef), sinkModule);
+            final TelemetryMessageConsumer consumer = new TelemetryMessageConsumer(adapterDef, Lists.newArrayList(adapterDef), sinkModule);
             consumer.setAdapterRegistry(telemetryAdapterRegistry);
             consumer.init();
             messageConsumerManager.registerConsumer(consumer);

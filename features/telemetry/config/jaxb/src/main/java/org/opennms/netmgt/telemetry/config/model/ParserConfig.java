@@ -81,7 +81,6 @@ public class ParserConfig implements ParserDefinition {
         this.className = className;
     }
 
-    @Override
     public QueueConfig getQueue() {
         return this.queue;
     }

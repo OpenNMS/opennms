@@ -35,22 +35,17 @@ import java.util.Map;
 import org.apache.commons.collections.MapUtils;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
+import org.opennms.netmgt.telemetry.config.api.QueueDefinition;
 
-public class MapBasedAdapterDef implements AdapterDefinition {
-    private final String name;
+public class MapBasedAdapterDef extends MapBasedQueueDef implements AdapterDefinition {
     private final String className;
     private final Map<String, String> parameters;
 
     public MapBasedAdapterDef(final PropertyTree definition) {
-        this.name = definition.getRequiredString("name");
+        super(definition);
+
         this.className = definition.getRequiredString("class-name");
-
         this.parameters = definition.getMap("adapter");
-    }
-
-    @Override
-    public String getName() {
-        return name;
     }
 
     @Override

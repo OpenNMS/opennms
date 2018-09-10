@@ -36,7 +36,5 @@ public interface ParserDefinition {
 
     String getClassName();
 
-    QueueDefinition getQueue();
-
     Map<String, String> getParameterMap();
 }

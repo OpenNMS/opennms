@@ -31,33 +31,20 @@ package org.opennms.netmgt.telemetry.distributed.common;
 import java.util.Map;
 import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
 
-public class MapBasedParserDef implements ParserDefinition {
-    private final String name;
+public class MapBasedParserDef extends MapBasedQueueDef implements ParserDefinition {
     private final String className;
-    private final MapBasedQueueDef queue;
     private final Map<String, String> parameters;
 
     public MapBasedParserDef(final PropertyTree definition) {
-        this.name = definition.getRequiredString("name");
+        super(definition);
+
         this.className = definition.getRequiredString("class-name");
-        this.queue = new MapBasedQueueDef(definition.getSubTree("queue"));
-
         this.parameters = definition.getMap("parser");
-    }
-
-    @Override
-    public String getName() {
-        return name;
     }
 
     @Override
     public String getClassName() {
         return className;
-    }
-
-    @Override
-    public MapBasedQueueDef getQueue() {
-        return this.queue;
     }
 
     @Override

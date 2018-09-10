@@ -30,14 +30,20 @@ package org.opennms.netmgt.telemetry.distributed.minion;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.telemetry.api.receiver.Parser;
+import org.opennms.netmgt.telemetry.common.Beans;
 import org.opennms.netmgt.telemetry.distributed.common.MapBasedListenerDef;
+import org.opennms.netmgt.telemetry.distributed.common.MapBasedParserDef;
 import org.opennms.netmgt.telemetry.distributed.common.MapBasedQueueDef;
 import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
@@ -64,9 +70,14 @@ public class ListenerManager implements ManagedServiceFactory {
     private MessageDispatcherFactory messageDispatcherFactory;
     private DistPollerDao distPollerDao;
 
-    private Map<String, Listener> listenersByPid = new LinkedHashMap<>();
-    private Map<String, AsyncDispatcher<TelemetryMessage>> dispatchersByPid = new LinkedHashMap<>();
-    private Map<String, ServiceRegistration<HealthCheck>> healthChecksById = new LinkedHashMap<>();
+    private static class Entity {
+        private Listener listener = null;
+        private Set<Parser> parsers = new HashSet<>();
+        private Set<AsyncDispatcher<TelemetryMessage>> dispatchers = new HashSet<>();
+        private ServiceRegistration<HealthCheck> healthCheck = null;
+    }
+
+    private Map<String, Entity> entities = new LinkedHashMap<>();
 
     private BundleContext bundleContext;
 
@@ -77,47 +88,55 @@ public class ListenerManager implements ManagedServiceFactory {
 
     @Override
     public void updated(String pid, Dictionary<String, ?> properties) {
-        final Listener existingListener = listenersByPid.get(pid);
-        if (existingListener != null) {
+        if (this.entities.containsKey(pid)) {
             LOG.info("Updating existing listener/dispatcher for pid: {}", pid);
             deleted(pid);
         } else {
             LOG.info("Creating new listener/dispatcher for pid: {}", pid);
         }
 
+        final Entity entity = new Entity();
+
         // Convert the dictionary to a map
         final PropertyTree definition = PropertyTree.from(properties);
 
         // Build the protocol and listener definitions
-        final MapBasedQueueDef protocolDef = new MapBasedQueueDef(definition);
-        final MapBasedListenerDef listenerDef = new MapBasedListenerDef(definition); // FIXME: This is wrong!
+        final MapBasedListenerDef listenerDef = new MapBasedListenerDef(definition);
 
         // Register health check
         final ListenerHealthCheck healthCheck = new ListenerHealthCheck(listenerDef);
-        final ServiceRegistration<HealthCheck> serviceRegistration = bundleContext.registerService(HealthCheck.class, healthCheck, null);
-        healthChecksById.put(pid, serviceRegistration);
-
-        // Create Module
-        final TelemetrySinkModule sinkModule = new TelemetrySinkModule(protocolDef);
-        sinkModule.setDistPollerDao(distPollerDao);
-        final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
+        entity.healthCheck = bundleContext.registerService(HealthCheck.class, healthCheck, null);
 
         try {
-            // FIXME: Reactivate
-//            final Listener listener = Beans.buildListener(listenerDef, dispatcher);
-//            listener.start();
-//            listenersByPid.put(pid, listener);
-//            dispatchersByPid.put(pid, dispatcher);
+            final Listener.Factory listenerFactory = Beans.createFactory(Listener.Factory.class, listenerDef.getClassName());
+
+            // Create Parsers
+            for (final MapBasedParserDef parserDef : listenerDef.getParsers()) {
+                final TelemetrySinkModule sinkModule = new TelemetrySinkModule(parserDef);
+                sinkModule.setDistPollerDao(distPollerDao);
+                final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
+
+                entity.dispatchers.add(dispatcher);
+
+                final Parser parser = listenerFactory.parser(parserDef).create(dispatcher);
+                entity.parsers.add(parser);
+            }
+
+            entity.listener = listenerFactory.create(listenerDef.getName(), listenerDef.getParameterMap(), entity.parsers);
+            entity.listener.start();
 
             // At this point the listener should be up and running,
             // so we mark the underlying health check as success
             healthCheck.markSucess();
+
         } catch (Exception e) {
             // In case of error, we mark the health check as failure as well
             healthCheck.markError(e);
             LOG.error("Failed to build listener.", e);
             try {
-                dispatcher.close();
+                for (final AsyncDispatcher<TelemetryMessage> dispatcher : entity.dispatchers) {
+                    dispatcher.close();
+                }
             } catch (Exception ee) {
                 LOG.error("Failed to close dispatcher.", e);
             }
@@ -128,24 +147,34 @@ public class ListenerManager implements ManagedServiceFactory {
 
     @Override
     public void deleted(String pid) {
-        healthChecksById.get(pid).unregister();
-        final Listener listener = listenersByPid.remove(pid);
-        if (listener != null) {
+        final Entity entity = this.entities.remove(pid);
+
+        entity.healthCheck.unregister();
+
+        if (entity.listener != null) {
             LOG.info("Stopping listener for pid: {}", pid);
             try {
-                listener.stop();
+                entity.listener.stop();
             } catch (InterruptedException e) {
-                LOG.error("Error occured while stopping listener for pid: {}", pid, e);
+                LOG.error("Error occurred while stopping listener for pid: {}", pid, e);
             }
         }
 
-        final AsyncDispatcher<TelemetryMessage> dispatcher = dispatchersByPid.remove(pid);
-        if (dispatcher != null) {
+        for (final Parser parser : entity.parsers) {
+            LOG.info("Closing parser for pid: {}", pid);
+            try {
+                parser.stop();
+            } catch (Exception e) {
+                LOG.error("Error occurred while closing parser for pid: {}", pid, e);
+            }
+        }
+
+        for (final AsyncDispatcher<TelemetryMessage> dispatcher : entity.dispatchers) {
             LOG.info("Closing dispatcher for pid: {}", pid);
             try {
                 dispatcher.close();
             } catch (Exception e) {
-                LOG.error("Error occured while closing dispatcher for pid: {}", pid, e);
+                LOG.error("Error occurred while closing dispatcher for pid: {}", pid, e);
             }
         }
     }
@@ -155,7 +184,7 @@ public class ListenerManager implements ManagedServiceFactory {
     }
 
     public void destroy() {
-        new ArrayList<>(listenersByPid.keySet()).forEach(pid -> deleted(pid));
+        new ArrayList<>(this.entities.keySet()).forEach(pid -> deleted(pid));
         LOG.info("ListenerManager stopped.");
     }
 

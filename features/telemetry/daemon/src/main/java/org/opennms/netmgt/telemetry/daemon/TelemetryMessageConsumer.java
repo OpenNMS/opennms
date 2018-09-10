@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.daemon;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -60,24 +61,23 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
 
     private final QueueDefinition protocolDef;
     private final TelemetrySinkModule sinkModule;
-    private final List<org.opennms.netmgt.telemetry.config.api.AdapterDefinition> adapterDefs = new ArrayList<>();
+    private final List<AdapterDefinition> adapterDefs = new ArrayList<>();
 
     // Actual adapters implementing the logic
     private final List<Adapter> adapters;
 
-    public TelemetryMessageConsumer(QueueDefinition protocol, TelemetrySinkModule sinkModule) throws Exception {
-        this(protocol,
-                protocol.getAdapters().stream().map(adapter -> (org.opennms.netmgt.telemetry.config.api.AdapterDefinition) adapter).collect(Collectors.toList()),
+    public TelemetryMessageConsumer(QueueConfig queueConfig, TelemetrySinkModule sinkModule) throws Exception {
+        this(queueConfig,
+                queueConfig.getAdapters(),
                 sinkModule);
     }
 
     public TelemetryMessageConsumer(QueueDefinition protocolDef,
-                                        List<org.opennms.netmgt.telemetry.config.api.AdapterDefinition> adapterDef,
+                                        Collection<? extends AdapterDefinition> adapterDefs,
                                         TelemetrySinkModule sinkModule) {
         this.protocolDef = Objects.requireNonNull(protocolDef);
         this.sinkModule = Objects.requireNonNull(sinkModule);
-        this.adapters = new ArrayList<>(adapterDef.size());
-        this.adapterDefs.addAll(adapterDef);
+        this.adapters = new ArrayList(adapterDefs);
 
     }
 

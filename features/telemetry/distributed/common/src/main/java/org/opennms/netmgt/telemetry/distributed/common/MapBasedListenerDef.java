@@ -68,7 +68,7 @@ public class MapBasedListenerDef implements ListenerDefinition {
     }
 
     @Override
-    public List<? extends ParserDefinition> getParsers() {
+    public List<MapBasedParserDef> getParsers() {
         return this.parsers;
     }
 

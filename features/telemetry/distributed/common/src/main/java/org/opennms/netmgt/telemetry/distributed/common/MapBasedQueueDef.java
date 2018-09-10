@@ -82,10 +82,4 @@ public class MapBasedQueueDef implements QueueDefinition {
     public Optional<Integer> getQueueSize() {
         return queueSize;
     }
-
-    @Override
-    public List<? extends AdapterDefinition> getAdapters() {
-        return this.adapters;
-    }
-
 }

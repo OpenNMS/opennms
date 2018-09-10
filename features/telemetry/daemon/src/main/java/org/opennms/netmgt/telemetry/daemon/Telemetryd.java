@@ -120,8 +120,6 @@ public class Telemetryd implements SpringServiceDaemon {
                 LOG.debug("Setting up adapter: {}", adapterConfig.getName());
 
                 // Create the consumer, but don't start it yet
-                // FIXME: Dispatch to all adapters in queue
-//                final TelemetryMessageConsumer consumer = new TelemetryMessageConsumer(adapterConfig, sinkModule);
                 final TelemetryMessageConsumer consumer = new TelemetryMessageConsumer(queueConfig, sinkModule);
                 beanFactory.autowireBean(consumer);
                 beanFactory.initializeBean(consumer, "consumer");
@@ -145,7 +143,7 @@ public class Telemetryd implements SpringServiceDaemon {
             final Set<Parser> parsers = listenerConfig.getParsers().stream()
                     .filter(ParserConfig::isEnabled)
                     .map(parserConfig -> listenerFactory.parser(parserConfig)
-                            .create(this.dispatchers.get(parserConfig.getQueueRef())))
+                            .create(this.dispatchers.get(parserConfig.getQueue())))
                     .collect(Collectors.toSet());
 
             final Listener listener = listenerFactory.create(listenerConfig.getName(), listenerConfig.getParameterMap(), parsers);
@@ -209,100 +207,6 @@ public class Telemetryd implements SpringServiceDaemon {
 
         LOG.info("{} is stopped.", NAME);
     }
-
-//    @Override
-//    public synchronized void start() throws Exception {
-//        if (consumers.size() > 0) {
-//            throw new IllegalStateException(NAME + " is already started.");
-//        }
-//        LOG.info("{} is starting.", NAME);
-//        final TelemetrydConfig config = telemetrydConfigDao.getContainer().getObject();
-//        final AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
-//
-//        for (Protocol protocol : config.getProtocols()) {
-//            if (!protocol.getEnabled()) {
-//                LOG.debug("Skipping disabled protocol: {}", protocol.getName());
-//                continue;
-//            }
-//            LOG.debug("Setting up protocol: {}", protocol.getName());
-//
-//            // Create a Sink module using the protocol definition.
-//            // This allows for protocol to each have their respective queues and thread
-//            // related settings to help limit the impact of one protocol on another.
-//            final TelemetrySinkModule sinkModule = new TelemetrySinkModule(protocol);
-//            beanFactory.autowireBean(sinkModule);
-//            beanFactory.initializeBean(sinkModule, "sinkModule");
-//
-//            // Create the consumer, but don't start it yet
-//            final TelemetryMessageConsumer consumer = new TelemetryMessageConsumer(protocol, sinkModule);
-//            beanFactory.autowireBean(consumer);
-//            beanFactory.initializeBean(consumer, "consumer");
-//            consumers.add(consumer);
-//
-//            // Build the dispatcher, and all of
-//            final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
-//            dispatchers.add(dispatcher);
-//            for (org.opennms.netmgt.telemetry.config.model.Listener listenerDef : protocol.getListeners()) {
-//                listeners.add(ListenerFactory.buildListener(listenerDef, dispatcher));
-//            }
-//        }
-//
-//        // Start the consumers
-//        for (TelemetryMessageConsumer consumer : consumers) {
-//            LOG.info("Starting consumer for {} protocol.", consumer.getProtocol().getName());
-//            messageConsumerManager.registerConsumer(consumer);
-//        }
-//
-//        // Start the listeners
-//        for (Listener listener : listeners) {
-//            LOG.info("Starting {} listener.", listener.getName());
-//            listener.start();
-//        }
-//
-//        LOG.info("{} is started.", NAME);
-//    }
-//
-//    @Override
-//    public synchronized void destroy() {
-//        LOG.info("{} is stopping.", NAME);
-//
-//        // Stop the listeners
-//        for (Listener listener : listeners) {
-//            try {
-//                LOG.info("Stopping {} listener.", listener.getName());
-//                listener.stop();
-//            } catch (InterruptedException e) {
-//                LOG.warn("Error while stopping listener.", e);
-//            }
-//        }
-//        listeners.clear();
-//
-//        // Stop the dispatchers
-//        for (AsyncDispatcher<?> dispatcher : dispatchers) {
-//            try {
-//                LOG.info("Closing dispatcher.", dispatcher);
-//                dispatcher.close();
-//            } catch (Exception e) {
-//                LOG.warn("Error while closing dispatcher.", e);
-//            }
-//        }
-//        dispatchers.clear();
-//
-//        final AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
-//        // Stop the consumers
-//        for (TelemetryMessageConsumer consumer : consumers) {
-//            try {
-//                LOG.info("Stopping consumer for {} protocol.", consumer.getProtocol().getName());
-//                messageConsumerManager.unregisterConsumer(consumer);
-//            } catch (Exception e) {
-//                LOG.error("Error while stopping consumer.", e);
-//            }
-//            beanFactory.destroyBean(consumer);
-//        }
-//        consumers.clear();
-//
-//        LOG.info("{} is stopped.", NAME);
-//    }
 
     @Override
     public void afterPropertiesSet() {
