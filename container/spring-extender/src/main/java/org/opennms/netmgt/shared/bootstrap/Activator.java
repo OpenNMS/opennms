@@ -77,7 +77,6 @@ public class Activator implements BundleActivator {
         }
     }
 
-    // TODO MVR decide if we need this, or if this can be removed
     // UGLY HACK  !!
     // Gemini-listeners do not start application context within the activating bundle.
     // We use this implementation to manually invoke it

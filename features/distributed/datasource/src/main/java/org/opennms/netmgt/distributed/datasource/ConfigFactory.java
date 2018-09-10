@@ -28,21 +28,16 @@
 
 package org.opennms.netmgt.distributed.datasource;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.Objects;
 
 import javax.sql.DataSource;
 
 import org.opennms.core.db.ClosableDataSource;
-import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
-import org.opennms.netmgt.config.api.DatabaseSchemaConfig;
 import org.opennms.netmgt.config.opennmsDataSources.ConnectionPool;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 
 public class ConfigFactory {
-
-    private static DatabaseSchemaConfigFactory factory;
 
     public DataSource createDataSource(ConnectionPool connectionPool, JdbcDataSource jdbcDataSource) throws Exception {
         Objects.requireNonNull(connectionPool);
@@ -59,13 +54,4 @@ public class ConfigFactory {
         dataSource.setMaxSize(connectionPool.getMaxSize());
         return dataSource;
     }
-
-    public DatabaseSchemaConfig createDatabaseSchemaConfig() throws IOException {
-        if (factory == null) {
-            factory = new DatabaseSchemaConfigFactory();
-            factory.init();
-        }
-        return factory.getInstance();
-    }
-
 }

@@ -57,6 +57,18 @@ public class ScenarioResults {
         return alarmsByTime.get(lastTime);
     }
 
+    public List<OnmsAlarm> getSituations(long time) {
+        return getAlarms(time).stream()
+                .filter(OnmsAlarm::isSituation)
+                .collect(Collectors.toList());
+    }
+
+    public OnmsAlarm getSituation(long time) {
+        return getSituations(time).stream()
+                .findFirst()
+                .orElse(null);
+    }
+
     public OnmsAlarm getProblemAlarm(long time) {
         return getFirstAlarmWithType(time, OnmsAlarm.PROBLEM_TYPE, "problem");
     }

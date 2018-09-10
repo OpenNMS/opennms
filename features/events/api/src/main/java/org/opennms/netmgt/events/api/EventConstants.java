@@ -57,6 +57,11 @@ public abstract class EventConstants {
     //
 
     /**
+     * The situation event UEI.
+     */
+    public static final String SITUATION_EVENT_UEI = "uei.opennms.org/alarms/situation";
+
+    /**
      * The new suspect event UEI.
      */
     public static final String NEW_SUSPECT_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/discovery/newSuspect";

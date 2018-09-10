@@ -53,15 +53,14 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
-// TODO MVR ...
 /**
  * This {@link ManagedServiceFactory} for service pids that contain
- * telemetry listener definitions and manages their lifecycle by starting/updating
+ * telemetry adapter definitions and manages their lifecycle by starting/updating
  * and stopping them accordingly.
  *
- * See {@link MapBasedListenerDef} for a list of supported properties.
+ * See {@link MapBasedAdapterDef} for a list of supported properties.
  *
- * @author jwhite
+ * @author mvrueden
  */
 public class AdapterManager implements ManagedServiceFactory {
     private static final Logger LOG = LoggerFactory.getLogger(AdapterManager.class);
@@ -79,7 +78,7 @@ public class AdapterManager implements ManagedServiceFactory {
 
     @Override
     public String getName() {
-        return "Manages telemetry listener lifecycle.";
+        return "Manages telemetry adapter lifecycle.";
     }
 
     @Override

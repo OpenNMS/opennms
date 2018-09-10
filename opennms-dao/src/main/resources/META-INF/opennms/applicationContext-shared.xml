@@ -245,7 +245,6 @@
     <bean id="nodeLabel" class="org.opennms.netmgt.dao.hibernate.NodeLabelDaoImpl"/>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.NodeLabel" ref="nodeLabel" />
 
-    <!-- TODO MVR verify each DAO again and see if it is really working without etc/... -->
     <bean id="requisitionedCategoryAssociationDao" class="org.opennms.netmgt.dao.hibernate.RequisitionedCategoryAssociationDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>

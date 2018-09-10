@@ -156,7 +156,7 @@ public class SyslogReloadDaemonIT implements InitializingBean {
         File opennmsHome = Paths.get("src", "test", "resources", "opennms-home-reload").toFile();
         System.setProperty("opennms.home", opennmsHome.getAbsolutePath());
         EventBuilder eventBuilder = new EventBuilder("uei.opennms.org/internal/reloadDaemonConfig", "syslog-test");
-        eventBuilder.addParam("daemonName", "syslogd");
+        eventBuilder.addParam("daemonName", "Syslogd");
         m_syslogd.handleReloadEvent(eventBuilder.getEvent());
         SyslogdTestUtils.waitForSyslogdToReload();
         // test new port change in config 

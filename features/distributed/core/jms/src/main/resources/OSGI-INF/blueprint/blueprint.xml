@@ -18,7 +18,7 @@
     <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" />
 
     <!-- Connection factory used by the Camel component and shell commands -->
-    <bean id="jmsConnectionFactory" class="org.opennms.distribute.jms.impl.ScvEnabledActiveMQConnectionFactory">
+    <bean id="jmsConnectionFactory" class="org.opennms.distributed.jms.impl.ScvEnabledActiveMQConnectionFactory">
         <argument ref="brokerUrl"/>
         <argument ref="secureCredentialsVault"/>
         <argument value="opennms.broker"/>
@@ -51,8 +51,7 @@
 
     <!-- JMS HealthCheck -->
     <service interface="org.opennms.core.health.api.HealthCheck">
-        <!-- TODO MVR should be distributed -->
-        <bean class="org.opennms.distribute.jms.impl.JmsConnectionHealthCheck" >
+        <bean class="org.opennms.distributed.jms.impl.JmsConnectionHealthCheck" >
             <argument ref="blueprintBundleContext"/>
         </bean>
     </service>

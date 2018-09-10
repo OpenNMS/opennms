@@ -69,7 +69,10 @@ import com.google.common.util.concurrent.Striped;
 public class AlarmPersisterImpl implements AlarmPersister {
     private static final Logger LOG = LoggerFactory.getLogger(AlarmPersisterImpl.class);
 
+    public static final String RELATED_REDUCTION_KEY_PREFIX = "related-reductionKey";
+
     protected static final Integer NUM_STRIPE_LOCKS = Integer.getInteger("org.opennms.alarmd.stripe.locks", Alarmd.THREADS * 4);
+    protected static boolean NEW_IF_CLEARED = Boolean.getBoolean("org.opennms.alarmd.newIfClearedAlarmExists");
 
     @Autowired
     private AlarmDao m_alarmDao;
@@ -89,6 +92,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private Striped<Lock> lockStripes = StripedExt.fairLock(NUM_STRIPE_LOCKS);
 
     private final Set<AlarmPersisterExtension> extensions = Sets.newConcurrentHashSet();
+
+    private boolean m_createNewAlarmIfClearedAlarmExists = NEW_IF_CLEARED;
 
     @Override
     public OnmsAlarm persist(Event event) {
@@ -127,10 +132,19 @@ public class AlarmPersisterImpl implements AlarmPersister {
         LOG.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
         OnmsAlarm alarm = m_alarmDao.findByReductionKey(reductionKey);
 
-        if (alarm == null) {
+        if (alarm == null || (m_createNewAlarmIfClearedAlarmExists && OnmsSeverity.CLEARED.equals(alarm.getSeverity()))) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} not found, instantiating new alarm", reductionKey);
             }
+
+            if (alarm != null) {
+                LOG.debug("addOrReduceEventAsAlarm: \"archiving\" cleared Alarm for problem: {}; " +
+                        "A new alarm will be instantiated to manage the problem.", reductionKey);
+                alarm.archive();
+                m_alarmDao.save(alarm);
+                m_alarmDao.flush();
+            }
+
             alarm = createNewAlarm(e, event);
 
             // Trigger extensions, allowing them to mangle the alarm
@@ -298,7 +312,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private static boolean isRelatedReductionKeyWithContent(Parm param) {
         return param.getParmName() != null
                 // TOOD revisit using equals() when event_parameters table supports multiple params with the same name (see NMS-10214)
-                && param.getParmName().startsWith("related-reductionKey")
+                && param.getParmName().startsWith(RELATED_REDUCTION_KEY_PREFIX)
                 && param.getValue() != null
                 && param.getValue().getContent() != null;
     }
@@ -411,5 +425,13 @@ public class AlarmPersisterImpl implements AlarmPersister {
     public void onExtensionUnregistered(final AlarmPersisterExtension ext, final Map<String,String> properties) {
         LOG.debug("onExtensionUnregistered: {} with properties: {}", ext, properties);
         extensions.remove(ext);
+    }
+
+    public boolean isCreateNewAlarmIfClearedAlarmExists() {
+        return m_createNewAlarmIfClearedAlarmExists;
+    }
+
+    public void setCreateNewAlarmIfClearedAlarmExists(boolean createNewAlarmIfClearedAlarmExists) {
+        m_createNewAlarmIfClearedAlarmExists = createNewAlarmIfClearedAlarmExists;
     }
 }

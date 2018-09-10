@@ -1114,8 +1114,8 @@ CREATE TABLE alarm_situations (
     situation_id    INTEGER NOT NULL,
     related_alarm_id  INTEGER NOT NULL,
     
-    CONSTRAINT fk_alarm_situations_alarm_id FOREIGN KEY (related_alarm_id) REFERENCES alarms (alarmid),
-    CONSTRAINT fk_alarm_situations_situation_id FOREIGN KEY (situation_id) REFERENCES alarms (alarmid)
+    CONSTRAINT fk_alarm_situations_alarm_id FOREIGN KEY (related_alarm_id) REFERENCES alarms (alarmid) ON DELETE CASCADE,
+    CONSTRAINT fk_alarm_situations_situation_id FOREIGN KEY (situation_id) REFERENCES alarms (alarmid) ON DELETE CASCADE
 );
 
 CREATE UNIQUE INDEX alarm_situations_situation_id_alarms_alarmid_key ON alarm_situations(situation_id, related_alarm_id);
