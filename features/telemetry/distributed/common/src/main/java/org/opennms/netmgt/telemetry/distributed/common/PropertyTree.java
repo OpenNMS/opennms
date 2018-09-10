@@ -73,6 +73,14 @@ public class PropertyTree {
         this.root = root;
     }
 
+    private PropertyTree(Optional<String> value) {
+        this(new Node(value));
+    }
+
+    private PropertyTree() {
+        this(Optional.empty());
+    }
+
     public Optional<Node> find(final Iterable<String> path) {
         Node node = this.root;
         for (final String p : path) {
@@ -105,6 +113,12 @@ public class PropertyTree {
         return this.find(path)
                 .map(node -> Maps.transformValues(node.children, c -> c.getValue().get()))
                 .orElseGet(Collections::emptyMap);
+    }
+
+    public PropertyTree getSubTree(final String... path) {
+        return this.find(path)
+                .map(PropertyTree::new)
+                .orElseGet(PropertyTree::new);
     }
 
     public Map<String, PropertyTree> getSubTrees(final String... path) {
