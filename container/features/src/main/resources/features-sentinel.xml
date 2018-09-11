@@ -8,6 +8,9 @@
     <!-- OpenNMS Features -->
     <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features</repository>
 
+    <!-- Newts Features -->
+    <repository>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</repository>
+
     <!-- Required by sentinel-jms -->
     <feature name="geronimo-jms-api" description="Apache Geronimo :: JMS :: API" version="${geronimoVersion}">
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-annotation_1.0_spec/${geronimoVersion}</bundle>
@@ -154,7 +157,8 @@
         <feature>opennms-measurements-api</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-dao-api</feature>
-        <feature>opennms-newts</feature>
+        <feature>newts-cassandra</feature>
+        <feature>newts-cassandra-search</feature>
 
         <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-trees/concurrent-trees/2.5.0</bundle>
         <bundle dependency="true">mvn:com.lmax/disruptor/${lmaxDisruptorVersion}</bundle>
