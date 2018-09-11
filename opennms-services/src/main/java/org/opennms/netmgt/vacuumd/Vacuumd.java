@@ -47,6 +47,7 @@ import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Statement;
 import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
@@ -55,7 +56,6 @@ import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -350,8 +350,38 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     /** {@inheritDoc} */
     @Override
     public void onEvent(Event event) {
-        
-        if (isReloadConfigEvent(event)) {
+        if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
+            DaemonTools.handleReloadEvent(event, getName(), (e) -> {
+                LOG.debug("onEvent: Number of elements in schedule:{}; calling stop on scheduler...", m_scheduler.getScheduled());
+                stop();
+                ExecutorService runner = m_scheduler.getRunner();
+                while (!runner.isShutdown() || m_scheduler.getStatus() != STOPPED) {
+                    LOG.debug("onEvent: waiting for scheduler to stop. Current status of scheduler: {}; Current status of runner: {}", m_scheduler.getStatus(), (runner.isTerminated() ? "TERMINATED" : (runner.isShutdown() ? "SHUTDOWN" : "RUNNING")));
+                    Thread.sleep(500);
+                }
+                LOG.debug("onEvent: Current status of scheduler: {}; Current status of runner: {}", m_scheduler.getStatus(), (runner.isTerminated() ? "TERMINATED" : (runner.isShutdown() ? "SHUTDOWN" : "RUNNING")));
+                LOG.debug("onEvent: Number of elements in schedule: {}", m_scheduler.getScheduled());
+                LOG.debug("onEvent: reloading vacuumd configuration.");
+
+                VacuumdConfigFactory.reload();
+                LOG.debug("onEvent: creating new schedule and rescheduling automations.");
+
+                init();
+                LOG.debug("onEvent: restarting vacuumd and scheduler.");
+
+                start();
+                LOG.debug("onEvent: Number of elements in schedule: {}", m_scheduler.getScheduled());
+            }, (ex) -> {
+                if (ex instanceof IOException) {
+                    LOG.error("onEvent: IO problem reading vacuumd configuration", ex);
+                } else if (ex instanceof InterruptedException) {
+                    LOG.error("onEvent: Problem interrupting current Vacuumd Thread", ex);
+                }
+            });
+        }
+
+        //Depreciating this one...
+        if (EventConstants.RELOAD_VACUUMD_CONFIG_UEI.equals(event.getUei())) {
             handleReloadConifgEvent();
         }
     }
@@ -401,27 +431,6 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         if (ebldr != null) {
             m_eventMgr.sendNow(ebldr.getEvent());
         }
-    }
-
-    private boolean isReloadConfigEvent(Event event) {
-        boolean isTarget = false;
-        
-        if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
-            List<Parm> parmCollection = event.getParmCollection();
-            
-            for (Parm parm : parmCollection) {
-                if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Vacuumd".equalsIgnoreCase(parm.getValue().getContent())) {
-                    isTarget = true;
-                    break;
-                }
-            }
-        
-        //Depreciating this one...
-        } else if (EventConstants.RELOAD_VACUUMD_CONFIG_UEI.equals(event.getUei())) {
-            isTarget = true;
-        }
-        
-        return isTarget;
     }
 
     /**

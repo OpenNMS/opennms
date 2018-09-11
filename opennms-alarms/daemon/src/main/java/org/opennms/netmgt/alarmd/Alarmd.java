@@ -31,6 +31,7 @@ package org.opennms.netmgt.alarmd;
 import org.opennms.netmgt.alarmd.drools.DroolsAlarmContext;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.daemon.DaemonTools;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.ThreadAwareEventListener;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
@@ -78,7 +79,7 @@ public class Alarmd extends AbstractServiceDaemon implements ThreadAwareEventLis
      */
     @EventHandler(uei = EventHandler.ALL_UEIS)
     public void onEvent(Event e) {
-    	if (e.getUei().equals("uei.opennms.org/internal/reloadDaemonConfig")) {
+    	if (e.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI)) {
            handleReloadEvent(e);
            return;
     	}

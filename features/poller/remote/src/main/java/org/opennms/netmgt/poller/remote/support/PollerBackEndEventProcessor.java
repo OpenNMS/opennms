@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.poller.remote.support;
 
+import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
-import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -72,10 +72,7 @@ public class PollerBackEndEventProcessor {
      */
     @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleDaemonConfigChanged(final Event event) {
-        String daemon = EventUtils.getParm(event, EventConstants.PARM_DAEMON_NAME);
-        if ("PollerBackEnd".equalsIgnoreCase(daemon)) {
-            m_pollerBackEnd.configurationUpdated();
-        }
+        DaemonTools.handleReloadEvent(event, "PollerBackEnd", (e)-> m_pollerBackEnd.configurationUpdated());
     }
 
     /**

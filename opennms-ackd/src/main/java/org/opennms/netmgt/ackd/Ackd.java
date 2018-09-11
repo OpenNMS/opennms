@@ -30,13 +30,13 @@ package org.opennms.netmgt.ackd;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.netmgt.ackd.AckReader.AckReaderState;
 import org.opennms.netmgt.ackd.readers.ReaderSchedule;
+import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.AckdConfigurationDao;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
@@ -45,9 +45,7 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -313,49 +311,13 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
      */
     @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadConfigEvent(Event event) {
-        String specifiedDaemon = null;
-
         LOG.info("handleReloadConfigEvent: processing reload event: {}", event);
 
-        List<Parm> parms = event.getParmCollection();
-
-        for (Parm parm : parms) {
-            specifiedDaemon = parm.getValue().getContent();
-
-            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) 
-                    && getName().equalsIgnoreCase(specifiedDaemon)) {
-
-                LOG.debug("handleReloadConfigEvent: reload event is for this daemon: {}; reloading configuration...", getName());
-
-                try {
-                    m_configDao.reloadConfiguration();
-                    EventBuilder bldr = new EventBuilder(
-                                                         EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, 
-                                                         getName(), 
-                                                         Calendar.getInstance().getTime());
-                    bldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
-                    m_eventForwarder.sendNow(bldr.getEvent());
-
-                    LOG.debug("handleReloadConfigEvent: restarting readers due to reload configuration event...");
-                    this.restartReaders(true);
-                } catch (Throwable e) {
-                    LOG.error("handleReloadConfigEvent: ", e);
-                    EventBuilder bldr = new EventBuilder(
-                                                         EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, 
-                                                         getName(), 
-                                                         Calendar.getInstance().getTime());
-                    bldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
-                    bldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
-                    m_eventForwarder.sendNow(bldr.getEvent());
-                }
-
-                LOG.debug("handleReloadConfigEvent: configuration reloaded.");
-
-                return;  //return here because we are done.
-            }
-
-        }
-        LOG.debug("handleReloadConfigEvent: reload event not for this daemon: {}; daemon specified is: {}", getName(), specifiedDaemon);
+        DaemonTools.handleReloadEvent(event, NAME, (e) -> {
+            m_configDao.reloadConfiguration();
+            LOG.debug("handleReloadConfigEvent: restarting readers due to reload configuration event...");
+            this.restartReaders(true);
+        });
     }
 
     /**

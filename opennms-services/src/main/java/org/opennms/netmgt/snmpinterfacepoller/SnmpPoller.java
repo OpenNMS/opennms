@@ -29,12 +29,15 @@
 package org.opennms.netmgt.snmpinterfacepoller;
 
 
+import java.io.IOException;
+
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.network.IPAddress;
 import org.opennms.core.network.IPAddressRange;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpInterfacePollerConfig;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
@@ -241,14 +244,8 @@ public class SnmpPoller extends AbstractServiceDaemon {
     	for (OnmsIpInterface iface : getNetwork().getContext().getPollableNodes()) {
             schedulePollableInterface(iface);    		
     	}
-    }   
+    }
 
-    /**
-     * <p>schedulePollableInterface</p>
-     *
-     * @param nodeid a int.
-     * @param ipaddress a {@link java.lang.String} object.
-     */
     protected void schedulePollableInterface(OnmsIpInterface iface) {
         String ipaddress = iface.getIpAddress().getHostAddress();
         String netmask = null;
@@ -368,22 +365,27 @@ public class SnmpPoller extends AbstractServiceDaemon {
             }
         }
     }
-    
-    /**
-     * <p>reloadConfig</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    @EventHandler(uei = EventConstants.SNMPPOLLERCONFIG_CHANGED_EVENT_UEI)
+
+    @EventHandler(ueis = {EventConstants.SNMPPOLLERCONFIG_CHANGED_EVENT_UEI, EventConstants.RELOAD_DAEMON_CONFIG_UEI})
     public void reloadConfig(Event event) {
-        LOG.debug("reloadConfig: managing event: {}", event.getUei());
-        try {
-            getPollerConfig().update();
-            getNetwork().deleteAll();
-            scheduleExistingSnmpInterface();
-        } catch (Throwable e) {
-            LOG.error("Update SnmpPoller configuration file failed",e);
+        if(EventConstants.SNMPPOLLERCONFIG_CHANGED_EVENT_UEI.equals(event.getUei())) {
+            try {
+                doConfigReload(event);
+            } catch (Throwable e) {
+                LOG.error("Update SnmpPoller configuration file failed", e);
+            }
+        } else {
+            DaemonTools.handleReloadEvent(event, "SnmpPoller", e -> {
+                doConfigReload(e);
+            });
         }
+    }
+
+    private void doConfigReload(final Event event) throws IOException {
+        LOG.debug("reloadConfig: managing event: {}", event.getUei());
+        getPollerConfig().update();
+        getNetwork().deleteAll();
+        scheduleExistingSnmpInterface();
     }
 
     /**
