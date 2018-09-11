@@ -20,5 +20,6 @@
     <module>core</module>
     <module>dao</module>
     <module>datasource</module>
+    <module>coordination</module>
   </modules>
 </project>

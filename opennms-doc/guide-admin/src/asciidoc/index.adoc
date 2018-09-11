@@ -184,6 +184,9 @@ include::text/events/event-configuration.adoc[]
 
 [[ga-alarms]]
 == Alarms
+include::text/alarms/introduction.adoc[]
+include::text/alarms/alarmd.adoc[]
+include::text/alarms/configuring-alarms.adoc[]
 include::text/alarms/alarm-notes.adoc[]
 include::text/alarms/alarm-sound-flash.adoc[]
 

@@ -70,6 +70,7 @@ public class AlarmdBlackboxIT {
     @Test
     public void canTriggerAndClearAlarm() {
         Scenario scenario = Scenario.builder()
+                .withLegacyAlarmBehavior()
                 .withNodeDownEvent(1, 1)
                 .withNodeUpEvent(2, 1)
                 .build();
@@ -125,6 +126,7 @@ public class AlarmdBlackboxIT {
     @Test
     public void canFlapAlarm() {
         Scenario scenario = Scenario.builder()
+                .withLegacyAlarmBehavior()
                 .withNodeDownEvent(1, 1)
                 .withNodeUpEvent(2, 1)
                 .withNodeDownEvent(3, 1)
@@ -177,6 +179,7 @@ public class AlarmdBlackboxIT {
     @Test
     public void canTriggerAcknowledgeAndClearAlarm() {
         Scenario scenario = Scenario.builder()
+                .withLegacyAlarmBehavior()
                 .withNodeDownEvent(1, 1)
                 .withAcknowledgmentForNodeDownAlarm(2, 1)
                 .withNodeUpEvent(3, 1)
@@ -278,6 +281,7 @@ public class AlarmdBlackboxIT {
     @Test
     public void canCreateSituation() {
         Scenario scenario = Scenario.builder()
+                .withLegacyAlarmBehavior()
                 // Create some node down alarms
                 .withNodeDownEvent(1, 1)
                 .withNodeDownEvent(2, 2)
