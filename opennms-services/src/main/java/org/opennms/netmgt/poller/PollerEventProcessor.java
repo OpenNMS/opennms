@@ -41,10 +41,10 @@ import java.util.Set;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.pollables.PollableInterface;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
@@ -463,41 +463,12 @@ final class PollerEventProcessor implements EventListener {
     }
 
     private void reloadConfigHandler(Event event) {
-        final String daemonName = "Pollerd";
-        boolean isPoller = false;
-        for (Parm parm : event.getParmCollection()) {
-            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && daemonName.equalsIgnoreCase(parm.getValue().getContent())) {
-                isPoller = true;
-                break;
-            }
-        }
-        if (isPoller) {
-            LOG.info("reloadConfigHandler: reloading poller configuration");
-            final String targetFile = ConfigFileConstants.getFileName(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
-            EventBuilder ebldr = null;
-            try {
-                getPollerConfig().update();
-                rescheduleAllServices(event);
-                // Preparing successful event
-                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, daemonName);
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
-                ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
-            } catch (Throwable e) {
-                // Preparing failed event
-                LOG.error("reloadConfigHandler: Error reloading/processing poller configuration: {}", e.getMessage(), e);
-                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, daemonName);
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
-                ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
-                ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
-            }
-            finally {
-                if (ebldr != null) {
-                    getEventManager().sendNow(ebldr.getEvent());
-                }
-            }
-        } else {
-            LOG.warn("reloadConfigHandler: invalid parameters");
-        }
+
+        final String targetFile = ConfigFileConstants.getFileName(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
+        DaemonTools.handleReloadEvent(event, "Pollerd", targetFile, (e)->{
+            getPollerConfig().update();
+            rescheduleAllServices(e);
+        });
     }
 
     /**

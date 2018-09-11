@@ -30,6 +30,7 @@ package org.opennms.netmgt.statsd;
 
 import java.text.ParseException;
 
+import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
@@ -39,8 +40,6 @@ import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
-import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -101,47 +100,20 @@ public class Statsd implements SpringServiceDaemon {
      */
     @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadConfigEvent(Event e) {
-        
-        if (isReloadConfigEventTarget(e)) {
-            LOG.info("handleReloadConfigEvent: reloading configuration...");
-            EventBuilder ebldr = null;
 
+        DaemonTools.handleReloadEvent(e, "Statsd", (event) -> {
             LOG.debug("handleReloadConfigEvent: acquiring lock...");
             synchronized (m_scheduler) {
-                try {
-                    LOG.debug("handleReloadConfigEvent: lock acquired, unscheduling current reports...");
-                    unscheduleReports();
-                    m_reportDefinitionBuilder.reload();
-                    LOG.debug("handleReloadConfigEvent: config remarshaled, unscheduling current reports...");
-                    LOG.debug("handleReloadConfigEvent: reports unscheduled, rescheduling...");
-                    start();
-                    LOG.debug("handleRelodConfigEvent: reports rescheduled.");
-                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Statsd");
-                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
-                } catch (Throwable exception) {
-                    LOG.error("handleReloadConfigurationEvent: Error reloading configuration", exception);
-                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Statsd");
-                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
-                    ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
-                }
-                if (ebldr != null) {
-                    getEventForwarder().sendNow(ebldr.getEvent());
-                }
+                LOG.debug("handleReloadConfigEvent: lock acquired, unscheduling current reports...");
+                unscheduleReports();
+                m_reportDefinitionBuilder.reload();
+                LOG.debug("handleReloadConfigEvent: config remarshaled, unscheduling current reports...");
+                LOG.debug("handleReloadConfigEvent: reports unscheduled, rescheduling...");
+                start();
+                LOG.debug("handleRelodConfigEvent: reports rescheduled.");
             }
             LOG.debug("handleReloadConfigEvent: lock released.");
-        }
-        
-    }
-    
-    private boolean isReloadConfigEventTarget(Event event) {
-        boolean isTarget = false;
-        
-        if ("Statsd".equalsIgnoreCase(EventUtils.getParm(event, EventConstants.PARM_DAEMON_NAME))) {
-            isTarget = true;
-        }
-        
-        LOG.debug("isReloadConfigEventTarget: Statsd was target of reload event: {}", isTarget);
-        return isTarget;
+        });
     }
 
     /*
@@ -150,6 +122,7 @@ public class Statsd implements SpringServiceDaemon {
      *
      * Changed this to just throw Exception since nothing is actually done with each individual exception types.
      */
+
     /**
      * <p>start</p>
      *

@@ -65,6 +65,7 @@ import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
@@ -614,13 +615,6 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * Returns true if specified address/pkg pair is already represented in
      * the collectable services list. False otherwise.
-     * 
-     * @param iface
-     *            TODO
-     * @param spec
-     *            TODO
-     * @param svcName
-     *            TODO
      */
     private boolean alreadyScheduled(OnmsIpInterface iface, CollectionSpecification spec) {
         String ipAddress = str(iface.getIpAddress());
@@ -1099,6 +1093,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 break;
             }
         }
+
         if (isThresholds) {
             String thresholdsFile = ConfigFileConstants.getFileName(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
             String threshdFile = ConfigFileConstants.getFileName(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
@@ -1148,64 +1143,25 @@ public class Collectd extends AbstractServiceDaemon implements
         }
 
         final String collectionDaemonName = "Collectd";
-        boolean isCollection = false;
+
+        final String targetFile = ConfigFileConstants.getFileName(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
+
+        boolean isDataCollectionConfig = false;
         for (Parm parm : event.getParmCollection()) {
-            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && collectionDaemonName.equalsIgnoreCase(parm.getValue().getContent())) {
-                isCollection = true;
+            if (EventConstants.PARM_CONFIG_FILE_NAME.equals(parm.getParmName()) && targetFile.equalsIgnoreCase(parm.getValue().getContent())) {
+                isDataCollectionConfig = true;
                 break;
             }
         }
-        if (isCollection) {
-            final String targetFile = ConfigFileConstants.getFileName(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
-            boolean isDataCollectionConfig = false;
-            for (Parm parm : event.getParmCollection()) {
-                if (EventConstants.PARM_CONFIG_FILE_NAME.equals(parm.getParmName()) && targetFile.equalsIgnoreCase(parm.getValue().getContent())) {
-                    isDataCollectionConfig = true;
-                    break;
-                }
-            }
-            EventBuilder ebldr = null;
-            if (isDataCollectionConfig) {
-                try {
-                    DataCollectionConfigFactory.reload();
-                    // Preparing successful event
-                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Collectd");
-                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, collectionDaemonName);
-                    ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
-                } catch (Throwable e) {
-                    // Preparing failed event
-                    LOG.error("handleReloadDaemonConfig: Error reloading/processing datacollection configuration: {}", e.getMessage(), e);
-                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Collectd");
-                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, collectionDaemonName);
-                    ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
-                    ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
-                }
-                finally {
-                    if (ebldr != null) {
-                        getEventIpcManager().sendNow(ebldr.getEvent());
-                    }
-                }
-            } else {
-                final String cfgFile = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME);
-                try {
-                    m_collectdConfigFactory.reload();
-                    rebuildScheduler();
-                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Collectd");
-                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, collectionDaemonName);
-                    ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, cfgFile);
-                } catch (Throwable e) {
-                    LOG.error("handleReloadDaemonConfig: Error reloading/processing collectd configuration: {}", e.getMessage(), e);
-                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Collectd");
-                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, collectionDaemonName);
-                    ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, cfgFile);
-                    ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
-                }
-                finally {
-                    if (ebldr != null) {
-                        getEventIpcManager().sendNow(ebldr.getEvent());
-                    }
-                }
-            }
+
+        if (isDataCollectionConfig) {
+            DaemonTools.handleReloadEvent(event, collectionDaemonName, targetFile,  (e) -> DataCollectionConfigFactory.reload());
+        } else {
+            final String cfgFile = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME);
+            DaemonTools.handleReloadEvent(event, collectionDaemonName, cfgFile,  (e) -> {
+                m_collectdConfigFactory.reload();
+                rebuildScheduler();
+            });
         }
     }
     
@@ -1458,7 +1414,6 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>getScheduler</p>
      *
-     * @param scheduler a {@link org.opennms.netmgt.scheduler.Scheduler} object.
      */
     public Scheduler getScheduler() {
         if (m_scheduler == null) {
@@ -1467,11 +1422,6 @@ public class Collectd extends AbstractServiceDaemon implements
         return m_scheduler;
     }
 
-    /**
-     * <p>setCollectorConfigDao</p>
-     *
-     * @param collectdConfigFactory a {@link org.opennms.netmgt.dao.api.CollectorConfigDao} object.
-     */
     void setCollectdConfigFactory(CollectdConfigFactory collectdConfigFactory) {
         m_collectdConfigFactory = collectdConfigFactory;
     }

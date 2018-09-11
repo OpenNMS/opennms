@@ -35,10 +35,10 @@ import javax.sql.DataSource;
 
 import org.opennms.netmgt.config.EventTranslatorConfig;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
@@ -147,7 +147,16 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
     public void onEvent(Event e) {
 
         if (isReloadConfigEvent(e)) {
-            handleReloadEvent(e);
+            DaemonTools.handleReloadEvent(e, "EventTranslator", (event)->{
+                List<String> previousUeis = m_config.getUEIList();
+                m_config.update();
+
+                //need to re-register the UEIs not including those the daemon
+                //registered separate from the config (i.e. reloadDaemonConfig)
+                getEventManager().removeEventListener(this, previousUeis);
+                getEventManager().addEventListener(this, m_config.getUEIList());
+                LOG.debug("onEvent: configuration reloaded.");
+            });
             return;
         }
 
@@ -177,40 +186,6 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
         }
     }
 
-    /**
-     * Re-marshals the translator specs into the factory's config member and
-     * re-registers the UIEs with the eventProxy.
-     *
-     * @param e The reload daemon config event<code>Event</code>
-     */
-    protected void handleReloadEvent(Event e) {
-        LOG.info("onEvent: reloading configuration....");
-        EventBuilder ebldr = null;
-        try {
-            List<String> previousUeis = m_config.getUEIList();
-            m_config.update();
-
-            //need to re-register the UEIs not including those the daemon
-            //registered separate from the config (i.e. reloadDaemonConfig)
-            getEventManager().removeEventListener(this, previousUeis);
-            getEventManager().addEventListener(this, m_config.getUEIList());
-
-            LOG.debug("onEvent: configuration reloaded.");
-            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
-            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Translator");
-        } catch (Throwable exception) {
-            LOG.error("onEvent: reload config failed: {}", e, exception);
-            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
-            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Translator");
-            ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
-        }
-        if (ebldr != null) {
-            m_eventMgr.sendNow(ebldr.getEvent());
-        }
-
-        LOG.info("onEvent: reload configuration: reload configuration contains {} UEI specs.", m_config.getUEIList().size());
-    }
-
     private boolean isReloadConfigEvent(Event event) {
         boolean isTarget = false;
 
@@ -219,8 +194,9 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
             List<Parm> parmCollection = event.getParmCollection();
 
             for (Parm parm : parmCollection) {
-                if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && 
-                        "Translator".equalsIgnoreCase(parm.getValue().getContent())) {
+                if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) &&
+                        ("EventTranslator".equalsIgnoreCase(parm.getValue().getContent()) ||
+                                "Translator".equalsIgnoreCase(parm.getValue().getContent()))) {
                     isTarget = true;
                     break;
                 }

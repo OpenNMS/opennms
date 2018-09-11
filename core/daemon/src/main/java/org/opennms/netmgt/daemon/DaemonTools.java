@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.daemon;
 
+import java.util.function.Consumer;
+
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -36,13 +38,54 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.function.Consumer;
-
 public class DaemonTools {
+    /**
+     * Interface to accept the implementation of configuration reloading.
+     * This is used instead of {@link Consumer} as it allows throwing Exceptions
+     */
+    public interface Action<T> {
+        void accept(T t) throws Exception;
+    }
 
     public static final Logger LOG = LoggerFactory.getLogger(DaemonTools.class);
 
-    public static void handleReloadEvent(Event e, String daemonName, Consumer<Event> handleConfigurationChanged) {
+    /**
+     * @see #handleReloadEvent(Event, String, String, Action, Consumer)
+     */
+    public static void handleReloadEvent(Event e, String daemonName, Action<Event> handleConfigurationChanged) {
+        handleReloadEvent(e, daemonName, null, (event) -> handleConfigurationChanged.accept(event), null);
+    }
+
+    /**
+     * @see #handleReloadEvent(Event, String, String, Action, Consumer)
+     */
+    public static void handleReloadEvent(Event e, String daemonName, Action<Event> handleConfigurationChanged, Consumer<Exception> exceptionHandler) {
+        handleReloadEvent(e, daemonName, null, (event) -> handleConfigurationChanged.accept(event), (exception) -> exceptionHandler.accept(exception));
+    }
+
+    /**
+     * @see #handleReloadEvent(Event, String, String, Action, Consumer)
+     */
+    public static void handleReloadEvent(Event e, String daemonName, String targetFile, Action<Event> handleConfigurationChanged) {
+        handleReloadEvent(e, daemonName, targetFile, (event) -> handleConfigurationChanged.accept(event), null);
+    }
+
+    /**
+     * Handles the ReloadEvent of Daemons, to have a standardized way they are done.
+     *
+     * @param e                          the Reload Event with the uei {@link EventConstants#RELOAD_DAEMON_CONFIG_UEI}
+     * @param daemonName                 the Name of the daemon that should be updated, needed for the Name-check with the event-parameter
+     * @param targetFile                 the Name and path of the configfile, that will be reloaded
+     * @param handleConfigurationChanged An Action that handles the Configuration change (Can throw Exceptions)
+     * @param exceptionHandler           A Consumer that handles possible Exceptions from the given handleConfigurationChanged-Action (Can not throw Exceptions)
+     */
+    public static void handleReloadEvent(Event e, String daemonName, String targetFile, Action<Event> handleConfigurationChanged, Consumer<Exception> exceptionHandler) {
+
+        if (!EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(e.getUei())) {
+            LOG.warn("The event does not have the correct uei: {}. Ignoring.", EventConstants.RELOAD_DAEMON_CONFIG_UEI);
+            return;
+        }
+
         final Parm daemonNameParm = e.getParm(EventConstants.PARM_DAEMON_NAME);
         if (daemonNameParm == null || daemonNameParm.getValue() == null) {
             LOG.warn("The {} parameter has no value. Ignoring.", EventConstants.PARM_DAEMON_NAME);
@@ -56,14 +99,19 @@ public class DaemonTools {
             try {
                 handleConfigurationChanged.accept(e);
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, daemonName);
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
                 LOG.info("Reload successful.");
             } catch (Exception t) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(t);
+                }
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, daemonName);
                 ebldr.addParam(EventConstants.PARM_REASON, t.getLocalizedMessage().substring(0, 128));
                 LOG.error("Reload failed.", t);
             }
 
+            if (targetFile != null) {
+                ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
+            }
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
             EventIpcManagerFactory.getIpcManager().sendNow(ebldr.getEvent());
         }

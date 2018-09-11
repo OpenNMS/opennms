@@ -49,6 +49,7 @@ import org.opennms.core.tasks.Task;
 import org.opennms.core.tasks.TaskCoordinator;
 import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
+import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
@@ -270,7 +271,7 @@ public class Provisioner implements SpringServiceDaemon {
      * @param nodeId a {@link java.lang.Integer} object.
      * @param foreignSource a {@link java.lang.String} object.
      * @param foreignId a {@link java.lang.String} object.
-     * @param location a {@link org.opennms.netmgt.model.monitoringLocation.OnmsMonitoringLocation} object.
+     * @param location a {@link org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation} object.
      * @return a {@link org.opennms.netmgt.provision.service.NodeScan} object.
      */
     public NodeScan createNodeScan(Integer nodeId, String foreignSource, String foreignId, OnmsMonitoringLocation location) {
@@ -292,7 +293,6 @@ public class Provisioner implements SpringServiceDaemon {
     /**
      * <p>createForceRescanScan</p>
      *
-     * @param ipAddress a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.netmgt.provision.service.ForceRescanScan} object.
      */
     public ForceRescanScan createForceRescanScan(Integer nodeId) {
@@ -701,53 +701,11 @@ public class Provisioner implements SpringServiceDaemon {
      */
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadConfigEvent(Event e) {
-        
-        if (isReloadConfigEventTarget(e)) {
-            LOG.info("handleReloadConfigEvent: reloading configuration...");
-            EventBuilder ebldr = null;
-
-            try {
-                LOG.debug("handleReloadConfigEvent: lock acquired, unscheduling current reports...");
-                
-                m_importSchedule.rebuildImportSchedule();
-                
-                LOG.debug("handleRelodConfigEvent: reports rescheduled.");
-                
-                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Provisiond");
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond");
-                
-            } catch (Throwable exception) {
-                
-                LOG.error("handleReloadConfigurationEvent: Error reloading configuration", exception);
-                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Provisiond");
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond");
-                ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
-                
-            }
-            
-            if (ebldr != null) {
-                m_eventForwarder.sendNow(ebldr.getEvent());
-            }
-            LOG.info("handleReloadConfigEvent: configuration reloaded.");
-        }
-        
-    }
-    
-    private boolean isReloadConfigEventTarget(Event event) {
-        boolean isTarget = false;
-        
-        List<Parm> parmCollection = event.getParmCollection();
-        
-
-        for (Parm parm : parmCollection) {
-            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Provisiond".equalsIgnoreCase(parm.getValue().getContent())) {
-                isTarget = true;
-                break;
-            }
-        }
-        
-        LOG.debug("isReloadConfigEventTarget: Provisiond was target of reload event: {}", isTarget);
-        return isTarget;
+        DaemonTools.handleReloadEvent(e, "Provisiond", (event)->{
+            LOG.debug("handleReloadConfigEvent: lock acquired, unscheduling current reports...");
+            m_importSchedule.rebuildImportSchedule();
+            LOG.debug("handleRelodConfigEvent: reports rescheduled.");
+        });
     }
 
     /**
