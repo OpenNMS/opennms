@@ -605,6 +605,12 @@
       <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.xml/${project.version}</bundle>
     </feature>
+    
+    <feature name="opennms-core-ipc-sink-offheap" description="OpenNMS :: Core :: IPC :: Sink :: OffHeap" version="${project.version}">
+      <feature>opennms-core-ipc-sink-api</feature>
+      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.offheap/${project.version}</bundle>
+      <bundle>mvn:com.h2database/h2/1.4.197</bundle>
+    </feature>
 
     <!-- CAMEL -->
     <feature name="opennms-core-ipc-sink-camel-common" description="OpenNMS :: Core :: IPC :: Sink :: Camel :: Common" version="${project.version}">
