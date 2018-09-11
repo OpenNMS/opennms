@@ -118,7 +118,7 @@ public class SimpleIframeInVaadinApplication extends UI {
 			try {
 				setHeaderHtml(m_headerProvider.getHeaderHtml(((VaadinServletRequest) request).getHttpServletRequest()));
 			} catch (final Exception e) {
-				LOG.error("failed to get header HTML for request " + request.getPathInfo(), e.getCause());
+				LOG.error("failed to get header HTML for request " + request.getPathInfo(), e);
 			}
 		}
 		if (m_headerHtml != null) {
