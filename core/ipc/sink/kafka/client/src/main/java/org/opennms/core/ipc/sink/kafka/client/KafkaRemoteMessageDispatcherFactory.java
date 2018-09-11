@@ -108,8 +108,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             LOG.info("KafkaRemoteMessageDispatcherFactory: initializing the Kafka producer with: {}", kafkaConfig);
             final ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
             try {
-                // Class-loader hack for accessing the org.apache.kafka.common.serialization.ByteArraySerializer
-                Thread.currentThread().setContextClassLoader(null);
+                Thread.currentThread().setContextClassLoader(KafkaProducer.class.getClassLoader());
                 producer = new KafkaProducer<>(kafkaConfig);
             } finally {
                 Thread.currentThread().setContextClassLoader(currentClassLoader);
