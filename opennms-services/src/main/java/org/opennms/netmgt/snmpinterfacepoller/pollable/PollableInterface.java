@@ -150,11 +150,12 @@ public class PollableInterface {
    * @param retries a int.
    * @param hasMaxVarsPerPdu a boolean.
    * @param maxVarsPerPdu a int.
+   * @param suppressAdminDownEvent a boolean.
    * @return a {@link org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface} object.
    */
   public PollableSnmpInterface createPollableSnmpInterface(String name, String criteria, boolean hasPort, 
           int port, boolean hasTimeout, int timeout, boolean hasRetries, int retries, 
-          boolean hasMaxVarsPerPdu,int maxVarsPerPdu) {
+          boolean hasMaxVarsPerPdu, int maxVarsPerPdu, boolean suppressAdminDownEvent) {
 
         PollableSnmpInterface iface = new PollableSnmpInterface(this);
         iface.setName(name);
@@ -168,6 +169,7 @@ public class PollableInterface {
         if (hasMaxVarsPerPdu) agentConfig.setMaxVarsPerPdu(maxVarsPerPdu);
 
         iface.setAgentConfig(agentConfig);
+        iface.setSuppressAdminDownEvent(suppressAdminDownEvent);
                
         m_pollablesnmpinterface.put(name,iface);
         return iface;
