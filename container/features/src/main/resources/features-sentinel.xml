@@ -105,8 +105,10 @@
         <bundle>mvn:com.google.guava/guava/${guavaVersion}</bundle>
         <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.netflow/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.sflow/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.adapter/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.adapter/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.jti/org.opennms.features.telemetry.protocols.jti.adapter/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.nxos/org.opennms.features.telemetry.protocols.nxos.adapter/${project.version}</bundle>
     </feature>
 
     <!--Coordination-->

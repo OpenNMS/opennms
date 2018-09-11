@@ -141,10 +141,8 @@
       <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.simple/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.smart/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/${project.version}</bundle>
-      <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.netflow/${project.version}</bundle>
-      <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.sflow/${project.version}</bundle>
-      <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.nxos/${project.version}</bundle>
-      <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.jti/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.adapter/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.adapter/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.minion/${project.version}</bundle>
     </feature>
