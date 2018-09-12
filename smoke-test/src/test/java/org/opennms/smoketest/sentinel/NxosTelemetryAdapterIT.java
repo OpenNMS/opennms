@@ -36,10 +36,10 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.opennms.smoketest.OpenNMSSeleniumTestCase.BASIC_AUTH_PASSWORD;
 import static org.opennms.smoketest.OpenNMSSeleniumTestCase.BASIC_AUTH_USERNAME;
-import static org.opennms.smoketest.flow.FlowStackIT.sendNetflowPacket;
+import static org.opennms.smoketest.minion.NxosTelemetryIT.sendNxosTelemetryMessage;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -60,11 +60,11 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
-import org.opennms.smoketest.flow.FlowStackIT;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.RestClient;
+import org.opennms.smoketest.utils.TargetRoot;
 import org.opennms.test.system.api.NewTestEnvironment;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
@@ -75,10 +75,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
-/**
- * Verifies that sflow packets containing samples are also persisted if set up correctly
- */
-public class SFlowTelemetryAdapterIT {
+public class NxosTelemetryAdapterIT {
 
     @Rule
     public Timeout timeout = new Timeout(20, TimeUnit.MINUTES);
@@ -96,18 +93,21 @@ public class SFlowTelemetryAdapterIT {
             final TestEnvironmentBuilder builder = TestEnvironment.builder()
                     .opennms()
                     .minion()
-                    .es6()
                     .newts()
                     .sentinel();
 
-            // Enable Netflow 5 Adapter
+            // Enable NXOS Adapter
+            final Path opennmsSourceEtcDirectory = new TargetRoot(getClass()).getPath("system-test-resources", "etc");
             builder.withSentinelEnvironment()
-                    .addFile(getClass().getResource("/sentinel/features-newts-sflow.xml"), "deploy/features.xml")
-                    .addFile(getClass().getResource("/sentinel/sflow-host.groovy"), "etc/sflow-host.groovy");
+                    .addFile(getClass().getResource("/sentinel/features-newts-nxos.xml"), "deploy/features.xml")
+                    .addFile(getClass().getResource("/sentinel/cisco-nxos-telemetry-interface.groovy"), "etc/cisco-nxos-telemetry-interface.groovy")
+                    .addFiles(opennmsSourceEtcDirectory.resolve("resource-types.d"), "etc/resource-types.d")
+                    .addFiles(opennmsSourceEtcDirectory.resolve("datacollection"), "etc/datacollection")
+                    .addFile(opennmsSourceEtcDirectory.resolve("datacollection-config.xml"), "etc/datacollection-config.xml");
 
-            // Enable Flow-Listeners
+            // Enable NXOS-Listener
             builder.withMinionEnvironment()
-                    .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50003.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-sflow.cfg")
+                    .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50000-nxos.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-nxos.cfg")
             ;
 
             OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
@@ -123,10 +123,10 @@ public class SFlowTelemetryAdapterIT {
     }
 
     @Test
-    public void verifySflow() throws Exception {
+    public void verifyAdapter() throws Exception {
         // Determine endpoints
         final InetSocketAddress sentinelSshAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301);
-        final InetSocketAddress minionSflowListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, FlowStackIT.SFLOW_LISTENER_UDP_PORT, "udp");
+        final InetSocketAddress minionListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, 50000, "udp");
         final InetSocketAddress opennmsHttpAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8980);
         final InetSocketAddress postgresqlAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.POSTGRES, 5432);
 
@@ -141,7 +141,7 @@ public class SFlowTelemetryAdapterIT {
         createRequisition(opennmsHttpAddress, postgresqlAddress);
 
         // Wait until a route for SFlow procession is actually started
-        new KarafShell(sentinelSshAddress).verifyLog((output) -> output.contains("Route: Sink.Server.Telemetry-SFlow started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-SFlow"));
+        new KarafShell(sentinelSshAddress).verifyLog((output) -> output.contains("Route: Sink.Server.Telemetry-NXOS started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-NXOS"));
 
         // Now sentinel is up and running, we should re-sync the datasource,as the
         // earlier created node may not be visible to sentinel yet.
@@ -149,57 +149,50 @@ public class SFlowTelemetryAdapterIT {
 
         // Ensure no measurement data available
         final Response response = RestAssured.given().accept(ContentType.JSON)
-                .get("/measurements/node[telemetry-sflow:dummy-node].nodeSnmp[]/load_avg_5min");
+                .get("/measurements/node[telemetry-nxos:nexus9k].nodeSnmp[]/load_avg_1min");
         Assert.assertEquals(404, response.statusCode());
 
-        // Send flow packet to minion
-        sendNetflowPacket(minionSflowListenerAddress, "/flows/sflow2.dat"); // ? record
+        // Send nxos packet to minion
+        sendNxosTelemetryMessage(minionListenerAddress);
 
         await().atMost(3, TimeUnit.MINUTES).pollInterval(10, TimeUnit.SECONDS).until(
                 () -> {
                     final Response theResponse = RestAssured.given().accept(ContentType.JSON)
-                            .get("/measurements/node[telemetry-sflow:dummy-node].nodeSnmp[]/load_avg_5min");
+                            .get("/measurements/node[telemetry-nxos:nexus9k].nodeSnmp[]/load_avg_1min");
                     return theResponse.statusCode() == 200;
                 }
         );
     }
 
-    public void createRequisition(final InetSocketAddress opennmsHttpAddress, final InetSocketAddress postgresqlAddress) {
-        // Build requisition object
-        final List<RequisitionInterface> interfaces = new ArrayList<>();
-        final RequisitionInterface requisitionInterface = new RequisitionInterface();
-        requisitionInterface.setIpAddr("172.18.45.116"); // IP-Address from the sflow-package we are going to send
+    public static OnmsNode createRequisition(InetSocketAddress opennmsHttp, InetSocketAddress postgresAddress) {
+        final RestClient client = new RestClient(opennmsHttp);
+        final Requisition requisition = new Requisition("telemetry-nxos");
+        List<RequisitionInterface> interfaces = new ArrayList<>();
+        RequisitionInterface requisitionInterface = new RequisitionInterface();
+        requisitionInterface.setIpAddr("192.168.0.1");
         requisitionInterface.setManaged(true);
         requisitionInterface.setSnmpPrimary(PrimaryType.PRIMARY);
         interfaces.add(requisitionInterface);
-
-        final RequisitionNode node = new RequisitionNode();
-        node.setNodeLabel("Dummy-Node");
-        node.setForeignId("dummy-node");
+        RequisitionNode node = new RequisitionNode();
+        node.setNodeLabel("nexus9k");
+        node.setForeignId("nexus9k");
         node.setInterfaces(interfaces);
-        node.setLocation("MINION"); // The node must be in the same location as the sender, which is MINION
-
-        final Requisition requisition = new Requisition("telemetry-sflow");
+        node.setLocation("MINION");
+        node.setNodeLabel("nexus9k");
         requisition.insertNode(node);
-
-
-        // Create requisition and trigger import
-        final RestClient client = new RestClient(opennmsHttpAddress);
         client.addOrReplaceRequisition(requisition);
-        client.importRequisition("telemetry-sflow");
+        client.importRequisition("telemetry-nxos");
 
-        // Verify that node has been created
-        final HibernateDaoFactory daoFactory = new HibernateDaoFactory(postgresqlAddress);
-        final NodeDao nodeDao = daoFactory.getDao(NodeDaoHibernate.class);
+        HibernateDaoFactory daoFactory = new HibernateDaoFactory(postgresAddress);
+        NodeDao nodeDao = daoFactory.getDao(NodeDaoHibernate.class);
+
         final OnmsNode onmsNode = await().atMost(3, MINUTES).pollInterval(30, SECONDS)
                 .until(DaoUtils.findMatchingCallable(nodeDao, new CriteriaBuilder(OnmsNode.class)
-                        .eq("label", "Dummy-Node").toCriteria()), notNullValue());
-        assertNotNull(onmsNode);
-    }
+                        .eq("label", "nexus9k").toCriteria()), notNullValue());
 
-    public static void main(String[] args) throws IOException {
-//        final InetSocketAddress minionSflowListenerAddress = new InetSocketAddress("192.168.1.119", 32773);
-        final InetSocketAddress minionSflowListenerAddress = new InetSocketAddress("localhost", 50003);
-        sendNetflowPacket(minionSflowListenerAddress, "/flows/sflow2.dat"); // ? record
+        assertNotNull(onmsNode);
+
+        return onmsNode;
+
     }
 }
