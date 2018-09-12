@@ -69,6 +69,8 @@ public class PollableSnmpInterface implements ReadyRunnable {
         
     private SnmpAgentConfig m_agentConfig;
     
+    private boolean m_suppressInitializationEvent;
+
     public static class SnmpMinimalPollInterface {
         
     	static final int IF_UP=1;
@@ -165,18 +167,25 @@ public class PollableSnmpInterface implements ReadyRunnable {
     	
     	m_snmpinterfaces.clear();
         for (OnmsSnmpInterface iface: snmpinterfaces) {
-		LOG.debug("setting snmpinterface:", iface.toString());
         	if (iface != null && iface.getIfIndex() != null && iface.getIfIndex() > 0) {
         		final Integer oldStatus = oldStatuses.get(iface.getIfIndex());
                         LOG.debug("setting snmpinterface (oldStatus={}):{}", oldStatus, iface.toString());
-                        // Note: If OpenNMS is restarted, the event is going to be sent no matter if it was sent before, if the current status of the interface is down.        
                         m_snmpinterfaces.put(iface.getIfIndex(), iface);
-        		if (iface.getIfAdminStatus() != null &&
+                // ifOperStatus Down events will be sent after every restart, unless suppressInitializationEvent
+                // is enabled, which is likely to result in duplicate events for certain interfaces.
+                // (If an interface goes down while OpenNMS is stopped, doPoll() will handle the events at next run.)
+                if (iface.getIfAdminStatus() != null &&
         				iface.getIfAdminStatus().equals(SnmpMinimalPollInterface.IF_UP) && 
         				iface.getIfOperStatus() != null &&
         				iface.getIfOperStatus().equals(SnmpMinimalPollInterface.IF_DOWN) &&
         				(oldStatus == null || (iface.getIfOperStatus().intValue() != oldStatus.intValue()))) {
-        			sendOperDownEvent(iface);
+                    if (!getSuppressInitializationEvent()) {
+                        sendOperDownEvent(iface);
+                    } else {
+                        LOG.info("ifOperStatus for interface {} ({}) on nodeId {} was down during initialization, but suppressInitializationEvent is enabled.",
+                                iface.getIfIndex(), iface.getIfName(), iface.getNodeId()
+                        );
+                    }
         		}
         	}
         }
@@ -265,6 +274,24 @@ public class PollableSnmpInterface implements ReadyRunnable {
      */
     public void setName(String name) {
         m_name = name;
+    }
+
+    /**
+     * <p>getSuppressInitializationEvent</p>
+     *
+     * @return a boolean.
+     */
+    public boolean getSuppressInitializationEvent() {
+        return m_suppressInitializationEvent;
+    }
+
+    /**
+     * <p>setSuppressInitializationEvent</p>
+     *
+     * @param suppressInitializationEvent a boolean.
+     */
+    public void setSuppressInitializationEvent(boolean suppressInitializationEvent) {
+        m_suppressInitializationEvent = suppressInitializationEvent;
     }
 
     /**

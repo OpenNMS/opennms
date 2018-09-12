@@ -272,6 +272,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
     private void scheduleSnmpCollection(PollableInterface nodeGroup,String pkgName) {
     	
     	String excludingCriteria = new String(" snmpifindex > 0 ");
+        boolean suppressInitializationEvent = getPollerConfig().getSuppressInitializationEvent();
         for (String pkgInterfaceName: getPollerConfig().getInterfaceOnPackage(pkgName)) {
             LOG.debug("found package interface with name: {}", pkgInterfaceName);
             if (getPollerConfig().getStatus(pkgName, pkgInterfaceName)){
@@ -294,7 +295,8 @@ public class SnmpPoller extends AbstractServiceDaemon {
                 if (hasMaxVarsPerPdu) maxVarsPerPdu = getPollerConfig().getMaxVarsPerPdu(pkgName, pkgInterfaceName);
 
                 PollableSnmpInterface node = nodeGroup.createPollableSnmpInterface(pkgInterfaceName, criteria, 
-                   port != -1, port, timeout != -1, timeout, retries != -1, retries, hasMaxVarsPerPdu, maxVarsPerPdu);
+                   port != -1, port, timeout != -1, timeout, retries != -1, retries, hasMaxVarsPerPdu, maxVarsPerPdu,
+                   suppressInitializationEvent);
 
                 node.setSnmpinterfaces(getNetwork().getContext().get(node.getParent().getNodeid(), criteria));
 
@@ -306,7 +308,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
         if (!getPollerConfig().useCriteriaFilters()) {
             LOG.debug("excluding criteria used for default polling: {}", excludingCriteria);
             PollableSnmpInterface node = nodeGroup.createPollableSnmpInterface("null", excludingCriteria, 
-                false, -1, false, -1, false, -1, false, -1);
+                false, -1, false, -1, false, -1, false, -1, suppressInitializationEvent);
 
             node.setSnmpinterfaces(getNetwork().getContext().get(node.getParent().getNodeid(), excludingCriteria));
 

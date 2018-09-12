@@ -63,6 +63,16 @@
         </annotation>
       </attribute>    
 
+      <attribute type="boolean" default="false" name="suppressInitializationEvent" use="optional">
+        <annotation>
+          <documentation>Flag which toggles suppression of OperStatus Down events during initialization.
+          When this is enabled, no OperStatus Down events will be sent immediately after OpenNMS restarts,
+          Instead, the regular poller logic will handle events for any interfaces that went down while
+          OpenNMS while OpenNMS was not running.
+          </documentation>
+        </annotation>
+      </attribute>
+
       <attribute type="boolean" default="false" name="useCriteriaFilters" use="optional">
         <annotation>
           <documentation>Flag which indicates if the filters defined on packages and interface

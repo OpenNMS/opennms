@@ -82,6 +82,12 @@ public class SnmpInterfacePollerConfiguration implements Serializable {
     private Boolean m_suppressAdminDownEvent;
 
     /**
+     * Flag which toggles suppression of OperStatus Down events during initialization.
+     */
+    @XmlAttribute(name = "suppressInitializationEvent")
+    private Boolean m_suppressInitializationEvent;
+
+    /**
      * Flag which indicates if the filters defined on packages and interface
      *  criterias must be used to select the SNMP interfaces to be tracked by the
      * poller
@@ -136,6 +142,14 @@ public class SnmpInterfacePollerConfiguration implements Serializable {
         m_suppressAdminDownEvent = suppressAdminDownEvent;
     }
 
+    public Boolean getSuppressInitializationEvent() {
+        return m_suppressInitializationEvent != null ? m_suppressInitializationEvent : Boolean.FALSE;
+    }
+
+    public void setSuppressInitializationEvent(final Boolean suppressInitializationEvent) {
+        m_suppressInitializationEvent = suppressInitializationEvent;
+    }
+
     public Boolean getUseCriteriaFilters() {
         return m_useCriteriaFilters != null ? m_useCriteriaFilters : Boolean.FALSE;
     }
@@ -177,6 +191,7 @@ public class SnmpInterfacePollerConfiguration implements Serializable {
                             m_threads, 
                             m_service, 
                             m_suppressAdminDownEvent, 
+                            m_suppressInitializationEvent,
                             m_useCriteriaFilters, 
                             m_nodeOutage, 
                             m_packages);
@@ -194,6 +209,7 @@ public class SnmpInterfacePollerConfiguration implements Serializable {
                     && Objects.equals(this.m_threads, that.m_threads)
                     && Objects.equals(this.m_service, that.m_service)
                     && Objects.equals(this.m_suppressAdminDownEvent, that.m_suppressAdminDownEvent)
+                    && Objects.equals(this.m_suppressInitializationEvent, that.m_suppressInitializationEvent)
                     && Objects.equals(this.m_useCriteriaFilters, that.m_useCriteriaFilters)
                     && Objects.equals(this.m_nodeOutage, that.m_nodeOutage)
                     && Objects.equals(this.m_packages, that.m_packages);
