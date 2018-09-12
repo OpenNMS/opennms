@@ -214,6 +214,7 @@ include::text/provisioning/api-examples.adoc[]
 === Service Detectors
 include::text/provisioning/detectors/SnmpDetector.adoc[]
 include::text/provisioning/detectors/wsman.adoc[]
+include::text/provisioning/detectors/wsmanwql.adoc[]
 
 [[ga-bsm]]
 == Business Service Monitoring
