@@ -177,4 +177,19 @@
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.persistence.osgi/${project.version}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.newts/${project.version}</bundle>
     </feature>
+
+    <!-- NXOS -->
+    <feature name="sentinel-telemetry-nxos" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: NXOS" version="${project.version}">
+        <feature>sentinel-telemetry</feature>
+        <feature>opennms-telemetry-nxos</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
+    </feature>
+
+    <!-- JTI -->
+    <feature name="sentinel-telemetry-jti" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: JTI" version="${project.version}">
+        <feature>sentinel-telemetry</feature>
+        <feature>opennms-telemetry-jti</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
+    </feature>
+
 </features>

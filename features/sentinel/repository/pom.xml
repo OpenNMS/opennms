@@ -62,6 +62,8 @@
                                 <feature>sentinel-coordination-zookeeper</feature>
                                 <feature>sentinel-coordination-shell</feature>
                                 <feature>sentinel-newts</feature>
+                                <feature>sentinel-telemetry-nxos</feature>
+                                <feature>sentinel-telemetry-jti</feature>
 
                                 <!-- Other features -->
                                 <feature>hawtio-offline</feature>
