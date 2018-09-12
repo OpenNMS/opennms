@@ -367,17 +367,15 @@ public class PollableSnmpInterface implements ReadyRunnable {
                                 sendAdminUpEvent(iface);
                             }
                         }
-                        // There's no guarantee ifOperStatus was UP *before* the admin interface went down.
-                        // Because of this, it's probably safest to send an UP event, in case there are old alarms present.
-                        if (miface.getAdminstatus() == SnmpMinimalPollInterface.IF_UP && miface.getOperstatus() == SnmpMinimalPollInterface.IF_UP) {
-                            sendOperUpEvent(iface);
-                        }
                     }
-                    // Handle ifOperStatus changes, with the assumption that ifOperStatus will never change as long as ifAdminStatus remains DOWN
-                    else if (miface.getOperstatus() != iface.getIfOperStatus()) {
-                        LOG.info("ifOperStatus for interface {} ({}) has changed from {} to {}.",
-                                iface.getIfIndex(), iface.getIfName(), iface.getIfOperStatus(), miface.getOperstatus()
-                        );
+                    // Always generate events for ifOperStatus changes, even if the ifOperStatus changes because of ifAdminStatus going DOWN
+                    if (miface.getOperstatus() != iface.getIfOperStatus()) {
+                        // Don't bother logging if the ifAdminStatus changed, since we include ifOperStatus info there
+                        if (miface.getAdminstatus() == iface.getIfAdminStatus()) {
+                            LOG.info("ifOperStatus for interface {} ({}) has changed from {} to {}.",
+                                    iface.getIfIndex(), iface.getIfName(), iface.getIfOperStatus(), miface.getOperstatus()
+                            );
+                        }
                         // ifOperStatus has changed from Up to Down
                         if (miface.getOperstatus() == SnmpMinimalPollInterface.IF_DOWN) {
                             sendOperDownEvent(iface);
