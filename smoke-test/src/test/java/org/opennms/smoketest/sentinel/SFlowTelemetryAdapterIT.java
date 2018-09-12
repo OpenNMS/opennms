@@ -39,7 +39,6 @@ import static org.opennms.smoketest.OpenNMSSeleniumTestCase.BASIC_AUTH_USERNAME;
 import static org.opennms.smoketest.flow.FlowStackIT.sendNetflowPacket;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,11 +63,11 @@ import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.smoketest.flow.FlowStackIT;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
+import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.RestClient;
 import org.opennms.test.system.api.NewTestEnvironment;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.opennms.test.system.api.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,11 +142,11 @@ public class SFlowTelemetryAdapterIT {
         createRequisition(opennmsHttpAddress, postgresqlAddress);
 
         // Wait until a route for SFlow procession is actually started
-        waitForSentinelStartup(sentinelSshAddress);
+        new KarafShell(sentinelSshAddress).verifyLog((output) -> output.contains("Route: Sink.Server.Telemetry-SFlow started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-SFlow"));
 
         // Now sentinel is up and running, we should re-sync the datasource,as the
         // earlier created node may not be visible to sentinel yet.
-        syncDataSource(sentinelSshAddress);
+        new KarafShell(sentinelSshAddress).runCommand("nodecache:sync");
 
         // Ensure no measurement data available
         final Response response = RestAssured.given().accept(ContentType.JSON)
@@ -164,32 +163,6 @@ public class SFlowTelemetryAdapterIT {
                     return theResponse.statusCode() == 200;
                 }
         );
-    }
-
-    private void syncDataSource(InetSocketAddress sentinelSshAddress) {
-        // Sync DataSoucre
-        await().atMost(5, MINUTES)
-                .pollInterval(5, SECONDS)
-                .until(() -> {
-                    try (final SshClient sshClient = new SshClient(sentinelSshAddress, "admin", "admin")) {
-                        final PrintStream pipe = sshClient.openShell();
-                        pipe.println("nodecache:sync");
-                        pipe.println("log:display");
-                        pipe.println("logout");
-
-                        // Wait for karaf to process the commands
-                        await().atMost(10, SECONDS).until(sshClient.isShellClosedCallable());
-
-                        // Read stdout and verify
-                        final String shellOutput = sshClient.getStdout();
-                        logger.info("log:display");
-                        logger.info("{}", shellOutput);
-                        return true;
-                    } catch (Exception ex) {
-                        logger.error("Error while trying to verify sentinel startup: {}", ex.getMessage());
-                        return false;
-                    }
-                });
     }
 
     public void createRequisition(final InetSocketAddress opennmsHttpAddress, final InetSocketAddress postgresqlAddress) {
@@ -223,35 +196,6 @@ public class SFlowTelemetryAdapterIT {
                 .until(DaoUtils.findMatchingCallable(nodeDao, new CriteriaBuilder(OnmsNode.class)
                         .eq("label", "Dummy-Node").toCriteria()), notNullValue());
         assertNotNull(onmsNode);
-    }
-
-    // localhost:32781/opennms/rest/measurements/node%5btest:1536585523417%5d.nodeSnmp%5b%5d/load_avg_5min
-    private void waitForSentinelStartup(InetSocketAddress sentinelSshAddress) throws Exception {
-        // Ensure we are actually started the sink and are ready to listen for messages
-        await().atMost(5, MINUTES)
-                .pollInterval(5, SECONDS)
-                .until(() -> {
-                    try (final SshClient sshClient = new SshClient(sentinelSshAddress, "admin", "admin")) {
-                        final PrintStream pipe = sshClient.openShell();
-                        pipe.println("log:display");
-                        pipe.println("logout");
-
-                        // Wait for karaf to process the commands
-                        await().atMost(10, SECONDS).until(sshClient.isShellClosedCallable());
-
-                        // Read stdout and verify
-                        final String shellOutput = sshClient.getStdout();
-                        final String sentinelReadyString = "Route: Sink.Server.Telemetry-SFlow started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-SFlow";
-                        final boolean routeStarted = shellOutput.contains(sentinelReadyString);
-
-                        logger.info("log:display");
-                        logger.info("{}", shellOutput);
-                        return routeStarted;
-                    } catch (Exception ex) {
-                        logger.error("Error while trying to verify sentinel startup: {}", ex.getMessage());
-                        return false;
-                    }
-                });
     }
 
     public static void main(String[] args) throws IOException {
