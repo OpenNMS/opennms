@@ -110,10 +110,12 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
 
         clickMenuItem(mapsMenuName, "Topology", "topology");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(), 'Selection Context')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='navbar']//a[@name='nav-Maps-top']")));
 
         frontPage();
         clickMenuItem(mapsMenuName, "Geographical", "node-maps");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='Show Severity >=']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='navbar']//a[@name='nav-Maps-top']")));
 
         frontPage();
         final String adminMenuName = "name=nav-admin-top";
