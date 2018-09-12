@@ -28,9 +28,7 @@
 
 package org.opennms.netmgt.model;
 
-import org.opennms.netmgt.model.topology.Topology;
-
-public class OnmsTopologyEdge extends OnmsTopologyRef {
+public class OnmsTopologyEdge extends OnmsTopologyAbstractRef implements OnmsTopologyRef {
 
     private static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
     private static final String HTML_TOOLTIP_TAG_END  = "</p>";
@@ -56,7 +54,7 @@ public class OnmsTopologyEdge extends OnmsTopologyRef {
     
     private Integer m_sourceIfIndex;
     private Integer m_targetIfIndex;
-    private Topology.ProtocolSupported m_discoveredBy;
+    private OnmsTopologyProtocol m_discoveredBy;
 
     private OnmsTopologyEdge(String id, OnmsTopologyVertex source, OnmsTopologyVertex target) {
         super(id);
@@ -171,11 +169,11 @@ public class OnmsTopologyEdge extends OnmsTopologyRef {
         return tooltipText.toString();
     }
 
-    public Topology.ProtocolSupported getDiscoveredBy() {
+    public OnmsTopologyProtocol getDiscoveredBy() {
         return m_discoveredBy;
     }
 
-    public void setDiscoveredBy(Topology.ProtocolSupported discoveredBy) {
+    public void setDiscoveredBy(OnmsTopologyProtocol discoveredBy) {
         m_discoveredBy = discoveredBy;
     }
 

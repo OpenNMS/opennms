@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,31 +26,43 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.model;
 
-import java.util.Set;
-
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsTopology;
-import org.opennms.netmgt.model.OnmsTopologyConsumer;
-import org.opennms.netmgt.model.OnmsTopologyMessage;
-import org.opennms.netmgt.model.OnmsTopologyProtocol;
-import org.opennms.netmgt.model.OnmsTopologyUpdater;
-
-public interface TopologyDao {
-
-    OnmsNode getDefaultFocusPoint();
+public abstract class OnmsTopologyAbstractRef {
     
-    OnmsTopology getTopology(OnmsTopologyProtocol protocol);
+    private final String m_id;
+
+    public OnmsTopologyAbstractRef(String id) {
+        m_id= id;
+    }
+
+    public String getId() {
+        return m_id;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_id == null) ? 0 : m_id.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        OnmsTopologyAbstractRef other = (OnmsTopologyAbstractRef) obj;
+        if (m_id == null) {
+            if (other.m_id != null)
+                return false;
+        } else if (!m_id.equals(other.m_id))
+            return false;
+        return true;
+    }
     
-    Set<OnmsTopologyProtocol> getSupportedProtocols();
-
-    boolean register(OnmsTopologyUpdater updater);
-    boolean unregister(OnmsTopologyUpdater updater);
-
-    void subscribe(OnmsTopologyConsumer consumer);
-    void unsubscribe(OnmsTopologyConsumer consumer);
-    
-    void update(OnmsTopologyUpdater updater, OnmsTopologyMessage message);
-
 }

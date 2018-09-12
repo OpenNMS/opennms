@@ -132,8 +132,20 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         if (m_nodes.size() > 0 && m_linkdConfig.useBridgeDiscovery()) {
             scheduleDiscoveryBridgeDomain();
         }
+        if (m_nodes.size() > 0 && m_linkdConfig.useCdpDiscovery()) {
+            scheduleDiscoveryCdpTopology();
+        }
+
     }
     
+    public void scheduleDiscoveryCdpTopology() {
+        DiscoveryCdpTopology discoverycdp = new DiscoveryCdpTopology(this);
+        LOG.debug("scheduleDiscoveryCdpTopology: Scheduling {}",
+                  discoverycdp.getInfo());
+        discoverycdp.setScheduler(m_scheduler);
+        discoverycdp.schedule();
+    }
+
     public void scheduleDiscoveryBridgeDomain() {
             DiscoveryBridgeDomains discoverbridge=
                     new DiscoveryBridgeDomains(this);

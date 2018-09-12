@@ -30,12 +30,10 @@ package org.opennms.netmgt.model;
 
 
 import java.util.EnumMap;
-import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 
-import org.opennms.netmgt.model.topology.Topology;
-
-public class OnmsTopologyVertex extends OnmsTopologyRef {
+public class OnmsTopologyVertex extends OnmsTopologyAbstractRef implements OnmsTopologyRef {
 
     private static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
     private static final String HTML_TOOLTIP_TAG_END  = "</p>";
@@ -56,7 +54,7 @@ public class OnmsTopologyVertex extends OnmsTopologyRef {
     }
     
     private final OnmsNode m_node;
-    private Set<Topology.ProtocolSupported> m_protocolSupported = EnumSet.noneOf(Topology.ProtocolSupported.class);
+    private Set<OnmsTopologyProtocol> m_protocolSupported = new HashSet<OnmsTopologyProtocol>();
 
     private OnmsTopologyVertex(OnmsNode node) {
         super(node.getNodeId());
@@ -107,12 +105,12 @@ public class OnmsTopologyVertex extends OnmsTopologyRef {
 
     }
 
-    public Set<Topology.ProtocolSupported> getProtocolSupported() {
+    public Set<OnmsTopologyProtocol> getProtocolSupported() {
         return m_protocolSupported;
     }
 
     public void setProtocolSupported(
-            Set<Topology.ProtocolSupported> protocolSupported) {
+            Set<OnmsTopologyProtocol> protocolSupported) {
         m_protocolSupported = protocolSupported;
     }
 

@@ -28,20 +28,12 @@
 
 package org.opennms.web.rest.v1;
 
-import java.util.Arrays;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-
-
-
-
-
 
 
 import org.graphdrawing.graphml.GraphmlType;
@@ -53,8 +45,7 @@ import org.opennms.features.graphml.model.GraphMLWriter;
 import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.OnmsTopology;
-import org.opennms.netmgt.model.topology.Topology;
-import org.opennms.netmgt.model.topology.Topology.ProtocolSupported;
+import org.opennms.netmgt.model.OnmsTopologyProtocol;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -79,36 +70,36 @@ public class TopologyRestService {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String getProtocolSupportedString() {
-        return Arrays.asList(Topology.ProtocolSupported.values()).toString();
+        return m_topologyDao.getSupportedProtocols().toString();
     }
     
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String getCount() {
-        return Integer.toString(Topology.ProtocolSupported.values().length);
+        return Integer.toString(m_topologyDao.getSupportedProtocols().size());
     }
     
     @GET
     @Path("{supported-protocol}")
     @Produces({MediaType.APPLICATION_XML})
     public Response getGraph(@PathParam("supported-protocol") String supportedProtocol) throws InvalidGraphException {
-        try {
-            return Response.ok(getGraph(ProtocolSupported.valueOf(supportedProtocol))).build();
-        } catch (IllegalArgumentException e) {
+        OnmsTopologyProtocol protocol = OnmsTopologyProtocol.createFromString(supportedProtocol);
+        if (!m_topologyDao.getSupportedProtocols().contains(supportedProtocol)) {
             return Response
                     .status(Response.Status.NOT_FOUND)
                     .build();                
-        }        
+        }
+        return Response.ok(getGraph(protocol)).build();
     }
 
-    private GraphmlType getGraph(ProtocolSupported protocolSupported) throws InvalidGraphException {
+    private GraphmlType getGraph(OnmsTopologyProtocol protocolSupported) throws InvalidGraphException {
         OnmsTopology topology = m_topologyDao.getTopology(protocolSupported);
         GraphML graphml = new GraphML();
         GraphMLGraph graph = new GraphMLGraph();
-        graph.setProperty(NAMESPACE,protocolSupported.name());
-        graph.setProperty(LABEL,protocolSupported.name() + " Topology");
-        graph.setId(protocolSupported.name());
+        graph.setProperty(NAMESPACE,protocolSupported.getProtocol());
+        graph.setProperty(LABEL,protocolSupported.getProtocol() + " Topology");
+        graph.setId(protocolSupported.getProtocol());
         topology.getVertices().stream().forEach(vertex -> {
             GraphMLNode gnode = new GraphMLNode();
             gnode.setId(vertex.getId());
