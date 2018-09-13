@@ -364,9 +364,14 @@ public class PollableSnmpInterface implements ReadyRunnable {
                             );
                         }
                         if (miface.getAdminstatus() == SnmpMinimalPollInterface.IF_UP) {
-                            // Suppress all admin status events if suppressAdminDownEvent is enabled
+                            // ifAdminStatus Up events will not be sent if suppressAdminDownEvent is enabled...
                             if (!getSuppressAdminDownEvent()) {
                                 sendAdminUpEvent(iface);
+                            }
+                            // ... but since we *may* have ifOperStatus down alarms from before the ifAdminStatus changed,
+                            // we need to send an ifOperStatus Up event in order to auto-clear existing alarms.
+                            if (miface.getOperstatus() == SnmpMinimalPollInterface.IF_UP) {
+                                sendOperUpEvent(iface);
                             }
                             // Should ifOperStatus continue to stay down after ifAdminStatus comes up, trigger an OperDownEvent.
                             // This *will* trigger duplicate OperDownEvents for interfaces where ifOperStatus was already down when ifAdminStatus went down,
@@ -376,6 +381,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
                                 sendOperDownEvent(iface);
                             }
                         } else if (!getSuppressAdminDownEvent() && miface.getAdminstatus() == SnmpMinimalPollInterface.IF_DOWN) {
+                            // Never send any ifOperStatus Down events due to ifAdminStatus going down, regardless of suppressAdminDownEvent
                             sendAdminDownEvent(iface);
                         }
                     }
