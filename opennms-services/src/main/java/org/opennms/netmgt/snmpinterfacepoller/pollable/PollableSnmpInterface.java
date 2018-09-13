@@ -351,32 +351,36 @@ public class PollableSnmpInterface implements ReadyRunnable {
                     LOG.debug("Previous status Admin/Oper: {}/{}", iface.getIfAdminStatus(), iface.getIfOperStatus());
                     LOG.debug("Current status Admin/Oper: {}/{}", miface.getAdminstatus(), miface.getOperstatus());
 
-                    // Handle ifAdminStatus changes first, since they will always affect ifOperStatus as well
+                    // Handle ifAdminStatus changes first, since these will often affect ifOperStatus as well
                     if (miface.getAdminstatus() != iface.getIfAdminStatus()) {
-                        LOG.info("ifAdminStatus for interface {} ({}) has changed from {} to {}. ifOperStatus (previously {}) is now {}.",
-                                iface.getIfIndex(), iface.getIfName(), iface.getIfAdminStatus(), miface.getAdminstatus(),
-                                iface.getIfOperStatus(), miface.getOperstatus()
-                        );
-                        // Suppress all admin status changes if suppressAdminDownEvent is enabled
-                        // Otherwise, the event log will potentially have duplicate "admin up" events for no apparent reason
-                        if (!getSuppressAdminDownEvent()) {
-                            if (miface.getAdminstatus() == SnmpMinimalPollInterface.IF_DOWN) {
-                                sendAdminDownEvent(iface);
-                            }
-                            else if (miface.getAdminstatus() == SnmpMinimalPollInterface.IF_UP) {
-                                sendAdminUpEvent(iface);
-                            }
-                        }
-                    }
-                    // Always generate events for ifOperStatus changes, even if the ifOperStatus changes because of ifAdminStatus going DOWN
-                    if (miface.getOperstatus() != iface.getIfOperStatus()) {
-                        // Don't bother logging if the ifAdminStatus changed, since we include ifOperStatus info there
-                        if (miface.getAdminstatus() == iface.getIfAdminStatus()) {
-                            LOG.info("ifOperStatus for interface {} ({}) has changed from {} to {}.",
-                                    iface.getIfIndex(), iface.getIfName(), iface.getIfOperStatus(), miface.getOperstatus()
+                        if (miface.getOperstatus() != iface.getIfOperStatus()) {
+                            LOG.info("ifAdminStatus for interface {} ({}) on nodeId {} has changed from {} to {} and ifOperStatus changed from {} to {}.",
+                                    iface.getIfIndex(), iface.getIfName(), iface.getNodeId(), iface.getIfAdminStatus(), miface.getAdminstatus(),
+                                    iface.getIfOperStatus(), miface.getOperstatus()
+                            );
+                        } else {
+                            LOG.info("ifAdminStatus for interface {} ({}) on nodeId {} has changed from {} to {} while ifOperStatus remained unchanged as {}.",
+                                    iface.getIfIndex(), iface.getIfName(), iface.getNodeId(), iface.getIfAdminStatus(), miface.getAdminstatus(), miface.getOperstatus()
                             );
                         }
-                        // ifOperStatus has changed from Up to Down
+                        if (miface.getAdminstatus() == SnmpMinimalPollInterface.IF_UP) {
+                            // Suppress all admin status events if suppressAdminDownEvent is enabled
+                            if (!getSuppressAdminDownEvent()) {
+                                sendAdminUpEvent(iface);
+                            }
+                            // Should ifOperStatus continue to stay down after ifAdminStatus comes up, trigger an ifOperDownEvent
+                            if (miface.getOperstatus() == SnmpMinimalPollInterface.IF_DOWN) {
+                                sendOperDownEvent(iface);
+                            }
+                        } else if (!getSuppressAdminDownEvent() && miface.getAdminstatus() == SnmpMinimalPollInterface.IF_DOWN) {
+                            sendAdminDownEvent(iface);
+                        }
+                    }
+                    // Next, deal with all ifOperStatus changes that are *not* related to any changes in ifAdminStatus
+                    else if (miface.getOperstatus() != iface.getIfOperStatus()) {
+                        LOG.info("ifOperStatus for interface {} ({}) has changed from {} to {}.",
+                                iface.getIfIndex(), iface.getIfName(), iface.getIfOperStatus(), miface.getOperstatus()
+                        );
                         if (miface.getOperstatus() == SnmpMinimalPollInterface.IF_DOWN) {
                             sendOperDownEvent(iface);
                         }
