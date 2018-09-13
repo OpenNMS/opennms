@@ -381,8 +381,8 @@ public class PollableSnmpInterface implements ReadyRunnable {
                     }
                     // Next, deal with all ifOperStatus changes that are *not* related to any changes in ifAdminStatus
                     else if (miface.getOperstatus() != iface.getIfOperStatus()) {
-                        LOG.info("ifOperStatus for interface {} ({}) has changed from {} to {}.",
-                                iface.getIfIndex(), iface.getIfName(), iface.getIfOperStatus(), miface.getOperstatus()
+                        LOG.info("ifOperStatus for interface {} ({}) on nodeId {} has changed from {} to {}.",
+                                iface.getIfIndex(), iface.getIfName(), iface.getNodeId(), iface.getIfOperStatus(), miface.getOperstatus()
                         );
                         if (miface.getOperstatus() == SnmpMinimalPollInterface.IF_DOWN) {
                             sendOperDownEvent(iface);
