@@ -9,10 +9,9 @@ WARNING:    The sentinel feature is still in development and this is only a very
 
 Currently _Sentinel_ is in a very early state of development and therefore the usage is limited:
 
- * Can only be used to process flows
- * Requires a _Minion_ to work as a producer
- * As only flows are supported, the procession of flows in {opennms-product-name} should be disabled, whereas _Telemetryd_ must not.
-   This means, _Telemetryd_ can be enabled, but all listeners and adapters related to flow procession should be disabled.
+ * Only allows distribution of _Telemetryd_ functionality (such as processing flows, or use the existing telemetry adapters to store measurements data to _Newts_)
+ * Requires a _Minion_ to work as a (message) producer
+ * In most cases, it is advised to disable those adapters and listeners in _{opennms-product-name}_ if they are also running by a _Sentinel_ instance.
 
 === Installation
 
@@ -34,6 +33,8 @@ Therefore at least the following configurations are necessary:
  - Install features
 
 ==== Configure the datasource
+
+This is required in order to have sentinel connect to the PostgreSQL database _{opennms-product-name}_.
 
 ----
 config:edit org.opennms.netmgt.distributed.datasource
@@ -115,6 +116,18 @@ The following list contains some features which may be installed manually:
 | sentinel-flows
 | false
 | Feature which starts all dependencies to start processing flows.
+
+| sentinel-newts
+| false
+| Provides functionality to persist measurement data to _Newts_.
+
+| sentinel-telemetry-nxos
+| false
+| Allows using the `NxosGpbAdapter`
+
+| sentinel-telemetry-jti
+| false
+| Allows using the `JtiGpbAdapter`
 
 |====
 
@@ -374,3 +387,132 @@ Simply copy it to `${SENTINEL_HOME}/deploy/`.
     </feature>
 </features>
 -----
+
+=== Persisting Collection Sets to Newts
+
+In the previous chapter it is described on how to setup _{opennms-product-name}_, _Minion_ and _Sentinel_ in order to distribute the procession of flows.
+However, it only covered flow processing adapters, but there are more, e.g. the `NxosGpbAdapter`, which can also be run on a _Sentinel_.
+
+==== Adapters
+
+This chapter describes the various adapters which may contain sample data which may be stored to a Persistence Storage and can also run on a _Sentinel_.
+At the moment only _Newts_ is supported as a Persistence Storage.
+See chapter <<ga-sentinel-configure-newts>> on how to configure _Newts_.
+
+In order to get it to work properly, please note, that an apropriate listener on the _Minion_ must also be configured.
+The name of the listener should share the same name on _Sentinel_.
+
+===== SFlowTelemetryAdapter
+
+In order to use this adapter, the feature `sentinel-flows` and `sentinel-newts` must be installed.
+In addition either `sentinel-jms` or `sentinel-kafka` should be installed and configured properly.
+See the previous _Flow Procession_ chapter for more details.
+
+If only sample data should be persisted, the following commands can be run on the _Sentinel_'s Karaf Shell
+
+----
+$ ssh -p 8301 admin@localhost
+----
+
+----
+admin@sentinel> config:edit org.opennms.features.telemetry.adapters-sflow
+admin@sentinel> config:property-set name SFlow-Telemetry
+admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowTelemetryAdapter
+admin@sentinel> config:property-set parameters.script  /opt/sentinel/etc/sflow-host.groovy
+admin@sentinel> config:update
+----
+
+If SFlow flows and the sample data should be processed, multiple adapters can be configured:
+
+----
+config:edit org.opennms.features.telemetry.adapters-sflow-telemetry
+config:property-set name SFlow
+config:property-set adapters.1.name SFlow-Adapter
+config:property-set adapters.1.class-name org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowAdapter
+config:property-set adapters.2.name SFlow-Telemetry
+config:property-set adapters.2.class-name org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowTelemetryAdapter
+config:property-set adapters.2.parameters.script /opt/sentinel/etc/sflow-host.groovy
+config:update
+----
+
+Please note, that in both cases the file `/opt/sentinel/etc/sflow-host.groofy` must be provided manually, e.g. by manually copying it over from _{opennms-product-name}_.
+
+===== NxosGpbAdapter
+
+In order to use this adapter, the feature `sentinel-telemetry-nxos` and `sentinel-newts` must be installed.
+In addition either `sentinel-jms` or `sentinel-kafka` should be installed and configured properly.
+See the previous _Flow Procession_ chapter for more details.
+
+Besides this, configuration files from _{opennms-product-name}_ must be copied to _Sentinel_ to `/opt/sentinel/etc`.
+The following files and directories are required:
+
+ * `${OPENNMS_HOME}/etc/datacollection`
+ * `${OPENNMS_HOME}/etc/datacollection-config.xml`
+ * `${OPENNMS_HOME}/etc/resource-types.d`
+
+Afterwards the adapter can be set up:
+
+----
+$ ssh -p 8301 admin@localhost
+----
+
+----
+admin@sentinel> config:edit org.opennms.features.telemetry.adapters-nxos
+admin@sentinel> config:property-set name NXOS
+admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.adapters.nxos.NxosGpbAdapter
+admin@sentinel> config:property-set parameters.script  /opt/sentinel/etc/cisco-nxos-telemetry-interface.groovy
+admin@sentinel> config:update
+----
+
+Please note, that the file `/opt/sentinel/etc/cisco-nxos-telemetry-interface.groovy` must also be provided manually,
+e.g. by manually copying it over from _{opennms-product-name}_.
+
+===== JtiGpbAdapter
+
+In order to use this adapter, the feature `sentinel-telemetry-jti` and `sentinel-newts` must be installed.
+In addition either `sentinel-jms` or `sentinel-kafka` should be installed and be configured properly.
+See the previous _Flow Procession_ chapter for more details.
+
+Besides this, configuration files from _{opennms-product-name}_ must be copied to _Sentinel_ to `/opt/sentinel/etc`.
+The following files and directories are required:
+
+ * `${OPENNMS_HOME}/etc/datacollection`
+ * `${OPENNMS_HOME}/etc/datacollection-config.xml`
+ * `${OPENNMS_HOME}/etc/resource-types.d`
+
+Afterwards the adapter can be set up:
+
+----
+$ ssh -p 8301 admin@localhost
+----
+
+----
+admin@sentinel> config:edit org.opennms.features.telemetry.adapters-jti
+admin@sentinel> config:property-set name JTI
+admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.adapters.jti.JtiGpbAdapter
+admin@sentinel> config:property-set parameters.script  /opt/sentinel/etc/junos-telemetry-interface.groovy
+admin@sentinel> config:update
+----
+
+Please note, that the file `/opt/sentinel/etc/junos-telemetry-interface.groovy` must also be provided manually,
+e.g. by manually copying it over from _{opennms-product-name}_.
+
+[[ga-sentinel-configure-newts]]
+==== Configure Newts
+
+The configuration of _Newts_ for _Sentinel_ uses the same properties as for _{opennms-product-name}_.
+The only difference is, that the properties for _Sentinel_ are stored in `/opt/sentinel/etc/org.opennms.newts.config.cfg` instead of `*.properties` files.
+The name of each property is the same as for _{opennms-product-name}_ without the `org.opennms.newts.config` prefix.
+The following example shows a custom _Newts_ configuration using the _Sentinel_'s _Karaf Shell_.
+
+----
+$ ssh -p 8301 admin@localhost
+----
+
+----
+admin@sentinel> config:edit org.opennms.newts.config
+admin@sentinel> config:property-set hostname localhost
+admin@sentinel> config:property-set port 9042
+admin@sentinel> config:property-set cache.strategy org.opennms.netmgt.newts.support.GuavaSearchableResourceMetadataCache
+admin@sentinel> config:update
+----
