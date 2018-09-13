@@ -127,7 +127,7 @@ public class SnmpInterfacePollerConfiguration implements Serializable {
     }
 
     public Boolean getSuppressAdminDownEvent() {
-        return m_suppressAdminDownEvent != null ? m_suppressAdminDownEvent : Boolean.TRUE;
+        return m_suppressAdminDownEvent != null ? m_suppressAdminDownEvent : Boolean.FALSE;
     }
 
     public void setSuppressAdminDownEvent(final Boolean suppressAdminDownEvent) {

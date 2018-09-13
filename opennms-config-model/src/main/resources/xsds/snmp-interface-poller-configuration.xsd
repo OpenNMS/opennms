@@ -55,7 +55,7 @@
         </annotation>
       </attribute>
 
-      <attribute type="boolean" default="true" name="suppressAdminDownEvent" use="optional">
+      <attribute type="boolean" default="false" name="suppressAdminDownEvent" use="optional">
         <annotation>
           <documentation>Flag which toggles suppression of all Admin Status events.
           When this is enabled, Oper Status changes that occur because of an Admin Status change
