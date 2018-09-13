@@ -43,6 +43,7 @@ import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsTopology;
 import org.opennms.netmgt.model.OnmsTopologyEdge;
+import org.opennms.netmgt.model.OnmsTopologyMessage;
 import org.opennms.netmgt.model.OnmsTopologyProtocol;
 import org.opennms.netmgt.model.OnmsTopologyUpdater;
 import org.opennms.netmgt.model.OnmsTopologyVertex;
@@ -78,7 +79,9 @@ public class DiscoveryCdpTopology extends Discovery implements OnmsTopologyUpdat
     
     @Override
     public void runDiscovery() {
-        LOG.info("run: calculate topology on cdp. not yet implemented");
+        OnmsTopology topo = getTopology();
+        topo.getVertices().stream().forEach(vertex -> m_topologyDao.update(this, OnmsTopologyMessage.update(vertex)));
+        topo.getEdges().stream().forEach(edge -> m_topologyDao.update(this, OnmsTopologyMessage.update(edge)));
     }
 
     @Override
