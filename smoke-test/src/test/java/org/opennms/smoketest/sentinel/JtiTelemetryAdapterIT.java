@@ -50,7 +50,7 @@ public class JtiTelemetryAdapterIT extends AbstractAdapterIT {
         final Path opennmsSourceEtcDirectory = new TargetRoot(getClass()).getPath("system-test-resources", "etc");
         builder.withSentinelEnvironment()
                 .addFile(getClass().getResource("/sentinel/features-newts-jti.xml"), "deploy/features.xml")
-                .addFile(getClass().getResource("/sentinel/junos-telemetry-interface.groovy"), "etc/junos-telemetry-interface.groovy")
+                .addFile(opennmsSourceEtcDirectory.resolve("telemetryd-adapters/junos-telemetry-interface.groovy"), "etc/junos-telemetry-interface.groovy")
                 .addFiles(opennmsSourceEtcDirectory.resolve("resource-types.d"), "etc/resource-types.d")
                 .addFiles(opennmsSourceEtcDirectory.resolve("datacollection"), "etc/datacollection")
                 .addFile(opennmsSourceEtcDirectory.resolve("datacollection-config.xml"), "etc/datacollection-config.xml");

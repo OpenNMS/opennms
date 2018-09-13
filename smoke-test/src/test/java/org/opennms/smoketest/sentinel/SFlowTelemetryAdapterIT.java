@@ -32,8 +32,10 @@ import static org.opennms.smoketest.flow.FlowStackIT.sendNetflowPacket;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.file.Path;
 import java.util.function.Function;
 
+import org.opennms.smoketest.utils.TargetRoot;
 import org.opennms.test.system.api.NewTestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
 
@@ -47,9 +49,10 @@ public class SFlowTelemetryAdapterIT extends AbstractAdapterIT {
         builder.es6();
 
         // Enable SFlow Adapters
+        final Path opennmsSourceEtcDirectory = new TargetRoot(getClass()).getPath("system-test-resources", "etc");
         builder.withSentinelEnvironment()
                 .addFile(getClass().getResource("/sentinel/features-newts-sflow.xml"), "deploy/features.xml")
-                .addFile(getClass().getResource("/sentinel/sflow-host.groovy"), "etc/sflow-host.groovy");
+                .addFile(opennmsSourceEtcDirectory.resolve("telemetryd-adapters/sflow-host.groovy"), "etc/sflow-host.groovy");
 
         // Enable SFlow Listener
         builder.withMinionEnvironment()
