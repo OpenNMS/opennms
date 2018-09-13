@@ -368,7 +368,10 @@ public class PollableSnmpInterface implements ReadyRunnable {
                             if (!getSuppressAdminDownEvent()) {
                                 sendAdminUpEvent(iface);
                             }
-                            // Should ifOperStatus continue to stay down after ifAdminStatus comes up, trigger an ifOperDownEvent
+                            // Should ifOperStatus continue to stay down after ifAdminStatus comes up, trigger an OperDownEvent.
+                            // This *will* trigger duplicate OperDownEvents for interfaces where ifOperStatus was already down when ifAdminStatus went down,
+                            // but the alternative carries a risk of suppressing OperDownEvents for interfaces where ifOperStatus was originally up.
+                            // Without saving the original ifOperStatus somewhere, this seems to be the lesser of two evils.
                             if (miface.getOperstatus() == SnmpMinimalPollInterface.IF_DOWN) {
                                 sendOperDownEvent(iface);
                             }
