@@ -8,7 +8,7 @@
 
     <!-- Install bootstrap feature to start all flow related features automatically -->
     <feature name="autostart-sentinel-telemetry-collectionset-adapters" version="${project.version}" start-level="200" install="auto">
-        <!-- Configure an SFLOW Adapter to persist SFlows and also Samples -->
+        <!-- Configure an JTI Adapter to persist samples to Newts-->
         <config name="org.opennms.features.telemetry.adapters-jti">
             name = JTI
             class-name = org.opennms.netmgt.telemetry.adapters.jti.JtiGpbAdapter

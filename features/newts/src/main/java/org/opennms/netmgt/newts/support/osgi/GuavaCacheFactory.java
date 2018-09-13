@@ -44,7 +44,6 @@ public class GuavaCacheFactory implements CacheFactory<GuavaSearchableResourceMe
         this.metricRegistry = Objects.requireNonNull(metricRegistry);
     }
 
-
     @Override
     public Class<GuavaSearchableResourceMetadataCache> supportedType() {
         return GuavaSearchableResourceMetadataCache.class;
