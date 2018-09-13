@@ -97,6 +97,9 @@ public class KarafShell {
                         }
 
                         // Log output
+                        if (command != null) {
+                            logger.info(command);
+                        }
                         logger.info("log:display");
                         logger.info("{}", shellOutput);
 
