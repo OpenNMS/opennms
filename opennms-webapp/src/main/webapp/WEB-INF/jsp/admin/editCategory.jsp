@@ -112,7 +112,7 @@ function toggleReqNodes() {
       <input type="hidden" name="categoryid" value="${model.category.id}"/>
       <input type="hidden" name="edit" value=""/>
 
-      <div class="row form-group">
+      <div class="form-group form-row">
         <div class="col-md-5">
           <label for="toAdd">Available nodes</label>
           <select id="toAdd" class="form-control" name="toAdd" size="20" multiple>
@@ -121,11 +121,9 @@ function toggleReqNodes() {
           </select>
         </div> <!-- column -->
 
-        <div class="col-md-2 text-center">
-          <div class="btn-group-vertical" role="group">
+        <div class="col-md-2 form-group text-center my-auto mx-auto">
             <button type="submit" class="btn btn-secondary" name="action" value="Add &#155;&#155;">Add &#155;&#155;</button>
             <button type="submit" class="btn btn-secondary" name="action" value="&#139;&#139; Remove">&#139;&#139; Remove</button>
-          </div>
         </div>
 
         <div class="col-md-5">
