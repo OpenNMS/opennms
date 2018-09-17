@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,40 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.minion.heartbeat.common;
+package org.opennms.core.ipc.sink.api;
 
-import org.opennms.core.ipc.sink.api.AggregationPolicy;
-import org.opennms.core.ipc.sink.api.AsyncPolicy;
-import org.opennms.core.ipc.sink.xml.AbstractXmlSinkModule;
+public class WriteFailedException extends Exception {
 
-public class HeartbeatModule extends AbstractXmlSinkModule<MinionIdentityDTO, MinionIdentityDTO> {
+    private static final long serialVersionUID = -6945401599648861750L;
 
-    public static final String MODULE_ID = "Heartbeat";
-
-    public HeartbeatModule() {
-        super(MinionIdentityDTO.class, MinionIdentityDTO.class);
+    public WriteFailedException(String message) {
+        super(message);
     }
-
-    @Override
-    public String getId() {
-        return MODULE_ID;
-    }
-
-    @Override
-    public int getNumConsumerThreads() {
-        return 1;
-    }
-
-    @Override
-    public AggregationPolicy<MinionIdentityDTO, MinionIdentityDTO, MinionIdentityDTO> getAggregationPolicy() {
-        // No aggregation
-        return null;
-    }
-
-    @Override
-    public AsyncPolicy getAsyncPolicy() {
-        // Only synchronous dispatching
-        return null;
-    }
-
 }

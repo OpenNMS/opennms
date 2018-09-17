@@ -55,14 +55,29 @@ public interface SinkModule<S extends Message, T extends Message> {
     int getNumConsumerThreads();
 
     /**
-     * Marshals the message to a byte array.
+     * Marshals the aggregated message to a byte array.
      */
     byte[] marshal(T message);
 
     /**
-     * Unmarshals the message from a byte array.
+     * Unmarshals the aggregated message from a byte array.
      */
     T unmarshal(byte[]  message);
+
+
+    /**
+     * Marshals single message to a byte array.
+     */
+    default byte[]  marshalSingleMessage(S message) {
+        return null;
+    }
+
+    /**
+     * Unmarshals single message from a byte array.
+     */
+    default S unmarshalSingleMessage(byte[]  message) {
+        return null;
+    }
 
     /**
      * Defines how messages should be combined, and when they

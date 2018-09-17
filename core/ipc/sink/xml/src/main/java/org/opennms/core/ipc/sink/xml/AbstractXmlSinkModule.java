@@ -41,26 +41,40 @@ public abstract class AbstractXmlSinkModule<S extends Message, T extends Message
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractXmlSinkModule.class);
 
-    private final Class<T> messageClazz;
+    private final Class<T> aggregatedMessageClazz;
+    private final Class<S> singleMessageClazz;
 
     /**
      * Store a thread-local reference to the {@link XmlHandler} because 
      * Unmarshalers are not thread-safe.
      */
-    private final ThreadLocal<XmlHandler<T>> messageXmlHandler = new ThreadLocal<>();
+    private final ThreadLocal<XmlHandler<T>> aggregateMessageXmlHandler = new ThreadLocal<>();
 
-    public AbstractXmlSinkModule(Class<T> messageClazz) {
-        this.messageClazz = Objects.requireNonNull(messageClazz);
+    private final ThreadLocal<XmlHandler<S>> singleMessageXmlHandler = new ThreadLocal<>();
+
+    public AbstractXmlSinkModule(Class<S> singleMessageClazz, Class<T> aggregatedMessageClazz) {
+        this.singleMessageClazz = Objects.requireNonNull(singleMessageClazz);
+        this.aggregatedMessageClazz = Objects.requireNonNull(aggregatedMessageClazz);
     }
 
     @Override
     public byte[] marshal(T message) {
-        return getXmlHandler().marshal(message).getBytes(StandardCharsets.UTF_8);
+        return getXmlHandlerForAggregatedMessage().marshal(message).getBytes(StandardCharsets.UTF_8);
     }
 
     @Override
     public T unmarshal(byte[] bytes) {
-        return getXmlHandler().unmarshal(new String(bytes, StandardCharsets.UTF_8));
+        return getXmlHandlerForAggregatedMessage().unmarshal(new String(bytes, StandardCharsets.UTF_8));
+    }
+
+    @Override
+    public byte[] marshalSingleMessage(S message) {
+        return getXmlHandlerForSingleMessage().marshal(message).getBytes(StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public S unmarshalSingleMessage(byte[] bytes) {
+        return getXmlHandlerForSingleMessage().unmarshal(new String(bytes, StandardCharsets.UTF_8));
     }
 
     @Override
@@ -75,16 +89,25 @@ public abstract class AbstractXmlSinkModule<S extends Message, T extends Message
         return getClass() == obj.getClass();
     }
 
-    private XmlHandler<T> getXmlHandler() {
-        XmlHandler<T> xmlHandler = messageXmlHandler.get();
+    private XmlHandler<T> getXmlHandlerForAggregatedMessage() {
+        XmlHandler<T> xmlHandler = aggregateMessageXmlHandler.get();
         if (xmlHandler == null) {
-            xmlHandler = createXmlHandler(messageClazz);
-            messageXmlHandler.set(xmlHandler);
+            xmlHandler = createXmlHandler(aggregatedMessageClazz);
+            aggregateMessageXmlHandler.set(xmlHandler);
         }
         return xmlHandler;
     }
 
-    private <W> XmlHandler<W> createXmlHandler(Class<W> clazz) {
+    private XmlHandler<S> getXmlHandlerForSingleMessage() {
+        XmlHandler<S> xmlHandler = singleMessageXmlHandler.get();
+        if (xmlHandler == null) {
+            xmlHandler = createXmlHandler(singleMessageClazz);
+            singleMessageXmlHandler.set(xmlHandler);
+        }
+        return xmlHandler;
+    }
+
+    protected <W> XmlHandler<W> createXmlHandler(Class<W> clazz) {
         try {
             return new XmlHandler<>(clazz);
         } catch (Throwable t) {

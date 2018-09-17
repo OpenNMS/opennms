@@ -50,7 +50,7 @@ public class EventModule extends AbstractXmlSinkModule<Event, Log> {
     private final EventdConfig m_config;
 
     public EventModule(EventdConfig config) {
-        super(Log.class);
+        super(Event.class, Log.class);
         this.m_config = config;
     }
 

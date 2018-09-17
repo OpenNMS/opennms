@@ -1,0 +1,26 @@
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== Using Offheap storage for Sink Messages
+
+If minion experiences connectivity issues with _Kafka_ or _ActiveMQ_ there is a chance that Traps and Syslog messages may be lost as the internal queue is limited by heap size.
+Offheap option will extend the queues outside heap to facilitate more storage for the sink messages.
+
+==== Configuring offheap storage
+
+Install offheap feature on minion:
+
+[source, sh]
+----
+echo 'opennms-core-ipc-sink-offheap' >> "$MINION_HOME/etc/featuresBoot.d/features.boot"
+----
+
+Configure storage and enable offheap as below:
+
+[source, sh]
+----
+echo 'offHeapSize=1000000000
+enableOffHeap=true' > "$MINION_HOME/etc/org.opennms.core.ipc.sink.offheap.cfg"
+----
+
+In above example, offHeapSize is configured to 1,000,000,000 i.e 1GB

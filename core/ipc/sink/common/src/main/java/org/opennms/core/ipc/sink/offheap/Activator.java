@@ -26,30 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.api;
+package org.opennms.core.ipc.sink.offheap;
 
-public interface OffHeapFifoQueue {
-    
-    void init(long maxSizeInBytes);
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    /**
-     * Thread safe. Should throw exception when full.
-     *
-     * @param message
-     */
-    void writeMessage(byte[] message);
+public class Activator implements BundleActivator {
 
-    /**
-     * Thread safe.
-     *
-     * Retrieves and removes the head of this queue, waiting if necessary
-     * until an element becomes available.
-     *
-     * @return the head of this queue
-     * @throws InterruptedException if interrupted while waiting
-     */
-    byte[] readNextMessage() throws InterruptedException;
+    private static final Logger LOG = LoggerFactory.getLogger(Activator.class);
 
-    void destroy();
+    @Override
+    public void start(BundleContext context) throws Exception {
+        LOG.info("Set bundle context in OffHeapServiceLoader");
+         OffHeapServiceLoader.setBundleContext(context);
+    }
+
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        LOG.info("Clear bundle context in OffHeapServiceLoader");
+        OffHeapServiceLoader.setBundleContext(null);
+    }
 
 }

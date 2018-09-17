@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,40 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.minion.heartbeat.common;
+package org.opennms.core.ipc.sink.api;
 
-import org.opennms.core.ipc.sink.api.AggregationPolicy;
-import org.opennms.core.ipc.sink.api.AsyncPolicy;
-import org.opennms.core.ipc.sink.xml.AbstractXmlSinkModule;
+import java.util.AbstractMap;
 
-public class HeartbeatModule extends AbstractXmlSinkModule<MinionIdentityDTO, MinionIdentityDTO> {
+public interface OffHeapQueue {
 
-    public static final String MODULE_ID = "Heartbeat";
 
-    public HeartbeatModule() {
-        super(MinionIdentityDTO.class, MinionIdentityDTO.class);
-    }
+    /**
+     * Write Message for a Sink Module and a key that is unique to message.
+     *
+     * @param message
+     * @param moduleName Sink Module Name.
+     * @param key  key, unique id for the sink message.
+     */
+    boolean writeMessage(byte[] message, String moduleName, String key) throws WriteFailedException;
 
-    @Override
-    public String getId() {
-        return MODULE_ID;
-    }
+    /**
+     *
+     * Retrieves and removes the head of this queue, waiting if necessary
+     * until an element becomes available.
+     *
+     * @return key, value pair where key is the uuid and value is sink message.
+     * @throws InterruptedException if interrupted while waiting
+     */
+    AbstractMap.SimpleImmutableEntry<String, byte[]> readNextMessage(String moduleName) throws InterruptedException;
 
-    @Override
-    public int getNumConsumerThreads() {
-        return 1;
-    }
-
-    @Override
-    public AggregationPolicy<MinionIdentityDTO, MinionIdentityDTO, MinionIdentityDTO> getAggregationPolicy() {
-        // No aggregation
-        return null;
-    }
-
-    @Override
-    public AsyncPolicy getAsyncPolicy() {
-        // Only synchronous dispatching
-        return null;
-    }
 
 }

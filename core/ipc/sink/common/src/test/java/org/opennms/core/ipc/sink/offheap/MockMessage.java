@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,42 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.trapd;
-
-import java.util.Objects;
+package org.opennms.core.ipc.sink.offheap;
 
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.netmgt.snmp.SnmpException;
-import org.opennms.netmgt.snmp.TrapInformation;
 
-/**
- * Wrapper to make the {@link TrapInformation} object Sink API compatible, without adding the dependency to the sink-api module.
- *
- * @author mvrueden
- */
-public class TrapInformationWrapper implements Message {
+public class MockMessage implements Message{
 
-    private final TrapInformation trapInformation;
+    private String id;
 
-    private final TrapDTO trapDTO;
-
-    public TrapInformationWrapper(TrapInformation trapInformation) throws SnmpException {
-        this.trapInformation = Objects.requireNonNull(trapInformation);
-        this.trapDTO = null;
-        trapInformation.validate(); // Before this was at ProcessQueueProcessor which does not exist anymore
+    public MockMessage(String id) {
+          this.id = id;
     }
 
-    public TrapInformationWrapper(TrapDTO trapDTO) {
-        this.trapDTO = trapDTO;
-        this.trapInformation = null;
+    public String getId(){
+        return this.id;
     }
-
-    public TrapInformation getTrapInformation() {
-        return trapInformation;
-    }
-
-    public TrapDTO getTrapDTO() {
-        return trapDTO;
-    }
-
 }
