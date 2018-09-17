@@ -209,9 +209,13 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <span>Duty Schedules:</span>
+        <span>Duty Schedules</span>
       </div>
-      <table class="table table-sm table-striped table-bordered">
+      <% Collection<String> dutySchedules = user.getDutySchedules(); %>
+      <% if (dutySchedules.isEmpty()) { %>
+      <div class="card-body">No schedule(s) defined yet.</div>
+      <% } else { %>
+      <table class="table table-sm table-striped">
         <thead>
           <tr>
           <th>Mo</th>
@@ -226,7 +230,6 @@
           </tr>
         </thead>
 
-			<% Collection<String> dutySchedules = user.getDutySchedules(); %>
                         <%
                                 for (String dutySchedule : dutySchedules) {
                                         DutySchedule tmp = new DutySchedule(dutySchedule);
@@ -252,6 +255,7 @@
                         </tr>
                         <% } %>
       </table>
+      <% } %>
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

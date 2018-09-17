@@ -81,33 +81,21 @@
     <%}%>
   </div>
   <div class="card-body">
-    <form class="form-horizontal" role="form" id="newUserForm" method="post" name="newUserForm" onsubmit="return validateFormInput();">
+    <form class="form" role="form" id="newUserForm" method="post" name="newUserForm" onsubmit="return validateFormInput();">
       <div class="form-group">
-        <label for="userID" class="col-sm-2 col-form-label">User ID:</label>
-        <div class="col-sm-10">
-          <input id="userID" type="text" name="userID" class="form-control">
-        </div>
+        <label for="userID" class="">User ID</label>
+        <input id="userID" type="text" name="userID" class="form-control">
       </div>
       <div class="form-group">
-        <label for="pass1" class="col-sm-2 col-form-label">Password:</label>
-        <div class="col-sm-10">
-          <input id="pass1" type="password" name="pass1" class="form-control">
-        </div>
+        <label for="pass1" class="">Password</label>
+        <input id="pass1" type="password" name="pass1" class="form-control">
       </div>
       <div class="form-group">
-        <label for="pass2" class="col-sm-2 col-form-label">Confirm Password:</label>
-        <div class="col-sm-10">
-          <input id="pass2" type="password" name="pass2" class="form-control">
-        </div>
+        <label for="pass2" class="">Confirm Password</label>
+        <input id="pass2" type="password" name="pass2" class="form-control">
       </div>
-      <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-          <div class="btn-group" role="group">
-            <button type="submit" class="btn btn-secondary">OK</button>
-            <button type="button" class="btn btn-secondary" onclick="cancelUser()">Cancel</button>
-          </div>
-        </div>
-      </div>
+      <button type="submit" class="btn btn-secondary">OK</button>
+      <button type="button" class="btn btn-secondary" onclick="cancelUser()">Cancel</button>
     </form>
   </div> <!-- card-body -->
 </div> <!-- panel -->

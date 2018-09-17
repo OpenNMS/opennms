@@ -94,10 +94,15 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h2 class="card-title">Duty Schedules</h2>
+        <span class="card-title">Duty Schedules</span>
       </div>
-      <table class="table table-sm table-striped table-bordered">
-        <thead>
+
+      <% Collection<String> dutySchedules = group.getDutySchedules(); %>
+      <% if (dutySchedules.isEmpty()) { %>
+          <div class="card-body">No schedule(s) defined yet.</div>
+      <% } else { %>
+
+      <table class="table table-sm table-striped">
           <tr>
           <th>Mo</th>
           <th>Tu</th>
@@ -109,8 +114,7 @@
           <th>Begin Time</th>
           <th>End Time</th>
           </tr>
-        </thead>
-        <% Collection<String> dutySchedules = group.getDutySchedules(); %>
+
         <%
           for (String dutySchedule : dutySchedules) {
           DutySchedule tmp = new DutySchedule(dutySchedule);
@@ -135,6 +139,7 @@
         </tr>
         <% } %>
       </table>
+      <% } %>
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

@@ -40,6 +40,7 @@
   <jsp:param name="headTitle" value="Users" />
   <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="quiet" value="true" />
+  <jsp:param name="nobreadcrumbs" value="true" />
 </jsp:include>
 
 
@@ -64,29 +65,21 @@
     <span>Please enter a new password and confirm</span>
   </div>
   <div class="card-body">
-    <form role="form" class="form-horizontal" method="post" name="goForm">
+    <form role="form" class="form" method="post" name="goForm">
       <div class="form-group">
-        <label for="pass1" class="col-sm-2 col-form-label">Password</label>
-        <div class="col-sm-10">
-          <input type="password" class="form-control" id="pass1" name="pass1">
-        </div>
+        <label for="pass1" class="">Password</label>
+        <input type="password" class="form-control" id="pass1" name="pass1">
       </div>
   
       <div class="form-group">
-        <label for="pass2" class="col-sm-2 col-form-label">Confirm Password</label>
-        <div class="col-sm-10">
-          <input type="password" class="form-control" id="pass2" name="pass2">
-        </div>
+        <label for="pass2" class="">Confirm Password</label>
+        <input type="password" class="form-control" id="pass2" name="pass2">
       </div>
 
-      <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-          <button type="button" class="btn btn-secondary" onclick="verifyGoForm()">OK</button>
-          <button type="button" class="btn btn-secondary" onclick="window.close()">Cancel</button>
-        </div>
-      </div>
+      <button type="button" class="btn btn-secondary" onclick="verifyGoForm()">OK</button>
+      <button type="button" class="btn btn-secondary" onclick="window.close()">Cancel</button>
     </form>
-    <p>
+    <p class="alert alert-warning mt-2">
       Note: Be sure to click "Finish" at the bottom of the user page to save
       changes.
     </p>
