@@ -43,7 +43,7 @@ public interface CollectdMBean extends BaseOnmsMBean {
     public long getActiveThreads();
 
     /**
-     * @return The active number of collection threads
+     * @return The current number of threads in the pool
      */
     public long getNumPoolThreads();
 
