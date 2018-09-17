@@ -68,7 +68,7 @@
         </tr>
         	<tr>
                 <td>
-                    <select name="type" class="form-control">
+                    <select name="type" class="form-control custom-select">
                         <c:forEach items="${thresholdTypes}" var="thisType">
                             <c:choose>
                                 <c:when test="${expression.type.enumName==thisType}">
@@ -84,7 +84,7 @@
                 </td>
         		<td><input type="text" name="expression" class="form-control" size="30" value="${expression.expression}"/></td>
         		<td>
-        		   	<select name="dsType" class="form-control">
+        		   	<select name="dsType" class="form-control custom-select">
         				<c:forEach items="${dsTypes}" var="thisDsType">
        						<c:choose>
       							<c:when test="${expression.dsType==thisDsType.key}">
@@ -138,7 +138,7 @@
               </tr>
               <tr>
                 <td>
-                  <select name="filterOperator" class="form-control">
+                  <select name="filterOperator" class="form-control custom-select">
                       <c:forEach items="${filterOperators}" var="thisOperator">
                           <c:choose>
                               <c:when test="${expression.filterOperator.enumName==thisOperator}">
