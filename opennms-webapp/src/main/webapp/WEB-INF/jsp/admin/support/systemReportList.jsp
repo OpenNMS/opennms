@@ -65,7 +65,7 @@ function toggle(box, field)
 //  End -->
 </script>
 
-<form role="form" name="report" class="form-inline" action="admin/support/systemReport.htm" method="post" class="normal">
+<form role="form" name="report" class="form" action="admin/support/systemReport.htm" method="post" class="normal">
 
 <div class="card">
   <div class="card-header">
@@ -84,28 +84,31 @@ function toggle(box, field)
     <span>Report Type</span>
   </div>
   <div class="card-body">
-    <p>Choose which report to use:</p>
-    <p>
-    <select name="formatter" class="form-control">
-    <c:forEach items="${report.formatters}" var="formatter">
-     <c:choose>
-      <c:when test="${formatter.name == 'text'}">
-       <c:set var="formatterSelected" value="selected" />
-      </c:when>
-      <c:otherwise>
-       <c:set var="formatterSelected" value="" />
-      </c:otherwise>
-     </c:choose>
-     <option value="<c:out value="${formatter.name}" />" <c:out value="${formatterSelected}" />><c:out value="${formatter.name}: ${formatter.description}" /></option>
-    </c:forEach>
-    </select>
-    Output: <input type="text" name="output" class="form-control" />
-    </p>
+      <div class="form-group row">
+          <label class="col-2" id="formatter" for="formatter">Choose which report to use</label>
+          <select name="formatter" class="col-10 form-control custom-select">
+              <c:forEach items="${report.formatters}" var="formatter">
+                  <c:choose>
+                      <c:when test="${formatter.name == 'text'}">
+                          <c:set var="formatterSelected" value="selected" />
+                      </c:when>
+                      <c:otherwise>
+                          <c:set var="formatterSelected" value="" />
+                      </c:otherwise>
+                  </c:choose>
+                  <option value="<c:out value="${formatter.name}" />" <c:out value="${formatterSelected}" />><c:out value="${formatter.name}: ${formatter.description}" /></option>
+              </c:forEach>
+          </select>
+      </div>
+      <div class="form-group row">
+          <label for="filename" class="col-2">File name <small>(optional)</small></label>
+          <input type="text" id="filename" name="output" class="form-control col-10" />
+      </div>
+      <div class="form-group">
+          <input type="hidden" name="operation" value="run" />
+          <input type="submit" class="btn btn-secondary" value="Generate System Report" />
+      </div>
   </div> <!-- card-body -->
-  <div class="card-footer">
-    <input type="hidden" name="operation" value="run" />
-    <input type="submit" class="btn btn-secondary" />
-  </div>
 </div> <!-- panel -->
 
 </form>
