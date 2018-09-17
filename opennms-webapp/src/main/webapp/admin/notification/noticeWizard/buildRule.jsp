@@ -129,7 +129,7 @@
              			</p>
                 <div class="form-group">
                   <label for="input_services" class="col-form-label">Services:</label>
-                  <select class="form-control" size="10" multiple id="input_services" name="services"><%=buildServiceOptions(newRule)%></select>
+                  <select class="form-control custom-select" size="10" multiple id="input_services" name="services"><%=buildServiceOptions(newRule)%></select>
                 </div>
               </div> <!-- column -->
               <div class="col-md-6">
@@ -138,7 +138,7 @@
               			</p>
                 <div class="form-group">
                   <label for="input_notServices" class="col-form-label">"NOT" Services:</label>
-                  <select class="form-control" size="10" multiple name="notServices"><%=buildNotServiceOptions(newRule)%></select>
+                  <select class="form-control custom-select" size="10" multiple name="notServices"><%=buildNotServiceOptions(newRule)%></select>
                 </div>
               </div> <!-- column -->
             </div> <!-- row -->

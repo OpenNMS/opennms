@@ -244,7 +244,7 @@
     public String buildPathSelect(String currentPath)
       throws ServletException
     {
-         StringBuffer buffer = new StringBuffer("<select class=\"form-control\" NAME=\"path\">");
+         StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" NAME=\"path\">");
          
          Map<String, Path> pathsMap = null;
          
