@@ -24,6 +24,7 @@
          <mbean name="OpenNMS Pollerd" objectname="OpenNMS:Name=Pollerd">
             <attrib name="NumPolls" alias="ONMSPollCount" type="counter"/>
             <attrib name="NumPoolThreads" alias="ONMSPollerPoolThrd" type="gauge"/>
+            <attrib name="CorePoolThreads" alias="ONMSPollerPoolCore" type="gauge"/>
             <attrib name="MaxPoolThreads" alias="ONMSPollerPoolMax" type="gauge"/>
             <attrib name="PeakPoolThreads" alias="ONMSPollerPoolPeak" type="gauge"/>
             <attrib name="ActiveThreads" alias="ONMSPollerThreadAct" type="gauge"/>
@@ -43,6 +44,7 @@
          <mbean name="OpenNMS Collectd" objectname="OpenNMS:Name=Collectd">
             <attrib name="ActiveThreads" alias="ONMSCollectThrdAct" type="gauge"/>
             <attrib name="NumPoolThreads" alias="ONMSCollectPoolThrd" type="gauge"/>
+            <attrib name="CorePoolThreads" alias="ONMSCollectPoolCore" type="gauge"/>
             <attrib name="MaxPoolThreads" alias="ONMSCollectPoolMax" type="gauge"/>
             <attrib name="PeakPoolThreads" alias="ONMSCollectPoolPeak" type="gauge"/>
             <attrib name="TasksTotal" alias="ONMSCollectTasksTot" type="counter"/>

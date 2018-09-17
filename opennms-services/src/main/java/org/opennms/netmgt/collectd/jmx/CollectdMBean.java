@@ -53,6 +53,11 @@ public interface CollectdMBean extends BaseOnmsMBean {
     public long getMaxPoolThreads();
 
     /**
+     * @return The core number of threads
+     */
+    public long getCorePoolThreads();
+
+    /**
      * @return The peak number of collection threads in use.
      */
     public long getPeakPoolThreads();

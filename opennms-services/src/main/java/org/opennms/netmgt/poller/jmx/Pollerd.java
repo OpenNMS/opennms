@@ -123,6 +123,16 @@ public class Pollerd extends AbstractSpringContextJmxServiceDaemon<org.opennms.n
 
     /** {@inheritDoc} */
     @Override
+    public long getCorePoolThreads() {
+        if (getThreadPoolStatsStatus()) {
+            return getExecutor().getCorePoolSize();
+        } else {
+            return 0L;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public long getMaxPoolThreads() {
         if (getThreadPoolStatsStatus()) {
             return getExecutor().getMaximumPoolSize();
