@@ -69,7 +69,7 @@
                         <p>You may elect to include a basic system report to help the support engineer who works your
                             ticket diagnose the problem more quickly.</p>
 
-                        <form method="post" action="support/index.htm" id="signout">
+                        <form method="post" action="support/index.htm" id="signout" class="form">
                             <input type="hidden" name="operation" value="logout"/>
                         </form>
                         <form role="form" class="form-horizontal" method="post" action="support/index.htm">
@@ -158,20 +158,20 @@
                             If you do not have a commercial support agreement, see
                             <a href="https://www.opennms.com/support/">the OpenNMS.com support page</a> for more details.
                         </p>
-                        <form role="form" method="post" action="support/index.htm">
+                        <form role="form" method="post" action="support/index.htm" class="form">
                             <div class="form-group">
-                                <label for="username" class="col-form-label">Username:</label>
+                                <label for="username" class="col-form-label">Username</label>
                                 <input type="text" name="username" class="form-control" id="username"
                                        placeholder="Username">
                             </div>
                             <div class="form-group">
-                                <label for="password" class="col-form-label">Password:</label>
+                                <label for="password" class="col-form-label">Password</label>
                                 <input type="password" name="password" class="form-control" id="password"
                                        placeholder="Password">
                             </div>
                             <div class="form-group">
                                 <button type="reset" class="btn btn-secondary">Clear</button>
-                                <button type="submit" class="btn btn-secondary">Log in</button>
+                                <button type="submit" class="btn btn-primary">Log in</button>
                                 <input type="hidden" name="operation" value="login"/>
                             </div>
                         </form>
