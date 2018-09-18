@@ -55,12 +55,12 @@
 
   <div class="card-body">
     <br/>
-    <form name="chooseForm" action="distributedStatusHistory.htm" role="form" class="form-horizontal">
+    <form name="chooseForm" action="distributedStatusHistory.htm" role="form" class="form">
       <input type="hidden" name="previousLocation" value="${historyModel.chosenLocation.locationName}"/>
       <div class="form-group">
         <label class="col-md-2 col-form-label" for="location">Location</label>
         <div class="col-md-4">
-          <select class="form-control" name="location" id="location" onChange="document.chooseForm.submit();">
+          <select class="form-control custom-select" name="location" id="location" onChange="document.chooseForm.submit();">
             <c:forEach items="${historyModel.locations}" var="location">
               <c:choose>
                 <c:when test="${location.locationName == historyModel.chosenLocation.locationName}">
@@ -82,7 +82,7 @@
               <p class="form-control-static">No remote pollers have registered for this location.</p>
             </c:when>
         	  <c:otherwise>
-              <select class="form-control" name="monitorId" id="monitor" onChange="document.chooseForm.submit();">
+              <select class="form-control custom-select" name="monitorId" id="monitor" onChange="document.chooseForm.submit();">
                 <c:forEach items="${historyModel.monitors}" var="monitor">
                   <c:choose>
                     <c:when test="${monitor.id == historyModel.chosenMonitor.id}">
@@ -105,7 +105,7 @@
       <div class="form-group">
         <label class="col-md-2 col-form-label" for="application">Application</label>
         <div class="col-md-4">
-          <select class="form-control" name="application" id="application" onChange="document.chooseForm.submit();">
+          <select class="form-control custom-select" name="application" id="application" onChange="document.chooseForm.submit();">
             <c:forEach items="${historyModel.applications}" var="application">
               <c:choose>
                 <c:when test="${application == historyModel.chosenApplication}">
@@ -122,7 +122,7 @@
       <div class="form-group">
         <label class="col-md-2 col-form-label" for="timeSpan">Time Span</label>
         <div class="col-md-4">
-      	  <select class="form-control" name="timeSpan" id="timeSpan" onChange="document.chooseForm.submit();">
+      	  <select class="form-control custom-select" name="timeSpan" id="timeSpan" onChange="document.chooseForm.submit();">
       	    <c:forEach items="${historyModel.periods}" var="period">
                 <c:choose>
                   <c:when test="${period == historyModel.chosenPeriod}">
