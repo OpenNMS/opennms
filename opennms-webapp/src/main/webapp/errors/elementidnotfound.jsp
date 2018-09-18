@@ -59,10 +59,10 @@
   To search again by <%=einfe.getElemType()%> ID, enter the ID here:
   </p>
 
-  <form role="form" method="get" action="<%=einfe.getDetailUri()%>">
+  <form role="form" method="get" action="<%=einfe.getDetailUri()%>" class="form">
     <div class="row">
       <div class="form-group col-md-2">
-        <label for="input_text">Get&nbsp;details&nbsp;for&nbsp;<%=einfe.getElemType()%>&nbsp;ID:</label>
+        <label for="input_text">Get&nbsp;details&nbsp;for&nbsp;<%=einfe.getElemType()%>&nbsp;ID</label>
         <input type="text" class="form-control" id="input_text" name="<%=einfe.getDetailParam()%>"/>
       </div>
     </div>

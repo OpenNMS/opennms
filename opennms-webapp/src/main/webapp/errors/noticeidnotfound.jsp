@@ -57,10 +57,10 @@
   to find the notice you are looking for.
 </p>
 
-<form role="form" method="get" action="notification/detail.jsp">
+<form role="form" method="get" action="notification/detail.jsp" class="form mb-4">
   <div class="row">
     <div class="form-group col-md-2">
-      <label for="input_notice">Get&nbsp;details&nbsp;for&nbsp;Notice&nbsp;ID:</label>
+      <label for="input_notice">Get&nbsp;details&nbsp;for&nbsp;Notice&nbsp;ID</label>
       <input type="text" class="form-control" id="input_notice" name="notice"/>
     </div>
   </div>
