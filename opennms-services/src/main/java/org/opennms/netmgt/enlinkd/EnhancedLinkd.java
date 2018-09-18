@@ -129,17 +129,18 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         LOG.debug("init: Bridge Topology loaded.");
 
         scheduleCollection();
-        if (m_nodes.size() > 0 && m_linkdConfig.useBridgeDiscovery()) {
+        if (m_linkdConfig.useBridgeDiscovery()) {
             scheduleDiscoveryBridgeDomain();
         }
-        if (m_nodes.size() > 0 && m_linkdConfig.useCdpDiscovery()) {
+
+        if (m_linkdConfig.useCdpDiscovery()) {
             scheduleDiscoveryCdpTopology();
         }
 
     }
     
     public void scheduleDiscoveryCdpTopology() {
-        DiscoveryCdpTopology discoverycdp = new DiscoveryCdpTopology(this);
+        DiscoveryCdpTopology discoverycdp = DiscoveryCdpTopology.createAndRegister(this);
         LOG.debug("scheduleDiscoveryCdpTopology: Scheduling {}",
                   discoverycdp.getInfo());
         discoverycdp.setScheduler(m_scheduler);
@@ -311,9 +312,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         }
 
         scheduleCollectionForNode(node);
-        if (m_nodes.size() == 1 && m_linkdConfig.useBridgeDiscovery()) {
-            scheduleDiscoveryBridgeDomain();
-        }
         return true;
     }
 

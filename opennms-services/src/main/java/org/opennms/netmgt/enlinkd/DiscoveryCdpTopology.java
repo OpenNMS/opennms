@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Assert;
 import org.opennms.netmgt.dao.api.CdpElementDao;
 import org.opennms.netmgt.dao.api.CdpLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -51,38 +52,44 @@ import org.opennms.netmgt.model.topology.Topology;
 import org.opennms.netmgt.model.topology.Topology.ProtocolSupported;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class DiscoveryCdpTopology extends Discovery implements OnmsTopologyUpdater, InitializingBean {
+public class DiscoveryCdpTopology extends Discovery implements OnmsTopologyUpdater {
+
+    public static DiscoveryCdpTopology createAndRegister(EnhancedLinkd linkd) {
+        DiscoveryCdpTopology discoveryCdpTopology = new DiscoveryCdpTopology(linkd);
+        Assert.assertNotNull(discoveryCdpTopology.getTopologyDao());
+        discoveryCdpTopology.getTopologyDao().register(discoveryCdpTopology);
+        return discoveryCdpTopology;
+    }
 
     private static final Logger LOG = LoggerFactory.getLogger(DiscoveryCdpTopology.class);
-    final int m_maxthreads;
 
     @Autowired
-    NodeDao m_nodeDao;
+    private NodeDao m_nodeDao;
    
     @Autowired
-    CdpElementDao m_cdpElementDao;
+    private CdpElementDao m_cdpElementDao;
 
     @Autowired
-    CdpLinkDao m_cdpLinkDao;
+    private CdpLinkDao m_cdpLinkDao;
     
     @Autowired
-    TopologyDao m_topologyDao;
+    private TopologyDao m_topologyDao;
     
-    public DiscoveryCdpTopology(EnhancedLinkd linkd) {
+    private DiscoveryCdpTopology(EnhancedLinkd linkd) {
         super(linkd, linkd.getBridgeTopologyInterval(), linkd.getInitialSleepTime()+linkd.getBridgeTopologyInterval());
-        m_maxthreads=linkd.getDiscoveryBridgeThreads();
     }
             
     
     @Override
     public void runDiscovery() {
+        LOG.debug("run: start");
         OnmsTopology topo = getTopology();
         topo.getVertices().stream().forEach(vertex -> m_topologyDao.update(this, OnmsTopologyMessage.update(vertex)));
         topo.getEdges().stream().forEach(edge -> m_topologyDao.update(this, OnmsTopologyMessage.update(edge)));
-    }
+        LOG.debug("run: end");
+           }
 
     @Override
     public String getName() {
@@ -196,9 +203,13 @@ public class DiscoveryCdpTopology extends Discovery implements OnmsTopologyUpdat
     }
 
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        m_topologyDao.register(this);
+    public TopologyDao getTopologyDao() {
+        return m_topologyDao;
+    }
+
+
+    public void setTopologyDao(TopologyDao topologyDao) {
+        m_topologyDao = topologyDao;
     }
             
 }

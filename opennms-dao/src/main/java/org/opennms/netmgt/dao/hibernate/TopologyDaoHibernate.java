@@ -33,6 +33,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.sql.rowset.spi.SyncResolver;
+
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.OnmsNode;
@@ -76,28 +78,36 @@ public class TopologyDaoHibernate implements TopologyDao {
 
     @Override
     public void subscribe(OnmsTopologyConsumer consumer) {
-       m_consumers.add(consumer);
+        synchronized (m_consumers) {
+            m_consumers.add(consumer);            
+        }
     }
 
     @Override
     public void unsubscribe(OnmsTopologyConsumer consumer) {
-        m_consumers.remove(consumer);
+        synchronized (m_consumers) {
+            m_consumers.remove(consumer);
+        }
     }
 
     @Override
     public boolean register(OnmsTopologyUpdater updater) {
-        if (m_updatersMap.containsKey(updater.getProtocol())) {
-            return false;
+        synchronized (m_updatersMap) {
+            if (m_updatersMap.containsKey(updater.getProtocol())) {
+                return false;
+            }
+            m_updatersMap.put(updater.getProtocol(), updater);
         }
-        m_updatersMap.put(updater.getProtocol(), updater);
         return true;
     }
 
     @Override
     public boolean unregister(OnmsTopologyUpdater updater) {
-        OnmsTopologyUpdater subscribed =  m_updatersMap.remove(updater.getProtocol());
-        if (subscribed == null) {
-            return false;
+        synchronized (m_updatersMap) {
+            OnmsTopologyUpdater subscribed =  m_updatersMap.remove(updater.getProtocol());
+            if (subscribed == null) {
+                return false;
+            }
         }
         return true;
     }
@@ -110,14 +120,17 @@ public class TopologyDaoHibernate implements TopologyDao {
     @Override
     public void update(OnmsTopologyUpdater updater,
             OnmsTopologyMessage message) {
-        if (!m_updatersMap.containsKey(updater.getProtocol()))
+        if (!m_updatersMap.containsKey(updater.getProtocol())) {
             return;
+        }
         if ( m_updatersMap.get(updater.getProtocol()) != updater
                            ) {
             return;
         }
-        m_consumers.stream().
+        synchronized (m_consumers) {
+            m_consumers.stream().
             filter(consumer -> consumer.getProtocols().contains(updater.getProtocol())).
-            forEach(consumer -> consumer.consume(message));
+            forEach(consumer -> consumer.consume(message));            
+        }
     }
 }
