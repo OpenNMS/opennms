@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Assert;
 import org.opennms.netmgt.dao.api.CdpElementDao;
 import org.opennms.netmgt.dao.api.CdpLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -53,12 +52,13 @@ import org.opennms.netmgt.model.topology.Topology.ProtocolSupported;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 
 public class DiscoveryCdpTopology extends Discovery implements OnmsTopologyUpdater {
 
     public static DiscoveryCdpTopology createAndRegister(EnhancedLinkd linkd) {
         DiscoveryCdpTopology discoveryCdpTopology = new DiscoveryCdpTopology(linkd);
-        Assert.assertNotNull(discoveryCdpTopology.getTopologyDao());
+        Assert.notNull(discoveryCdpTopology.getTopologyDao());
         discoveryCdpTopology.getTopologyDao().register(discoveryCdpTopology);
         return discoveryCdpTopology;
     }

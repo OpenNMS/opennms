@@ -38,11 +38,13 @@ import org.opennms.netmgt.model.OnmsTopologyProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 
 public class TopologyLogger implements OnmsTopologyConsumer {
 
     public static TopologyLogger createAndSubscribe(OnmsTopologyProtocol protocol) {
         TopologyLogger tl = new TopologyLogger(protocol);
+        Assert.notNull(tl.getTopologyDao());
         tl.getTopologyDao().subscribe(tl);
         return tl;
     }
