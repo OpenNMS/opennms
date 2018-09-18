@@ -131,21 +131,21 @@
                     </table>
                     <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
                     <div class="pagination">
-                        <a onClick="toggle(true, 'triggerNames')">Select all</a> /
-                        <a onClick="toggle(false, 'triggerNames')">Deselect all</a>
+                        <button type="button" class="btn btn-link" onClick="toggle(true, 'triggerNames')">Select all</button>
+                        <button type="button" class="btn btn-link" href onClick="toggle(false, 'triggerNames')">Deselect all</button>
                     </div>
                     <% } %>
 
                     <% // if deletion was successful %>
                     <c:if test="${not empty success}">
-                        <div class="alert-success" style="clear:both">
+                        <div class="alert alert-success" style="clear:both">
                                 ${success}
                         </div>
                     </c:if>
 
                     <% // If user is not allowed to delete %>
                     <c:if test="${not empty error}">
-                        <div class="alert-error" style="clear:both">
+                        <div class="alert alert-danger" style="clear:both">
                                 ${error}
                         </div>
                     </c:if>

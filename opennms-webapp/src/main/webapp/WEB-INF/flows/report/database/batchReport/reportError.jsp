@@ -46,7 +46,7 @@
 
 <div class="row" >
     <div class="col-md-12">
-        <div class="card bg-success">
+        <div class="card">
             <div class="card-header">
                 <span>Report Error</span>
             </div>

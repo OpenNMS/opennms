@@ -50,7 +50,7 @@
             <div class="card-header">
                 <span>Report Scheduled</span>
             </div>
-            <div class="boxWrapper">
+            <div class="card-body">
                 <form:form cssClass="stdform">
                     <p><span class="indent">
                         Your report has been scheduled.
