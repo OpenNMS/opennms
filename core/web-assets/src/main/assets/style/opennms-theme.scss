@@ -404,9 +404,10 @@ Bootstrap Theme Specific Stylesheet
 //  min-width: 50px;
 //}
 //
-//.dropdown:hover .dropdown-menu {
-//  display: block;
-//}
+// Allow hovering over dropdown to show elements
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
 
 
 /* =11.0 Navs and Navbars
