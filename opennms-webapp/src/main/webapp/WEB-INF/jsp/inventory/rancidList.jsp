@@ -54,7 +54,7 @@
                 <span>RWS status</span>
             </div>
 
-            <table class="table table-sm table-bordered">
+            <table class="table table-sm mb-0">
                 <tr>
                     <td>${model.RWSStatus}</td>
                 </tr>
@@ -66,7 +66,7 @@
                 <span>Associated Elements</span>
             </div>
 
-            <table class="table table-sm table-bordered">
+            <table class="table table-sm mb-0">
                 <tr>
                     <th>Group</th>
                     <th>Version</th>

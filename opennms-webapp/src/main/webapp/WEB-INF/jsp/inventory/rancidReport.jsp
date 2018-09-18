@@ -51,7 +51,7 @@
                 <span>Generate reports</span>
             </div>
 
-            <table class="table table-sm table-bordered">
+            <table class="table table-sm mb-0">
             </table>
 
         </div>
@@ -61,49 +61,43 @@
                 <span>Inventory</span>
             </div>
             <div class="card-body">
-                <form id="inventoryReport" class="form-horizontal" method="post" name="inventoryReport">
+                <form id="inventoryReport" class="form" method="post" name="inventoryReport">
                     <div class="form-group">
-                        <div class="col-md-12">
-                            <label id="date" for="date">Date:</label>
-                            <input class="form-control" id="date" type="text" name="date" value="YYYY/MM/DD">
-                        </div>
+                        <label id="dateLabel" for="date">Date</label>
+                        <input class="form-control" id="date" type="text" name="date" value="YYYY/MM/DD">
                     </div>
 
                     <div class="form-group" >
-                        <div class="col-md-12">
-                            <label id="fieldhas" for="fieldhas">Matching:</label>
-                            <input class="form-control" id="fieldhas" type="text" name="fieldhas" value="">
-                        </div>
+                        <label id="fieldhasLabel" for="fieldhas">Matching</label>
+                        <input class="form-control" id="fieldhas" type="text" name="fieldhas" value="">
                     </div>
                     <div class="form-group">
-                        <div class="col-md-12">
-                            <label id="reporttype" for="reporttype">Report type:</label>
-                            <select class="form-control" name="reporttype">
-                                <option value="rancidlist">Rancid</option>
-                                <option value="inventory">Inventory</option>
-                            </select>
+                        <label id="reporttypeLabel" for="reporttype">Report type</label>
+                        <select class="form-control custom-select" id="reporttype">
+                            <option value="rancidlist">Rancid</option>
+                            <option value="inventory">Inventory</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Report format</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="reportfileTypeXml" name="reportfiletype" value="pdftype">
+                            <label class="form-check-label" for="reportfileTypeXml">XML</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="reportFileTypeHtml" name="reportfiletype" value="htmltype" checked>
+                            <label class="form-check-label" for="reportFileTypeHtml">HTML</label>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <div class="col-md-12">
-                            <p><strong>Report format: </strong></p>
-                            <input type="radio" name="reportfiletype" value="pdftype" > XML
-                            <input type="radio" name="reportfiletype" value="htmltype" checked > HTML
-                        </div>
+                        <label id="reportemailLabel" for="reportemail">Email to</label>
+                        <input class="form-control" id="reportemail" type="text" name="reportemail" value="">
                     </div>
 
                     <div class="form-group">
-                        <div class="col-md-12">
-                            <label id="reportemail" for="reportemail">Email to:</label>
-                            <input class="form-control" id="reportemail" type="text" name="reportemail" value="">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="col-md-12">
-                            <input class="btn btn-secondary" id="run" type="button" value="run" onClick="runInventory()">
-                        </div>
+                        <input class="btn btn-secondary" id="run" type="button" value="run" onClick="runInventory()">
                     </div>
                 </form>
             </div>

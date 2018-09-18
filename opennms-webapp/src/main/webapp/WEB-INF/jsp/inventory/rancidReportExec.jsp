@@ -50,7 +50,7 @@
             <div class="card-header">
                 <span>Report in progress</span>
             </div>
-            <table class="table table-sm table-bordered">
+            <table class="table table-sm mb-0">
                 <tr>
                     <th>Report Type</th>
                     <td>${type}</td>

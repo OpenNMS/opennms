@@ -56,7 +56,7 @@
             <div class="card-header">
                 <span>General (Status: ${model.status_general})</span>
             </div>
-            <table class="table table-sm table-bordered">
+            <table class="table table-sm mb-0">
                 <tr>
                     <th>Node</th>
                     <td><a href="element/node.jsp?node=${model.db_id}">${model.id}</a></td>
@@ -77,7 +77,7 @@
                 <span>Rancid info</span>
             </div>
 
-            <table class="table table-sm table-bordered">
+            <table class="table table-sm mb-0">
                 <tr>
                     <th>Group Name</th>
                     <td>${model.groupname}</td>
@@ -107,7 +107,7 @@
             </div>
 
 
-            <table class="table table-sm table-bordered">
+            <table class="table table-sm mb-0">
                 <tr>
                     <th>Host(version)</th>
                 </tr>
@@ -129,7 +129,7 @@
             <div class="card-body">
                 <c:forEach items="${model.inventory}" var="invel" varStatus="status">
                     <h3>Item ${status.count}</h3>
-                    <table class="table table-sm table-bordered">
+                    <table class="table table-sm mb-0">
                         <c:forEach items="${invel.tupleList}" var="tup">
                             <tr>
                                 <th width="50%">${tup.name}</th>
