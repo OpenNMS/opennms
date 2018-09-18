@@ -84,7 +84,7 @@
   </c:when>
 
   <c:otherwise>
-    <select style="float:right;" class="icon-black" id="monitoringLocation" onchange="javascript:location.href = location.protocol + '//' + location.host + location.pathname + '?monitoringLocation=' + this.options[this.selectedIndex].value;">
+    <select style="width: 150px" class="form-control custom-select pull-right" id="monitoringLocation" onchange="javascript:location.href = location.protocol + '//' + location.host + location.pathname + '?monitoringLocation=' + this.options[this.selectedIndex].value;">
       <%
         if ("".equals(selectedMonitoringLocation)) {
       %>
@@ -109,7 +109,10 @@
         }
       %>
     </select>
-    <span><span>Nodes</span><span style="padding-left: 32px;"><a href="javascript:toggleClassDisplay('NLdbid', '', 'inline');"><i class="fa fa-database fa-lg icon-black" title="Toggle database IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfs', '', 'inline');"><i class="fa fa-list-alt fa-lg icon-black" title="Toggle requisition names"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfid', '', 'inline');"><i class="fa fa-qrcode fa-lg icon-black" title="Toggle foreign IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLloc', '', 'inline');"><i class="fa fa-map-marker fa-lg icon-black" title="Toggle locations"></i></a></span></span>
+    <div class="btn-toolbar" role="toolbar">
+      <span>Nodes</span>
+      <span class="btn-group mr-2 ml-4"><a href="javascript:toggleClassDisplay('NLdbid', '', 'inline');"><i class="fa fa-database fa-lg" title="Toggle database IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfs', '', 'inline');"><i class="fa fa-list-alt fa-lg" title="Toggle requisition names"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfid', '', 'inline');"><i class="fa fa-qrcode fa-lg" title="Toggle foreign IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLloc', '', 'inline');"><i class="fa fa-map-marker fa-lg" title="Toggle locations"></i></a></span>
+    </div>
   </c:otherwise>
 </c:choose>
   </div> <!-- card-header -->
