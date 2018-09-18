@@ -31,7 +31,6 @@ package org.opennms.netmgt.enlinkd;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Assert;
 import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.OnmsTopologyConsumer;
 import org.opennms.netmgt.model.OnmsTopologyMessage;
@@ -44,7 +43,6 @@ public class TopologyLogger implements OnmsTopologyConsumer {
 
     public static TopologyLogger createAndSubscribe(OnmsTopologyProtocol protocol) {
         TopologyLogger tl = new TopologyLogger(protocol);
-        Assert.assertNotNull(tl.getTopologyDao());
         tl.getTopologyDao().subscribe(tl);
         return tl;
     }
