@@ -210,6 +210,7 @@
 		<span>Supporting Applications and Frameworks</span>
 	</div>
 	<div class="card-body">
+        <div class="row">
 		<div class="col-md-3">
 			<p align="center">
 				Powered By Jetty<br />
@@ -243,6 +244,7 @@
 				</a>
 			</p>
 		</div>
+        </div>
 	</div>
 </div>
 
