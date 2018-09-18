@@ -33,8 +33,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.sql.rowset.spi.SyncResolver;
-
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.OnmsNode;
