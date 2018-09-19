@@ -18,6 +18,7 @@
     <module>opennms-rws</module>
     <module>opennms-snmp-asset-provisioning-adapter</module>
     <module>opennms-snmp-hardware-inventory-provisioning-adapter</module>
+    <module>opennms-wsman-asset-provisioning-adapter</module>
     <module>opennms-jasper-extensions</module>
     <module>opennms-jasperstudio-extension</module>
     <module>opennms-vmware</module>
