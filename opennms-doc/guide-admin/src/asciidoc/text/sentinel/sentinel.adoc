@@ -34,7 +34,7 @@ Therefore at least the following configurations are necessary:
 
 ==== Configure the datasource
 
-This is required in order to have sentinel connect to the PostgreSQL database _{opennms-product-name}_.
+This is required in order to have _Sentinel_ connect to the PostgreSQL database _{opennms-product-name}_.
 
 ----
 config:edit org.opennms.netmgt.distributed.datasource
@@ -209,7 +209,7 @@ Afterwards the following configuration examples help setting everything up.
 
 ==== Configure Sentinel
 
-In order to process flows, sentinel must start appropriate flow adapters.
+In order to process flows, _Sentinel_ must start appropriate flow adapters.
 In _Sentinel_ flow adapters are configured by either be placing a `.cfg` file in `${SENTINEL_HOME}/etc` or via `config:edit` statement.
 
 The following example will configure the consumption of `Netflow5` flows and saves the configuration in
