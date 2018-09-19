@@ -141,7 +141,7 @@ to the `deploy` folder, _Sentinel_ can make use of that mechanism to enable auto
 In order to do so, in most cases it is sufficient to copy a `features.xml` file to `${SENTINEL_HOME}/deploy`.
 This can be done even if the container is running.
 
-The chapter _Configure Flow Procession_ contains an example on how to automatically start them with _Sentinel_
+The chapter _Configure Flow Processing_ contains an example on how to automatically start them with _Sentinel_
 
 
 ==== Auto Start
@@ -200,7 +200,7 @@ NOTE: In order to run the `health:check` command, the feature `sentinel-core` mu
 NOTE: This is also available in _Minion_ Containers and will replace the now deprecated command `minion:ping`.
 
 
-=== Flow Procession
+=== Flow Processing
 
 In order to process flows via _Sentinel_ ensure that _{opennms-product-name}_, _Minion_ and _Sentinel_ are all installed according
 to the official Installation Guide.
@@ -235,7 +235,7 @@ admin@sentinel> feature:install sentinel-flows
 ----
 <1> or `sentinel-kafka`
 
-NOTE:   Only procession of `Netflow5` flows has been tested.
+NOTE:   Only processing of `Netflow5` flows has been tested.
 
 To check everything is working as expected, run the `health:check` command, e.g.:
 
@@ -277,7 +277,7 @@ This can be done in `$OPENNMS_HOME/etc/opennms-activemq.xml`.
 For more details please refer to the Minion Installation Guide.
 
 
-==== Auto configure flow procession for Sentinel
+==== Auto configure flow processing for Sentinel
 
 The following examples illustrate a `features.xml` which configures the _Sentinel_ instance and automatically starts
 all required features to either consume messages via JMS (_ActiveMQ_) or _Kafka_.
@@ -390,7 +390,7 @@ Simply copy it to `${SENTINEL_HOME}/deploy/`.
 
 === Persisting Collection Sets to Newts
 
-In the previous chapter it is described on how to setup _{opennms-product-name}_, _Minion_ and _Sentinel_ in order to distribute the procession of flows.
+In the previous chapter it is described on how to setup _{opennms-product-name}_, _Minion_ and _Sentinel_ in order to distribute the processing of flows.
 However, it only covered flow processing adapters, but there are more, e.g. the `NxosGpbAdapter`, which can also be run on a _Sentinel_.
 
 ==== Adapters
@@ -406,7 +406,7 @@ The name of the listener should share the same name on _Sentinel_.
 
 In order to use this adapter, the feature `sentinel-flows` and `sentinel-newts` must be installed.
 In addition either `sentinel-jms` or `sentinel-kafka` should be installed and configured properly.
-See the previous _Flow Procession_ chapter for more details.
+See the previous _Flow Processing_ chapter for more details.
 
 If only sample data should be persisted, the following commands can be run on the _Sentinel_'s Karaf Shell
 
@@ -441,7 +441,7 @@ Please note, that in both cases the file `/opt/sentinel/etc/sflow-host.groofy` m
 
 In order to use this adapter, the feature `sentinel-telemetry-nxos` and `sentinel-newts` must be installed.
 In addition either `sentinel-jms` or `sentinel-kafka` should be installed and configured properly.
-See the previous _Flow Procession_ chapter for more details.
+See the previous _Flow Processing_ chapter for more details.
 
 Besides this, configuration files from _{opennms-product-name}_ must be copied to _Sentinel_ to `/opt/sentinel/etc`.
 The following files and directories are required:
@@ -471,7 +471,7 @@ e.g. by manually copying it over from _{opennms-product-name}_.
 
 In order to use this adapter, the feature `sentinel-telemetry-jti` and `sentinel-newts` must be installed.
 In addition either `sentinel-jms` or `sentinel-kafka` should be installed and be configured properly.
-See the previous _Flow Procession_ chapter for more details.
+See the previous _Flow Processing_ chapter for more details.
 
 Besides this, configuration files from _{opennms-product-name}_ must be copied to _Sentinel_ to `/opt/sentinel/etc`.
 The following files and directories are required:
