@@ -38,7 +38,7 @@ public class OnmsTopologyException extends Exception {
     private static final long serialVersionUID = -6913989384724814658L;
 
     OnmsTopologyRef m_ref;
-    OnmsTopologyProtocol m_protocol;
+    String m_protocol;
     TopologyMessageStatus m_messageStatus;
 
     public OnmsTopologyException(String message) {
@@ -49,26 +49,26 @@ public class OnmsTopologyException extends Exception {
         super(message, throwable);
     }
 
-    public OnmsTopologyException(String message, OnmsTopologyRef ref, OnmsTopologyProtocol protocol) {
+    public OnmsTopologyException(String message, OnmsTopologyRef ref, String protocol) {
         super(message);
         m_ref=ref;
         m_protocol =protocol;
     }
 
-    public OnmsTopologyException(String message,OnmsTopologyRef ref, OnmsTopologyProtocol protocol, Throwable throwable) {
+    public OnmsTopologyException(String message,OnmsTopologyRef ref, String protocol, Throwable throwable) {
         super(message, throwable);
         m_ref=ref;
         m_protocol=protocol;
     }
 
-    public OnmsTopologyException(String message, OnmsTopologyRef ref, OnmsTopologyProtocol protocol, TopologyMessageStatus status) {
+    public OnmsTopologyException(String message, OnmsTopologyRef ref, String protocol, TopologyMessageStatus status) {
         super(message);
         m_ref=ref;
         m_protocol =protocol;
         m_messageStatus=status;
     }
 
-    public OnmsTopologyException(String message,OnmsTopologyRef ref, OnmsTopologyProtocol protocol, TopologyMessageStatus status,Throwable throwable) {
+    public OnmsTopologyException(String message,OnmsTopologyRef ref, String protocol, TopologyMessageStatus status,Throwable throwable) {
         super(message, throwable);
         m_ref=ref;
         m_protocol=protocol;
@@ -82,7 +82,7 @@ public class OnmsTopologyException extends Exception {
         return m_ref.getId();
     }
     
-    public OnmsTopologyProtocol getProtocol() {
+    public String getProtocol() {
         return m_protocol;
     }
     

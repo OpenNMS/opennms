@@ -54,7 +54,7 @@ public class OnmsTopologyEdge extends OnmsTopologyAbstractRef implements OnmsTop
     
     private Integer m_sourceIfIndex;
     private Integer m_targetIfIndex;
-    private OnmsTopologyProtocol m_discoveredBy;
+    private String m_discoveredBy;
 
     private OnmsTopologyEdge(String id, OnmsTopologyVertex source, OnmsTopologyVertex target) {
         super(id);
@@ -169,11 +169,11 @@ public class OnmsTopologyEdge extends OnmsTopologyAbstractRef implements OnmsTop
         return tooltipText.toString();
     }
 
-    public OnmsTopologyProtocol getDiscoveredBy() {
+    public String getDiscoveredBy() {
         return m_discoveredBy;
     }
 
-    public void setDiscoveredBy(OnmsTopologyProtocol discoveredBy) {
+    public void setDiscoveredBy(String discoveredBy) {
         m_discoveredBy = discoveredBy;
     }
 

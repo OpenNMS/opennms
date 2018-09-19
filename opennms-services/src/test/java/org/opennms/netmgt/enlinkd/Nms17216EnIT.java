@@ -93,7 +93,6 @@ import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsTopology;
-import org.opennms.netmgt.model.OnmsTopologyProtocol;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
 import org.opennms.netmgt.model.topology.Topology.ProtocolSupported;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
@@ -736,7 +735,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertEquals(11, m_cdpLinkDao.countAll());
         
         assertEquals(1, m_topologyDao.getSupportedProtocols().size());
-        assertEquals(OnmsTopologyProtocol.createFromTopologySupportedProtocol(ProtocolSupported.CDP), m_topologyDao.getSupportedProtocols().iterator().next());
+        assertEquals(ProtocolSupported.CDP.name(), m_topologyDao.getSupportedProtocols().iterator().next());
 
         DiscoveryCdpTopology cdptopology = m_linkd.getDiscoveryCdpTopology();
         assertNotNull(cdptopology);
@@ -745,7 +744,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertEquals(4, topology.getEdges().size());
         
         TopologyLogger tl = TopologyLogger.createAndSubscribe(
-                  OnmsTopologyProtocol.createFromTopologySupportedProtocol(ProtocolSupported.CDP),m_linkd);
+                  ProtocolSupported.CDP.name(),m_linkd);
         assertEquals("CDP:Consumer:Logger", tl.getId());
                 
         m_linkd.runDiscoveryCdpTopology();

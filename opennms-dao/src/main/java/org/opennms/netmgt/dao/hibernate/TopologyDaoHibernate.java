@@ -40,14 +40,13 @@ import org.opennms.netmgt.model.OnmsTopology;
 import org.opennms.netmgt.model.OnmsTopologyConsumer;
 import org.opennms.netmgt.model.OnmsTopologyException;
 import org.opennms.netmgt.model.OnmsTopologyMessage;
-import org.opennms.netmgt.model.OnmsTopologyProtocol;
 import org.opennms.netmgt.model.OnmsTopologyUpdater;
 
 public class TopologyDaoHibernate implements TopologyDao {
 
 
     private NodeDao m_nodeDao;
-    private Map<OnmsTopologyProtocol,OnmsTopologyUpdater> m_updatersMap = new HashMap<OnmsTopologyProtocol, OnmsTopologyUpdater>();
+    private Map<String,OnmsTopologyUpdater> m_updatersMap = new HashMap<String, OnmsTopologyUpdater>();
     Set<OnmsTopologyConsumer> m_consumers = new HashSet<OnmsTopologyConsumer>();
 
     @Override
@@ -56,11 +55,11 @@ public class TopologyDaoHibernate implements TopologyDao {
     }
 
     @Override
-    public OnmsTopology getTopology(OnmsTopologyProtocol protocolSupported) {
+    public OnmsTopology getTopology(String protocolSupported) throws OnmsTopologyException {
         if (m_updatersMap.containsKey(protocolSupported)) {
             return m_updatersMap.get(protocolSupported).getTopology();
         }
-        return null;
+        throw new OnmsTopologyException(protocolSupported + "protocol not supported");
     }
 
     public NodeDao getNodeDao() {
@@ -107,8 +106,8 @@ public class TopologyDaoHibernate implements TopologyDao {
     }
 
     @Override
-    public Set<OnmsTopologyProtocol> getSupportedProtocols() {
-        Set<OnmsTopologyProtocol> protocols = new HashSet<OnmsTopologyProtocol>();
+    public Set<String> getSupportedProtocols() {
+        Set<String> protocols = new HashSet<String>();
         synchronized (m_updatersMap) {
             protocols.addAll(m_updatersMap.keySet());
         }

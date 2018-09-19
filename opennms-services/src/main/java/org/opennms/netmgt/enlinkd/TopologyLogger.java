@@ -33,19 +33,18 @@ import java.util.Set;
 
 import org.opennms.netmgt.model.OnmsTopologyConsumer;
 import org.opennms.netmgt.model.OnmsTopologyMessage;
-import org.opennms.netmgt.model.OnmsTopologyProtocol;
 
 public class TopologyLogger implements OnmsTopologyConsumer {
 
-    public static TopologyLogger createAndSubscribe(OnmsTopologyProtocol protocol, EnhancedLinkd linkd) {
+    public static TopologyLogger createAndSubscribe(String protocol, EnhancedLinkd linkd) {
         TopologyLogger tl = new TopologyLogger(protocol);
         linkd.getQueryManager().subscribe(tl);
         return tl;
     }
     
-    private Set<OnmsTopologyProtocol> m_protocols;
-    public TopologyLogger(OnmsTopologyProtocol protocol) {
-        m_protocols = new HashSet<OnmsTopologyProtocol>();
+    private Set<String> m_protocols;
+    public TopologyLogger(String protocol) {
+        m_protocols = new HashSet<String>();
         m_protocols.add(protocol);
     }
 
@@ -55,7 +54,7 @@ public class TopologyLogger implements OnmsTopologyConsumer {
     }
 
     @Override
-    public Set<OnmsTopologyProtocol> getProtocols() {
+    public Set<String> getProtocols() {
         return m_protocols;
     }
 

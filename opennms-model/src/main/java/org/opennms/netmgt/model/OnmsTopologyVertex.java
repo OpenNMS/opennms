@@ -54,7 +54,7 @@ public class OnmsTopologyVertex extends OnmsTopologyAbstractRef implements OnmsT
     }
     
     private final OnmsNode m_node;
-    private Set<OnmsTopologyProtocol> m_protocolSupported = new HashSet<OnmsTopologyProtocol>();
+    private Set<String> m_protocolSupported = new HashSet<String>();
 
     private OnmsTopologyVertex(OnmsNode node) {
         super(node.getNodeId());
@@ -105,12 +105,12 @@ public class OnmsTopologyVertex extends OnmsTopologyAbstractRef implements OnmsT
 
     }
 
-    public Set<OnmsTopologyProtocol> getProtocolSupported() {
+    public Set<String> getProtocolSupported() {
         return m_protocolSupported;
     }
 
     public void setProtocolSupported(
-            Set<OnmsTopologyProtocol> protocolSupported) {
+            Set<String> protocolSupported) {
         m_protocolSupported = protocolSupported;
     }
 

@@ -41,7 +41,6 @@ import org.opennms.netmgt.model.OnmsTopology;
 import org.opennms.netmgt.model.OnmsTopologyEdge;
 import org.opennms.netmgt.model.OnmsTopologyException;
 import org.opennms.netmgt.model.OnmsTopologyMessage;
-import org.opennms.netmgt.model.OnmsTopologyProtocol;
 import org.opennms.netmgt.model.OnmsTopologyUpdater;
 import org.opennms.netmgt.model.OnmsTopologyVertex;
 import org.opennms.netmgt.model.topology.Topology;
@@ -91,7 +90,7 @@ public class DiscoveryCdpTopology extends Discovery implements OnmsTopologyUpdat
         m_linkd.getQueryManager().getAllCdpElements().stream().forEach(cdpelement -> {
             cdpelementmap.put(cdpelement.getNode().getId(), cdpelement);
             OnmsTopologyVertex vertex = OnmsTopologyVertex.create(nodeMap.get(cdpelement.getNode().getId()));
-            vertex.getProtocolSupported().add(OnmsTopologyProtocol.createFromTopologySupportedProtocol(ProtocolSupported.CDP));
+            vertex.getProtocolSupported().add(ProtocolSupported.CDP.name());
             topology.getVertices().add(vertex);
         });
         
@@ -138,7 +137,7 @@ public class DiscoveryCdpTopology extends Discovery implements OnmsTopologyUpdat
             edge.setTargetPort(targetLink.getCdpInterfaceName());
             edge.setTargetIfIndex(targetLink.getCdpCacheIfIndex());
             edge.setTargetAddr(sourceLink.getCdpCacheAddress());
-            edge.setDiscoveredBy(OnmsTopologyProtocol.createFromTopologySupportedProtocol(ProtocolSupported.CDP));
+            edge.setDiscoveredBy(ProtocolSupported.CDP.name());
             topology.getEdges().add(edge);
        }
         
@@ -151,8 +150,8 @@ public class DiscoveryCdpTopology extends Discovery implements OnmsTopologyUpdat
     }
 
     @Override
-    public OnmsTopologyProtocol getProtocol() {
-        return OnmsTopologyProtocol.createFromTopologySupportedProtocol(Topology.ProtocolSupported.CDP);
+    public String getProtocol() {
+        return Topology.ProtocolSupported.CDP.name();
     }
             
 }

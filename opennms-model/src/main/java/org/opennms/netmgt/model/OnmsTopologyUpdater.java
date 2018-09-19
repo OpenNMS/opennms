@@ -32,6 +32,6 @@ public interface OnmsTopologyUpdater extends OnmsTopologyRef {
     
     OnmsTopology getTopology();
     
-    OnmsTopologyProtocol getProtocol();
+    String getProtocol();
 
 }

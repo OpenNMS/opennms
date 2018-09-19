@@ -32,7 +32,7 @@ import java.util.Set;
 
 public interface OnmsTopologyConsumer extends OnmsTopologyRef {
     
-    Set<OnmsTopologyProtocol> getProtocols();
+    Set<String> getProtocols();
 
     void consume(OnmsTopologyMessage message);
     

@@ -35,7 +35,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-
 import org.graphdrawing.graphml.GraphmlType;
 import org.opennms.features.graphml.model.GraphML;
 import org.opennms.features.graphml.model.GraphMLEdge;
@@ -45,7 +44,7 @@ import org.opennms.features.graphml.model.GraphMLWriter;
 import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.OnmsTopology;
-import org.opennms.netmgt.model.OnmsTopologyProtocol;
+import org.opennms.netmgt.model.OnmsTopologyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -83,23 +82,22 @@ public class TopologyRestService {
     @GET
     @Path("{supported-protocol}")
     @Produces({MediaType.APPLICATION_XML})
-    public Response getGraph(@PathParam("supported-protocol") String supportedProtocol) throws InvalidGraphException {
-        OnmsTopologyProtocol protocol = OnmsTopologyProtocol.createFromString(supportedProtocol);
+    public Response getGraph(@PathParam("supported-protocol") String supportedProtocol) throws InvalidGraphException,OnmsTopologyException {
         if (!m_topologyDao.getSupportedProtocols().contains(supportedProtocol)) {
             return Response
                     .status(Response.Status.NOT_FOUND)
                     .build();                
         }
-        return Response.ok(getGraph(protocol)).build();
+        return Response.ok(getGraphMl(supportedProtocol)).build();
     }
 
-    private GraphmlType getGraph(OnmsTopologyProtocol protocolSupported) throws InvalidGraphException {
+    private GraphmlType getGraphMl(String protocolSupported) throws InvalidGraphException, OnmsTopologyException {
         OnmsTopology topology = m_topologyDao.getTopology(protocolSupported);
         GraphML graphml = new GraphML();
         GraphMLGraph graph = new GraphMLGraph();
-        graph.setProperty(NAMESPACE,protocolSupported.getProtocol());
-        graph.setProperty(LABEL,protocolSupported.getProtocol() + " Topology");
-        graph.setId(protocolSupported.getProtocol());
+        graph.setProperty(NAMESPACE,protocolSupported);
+        graph.setProperty(LABEL,protocolSupported + " Topology");
+        graph.setId(protocolSupported);
         topology.getVertices().stream().forEach(vertex -> {
             GraphMLNode gnode = new GraphMLNode();
             gnode.setId(vertex.getId());

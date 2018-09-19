@@ -35,16 +35,15 @@ import org.opennms.netmgt.model.OnmsTopology;
 import org.opennms.netmgt.model.OnmsTopologyConsumer;
 import org.opennms.netmgt.model.OnmsTopologyException;
 import org.opennms.netmgt.model.OnmsTopologyMessage;
-import org.opennms.netmgt.model.OnmsTopologyProtocol;
 import org.opennms.netmgt.model.OnmsTopologyUpdater;
 
 public interface TopologyDao {
 
     OnmsNode getDefaultFocusPoint();
     
-    OnmsTopology getTopology(OnmsTopologyProtocol protocol);
+    OnmsTopology getTopology(String protocol) throws OnmsTopologyException;
     
-    Set<OnmsTopologyProtocol> getSupportedProtocols();
+    Set<String> getSupportedProtocols();
 
     void register(OnmsTopologyUpdater updater) throws OnmsTopologyException;
     void unregister(OnmsTopologyUpdater updater) throws OnmsTopologyException;
