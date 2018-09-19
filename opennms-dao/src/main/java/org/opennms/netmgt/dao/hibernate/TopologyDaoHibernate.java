@@ -38,15 +38,13 @@ import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsTopology;
 import org.opennms.netmgt.model.OnmsTopologyConsumer;
+import org.opennms.netmgt.model.OnmsTopologyException;
 import org.opennms.netmgt.model.OnmsTopologyMessage;
 import org.opennms.netmgt.model.OnmsTopologyProtocol;
 import org.opennms.netmgt.model.OnmsTopologyUpdater;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TopologyDaoHibernate implements TopologyDao {
 
-    private static Logger LOG = LoggerFactory.getLogger(TopologyDaoHibernate.class);
 
     private NodeDao m_nodeDao;
     private Map<OnmsTopologyProtocol,OnmsTopologyUpdater> m_updatersMap = new HashMap<OnmsTopologyProtocol, OnmsTopologyUpdater>();
@@ -89,41 +87,43 @@ public class TopologyDaoHibernate implements TopologyDao {
     }
 
     @Override
-    public boolean register(OnmsTopologyUpdater updater) {
+    public void register(OnmsTopologyUpdater updater) throws OnmsTopologyException {
         synchronized (m_updatersMap) {
             if (m_updatersMap.containsKey(updater.getProtocol())) {
-                return false;
+                throw new OnmsTopologyException("Protocol already registered", updater, updater.getProtocol());
             }
             m_updatersMap.put(updater.getProtocol(), updater);
         }
-        return true;
     }
 
     @Override
-    public boolean unregister(OnmsTopologyUpdater updater) {
+    public void unregister(OnmsTopologyUpdater updater) throws OnmsTopologyException {
         synchronized (m_updatersMap) {
             OnmsTopologyUpdater subscribed =  m_updatersMap.remove(updater.getProtocol());
             if (subscribed == null) {
-                return false;
+                throw new OnmsTopologyException("updater is not registered", updater, updater.getProtocol());
             }
         }
-        return true;
     }
 
     @Override
     public Set<OnmsTopologyProtocol> getSupportedProtocols() {
-        return m_updatersMap.keySet();
+        Set<OnmsTopologyProtocol> protocols = new HashSet<OnmsTopologyProtocol>();
+        synchronized (m_updatersMap) {
+            protocols.addAll(m_updatersMap.keySet());
+        }
+        return protocols;
     }
 
     @Override
     public void update(OnmsTopologyUpdater updater,
-            OnmsTopologyMessage message) {
+            OnmsTopologyMessage message) throws OnmsTopologyException {
         if (!m_updatersMap.containsKey(updater.getProtocol())) {
-            return;
+            throw new OnmsTopologyException("cannot update message with id: " + message.getMessagebody().getId() + ". Protocol not supported", updater,updater.getProtocol(), message.getMessagestatus());
         }
         if ( m_updatersMap.get(updater.getProtocol()) != updater
                            ) {
-            return;
+            throw new OnmsTopologyException("cannot update message with id: " + message.getMessagebody().getId() + ". updater not supported", updater,updater.getProtocol(), message.getMessagestatus());
         }
         synchronized (m_consumers) {
             m_consumers.stream().

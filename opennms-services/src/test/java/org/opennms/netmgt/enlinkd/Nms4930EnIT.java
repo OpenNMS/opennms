@@ -434,7 +434,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
         assertEquals(0,m_bridgeMacLinkDao.countAll());
         
         assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
-        m_linkd.runTopologyDiscovery();
+        m_linkd.runDiscoveryBridgeDomains();
         checkTopologyDlink1(dlink1);
         
     }
@@ -463,7 +463,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
         assertEquals(0,m_bridgeMacLinkDao.countAll());
         
         assertTrue(m_linkd.runSingleSnmpCollection(dlink2.getId()));
-        m_linkd.runTopologyDiscovery();
+        m_linkd.runDiscoveryBridgeDomains();
         checkTopologyDlink2(dlink2);
         
     }
@@ -507,11 +507,11 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
         assertEquals(0,m_bridgeMacLinkDao.countAll());
         
         assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
-        m_linkd.runTopologyDiscovery();
+        m_linkd.runDiscoveryBridgeDomains();
         checkTopologyDlink1(dlink1);
 
         assertTrue(m_linkd.runSingleSnmpCollection(dlink2.getId()));
-        m_linkd.runTopologyDiscovery();
+        m_linkd.runDiscoveryBridgeDomains();
         checkTopology(dlink1, dlink2, nodeonlink1dport6, nodebetweendlink1dlink2,false);
     }
     
@@ -548,11 +548,11 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
         assertEquals(0,m_bridgeMacLinkDao.countAll());
 
         assertTrue(m_linkd.runSingleSnmpCollection(dlink2.getId()));
-        m_linkd.runTopologyDiscovery();
+        m_linkd.runDiscoveryBridgeDomains();
         checkTopologyDlink2(dlink2);
 
         assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
-        m_linkd.runTopologyDiscovery();
+        m_linkd.runDiscoveryBridgeDomains();
         checkTopology(dlink1, dlink2, nodeonlink1dport6, nodebetweendlink1dlink2,true);
     }
 

@@ -42,6 +42,10 @@ import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsTopologyConsumer;
+import org.opennms.netmgt.model.OnmsTopologyMessage;
+import org.opennms.netmgt.model.OnmsTopologyUpdater;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
@@ -144,5 +148,17 @@ public interface EnhancedLinkdService {
     Set<BridgeForwardingTableEntry> useBridgeTopologyUpdateBFT(int nodeid);
         
     void updateBridgeOnDomain(BroadcastDomain domain,Integer nodeid);
-            
+    
+    void register(OnmsTopologyUpdater updater);
+
+    void subscribe(OnmsTopologyConsumer consumer);
+
+    void update(OnmsTopologyUpdater updater, OnmsTopologyMessage message);
+    
+    List<OnmsNode> getAllOnmsNodes();
+    
+    List<CdpElement> getAllCdpElements();
+    
+    List<CdpLink> getAllCdpLinks();
+    
 }

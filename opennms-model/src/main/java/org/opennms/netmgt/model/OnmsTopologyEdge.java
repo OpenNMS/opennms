@@ -33,9 +33,9 @@ public class OnmsTopologyEdge extends OnmsTopologyAbstractRef implements OnmsTop
     private static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
     private static final String HTML_TOOLTIP_TAG_END  = "</p>";
 
-    public static OnmsTopologyEdge create(OnmsTopologyVertex source, OnmsTopologyVertex target) {
+    public static OnmsTopologyEdge create(OnmsTopologyVertex source, OnmsTopologyVertex target, Integer sourceIndex, Integer targetIndex) {
         if (source !=  null && target != null && !source.getId().equals(target.getId())) {
-            return new OnmsTopologyEdge(source.getId()+":"+target.getId(), source, target);
+            return new OnmsTopologyEdge(source.getId()+":"+sourceIndex+"-"+target.getId()+":"+targetIndex, source, target);
         }
         
         return null;

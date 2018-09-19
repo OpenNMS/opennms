@@ -33,6 +33,7 @@ import java.util.Set;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsTopology;
 import org.opennms.netmgt.model.OnmsTopologyConsumer;
+import org.opennms.netmgt.model.OnmsTopologyException;
 import org.opennms.netmgt.model.OnmsTopologyMessage;
 import org.opennms.netmgt.model.OnmsTopologyProtocol;
 import org.opennms.netmgt.model.OnmsTopologyUpdater;
@@ -45,12 +46,12 @@ public interface TopologyDao {
     
     Set<OnmsTopologyProtocol> getSupportedProtocols();
 
-    boolean register(OnmsTopologyUpdater updater);
-    boolean unregister(OnmsTopologyUpdater updater);
+    void register(OnmsTopologyUpdater updater) throws OnmsTopologyException;
+    void unregister(OnmsTopologyUpdater updater) throws OnmsTopologyException;
 
     void subscribe(OnmsTopologyConsumer consumer);
     void unsubscribe(OnmsTopologyConsumer consumer);
     
-    void update(OnmsTopologyUpdater updater, OnmsTopologyMessage message);
+    void update(OnmsTopologyUpdater updater, OnmsTopologyMessage message) throws OnmsTopologyException;
 
 }

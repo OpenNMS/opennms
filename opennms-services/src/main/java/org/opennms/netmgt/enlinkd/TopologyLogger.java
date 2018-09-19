@@ -31,29 +31,18 @@ package org.opennms.netmgt.enlinkd;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.OnmsTopologyConsumer;
 import org.opennms.netmgt.model.OnmsTopologyMessage;
 import org.opennms.netmgt.model.OnmsTopologyProtocol;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 
 public class TopologyLogger implements OnmsTopologyConsumer {
 
-    public static TopologyLogger createAndSubscribe(OnmsTopologyProtocol protocol) {
+    public static TopologyLogger createAndSubscribe(OnmsTopologyProtocol protocol, EnhancedLinkd linkd) {
         TopologyLogger tl = new TopologyLogger(protocol);
-        Assert.notNull(tl.getTopologyDao());
-        tl.getTopologyDao().subscribe(tl);
+        linkd.getQueryManager().subscribe(tl);
         return tl;
     }
     
-    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryCdpTopology.class);
-
-    @Autowired
-    private TopologyDao m_topologyDao;
-
     private Set<OnmsTopologyProtocol> m_protocols;
     public TopologyLogger(OnmsTopologyProtocol protocol) {
         m_protocols = new HashSet<OnmsTopologyProtocol>();
@@ -72,15 +61,7 @@ public class TopologyLogger implements OnmsTopologyConsumer {
 
     @Override
     public void consume(OnmsTopologyMessage message) {
-        LOG.warn("consume: received message type: {} ref: {}", message.getMessagestatus(), message.getMessagebody().getId());
-    }
-
-    public TopologyDao getTopologyDao() {
-        return m_topologyDao;
-    }
-
-    public void setTopologyDao(TopologyDao topologyDao) {
-        m_topologyDao = topologyDao;
+        System.out.println("received message type:" +  message.getMessagestatus() + " ref:"+message.getMessagebody().getId());
     }
 
 }

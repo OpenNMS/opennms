@@ -54,6 +54,7 @@ import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OspfElementDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
+import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeStpLink;
@@ -66,6 +67,10 @@ import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.OnmsTopologyConsumer;
+import org.opennms.netmgt.model.OnmsTopologyException;
+import org.opennms.netmgt.model.OnmsTopologyMessage;
+import org.opennms.netmgt.model.OnmsTopologyUpdater;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
@@ -73,7 +78,6 @@ import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,6 +116,8 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     private BridgeStpLinkDao m_bridgeStpLinkDao;
 
     private BridgeTopologyDao m_bridgeTopologyDao;
+    
+    private TopologyDao m_topologyDao;
 
     volatile Map<Integer, Set<BridgeForwardingTableEntry>> m_nodetoBroadcastDomainMap= new HashMap<Integer, Set<BridgeForwardingTableEntry>>();
     volatile Set<BroadcastDomain> m_domains;
@@ -858,6 +864,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         m_bridgeTopologyDao = bridgeTopologyDao;
     }
 
+    
     @Override
     public void updateBridgeOnDomain(BroadcastDomain domain, Integer nodeId) {
         if (domain == null) {
@@ -883,4 +890,52 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         return elems;
     }
 
+    public TopologyDao getTopologyDao() {
+        return m_topologyDao;
+    }
+
+    public void setTopologyDao(TopologyDao topologyDao) {
+        m_topologyDao = topologyDao;
+    }
+
+    @Override
+    public void register(OnmsTopologyUpdater updater) {
+        try {
+            m_topologyDao.register(updater);
+        } catch (OnmsTopologyException e) {
+            LOG.error("register: {}: {} {} ", e.getMessage(), e.getId(), e.getProtocol());
+        }
+    }
+
+    @Override
+    public void update(OnmsTopologyUpdater updater,
+            OnmsTopologyMessage message) {
+        try {
+            m_topologyDao.update(updater, message);
+        } catch (OnmsTopologyException e) {
+            LOG.error("update: cannot {}: {} {} {}", e.getMessageStatus(), e.getId(), e.getProtocol(),e.getMessage());
+        }
+        
+    }
+
+    @Override
+    public void subscribe(OnmsTopologyConsumer consumer) {
+        m_topologyDao.subscribe(consumer);
+    }
+
+    @Override
+    public List<OnmsNode> getAllOnmsNodes() {
+        return m_nodeDao.findAll();
+    }
+
+    @Override
+    public List<CdpElement> getAllCdpElements() {
+        return m_cdpElementDao.findAll();
+    }
+
+    @Override
+    public List<CdpLink> getAllCdpLinks() {
+        return m_cdpLinkDao.findAll();
+    }
+    
 }

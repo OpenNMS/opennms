@@ -45,6 +45,7 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.enlinkd.scheduler.Scheduler;
+import org.opennms.netmgt.model.OnmsTopologyException;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
@@ -99,6 +100,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
 
+    private DiscoveryCdpTopology m_discoveryCdpTopology;
+    private DiscoveryBridgeDomains m_discoveryBridgeDomains;
+
     private volatile Set<Integer> m_bridgecollectionsscheduled = new HashSet<>();
     /**
      * <p>
@@ -140,20 +144,25 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     }
     
     public void scheduleDiscoveryCdpTopology() {
-        DiscoveryCdpTopology discoverycdp = DiscoveryCdpTopology.createAndRegister(this);
-        LOG.debug("scheduleDiscoveryCdpTopology: Scheduling {}",
-                  discoverycdp.getInfo());
-        discoverycdp.setScheduler(m_scheduler);
-        discoverycdp.schedule();
+         try {
+            m_discoveryCdpTopology = DiscoveryCdpTopology.createAndRegister(this);
+        } catch (OnmsTopologyException e) {
+            LOG.error("OnmsTopologyException: cannote schedule: {} {} {}", e.getMessage(),e.getId(),e.getProtocol());
+            return;
+        }
+         LOG.debug("scheduleDiscoveryCdpTopology: Scheduling {}",
+                   m_discoveryCdpTopology.getInfo());
+         m_discoveryCdpTopology.setScheduler(m_scheduler);
+         m_discoveryCdpTopology.schedule();
     }
 
     public void scheduleDiscoveryBridgeDomain() {
-            DiscoveryBridgeDomains discoverbridge=
+            m_discoveryBridgeDomains=
                     new DiscoveryBridgeDomains(this);
             LOG.debug("scheduleDiscoveryBridgeDomain: Scheduling {}",
-                     discoverbridge.getInfo());
-            discoverbridge.setScheduler(m_scheduler);
-            discoverbridge.schedule();
+                     m_discoveryBridgeDomains.getInfo());
+            m_discoveryBridgeDomains.setScheduler(m_scheduler);
+            m_discoveryBridgeDomains.schedule();
     }
 
     private void scheduleCollection() {
@@ -329,11 +338,26 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         return allready;
     }
 
-    public void runTopologyDiscovery() {
-        final DiscoveryBridgeDomains snmpColl = new DiscoveryBridgeDomains(this);
-        snmpColl.runDiscovery();
+    public void runDiscoveryBridgeDomains() {
+        if (m_discoveryBridgeDomains != null) {
+            m_discoveryBridgeDomains.runDiscovery();
+        }
+    }
+
+    public void runDiscoveryCdpTopology() {
+        if (m_discoveryCdpTopology != null) {
+            m_discoveryCdpTopology.runDiscovery();
+        }
     }
     
+    public DiscoveryBridgeDomains getDiscoveryBridgeDomains() {
+        return m_discoveryBridgeDomains;
+    }
+    
+    public DiscoveryCdpTopology getDiscoveryCdpTopology() {
+        return m_discoveryCdpTopology;
+    }
+
     public void scheduleNodeBridgeTopologyDiscovery(BroadcastDomain domain, Map<Integer,Set<BridgeForwardingTableEntry>> updateBfpMap) {
         final DiscoveryBridgeTopology bridgediscovery = getNodeBridgeDiscoveryTopology(domain);
         for (Integer bridgeid: updateBfpMap.keySet()) {
