@@ -183,7 +183,7 @@ public class JtiTelemetryIT {
                 .until(matchRrdFileFromNodeResource(onmsNode.getId()));
     }
 
-    private void sendJtiTelemetryMessage(InetSocketAddress udpAddress) throws IOException {
+    public static void sendJtiTelemetryMessage(InetSocketAddress udpAddress) throws IOException {
        
         byte[] jtiOutBytes = Resources.toByteArray(Resources.getResource("telemetry/jti-proto.raw"));
         DatagramPacket packet = new DatagramPacket(jtiOutBytes, jtiOutBytes.length, udpAddress);

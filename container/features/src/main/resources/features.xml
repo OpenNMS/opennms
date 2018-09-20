@@ -1269,7 +1269,6 @@
         <bundle>mvn:org.opennms.container/spring-extender/${project.version}</bundle>
     </feature>
 
-
     <feature name="opennms-flows" description="OpenNMS :: Features :: Flows :: Feature Definition" version="${project.version}">
         <details>Feature definition to start all required bundles related to *flow-support.</details>
         <feature>opennms-health</feature>

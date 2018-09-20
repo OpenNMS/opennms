@@ -28,7 +28,8 @@
 
 package org.opennms.netmgt.newts.support;
 
-import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.opennms.newts.api.Context;
 import org.opennms.newts.cassandra.CassandraSession;
@@ -51,10 +52,21 @@ public class CachePrimer implements InitializingBean, Runnable {
     @Autowired
     private Context context;
 
-    private static final boolean primingDisabled = Boolean.getBoolean("org.opennms.newts.config.cache.priming.disable");
-    private static final long blockWhilePrimingMs = Long.getLong("org.opennms.newts.config.cache.priming.block_ms", TimeUnit.MINUTES.toMillis(2));
-    private static final int fetchSize = Integer.getInteger("org.opennms.newts.config.cache.priming.fetch_size", CassandraCachePrimer.DEFAULT_FETCH_SIZE);
-    private static final int fetchMoreThreshold = Integer.getInteger("org.opennms.newts.config.cache.priming.fetch_more_threshold", CassandraCachePrimer.DEFAULT_FETCH_MORE_THRESHOLD);
+    private final boolean primingDisabled;
+    private final long blockWhilePrimingMs;
+    private final int fetchSize;
+    private final int fetchMoreThreshold;
+
+    @Inject
+    public CachePrimer(@Named("cache.priming.disable") boolean primingDisabled,
+                       @Named("cache.priming.block_ms") long blockWhilePrimingMs,
+                       @Named("cache.priming.fetch_size") int fetchSize,
+                       @Named("cache.priming.fetch_more_threshold") int fetchMoreThreshold) {
+        this.primingDisabled = primingDisabled;
+        this.blockWhilePrimingMs = blockWhilePrimingMs;
+        this.fetchSize = fetchSize;
+        this.fetchMoreThreshold = fetchMoreThreshold;
+    }
 
     @Override
     public void afterPropertiesSet() {
@@ -100,5 +112,17 @@ public class CachePrimer implements InitializingBean, Runnable {
         LOG.info("Starting to prime the cache.");
         primer.prime(resourceMetadataCache, context);
         LOG.info("Done priming cache. Cache size: {}", resourceMetadataCache.getSize());
+    }
+
+    public void setResourceMetadataCache(GuavaSearchableResourceMetadataCache resourceMetadataCache) {
+        this.resourceMetadataCache = resourceMetadataCache;
+    }
+
+    public void setSession(CassandraSession session) {
+        this.session = session;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 }
