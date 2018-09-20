@@ -84,6 +84,27 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.1]
+
+==== Release Meridian-2018.1.1
+
+Release 2018.1.1 is an update to Meridian 2018.1.0.
+It contains a few bug fixes and enhancements.
+
+The codename for 2018.1.1 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_1[Light air]_.
+
+===== Bug
+
+* Minions without nodes should show "unknown" status (Issue http://issues.opennms.org/browse/NMS-10338[NMS-10338])
+* navbar.ftl not rendering (Issue http://issues.opennms.org/browse/NMS-10342[NMS-10342])
+
+===== Enhancement
+
+* add polling interval definition on service UI (Issue http://issues.opennms.org/browse/NMS-9747[NMS-9747])
+* Improve CDP topology calculation performance (Issue http://issues.opennms.org/browse/NMS-10317[NMS-10317])
+* Memory related env-variables from /etc/sysconfig/minion are not honored (Issue http://issues.opennms.org/browse/NMS-10332[NMS-10332])
+* Manage Minions page should link to the node for the minion (Issue http://issues.opennms.org/browse/NMS-10296[NMS-10296])
+
 [releasenotes-changelog-Meridian-2018.1.0]
 
 ==== Release Meridian-2018.1.0
