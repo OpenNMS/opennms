@@ -18,9 +18,9 @@ Bootstrap Theme Specific Stylesheet
  *  15.0 - Miscellaneous and Workarounds
  */
 
+@import "properties.scss";
 @import "~bootstrap/scss/_functions.scss";
 @import "~bootstrap/scss/_variables.scss";
-@import "properties.scss";
 @import "severities.scss";
 
 /* =1.0 Structure

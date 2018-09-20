@@ -76,3 +76,9 @@ $nav-tabs-active-link-hover-bg:             $body-bg !default;
 $nav-tabs-active-link-hover-border-color:   #ddd !default;
 */
 //$nav-tabs-active-link-hover-color:          $color_opennms_dark;
+
+// Add custom colors to the theme
+$theme-colors: (
+        "horizon": #4c9d29,
+        "meridian": #5D7CBA,
+);
