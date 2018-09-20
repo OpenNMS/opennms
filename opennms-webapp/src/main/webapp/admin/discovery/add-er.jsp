@@ -86,20 +86,20 @@ function doAddExcludeRange(){
         <span>Add Range to Exclude from Discovery</span>
       </div>
       <div class="card-body">
-        <form role="form" class="form-horizontal">
-          <div class="form-group">
-            <label for="begin" class="col-form-label col-sm-2">Begin IP Address:</label>
+        <form role="form" class="form">
+          <div class="form-group form-row">
+            <label for="begin" class="col-form-label col-sm-2">Begin IP Address</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" id="begin" name="begin" value=''/>
             </div>
           </div>
-          <div class="form-group">
-            <label for="end" class="col-form-label col-sm-2">End IP Address:</label>
+          <div class="form-group form-row">
+            <label for="end" class="col-form-label col-sm-2">End IP Address</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" id="end" name="end" value=''/>
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group form-row">
             <div class="col-sm-12">
               <button type="button" class="btn btn-secondary" name="addExcludeRange" id="addExcludeRange" onclick="doAddExcludeRange();">Add</button>
               <button type="button" class="btn btn-secondary" name="cancel" id="cancel" onclick="window.close();opener.document.focus();">Cancel</button>

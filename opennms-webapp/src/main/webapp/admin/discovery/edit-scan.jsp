@@ -67,19 +67,19 @@
 
 <script type="text/javascript">
 function addSpecific(){
-	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-specific.jsp?mode=scan" )%>', 'AddSpecific', 'toolbar=0,width=700,height=350, left=0, top=0, resizable=1, scrollbars=1')
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-specific.jsp?mode=scan&nobreadcrumbs=true" )%>', 'AddSpecific', 'toolbar=0,width=700,height=500, left=0, top=0, resizable=1, scrollbars=1')
 }
 
 function addIncludeRange(){
-	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-ir.jsp?mode=scan" )%>', 'AddIncludeRange', 'toolbar=0,width=750 ,height=500, left=0, top=0, resizable=1, scrollbars=1')
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-ir.jsp?mode=scan&nobreadcrumbs=true" )%>', 'AddIncludeRange', 'toolbar=0,width=750 ,height=670, left=0, top=0, resizable=1, scrollbars=1')
 }
 
 function addIncludeUrl(){
-	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-url.jsp?mode=scan" )%>', 'AddIncludeUrl', 'toolbar=0,width=750 ,height=350, left=0, top=0, resizable=1, scrollbars=1')
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-url.jsp?mode=scan&nobreadcrumbs=true" )%>', 'AddIncludeUrl', 'toolbar=0,width=750 ,height=500, left=0, top=0, resizable=1, scrollbars=1')
 }
 
 function addExcludeRange(){
-	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-er.jsp?mode=scan" )%>', 'AddExcludeRange', 'toolbar=0,width=600 ,height=350, left=0, top=0, resizable=1, scrollbars=1')
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-er.jsp?mode=scan&nobreadcrumbs=true" )%>', 'AddExcludeRange', 'toolbar=0,width=600 ,height=350, left=0, top=0, resizable=1, scrollbars=1')
 }
 
 
@@ -157,7 +157,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 
 %>
 
-<form role="form" class="form-horizontal" method="post" id="modifyDiscoveryConfig" name="modifyDiscoveryConfig" action="<%= Util.calculateUrlBase(request, "admin/discovery/scanConfig") %>" onsubmit="return restartDiscovery();">
+<form role="form" class="form" method="post" id="modifyDiscoveryConfig" name="modifyDiscoveryConfig" action="<%= Util.calculateUrlBase(request, "admin/discovery/scanConfig") %>" onsubmit="return restartDiscovery();">
 
 <input type="hidden" id="specificipaddress" name="specificipaddress" value=""/>
 <input type="hidden" id="specifictimeout" name="specifictimeout" value=""/>
@@ -181,59 +181,54 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 <input type="hidden" id="erbegin" name="erbegin" value=""/>
 <input type="hidden" id="erend" name="erend" value=""/>
 
-<button type="submit" class="btn btn-secondary">Start Discovery Scan</button>
-
-<p/>
+<button type="submit" class="btn btn-secondary mt-2 mb-4">Start Discovery Scan</button>
 
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-sm-12 col-md-10 col-lg-8">
     <div class="card">
-      <div class="card-header">
-        <span>General Settings</span>
-      </div>
-      <div class="list-group">
-        <div class="list-group-item">
-        <div class="col-xs-12 input-group">
-          <label for="retries" class="col-form-label">Timeout (milliseconds):</label>
-          <input type="text" class="form-control" id="timeout" name="timeout" value="<%=currConfig.getTimeout().orElse(DiscoveryConfigFactory.DEFAULT_TIMEOUT)%>"/>
-        </div> <!-- input-group -->
-        <div class="col-xs-12 input-group">
-          <label for="retries" class="col-form-label">Retries:</label>
-          <input type="text" class="form-control" id="retries" name="retries" value="<%=currConfig.getRetries().orElse(DiscoveryConfigFactory.DEFAULT_RETRIES)%>"/>
-        </div> <!-- input-group -->
-        <div class="col-xs-12 input-group">
-          <label for="foreignsource" class="col-form-label">Foreign Source:</label>
-          <select id="foreignsource" class="form-control" name="foreignsource">
-            <option value="" <%if (!currConfig.getForeignSource().isPresent()) out.print("selected");%>>None selected</option>
-            <% for (String key : foreignsources.keySet()) { %>
-              <option value="<%=key%>" <%if(key.equals(currConfig.getForeignSource().orElse(null))) out.print("selected");%>><%=foreignsources.get(key)%></option>
-            <% } %>
-          </select>
-        </div> <!-- input-group -->
-        <div class="col-xs-12 input-group">
-          <label for="location" class="col-form-label">Location:</label>
-          <select id="location" class="form-control" name="location">
-            <% for (String key : locations.keySet()) { %>
-              <option value="<%=key%>" <%if(key.equals(currConfig.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))) out.print("selected");%>><%=locations.get(key)%></option>
-            <% } %>
-          </select>
-        </div> <!-- input-group -->
-        </div>
 
-        <div class="list-group-item">
-        <h4 class="list-group-item-heading">Advanced configuration</h4>
-        <div class="col-xs-12 input-group">
-          <label for="chunksize" class="col-form-label">Task chunk size:</label>
-          <input type="text" class="form-control" id="chunksize" name="chunksize" value="<%=currConfig.getChunkSize().orElse(DiscoveryConfigFactory.DEFAULT_CHUNK_SIZE)%>"/>
-        </div> <!-- input-group -->
+        <div class="card-header">
+            <span>General Settings</span>
         </div>
-      </div>
+        <div class="card-body">
+            <div class="form-group form-row">
+                <label for="retries" class="col-form-label col-md-4">Timeout (milliseconds)</label>
+                <input type="text" class="form-control col-md-8" id="timeout" name="timeout" value="<%=currConfig.getTimeout().orElse(DiscoveryConfigFactory.DEFAULT_TIMEOUT)%>"/>
+            </div> <!-- form-group -->
+            <div class="form-group form-row">
+                <label for="retries" class="col-form-label col-md-4">Retries</label>
+                <input type="text" class="form-control col-md-8" id="retries" name="retries" value="<%=currConfig.getRetries().orElse(DiscoveryConfigFactory.DEFAULT_RETRIES)%>"/>
+            </div> <!-- form-group -->
+            <div class="form-group form-row">
+                <label for="foreignsource" class="col-form-label col-md-4">Foreign Source</label>
+                <select id="foreignsource" class="form-control custom-select col-md-8" name="foreignsource">
+                    <option value="" <%if (!currConfig.getForeignSource().isPresent()) out.print("selected");%>>None selected</option>
+                    <% for (String key : foreignsources.keySet()) { %>
+                    <option value="<%=key%>" <%if(key.equals(currConfig.getForeignSource().orElse(null))) out.print("selected");%>><%=foreignsources.get(key)%></option>
+                    <% } %>
+                </select>
+            </div> <!-- form-group -->
+            <div class="form-group form-row">
+                <label for="location" class="col-form-label col-md-4">Location</label>
+                <select id="location" class="form-control custom-select col-md-8" name="location">
+                    <% for (String key : locations.keySet()) { %>
+                    <option value="<%=key%>" <%if(key.equals(currConfig.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))) out.print("selected");%>><%=locations.get(key)%></option>
+                    <% } %>
+                </select>
+            </div> <!-- form-group -->
+
+            <h4 class="">Advanced configuration</h4>
+            <div class="form-group form-row">
+                <label for="chunksize" class="col-form-label col-md-4">Task chunk size</label>
+                <input type="text" class="form-control col-md-8" id="chunksize" name="chunksize" value="<%=currConfig.getChunkSize().orElse(DiscoveryConfigFactory.DEFAULT_CHUNK_SIZE)%>"/>
+            </div> <!-- form-group -->
+        </div>
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
 
 <div class="row">
-  <div class="col-xs-12">
+  <div class="col-sm-12 col-md-10 col-lg-8">
     <div class="card">
       <div class="card-header">
         <span>Specific Addresses</span>
@@ -274,7 +269,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 </div> <!-- row -->
 
 <div class="row">
-  <div class="col-xs-12">
+  <div class="col-sm-12 col-md-10 col-lg-8">
     <div class="card">
       <div class="card-header">
         <span>Include URLs</span>
@@ -315,7 +310,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 </div> <!-- row -->
 
 <div class="row">
-  <div class="col-xs-12">
+  <div class="col-sm-12 col-md-10 col-lg-8">
     <div class="card">
       <div class="card-header">
         <span>Include Ranges</span>
@@ -360,7 +355,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 </div> <!-- row -->
 
 <div class="row">
-  <div class="col-xs-12">
+  <div class="col-sm-12 col-md-10 col-lg-8">
     <div class="card">
       <div class="card-header">
         <span>Exclude Ranges</span>
@@ -397,11 +392,8 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
   </div> <!-- column -->
 </div> <!-- row -->
 
-<button type="submit" class="btn btn-secondary">Start Discovery Scan</button>
+<button type="submit" class="btn btn-secondary mt-2 mb-4">Start Discovery Scan</button>
 
 </form>
-
-<!-- TODO: Remove this, add top padding to the footer div -->
-<p/>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
