@@ -69,19 +69,19 @@
     <span>Edit On-Call Role</span>
   </div>
   <div class="card-body">
-    <form role="form" class="form-horizontal" action="<c:url value='${reqUrl}'/>" method="post" name="editForm">
+    <form role="form" class="form" action="<c:url value='${reqUrl}'/>" method="post" name="editForm">
       <input type="hidden" name="operation" value="saveDetails"/>
       <input type="hidden" name="role" value="${fn:escapeXml(role.name)}"/>
 
-      <div class="form-group">
+      <div class="form-group form-row">
         <label for="input_roleName" class="col-sm-2 col-form-label">Name</label>
         <div class="col-sm-10">
           <input class="form-control" name="roleName" id="input_roleName" type="text" value="${fn:escapeXml(role.name)}"/>
         </div>
       </div>
 
-      <div class="form-group">
-        <label class="col-sm-2 col-form-label">Currently On Call</label>
+      <div class="form-group form-row">
+        <label class="col-sm-2 col-form-label"><strong>Currently On Call</strong></label>
         <div class="col-sm-10">
           <ul>
             <c:forEach var="scheduledUser" items="${role.currentUsers}">
@@ -91,10 +91,10 @@
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group form-row">
         <label for="input_roleUser" class="col-sm-2 col-form-label">Supervisor</label>
         <div class="col-sm-10">
-          <select class="form-control" id="input_roleUser" name="roleUser">
+          <select class="form-control custom-select" id="input_roleUser" name="roleUser">
             <c:forEach var="user" items="${userManager.users}">
               <c:choose>
                 <c:when test="${user == role.defaultUser}">
@@ -109,10 +109,10 @@
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group form-row">
         <label for="input_roleGroup" class="col-sm-2 col-form-label">Membership Group</label>
         <div class="col-sm-10">
-          <select class="form-control" id="input_roleGroup" name="roleGroup">
+          <select class="form-control custom-select" id="input_roleGroup" name="roleGroup">
             <c:forEach var="group" items="${groupManager.groups}">
               <c:choose>
                 <c:when test="${group == role.membershipGroup}">
@@ -127,7 +127,7 @@
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group form-row">
         <label for="input_roleDescr" class="col-sm-2 col-form-label">Description</label>
         <div class="col-sm-10">
           <input class="form-control" name="roleDescr" id="input_roleDescr" type="text" value="${fn:escapeXml(role.description)}"/>

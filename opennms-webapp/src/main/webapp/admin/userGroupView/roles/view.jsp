@@ -160,7 +160,7 @@
   <button type="submit" class="btn btn-secondary">Value Details</button>
 </form>
 
-<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">
+<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm" class="my-4">
   <button type="submit" class="btn btn-secondary">Done</button>
 </form>
 
@@ -219,7 +219,7 @@
 			</table>
 </div>
 
-<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">
+<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm" class="mb-4">
   <button type="submit" class="btn btn-secondary">Done</button>
 </form>
 
