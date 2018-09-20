@@ -238,9 +238,25 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         Assert.assertEquals("Servers", topologyUIPage.getVisibleVertices().get(1).getLabel());
     }
 
-    /**
-     * Creates and publishes a requisition with 2 dummy nodes with predefined parameters
-     */
+    @Test
+    public void verifyCanChangeIcon() throws IOException, InterruptedException {
+        topologyUIPage.selectTopologyProvider(() -> LABEL);
+        topologyUIPage.findVertex("North Region").contextMenu().click("Navigate To", "Markets (North Region)");
+        String label = "North 1";
+
+        // open icon select popup
+        topologyUIPage.findVertex(label).select();
+        topologyUIPage.findVertex(label).contextMenu().click("Change Icon");
+
+        // choose new icon
+        String newIconName = "microwave_backhaul_1";
+        findElementByXpath("//*[name()='title' and text()='"+newIconName+"']/../*[name()='rect']").click();
+        assertEquals(newIconName, topologyUIPage.findVertex(label).getIconName());
+    }
+
+        /**
+         * Creates and publishes a requisition with 2 dummy nodes with predefined parameters
+         */
     private void createDummyNodes() throws IOException, InterruptedException {
 
         // First node has foreign ID "node1", label - "North 2" and category "Routers"
