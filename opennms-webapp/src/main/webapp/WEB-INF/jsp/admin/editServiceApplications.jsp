@@ -48,7 +48,7 @@
   <input type="hidden" name="edit" value=""/>
 
 <div class="row">
-  <div class="col-md-8">
+  <div class="col-md-12">
     <div class="card">
       <div class="card-header">
         <span>Edit applications on ${fn:escapeXml(model.service.serviceName)}</span>
@@ -69,9 +69,9 @@
               </c:forEach>
             </select>
           </div> <!-- column -->
-          <div class="col-md-2">
-            <input type="submit" name="action" class="btn btn-secondary" value="Add &#155;&#155;"/>
+          <div class="col-md-2 my-auto text-center">
             <input type="submit" name="action" class="btn btn-secondary" value="&#139;&#139; Remove"/>
+            <input type="submit" name="action" class="btn btn-secondary" value="Add &#155;&#155;"/>
           </div> <!-- column -->
           <div class="col-md-5">
             <label>Applications on service</label>
