@@ -27,13 +27,20 @@ var opennmsVersion = pkginfo.version;
 
 var argv = require('yargs').argv;
 var isProduction = argv.env === 'production';
+var doVaadin = true;
+if (typeof argv.vaadin !== 'undefined') {
+  doVaadin = argv.vaadin;
+}
 var distdir = path.join(__dirname, 'target', 'dist', 'assets');
 var variants = {
   production: [ false ]
 };
 
 if (isProduction) {
-  variants.production = [ true, false, 'vaadin' ];
+  variants.production = [ true, false ];
+  if (doVaadin) {
+    variants.production.push('vaadin');
+  }
 }
 
 console.log('=== running ' + (isProduction? 'production':'development') + ' build of OpenNMS ' + opennmsVersion + ' assets ===');
