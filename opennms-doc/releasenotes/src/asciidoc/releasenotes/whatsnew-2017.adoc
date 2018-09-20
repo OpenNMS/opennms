@@ -174,6 +174,25 @@ This reduces the complexity of the UI code and will make it easier for developer
 * Fix startup on systems without any IPv6 support.
 * Reverse lookups in provisioning now handle IPs without a corresponding A record.
 
+[releasenotes-changelog-Meridian-2017.1.11]
+
+==== Release Meridian-2017.1.11
+
+Release 2017.1.11 is a small update to OpenNMS Meridian 2017.1.10.
+It contains a few small bug fixes and enhancements.
+
+The codename for 2017.1.11 is _Paris meridian_.
+
+===== Bug
+
+* Content-Type tag wrong in emailed reports (Issue http://issues.opennms.org/browse/NMS-9027[NMS-9027])
+* The upgrade task for magic-users.properties fails because of the read-only attribute (Issue http://issues.opennms.org/browse/NMS-9267[NMS-9267])
+
+===== Enhancement
+
+* add polling interval definition on service UI (Issue http://issues.opennms.org/browse/NMS-9747[NMS-9747])
+* Release notes in Help / Support links to 2015 (Issue http://issues.opennms.org/browse/LTS-214[LTS-214])
+
 [releasenotes-changelog-Meridian-2017.1.10]
 
 ==== Release Meridian-2017.1.10
