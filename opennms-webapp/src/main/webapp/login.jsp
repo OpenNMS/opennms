@@ -72,8 +72,9 @@
 <div class="login-page">
   <div class="" style=""> <!-- this way it appears a bit above center which feels more natural -->
     <div class="card login-form rounded">
-      <div style="padding-bottom: 50px">
-        <h2 style="vertical-align: bottom;"><img src="images/o-green-trans.png"> OpenNMS <small class="badge badge-horizon">Horizon</small></h2>
+      <div style="padding-bottom: 50px; padding-top: 20px">
+        <img src="images/opennms-logo.png" class="" width="170px" />
+        <span style="font-size: 100%" class="badge badge-horizon pull-right">Horizon</span>
       </div>
       <form class="" name="loginForm" role="form" method="post" action="<c:url value='j_spring_security_check'/>">
         <div class="form-content">
