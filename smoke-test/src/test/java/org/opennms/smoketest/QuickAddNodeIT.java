@@ -98,7 +98,7 @@ public class QuickAddNodeIT extends OpenNMSSeleniumTestCase {
         // Add a category to the node
         findElementById("add-category").click();
         findElementByCss("input[name='categoryName'");
-        enterTextAutocomplete(By.cssSelector("input[name='categoryName']"), NODE_CATEGORY, Keys.ENTER);
+        enterTextAutocomplete(By.cssSelector("input[name='categoryName']"), NODE_CATEGORY);
 
         wait.until(ExpectedConditions.elementToBeClickable(By.id("provision"))).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".modal-dialog button[data-bb-handler='main']"))).click();

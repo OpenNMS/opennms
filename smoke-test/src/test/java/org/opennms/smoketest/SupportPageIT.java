@@ -59,7 +59,7 @@ public class SupportPageIT extends OpenNMSSeleniumTestCase {
                 "Mailing Lists",
                 "Questions & Answers"
         };
-        assertEquals(links.length, countElementsMatchingCss("div.panel-body a"));
+        assertEquals(links.length, countElementsMatchingCss("div.card-body a"));
         for (final String text : links) {
             assertNotNull("Link with text '" + text + "' must exist.", m_driver.findElement(By.linkText(text)));
         }

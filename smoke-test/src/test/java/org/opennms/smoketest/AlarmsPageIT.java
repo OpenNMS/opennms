@@ -64,10 +64,10 @@ public class AlarmsPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllTextIsPresent() throws Exception {
-        assertEquals(3, countElementsMatchingCss("h3.panel-title"));
-        findElementByXpath("//h3[text()='Alarm Queries']");
-        findElementByXpath("//h3[text()='Alarm Filter Favorites']");
-        findElementByXpath("//h3[text()='Outstanding and acknowledged alarms']");
+        assertEquals(3, countElementsMatchingCss("div.card-header"));
+        findElementByXpath("//span[text()='Alarm Queries']");
+        findElementByXpath("//span[text()='Alarm Filter Favorites']");
+        findElementByXpath("//span[text()='Outstanding and acknowledged alarms']");
 
         findElementByXpath("//form//input[@name='id']");
         findElementByXpath("//form//button[@type='submit']");

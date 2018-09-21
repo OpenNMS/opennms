@@ -162,9 +162,9 @@
 		// hide all not selected elements and show selected Element
 		$("div[class*='snmp-']").each(function() {
 		  if ($(this).hasClass(activeClass)) { // show
-                    $(this).removeClass("hidden");
+                    $(this).removeClass("invisible");
 		  } else { // hide
-		    $(this).addClass("hidden");
+		    $(this).addClass("invisible");
 		  }
 		});
 		return true;
@@ -463,7 +463,7 @@ if (request.getAttribute("success") != null) {
   </div> <!-- column -->
 
   <!-- v1/v2c parameters -->
-  <div class="col-md-6 hidden snmp-v1 snmp-v2c">
+  <div class="col-md-6 invisible snmp-v1 snmp-v2c">
     <div class="card">
       <div class="card-header">
         <span>v1/v2c specific parameters</span>
@@ -493,7 +493,7 @@ if (request.getAttribute("success") != null) {
   </div> <!-- column -->
 
   <!--  v3 parameters -->
-  <div class="col-md-6 hidden snmp-v3">
+  <div class="col-md-6 invisible snmp-v3">
     <div class="card">
       <div class="card-header">
         <span>v3 specific parameters</span>
