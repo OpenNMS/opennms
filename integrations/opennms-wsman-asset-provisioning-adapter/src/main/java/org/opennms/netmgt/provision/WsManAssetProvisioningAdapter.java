@@ -116,7 +116,7 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
         @Override
         AdapterOperationSchedule createScheduleForNode(int nodeId, AdapterOperationType adapterOperationType) {
                 AdapterOperationSchedule aos = new AdapterOperationSchedule(m_delay, 60, 3, m_timeUnit);
-                LOG.info("createScheduleForNode: Scheduling {} for nodeid {} with schedule: {}", aos, adapterOperationType, nodeId);
+                LOG.info("createScheduleForNode: Scheduling {} for nodeid {} with schedule: {}", aos, nodeId, adapterOperationType);
                 return aos;
         }
 
