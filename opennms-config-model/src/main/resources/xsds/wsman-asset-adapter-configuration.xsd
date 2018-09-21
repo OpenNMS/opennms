@@ -11,7 +11,7 @@
     <documentation>XML Schema for the wsman-asset-adapter-configuration.xml configuration file.</documentation>
   </annotation>
 
-  <element name="snmp-asset-adapter-configuration">
+  <element name="wsman-asset-adapter-configuration">
     <complexType>
       <sequence>
         <element maxOccurs="unbounded" minOccurs="1" ref="sa:package"/>

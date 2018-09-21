@@ -10,9 +10,7 @@
 	<bean name="wsmanAssetProvisioningAdapter" class="org.opennms.netmgt.provision.WsManAssetProvisioningAdapter">
 		<property name="eventForwarder" ref="eventForwarder" />
 		<property name="nodeDao" ref="nodeDao" />
-		<property name="wsmanPeerFactory" ref="wsmanPeerFactory" />
-		<property name="wsmanAssetAdapterConfig" ref="wsmanAssetAdapterConfig" />
-		<property name="locationAwareWsManClient" ref="locationAwareWsManClient" />
+		<property name="WsManAssetAdapterConfig" ref="wsmanAssetAdapterConfig" /> 
 		<property name="template" ref="transactionTemplate" />
 	</bean>
 
