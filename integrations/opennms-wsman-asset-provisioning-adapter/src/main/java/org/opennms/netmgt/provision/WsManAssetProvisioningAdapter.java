@@ -101,8 +101,8 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
         public WsManAssetProvisioningAdapter() {
                 super(NAME);
 
-                // Set the default time delay to 300 seconds
-                this.setDelay(300);
+                // Set the default time delay to 30 seconds
+                this.setDelay(30);
                 this.setTimeUnit(TimeUnit.SECONDS);
         }
 
@@ -154,9 +154,11 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
                 String vendor = m_template.execute(new TransactionCallback<String>() {
                         @Override
                         public String doInTransaction(TransactionStatus arg0) {
+                                 LOG.debug("doAdd: Fetching vendor asset string");
                                 return node.getAssetRecord().getVendor();
                         }
                 });
+                LOG.debug("doAdd: Fetched asset string: " + vendor);
 
                 if (m_wsManConfigDao == null) {
                         m_wsManConfigDao = BeanUtils.getBean("daoContext", "wsManConfigDao", WSManConfigDao.class);
@@ -164,6 +166,7 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
                 final WsmanAgentConfig config = m_wsManConfigDao.getAgentConfig(ipaddress);
                 final WSManEndpoint endpoint = WSManConfigDao.getEndpoint(config, ipaddress);
                 final WSManClient client = m_factory.getClient(endpoint);
+                LOG.debug("doAdd: m_config: " + m_config);
 
                 final OnmsAssetRecord asset = node.getAssetRecord();
                 m_config.getReadLock().lock();
@@ -281,7 +284,7 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
                                 return node.getAssetRecord().getVendor();
                         }
                 });
-	        LOG.debug("doUpdate: Fetched asset string: " + vendor);
+	        LOG.debug("doUpdate: Fetched asset string: \"i{}\"", vendor);
 
                 if (m_wsManConfigDao == null) {
                         m_wsManConfigDao = BeanUtils.getBean("daoContext", "wsManConfigDao", WSManConfigDao.class);
@@ -289,28 +292,26 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
                 final WsmanAgentConfig config = m_wsManConfigDao.getAgentConfig(ipaddress);
                 final WSManEndpoint endpoint = WSManConfigDao.getEndpoint(config, ipaddress);
                 final WSManClient client = m_factory.getClient(endpoint);
-		LOG.debug("doUpdate: m_config: " + m_config);
+		LOG.debug("doUpdate: m_config: \"{}\"", m_config);
 
                 final OnmsAssetRecord asset = node.getAssetRecord();
                 m_config.getReadLock().lock();
                 try {
                     for (final AssetField field : m_config.getAssetFieldsForAddress(ipaddress, vendor)) {
                         try {
-                                //client.enumerateAndPullUsingFilter(field.getWqlObjs().getResourceUri(), WSManConstants.XML_NS_WQL_DIALECT, field.getWqlObjs().getWql(), nodes, true);
-                                //String value = nodeToString(nodes.get(0));
                                 final String value = fetchWsManAssetString(client, endpoint, field.getWqlObjs(), field.getFormatString());
-                                LOG.debug("doAdd: Setting asset field \" {} \" to value: {}", field.getName(), value);
+                                LOG.debug("doUpdate: Setting asset field \" {} \" to value: {}", field.getName(), value);
                                 // Use Spring bean-accessor classes to set the field value
                                 final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(asset);
                                 try {
                                         wrapper.setPropertyValue(field.getName(), value);
                                 } catch (final BeansException e) {
-                                        LOG.warn("doAdd: Could not set property \" {} \" on asset object {}", field.getName(), e.getMessage(), e);
+                                        LOG.warn("doUpdate: Could not set property \" {} \" on asset object {}", field.getName(), e.getMessage(), e);
                                 }
                         } catch (final Throwable t) {
                                 // This exception is thrown if the WSMAN ENUM fails or an incorrect number of
                                 // parameters is returned by the agent or because of a misconfiguration.
-                                LOG.warn("doAdd: Could not set value for asset field \" {} \": {}", field.getName(), t.getMessage(), t);
+                                LOG.warn("doUpdate: Could not set value for asset field \" {} \": {}", field.getName(), t.getMessage(), t);
                         }
                 }
                 } finally {
