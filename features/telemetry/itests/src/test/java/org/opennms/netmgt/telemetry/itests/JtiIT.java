@@ -162,17 +162,20 @@ public class JtiIT {
         TelemetrydConfig telemetrydConfig = new TelemetrydConfig();
 
         QueueConfig jtiQueue = new QueueConfig();
+        jtiQueue.setName("JTI");
         telemetrydConfig.getQueues().add(jtiQueue);
 
         ListenerConfig jtiListener = new ListenerConfig();
+        jtiListener.setEnabled(true);
         jtiListener.setName("JTI");
-        jtiListener.setClassName(SimpleUdpListener.class.getCanonicalName());
+        jtiListener.setClassName(org.opennms.netmgt.telemetry.listeners.simple.Udp.class.getCanonicalName());
         jtiListener.getParameters().add(new Parameter("port", Integer.toString(port)));
         telemetrydConfig.getListeners().add(jtiListener);
 
         ParserConfig jtiParser = new ParserConfig();
+        jtiParser.setEnabled(true);
         jtiParser.setName("JTI-UDP-" + port);
-        jtiParser.setClassName(SimpleUdpListener.class.getCanonicalName());
+        jtiParser.setClassName(org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser.class.getCanonicalName());
         jtiParser.setQueue(jtiQueue);
         jtiListener.getParsers().add(jtiParser);
 
@@ -181,6 +184,7 @@ public class JtiIT {
         assertTrue("Can't read: " + script.getAbsolutePath(), script.canRead());
 
         AdapterConfig jtiGbpAdapter = new AdapterConfig();
+        jtiGbpAdapter.setEnabled(true);
         jtiGbpAdapter.setName("JTI-GBP");
         jtiGbpAdapter.setClassName(JtiGpbAdapter.class.getCanonicalName());
         jtiQueue.getAdapters().add(jtiGbpAdapter);
