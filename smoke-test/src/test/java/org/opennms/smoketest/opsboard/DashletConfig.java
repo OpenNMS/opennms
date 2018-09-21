@@ -28,32 +28,15 @@
 
 package org.opennms.smoketest.opsboard;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
+@Builder
 public class DashletConfig {
-    private String type;
-    private String title;
-    private Long duration;
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Long getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Long duration) {
-        this.duration = duration;
-    }
+    private final String type;
+    private final String title;
+    private final Long duration;
 }

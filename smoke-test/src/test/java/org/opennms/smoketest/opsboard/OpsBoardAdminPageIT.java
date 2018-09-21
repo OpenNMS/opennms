@@ -63,10 +63,10 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumTestCase {
     @Test
     public void canCreateAndPreview() {
         final OpsBoardAdminEditorPage testBoard = adminPage.createNew("testBoard");
-        testBoard.addDashlet(new DashletBuilder()
-                .withDashlet("Surveillance")
-                .withTitle("Test Dashlet")
-                .withDuration(300).build());
+        testBoard.addDashlet(DashletConfig.builder()
+                .type("Surveillance")
+                .title("Test Dashlet")
+                .duration(300L).build());
 
         // Hit preview button
         testBoard.preview();

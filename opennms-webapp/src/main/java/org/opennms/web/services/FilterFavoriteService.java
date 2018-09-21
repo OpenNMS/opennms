@@ -193,11 +193,8 @@ public class FilterFavoriteService {
         return false;
     }
 
+    @SneakyThrows(UnsupportedEncodingException.class)
     private static String unescapeAndDecode(String input) {
-        try {
-            return StringEscapeUtils.unescapeHtml(URLDecoder.decode(input, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        return StringEscapeUtils.unescapeHtml(URLDecoder.decode(input, "UTF-8"));
     }
 }

@@ -54,13 +54,15 @@ import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+
+import lombok.Data;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Generic tests for the Topology UI that do not require any elements
@@ -70,9 +72,8 @@ import com.google.common.collect.Lists;
  *
  * @author jwhite
  */
+@Slf4j
 public class TopologyIT extends OpenNMSSeleniumTestCase {
-
-    private static final Logger LOG = LoggerFactory.getLogger(TopologyIT.class);
 
     private static final int DEFAULT_MENU_RETRIES = 3;
 
@@ -82,24 +83,16 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
      * Represents a vertex that is focused using
      * criteria listed bellow the search bar.
      */
+    @Data
+    @RequiredArgsConstructor
     public static class FocusedVertex {
+        @NonNull
         private final TopologyUIPage ui;
+        @NonNull
         private final String namespace;
+        @NonNull
         private final String label;
 
-        public FocusedVertex(TopologyUIPage ui, String namespace, String label) {
-            this.ui = Objects.requireNonNull(ui);
-            this.namespace = Objects.requireNonNull(namespace);
-            this.label = Objects.requireNonNull(label);
-        }
-
-        public String getNamespace() {
-            return namespace;
-        }
-
-        public String getLabel() {
-            return label;
-        }
 
         public void centerOnMap() {
             getElement().findElement(By.xpath("//a[@class='icon-location-arrow']")).click();
@@ -139,37 +132,6 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         private WebElement getElement() {
             return ui.testCase.findElementByXpath("//*/table[@class='search-token-field']"
                     + "//div[@class='search-token-label' and contains(text(),'" + label + "')]");
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) {
-                return false;
-            }
-            if (obj == this) {
-                return true;
-            }
-            if (obj instanceof FocusedVertex) {
-                FocusedVertex other = (FocusedVertex) obj;
-                boolean equals = Objects.equals(getNamespace(), other.getNamespace())
-                        && Objects.equals(getLabel(), other.getLabel())
-                        && Objects.equals(ui, other.ui);
-                return equals;
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(ui, namespace, label);
-        }
-
-        @Override
-        public String toString() {
-            return MoreObjects.toStringHelper(this)
-                    .add("namespace", getNamespace())
-                    .add("label", getLabel())
-                    .toString();
         }
     }
 
