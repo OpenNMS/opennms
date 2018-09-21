@@ -47,6 +47,7 @@ import org.opennms.core.wsman.WSManClient;
 import org.opennms.core.wsman.WSManClientFactory;
 import org.opennms.core.wsman.WSManConstants;
 import org.opennms.core.wsman.WSManEndpoint;
+import org.opennms.core.wsman.cxf.CXFWSManClientFactory;
 import org.opennms.core.wsman.exceptions.WSManException;
 
 import org.opennms.netmgt.config.wsmanAsset.adapter.AssetField;
@@ -88,7 +89,8 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
         private NodeDao m_nodeDao;
         private EventForwarder m_eventForwarder;
         private WsManAssetAdapterConfig m_config;
-        private WSManClientFactory m_factory;
+        private final WSManClientFactory m_factory = new CXFWSManClientFactory();
+       // private WSManClientFactory m_factory;
         private WSManConfigDao m_wsManConfigDao;
 
         /**
@@ -275,9 +277,11 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
                 String vendor = m_template.execute(new TransactionCallback<String>() {
                         @Override
                         public String doInTransaction(TransactionStatus arg0) {
+				 LOG.debug("doUpdate: Fetching vendor asset string");
                                 return node.getAssetRecord().getVendor();
                         }
                 });
+	        LOG.debug("doUpdate: Fetched asset string: " + vendor);
 
                 if (m_wsManConfigDao == null) {
                         m_wsManConfigDao = BeanUtils.getBean("daoContext", "wsManConfigDao", WSManConfigDao.class);
@@ -285,6 +289,7 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
                 final WsmanAgentConfig config = m_wsManConfigDao.getAgentConfig(ipaddress);
                 final WSManEndpoint endpoint = WSManConfigDao.getEndpoint(config, ipaddress);
                 final WSManClient client = m_factory.getClient(endpoint);
+		LOG.debug("doUpdate: m_config: " + m_config);
 
                 final OnmsAssetRecord asset = node.getAssetRecord();
                 m_config.getReadLock().lock();
@@ -311,6 +316,7 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
                 } finally {
                     m_config.getReadLock().unlock();
                 }
+
                 node.setAssetRecord(asset);
                 m_nodeDao.saveOrUpdate(node);
                 m_nodeDao.flush();

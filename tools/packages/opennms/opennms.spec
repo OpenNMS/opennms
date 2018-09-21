@@ -238,6 +238,8 @@ Requires(pre):	%{name}-plugin-provisioning-reverse-dns
 Requires:	%{name}-plugin-provisioning-reverse-dns
 Requires(pre):	%{name}-plugin-provisioning-snmp-asset
 Requires:	%{name}-plugin-provisioning-snmp-asset
+Requires(pre):	%{name}-plugin-provisioning-wsman-asset
+Requires:	%{name}-plugin-provisioning-wsman-asset
 Requires(pre):	%{name}-plugin-provisioning-snmp-hardware-inventory
 Requires:	%{name}-plugin-provisioning-snmp-hardware-inventory
 Requires(pre):	%{name}-plugin-ticketer-jira
@@ -350,6 +352,20 @@ Requires:	%{name}-core = %{version}-%{release}
 %description plugin-provisioning-snmp-asset
 The SNMP asset provisioning adapter responds to provisioning events by updating asset
 fields with data fetched from SNMP GET requests.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-provisioning-wsman-asset
+Summary:        WSMAN Asset Provisioning Adapter
+Group:          Applications/System
+Requires(pre):  %{name}-core = %{version}-%{release}
+Requires:       %{name}-core = %{version}-%{release}
+
+%description plugin-provisioning-wsman-asset
+The WSMAN asset provisioning adapter responds to provisioning events by updating asset
+fields with data fetched from WSMAN WQL queries.
 
 %{extrainfo}
 %{extrainfo2}
@@ -650,6 +666,7 @@ find %{buildroot}%{instprefix}/etc ! -type d | \
 	grep -v 'otrs.properties' | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
+	grep -v 'wsman-asset-adapter-configuration.xml' | \
 	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
 	grep -v '/users.xml' | \
 	grep -v 'xmp-config.xml' | \
@@ -673,6 +690,7 @@ find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
 	grep -v 'otrs.properties' | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
+	grep -v 'wsman-asset-adapter-configuration.xml' | \
 	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
@@ -844,6 +862,12 @@ rm -rf %{buildroot}
 %{instprefix}/lib/opennms-snmp-asset-provisioning-adapter*.jar
 %config(noreplace) %{instprefix}/etc/snmp-asset-adapter-configuration.xml
 %{sharedir}/etc-pristine/snmp-asset-adapter-configuration.xml
+
+%files plugin-provisioning-wsman-asset
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-wsman-asset-provisioning-adapter*.jar
+%config(noreplace) %{instprefix}/etc/wsman-asset-adapter-configuration.xml
+%{sharedir}/etc-pristine/wsman-asset-adapter-configuration.xml
 
 %files plugin-provisioning-snmp-hardware-inventory
 %defattr(664 root root 775)

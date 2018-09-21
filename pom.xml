@@ -2170,6 +2170,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-wsman-asset-provisioning-adapter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-snmp-asset-provisioning-adapter</artifactId>
         <version>${project.version}</version>
       </dependency>
