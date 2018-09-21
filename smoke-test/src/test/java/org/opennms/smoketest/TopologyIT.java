@@ -61,7 +61,6 @@ import com.google.common.collect.Lists;
 
 import lombok.Data;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -84,7 +83,6 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
      * criteria listed bellow the search bar.
      */
     @Data
-    @RequiredArgsConstructor
     public static class FocusedVertex {
         @NonNull
         private final TopologyUIPage ui;
