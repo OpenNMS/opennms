@@ -110,12 +110,12 @@ window.forecastError = "One or more dependencies required for forecasting "
 		    <div class="col-md-4" ng-show="series.length < 1">
 		        <p>The graph does not contain any series that can be forecasted.</p>
 		    </div>
-		    <div class="col-md-4" ng-hide="series.length < 1">
-		        <form class="form-horizontal" name="form">
-		            <div class="form-group">
+		    <div class="col-md-4 mt-4" ng-hide="series.length < 1">
+		        <form class="form" name="form">
+		            <div class="form-group form-row">
 		                <div class="col-sm-12">
-		                    <label for="select-metric">Select the metric to forecast:</label>
-		                    <select class="form-control" id="select-metric"
+		                    <label for="select-metric">Select the metric to forecast</label>
+		                    <select class="form-control custom-select" id="select-metric"
 		                            ng-model="metricToForecast"
 		                            ng-options="s.name for s in series track by s.metric"
 		                    >
@@ -123,10 +123,10 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                </div>
 		            </div>
 
-		            <div class="form-group" ng-show="metricToForecast">
+		            <div class="form-group form-row" ng-show="metricToForecast">
 		                <div class="col-sm-12">
-		                    <label for="select-template">Select a template:</label>
-		                    <select class="form-control" id="select-template"
+		                    <label for="select-template">Select a template</label>
+		                    <select class="form-control custom-select" id="select-template"
 		                            ng-model="forecastingTemplate"
 		                            ng-options="t.name for t in forecastingTemplates track by t.id"
 		                            ng-change="onForecastingTemplateChange()">
@@ -135,17 +135,17 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                </div>
 		            </div>
 
-		            <div class="form-group" ng-show="forecastingTemplate.id === 'custom'">
+		            <div class="form-group form-row" ng-show="forecastingTemplate.id === 'custom'">
 		                <div role="tabpanel" id="options">
 		                    <!-- Nav tabs -->
 		                    <ul class="nav nav-tabs" role="tablist">
-		                        <li role="presentation" class="active"><a href="#time" role="tab" data-toggle="tab">Time Span</a></li>
-		                        <li role="presentation"><a href="#stat" role="tab" data-toggle="tab">Trend and Forecast</a></li>
+		                        <li role="presentation" class="nav-item"><a href="#time" role="tab" data-toggle="tab" class="nav-link active">Time Span</a></li>
+		                        <li role="presentation" class="nav-item"><a href="#stat" role="tab" data-toggle="tab" class="nav-link">Trend and Forecast</a></li>
 		                    </ul>
 		                    <!-- Tab panes -->
 		                    <div class="tab-content">
-		                        <div role="tabpanel" class="tab-pane active" id="time">
-		                            <div class="form-group" ng-class="{'has-error': form.trainingStart.$invalid}">
+		                        <div role="tabpanel" class="tab-pane active mt-2" id="time">
+		                            <div class="form-group form-row" ng-class="{'has-error': form.trainingStart.$invalid}">
 		                                <label class="col-sm-3 col-form-label">Training Start</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" integer min="0" ng-required="true" class="form-control" name="trainingStart" ng-model="forecastingOptions.trainingStart">
@@ -153,7 +153,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                                </div>
 		                            </div>
 
-		                            <div class="form-group" ng-class="{'has-error': form.graphStart.$invalid}">
+		                            <div class="form-group form-row" ng-class="{'has-error': form.graphStart.$invalid}">
 		                                <label class="col-sm-3 col-form-label">Graph Start</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" integer min="1" ng-required="true" class="form-control" name="graphStart" ng-model="forecastingOptions.graphStart">
@@ -161,7 +161,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                                </div>
 		                            </div>
 
-		                            <div class="form-group" ng-class="{'has-error': form.forecasts.$invalid}">
+		                            <div class="form-group form-row" ng-class="{'has-error': form.forecasts.$invalid}">
 		                                <label class="col-sm-3 col-form-label">Forecasts</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" integer min="1" ng-required="true" class="form-control" name="forecasts" ng-model="forecastingOptions.forecasts">
@@ -169,8 +169,8 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                                </div>
 		                            </div>
 		                        </div>
-		                        <div role="tabpanel" class="tab-pane" id="stat">
-		                            <div class="form-group" ng-class="{'has-error': form.season.$invalid}">
+		                        <div role="tabpanel" class="tab-pane mt-2" id="stat">
+		                            <div class="form-group form-row" ng-class="{'has-error': form.season.$invalid}">
 		                                <label class="col-sm-3 col-form-label">Season</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" greater-than-zero ng-required="true" class="form-control" name="season" ng-model="forecastingOptions.season">
@@ -178,7 +178,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                                </div>
 		                            </div>
 
-		                            <div class="form-group" ng-class="{'has-error': form.trendOrder.$invalid}">
+		                            <div class="form-group form-row" ng-class="{'has-error': form.trendOrder.$invalid}">
 		                                <label class="col-sm-3 col-form-label">Trend Order</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" integer min="1" ng-required="true" class="form-control" name="trendOrder" ng-model="forecastingOptions.trendOrder">
@@ -186,7 +186,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                                </div>
 		                            </div>
 
-		                            <div class="form-group" ng-class="{'has-error': form.confidenceLevel.$invalid}">
+		                            <div class="form-group form-row" ng-class="{'has-error': form.confidenceLevel.$invalid}">
 		                                <label class="col-sm-3 col-form-label">Confidence Level</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" greater-than-zero max="1" ng-required="true" class="form-control" name="confidenceLevel" ng-model="forecastingOptions.confidenceLevel">
@@ -194,7 +194,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                                </div>
 		                            </div>
 		
-		                            <div class="form-group" ng-class="{'has-error': form.outlierThreshold.$invalid}">
+		                            <div class="form-group form-row" ng-class="{'has-error': form.outlierThreshold.$invalid}">
 		                                <label class="col-sm-3 col-form-label">Outlier Threshold</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" greater-than-zero max="1" ng-required="true" class="form-control" name="outlierThreshold" ng-model="forecastingOptions.outlierThreshold">
@@ -206,7 +206,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                </div>
 		            </div>
 		
-		            <div class="form-group">
+		            <div class="form-group form-row">
 		                <div class="col-sm-12">
 		                    <button type="button" id="reset" ng-click="reset()" ng-show="graphModel !== null" class="btn btn-danger pull-left">Reset</button>
 		                    <button type="button" id="forecast" ng-click="forecast()" ng-disabled="!canForecast()" class="btn btn-primary pull-right">Forecast</button>
