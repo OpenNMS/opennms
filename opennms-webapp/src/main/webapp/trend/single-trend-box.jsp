@@ -42,7 +42,7 @@
     <div class="card-header">
         <span>Trend</span>
     </div>
-    <div class="alert-box card-body">
+    <div class="card-body">
         <jsp:include page="/trend/trend.htm" flush="false">
             <jsp:param name="name" value="${param.name}"/>
         </jsp:include>

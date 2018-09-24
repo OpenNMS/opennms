@@ -248,7 +248,7 @@
                                     <a href="javascript:popUp('${forecastGraphUrl}')" style="padding-right: 3px" title="Forecast ${graph.title}"><button type="button" class="btn btn-secondary btn-sm"><i class="fa fa-line-chart" aria-hidden="true"></i></span></button></a>
 		                    <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP') || fn:contains(resultSet.resource.resourceType.label, 'TCA') }">
 		                        <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
-		                            <a href="javascript:popUp('${nrtgGraphUrl}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-secondary btn-sm" aria-label="Start NRT-Graphing for ${graph.title}"><span class="glyphicon glyphicon-flash" aria-hidden="true"></span></button></a>
+		                            <a href="javascript:popUp('${nrtgGraphUrl}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-secondary btn-sm" aria-label="Start NRT-Graphing for ${graph.title}"><span class="fa fa-bolt" aria-hidden="true"></span></button></a>
 		                        </c:if>
 		                    </c:if>
                               <div style="display: inline" ng-if="flowsEnabled">

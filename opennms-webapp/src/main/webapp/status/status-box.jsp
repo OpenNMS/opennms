@@ -54,7 +54,7 @@
         <span>Status Overview</span>
     </div>
     <div class="card-body">
-        <div id="chart-content" class="row row-centered">
+        <div id="chart-content" class="row mx-auto">
         </div>
     </div>
 </div>
