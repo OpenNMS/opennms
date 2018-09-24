@@ -93,8 +93,8 @@
             </c:if>
 
             <div class="form-group">
-              <label for="input_ipAddress">IP address:</label>
-              <input size="15" name="ipAddress" class="form-control">
+              <label for="input_ipAddress">IP Address</label>
+              <input size="15" name="ipAddress" id="input_ipAddress" class="form-control">
             </div>
 
             <div class="form-group">
