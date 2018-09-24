@@ -60,6 +60,8 @@ public interface AlarmEntityNotifier {
 
     void didUpdateAlarmSeverity(OnmsAlarm alarm, OnmsSeverity previousSeverity);
 
+    void didArchiveAlarm(OnmsAlarm alarm, String previousReductionKey);
+
     void didDeleteAlarm(OnmsAlarm alarm);
 
     void didUpdateStickyMemo(OnmsAlarm onmsAlarm, String previousBody, String previousAuthor, Date previousUpdated);
