@@ -22,6 +22,7 @@
             <nodeDownloadRoot>http://mirror.internal.opennms.com/nodejs/dist/</nodeDownloadRoot>
             <npmDownloadRoot>http://mirror.internal.opennms.com/npmjs/npm/-/</npmDownloadRoot>
             <installDirectory>target</installDirectory>
+            <srcdir>${basedir}/src/main/assets</srcdir>
             <triggerfiles>
               <triggerfile>package.json</triggerfile>
             </triggerfiles>
