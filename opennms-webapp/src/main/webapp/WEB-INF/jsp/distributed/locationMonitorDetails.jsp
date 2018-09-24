@@ -150,7 +150,7 @@
           <form action="admin/distributed/locationMonitorDelete.htm" method="post" name="deleteForm">
             <input type="hidden" name="monitorId" value="${monitor.id}"/>
           </form>
-          <button class="btn btn-secondary" type="button" onClick="confirmDelete();">Delete</button>
+          <button class="btn btn-secondary mb-2" type="button" onClick="confirmDelete();">Delete</button>
           <c:choose>
             <c:when test="${monitor.status != 'PAUSED'}">
               <form action="admin/distributed/locationMonitorPause.htm" method="post">

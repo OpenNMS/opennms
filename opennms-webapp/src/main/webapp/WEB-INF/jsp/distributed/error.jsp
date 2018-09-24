@@ -44,11 +44,13 @@
     <span><spring:message code="error"/></span>
   </div>
   <div class="card-body">
-    <ul class="error">
-      <c:forEach var="err" items="${errors.allErrors}">
-        <li><spring:message message="${err}"/></li>
-      </c:forEach>
-    </ul>
+    <div class="alert alert-danger">
+      <ul class="error">
+        <c:forEach var="err" items="${errors.allErrors}">
+          <li><spring:message message="${err}"/></li>
+        </c:forEach>
+      </ul>
+    </div>
   </div>
 </div>
 

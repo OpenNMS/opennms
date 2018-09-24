@@ -49,10 +49,10 @@
   
 <c:if test="${isAdmin}">
   <div class="btn-group" role="group">
-  <form action="admin/distributed/locationMonitorPauseAll.htm" method="post" style="display:inline;">
-    <button class="btn btn-secondary" type="submit">Pause All</button>
+  <form action="admin/distributed/locationMonitorPauseAll.htm" method="post">
+    <button class="btn btn-secondary mr-2 mb-2" type="submit">Pause All</button>
   </form>
-  <form action="admin/distributed/locationMonitorResumeAll.htm" method="post" style="display:inline;">
+  <form action="admin/distributed/locationMonitorResumeAll.htm" method="post">
     <button class="btn btn-secondary" type="submit">Resume All</button>
   </form>
   </div>
