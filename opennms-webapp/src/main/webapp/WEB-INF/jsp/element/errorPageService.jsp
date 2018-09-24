@@ -42,7 +42,7 @@
   <jsp:param name="breadcrumb" value="Error" />
 </jsp:include>
 
-<h1>Service  Not Found</h1>
+<h3>Service  Not Found</h3>
 
 <p>
   The service is invalid. No such service in database for node ${node}, interface ${intf}, service ID ${serviceId}
