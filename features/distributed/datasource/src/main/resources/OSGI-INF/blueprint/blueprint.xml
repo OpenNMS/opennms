@@ -54,9 +54,4 @@
         <argument ref="dataSourceConfig" />
     </bean>
     <service ref="datasource" interface="javax.sql.DataSource" />
-
-    <!-- TODO MVR this should probably live in dao-impl or somewhere else -->
-    <service interface="org.opennms.netmgt.config.api.DatabaseSchemaConfig">
-        <bean factory-ref="configFactory" factory-method="createDatabaseSchemaConfig" />
-    </service>
 </blueprint>

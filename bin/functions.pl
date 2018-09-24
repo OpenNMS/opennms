@@ -87,10 +87,13 @@ if (not defined $MVN or not -x $MVN) {
 
 delete $ENV{'M2_HOME'};
 
+my $MEM = "2560m";
+my $RCCS = "512m";
+
 # maven options
 $MAVEN_OPTS = $ENV{'MAVEN_OPTS'};
 if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
-	$MAVEN_OPTS = "-Xmx2048m -XX:ReservedCodeCacheSize=512m";
+	$MAVEN_OPTS = "-Xmx${MEM} -XX:ReservedCodeCacheSize=${RCCS}";
 }
 
 if (not $MAVEN_OPTS =~ /TieredCompilation/) {
@@ -100,11 +103,11 @@ if (not $MAVEN_OPTS =~ /TieredCompilation/) {
 }
 
 if (not $MAVEN_OPTS =~ /-Xmx/) {
-	$MAVEN_OPTS .= " -Xmx2048m";
+	$MAVEN_OPTS .= " -Xmx${MEM}";
 }
 
 if (not $MAVEN_OPTS =~ /ReservedCodeCacheSize/) {
-	$MAVEN_OPTS .= " -XX:ReservedCodeCacheSize=512m";
+	$MAVEN_OPTS .= " -XX:ReservedCodeCacheSize=${RCCS}";
 }
 
 if (not $MAVEN_OPTS =~ /UseGCOverheadLimit/) {

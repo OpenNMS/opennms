@@ -58,17 +58,33 @@
         <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.ttl:31540000}" />
   </bean>
 
-<!--
-   The cassandraIndexer bean fails to load with the following exception when using
-   this definition:
-      No qualifying bean of type [int] found for dependency: expected at least 1 bean which qualifies as autowire candidate for this dependency. Dependency annotations: {@javax.inject.Named(value=search.cassandra.time-to-live)}
-   
-   So instead, we resort to the static value bellow:
-
-  <bean id="search.cassandra.time-to-live" class="java.lang.Integer">
-        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.ttl:31536000}" />
+  <bean id="cache.priming.disable" class="java.lang.Boolean">
+    <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.cache.priming.disable:false}"/>
   </bean>
--->
+
+  <bean id="cache.priming.block_ms" class="java.lang.Long">
+    <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.cache.priming.block_ms:120000}"/>
+  </bean>
+
+  <bean id="cache.priming.fetch_size" class="java.lang.Integer">
+    <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.cache.priming.fetch_size:10000}" />
+  </bean>
+
+  <bean id="cache.priming.fetch_more_threshold" class="java.lang.Integer">
+    <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.cache.priming.fetch_more_threshold:1000}" />
+  </bean>
+
+  <!--
+     The cassandraIndexer bean fails to load with the following exception when using
+     this definition:
+        No qualifying bean of type [int] found for dependency: expected at least 1 bean which qualifies as autowire candidate for this dependency. Dependency annotations: {@javax.inject.Named(value=search.cassandra.time-to-live)}
+
+     So instead, we resort to the static value bellow:
+
+    <bean id="search.cassandra.time-to-live" class="java.lang.Integer">
+          <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.ttl:31536000}" />
+    </bean>
+  -->
 
   <util:constant id="search.cassandra.time-to-live" static-field="org.opennms.netmgt.newts.support.NewtsUtils.TTL" />
 

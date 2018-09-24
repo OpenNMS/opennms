@@ -111,6 +111,9 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
 
     @Autowired
     private AlarmDao m_alarmDao;
+    
+    @Autowired
+    private AlarmPersisterImpl m_alarmPersisterImpl;
 
     @Autowired
     private MockEventIpcManager m_eventMgr;
@@ -148,6 +151,8 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
 
         // Register!
         m_alarmLifecycleListenerManager.onListenerRegistered(this, Collections.emptyMap());
+        
+        m_alarmPersisterImpl.setLegacyAlarmState(true);
 
         // Fire it up
         m_alarmd.start();

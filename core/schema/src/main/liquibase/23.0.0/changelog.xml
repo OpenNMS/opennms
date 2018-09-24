@@ -99,4 +99,17 @@
             tableName="alarm_situations"/>
  </changeSet>
  
+  <changeSet author="jwhite" id="23.0.0-alarm-situations-cascades">
+    <dropForeignKeyConstraint baseTableName="alarm_situations" constraintName="fk_alarm_situations_alarm_id" />
+    <dropForeignKeyConstraint baseTableName="alarm_situations" constraintName="fk_alarm_situations_situation_id" />
+
+    <addForeignKeyConstraint constraintName="fk_alarm_situations_situation_id" onDelete="CASCADE"
+          baseTableName="alarm_situations" baseColumnNames="situation_id"
+          referencedTableName="alarms" referencedColumnNames="alarmid"/>
+    <addForeignKeyConstraint constraintName="fk_alarm_situations_alarm_id" onDelete="CASCADE"
+	    baseTableName="alarm_situations" baseColumnNames="related_alarm_id"
+          referencedTableName="alarms" referencedColumnNames="alarmid"/>
+  </changeSet>
+
 </databaseChangeLog>
+

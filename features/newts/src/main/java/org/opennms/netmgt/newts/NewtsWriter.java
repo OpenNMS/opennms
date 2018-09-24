@@ -249,12 +249,10 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
                 }
             };
 
-    @VisibleForTesting
     public void setSampleRepository(SampleRepository sampleRepository) {
         m_sampleRepository = sampleRepository;
     }
 
-    @VisibleForTesting
     public void setIndexer(Indexer indexer) {
         m_indexer = indexer;
     }

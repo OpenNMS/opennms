@@ -124,7 +124,7 @@ public class DocumentEnricherTest {
     }
 
     @Test
-    public void testDirectionSwitch() {
+    public void testDirection() {
         final FlowDocument d1 = new FlowDocument();
         d1.setSrcAddr("1.1.1.1");
         d1.setSrcPort(1);
@@ -147,11 +147,12 @@ public class DocumentEnricherTest {
         d2.setProtocol(6);
         d2.setDirection(Direction.EGRESS);
 
+        // check that fields stay as theay are even when EGRESS is used
         final ClassificationRequest c2 = enricher.createClassificationRequest(d2);
-        assertEquals("2.2.2.2", c2.getSrcAddress());
-        assertEquals("1.1.1.1", c2.getDstAddress());
-        assertEquals(new Integer(2), c2.getSrcPort());
-        assertEquals(new Integer(1), c2.getDstPort());
+        assertEquals("1.1.1.1", c2.getSrcAddress());
+        assertEquals("2.2.2.2", c2.getDstAddress());
+        assertEquals(new Integer(1), c2.getSrcPort());
+        assertEquals(new Integer(2), c2.getDstPort());
 
         final FlowDocument d3 = new FlowDocument();
         d3.setSrcAddr("1.1.1.1");

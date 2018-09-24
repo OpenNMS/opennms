@@ -31,6 +31,7 @@ package org.opennms.netmgt.alarmd;
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
@@ -503,6 +504,120 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         assertNull(m_alarmDao.findByReductionKey(reductionKey).getAckTime());
     }
 
+    @Test
+    public void testArchiveAlarm() throws Exception {
+        // Enable the archiving functionality
+        AlarmPersisterImpl persisterImpl = (AlarmPersisterImpl)m_alarmd.getPersister();
+        persisterImpl.setCreateNewAlarmIfClearedAlarmExists(true);
+
+        final MockNode node = m_mockNetwork.getNode(1);
+
+        // There should be no alarms in the alarms table
+        assertEmptyAlarmTable();
+
+        //this should be the first occurrence of this alarm
+        //there should be 1 alarm now
+        sendNodeDownEvent("%nodeid%", node);
+
+        // Wait until we've create the node down alarm
+        await().atMost(10, SECONDS).until(getNumAlarmsCallable(), equalTo(1));
+
+        // Clear the existing alarm(s)
+        m_alarmDao.findAll().forEach(alarm -> {
+            alarm.setSeverity(OnmsSeverity.CLEARED);
+            m_alarmDao.update(alarm);
+            // Should not be archive
+            assertThat(alarm.isArchived(), equalTo(false));
+        });
+        m_alarmDao.flush();
+
+        // Trigger the alarm again
+        sendNodeDownEvent("%nodeid%", node);
+
+        // We should have two alarms now
+        await().atMost(10, SECONDS).until(getNumAlarmsCallable(), equalTo(2));
+
+        // One alarm should be cleared, and archived
+        assertThat(m_alarmDao.findAll().stream().filter(a -> a.isArchived()
+                && OnmsSeverity.CLEARED.equals(a.getSeverity())).count(), equalTo(1L));
+
+        // The other should not be cleared, and not be archived
+        assertThat(m_alarmDao.findAll().stream().filter(a -> !a.isArchived()
+                && !OnmsSeverity.CLEARED.equals(a.getSeverity())).count(), equalTo(1L));
+    }
+    
+    @Test
+    public void testDualAlarmState() throws Exception {
+        AlarmPersisterImpl persisterImpl = (AlarmPersisterImpl)m_alarmd.getPersister();
+        
+        // Enable the legacy two alarm state functionality
+        persisterImpl.setLegacyAlarmState(true);
+
+        final MockNode node = m_mockNetwork.getNode(1);
+
+        // There should be no alarms in the alarms table
+        assertEmptyAlarmTable();
+
+        //this should be the first occurrence of this alarm
+        //there should be 1 alarm now
+        sendNodeDownEvent(node);
+
+        // Wait until we've create the node down alarm
+        Callable<Integer> numAlarmsCallable = getNumAlarmsCallable();
+        await().atMost(10, SECONDS).until(numAlarmsCallable, equalTo(1));
+
+        // Send in the UP
+        sendNodeUpEvent(node);
+
+        // We should have two alarms now
+        numAlarmsCallable = getNumAlarmsCallable();
+        await().atMost(10, SECONDS).until(numAlarmsCallable, equalTo(2));
+
+        await().atMost(10, SECONDS).until(() -> m_alarmDao.findAll().stream().filter(a -> !a.isArchived()
+                && OnmsSeverity.CLEARED.equals(a.getSeverity())).count(), equalTo(1L));
+
+        // The other should be Normal, and not be archived
+        assertThat(m_alarmDao.findAll().stream().filter(a -> !a.isArchived()
+                && OnmsSeverity.NORMAL.equals(a.getSeverity())).count(), equalTo(1L));
+    }
+    
+    @Test
+    public void testSingleAlarmState() throws Exception {
+        AlarmPersisterImpl persisterImpl = (AlarmPersisterImpl)m_alarmd.getPersister();
+        
+        // Enable the new single alarm state functionality
+        persisterImpl.setLegacyAlarmState(false);
+
+        final MockNode node = m_mockNetwork.getNode(1);
+
+        // There should be no alarms in the alarms table
+        assertEmptyAlarmTable();
+
+        //this should be the first occurrence of this alarm
+        //there should be 1 alarm now
+        sendNodeDownEvent(node);
+
+        // Wait until we've create the node down alarm
+        Callable<Integer> numAlarmsCallable = getNumAlarmsCallable();
+        await().atMost(10, SECONDS).until(numAlarmsCallable, equalTo(1));
+
+        // Send in the UP
+        sendNodeUpEvent(node);
+
+        // We should only have one alarm now
+        numAlarmsCallable = getNumAlarmsCallable();
+        await().atMost(10, SECONDS).until(numAlarmsCallable, equalTo(1));
+
+        // One alarm should be cleared, and not archived
+        assertThat(m_alarmDao.findAll().stream().filter(a -> !a.isArchived()
+                && OnmsSeverity.CLEARED.equals(a.getSeverity())).count(), equalTo(1L));
+
+    }
+    
+    private Callable<Integer> getNumAlarmsCallable() {
+        return () -> m_alarmDao.countAll();
+    }
+
     //Supporting method for test
     private void sendNodeDownEventDontChangeLogMsg(String reductionKey, MockNode node, String logMsg) {
         
@@ -604,6 +719,35 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
             event.setAlarmData(null);
         }
 
+        event.setLogDest("logndisplay");
+        event.setLogMessage("testing");
+
+        m_eventMgr.sendNow(event.getEvent());
+    }
+
+    private void sendNodeDownEvent(MockNode node) throws SQLException {
+        EventBuilder event = MockEventUtil.createNodeDownEventBuilder("Test", node);
+        
+        AlarmData data = new AlarmData();
+        data.setAlarmType(1);
+        data.setReductionKey("uei.opennms.org/nodes/nodeDown:1");
+        event.setAlarmData(data);
+        
+        event.setLogDest("logndisplay");
+        event.setLogMessage("testing");
+
+        m_eventMgr.sendNow(event.getEvent());
+    }
+
+    private void sendNodeUpEvent(MockNode node) throws SQLException {
+        EventBuilder event = MockEventUtil.createNodeUpEventBuilder("Test", node);
+
+        AlarmData data = new AlarmData();
+        data.setAlarmType(2);
+        data.setReductionKey("uei.opennms.org/nodes/nodeUp:1");
+        data.setClearKey("uei.opennms.org/nodes/nodeDown:1");
+        event.setAlarmData(data);
+        
         event.setLogDest("logndisplay");
         event.setLogMessage("testing");
 

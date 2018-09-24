@@ -49,6 +49,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
+import org.opennms.web.svclayer.api.RequisitionAccessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +69,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MinionRestService extends AbstractDaoRestService<OnmsMinion,OnmsMinion,String,String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MinionRestService.class);
+    private static final String PROVISIONING_FOREIGN_SOURCE_PATTERN = System.getProperty("opennms.minion.provisioning.foreignSourcePattern", "Minions");
 
     @Autowired
     private MinionDao m_dao;
@@ -75,6 +77,9 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,OnmsMin
     @Autowired
     @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
+
+    @Autowired
+    private RequisitionAccessService m_requisitionAccessService;
 
     @Override
     protected MinionDao getDao() {
@@ -135,6 +140,15 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,OnmsMin
         } catch (final EventProxyException e) {
             LOG.warn("Failed to send Event on Minion deletion " + e.getMessage(), e);
         }
+
+        /*
+        In the heartbeat code a minion is automatically added to a requisition for monitoring. The requisition's name
+        to be used is defined by a system property and the minion's location. So, we will also delete the minion from
+        it's requisition here...
+         */
+
+        final String foreignSource = String.format(PROVISIONING_FOREIGN_SOURCE_PATTERN, minion.getLocation());
+        m_requisitionAccessService.deleteNode(foreignSource, minion.getId());
     }
 
     @Override

@@ -13,6 +13,7 @@
 	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
 	<reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" />
 	<reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
+	<reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" availability="optional"/>
 
 	<!-- Netflow5 Factory and Adapter -->
 	<bean id="netflow5Factory" class="org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5AdapterFactory">
@@ -68,6 +69,7 @@
 		<property name="collectionAgentFactory" ref="collectionAgentFactory" />
 		<property name="nodeDao" ref="nodeDao" />
 		<property name="filterDao" ref="filterDao" />
+		<property name="persisterFactory" ref="persisterFactory" />
 	</bean>
 	<service ref="sflowTelemetryFactory" interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory">
 		<service-properties>

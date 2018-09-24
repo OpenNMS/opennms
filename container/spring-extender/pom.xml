@@ -53,24 +53,26 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
-        <!-- TODO MVR define geminiVersion or something like that in root/parent pom -->
         <dependency>
             <groupId>org.eclipse.gemini.blueprint</groupId>
             <artifactId>gemini-blueprint-core</artifactId>
-            <version>2.0.0.RELEASE</version>
+            <version>${eclipseGeminiVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.gemini.blueprint</groupId>
             <artifactId>gemini-blueprint-extender</artifactId>
-            <version>2.0.0.RELEASE</version>
+            <version>${eclipseGeminiVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.gemini.blueprint</groupId>
             <artifactId>gemini-blueprint-io</artifactId>
-            <version>2.0.0.RELEASE</version>
+            <version>${eclipseGeminiVersion}</version>
         </dependency>
     </dependencies>
-    <!-- TODO MVR why do we need this below? -->
+    <!--
+        By default Eclipse Gemini uses Spring 4.2.5.RELEASE_1, but we use 4.2.9.RELEASE_1.
+        In order to enforce this, we manually overwrite the spring dependencies here.
+    -->
     <dependencyManagement>
         <dependencies>
             <dependency>

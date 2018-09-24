@@ -34,7 +34,7 @@ package org.opennms.features.situationfeedback.api;
 public class AlarmFeedback {
 
     public enum FeedbackType {
-        FALSE_POSITVE, // Alarm does not belong in this Situation
+        FALSE_POSITIVE, // Alarm does not belong in this Situation
         FALSE_NEGATIVE, // Alarm was missing from this Situation
         CORRECT, // Alarm is correctly correlated
         UNKNOWN;
@@ -42,7 +42,7 @@ public class AlarmFeedback {
         public static FeedbackType getType(String type) {
             switch(type) {
             case "FALSE_POSITVE": 
-                return FALSE_POSITVE;
+                return FALSE_POSITIVE;
             case "FALSE_NEGATIVE":
                 return FALSE_NEGATIVE;
             case "CORRECT":

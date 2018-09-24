@@ -265,7 +265,7 @@ public class MinionStatusTrackerTest {
         Event e = EventUtils.createNodeDeletedEvent(FOREIGN_SOURCE, 1, "one", "one");
         m_tracker.onNodeDeleted(e);
 
-        assertEquals("there should be no minions", 0, m_tracker.getMinions().size());
+        assertEquals("there should still be a minion", 1, m_tracker.getMinions().size());
         final MinionStatus status = m_tracker.getStatus(minion);
         assertNull("we should not get a status for the minion", status);
         verify(m_minionDao, times(1)).saveOrUpdate(minion);
@@ -507,6 +507,22 @@ public class MinionStatusTrackerTest {
         assertTrue("it should be up because refresh always checks for outages", m_tracker.getStatus(foreignIdA).isUp());
 
         verify(m_minionDao, times(1)).findAll();
+    }
+
+    @Test
+    public void testMinionWithoutNode() throws Exception {
+        final OnmsServiceType heartbeatServiceType = new OnmsServiceType(1, MINION_HEARTBEAT);
+        final OnmsServiceType rpcServiceType = new OnmsServiceType(2, MINION_RPC);
+        when(m_serviceTypeDao.findByName(MINION_HEARTBEAT)).thenReturn(heartbeatServiceType);
+        when(m_serviceTypeDao.findByName(MINION_RPC)).thenReturn(rpcServiceType);
+
+        final OnmsMinion minion = new OnmsMinion(UUID.randomUUID().toString(), "MinionLocation", "up", new Date());
+        when(m_minionDao.findAll()).thenReturn(Arrays.asList(minion));
+
+        m_tracker.refresh();
+
+        assertEquals("there should be 1 minion restored from the database", 1, m_tracker.getMinions().size());
+        assertNull("it should not have a status", m_tracker.getStatus(minion.getId()));
     }
 
     private Map<Integer,OnmsNode> m_nodes = new HashMap<>();

@@ -31,6 +31,7 @@ package org.opennms.netmgt.alarmd.drools;
 import java.util.Date;
 
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsSeverity;
 
 public interface AlarmService {
 
@@ -38,10 +39,12 @@ public interface AlarmService {
 
     void deleteAlarm(OnmsAlarm alarm);
 
-    void unclearAlarm(OnmsAlarm alarm);
+    void unclearAlarm(OnmsAlarm alarm, Date now);
 
     void escalateAlarm(OnmsAlarm alarm, Date now);
 
     void acknowledgeAlarm(OnmsAlarm alarm, Date now);
+
+    void setSeverity(OnmsAlarm alarm, OnmsSeverity severity, Date now);
 
 }

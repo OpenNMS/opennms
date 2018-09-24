@@ -92,7 +92,6 @@ import com.google.common.util.concurrent.RateLimiter;
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-client.xml"
 })
 @JUnitConfigurationEnvironment
-@Ignore("TODO MVR enable when merging sentinel back to develop")
 public class HeartbeatSinkPerfIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";

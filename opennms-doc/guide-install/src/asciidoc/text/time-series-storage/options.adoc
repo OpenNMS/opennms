@@ -11,11 +11,15 @@ include::rrdtool.adoc[]
 // Installation Guide for Time Series Database Newts
 include::newts/introduction.adoc[]
 include::newts/cassandra-rhel.adoc[]
+ifndef::opennms-prime[]
 include::newts/cassandra-debian.adoc[]
 include::newts/cassandra-windows.adoc[]
+endif::opennms-prime[]
 include::newts/configure-opennms.adoc[]
 
 // Installation Guide for R
 include::r/introduction.adoc[]
 include::r/rhel.adoc[]
+ifndef::opennms-prime[]
 include::r/debian.adoc[]
+endif::opennms-prime[]
