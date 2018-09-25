@@ -7,12 +7,12 @@ When splitting services to run on mutiple VMs, the order of the services should 
 maintained
 -->
 <service-configuration xmlns="http://xmlns.opennms.org/xsd/config/vmmgr">
-  <service>
+  <service reloadable="false">
     <name>OpenNMS:Name=Manager</name>
     <class-name>org.opennms.netmgt.vmmgr.Manager</class-name>
     <invoke at="stop" pass="1" method="doSystemExit"/>
   </service>
-  <service>
+  <service reloadable="false">
     <name>OpenNMS:Name=TestLoadLibraries</name>
     <class-name>org.opennms.netmgt.vmmgr.Manager</class-name>
     <invoke at="start" pass="0" method="doTestLoadLibraries"/>
@@ -57,7 +57,7 @@ maintained
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
-  <service>
+  <service reloadable="false">
     <name>OpenNMS:Name=Ticketer</name>
     <class-name>org.opennms.netmgt.ticketd.jmx.TroubleTicketer</class-name>
     <invoke at="start" pass="0" method="init"/>
@@ -65,7 +65,7 @@ maintained
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
-  <service enabled="false">
+  <service enabled="false" reloadable="false">
     <name>OpenNMS:Name=Correlator</name>
     <class-name>org.opennms.netmgt.correlation.jmx.Correlator</class-name>
     <invoke at="start" pass="0" method="init"/>
@@ -73,7 +73,7 @@ maintained
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
-  <service>
+  <service reloadable="false">
     <name>OpenNMS:Name=Trapd</name>
     <class-name>org.opennms.netmgt.trapd.jmx.Trapd</class-name>
     <invoke at="start" pass="0" method="init"/>
@@ -81,7 +81,7 @@ maintained
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
-  <service>
+  <service reloadable="false">
     <name>OpenNMS:Name=Queued</name>
     <class-name>org.opennms.netmgt.queued.jmx.Queued</class-name>
     <invoke at="start" pass="0" method="init"/>
@@ -91,14 +91,14 @@ maintained
   </service>
   <!--  Dhcpd is now distributed separately. You will need to ensure
         it is installed before you enable it here. -->
-  <service enabled="false">
+  <service enabled="false" reloadable="false">
     <name>OpenNMS:Name=Dhcpd</name>
     <class-name>org.opennms.netmgt.dhcpd.jmx.Dhcpd</class-name>
     <invoke at="start" pass="1" method="start"/>
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
-  <service>
+  <service reloadable="false">
     <name>OpenNMS:Name=Actiond</name>
     <class-name>org.opennms.netmgt.actiond.jmx.Actiond</class-name>
     <invoke at="start" pass="0" method="init"/>
@@ -122,7 +122,7 @@ maintained
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
-  <service>
+  <service reloadable="false">
     <name>OpenNMS:Name=Rtcd</name>
     <class-name>org.opennms.netmgt.rtc.jmx.Rtcd</class-name>
     <invoke at="start" pass="0" method="init"/>
@@ -154,7 +154,7 @@ maintained
      <invoke at="status" pass="0" method="status"/>
      <invoke at="stop" pass="0" method="stop"/>
   </service>
-  <service>
+  <service reloadable="false">
     <name>OpenNMS:Name=EnhancedLinkd</name>
     <class-name>org.opennms.netmgt.enlinkd.jmx.EnhancedLinkd</class-name>
     <invoke at="start" pass="0" method="init"/>
@@ -194,7 +194,7 @@ maintained
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
-  <service>
+  <service reloadable="false">
     <name>OpenNMS:Name=PassiveStatusd</name>
     <class-name>org.opennms.netmgt.passive.jmx.PassiveStatusd</class-name>
     <invoke at="start" pass="0" method="init"/>
@@ -258,7 +258,7 @@ maintained
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
-  <service>
+  <service reloadable="false">
     <name>OpenNMS:Name=JettyServer</name>
     <class-name>org.opennms.netmgt.jetty.jmx.JettyServer</class-name>
     <invoke at="start" pass="0" method="init"/>
@@ -274,7 +274,7 @@ maintained
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
-  <service enabled="false">
+  <service enabled="false" reloadable="false">
     <name>OpenNMS:Name=Syslogd</name>
     <class-name>org.opennms.netmgt.syslogd.jmx.Syslogd</class-name>
     <invoke at="start" pass="0" method="init"/>
@@ -282,7 +282,7 @@ maintained
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
-  <service enabled="false">
+  <service enabled="false" reloadable="false">
     <name>OpenNMS:Name=AsteriskGateway</name>
     <class-name>org.opennms.netmgt.asterisk.agi.jmx.AsteriskGateway</class-name>
     <invoke at="start" pass="0" method="init"/>
