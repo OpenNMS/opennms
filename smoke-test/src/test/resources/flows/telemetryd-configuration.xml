@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <telemetryd-config>
-    <listener name="Netflow-5" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="false">
+    <listener name="Netflow-5" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="true">
         <parameter key="port" value="50000"/>
         <parameter key="host" value="0.0.0.0"/>
 
@@ -46,20 +46,6 @@
 
     <queue name="SFlow">
         <adapter name="SFlow-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter" enabled="true">
-        </adapter>
-
-        <adapter name="SFlow-Telemetry" class-name="org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowTelemetryAdapter" enabled="true">
-            <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/sflow-host.groovy"/>
-
-            <package name="SFlow-Default">
-                <rrd step="300">
-                    <rra>RRA:AVERAGE:0.5:1:2016</rra>
-                    <rra>RRA:AVERAGE:0.5:12:1488</rra>
-                    <rra>RRA:AVERAGE:0.5:288:366</rra>
-                    <rra>RRA:MAX:0.5:288:366</rra>
-                    <rra>RRA:MIN:0.5:288:366</rra>
-                </rrd>
-            </package>
         </adapter>
     </queue>
 </telemetryd-config>
