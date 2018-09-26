@@ -1,0 +1,25 @@
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-situation-feedback]]
+
+=== Situation Feedback
+
+==== Introduction
+
+Situation Feedback allows operators to provide real time feedback on Alarm Correlation.
+
+==== Installation
+
+Situation Feedback needs to be enabled by installing the feature from the Karaf shell:
+
+`feature:install opennms-situation-feedback`
+
+==== Requirements
+
+The feature requires Elasticsearch to persist the feeback records.
+
+Installing the feature exposes a ReST enpoint that the HELM UI uses to display and submit feedback. 
+
+Further information on the ReST API can be found in the <<gs-situation-feedback, Developer Guide>>
+

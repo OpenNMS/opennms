@@ -384,3 +384,7 @@ include::text/flows/classification-engine.adoc[]
 [[ga-kafka-producer]]
 == Kafka Producer
 include::text/kafka-producer/kafka-producer.adoc[]
+
+[[ga-alarm-correlation]]
+== Alarm Correlation
+include::text/alarm-correlation/situation-feedback.adoc[]
