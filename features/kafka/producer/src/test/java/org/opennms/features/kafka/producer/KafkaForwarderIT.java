@@ -245,7 +245,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         // Send a node down event (should be forwarded)
         eventdIpcMgr.sendNow(MockEventUtil.createNodeDownEventBuilder("test", databasePopulator.getNode1()).getEvent());
         // Create and trigger the associated alarm
-        final OnmsAlarm alarm = nodeDownAlarm();
+        final OnmsAlarm alarm = nodeDownAlarmWithRelatedAlarm();
         final String alarmReductionKey = alarm.getReductionKey();
         {
             alarmDao.save(alarm);
@@ -322,12 +322,14 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         kafkaProducer.setSuppressIncrementalAlarms(true);
 
         // Send an alarm
-        final OnmsAlarm alarm = nodeDownAlarm();
+        final OnmsAlarm alarm = nodeDownAlarmWithRelatedAlarm();
         alarmDao.save(alarm);
         kafkaProducer.handleNewOrUpdatedAlarm(alarm);
 
         // Increment the alarm and re-send
         alarm.setCounter(2);
+        // Also update the related alarm
+        alarm.getRelatedAlarms().iterator().next().setCounter(2);
         alarmDao.save(alarm);
         kafkaProducer.handleNewOrUpdatedAlarm(alarm);
 
@@ -346,12 +348,14 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         kafkaProducer.setSuppressIncrementalAlarms(true);
 
         // Send an alarm
-        final OnmsAlarm alarm = nodeDownAlarm();
+        final OnmsAlarm alarm = nodeDownAlarmWithRelatedAlarm();
         alarmDao.save(alarm);
         kafkaProducer.handleNewOrUpdatedAlarm(alarm);
 
         // Increment the alarm and write directly to db
         alarm.setCounter(2);
+        // Also update the related alarm
+        alarm.getRelatedAlarms().iterator().next().setCounter(2);
         alarmDao.save(alarm);
 
         // Fire up the consumer
@@ -373,6 +377,14 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         return kafkaConsumer;
     }
 
+    private OnmsAlarm nodeDownAlarmWithRelatedAlarm() {
+        OnmsAlarm alarm = nodeDownAlarm();
+        OnmsAlarm relatedAlarm = nodeDownAlarm();
+        relatedAlarm.setId(2);
+        alarm.addRelatedAlarm(relatedAlarm);        
+        return alarm;
+    }
+    
     private OnmsAlarm nodeDownAlarm() {
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setId(1);

@@ -8,6 +8,9 @@
     <!-- OpenNMS Features -->
     <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features</repository>
 
+    <!-- Newts Features -->
+    <repository>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</repository>
+
     <!-- Required by sentinel-jms -->
     <feature name="geronimo-jms-api" description="Apache Geronimo :: JMS :: API" version="${geronimoVersion}">
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-annotation_1.0_spec/${geronimoVersion}</bundle>
@@ -64,6 +67,7 @@
         <feature>opennms-persistence</feature>
         <feature>sentinel-distpoller-dao</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-healthcheck/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-shell/${project.version}</bundle>
     </feature>
 
     <feature name="sentinel-telemetry" description="OpenNMS :: Sentinel :: Telemetry" version="${project.version}">
@@ -80,9 +84,12 @@
 
         <bundle dependency="true">mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
 
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
+
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.api/${project.version}</bundle>
 
+        <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.jaxb/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.daemon/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.registry/${project.version}</bundle>
@@ -146,5 +153,33 @@
         <bundle dependency="true">mvn:org.apache.curator/curator-client/2.9.1</bundle>
         <bundle dependency="true">mvn:org.apache.curator/curator-framework/2.9.1</bundle>
         <bundle dependency="true">mvn:org.apache.curator/curator-recipes/2.9.1</bundle>
+    </feature>
+
+    <!-- Newts -->
+    <feature name="sentinel-newts" description="OpenNMS :: Sentinel :: Newts" version="${project.version}">
+        <feature>sentinel-core</feature>
+        <feature>guava</feature>
+        <feature>opennms-measurements-api</feature>
+        <feature>opennms-collection-api</feature>
+        <feature>opennms-dao-api</feature>
+        <feature>newts-cassandra</feature>
+        <feature>newts-cassandra-search</feature>
+
+        <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-trees/concurrent-trees/2.5.0</bundle>
+        <bundle dependency="true">mvn:com.lmax/disruptor/${lmaxDisruptorVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.commons/commons-pool2/2.4.2</bundle>
+        <bundle dependency="true">mvn:redis.clients/jedis/2.8.1</bundle>
+        <bundle dependency="true">mvn:args4j/args4j/${args4jVersion}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.6.6</bundle>
+        <bundle dependency="true">mvn:org.javassist/javassist/3.19.0-GA</bundle>
+        <bundle dependency="true">mvn:org.objenesis/objenesis/2.4</bundle>
+        <bundle dependency="true">mvn:de.ruedigermoeller/fst/2.47</bundle>
+
+        <!-- Add Groovy Script Engine -->
+        <bundle dependency="true">mvn:org.codehaus.groovy/groovy-all/${groovyVersion}</bundle>
+
+        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.persistence.osgi/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features/org.opennms.features.newts/${project.version}</bundle>
     </feature>
 </features>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features
+        name="opennms-${project.version}"
+        xmlns="http://karaf.apache.org/xmlns/features/v1.4.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
+>
+
+    <!-- Install bootstrap feature to start all flow related features automatically -->
+    <feature name="autostart-sentinel-telemetry-collectionset-adapters" version="${project.version}" start-level="200" install="auto">
+        <!-- Configure an NXOS Adapter to persist samples -->
+        <config name="org.opennms.features.telemetry.adapters-nxos">
+            name = NXOS
+            class-name = org.opennms.netmgt.telemetry.adapters.nxos.NxosGpbAdapter
+            parameters.script = /opt/sentinel/etc/cisco-nxos-telemetry-interface.groovy
+        </config>
+        <!-- Point sentinel to the correct elastic endpoint -->
+        <config name="org.opennms.features.flows.persistence.elastic">
+            elasticUrl = http://elasticsearch:9200
+        </config>
+        <!-- Point sentinel to cassandra -->
+        <config name="org.opennms.newts.config">
+            hostname = cassandra
+            port = 9042
+        </config>
+        <feature>sentinel-jms</feature>
+        <feature>sentinel-newts</feature>
+        <feature>sentinel-telemetry-nxos</feature>
+    </feature>
+</features>

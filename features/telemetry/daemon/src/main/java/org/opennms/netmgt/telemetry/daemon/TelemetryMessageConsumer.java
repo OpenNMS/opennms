@@ -32,24 +32,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.logging.Logging;
 import org.opennms.features.telemetry.protocols.registry.api.TelemetryAdapterRegistry;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
+import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
+import org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos;
+import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.config.api.QueueDefinition;
 import org.opennms.netmgt.telemetry.config.model.QueueConfig;
-import org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos;
-import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
-import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,8 +75,8 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     }
 
     public TelemetryMessageConsumer(QueueDefinition protocolDef,
-                                        Collection<? extends AdapterDefinition> adapterDefs,
-                                        TelemetrySinkModule sinkModule) {
+                                    Collection<? extends AdapterDefinition> adapterDefs,
+                                    TelemetrySinkModule sinkModule) {
         this.protocolDef = Objects.requireNonNull(protocolDef);
         this.sinkModule = Objects.requireNonNull(sinkModule);
         this.adapterDefs = new ArrayList(adapterDefs);

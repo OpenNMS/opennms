@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.distributed.sentinel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -37,13 +38,9 @@ import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.features.telemetry.protocols.registry.api.TelemetryAdapterRegistry;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
-import org.opennms.netmgt.telemetry.config.api.QueueDefinition;
+import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
 import org.opennms.netmgt.telemetry.daemon.TelemetryMessageConsumer;
 import org.opennms.netmgt.telemetry.distributed.common.MapBasedAdapterDef;
-import org.opennms.netmgt.telemetry.distributed.common.MapBasedListenerDef;
-import org.opennms.netmgt.telemetry.distributed.common.MapBasedQueueDef;
-import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
 import org.opennms.netmgt.telemetry.distributed.common.PropertyTree;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -51,7 +48,6 @@ import org.osgi.service.cm.ManagedServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
 
 /**
  * This {@link ManagedServiceFactory} for service pids that contain
@@ -95,7 +91,6 @@ public class AdapterManager implements ManagedServiceFactory {
         final PropertyTree definition = PropertyTree.from(properties);
 
         // Build the protocol and listener definitions
-//        final QueueDefinition queueDef = new MapBasedQueueDef(definition);
         final MapBasedAdapterDef adapterDef = new MapBasedAdapterDef(definition);
 
         // Register health check
@@ -109,7 +104,7 @@ public class AdapterManager implements ManagedServiceFactory {
             sinkModule.setDistPollerDao(distPollerDao);
 
             // Create the consumer
-            final TelemetryMessageConsumer consumer = new TelemetryMessageConsumer(adapterDef, Lists.newArrayList(adapterDef), sinkModule);
+            final TelemetryMessageConsumer consumer = new TelemetryMessageConsumer(adapterDef, Arrays.asList(adapterDef), sinkModule);
             consumer.setAdapterRegistry(telemetryAdapterRegistry);
             consumer.init();
             messageConsumerManager.registerConsumer(consumer);

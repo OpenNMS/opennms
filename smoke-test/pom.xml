@@ -141,6 +141,28 @@
           </execution>
         </executions>
       </plugin>
+      <!-- Copy some resources required by some system tests -->
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-opennms-base-assembly-resources</id>
+            <phase>generate-test-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/system-test-resources</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${basedir}/../opennms-base-assembly/src/main/filtered</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <dependencyManagement>
@@ -324,8 +346,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.telemetry.adapters</groupId>
-      <artifactId>org.opennms.features.telemetry.adapters.netflow</artifactId>
+      <groupId>org.opennms.features.telemetry.protocols.netflow</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.netflow.adapter</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

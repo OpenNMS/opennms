@@ -76,6 +76,11 @@ public class AlarmEntityNotifierImpl implements AlarmEntityNotifier {
     }
 
     @Override
+    public void didArchiveAlarm(OnmsAlarm alarm, String previousReductionKey) {
+        forEachListener(l -> l.onAlarmArchived(alarm, previousReductionKey));
+    }
+
+    @Override
     public void didDeleteAlarm(OnmsAlarm alarm) {
         forEachListener(l -> l.onAlarmDeleted(alarm));
     }

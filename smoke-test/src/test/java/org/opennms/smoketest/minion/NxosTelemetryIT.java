@@ -163,7 +163,7 @@ public class NxosTelemetryIT {
                 .until(matchRrdFileFromNodeResource(onmsNode.getId()));
     }
 
-    private void sendNxosTelemetryMessage(InetSocketAddress udpAddress) throws IOException {
+    public static void sendNxosTelemetryMessage(InetSocketAddress udpAddress) throws IOException {
 
         byte[] nxosOutBytes = Resources.toByteArray(Resources.getResource("telemetry/cisco-nxos-proto.raw"));
         DatagramPacket packet = new DatagramPacket(nxosOutBytes, nxosOutBytes.length, udpAddress);

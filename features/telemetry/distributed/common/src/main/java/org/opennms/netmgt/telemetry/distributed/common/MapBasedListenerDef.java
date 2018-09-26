@@ -45,7 +45,7 @@ public class MapBasedListenerDef implements ListenerDefinition {
         this.name = definition.getRequiredString("name");
         this.className = definition.getRequiredString("class-name");
 
-        this.parameters = definition.getMap("listener");
+        this.parameters = definition.getMap("parameters");
 
         this.parsers = definition.getSubTrees("parsers").values().stream()
                 .map(MapBasedParserDef::new)

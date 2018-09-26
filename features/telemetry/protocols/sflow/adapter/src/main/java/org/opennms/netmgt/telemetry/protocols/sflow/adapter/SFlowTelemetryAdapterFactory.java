@@ -54,9 +54,7 @@ public class SFlowTelemetryAdapterFactory extends AbstractCollectionAdapterFacto
         final SFlowTelemetryAdapter adapter = new SFlowTelemetryAdapter();
         adapter.setConfig(adapterConfig);
         adapter.setCollectionAgentFactory(getCollectionAgentFactory());
-        adapter.setInterfaceToNodeCache(getInterfaceToNodeCache());
-        adapter.setNodeDao(getNodeDao());
-        adapter.setTransactionTemplate(getTransactionTemplate());
+        adapter.setPersisterFactory(getPersisterFactory());
         adapter.setFilterDao(getFilterDao());
         adapter.setPersisterFactory(getPersisterFactory());
         adapter.setBundleContext(getBundleContext());
