@@ -230,6 +230,13 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 testCase.setImplicitWait();
             }
         }
+
+        public void changeIcon(String iconName){
+            this.select();
+            this.contextMenu().click("Change Icon");
+            testCase.findElementByXpath("//*[name()='title' and text()='"+iconName+"']/../*[name()='rect']").click();
+            testCase.findElementById("iconSelectionDialog.button.ok").click();
+        }
     }
 
     public static class PingWindow {
