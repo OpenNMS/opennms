@@ -7,7 +7,7 @@
 >
 
     <!-- Install bootstrap feature to start all flow related features automatically -->
-    <feature name="autostart-sentinel-telemetry-flows" version="${project.version}" start-level="900" install="auto">
+    <feature name="autostart-sentinel-telemetry-flows" version="${project.version}" start-level="200" install="auto">
         <!--
             Starts the Netflow5Adapter to process Netflow5 Messages.
             Be aware, that this requires a Listener with name "Netflow-5" on the Minion-side to have messages

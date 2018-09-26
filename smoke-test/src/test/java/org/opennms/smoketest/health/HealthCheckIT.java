@@ -69,6 +69,8 @@ public class HealthCheckIT {
                     .es6()
                     .sentinel();
 
+            builder.skipTearDown(true);
+
             // Start a Listener to ensure that a HealthCheck is actually exposed for it as well
             builder.withMinionEnvironment()
                     .addFile(HealthCheckIT.class.getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50000.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-50000.cfg");

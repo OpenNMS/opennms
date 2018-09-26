@@ -28,8 +28,6 @@
 
 package org.opennms.features.telemetry.protocols.registry.api;
 
-import java.util.Map;
-
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 

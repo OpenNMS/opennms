@@ -10,13 +10,6 @@
 ">
 	<reference id="flowRepository" interface="org.opennms.netmgt.flows.api.FlowRepository" availability="mandatory" />
 
-	<reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
-	<reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" />
-	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
-	<reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" />
-	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" />
-	<reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" />
-
 	<!-- Netflow5 Factory and Adapter -->
 	<bean id="netflow5Factory" class="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5AdapterFactory">
 		<property name="metricRegistry" ref="netflowAdapterMetricRegistry"/>
