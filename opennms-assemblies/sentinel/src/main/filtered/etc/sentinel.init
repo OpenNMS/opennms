@@ -64,7 +64,7 @@ fi
 # now, rather than letting Karaf init do it.
 
 # shellcheck disable=SC1090,SC1091
-. "${MINION_HOME}/bin/inc"
+. "${SENTINEL_HOME}/bin/inc"
 setupDefaults
 
 # always dump heap if we OOM
