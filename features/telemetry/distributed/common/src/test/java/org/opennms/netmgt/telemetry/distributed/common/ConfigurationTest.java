@@ -47,7 +47,7 @@ public class ConfigurationTest {
         final Map<String, String> properties = new HashMap();
         properties.put("name", "Example");
         properties.put("class-name", "com.example.Adapter");
-        properties.put("test", "success");
+        properties.put("parameters.test", "success");
 
         final PropertyTree tree = PropertyTree.from(properties);
 
