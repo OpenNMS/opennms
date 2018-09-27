@@ -166,7 +166,7 @@ public class JtiTelemetryIT {
             PrintStream pipe = sshClient.openShell();
             pipe.println("config:edit org.opennms.features.telemetry.listeners-udp-50000");
             pipe.println("config:property-set name JTI");
-            pipe.println("config:property-set class-name org.opennms.netmgt.telemetry.listeners.udp.UdpListener");
+            pipe.println("config:property-set class-name org.opennms.netmgt.telemetry.listeners.simple.Udp");
             pipe.println("config:property-set listener.port 50000");
             pipe.println("config:update");
             pipe.println("logout");

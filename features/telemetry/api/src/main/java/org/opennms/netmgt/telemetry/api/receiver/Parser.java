@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.telemetry.api.receiver;
 
-import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import java.util.concurrent.ScheduledExecutorService;
 
-import io.netty.channel.EventLoopGroup;
+import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 
 /**
  * Interface used by the daemon to manage parsers.
@@ -42,7 +42,7 @@ import io.netty.channel.EventLoopGroup;
 public interface Parser {
     String getName();
 
-    void start(final EventLoopGroup eventLoopGroup);
+    void start(final ScheduledExecutorService executorService);
     void stop();
 
     /**

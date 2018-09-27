@@ -34,6 +34,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.bson.BsonBinaryWriter;
 import org.bson.io.BasicOutputBuffer;
@@ -45,8 +46,6 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows.DatagramV
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows.SampleDatagram;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.netty.channel.EventLoopGroup;
 
 public class SflowUdpParser implements SimpleUdpParser, SmartUdpParser {
     private static final Logger LOG = LoggerFactory.getLogger(SflowUdpParser.class);
@@ -107,8 +106,7 @@ public class SflowUdpParser implements SimpleUdpParser, SmartUdpParser {
     }
 
     @Override
-    public void start(EventLoopGroup eventLoopGroup) {
-
+    public void start(final ScheduledExecutorService executorService) {
     }
 
     @Override

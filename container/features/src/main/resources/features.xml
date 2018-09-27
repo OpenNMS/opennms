@@ -1185,6 +1185,8 @@
     <feature name="opennms-telemetry-collection" description="OpenNMS :: Telemetry :: Collection" version="${project.version}">
       <feature>guava</feature>
 
+      <feature>camel-netty4</feature>
+
       <feature>opennms-collection-api</feature>
       <feature>opennms-osgi-jsr223</feature>
 
@@ -1203,7 +1205,6 @@
     </feature>
 
     <feature name="opennms-telemetry-daemon" description="OpenNMS :: Telemetry :: Daemon" version="${project.version}">
-      <feature>camel-netty4</feature>
       <!-- Needed to bootstrap opennms-core-ipc-sink-api Spring context -->
       <feature>camel-spring</feature>
 

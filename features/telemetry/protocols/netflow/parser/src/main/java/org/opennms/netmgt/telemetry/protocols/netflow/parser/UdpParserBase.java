@@ -31,6 +31,8 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.time.Duration;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
@@ -38,9 +40,6 @@ import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
-
-import io.netty.channel.EventLoopGroup;
-import io.netty.util.concurrent.ScheduledFuture;
 
 public abstract class UdpParserBase extends ParserBase {
     public final static long HOUSEKEEPING_INTERVAL = 60000;
@@ -67,9 +66,9 @@ public abstract class UdpParserBase extends ParserBase {
         }
     }
 
-    public void start(final EventLoopGroup eventLoopGroup) {
+    public void start(final ScheduledExecutorService executorService) {
         this.sessionManager = new UdpSessionManager(this.templateTimeout);
-        this.housekeepingFuture = eventLoopGroup.scheduleAtFixedRate(this.sessionManager::doHousekeeping,
+        this.housekeepingFuture = executorService.scheduleAtFixedRate(this.sessionManager::doHousekeeping,
                 HOUSEKEEPING_INTERVAL,
                 HOUSEKEEPING_INTERVAL,
                 TimeUnit.MILLISECONDS);

@@ -29,16 +29,11 @@
 package org.opennms.netmgt.telemetry.distributed.common;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
-import org.opennms.netmgt.telemetry.config.api.QueueDefinition;
-
-import com.google.common.collect.ImmutableMap;
 
 public class ConfigurationTest {
 

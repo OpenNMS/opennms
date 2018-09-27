@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
@@ -41,8 +42,6 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Head
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
 
-import io.netty.channel.EventLoopGroup;
-
 public class IpfixTcpParser extends ParserBase implements SimpleTcpParser {
 
     public IpfixTcpParser(final String name,
@@ -51,7 +50,7 @@ public class IpfixTcpParser extends ParserBase implements SimpleTcpParser {
     }
 
     @Override
-    public void start(final EventLoopGroup eventLoopGroup) {
+    public void start(final ScheduledExecutorService executorService) {
     }
 
     @Override

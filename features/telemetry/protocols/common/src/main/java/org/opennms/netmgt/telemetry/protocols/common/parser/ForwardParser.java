@@ -33,14 +33,13 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.simple.SimpleUdpParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.netty.channel.EventLoopGroup;
 
 public class ForwardParser implements SimpleUdpParser.Factory {
     private static final Logger LOG = LoggerFactory.getLogger(ForwardParser.class);
@@ -60,7 +59,7 @@ public class ForwardParser implements SimpleUdpParser.Factory {
         }
 
         @Override
-        public void start(EventLoopGroup eventLoopGroup) {
+        public void start(final ScheduledExecutorService executorService) {
         }
 
         @Override
