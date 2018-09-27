@@ -4126,6 +4126,15 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+      <version>${jaxbVersion}</version>
+    </dependency>
+  </dependencies>
+
   <repositories>
 <!--
     <repository>
