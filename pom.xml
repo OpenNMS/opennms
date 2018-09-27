@@ -1641,11 +1641,6 @@
         <artifactId>opennms-provisioning</artifactId>
         <version>1.0.0</version>
       </dependency>
-      <dependency>
-        <groupId>org.glassfish.jaxb</groupId>
-        <artifactId>jaxb-runtime</artifactId>
-        <version>${jaxbVersion}</version>
-      </dependency>
 
       <!--  opennms dependencies -->
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
