@@ -29,13 +29,11 @@
 package org.opennms.netmgt.trapd;
 
 import java.net.InetAddress;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import org.opennms.core.ipc.sink.api.AggregationPolicy;
 import org.opennms.core.ipc.sink.api.AsyncPolicy;
 import org.opennms.core.ipc.sink.xml.AbstractXmlSinkModule;
-import org.opennms.core.xml.XmlHandler;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.snmp.TrapInformation;
@@ -53,10 +51,9 @@ public class TrapSinkModule extends AbstractXmlSinkModule<TrapInformationWrapper
     private final TrapdConfig config;
 
     private OnmsDistPoller distPoller;
-    private final ThreadLocal<XmlHandler<TrapDTO>> xmlHandler = new ThreadLocal<>();
 
     public TrapSinkModule(TrapdConfig trapdConfig, OnmsDistPoller distPoller) {
-        super(TrapInformationWrapper.class, TrapLogDTO.class);
+        super(TrapLogDTO.class);
         this.config = Objects.requireNonNull(trapdConfig);
         this.distPoller = Objects.requireNonNull(distPoller);
     }
@@ -86,24 +83,23 @@ public class TrapSinkModule extends AbstractXmlSinkModule<TrapInformationWrapper
 
             @Override
             public Object key(TrapInformationWrapper message) {
-                if (message.getTrapInformation() != null) {
-                    return message.getTrapInformation().getTrapAddress();
-                } else {
-                    return message.getTrapDTO().getTrapAddress();
-                }
+                return message.getTrapAddress();
             }
 
             @Override
             public TrapLogDTO aggregate(TrapLogDTO accumulator, TrapInformationWrapper newMessage) {
                 final TrapInformation trapInfo = newMessage.getTrapInformation();
                 TrapDTO trapDTO;
+                InetAddress trapAddress;
                 if(trapInfo != null) {
                     trapDTO = transformTrapInfo(trapInfo);
+                    trapAddress = TrapUtils.getEffectiveTrapAddress(trapInfo, config.shouldUseAddressFromVarbind());
                 } else {
                     trapDTO = newMessage.getTrapDTO();
+                    trapAddress = newMessage.getTrapAddress();
                 }
                 if (accumulator == null) { // no log created yet
-                    accumulator = new TrapLogDTO(distPoller.getId(), distPoller.getLocation(), trapDTO.getTrapAddress());
+                    accumulator = new TrapLogDTO(distPoller.getId(), distPoller.getLocation(), trapAddress);
                 }
                 accumulator.addMessage(trapDTO);
                 return accumulator;
@@ -116,17 +112,9 @@ public class TrapSinkModule extends AbstractXmlSinkModule<TrapInformationWrapper
         };
     }
 
-    @Override
-    public byte[] marshalSingleMessage(TrapInformationWrapper message) {
-        final TrapInformation trapInfo = message.getTrapInformation();
-        TrapDTO trapDTO = transformTrapInfo(trapInfo);
-        return getXmlHandler().marshal(trapDTO).getBytes(StandardCharsets.UTF_8);
-    }
 
     private TrapDTO transformTrapInfo(TrapInformation trapInfo) {
-        InetAddress trapAddress = TrapUtils.getEffectiveTrapAddress(trapInfo, config.shouldUseAddressFromVarbind());
         final TrapDTO trapDTO = new TrapDTO(trapInfo);
-        trapDTO.setTrapAddress(trapAddress);
         // include the raw message, if configured
         if (config.isIncludeRawMessage()) {
             byte[] rawMessage = convertToRawMessage(trapInfo);
@@ -139,18 +127,12 @@ public class TrapSinkModule extends AbstractXmlSinkModule<TrapInformationWrapper
 
     @Override
     public TrapInformationWrapper unmarshalSingleMessage(byte[] bytes) {
-        TrapDTO trapDTO = getXmlHandler().unmarshal(new String(bytes, StandardCharsets.UTF_8));
-        return new TrapInformationWrapper(trapDTO);
+        TrapLogDTO trapLogDTO = unmarshal(bytes);
+        TrapInformationWrapper trapInfo = new TrapInformationWrapper(trapLogDTO.getMessages().get(0));
+        trapInfo.setTrapAddress(trapLogDTO.getTrapAddress());
+        return trapInfo;
     }
 
-    private XmlHandler<TrapDTO> getXmlHandler() {
-        XmlHandler<TrapDTO> trapDTOXmlHandler = xmlHandler.get();
-        if(trapDTOXmlHandler == null) {
-            trapDTOXmlHandler = super.createXmlHandler(TrapDTO.class);
-            xmlHandler.set(trapDTOXmlHandler);
-        }
-        return trapDTOXmlHandler;
-    }
 
     @Override
     public AsyncPolicy getAsyncPolicy() {

@@ -609,7 +609,8 @@
     <feature name="opennms-core-ipc-sink-offheap" description="OpenNMS :: Core :: IPC :: Sink :: OffHeap" version="${project.version}">
       <feature>opennms-core-ipc-sink-api</feature>
       <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.offheap/${project.version}</bundle>
-      <bundle>mvn:com.h2database/h2/1.4.197</bundle>
+      <bundle>mvn:com.h2database/h2/${h2databaseVersion}</bundle>
+        <feature>dropwizard-metrics</feature>
     </feature>
 
     <!-- CAMEL -->

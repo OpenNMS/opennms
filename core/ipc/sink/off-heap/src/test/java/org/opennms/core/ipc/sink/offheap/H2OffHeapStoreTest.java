@@ -57,7 +57,7 @@ public class H2OffHeapStoreTest {
     @Before
     public void setup() throws IOException {
         Hashtable<String, Object> configProperties = new Hashtable<>();
-        configProperties.put(OFFHEAP_SIZE, "100000");
+        configProperties.put(OFFHEAP_SIZE, "1MB");
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(OFFHEAP_CONFIG).getProperties()).thenReturn(configProperties);
         queue = new H2OffHeapStore(configAdmin);

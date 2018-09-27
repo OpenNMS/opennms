@@ -35,7 +35,6 @@ import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -70,9 +69,6 @@ public class TrapDTO implements Message {
 	private byte[] rawMessage;
 	@XmlElement(name = "trap-identity")
 	private TrapIdentityDTO trapIdentity;
-	@XmlAttribute(name = "trap-address")
-	@XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
-	private InetAddress trapAddress;
 	@XmlElementWrapper(name = "results")
 	@XmlElement(name = "result")
 	private List<SnmpResult> results = new ArrayList<>();
@@ -163,14 +159,6 @@ public class TrapDTO implements Message {
 		return trapIdentity;
 	}
 
-	public InetAddress getTrapAddress() {
-		return trapAddress;
-	}
-
-	public void setTrapAddress(InetAddress trapAddress) {
-		this.trapAddress = trapAddress;
-	}
-
 	public List<SnmpResult> getResults() {
 		return results;
 	}
@@ -201,7 +189,6 @@ public class TrapDTO implements Message {
 				&& Objects.equals(creationTime, other.creationTime)
 				&& Objects.equals(rawMessage, other.rawMessage)
 				&& Objects.equals(trapIdentity, other.trapIdentity)
-				&& Objects.equals(trapAddress, other.trapAddress)
 				&& Objects.equals(results, other.results)
 				&& Objects.equals(agentAddress, other.agentAddress);
 		return equals;
@@ -213,7 +200,6 @@ public class TrapDTO implements Message {
 				.add("agentAddress", agentAddress)
 				.add("community", community)
 				.add("trapIdentity", trapIdentity)
-				.add("trapAddress", trapAddress)
 				.add("creationTime", creationTime)
 				.add("pduLength", pduLength)
 				.add("timestamp", timestamp)

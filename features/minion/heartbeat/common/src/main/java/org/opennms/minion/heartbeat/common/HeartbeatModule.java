@@ -37,7 +37,7 @@ public class HeartbeatModule extends AbstractXmlSinkModule<MinionIdentityDTO, Mi
     public static final String MODULE_ID = "Heartbeat";
 
     public HeartbeatModule() {
-        super(MinionIdentityDTO.class, MinionIdentityDTO.class);
+        super(MinionIdentityDTO.class);
     }
 
     @Override

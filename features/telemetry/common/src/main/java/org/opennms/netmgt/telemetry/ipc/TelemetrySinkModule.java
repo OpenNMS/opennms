@@ -28,8 +28,11 @@
 
 package org.opennms.netmgt.telemetry.ipc;
 
-import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.util.Date;
+import java.util.Objects;
+
 import org.opennms.core.ipc.sink.api.AggregationPolicy;
 import org.opennms.core.ipc.sink.api.AsyncPolicy;
 import org.opennms.core.ipc.sink.api.SinkModule;
@@ -38,7 +41,8 @@ import org.opennms.netmgt.telemetry.config.api.Protocol;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Objects;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 public class TelemetrySinkModule implements SinkModule<TelemetryMessage, TelemetryProtos.TelemetryMessageLog> {
     private static final String MODULE_ID_PREFIX = "Telemetry-";
@@ -82,6 +86,20 @@ public class TelemetrySinkModule implements SinkModule<TelemetryMessage, Telemet
         } catch (InvalidProtocolBufferException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public byte[] marshalSingleMessage(TelemetryMessage message) {
+        return marshal(getAggregationPolicy().aggregate(null, message).build());
+    }
+
+    @Override
+    public TelemetryMessage unmarshalSingleMessage(byte[] message) {
+        TelemetryProtos.TelemetryMessageLog messageLog = unmarshal(message);
+        InetSocketAddress inetSocketAddress = new InetSocketAddress(messageLog.getSourceAddress(), messageLog.getSourcePort());
+        return new TelemetryMessage(inetSocketAddress,
+                ByteBuffer.wrap(messageLog.getMessage(0).getByteArray()),
+                new Date(messageLog.getMessage(0).getTimestamp()));
     }
 
     @Override

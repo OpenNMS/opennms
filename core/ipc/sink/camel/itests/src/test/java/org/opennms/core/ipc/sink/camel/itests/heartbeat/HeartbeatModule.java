@@ -37,7 +37,7 @@ public class HeartbeatModule extends AbstractXmlSinkModule<Heartbeat, Heartbeat>
     public static final HeartbeatModule INSTANCE = new HeartbeatModule();
 
     public HeartbeatModule() {
-        super(Heartbeat.class, Heartbeat.class);
+        super(Heartbeat.class);
     }
 
     @Override

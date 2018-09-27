@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.syslogd.api;
 
-import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.Objects;
@@ -39,19 +38,13 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.xml.ByteBufferXmlAdapter;
+
 
 @XmlRootElement(name = "syslog-message")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SyslogMessageDTO {
 
-    @XmlAttribute(name = "source-address")
-    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
-    private InetAddress sourceAddress;
-    @XmlAttribute(name = "source-port")
-    private int sourcePort;
     @XmlAttribute(name = "timestamp")
     private Date timestamp;
 
@@ -79,22 +72,6 @@ public class SyslogMessageDTO {
         this.bytes = bytes;
     }
 
-    public InetAddress getSourceAddress() {
-        return sourceAddress;
-    }
-
-    public void setSourceAddress(InetAddress sourceAddress) {
-        this.sourceAddress = sourceAddress;
-    }
-
-    public int getSourcePort() {
-        return sourcePort;
-    }
-
-    public void setSourcePort(int sourcePort) {
-        this.sourcePort = sourcePort;
-    }
-
     @Override
     public boolean equals(final Object other) {
         if (!(other instanceof SyslogMessageDTO)) {
@@ -102,13 +79,11 @@ public class SyslogMessageDTO {
         }
         SyslogMessageDTO castOther = (SyslogMessageDTO) other;
         return Objects.equals(timestamp, castOther.timestamp)
-                && Objects.equals(sourceAddress, castOther.sourceAddress)
-                && Objects.equals(sourcePort, castOther.sourcePort)
                 && Objects.equals(bytes, castOther.bytes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(timestamp, bytes, sourceAddress, sourcePort);
+        return Objects.hash(timestamp, bytes);
     }
 }

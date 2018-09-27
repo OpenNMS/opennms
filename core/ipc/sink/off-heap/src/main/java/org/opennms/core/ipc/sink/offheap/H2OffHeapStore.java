@@ -46,16 +46,23 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Strings;
+
 
 public class H2OffHeapStore implements OffHeapQueue {
 
     private static final Logger LOG = LoggerFactory.getLogger(H2OffHeapStore.class);
     private static final String OFFHEAP_CONFIG = "org.opennms.core.ipc.sink.offheap";
     private final static String OFFHEAP_SIZE = "offHeapSize";
+    private final static String DEFAULT_OFFHEAP_SIZE = "10MB";
     // Default wait time for each poll is 1000msec.
     private final static long DEFAULT_WAIT_FOR_POLL = 1000L;
 
+    private JmxReporter reporter = null;
+    private MetricRegistry offheapMetrics = new MetricRegistry();
     private MVStore store;
     private long maxSizeInBytes;
     private final ConfigurationAdmin configAdmin;
@@ -74,9 +81,18 @@ public class H2OffHeapStore implements OffHeapQueue {
         Dictionary<String, Object> properties = configAdmin.getConfiguration(OFFHEAP_CONFIG).getProperties();
         if (properties != null && properties.get(OFFHEAP_SIZE) != null) {
             if (properties.get(OFFHEAP_SIZE) instanceof String) {
-                maxSizeInBytes = Long.parseLong((String) properties.get(OFFHEAP_SIZE));
+                maxSizeInBytes = convertByteSizes((String)properties.get(OFFHEAP_SIZE));
             }
         }
+        reporter = JmxReporter.forRegistry(offheapMetrics).inDomain(this.getClass().getPackage().getName()).build();
+        offheapMetrics.register(MetricRegistry.name("currentSize"), new Gauge<Long>() {
+            @Override
+            public Long getValue() {
+                return getSize();
+
+            }
+        });
+        reporter.start();
         LOG.info("initializing H2 OffHeapStore with max size : {} ", maxSizeInBytes);
     }
 
@@ -133,17 +149,42 @@ public class H2OffHeapStore implements OffHeapQueue {
         LOG.info("closing H2OffHeapStore, size = {} ", getSize());
         store.getFileStore().close();
         store.close();
+        reporter.stop();
+    }
+
+    private long convertByteSizes(String size) {
+        String suffix = size.substring(size.length()-2, size.length());
+        double value = 0;
+        long bytes = 0;
+        try {
+            value = Double.parseDouble(size.substring(0, size.length() - 2));
+        } catch (NumberFormatException e) {
+            //pass
+        }
+        switch(suffix) {
+            case "KB":
+                bytes = (long) (value * 1024);
+                break;
+            case "MB":
+                bytes = (long) (value * 1024 * 1024);
+                break;
+            case "GB":
+                bytes = (long) (value * 1024 * 1024 * 1024);
+                break;
+        }
+        if (bytes == 0) {
+            LOG.error("Provided offheap size '{}' is invalid, using default as {}", size, DEFAULT_OFFHEAP_SIZE);
+            return convertByteSizes(DEFAULT_OFFHEAP_SIZE);
+        }
+        return bytes;
     }
 
     public long getSize() {
-        // Commit to update size calculations, otherwise it updates every 1 sec.
-        store.commit();
         return store.getFileStore().size();
-
     }
 
-    // For test purpose
-    protected int numOfMessages(String moduleName) {
+
+    public int getNumOfMessages(String moduleName) {
 
         BlockingQueue<String> queue = queueMap.get(moduleName);
         if (queue != null) {

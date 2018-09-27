@@ -29,10 +29,12 @@
 package org.opennms.core.ipc.sink.offheap;
 
 import static com.jayway.awaitility.Awaitility.await;
-import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -42,20 +44,19 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.ThreadLockingDispatcherFactory;
 import org.opennms.core.ipc.sink.common.ThreadLockingSyncDispatcher;
 import org.osgi.service.cm.ConfigurationAdmin;
 
-@RunWith(MockitoJUnitRunner.class)
 public class AsyncDispatcherOffHeapTest {
 
     private final static String OFFHEAP_SIZE = "offHeapSize";
@@ -63,7 +64,7 @@ public class AsyncDispatcherOffHeapTest {
     public static final String OFFHEAP_CONFIG = "org.opennms.core.ipc.sink.offheap";
     private static final int QUEUE_SIZE = 100;
     private static final int NUM_THREADS = 16;
-    private static final int OFFHEAP_MESSAGES = 200;
+    private static final int OFFHEAP_MESSAGES = 100;
     private H2OffHeapStore offHeapStore;
 
     private SinkModule<MockMessage, MockMessage> module = new MockModule();
@@ -73,7 +74,7 @@ public class AsyncDispatcherOffHeapTest {
     @Before
     public void setup() throws IOException {
         Hashtable<String, Object> configProperties = new Hashtable<>();
-        configProperties.put(OFFHEAP_SIZE, "100000");
+        configProperties.put(OFFHEAP_SIZE, "40KB");
         configProperties.put(ENABLE_OFFHEAP, true);
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(OFFHEAP_CONFIG).getProperties()).thenReturn(configProperties);
@@ -82,7 +83,7 @@ public class AsyncDispatcherOffHeapTest {
         OffHeapServiceLoader.setOffHeapQueue(offHeapStore);
         OffHeapServiceLoader.setOffHeapEnabled(true);
     }
-    @Test(timeout=4*60*1000)
+    @Test(timeout=4*30*1000)
     public void testOffHeapStore() throws Exception {
 
         final AsyncDispatcher<MockMessage> asyncDispatcher = threadLockingDispatcherFactory.createAsyncDispatcher(module);
@@ -99,30 +100,137 @@ public class AsyncDispatcherOffHeapTest {
         }
 
         // All of the dispatcher thread should be locked, and
-        await().atMost(1, MINUTES).until(() -> allThreadsLocked.get());
+        await().atMost(30, SECONDS).until(() -> allThreadsLocked.get());
         // No additional thread should be waiting
-        assertEquals(0, threadLockingSyncDispatcher.getNumExtraThreadsWaiting());
+        assertEquals(0, threadLockingSyncDispatcher.getNumExtraThreadsWaiting()); 
         // The queue should be full
         assertEquals(QUEUE_SIZE, asyncDispatcher.getQueueSize());
-
+        int numOfMessagesInOffHeap = 0;
         for (int i = NUM_THREADS + QUEUE_SIZE; i < NUM_THREADS + QUEUE_SIZE + OFFHEAP_MESSAGES; i++) {
             CompletableFuture<MockMessage> future = asyncDispatcher.send(new MockMessage(Integer.toString(i)));
+            // This sleep is needed to get right size as the writes are committed every 1 sec by default
+            Thread.sleep(100);
             futures.add(future);
         }
-        // Since one message will be read immediately without waiting, numOfMessages would be one less than num of offheap messages.
-        await().atMost(1, MINUTES).pollDelay(5, TimeUnit.SECONDS)
-                .until(() -> offHeapStore.numOfMessages(module.getId()), equalTo(OFFHEAP_MESSAGES -1));
+        // Since one message will be read immediately without waiting, getNumOfMessages would be one less than num of offheap messages.
+        assertThat(offHeapStore.getNumOfMessages(module.getId()), equalTo(OFFHEAP_MESSAGES -1));
         // Release the threads!
         threadLockingSyncDispatcher.release();
         // Wait for the queue to be drained
-        await().atMost(1, MINUTES).until(() -> asyncDispatcher.getQueueSize(), equalTo(0));
-        await().atMost(1, MINUTES).until(() -> threadLockingDispatcherFactory.getNumMessageDispatched(),
+        await().atMost(30, SECONDS).until(() -> asyncDispatcher.getQueueSize(), equalTo(0));
+        await().atMost(30, SECONDS).until(() -> threadLockingDispatcherFactory.getNumMessageDispatched(),
                 greaterThan(QUEUE_SIZE + OFFHEAP_MESSAGES));
 
         // All of our futures should be successfully resolved
         CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[]{}));
+        asyncDispatcher.close();
+    }
+    @Test(timeout=4*30*1000)
+    public void testRejectedWhenOffHeapIsFull() throws Exception {
 
+        final AsyncDispatcher<MockMessage> asyncDispatcher = threadLockingDispatcherFactory.createAsyncDispatcher(module);
+
+        final AtomicBoolean allThreadsLocked = new AtomicBoolean(false);
+        ThreadLockingSyncDispatcher<MockMessage> threadLockingSyncDispatcher = threadLockingDispatcherFactory.getThreadLockingSyncDispatcher();
+        threadLockingSyncDispatcher.waitForThreads(NUM_THREADS).thenRun(() -> {
+            allThreadsLocked.set(true);
+        });
+
+        final List<CompletableFuture<MockMessage>> futures = new ArrayList<>();
+        for (int i = 0; i < NUM_THREADS + QUEUE_SIZE; i++) {
+            futures.add(asyncDispatcher.send(new MockMessage(Integer.toString(i))));
+        }
+
+        // All of the dispatcher thread should be locked, and
+        await().atMost(30, SECONDS).until(() -> allThreadsLocked.get());
+        // No additional thread should be waiting
+        assertEquals(0, threadLockingSyncDispatcher.getNumExtraThreadsWaiting());
+        // The queue should be full
+        assertEquals(QUEUE_SIZE, asyncDispatcher.getQueueSize());
+        int numOfMessagesDropped = 0;
+        int numOfMessagesInOffHeap = 0;
+        for (int i = NUM_THREADS + QUEUE_SIZE; i < NUM_THREADS + QUEUE_SIZE + OFFHEAP_MESSAGES*3; i++) {
+            CompletableFuture<MockMessage> future = asyncDispatcher.send(new MockMessage(Integer.toString(i)));
+            // This sleep is needed to get right size as the writes are committed every 1 sec by default.
+            Thread.sleep(100);
+            if (future.isCompletedExceptionally()) {
+                numOfMessagesDropped++;
+            } else {
+                numOfMessagesInOffHeap++;
+                futures.add(future);
+            }
+        }
+        // Atleast there should be one message that is dropped.
+        assertThat(numOfMessagesDropped, greaterThan(0));
+        // Since one message will be read immediately without waiting, getNumOfMessages would be one less than num of offheap messages.
+        assertThat(offHeapStore.getNumOfMessages(module.getId()), equalTo(numOfMessagesInOffHeap -1));
+        // Release the threads!
+        threadLockingSyncDispatcher.release();
+        // Wait for the queue to be drained
+        await().atMost(30, SECONDS).until(() -> asyncDispatcher.getQueueSize(), equalTo(0));
+        await().atMost(30, SECONDS).until(() -> threadLockingDispatcherFactory.getNumMessageDispatched(),
+                greaterThan(QUEUE_SIZE + numOfMessagesInOffHeap));
+
+        // All of our futures should be successfully resolved
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[]{}));
         asyncDispatcher.close();
     }
 
+    @Test(timeout=6*30*1000)
+    public void testBlockedWhenOffHeapIsFull() throws  Exception {
+        ((MockModule)module).setBlocked(true);
+        final AsyncDispatcher<MockMessage> asyncDispatcher = threadLockingDispatcherFactory.createAsyncDispatcher(module);
+
+        final AtomicBoolean allThreadsLocked = new AtomicBoolean(false);
+        ThreadLockingSyncDispatcher<MockMessage> threadLockingSyncDispatcher = threadLockingDispatcherFactory.getThreadLockingSyncDispatcher();
+        threadLockingSyncDispatcher.waitForThreads(NUM_THREADS).thenRun(() -> {
+            allThreadsLocked.set(true);
+        });
+
+        final List<CompletableFuture<MockMessage>> futures = new ArrayList<>();
+        for (int i = 0; i < NUM_THREADS + QUEUE_SIZE; i++) {
+            futures.add(asyncDispatcher.send(new MockMessage(Integer.toString(i))));
+        }
+
+        // All of the dispatcher thread should be locked, and
+        await().atMost(30, SECONDS).until(() -> allThreadsLocked.get());
+        // No additional thread should be waiting
+        assertEquals(0, threadLockingSyncDispatcher.getNumExtraThreadsWaiting());
+        // The queue should be full
+        assertEquals(QUEUE_SIZE, asyncDispatcher.getQueueSize());
+        AtomicInteger numOfMessagesDelivered = new AtomicInteger(0);
+        // needs seperate thread as this blocks when offHeap is full
+        Executors.newSingleThreadExecutor().execute(() -> {
+                    for (int i = NUM_THREADS + QUEUE_SIZE; i < NUM_THREADS + QUEUE_SIZE + OFFHEAP_MESSAGES * 3; i++) {
+                        CompletableFuture<MockMessage> future = asyncDispatcher.send(new MockMessage(Integer.toString(i)));
+                        // This sleep is needed to get right size as the writes are committed every 1 sec by default
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            //pass
+                        }
+                        numOfMessagesDelivered.incrementAndGet();
+                        futures.add(future);
+                    }
+                }
+        );
+        // Allow dispatcher to fill offheap
+        await().atMost(30, SECONDS).until(() -> offHeapStore.getSize(), greaterThanOrEqualTo(40960L));
+        // Release the threads!
+        threadLockingSyncDispatcher.release();
+        // Wait for the queue to be drained
+        await().atMost(30, SECONDS).until(() -> numOfMessagesDelivered.get(), equalTo(OFFHEAP_MESSAGES*3));
+        await().atMost(30, SECONDS).until(() -> asyncDispatcher.getQueueSize(), equalTo(0));
+        await().atMost(30, SECONDS).until(() -> threadLockingDispatcherFactory.getNumMessageDispatched(),
+                greaterThan(QUEUE_SIZE + OFFHEAP_MESSAGES*3 ));
+        // All of our futures should be successfully resolved
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[]{}));
+        asyncDispatcher.close();
+
+    }
+
+    @After
+    public void destroy() {
+        offHeapStore.destroy();
+    }
 }

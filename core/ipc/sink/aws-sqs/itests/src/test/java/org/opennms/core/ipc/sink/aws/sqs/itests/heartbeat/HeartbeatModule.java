@@ -46,7 +46,7 @@ public class HeartbeatModule extends AbstractXmlSinkModule<Heartbeat,Heartbeat> 
      * Instantiates a new heartbeat module.
      */
     public HeartbeatModule() {
-        super(Heartbeat.class ,Heartbeat.class);
+        super(Heartbeat.class);
     }
 
     /* (non-Javadoc)

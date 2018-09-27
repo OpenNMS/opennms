@@ -36,6 +36,7 @@ public class MockModule implements SinkModule<MockMessage, MockMessage> {
 
     private static final int QUEUE_SIZE = 100;
     private static final int NUM_THREADS = 16;
+    private boolean blocked = false;
 
     @Override
     public String getId() {
@@ -87,8 +88,12 @@ public class MockModule implements SinkModule<MockMessage, MockMessage> {
 
             @Override
             public boolean isBlockWhenFull() {
-                return false;
+                return blocked;
             }
         };
+    }
+
+    protected void setBlocked(boolean blocked) {
+         this.blocked = blocked;
     }
 }

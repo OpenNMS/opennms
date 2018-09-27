@@ -29,13 +29,11 @@
 package org.opennms.netmgt.syslogd;
 
 import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import org.opennms.core.ipc.sink.api.AggregationPolicy;
 import org.opennms.core.ipc.sink.api.AsyncPolicy;
 import org.opennms.core.ipc.sink.xml.AbstractXmlSinkModule;
-import org.opennms.core.xml.XmlHandler;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.syslogd.api.SyslogConnection;
@@ -48,10 +46,9 @@ public class SyslogSinkModule extends AbstractXmlSinkModule<SyslogConnection, Sy
 
     private final SyslogdConfig config;
     private final DistPollerDao distPollerDao;
-    private final ThreadLocal<XmlHandler<SyslogMessageDTO>> xmlHandler = new ThreadLocal<>();
 
     public SyslogSinkModule(SyslogdConfig config, DistPollerDao distPollerDao) {
-        super(SyslogConnection.class, SyslogMessageLogDTO.class);
+        super(SyslogMessageLogDTO.class);
         this.config = Objects.requireNonNull(config);
         this.distPollerDao = Objects.requireNonNull(distPollerDao);
     }
@@ -124,28 +121,13 @@ public class SyslogSinkModule extends AbstractXmlSinkModule<SyslogConnection, Sy
     }
 
     @Override
-    public byte[] marshalSingleMessage(SyslogConnection message) {
-        SyslogMessageDTO messageDTO = new SyslogMessageDTO(message.getBuffer());
-        messageDTO.setSourceAddress(message.getSource().getAddress());
-        messageDTO.setSourcePort(message.getSource().getPort());
-        return getXmlHandler().marshal(messageDTO).getBytes(StandardCharsets.UTF_8);
-    }
-
-    @Override
     public SyslogConnection unmarshalSingleMessage(byte[] bytes) {
-        SyslogMessageDTO syslogMessageDTO = getXmlHandler().unmarshal(new String(bytes, StandardCharsets.UTF_8));
-        InetSocketAddress inetSocketAddress = new InetSocketAddress(syslogMessageDTO.getSourceAddress(), syslogMessageDTO.getSourcePort());
+        SyslogMessageLogDTO syslogMessageLogDTO = unmarshal(bytes);
+        SyslogMessageDTO syslogMessageDTO = syslogMessageLogDTO.getMessages().get(0);
+        InetSocketAddress inetSocketAddress = new InetSocketAddress(syslogMessageLogDTO.getSourceAddress(), syslogMessageLogDTO.getSourcePort());
         return new SyslogConnection(inetSocketAddress, syslogMessageDTO.getBytes());
     }
 
-    private XmlHandler<SyslogMessageDTO> getXmlHandler() {
-        XmlHandler<SyslogMessageDTO> syslogXmlHandler = xmlHandler.get();
-        if(syslogXmlHandler == null) {
-            syslogXmlHandler = super.createXmlHandler(SyslogMessageDTO.class);
-            xmlHandler.set(syslogXmlHandler);
-        }
-        return syslogXmlHandler;
-    }
     /**
      * Used for testing.
      */

@@ -68,16 +68,12 @@ public interface SinkModule<S extends Message, T extends Message> {
     /**
      * Marshals single message to a byte array.
      */
-    default byte[]  marshalSingleMessage(S message) {
-        return null;
-    }
+    byte[]  marshalSingleMessage(S message);
 
     /**
      * Unmarshals single message from a byte array.
      */
-    default S unmarshalSingleMessage(byte[]  message) {
-        return null;
-    }
+    S unmarshalSingleMessage(byte[]  message);
 
     /**
      * Defines how messages should be combined, and when they

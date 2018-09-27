@@ -72,6 +72,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
     private final AsyncPolicy asyncPolicy;
     private OffHeapQueue offHeapQueue;
     private SinkModule<S,T> sinkModule;
+    private DispatcherState<W,S,T> state;
     private boolean useOffHeap = false;
     
     final RateLimitedLog rateLimittedLogger = RateLimitedLog
@@ -88,6 +89,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
         Objects.requireNonNull(asyncPolicy);
         this.syncDispatcher = Objects.requireNonNull(syncDispatcher);
         this.asyncPolicy = asyncPolicy;
+        this.state = state;
         sinkModule = state.getModule();
         if (OffHeapServiceLoader.isOffHeapEnabled()) {
             offHeapQueue = OffHeapServiceLoader.getOffHeapQueue();
@@ -183,7 +185,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
                 ((offHeapAdapter != null) && !offHeapAdapter.isOffHeapEmpty()))) {
             // Start drain thread before the first write to OffHeapQueue.
             if (offHeapAdapter == null) {
-                this.offHeapAdapter = new OffHeapAdapter(sinkModule, offHeapQueue);
+                this.offHeapAdapter = new OffHeapAdapter();
                 offHeapAdapterExecutor.execute(offHeapAdapter);
                 LOG.info("started drain thread for {}", sinkModule.getId());
             }
@@ -223,15 +225,17 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
     /** This adapter encapsulates write/read sink messages to OffHeapQueue. **/
     private class OffHeapAdapter implements Runnable {
 
-        private SinkModule<S, T> sinkModule;
-        private OffHeapQueue offHeapQueue;
         private Map<String, CompletableFuture<S>> offHeapFutureMap = new ConcurrentHashMap<>();
         private final CountDownLatch firstWrite = new CountDownLatch(1);
         private final AtomicBoolean closed = new AtomicBoolean(false);
 
-        public OffHeapAdapter(SinkModule<S, T> module, OffHeapQueue offHeapQueue) {
-            this.sinkModule = module;
-            this.offHeapQueue = offHeapQueue;
+        public OffHeapAdapter() {
+            state.getMetrics().register(MetricRegistry.name(state.getModule().getId(), "offheap-messages"), new Gauge<Integer>() {
+                @Override
+                public Integer getValue() {
+                    return offHeapQueue.getNumOfMessages(sinkModule.getId());
+                }
+            });
         }
 
         /** This is drain thread which polls data from OffHeapQueue, when data is available, it will push the data to the executor queue.
@@ -285,5 +289,4 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
 
     }
 
-  
 }

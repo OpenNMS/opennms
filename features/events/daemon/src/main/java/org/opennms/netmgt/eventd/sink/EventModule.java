@@ -50,7 +50,7 @@ public class EventModule extends AbstractXmlSinkModule<Event, Log> {
     private final EventdConfig m_config;
 
     public EventModule(EventdConfig config) {
-        super(Event.class, Log.class);
+        super(Log.class);
         this.m_config = config;
     }
 
@@ -118,6 +118,12 @@ public class EventModule extends AbstractXmlSinkModule<Event, Log> {
                 return true;
             }
         };
+    }
+
+    @Override
+    public Event unmarshalSingleMessage(byte[] bytes) {
+        Log log = unmarshal(bytes);
+        return log.getEvents().getEvent(0);
     }
 
     @Override
