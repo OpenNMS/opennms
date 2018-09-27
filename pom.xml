@@ -1542,6 +1542,7 @@
               <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-runtime</artifactId>
+                <version>${jaxbVersion}</version>
               </dependency>
             </dependencies>
           </plugin>
@@ -1645,6 +1646,7 @@
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
         <artifactId>jaxb-runtime</artifactId>
+        <version>${jaxbVersion}</version>
       </dependency>
 
       <!--  opennms dependencies -->
