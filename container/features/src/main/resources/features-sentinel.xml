@@ -115,9 +115,20 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.adapter/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry.protocols.jti/org.opennms.features.telemetry.protocols.jti.adapter/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry.protocols.nxos/org.opennms.features.telemetry.protocols.nxos.adapter/${project.version}</bundle>
     </feature>
+
+    <feature name="sentinel-telemetry-nxos" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: NXOS" version="${project.version}">
+        <feature>sentinel-telemetry</feature>
+        <feature>opennms-telemetry-nxos</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-telemetry-jti" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: JTI" version="${project.version}">
+        <feature>sentinel-telemetry</feature>
+        <feature>opennms-telemetry-jti</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
+    </feature>
+
 
     <!--Coordination-->
     <feature name="sentinel-coordination-api" description="OpenNMS :: Features :: Distributed :: Coordination :: API"
