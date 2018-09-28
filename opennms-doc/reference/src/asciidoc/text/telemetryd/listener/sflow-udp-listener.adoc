@@ -1,0 +1,23 @@
+
+==== sFlow UDP Listener
+
+This UDP based listener can be used to open a UDP socket to deal with incoming sFlow packets.
+
+===== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.listeners.sflow.Listener`
+| Supported on Minion | `Yes`
+|===
+
+===== Parameters
+
+.Listener specific parameters for the sFlow UDP listener
+[options="header, autowidth"]
+|===
+| Parameter         | Description                                                       | Required | Default value
+| `host`            | IP address on which to bind the UDP socket                        | optional | `0.0.0.0`
+| `port`            | UDP port number on which to listen                                | optional | `6343`
+| `maxPacketSize`   | Maximum packet size in bytes (anything greater will be truncated) | optional | `8096`
+|===

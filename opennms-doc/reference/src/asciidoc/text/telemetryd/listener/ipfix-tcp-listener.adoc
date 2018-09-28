@@ -1,0 +1,22 @@
+
+==== IPFIX TCP Listener
+
+This TCP based listener can be used to open a TCP socket to deal with IPFIX sessions.
+
+===== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.listeners.flow.ipfix.TcpListener`
+| Supported on Minion | `Yes`
+|===
+
+===== Parameters
+
+.Listener specific parameters for the IPFIX TCP listener
+[options="header, autowidth"]
+|===
+| Parameter         | Description                                                       | Required | Default value
+| `host`            | IP address on which to bind the TCP socket                        | optional | `0.0.0.0`
+| `port`            | TCP port number on which to listen                                | optional | `4739`
+|===

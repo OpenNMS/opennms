@@ -1,0 +1,9 @@
+
+==== DDNS Adapter
+
+The Opposite end of _Provisiond_ integration from the DNS Requisition Import, is the _DDNS adapter_.
+This adapter uses the _dynamic DNS protocol_ to update a DNS system as nodes are provisioned into {opennms-product-name}.
+To configure this adapter, edit the `opennms.properties` file and set the `importer.adapter.dns.server property`:
+
+ importer.adapter.dns.server=192.168.1.1
+
