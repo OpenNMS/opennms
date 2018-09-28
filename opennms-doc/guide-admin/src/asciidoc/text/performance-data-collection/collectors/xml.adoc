@@ -31,7 +31,6 @@ The following handlers are not currently supported on _Minion_:
 | Parameter              | Description                              | Required | Default value
 | `collection`           | The name of the _XML Collection_ to use  | required | `-`
 | `handler-class`        | Class used to perform the collection     | optional | `org.opennms.protocols.xml.collector.DefaultXmlCollectionHandler`
-| `use-system-proxy`     | Should the system wide proxy settings be used? This parameter is only applied for http(s) connections| optional | `false`
 |===
 
 The available handlers include:
@@ -60,6 +59,9 @@ Here is a snippet providing a collection definition named `xml-opennms-nodes`:
     <rra>RRA:MIN:0.5:288:366</rra>
   </rrd>
   <xml-source url="http://admin:admin@{ipaddr}:8980/opennms/rest/nodes">
+     <request method="GET">
+        <parameter name="use-system-proxy" value="true"/>
+      </request>
     <import-groups>xml-datacollection/opennms-nodes.xml</import-groups>
   </xml-source>
 </xml-collection
