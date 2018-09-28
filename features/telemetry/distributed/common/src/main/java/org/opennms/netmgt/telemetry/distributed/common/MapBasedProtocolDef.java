@@ -28,13 +28,18 @@
 
 package org.opennms.netmgt.telemetry.distributed.common;
 
-import java.util.Collections;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.xml.bind.JAXB;
+
 import org.opennms.netmgt.telemetry.config.api.Package;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
+
+import com.google.common.collect.Lists;
 
 public class MapBasedProtocolDef implements Protocol {
     private final String name;
@@ -73,11 +78,16 @@ public class MapBasedProtocolDef implements Protocol {
 
     @Override
     public Optional<Integer> getQueueSize() {
-        return threads;
+        return queueSize;
     }
 
     @Override
     public List<? extends Package> getPackages() {
-        return Collections.emptyList();
+        try (InputStream inputStream = getClass().getResourceAsStream("/package.xml")) {
+            final org.opennms.netmgt.telemetry.config.model.Package pkg = JAXB.unmarshal(inputStream, org.opennms.netmgt.telemetry.config.model.Package.class);
+            return Lists.newArrayList(pkg);
+        } catch (IOException e) {
+            throw new RuntimeException("Error while reading package.xml", e);
+        }
     }
 }

@@ -31,9 +31,10 @@ package org.opennms.features.vaadin.nodemaps.internal;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.features.topology.api.HasExtraComponents;
 import org.opennms.features.topology.api.VerticesUpdateManager.VerticesUpdateEvent;
@@ -54,8 +55,8 @@ import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
-import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
@@ -312,10 +313,9 @@ public class NodeMapsApplication extends UI {
     private void addHeader() {
         if (m_headerProvider != null) {
             try {
-                URL pageUrl = Page.getCurrent().getLocation().toURL();
-                setHeaderHtml(m_headerProvider.getHeaderHtml(new HttpServletRequestVaadinImpl(m_request, pageUrl)));
+                setHeaderHtml(getHeader(((VaadinServletRequest) m_request).getHttpServletRequest()));
             } catch (final Exception e) {
-                LOG.error("failed to get header HTML for request " + m_request.getPathInfo(), e.getCause());
+                LOG.error("failed to get header HTML for request " + m_request.getPathInfo(), e);
             }
         }
         if (m_headerHtml != null) {
@@ -330,6 +330,14 @@ public class NodeMapsApplication extends UI {
                 closeQuietly(is);
                 LOG.debug("failed to get header layout data", e);
             }
+        }
+    }
+
+    private String getHeader(final HttpServletRequest request) throws Exception {
+        if(m_headerProvider == null) {
+            return "";
+        } else {
+            return m_headerProvider.getHeaderHtml(request);
         }
     }
 

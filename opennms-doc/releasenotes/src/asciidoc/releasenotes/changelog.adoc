@@ -2,6 +2,41 @@
 
 === Changelog
 
+[[releasenotes-changelog-22.0.4]]
+
+==== Release 22.0.4
+
+Release 22.0.4 is the latest stable release of OpenNMS.
+It contains a number of bug fixes and enhancements, including fixes in upgrades, flows, date handling, topology UI performance, and minion management.
+For a high-level overview of what's changed in OpenNMS 22, see link:http://docs.opennms.org/opennms/releases/22.0.4/releasenotes/releasenotes.html#releasenotes-22[What's New in OpenNMS 22].
+
+The codename for 22.0.4 is _link:http://marvelcinematicuniverse.wikia.com/wiki/Power_Stone[Power]_.
+
+===== Bug
+
+* maxRetCode in HttpDetector does not work (Issue http://issues.opennms.org/browse/NMS-3974[NMS-3974])
+* Content-Type tag wrong in emailed reports (Issue http://issues.opennms.org/browse/NMS-9027[NMS-9027])
+* The upgrade task for magic-users.properties fails because of the read-only attribute (Issue http://issues.opennms.org/browse/NMS-9267[NMS-9267])
+* NoClassDefFoundError for net/sf/json/JSONSerialize with the JSON collector on Minion (Issue http://issues.opennms.org/browse/NMS-10286[NMS-10286])
+* Flow: Ingress/egress traffic is improperly reported when filtering by ifIndex (Issue http://issues.opennms.org/browse/NMS-10319[NMS-10319])
+* Minions can't be deleted from minion menu (Issue http://issues.opennms.org/browse/NMS-10321[NMS-10321])
+* Flow: Classification should not depend on direction (Issue http://issues.opennms.org/browse/NMS-10329[NMS-10329])
+* Minions without nodes should show "unknown" status (Issue http://issues.opennms.org/browse/NMS-10338[NMS-10338])
+* navbar.ftl not rendering (Issue http://issues.opennms.org/browse/NMS-10342[NMS-10342])
+
+===== Enhancement
+
+* UI stack trace is truncated (Issue http://issues.opennms.org/browse/NMS-7555[NMS-7555])
+* add polling interval definition on service UI (Issue http://issues.opennms.org/browse/NMS-9747[NMS-9747])
+* Normalize date formats across the WebUI (Issue http://issues.opennms.org/browse/NMS-10072[NMS-10072])
+* render dateformat for AngularJS (Issue http://issues.opennms.org/browse/NMS-10232[NMS-10232])
+* render date for Javascript with moment.js (Issue http://issues.opennms.org/browse/NMS-10233[NMS-10233])
+* implement minion "status" field (Issue http://issues.opennms.org/browse/NMS-10295[NMS-10295])
+* Manage Minions page should link to the node for the minion (Issue http://issues.opennms.org/browse/NMS-10296[NMS-10296])
+* Improve CDP topology calculation performance (Issue http://issues.opennms.org/browse/NMS-10317[NMS-10317])
+* Set the default resource graph time range to "Last Day" (Issue http://issues.opennms.org/browse/NMS-10324[NMS-10324])
+* Memory related env-variables from /etc/sysconfig/minion are not honored (Issue http://issues.opennms.org/browse/NMS-10332[NMS-10332])
+
 [[releasenotes-changelog-22.0.3]]
 
 ==== Release 22.0.3

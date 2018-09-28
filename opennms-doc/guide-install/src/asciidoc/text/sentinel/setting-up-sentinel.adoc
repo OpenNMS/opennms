@@ -11,7 +11,12 @@ NOTE:   At the moment only flows can be distributed using _Sentinel_.
 Setting up a _{opennms-product-name}_ with _Sentinel_ requires:
 
 * Instance of _{opennms-product-name}_ needs to be exact same version as _Sentinel_ packages
+ifdef::opennms-prime[]
+* Packages are available as _RPMs_ for _RHEL_-based systems alongside OpenNMS in the yum repository
+endif::opennms-prime[]
+ifndef::opennms-prime[]
 * Packages are available as _RPMs_ for _RHEL_-based systems and _DEBs_ for _Debian_-based systems
+endif::opennms-prime[]
 * _{opennms-product-name}_ needs to be installed and communication to the _REST (8980/tcp)_ and _ActiveMQ (616161/tcp)_ endpoints is possible
 * At least one _Minion_ needs to be installed and successful communicate with the _{opennms-product-name}_
 

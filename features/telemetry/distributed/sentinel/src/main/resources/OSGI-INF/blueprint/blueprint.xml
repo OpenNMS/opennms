@@ -14,7 +14,7 @@
     <reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
     <reference id="messageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager" />
     <reference id="telemetryAdapterRegistry" interface="org.opennms.features.telemetry.adapters.registry.api.TelemetryAdapterRegistry" />
-    <reference id="transactionManager" interface="org.springframework.transaction.PlatformTransactionManager" />
+    <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" />
 
@@ -31,13 +31,14 @@
     </service>
 
     <!--
-        Usually the CollectionAgentFactory is exposed via opennms-services, as we don't have that in Sentinel
-        a DefaultCollectionAgentFactory is exposed instead
+        Usually the CollectionAgentFactory is exposed via opennms-services, as that bundle is not available
+         in Sentinel, we expose a CollectionAgentFactory here.
+        The OsgiCollectionAgentFactory is a version of the CollectionAgentFactory which can run inside an OSGi container
     -->
-    <bean id="collectionAgentFactory" class="org.opennms.netmgt.collection.core.DefaultCollectionAgentFactory">
-        <property name="platformTransactionManager" ref="transactionManager" />
-        <property name="nodeDao" ref="nodeDao" />
-        <property name="ipInterfaceDao" ref="ipInterfaceDao" />
+    <bean id="collectionAgentFactory" class="org.opennms.netmgt.collection.core.OsgiCollectionAgentFactory">
+        <argument ref="nodeDao" />
+        <argument ref="ipInterfaceDao" />
+        <argument ref="transactionOperations" />
     </bean>
     <service ref="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
 

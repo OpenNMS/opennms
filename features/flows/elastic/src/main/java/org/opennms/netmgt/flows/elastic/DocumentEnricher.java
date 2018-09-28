@@ -212,17 +212,12 @@ public class DocumentEnricher {
         request.setProtocol(document.getProtocol() == null ? null : Protocols.getProtocol(document.getProtocol()));
         request.setLocation(document.getLocation());
         request.setExporterAddress(document.getHost());
-        if (document.getDirection() == Direction.EGRESS) {
-            request.setSrcAddress(document.getDstAddr());
-            request.setSrcPort(document.getDstPort());
-            request.setDstAddress(document.getSrcAddr());
-            request.setDstPort(document.getSrcPort());
-        } else {
-            request.setDstAddress(document.getDstAddr());
-            request.setDstPort(document.getDstPort());
-            request.setSrcAddress(document.getSrcAddr());
-            request.setSrcPort(document.getSrcPort());
-        }
+
+        request.setDstAddress(document.getDstAddr());
+        request.setDstPort(document.getDstPort());
+        request.setSrcAddress(document.getSrcAddr());
+        request.setSrcPort(document.getSrcPort());
+
         return request;
     }
 }

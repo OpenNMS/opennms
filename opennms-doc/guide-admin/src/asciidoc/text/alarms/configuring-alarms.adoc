@@ -1,0 +1,171 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-alarmd-configuration]]
+=== Configuring Alarms
+
+Since Alarmd instantiates Alarms from Events, defining Alarms in _{opennms-product-name}_ entails defining an additional XML element of an Event indicating a problem or resolution in the Network.
+This additional element is the "alarm-data" element.
+
+NOTE: Any Event that is marked as "donotpersist" in the logmsg element's "dest" attribute, will not be processed as an Alarm.
+
+.alarm-data Schema Definition (XSD)
+[source,XML]
+----
+<element name="alarm-data">
+  <annotation>
+    <documentation>This element is used for converting events into alarms.</documentation>
+  </annotation>
+  <complexType>
+    <sequence>
+      <element ref="this:update-field" minOccurs="0" maxOccurs="unbounded" />
+    </sequence>
+    <attribute name="reduction-key" type="string" use="required" />
+    <attribute name="alarm-type" use="required" >
+      <simpleType>
+        <restriction base="int">
+          <minInclusive value="1"/>
+        </restriction>
+      </simpleType>
+    </attribute>
+    <attribute name="clear-key" type="string" use="optional" />
+    <attribute name="auto-clean" type="boolean" use="optional" default="false" />
+    <attribute name="x733-alarm-type" type="this:x733-alarm-type" use="optional" />
+    <attribute name="x733-probable-cause" type="int" use="optional" />
+  </complexType>
+</element>
+
+<element name="update-field">
+  <complexType>
+    <attribute name="field-name" type="string" use="required" />
+    <attribute name="update-on-reduction" type="boolean" use="optional" default="true" />
+    <attribute name="value-expression" type="string" use="optional" default="" />
+  </complexType>
+</element>
+
+<simpleType name="x733-alarm-type">
+  <restriction base="string" >
+    <pattern value="CommunicationsAlarm|ProcessingErrorAlarm|EnvironmentalAlarm|QualityOfServiceAlarm|EquipmentAlarm|IntegrityViolation|SecurityViolation|TimeDomainViolation|OperationalViolation|PhysicalViolation" />
+  </restriction>
+</simpleType>
+----
+*NOTE*
+See also: <<ga-events-anatomy-of-an-event>>
+
+.The reduction-key
+The critical attribute when defining the alarm-data of an Event, is the _reduction-key_.
+This attribute can contain literal strings as well as references to properties (fields and parameters) of the Event.
+The purpose of the reduction-key is to uniquely identify the signature of a problem and, as such, is used to reduce (de-duplicate) Events so that only one problem is instantiated.
+Most commonly, the event's identifier (UEI) is used as the left most (least significant) portion of the reduction-key, followed by other properties of the Event from least to most significant and, traditionally, separated with the literal ':'.
+
+.Multi-part reduction-key
+====
+[source,XML]
+----
+<event>
+   <uei>uei.opennms.org/nodes/nodeDown</uei>
+...
+   <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false"/>
+</event>
+----
+====
+
+.Least Significant reduction-key Attribute
+====
+TIP: Decreasing the significance of the reduction-key is a way to aggregate, for example, all nodes down in to a single alarm.
+However, there are caveats:
+
+[source,XML]
+----
+<event>
+  <uei>uei.opennms.org/nodes/nodeDown</uei>
+  <alarm-data reduction-key="%uei%" alarm-type="1"/>
+</event>
+----
+With this reduction-key, a single alarm would be instantiated for all nodes that were determined by the Poller to be down.
+There would be a single alarm with the count representing the number of nodes down.
+However, the UEI +uei.opennms.org/nodes/nodeUp+ would *not* be a good ''pair wise'' reduction-key for resolving this alarm as it would take only a single ''node up'' to clear all nodes down tracked with this single alarm configuration.
+====
+
+.The alarm-type attribute
+The second most critical attribute is the alarm-type.
+There are currently three types of alarms: problem (1), resolution (2), and notification (3).
+The alarm-type attribute helps Alarmd with pair-wise resolution... the matching of resolution events to problem events.
+
+.The clear-key attribute
+This attribute is used in the pair-wise correlation feature of Alarmd.
+When configuring a resolution Alarm, set this attribute to match the reduction-key of a the corresponding problem Alarm.
+
+.The auto-clean attribute
+This attribute instructs Alarmd to only retain the most recent Event reduced into an alarm.
+For alarms that are super chatty, this is a way to reduce the size of the most recent Events in the database.
+
+WARNING: Do not use this feature with Alarms that have pair-wise correlation (matching problems with resolutions).
+
+.The update-field element
+Use this element to override Alarmd's default behavior for which some fields are updated during reduction.
+The Alarm fields that are currently allowed to be controlled this way are:
+.Bulleted
+* distpoller
+* ipaddr
+* mouseover
+* operinstruct
+* severity
+* descr
+* acktime
+* ackuser
+
+NOTE: With the new single alarm behavior in H23, if an Alarm transitions from an alarm-type 2 back to alarm-type 1 the Severity will be set to the most Event's value.
+
+.Reduction (de-duplication) of Alarms
+Alarmd is designed to reduce multiple occurrences of an Alarm into a single alarm.
+
+.Pairwise Correlation
+Alarmd is also intrinsically designed to automatically match resolving events with an existing Alarm.
+Alarms with matching resolutions with problems (Ups with Downs), should be indicated with the alarm-type attribute.
+.Bulleted
+* alarm-type="1" (problem alarm)
+* alarm-type="2" (resolving alarm)
+* alarm-type="3" (notification alarm... alarm with no resolution such as SNMP Authentication Failures)
+
+.Instantiate new Alarms for existing cleared problem
+NOTE: Also new in H23, a global property setting that controls behavior of alarm reduction of currently cleared Alarms.
+
+Create a properties file called alarmd.properties in the $OPENNMS_ETC/opennms.properties.d/ folder and add the following property set to true:
+[source]
+----
+###### Alarmd Properties ######
+#
+# Enable this property to force Alarmd to create new alarms when an problem re-occurs and the
+# existing Alarm is in a "Cleared" state.
+#
+# Default: false
+#org.opennms.alarmd.newIfClearedAlarmExists = false
+org.opennms.alarmd.newIfClearedAlarmExists = true
+----
+
+Now, with this property set, when a repeat incident occurs and the current state of the Alarm tracking the problem is "Cleared", instead of restating the current Alarm to it's default severity and incrementing the counter, a new instance of the Alarm will be created.
+.New node down Alarm with existing cleared Alarm
+image:alarms/new_after_clear_3.png[]
+
+What happens is that Alarmd will alter the existing Alarm's reductionKey to be unique.
+Thus preventing it from ever again being reused for a reoccurring problem in the Network (the literal ":ID:" and the alarm ID is appended to the reductionKey).
+
+.Altered reductionKey
+image:alarms/new_after_clear_4.png[]
+
+.Re-enable legacy dual Alarm state behavior
+NOTE: Now in H23, a global property setting can set to re-enable the legacy dual Alarm behavior.
+
+Create a properties file called alarmd.properties in the $OPENNMS_ETC/opennms.properties.d/ folder and add the following property set to true:
+[source]
+----
+###### Alarmd Properties ######
+# Enable this property to have the traditional dual alarm handling of alarms state
+# for Alarm pairwise correlation.
+# Default: false
+#org.opennms.alarmd.legacyAlarmState = false
+org.opennms.alarmd.legacyAlarmState = true
+----
+NOTE: Setting legacyAlarmState will nullify newIfClearedAlarmExists

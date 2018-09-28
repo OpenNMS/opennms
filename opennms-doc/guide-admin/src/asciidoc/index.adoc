@@ -184,6 +184,9 @@ include::text/events/event-configuration.adoc[]
 
 [[ga-alarms]]
 == Alarms
+include::text/alarms/introduction.adoc[]
+include::text/alarms/alarmd.adoc[]
+include::text/alarms/configuring-alarms.adoc[]
 include::text/alarms/alarm-notes.adoc[]
 include::text/alarms/alarm-sound-flash.adoc[]
 
@@ -217,6 +220,7 @@ include::text/provisioning/detectors/HttpDetector.adoc[]
 include::text/provisioning/detectors/HttpsDetector.adoc[]
 include::text/provisioning/detectors/SnmpDetector.adoc[]
 include::text/provisioning/detectors/wsman.adoc[]
+include::text/provisioning/detectors/wsmanwql.adoc[]
 
 [[ga-bsm]]
 == Business Service Monitoring
@@ -282,6 +286,8 @@ include::text/operation/daemon-config-files/introduction.adoc[]
 include::text/operation/daemon-config-files/eventd.adoc[]
 include::text/operation/daemon-config-files/notifd.adoc[]
 include::text/operation/daemon-config-files/pollerd.adoc[]
+include::text/operation/daemon-config-files/syslogd.adoc[]
+include::text/operation/daemon-config-files/trapd.adoc[]
 
 [[ga-opennms-system-properties]]
 == System Properties

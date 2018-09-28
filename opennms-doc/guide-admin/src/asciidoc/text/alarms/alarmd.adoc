@@ -1,0 +1,16 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+=== Alarm Service Daemon
+Alarmd, the Alarm Service Daemon, has the very simple task of processing Events representing problems in the Network.
+It either instantiates a new alarm for tracking a problem's state or reducing a reoccurring Event of an existing problem into the same Alarm.
+(_Also known as Alarm de-duplication_)
+
+Prior to OpenNMS Horizon version 23.0.0 (H23), Alarmd had no configuration.  With the release of H23, Drools is now imbedded directly inline with Alarmd's Event processing function.
+This provides users with a more robust infrastructure for the effective management of workflow and problem states in the Network.
+Business rules now replace the function of the ''Automations'' that were previously defined in Vacuumd's configuration.
+You will find these new business rules in the etc/alarmd/drools-rules.d/ folder.
+
+.$OPENNMS_ETC/.drools-rules.d/
+ alarmd.drl

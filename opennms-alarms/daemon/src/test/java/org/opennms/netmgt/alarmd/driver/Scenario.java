@@ -29,11 +29,9 @@
 package org.opennms.netmgt.alarmd.driver;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.opennms.netmgt.alarmd.AlarmPersisterImpl;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -44,14 +42,21 @@ import org.opennms.netmgt.xml.event.AlarmData;
 public class Scenario {
 
     private final List<Action> actions;
+    
+    private final boolean legacyAlarmBehavior;
 
     public Scenario(ScenarioBuilder builder) {
         this.actions = new ArrayList<>(builder.actions);
         this.actions.sort(Comparator.comparing(Action::getTime));
+        this.legacyAlarmBehavior = builder.legacyAlarmBehavior;
     }
 
     public List<Action> getActions() {
         return actions;
+    }
+    
+    public boolean getLegacyAlarmBehavior() {
+        return legacyAlarmBehavior;
     }
 
     public static ScenarioBuilder builder() {
@@ -60,6 +65,8 @@ public class Scenario {
 
     public static class ScenarioBuilder {
         private final List<Action> actions = new ArrayList<>();
+        
+        private boolean legacyAlarmBehavior = false;
 
         public ScenarioBuilder withNodeDownEvent(long time, int nodeId) {
             EventBuilder builder = new EventBuilder(EventConstants.NODE_DOWN_EVENT_UEI, "test");
@@ -118,10 +125,16 @@ public class Scenario {
             actions.add(new SendEventAction(builder.getEvent()));
             return this;
         }
+        
+        public ScenarioBuilder withLegacyAlarmBehavior() {
+            legacyAlarmBehavior = true;
+            return this;
+        }
 
         public Scenario build() {
             return new Scenario(this);
         }
+
     }
 
 }

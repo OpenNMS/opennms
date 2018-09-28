@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.distributed.sentinel;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.health.api.HealthCheck;
@@ -41,7 +42,7 @@ import org.opennms.netmgt.telemetry.config.api.Adapter;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
 import org.opennms.netmgt.telemetry.daemon.TelemetryMessageConsumer;
 import org.opennms.netmgt.telemetry.distributed.common.MapBasedAdapterDef;
-import org.opennms.netmgt.telemetry.distributed.common.MapBasedListenerDef;
+import org.opennms.netmgt.telemetry.distributed.common.AdapterConfigurationParser;
 import org.opennms.netmgt.telemetry.distributed.common.MapBasedProtocolDef;
 import org.opennms.netmgt.telemetry.distributed.common.MapUtils;
 import org.opennms.netmgt.telemetry.ipc.TelemetrySinkModule;
@@ -51,17 +52,15 @@ import org.osgi.service.cm.ManagedServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
 
-// TODO MVR ...
 /**
  * This {@link ManagedServiceFactory} for service pids that contain
- * telemetry listener definitions and manages their lifecycle by starting/updating
+ * telemetry adapter definitions and manages their lifecycle by starting/updating
  * and stopping them accordingly.
  *
- * See {@link MapBasedListenerDef} for a list of supported properties.
+ * See {@link MapBasedAdapterDef} for a list of supported properties.
  *
- * @author jwhite
+ * @author mvrueden
  */
 public class AdapterManager implements ManagedServiceFactory {
     private static final Logger LOG = LoggerFactory.getLogger(AdapterManager.class);
@@ -69,7 +68,7 @@ public class AdapterManager implements ManagedServiceFactory {
     private DistPollerDao distPollerDao;
 
     private Map<String, TelemetryMessageConsumer> consumersById = new LinkedHashMap<>();
-    private Map<String, ServiceRegistration<HealthCheck>> healthChecksById = new LinkedHashMap<>();
+    private Map<String, List<ServiceRegistration<HealthCheck>>> healthChecksById = new LinkedHashMap<>();
 
     private TelemetryAdapterRegistry telemetryAdapterRegistry;
 
@@ -79,7 +78,7 @@ public class AdapterManager implements ManagedServiceFactory {
 
     @Override
     public String getName() {
-        return "Manages telemetry listener lifecycle.";
+        return "Manages telemetry adapter lifecycle.";
     }
 
     @Override
@@ -95,14 +94,20 @@ public class AdapterManager implements ManagedServiceFactory {
         // Convert the dictionary to a map
         final Map<String, String> parameters = MapUtils.fromDict(properties);
 
-        // Build the protocol and listener definitions
+        // Build the protocol and adapter definitions
         final Protocol protocolDef = new MapBasedProtocolDef(parameters);
-        final Adapter adapterDef = new MapBasedAdapterDef(parameters);
+        final List<Adapter> adapterDefinitions = new AdapterConfigurationParser().parse(parameters);
 
         // Register health check
-        final AdapterHealthCheck healthCheck = new AdapterHealthCheck(adapterDef);
-        final ServiceRegistration<HealthCheck> serviceRegistration = bundleContext.registerService(HealthCheck.class, healthCheck, null);
-        healthChecksById.put(pid, serviceRegistration);
+        healthChecksById.putIfAbsent(pid, new ArrayList<>());
+        final List<AdapterHealthCheck> healthChecks = new ArrayList<>(); // we need this temporarily, to mark the health check as success or failed afterwards
+        for (Adapter eachAdapter : adapterDefinitions) {
+            final AdapterHealthCheck healthCheck = new AdapterHealthCheck(eachAdapter);
+            healthChecks.add(healthCheck);
+
+            final ServiceRegistration<HealthCheck> serviceRegistration = bundleContext.registerService(HealthCheck.class, healthCheck, null);
+            healthChecksById.get(pid).add(serviceRegistration);
+        }
 
         try {
             // Create the Module
@@ -110,24 +115,24 @@ public class AdapterManager implements ManagedServiceFactory {
             sinkModule.setDistPollerDao(distPollerDao);
 
             // Create the consumer
-            final TelemetryMessageConsumer consumer = new TelemetryMessageConsumer(protocolDef, Lists.newArrayList(adapterDef), sinkModule);
+            final TelemetryMessageConsumer consumer = new TelemetryMessageConsumer(protocolDef, adapterDefinitions, sinkModule);
             consumer.setAdapterRegistry(telemetryAdapterRegistry);
             consumer.init();
             messageConsumerManager.registerConsumer(consumer);
             consumersById.put(pid, consumer);
 
-            // At this point the consumer should be up and running, so we mark the underlying health check as success
-            healthCheck.markSucess();
+            // At this point the consumer should be up and running, so we mark the underlying health checks as success
+            healthChecks.forEach(AdapterHealthCheck::markSucess);
         } catch (Exception e) {
-            // In case of error, we mark the health check as failure as well
-            healthCheck.markError(e);
+            // In case of error, we mark the health checks as failure as well
+            healthChecks.forEach(healthCheck -> healthCheck.markError(e));
             LOG.error("Failed to create {}", TelemetryMessageConsumer.class, e);
         }
     }
 
     @Override
     public void deleted(String pid) {
-        healthChecksById.get(pid).unregister();
+        healthChecksById.get(pid).forEach(ServiceRegistration::unregister);
         final TelemetryMessageConsumer existingConsumer = consumersById.remove(pid);
         if (existingConsumer != null) {
             try {

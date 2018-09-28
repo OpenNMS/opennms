@@ -87,11 +87,11 @@ public class ElasticFeedbackRepositoryIT {
 
     @Test
     public void canPersistFeedback() throws FeedbackException {
-        AlarmFeedback feedback1 = new AlarmFeedback("situationKey1", "fingerprint1", "alarmKey1", FeedbackType.FALSE_POSITVE, "reason", "user",
+        AlarmFeedback feedback1 = new AlarmFeedback("situationKey1", "fingerprint1", "alarmKey1", FeedbackType.FALSE_POSITIVE, "reason", "user",
                                                     System.currentTimeMillis());
-        AlarmFeedback feedback2 = new AlarmFeedback("situationKey2", "fingerprint2", "alarmKey2", FeedbackType.FALSE_POSITVE, "reason", "user",
+        AlarmFeedback feedback2 = new AlarmFeedback("situationKey2", "fingerprint2", "alarmKey2", FeedbackType.FALSE_POSITIVE, "reason", "user",
                                                     System.currentTimeMillis());
-        AlarmFeedback feedback3 = new AlarmFeedback("situationKey3", "fingerprint3", "alarmKey3", FeedbackType.FALSE_POSITVE, "reason", "user",
+        AlarmFeedback feedback3 = new AlarmFeedback("situationKey3", "fingerprint3", "alarmKey3", FeedbackType.FALSE_POSITIVE, "reason", "user",
                                                     System.currentTimeMillis());
         final Collection<AlarmFeedback> feedback = Arrays.asList(feedback1, feedback2, feedback3);
         feedbackRepository.persist(feedback);
