@@ -54,6 +54,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.conn.util.InetAddressUtils;
+import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
@@ -89,6 +90,11 @@ import com.vmware.vim25.mo.VirtualMachine;
  * @author Alejandro Galue <agalue@opennms.org>
  */
 public class VmwareImporter {
+    private final int CIM_TEST_TIMEOUT = PropertiesUtils.getProperty(
+            System.getProperties(),
+            "org.opennms.protocols.vmware.cimTestTimeout",
+            3000
+    );
 
     private static final Logger logger = LoggerFactory.getLogger(VmwareImporter.class);
 
@@ -517,8 +523,10 @@ public class VmwareImporter {
     }
 
     private boolean reachableCimService(VmwareViJavaAccess vmwareViJavaAccess, HostSystem hostSystem, String ipAddress) {
-        if (!vmwareViJavaAccess.setTimeout(3000)) {
-            logger.warn("Error setting connection timeout");
+        int oldTimeout = vmwareViJavaAccess.getTimeout();
+
+        if (!vmwareViJavaAccess.setTimeout(CIM_TEST_TIMEOUT)) {
+            logger.warn("Error setting CIM connection timeout");
         }
 
         logger.debug("Probing address {} for Host System '{}'", ipAddress, hostSystem.getName());
@@ -530,6 +538,10 @@ public class VmwareImporter {
             logger.debug("Error while probing for address {} for Host System '{}'", ipAddress, hostSystem.getName());
             logger.debug("Exception thrown while probing IP address: {}", e);
             return false;
+        } finally {
+            if (!vmwareViJavaAccess.setTimeout(oldTimeout)) {
+                logger.warn("Error restoring connection timeout");
+            }
         }
 
         return cimObjects != null;
