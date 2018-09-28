@@ -34,7 +34,6 @@ import java.util.Map;
 import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
-import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
 
 public interface AlarmDao extends LegacyOnmsDao<OnmsAlarm, Integer> {
 
@@ -58,8 +57,6 @@ public interface AlarmDao extends LegacyOnmsDao<OnmsAlarm, Integer> {
      * @param nodeIds The nodeIds you want to restrict the AlarmSummary calculation to. Must not be NULL!
      */
     List<AlarmSummary> getNodeAlarmSummariesIncludeAcknowledgedOnes(List<Integer> nodeIds);
-
-    List<EdgeAlarmStatusSummary> getLldpEdgeAlarmSummaries(List<Integer> lldpLinkIds);
 
     List<HeatMapElement> getHeatMapItemsForEntity(String entityNameColumn, String entityIdColumn, boolean processAcknowledgedAlarms, String restrictionColumn, String restrictionValue, String... groupByColumns);
 

@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -89,6 +90,8 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 
     /** Constant <code>PROBLEM_WITHOUT_RESOLUTION_TYPE=3</code> */
     public static final int PROBLEM_WITHOUT_RESOLUTION_TYPE = 3;
+
+    public static final String ARCHIVED = "Archived";
 
     /** identifier field */
     private Integer m_id;
@@ -1024,7 +1027,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     @XmlTransient
     @ElementCollection
     @JoinTable(name="alarm_attributes", joinColumns = @JoinColumn(name="alarmId"))
-    @MapKeyColumn(name="attribute")
+    @MapKeyColumn(name="attributename")
     @Column(name="attributeValue", nullable=false)
     public Map<String, String> getDetails() {
         return m_details;
@@ -1112,6 +1115,22 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
 
     /**
+     * This marks an alarm as archived and prevents it from being used again in during reduction.
+     */
+    public void archive() {
+        m_qosAlarmState = ARCHIVED;
+        m_severity = OnmsSeverity.CLEARED;
+        m_reductionKey = getReductionKey() + ":ID:"+ getId();
+    }
+
+    // Alarms that are archived
+    @Transient
+    @XmlTransient
+    public boolean isArchived() {
+        return ARCHIVED.equals(m_qosAlarmState);
+    }
+
+    /**
      * <p>getType</p>
      *
      * @return a {@link org.opennms.netmgt.model.AckType} object.
@@ -1156,7 +1175,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
 
     /**
-     * <p>getAlarms</p>
+     * <p>getRelatedAlarms</p>
      *
      * @return a {@link java.util.Set} object.
      */
@@ -1166,6 +1185,14 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     @Column(name="alarm_id", nullable=false)
     public Set<OnmsAlarm> getRelatedAlarms() {
         return m_relatedAlarms;
+    }
+
+    @Transient
+    @XmlTransient
+    public Set<Integer> getRelatedAlarmIds() {
+        return getRelatedAlarms().stream()
+                .map(OnmsAlarm::getId)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -1186,6 +1213,20 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     @XmlTransient
     public boolean isSituation() {
         return ! m_relatedAlarms.isEmpty();
+    }
+
+    @Transient
+    @XmlTransient
+    public Integer getAffectedNodeCount() {
+        if (m_relatedAlarms == null || m_relatedAlarms.isEmpty()) {
+            return m_node == null ? 0 : 1;
+        }
+        Set<Integer> nodes = m_relatedAlarms.stream().map(OnmsAlarm::getNode).filter(Objects::nonNull).map(OnmsNode::getId).collect(Collectors.toSet());
+        // count the Situtation's node if it is different
+        if (m_node != null) {
+            nodes.add(m_node.getId());
+        }
+        return nodes.size();
     }
 
     @Transient

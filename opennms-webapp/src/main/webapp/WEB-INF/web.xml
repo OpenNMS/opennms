@@ -48,6 +48,7 @@
         classpath*:/META-INF/opennms/component-measurement.xml
         classpath*:/META-INF/opennms/component-service.xml
         classpath*:/META-INF/opennms/component-reporting.xml
+        classpath*:/META-INF/opennms/component-timeformat.xml
 
         <!-- WARMERGE: insert contextConfigLocation -->
     </param-value>

@@ -33,6 +33,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.netmgt.alarmd.AlarmPersisterImpl;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -41,14 +42,21 @@ import org.opennms.netmgt.xml.event.AlarmData;
 public class Scenario {
 
     private final List<Action> actions;
+    
+    private final boolean legacyAlarmBehavior;
 
     public Scenario(ScenarioBuilder builder) {
         this.actions = new ArrayList<>(builder.actions);
         this.actions.sort(Comparator.comparing(Action::getTime));
+        this.legacyAlarmBehavior = builder.legacyAlarmBehavior;
     }
 
     public List<Action> getActions() {
         return actions;
+    }
+    
+    public boolean getLegacyAlarmBehavior() {
+        return legacyAlarmBehavior;
     }
 
     public static ScenarioBuilder builder() {
@@ -57,6 +65,8 @@ public class Scenario {
 
     public static class ScenarioBuilder {
         private final List<Action> actions = new ArrayList<>();
+        
+        private boolean legacyAlarmBehavior = false;
 
         public ScenarioBuilder withNodeDownEvent(long time, int nodeId) {
             EventBuilder builder = new EventBuilder(EventConstants.NODE_DOWN_EVENT_UEI, "test");
@@ -98,9 +108,33 @@ public class Scenario {
             return this;
         }
 
+        public ScenarioBuilder withSituationForNodeDownAlarms(long time, String situtationId, int... nodesIds) {
+            EventBuilder builder = new EventBuilder(EventConstants.SITUATION_EVENT_UEI, "test");
+            builder.setTime(new Date(time));
+            builder.setSeverity(OnmsSeverity.NORMAL.getLabel());
+            for (int k = 0; k < nodesIds.length; k++) {
+                final String reductionKey = String.format("%s:%d", EventConstants.NODE_DOWN_EVENT_UEI, nodesIds[k]);
+                builder.addParam(AlarmPersisterImpl.RELATED_REDUCTION_KEY_PREFIX + k, reductionKey);
+            }
+
+            AlarmData data = new AlarmData();
+            data.setAlarmType(3);
+            data.setReductionKey(String.format("%s:%s", EventConstants.SITUATION_EVENT_UEI, situtationId));
+            builder.setAlarmData(data);
+
+            actions.add(new SendEventAction(builder.getEvent()));
+            return this;
+        }
+        
+        public ScenarioBuilder withLegacyAlarmBehavior() {
+            legacyAlarmBehavior = true;
+            return this;
+        }
+
         public Scenario build() {
             return new Scenario(this);
         }
+
     }
 
 }

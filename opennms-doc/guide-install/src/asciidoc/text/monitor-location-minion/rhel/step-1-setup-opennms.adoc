@@ -1,4 +1,4 @@
-
+[[gi-minion-rhel-setup-communication]]
 ==== Step 1: Setup {opennms-product-name} to allow Minion communication
 
 Communication between a _Minion_ and _{opennms-product-name}_ uses _REST API_ and a messaging system, by default _ActiveMQ_.

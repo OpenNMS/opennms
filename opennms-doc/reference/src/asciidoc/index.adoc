@@ -114,7 +114,11 @@ include::text/notification-strategies/SlackNotificationStrategy.adoc[]
 == Provisioning
 
 === Service Detectors
+include::text/provisioning/detectors/HttpDetector.adoc[]
+include::text/provisioning/detectors/HttpsDetector.adoc[]
 include::text/provisioning/detectors/SnmpDetector.adoc[]
+include::text/provisioning/detectors/wsman.adoc[]
+include::text/provisioning/detectors/wsmanwql.adoc[]
 include::text/provisioning/detectors/WsManDetector.adoc[]
 
 === Adapters

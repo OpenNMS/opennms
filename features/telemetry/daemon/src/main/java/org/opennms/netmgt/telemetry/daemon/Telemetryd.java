@@ -194,7 +194,6 @@ public class Telemetryd implements SpringServiceDaemon {
 
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadEvent(Event e) {
-        LOG.info("Received a reload configuration event: {}", e);
         DaemonTools.handleReloadEvent(e, Telemetryd.NAME, (event) -> handleConfigurationChanged());
     }
 

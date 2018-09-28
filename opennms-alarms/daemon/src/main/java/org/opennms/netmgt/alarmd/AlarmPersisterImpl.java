@@ -69,7 +69,11 @@ import com.google.common.util.concurrent.Striped;
 public class AlarmPersisterImpl implements AlarmPersister {
     private static final Logger LOG = LoggerFactory.getLogger(AlarmPersisterImpl.class);
 
+    public static final String RELATED_REDUCTION_KEY_PREFIX = "related-reductionKey";
+
     protected static final Integer NUM_STRIPE_LOCKS = Integer.getInteger("org.opennms.alarmd.stripe.locks", Alarmd.THREADS * 4);
+    protected static boolean NEW_IF_CLEARED = Boolean.getBoolean("org.opennms.alarmd.newIfClearedAlarmExists");
+    protected static boolean LEGACY_ALARM_STATE = Boolean.getBoolean("org.opennms.alarmd.legacyAlarmState");
 
     @Autowired
     private AlarmDao m_alarmDao;
@@ -89,6 +93,10 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private Striped<Lock> lockStripes = StripedExt.fairLock(NUM_STRIPE_LOCKS);
 
     private final Set<AlarmPersisterExtension> extensions = Sets.newConcurrentHashSet();
+
+    private boolean m_createNewAlarmIfClearedAlarmExists = LEGACY_ALARM_STATE == true ? false : NEW_IF_CLEARED;
+    
+    private boolean m_legacyAlarmState = LEGACY_ALARM_STATE;
 
     @Override
     public OnmsAlarm persist(Event event) {
@@ -117,53 +125,71 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return alarm;
     }
 
-    private OnmsAlarm addOrReduceEventAsAlarm(Event event) {
-        final OnmsEvent e = m_eventDao.get(event.getDbid());
-        if (e == null) {
+    private OnmsAlarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
+        
+        final OnmsEvent persistedEvent = m_eventDao.get(event.getDbid());
+        if (persistedEvent == null) {
             throw new IllegalStateException("Event with id " + event.getDbid() + " was deleted before we could retrieve it and create an alarm.");
         }
 
         final String reductionKey = event.getAlarmData().getReductionKey();
         LOG.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
-        OnmsAlarm alarm = m_alarmDao.findByReductionKey(reductionKey);
+        
+        String key = reductionKey;
+        String clearKey = event.getAlarmData().getClearKey();
+        
+        if (!m_legacyAlarmState && clearKey != null && isResolutionEvent(event)) {
+            key = clearKey;
+        }
 
-        if (alarm == null) {
+        OnmsAlarm alarm = m_alarmDao.findByReductionKey(key);
+
+        if (alarm == null || (m_createNewAlarmIfClearedAlarmExists && OnmsSeverity.CLEARED.equals(alarm.getSeverity()))) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} not found, instantiating new alarm", reductionKey);
             }
-            alarm = createNewAlarm(e, event);
+
+            if (alarm != null) {
+                LOG.debug("addOrReduceEventAsAlarm: \"archiving\" cleared Alarm for problem: {}; " +
+                        "A new alarm will be instantiated to manage the problem.", reductionKey);
+                alarm.archive();
+                m_alarmDao.save(alarm);
+                m_alarmDao.flush();
+
+                m_alarmEntityNotifier.didArchiveAlarm(alarm, reductionKey);
+            }
+
+            alarm = createNewAlarm(persistedEvent, event);
 
             // Trigger extensions, allowing them to mangle the alarm
             try {
                 final OnmsAlarm alarmCreated = alarm;
-                extensions.forEach(ext -> ext.afterAlarmCreated(alarmCreated, event, e));
+                extensions.forEach(ext -> ext.afterAlarmCreated(alarmCreated, event, persistedEvent));
             } catch (Exception ex) {
                 LOG.error("An error occurred while invoking the extension callbacks.", ex);
             }
 
             m_alarmDao.save(alarm);
-            m_eventDao.saveOrUpdate(e);
+            m_eventDao.saveOrUpdate(persistedEvent);
 
             m_alarmEntityNotifier.didCreateAlarm(alarm);
         } else {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getIpAddr());
-            }
-            reduceEvent(e, alarm, event);
+            LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getIpAddr());
+            reduceEvent(persistedEvent, alarm, event);
 
             // Trigger extensions, allowing them to mangle the alarm
             try {
                 final OnmsAlarm alarmCreated = alarm;
-                extensions.forEach(ext -> ext.afterAlarmUpdated(alarmCreated, event, e));
+                extensions.forEach(ext -> ext.afterAlarmUpdated(alarmCreated, event, persistedEvent));
             } catch (Exception ex) {
                 LOG.error("An error occurred while invoking the extension callbacks.", ex);
             }
 
             m_alarmDao.update(alarm);
-            m_eventDao.update(e);
+            m_eventDao.update(persistedEvent);
 
             if (event.getAlarmData().isAutoClean()) {
-                m_eventDao.deletePreviousEventsForAlarm(alarm.getId(), e);
+                m_eventDao.deletePreviousEventsForAlarm(alarm.getId(), persistedEvent);
             }
 
             m_alarmEntityNotifier.didUpdateAlarmWithReducedEvent(alarm);
@@ -171,16 +197,31 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return alarm;
     }
 
-    private void reduceEvent(OnmsEvent e, OnmsAlarm alarm, Event event) {
+    private void reduceEvent(OnmsEvent persistedEvent, OnmsAlarm alarm, Event event) {
         // Always set these
-        alarm.setLastEvent(e);
-        alarm.setLastEventTime(e.getEventTime());
-        alarm.setCounter(alarm.getCounter() + 1);
+        alarm.setLastEvent(persistedEvent);
+        alarm.setLastEventTime(persistedEvent.getEventTime());
+        
+        if (!isResolutionEvent(event)) {
+            incrementCounter(alarm);
+            
+            if (isResolvedAlarm(alarm)) {
+                resetAlarmSeverity(persistedEvent, alarm);
+            }
+        } else {
+            
+            if (isResolvedAlarm(alarm)) {
+                incrementCounter(alarm);
+            } else {
+                alarm.setSeverity(OnmsSeverity.CLEARED);
+            }
+        }
+        alarm.setAlarmType(event.getAlarmData().getAlarmType());
 
         if (!event.getAlarmData().hasUpdateFields()) {
 
             //We always set these even if there are not update fields specified
-            alarm.setLogMsg(e.getEventLogMsg());
+            alarm.setLogMsg(persistedEvent.getEventLogMsg());
         } else {
             for (UpdateField field : event.getAlarmData().getUpdateFieldList()) {
                 String fieldName = field.getFieldName();
@@ -189,24 +230,24 @@ public class AlarmPersisterImpl implements AlarmPersister {
                 if (fieldName.equalsIgnoreCase("LogMsg") && !field.isUpdateOnReduction()) {
                     continue;
                 } else {
-                    alarm.setLogMsg(e.getEventLogMsg());
+                    alarm.setLogMsg(persistedEvent.getEventLogMsg());
                 }
 
                 //Set these others
                 if (field.isUpdateOnReduction()) {
 
                     if (fieldName.toLowerCase().startsWith("distpoller")) {
-                        alarm.setDistPoller(e.getDistPoller());
+                        alarm.setDistPoller(persistedEvent.getDistPoller());
                     } else if (fieldName.toLowerCase().startsWith("ipaddr")) {
-                        alarm.setIpAddr(e.getIpAddr());
+                        alarm.setIpAddr(persistedEvent.getIpAddr());
                     } else if (fieldName.toLowerCase().startsWith("mouseover")) {
-                        alarm.setMouseOverText(e.getEventMouseOverText());
+                        alarm.setMouseOverText(persistedEvent.getEventMouseOverText());
                     } else if (fieldName.toLowerCase().startsWith("operinstruct")) {
-                        alarm.setOperInstruct(e.getEventOperInstruct());
+                        alarm.setOperInstruct(persistedEvent.getEventOperInstruct());
                     } else if (fieldName.equalsIgnoreCase("severity")) {
-                        alarm.setSeverity(OnmsSeverity.valueOf(e.getSeverityLabel()));
+                        resetAlarmSeverity(persistedEvent, alarm);
                     } else if (fieldName.toLowerCase().contains("descr")) {
-                        alarm.setDescription(e.getEventDescr());
+                        alarm.setDescription(persistedEvent.getEventDescr());
                     } else if (fieldName.toLowerCase().startsWith("acktime")) {
                         final String expandedAckTime = m_eventUtil.expandParms(field.getValueExpression(), event);
                         if ("null".equalsIgnoreCase(expandedAckTime) && alarm.isAcknowledged()) {
@@ -255,7 +296,23 @@ public class AlarmPersisterImpl implements AlarmPersister {
             }
         }
 
-        e.setAlarm(alarm);
+        persistedEvent.setAlarm(alarm);
+    }
+
+    private void resetAlarmSeverity(OnmsEvent persistedEvent, OnmsAlarm alarm) {
+        alarm.setSeverity(OnmsSeverity.valueOf(persistedEvent.getSeverityLabel()));
+    }
+
+    private void incrementCounter(OnmsAlarm alarm) {
+        alarm.setCounter(alarm.getCounter() + 1);
+    }
+
+    private boolean isResolvedAlarm(OnmsAlarm alarm) {
+        return alarm.getAlarmType() == OnmsAlarm.RESOLUTION_TYPE;
+    }
+
+    private boolean isResolutionEvent(Event event) {
+        return Objects.equals(event.getAlarmData().getAlarmType(), Integer.valueOf(OnmsAlarm.RESOLUTION_TYPE));
     }
 
     private OnmsAlarm createNewAlarm(OnmsEvent e, Event event) {
@@ -298,7 +355,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private static boolean isRelatedReductionKeyWithContent(Parm param) {
         return param.getParmName() != null
                 // TOOD revisit using equals() when event_parameters table supports multiple params with the same name (see NMS-10214)
-                && param.getParmName().startsWith("related-reductionKey")
+                && param.getParmName().startsWith(RELATED_REDUCTION_KEY_PREFIX)
                 && param.getValue() != null
                 && param.getValue().getContent() != null;
     }
@@ -411,5 +468,20 @@ public class AlarmPersisterImpl implements AlarmPersister {
     public void onExtensionUnregistered(final AlarmPersisterExtension ext, final Map<String,String> properties) {
         LOG.debug("onExtensionUnregistered: {} with properties: {}", ext, properties);
         extensions.remove(ext);
+    }
+
+    public boolean isCreateNewAlarmIfClearedAlarmExists() {
+        return m_createNewAlarmIfClearedAlarmExists;
+    }
+
+    public void setCreateNewAlarmIfClearedAlarmExists(boolean createNewAlarmIfClearedAlarmExists) {
+        m_createNewAlarmIfClearedAlarmExists = createNewAlarmIfClearedAlarmExists;
+    }
+    public boolean islegacyAlarmState() {
+        return m_legacyAlarmState;
+    }
+
+    public void setLegacyAlarmState(boolean legacyAlarmState) {
+        m_legacyAlarmState = legacyAlarmState;
     }
 }

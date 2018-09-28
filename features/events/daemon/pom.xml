@@ -93,6 +93,16 @@
       <artifactId>org.opennms.features.collection.persistence.rrd</artifactId>
       <scope>test</scope>
     </dependency>
+	<dependency>
+	  <groupId>org.opennms.core.ipc.sink</groupId>
+	  <artifactId>org.opennms.core.ipc.sink.xml</artifactId>
+	</dependency>
+	<dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.kafka</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
@@ -101,6 +111,18 @@
     <dependency>
       <groupId>com.jayway.awaitility</groupId>
       <artifactId>awaitility</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.sink.kafka</groupId>
+      <artifactId>org.opennms.core.ipc.sink.kafka.common</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.sink.kafka</groupId>
+      <artifactId>org.opennms.core.ipc.sink.kafka.server</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

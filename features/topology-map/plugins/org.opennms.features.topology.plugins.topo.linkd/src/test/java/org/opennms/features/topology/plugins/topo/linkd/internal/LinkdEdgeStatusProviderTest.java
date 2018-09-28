@@ -57,12 +57,13 @@ import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.topology.BridgePort;
 
 import com.codahale.metrics.MetricRegistry;
 
-public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
+public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
 
     public LinkdEdgeStatusProviderTest() {
         super(new MetricRegistry());
@@ -85,104 +86,146 @@ public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
     public void setUp(){
         m_node1 = new OnmsNode();
         m_node1.setId(1);
+        m_node1.setLabel("source");
 
         m_node2 = new OnmsNode();
         m_node2.setId(2);
+        m_node2.setLabel("target1");
+
 
         m_node3 = new OnmsNode();
         m_node3.setId(3);
+        m_node3.setLabel("target2");
         
         m_node4 = new OnmsNode();
         m_node4.setId(4);
+        m_node4.setLabel("source");
 
         m_node5 = new OnmsNode();
         m_node5.setId(5);
+        m_node5.setLabel("target");
 
         m_nodeDehli = new OnmsNode();
         m_nodeDehli.setId(10);
+        m_nodeDehli.setLabel("dehli");
 
         m_nodeChennai = new OnmsNode();
         m_nodeChennai.setId(14);
+        m_nodeChennai.setLabel("chennai");
 
 
         m_edges = new ArrayList<>();
-        Vertex sourceCloud = new AbstractVertex("nodes", "1", "source");
         // Cloud is identified by the designated bridge and designated port
-        Vertex cloud = new AbstractVertex("nodes", "1:48", "cloud");
-        Vertex targetCloud1 = new AbstractVertex("nodes", "2", "target1");
-        Vertex targetCloud2 = new AbstractVertex("nodes", "3", "target2");
+        AbstractVertex cloud = new AbstractVertex("nodes", "1:48", "cloud");
+        LinkdVertex node1Vertex = LinkdVertex.create(m_node1, null);
+        LinkdVertex node2Vertex = LinkdVertex.create(m_node2, null);
+        LinkdVertex node3Vertex = LinkdVertex.create(m_node3, null);;
 
-        Vertex source = new AbstractVertex("nodes", "4", "source");
-        Vertex target = new AbstractVertex("nodes", "5", "target");
+        LinkdVertex node4Vertex = LinkdVertex.create(m_node4, null);
+        LinkdVertex node5Vertex = LinkdVertex.create(m_node5, null);
 
-        Vertex dehli = new AbstractVertex("nodes", "10", "dehli");
-        Vertex chennai = new AbstractVertex("nodes", "14", "chennai");
+        LinkdVertex dehliVertex = LinkdVertex.create(m_nodeDehli,null);
+        LinkdVertex chennaiVertex = LinkdVertex.create(m_nodeChennai, null);
 
         // identification of link is done with targets id..that is port or mac        
         BridgePort bpnode1port48 = new BridgePort();
         bpnode1port48.setNodeId(m_node1.getId());
         bpnode1port48.setBridgePort(48);
         bpnode1port48.setBridgePortIfIndex(48);
-        m_edges.add(connectVertices(bpnode1port48, cloud, sourceCloud, BRIDGE_EDGE_NAMESPACE));
+        OnmsSnmpInterface sourceinterfacenode1port48 = new OnmsSnmpInterface();
+        sourceinterfacenode1port48.setNode(m_node1);
+        sourceinterfacenode1port48.setIfIndex(48);;
+
+        m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getEdgeId(cloud, bpnode1port48), 
+                                     cloud, node1Vertex, null, sourceinterfacenode1port48, "cloud", "bp: 48", ProtocolSupported.BRIDGE));
 
         BridgePort bpnode2port24 = new BridgePort();
         bpnode2port24.setNodeId(m_node2.getId());
         bpnode2port24.setBridgePort(24);
         bpnode2port24.setBridgePortIfIndex(24);
-        m_edges.add(connectVertices(bpnode2port24, cloud, targetCloud1, BRIDGE_EDGE_NAMESPACE));
+        OnmsSnmpInterface sourceinterfacenode2port24 = new OnmsSnmpInterface();
+        sourceinterfacenode2port24.setNode(m_node2);
+        sourceinterfacenode2port24.setIfIndex(24);;
+        m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getEdgeId(cloud, bpnode2port24), 
+                                     cloud, node2Vertex, null, sourceinterfacenode2port24, null, null, ProtocolSupported.BRIDGE));
 
-        m_edges.add(connectCloudMacVertices("a8d0e5a0a467", cloud, targetCloud2, BRIDGE_EDGE_NAMESPACE));
+        String mac = "a8d0e5a0a467";
+        m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getEdgeId(cloud, mac), 
+                                     cloud, node3Vertex, 
+                                     null, null, 
+                                     null, mac, ProtocolSupported.BRIDGE));
         
         // isis link
         IsIsLink link1 = createIsIsLink(m_node4, 599, 599, 1, 1, "001f12accbf1", "000110255062");
         link1.setId(104);
+        OnmsSnmpInterface node4port599 = new OnmsSnmpInterface();
+        node4port599.setNode(m_node4);
+        node4port599.setIfIndex(link1.getIsisCircIfIndex());
 
         IsIsLink link2 = createIsIsLink(m_node5, 578, 578, 1, 1, "0021590e47c1", "000110088500");
         link2.setId(105);
+        OnmsSnmpInterface node5port578 = new OnmsSnmpInterface();
+        node5port578.setNode(m_node5);
+        node5port578.setIfIndex(link2.getIsisCircIfIndex());
         
-        m_edges.add(connectVertices(
-                                    new IsIsLinkDetail(Math.min(link1.getId(), link2.getId()) + "|" + Math.max(link1.getId(), link2.getId()), source, link1, target, link2), 
-                                    ISIS_EDGE_NAMESPACE));
+        m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getDefaultEdgeId(link1.getId(), link2.getId()), 
+                                     node4Vertex, node5Vertex, 
+                                     node4port599, node5port578, 
+                                     link2.getIsisISAdjNeighSNPAAddress(), link1.getIsisISAdjNeighSNPAAddress(), 
+                                    ProtocolSupported.ISIS));
 
         // lldp link
         LldpLink link3 = new LldpLink(m_node4, 12, 1, "node4PortId", "node4PortDescr", LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL,
                                      "node4ChassisId", "node4SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL, "node4PortId",
                                      LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, "node2PortDescr");
         link3.setId(204);
+        OnmsSnmpInterface node4portPort1 = new OnmsSnmpInterface();
+        node4portPort1.setNode(m_node4);
+        node4portPort1.setIfIndex(link3.getLldpPortIfindex());
   
         LldpLink link4 = new LldpLink(m_node5, 21, 2, "node5PortId", "node5PortDescr", LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL,
                                      "node5ChassisId", "node5SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL, "node5PortId",
                                      LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, "node1PortDescr");
         link4.setId(205);
+        OnmsSnmpInterface node5portPort2 = new OnmsSnmpInterface();
+        node5portPort2.setNode(m_node5);
+        node5portPort2.setIfIndex(link4.getLldpPortIfindex());
          
-         m_edges.add(connectVertices(
-                                    new LldpLinkDetail(Math.min(link3.getId(), link4.getId()) + "|" + Math.max(link3.getId(), link4.getId()),
-                                                       source, link3, target, link4), LLDP_EDGE_NAMESPACE));
+         m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getDefaultEdgeId(link3.getId(), link4.getId()), node4Vertex, node5Vertex, 
+                                      node4portPort1, node5portPort2, link3.getLldpPortDescr(), link4.getLldpPortDescr(), ProtocolSupported.LLDP));
         
         //ospf link
          OspfLink link5 = createOspfLink(m_node4, "192.168.100.246", "255.255.255.252", 0, 10101, "192.168.100.249", "192.168.100.245", 0);
          link5.setId(404);
+         OnmsSnmpInterface node4portPort10101 = new OnmsSnmpInterface();
+         node4portPort10101.setNode(m_node4);
+         node4portPort10101.setIfIndex(link5.getOspfIfIndex());
+
 
          OspfLink link6 = createOspfLink(m_node5, "192.168.100.245", "255.255.255.252", 0, 10100, "192.168.100.250", "192.168.100.246", 0);
          link6.setId(405);
-         m_edges.add(connectVertices(
-                                  new OspfLinkDetail(Math.min(link5.getId(), link6.getId()) + "|" + Math.max(link5.getId(), link6.getId()),
-                                                       source, link5, target, link6), OSPF_EDGE_NAMESPACE));
+         OnmsSnmpInterface node5portPort10100 = new OnmsSnmpInterface();
+         node5portPort10100.setNode(m_node5);
+         node5portPort10100.setIfIndex(link6.getOspfIfIndex());
+         m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getDefaultEdgeId(link5.getId(), link6.getId()), node4Vertex, node5Vertex, 
+                                      node4portPort10101, node5portPort10100, 
+                                      InetAddressUtils.str(link6.getOspfRemIpAddr()), 
+                                      InetAddressUtils.str(link5.getOspfRemIpAddr()),  ProtocolSupported.OSPF));
 
         //cdp link
-        LinkdEdge edgeG = new LinkdEdge(EnhancedLinkdTopologyProvider.CDP_EDGE_NAMESPACE, "504|505", source, target);
+        LinkdEdge edgeG = LinkdEdge.create("504|505", node4Vertex, node5Vertex,ProtocolSupported.CDP );
         edgeG.setSourceNodeid(m_node4.getId());
         edgeG.setTargetNodeid(m_node5.getId());
-        edgeG.setSourceEndPoint("101");
-        edgeG.setTargetEndPoint("100");
+        edgeG.setSourceIfIndex(101);
+        edgeG.setTargetIfIndex(100);
         m_edges.add(edgeG);
 
         // another ospf link
-        LinkdEdge edgeChennaiTodehli = new LinkdEdge(EnhancedLinkdTopologyProvider.OSPF_EDGE_NAMESPACE, "310|314", dehli, chennai);
+        LinkdEdge edgeChennaiTodehli = LinkdEdge.create("310|314", dehliVertex, chennaiVertex,ProtocolSupported.OSPF);
         edgeChennaiTodehli.setSourceNodeid(m_nodeDehli.getId());
         edgeChennaiTodehli.setTargetNodeid(m_nodeChennai.getId());
-        edgeChennaiTodehli.setSourceEndPoint("13");
-        edgeChennaiTodehli.setTargetEndPoint("13");
+        edgeChennaiTodehli.setSourceIfIndex(13);
+        edgeChennaiTodehli.setTargetIfIndex(13);
         m_edges.add(edgeChennaiTodehli);
 
         m_alarmDao = EasyMock.createMock(AlarmDao.class);

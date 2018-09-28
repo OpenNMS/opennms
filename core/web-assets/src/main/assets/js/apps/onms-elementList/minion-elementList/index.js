@@ -5,11 +5,12 @@ const MODULE_NAME = 'onms.elementList.minion';
 const angular = require('vendor/angular-js');
 const elementList = require('../lib/elementList');
 require('../lib/restResources');
+require('../../onms-date-formatter');
 
 const mainTemplate = require('./main.html');
 
 // $filters that can be used to create human-readable versions of filter values
-angular.module('minionListFilters', [ 'onmsListFilters' ])
+angular.module('minionListFilters', [ 'onmsListFilters', 'onmsDateFormatter' ])
 .directive('onmsMinionList', () => {
 	return {
 		restrict: 'E',
@@ -43,7 +44,7 @@ angular.module('minionListFilters', [ 'onmsListFilters' ])
 		switch (property) {
 		case 'lastUpdated':
 			// Return the date in our preferred format
-			return $filter('date')(input, 'MMM d, yyyy h:mm:ss a');
+			return $filter('onmsDate')(input);
 		default:
 			return input;
 		}
@@ -51,13 +52,22 @@ angular.module('minionListFilters', [ 'onmsListFilters' ])
 });
 
 // Minion list module
-angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'minionListFilters' ])
+angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'minionListFilters', 'onmsDateFormatter' ])
 
 /**
  * Minion list controller
  */
-.controller('MinionListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'minionFactory', function($scope, $location, $window, $log, $filter, minionFactory) {
+.controller('MinionListCtrl', ['$scope', '$http', '$location', '$window', '$log', '$filter', 'DateFormatterService', 'minionFactory', function($scope, $http, $location, $window, $log, $filter, DateFormatterService, minionFactory) {
 	$log.debug('MinionListCtrl initializing...');
+
+	$scope.minionNodes = {};
+
+	$scope.getLink = function(minion) {
+		if (minion && $scope.minionNodes[minion.id + '\0' + minion.location]) {
+			return 'element/node.jsp?node=' + $scope.minionNodes[minion.id + '\0' + minion.location].id;
+		}
+		return undefined;
+	};
 
 	// Set the default sort and set it on $scope.$parent.query
 	$scope.$parent.defaults.orderBy = 'label';
@@ -65,6 +75,7 @@ angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'minionL
 
 	// Reload all resources via REST
 	$scope.$parent.refresh = function() {
+		DateFormatterService.formatter.finally(function() {
 		// Fetch all of the items
 		minionFactory.query(
 			{
@@ -77,6 +88,29 @@ angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'minionL
 			function(value, headers) {
 				$scope.$parent.items = value;
 
+				if (value && value.length > 0) {
+					var query = '(' + value.map(function(minion) {
+						return 'foreignId==' + minion.id;
+					}).join(',') + ')';
+
+					$http.get('api/v2/nodes', {
+						params: {
+							_s: query
+						}
+					}).then(function(response) {
+						var minionNodes = {}, node;
+						if (response && response.data && response.data.node) {
+							if (!angular.isArray(response.data.node)) {
+								response.data.node = [response.data.node];
+							}
+							for (var i=0; i < response.data.node.length; i++) {
+								node = response.data.node[i];
+								minionNodes[node.foreignId + '\0' + node.location] = node;
+							}
+							$scope.minionNodes = minionNodes;
+						}
+					});
+				}
 				var contentRange = elementList.parseContentRange(headers('Content-Range'));
 				$scope.$parent.query.lastOffset = contentRange.end;
 				// Subtract 1 from the value since offsets are zero-based
@@ -104,6 +138,32 @@ angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'minionL
 				return undefined;
 			}
 		);
+		});
+	};
+
+	$scope.$parent.deleteItem = function(item) {
+		var saveMe = minionFactory.get({id: item.id}, function() {
+			if ($window.confirm('Are you sure you want to remove minion "' + item['id'] + '"?')) {
+				saveMe.$delete({id: item['id']}, function() {
+					var cancelWatch = $scope.$watch('items', function() {
+						for (var i = 0; i < $scope.items.length; i++) {
+							// If it still contains the deleted item, then call refresh()
+							if ($scope.items[i]['id'] === item['id']) {
+								$scope.refresh();
+								return;
+							}
+						}
+						cancelWatch();
+					});
+				}, function (response) {
+					$window.alert('Deletion of minion "' +  item['id'] + '" failed.');
+				});
+			}
+		}, function(response) {
+			if (response.status === 404) {
+				$scope.refresh();
+			}
+		});
 	};
 
 	// Save an item by using $resource.$update

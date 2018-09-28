@@ -134,6 +134,12 @@ public class OnmsOutage implements Serializable {
         m_monitoredService = monitoredService;
     }
 
+    public OnmsOutage(Date ifLostService, Date ifRegainedService, OnmsMonitoredService monitoredService) {
+        m_ifLostService = ifLostService;
+        m_ifRegainedService = ifRegainedService;
+        m_monitoredService = monitoredService;
+    }
+
     /**
      * minimal constructor
      *

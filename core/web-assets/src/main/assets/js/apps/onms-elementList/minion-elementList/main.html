@@ -177,7 +177,7 @@
 						<i ng-show="query.orderBy === 'label' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'label' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-2 text-nowrap">
+					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('location')">Location</a>
 						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
@@ -200,11 +200,19 @@
 					<th class="col-sm-2 text-nowrap">
 						Properties
 					</th>
+					<th class="col-sm-1 text-nowrap">
+						Actions
+					</th>
 				</tr>
 
 				<tr ng-repeat="item in items">
 					<td class="text-nowrap" style="line-height:24px;">
-						{{item.id}}
+						<span ng-if="getLink(item)">
+							<a href="{{getLink(item)}}">{{item.id}}</a>
+						</span>
+						<span ng-if="!getLink(item)">
+							{{item.id}}
+						</span>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'EQ',value:item.id})"><i class="fa fa-plus-square-o fa-lg"/></a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'NE',value:item.id})"><i class="fa fa-minus-square-o fa-lg"/></a>
 					</td>
@@ -234,13 +242,16 @@
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.date !== null">
-							{{item.date | date:'MMM d, yyyy h:mm:ss a'}}
+							{{item.date | onmsDate}}
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'lastUpdated',operator:'GE',value:item.date})"><i class="fa fa-toggle-left fa-lg"/></a>
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'lastUpdated',operator:'LE',value:item.date})"><i class="fa fa-toggle-right fa-lg"/></a>
 						</span>
 					</td>
 					<td>
 						<onms-list-edit-map-in-place values="item.properties" value-type="'text'" on-edit="update(item)"/>
+					</td>
+					<td>
+						<a style="text-decoration: none;" ng-click="deleteItem(item)"><i class="fa fa-trash fa-lg"/></a>
 					</td>
 				</tr>
 			</tbody>

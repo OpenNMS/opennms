@@ -37,6 +37,8 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -243,18 +245,9 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         // Send a node down event (should be forwarded)
         eventdIpcMgr.sendNow(MockEventUtil.createNodeDownEventBuilder("test", databasePopulator.getNode1()).getEvent());
         // Create and trigger the associated alarm
-        final String alarmReductionKey = String.format("%s:%d", EventConstants.NODE_DOWN_EVENT_UEI, databasePopulator.getNode1().getId());
-        final OnmsAlarm alarm = new OnmsAlarm();
+        final OnmsAlarm alarm = nodeDownAlarmWithRelatedAlarm();
+        final String alarmReductionKey = alarm.getReductionKey();
         {
-            alarm.setId(1);
-            alarm.setUei(EventConstants.NODE_DOWN_EVENT_UEI);
-            alarm.setNode(databasePopulator.getNode1());
-            alarm.setCounter(1);
-            alarm.setDescription("node down");
-            alarm.setAlarmType(1);
-            alarm.setLogMsg("node down");
-            alarm.setSeverity(OnmsSeverity.NORMAL);
-            alarm.setReductionKey(alarmReductionKey);
             alarmDao.save(alarm);
             kafkaProducer.handleNewOrUpdatedAlarm(alarm);
         }
@@ -278,9 +271,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         }
 
         // Fire up the consumer
-        executor = Executors.newSingleThreadExecutor();
-        kafkaConsumer = new KafkaMessageConsumerRunner(kafkaServer.getKafkaConnectString());
-        executor.execute(kafkaConsumer);
+        kafkaConsumer = startConsumer();
 
         // Wait for the events to be consumed
         await().atMost(1, TimeUnit.MINUTES).until(this::getUeisForConsumedEvents, hasItems(
@@ -324,6 +315,89 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         await().atMost(2, TimeUnit.MINUTES).until(() ->
                 kafkaConsumer.getAlarmByReductionKey(alarmReductionKey), nullValue());
 
+    }
+
+    @Test
+    public void testProducerSuppression() throws Exception {
+        kafkaProducer.setSuppressIncrementalAlarms(true);
+
+        // Send an alarm
+        final OnmsAlarm alarm = nodeDownAlarmWithRelatedAlarm();
+        alarmDao.save(alarm);
+        kafkaProducer.handleNewOrUpdatedAlarm(alarm);
+
+        // Increment the alarm and re-send
+        alarm.setCounter(2);
+        // Also update the related alarm
+        alarm.getRelatedAlarms().iterator().next().setCounter(2);
+        alarmDao.save(alarm);
+        kafkaProducer.handleNewOrUpdatedAlarm(alarm);
+
+        // Fire up the consumer
+        kafkaConsumer = startConsumer();
+
+        // One alarm should have been consumed
+        await().atMost(1, TimeUnit.MINUTES).until(() -> !kafkaConsumer.getAlarms().isEmpty());
+        // Sleep an additional 10 seconds to verify a second alarm was not consumed
+        Thread.sleep(10000);
+        assertEquals(1, kafkaConsumer.getAlarms().size());
+    }
+
+    @Test
+    public void testSyncSuppression() {
+        kafkaProducer.setSuppressIncrementalAlarms(true);
+
+        // Send an alarm
+        final OnmsAlarm alarm = nodeDownAlarmWithRelatedAlarm();
+        alarmDao.save(alarm);
+        kafkaProducer.handleNewOrUpdatedAlarm(alarm);
+
+        // Increment the alarm and write directly to db
+        alarm.setCounter(2);
+        // Also update the related alarm
+        alarm.getRelatedAlarms().iterator().next().setCounter(2);
+        alarmDao.save(alarm);
+
+        // Fire up the consumer
+        kafkaConsumer = startConsumer();
+
+        // Only one alarm should have been consumed
+        try {
+            // This is a bit tricky since we need to wait fairly long to verify that the sync suppressed the alarm
+            await().atMost(2, TimeUnit.MINUTES).until(() -> kafkaConsumer.getAlarms().size() > 1);
+            fail("Alarm was not suppressed!");
+        } catch (Exception e) {
+        }
+    }
+
+    private KafkaMessageConsumerRunner startConsumer() {
+        executor = Executors.newSingleThreadExecutor();
+        kafkaConsumer = new KafkaMessageConsumerRunner(kafkaServer.getKafkaConnectString());
+        executor.execute(kafkaConsumer);
+        return kafkaConsumer;
+    }
+
+    private OnmsAlarm nodeDownAlarmWithRelatedAlarm() {
+        OnmsAlarm alarm = nodeDownAlarm();
+        OnmsAlarm relatedAlarm = nodeDownAlarm();
+        relatedAlarm.setId(2);
+        alarm.addRelatedAlarm(relatedAlarm);        
+        return alarm;
+    }
+    
+    private OnmsAlarm nodeDownAlarm() {
+        OnmsAlarm alarm = new OnmsAlarm();
+        alarm.setId(1);
+        alarm.setUei(EventConstants.NODE_DOWN_EVENT_UEI);
+        alarm.setNode(databasePopulator.getNode1());
+        alarm.setCounter(1);
+        alarm.setDescription("node down");
+        alarm.setAlarmType(1);
+        alarm.setLogMsg("node down");
+        alarm.setSeverity(OnmsSeverity.NORMAL);
+        alarm.setReductionKey(String.format("%s:%d", EventConstants.NODE_DOWN_EVENT_UEI,
+                databasePopulator.getNode1().getId()));
+        return alarm;
     }
 
     private Set<String> getUeisForConsumedEvents() {

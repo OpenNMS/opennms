@@ -70,6 +70,7 @@ public class AlarmdBlackboxIT {
     @Test
     public void canTriggerAndClearAlarm() {
         Scenario scenario = Scenario.builder()
+                .withLegacyAlarmBehavior()
                 .withNodeDownEvent(1, 1)
                 .withNodeUpEvent(2, 1)
                 .build();
@@ -125,6 +126,7 @@ public class AlarmdBlackboxIT {
     @Test
     public void canFlapAlarm() {
         Scenario scenario = Scenario.builder()
+                .withLegacyAlarmBehavior()
                 .withNodeDownEvent(1, 1)
                 .withNodeUpEvent(2, 1)
                 .withNodeDownEvent(3, 1)
@@ -177,6 +179,7 @@ public class AlarmdBlackboxIT {
     @Test
     public void canTriggerAcknowledgeAndClearAlarm() {
         Scenario scenario = Scenario.builder()
+                .withLegacyAlarmBehavior()
                 .withNodeDownEvent(1, 1)
                 .withAcknowledgmentForNodeDownAlarm(2, 1)
                 .withNodeUpEvent(3, 1)
@@ -269,6 +272,45 @@ public class AlarmdBlackboxIT {
         assertThat(problemStates.get(2).getTime(), greaterThanOrEqualTo(TimeUnit.DAYS.toMillis(2)));
         assertThat(problemStates.get(2).getTime(), lessThan(TimeUnit.DAYS.toMillis(9)));
         assertThat(problemStates.get(2).getAlarm(), nullValue()); // DELETED
+    }
+
+
+    /**
+     * Verifies the basic lifecycle of a situation.
+     */
+    @Test
+    public void canCreateSituation() {
+        Scenario scenario = Scenario.builder()
+                .withLegacyAlarmBehavior()
+                // Create some node down alarms
+                .withNodeDownEvent(1, 1)
+                .withNodeDownEvent(2, 2)
+                // Create a situation that contains the node down alarms
+                .withSituationForNodeDownAlarms(3, "situation#1", 1, 2)
+                // Now clear the node down alarms
+                .withNodeUpEvent(4, 1)
+                .withNodeUpEvent(4, 2)
+                .build();
+        ScenarioResults results = play(scenario);
+
+        // Verify the set of alarms at various points in time
+
+        // t=0, no alarms
+        assertThat(results.getAlarms(0), hasSize(0));
+        // t=1, a single problem alarm
+        assertThat(results.getAlarms(1), hasSize(1));
+        assertThat(results.getProblemAlarm(1), hasSeverity(OnmsSeverity.MAJOR));
+        // t=2, two problem alarms
+        assertThat(results.getAlarms(2), hasSize(2));
+        // t=3, two problem alarms + 1 situation
+        assertThat(results.getAlarms(3), hasSize(3)); // the situation is also an alarm, so it is counted here
+        assertThat(results.getSituations(3), hasSize(1));
+        assertThat(results.getSituation(3), hasSeverity(OnmsSeverity.MAJOR));
+        // t=4, everything should be cleared
+        assertThat(results.getProblemAlarm(4), hasSeverity(OnmsSeverity.CLEARED));
+        assertThat(results.getSituation(4), hasSeverity(OnmsSeverity.CLEARED));
+        // t=∞
+        assertThat(results.getAlarmsAtLastKnownTime(), hasSize(0));
     }
 
     private ScenarioResults play(Scenario scenario) {

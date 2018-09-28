@@ -46,7 +46,7 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.support.FtpResponse;
-import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 @Distributable
-public class FtpMonitor extends AbstractServiceMonitor {
+public class FtpMonitor extends ParameterSubstitutingMonitor {
     
     
     public static final Logger LOG = LoggerFactory.getLogger(FtpMonitor.class);
@@ -99,8 +99,8 @@ public class FtpMonitor extends AbstractServiceMonitor {
         // Get the parameters
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
-        String userid = ParameterMap.getKeyedString(parameters, "userid", null);
-        String password = ParameterMap.getKeyedString(parameters, "password", null);
+        String userid = resolveKeyedString(parameters, "userid", null);
+        String password = resolveKeyedString(parameters, "password", null);
 
         // Extract the address
         InetAddress ipAddr = svc.getAddress();

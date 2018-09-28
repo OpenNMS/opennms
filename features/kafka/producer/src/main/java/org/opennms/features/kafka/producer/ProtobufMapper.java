@@ -318,6 +318,10 @@ public class ProtobufMapper {
             builder.setManagedObjectType(alarm.getManagedObjectType());
         }
 
+        if (alarm.getRelatedAlarms() != null) {
+            alarm.getRelatedAlarms().forEach(relatedAlarm -> builder.addRelatedAlarm(toAlarm(relatedAlarm)));
+        }
+
         OpennmsModelProtos.Alarm.Type type = OpennmsModelProtos.Alarm.Type.UNRECOGNIZED;
         if (alarm.getAlarmType() != null) {
             if (alarm.getAlarmType() == OnmsAlarm.PROBLEM_TYPE) {

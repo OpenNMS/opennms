@@ -109,6 +109,12 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
         forEachListener(l -> l.handleNewOrUpdatedAlarm(alarm));
     }
 
+
+    @Override
+    public void onAlarmArchived(OnmsAlarm alarm, String previousReductionKey) {
+        onNewOrUpdatedAlarm(alarm);
+    }
+
     @Override
     public void onAlarmDeleted(OnmsAlarm alarm) {
         final Integer alarmId = alarm.getId();
@@ -166,6 +172,11 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
         onNewOrUpdatedAlarm(alarm);
     }
 
+    @Override
+    public void onRelatedAlarmsUpdated(OnmsAlarm alarm, Set<OnmsAlarm> previousRelatedAlarms) {
+        onNewOrUpdatedAlarm(alarm);
+    }
+
     private void forEachListener(Consumer<AlarmLifecycleListener> callback) {
         for (AlarmLifecycleListener listener : listeners) {
             try {
@@ -195,4 +206,5 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
     public void destroy() {
         stop();
     }
+
 }

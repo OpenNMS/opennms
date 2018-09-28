@@ -12,12 +12,14 @@
     <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" availability="mandatory" />
     <reference id="dataCollectionConfigDao" interface="org.opennms.netmgt.config.api.DataCollectionConfigDao" availability="mandatory" />
     <reference id="mibParser" interface="org.opennms.features.mibcompiler.api.MibParser" availability="mandatory" />
+    <reference id="timeformatService" interface="org.opennms.features.timeformat.api.TimeformatService" availability="mandatory" />
 
     <bean id="mibCompilerApplicationFactory" class="org.opennms.features.vaadin.mibcompiler.MibCompilerApplicationFactory" >
         <property name="eventProxy" ref="eventProxy" />
         <property name="eventConfDao" ref="eventConfDao" />
         <property name="dataCollectionDao" ref="dataCollectionConfigDao" />
         <property name="mibParser" ref="mibParser" />
+        <property name="timeformatService" ref="timeformatService" />
     </bean>
 
     <bean id="eventAdminApplicationFactory" class="org.opennms.features.vaadin.config.EventAdminApplicationFactory">

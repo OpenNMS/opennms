@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -52,8 +52,9 @@ import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageConsumerManager;
 import org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants;
+import org.opennms.core.ipc.sink.kafka.server.config.KafkaConfigProvider;
+import org.opennms.core.ipc.sink.kafka.server.config.OnmsKafkaConfigProvider;
 import org.opennms.core.logging.Logging;
-import org.opennms.core.utils.SystemInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -73,6 +74,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     private final ExecutorService executor = Executors.newCachedThreadPool(threadFactory);
 
     private final Properties kafkaConfig = new Properties();
+    private final KafkaConfigProvider configProvider;
 
     private class KafkaConsumerRunner implements Runnable {
         private final SinkModule<?, Message> module;
@@ -86,7 +88,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory(KafkaSinkConstants.KAFKA_TOPIC_PREFIX, module.getId());
             topic = topicNameFactory.getName();
 
-            consumer = new KafkaConsumer<>(kafkaConfig);
+            consumer = Utils.runWithNullContextClassLoader(() -> new KafkaConsumer<>(kafkaConfig));
         }
 
         @Override
@@ -121,6 +123,14 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         }
     }
 
+    public KafkaMessageConsumerManager() {
+        this(new OnmsKafkaConfigProvider());
+    }
+
+    public KafkaMessageConsumerManager(KafkaConfigProvider configProvider) {
+        this.configProvider = Objects.requireNonNull(configProvider);
+    }
+
     @Override
     protected void startConsumingForModule(SinkModule<?, Message> module) throws Exception {
         if (!consumerRunnersByModule.containsKey(module)) {
@@ -152,30 +162,12 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        // Set the defaults
         kafkaConfig.clear();
-        kafkaConfig.put("group.id", SystemInfoUtils.getInstanceId());
         kafkaConfig.put("enable.auto.commit", "true");
         kafkaConfig.put("key.deserializer", StringDeserializer.class.getCanonicalName());
         kafkaConfig.put("value.deserializer", ByteArrayDeserializer.class.getCanonicalName());
         kafkaConfig.put("auto.commit.interval.ms", "1000");
-
-        // Find all of the  system properties that start with 'org.opennms.core.ipc.sink.kafka.'
-        // and add them to the config. See https://kafka.apache.org/10/documentation.html#newconsumerconfigs
-        // for the list of supported properties
-        for (Entry<Object, Object> entry : System.getProperties().entrySet()) {
-            final Object keyAsObject = entry.getKey();
-            if (keyAsObject == null ||  !(keyAsObject instanceof String)) {
-                continue;
-            }
-            final String key = (String)keyAsObject;
-
-            if (key.length() > KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX.length()
-                    && key.startsWith(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX)) {
-                final String kafkaConfigKey = key.substring(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX.length());
-                kafkaConfig.put(kafkaConfigKey, entry.getValue());
-            }
-        }
+        kafkaConfig.putAll(configProvider.getProperties()); // e.g. groupId, and such
         LOG.info("KafkaMessageConsumerManager: consuming from Kafka using: {}", kafkaConfig);
     }
 }

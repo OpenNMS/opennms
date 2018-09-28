@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.api;
 
 import java.util.Date;
+import java.util.Set;
 
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMemo;
@@ -52,6 +53,8 @@ public interface AlarmEntityListener {
 
     void onAlarmSeverityUpdated(OnmsAlarm alarm, OnmsSeverity previousSeverity);
 
+    void onAlarmArchived(OnmsAlarm alarm, String previousReductionKey);
+
     void onAlarmDeleted(OnmsAlarm alarm);
 
     void onStickyMemoUpdated(OnmsAlarm alarm, String previousBody, String previousAuthor, Date previousUpdated);
@@ -63,5 +66,7 @@ public interface AlarmEntityListener {
     void onReductionKeyMemoDeleted(OnmsAlarm alarm, OnmsReductionKeyMemo memo);
 
     void onLastAutomationTimeUpdated(OnmsAlarm alarm, Date previousLastAutomationTime);
+
+    void onRelatedAlarmsUpdated(OnmsAlarm alarm, Set<OnmsAlarm> previousRelatedAlarms);
 
 }

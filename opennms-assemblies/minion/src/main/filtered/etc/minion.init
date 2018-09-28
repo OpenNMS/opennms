@@ -58,6 +58,21 @@ if [ -r "${MINION_HOME}/etc/minion.conf" ]; then
 	. "${MINION_HOME}/etc/minion.conf"
 fi
 
+# The user config can set JAVA_OPTS, but Karaf will not
+# do ANY of its own JAVA_OPTS processing if it is already
+# set, so work around this by grabbing DEFAULT_JAVA_OPTS
+# now, rather than letting Karaf init do it.
+
+# shellcheck disable=SC1090,SC1091
+. "${MINION_HOME}/bin/inc"
+setupDefaults
+
+# always dump heap if we OOM
+DEFAULT_JAVA_OPTS="${DEFAULT_JAVA_OPTS} -XX:+HeapDumpOnOutOfMemoryError"
+
+# combine user JAVA_OPTS with the defaults from Karaf
+JAVA_OPTS="${DEFAULT_JAVA_OPTS} ${JAVA_OPTS}"
+
 validate_icmp() {
 	if [ "$RUNAS" != "root" ]; then
 		if [ "$(uname -s)" = "Linux" ]; then
@@ -85,9 +100,6 @@ validate_icmp() {
 		fi
 	fi
 }
-
-# always dump heap if we OOM
-JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
 
 # export any default configurable variables from sysconf
 export JAVA_HOME JAVA_MIN_MEM JAVA_MAX_MEM MAX_FD JAVA JAVA_DEBUG_OPTS JAVA_DEBUG_PORT JAVA_OPTS CLASSPATH KARAF_DEBUG LD_LIBRARY_PATH

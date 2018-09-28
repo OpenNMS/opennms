@@ -17,7 +17,7 @@
          for the list of supported properties -->
     <cm:property-placeholder id="kafkaProperties" persistent-id="org.opennms.core.ipc.rpc.kafka" update-strategy="reload" />
     <!-- Provided by minion-core -->
-    <reference id="minionIdentity" interface="org.opennms.minion.core.api.MinionIdentity" />
+    <reference id="minionIdentity" interface="org.opennms.distributed.core.api.MinionIdentity" />
 
     <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
 
