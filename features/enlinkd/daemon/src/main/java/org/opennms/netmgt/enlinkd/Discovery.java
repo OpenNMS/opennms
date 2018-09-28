@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
-import org.opennms.netmgt.enlinkd.scheduler.Scheduler;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.scheduler.LegacyScheduler;
+import org.opennms.netmgt.scheduler.ReadyRunnable;
 
 /**
  * This class is designed to collect the necessary SNMP information from the
@@ -44,14 +44,13 @@ public abstract class Discovery implements ReadyRunnable {
     /**
      * The scheduler object
      */
-    private Scheduler m_scheduler;
+    private LegacyScheduler m_scheduler;
 
     /**
      * The interval, default value 30 minutes
      */
     protected long m_poll_interval = 1800000;
     protected long m_initial_sleep_time = 600000;
-    private boolean m_runned = false;
 
     /**
      * The initial sleep time, default value 5 minutes
@@ -83,7 +82,6 @@ public abstract class Discovery implements ReadyRunnable {
     // execute is where you got the stuff made
     public void run() {
         runDiscovery();
-        m_runned = true;
         reschedule();
     }
     /**
@@ -93,7 +91,7 @@ public abstract class Discovery implements ReadyRunnable {
      * 
      * @return a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler} object.
      */
-    public Scheduler getScheduler() {
+    public LegacyScheduler getScheduler() {
         return m_scheduler;
     }
 
@@ -106,7 +104,7 @@ public abstract class Discovery implements ReadyRunnable {
      *            a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler}
      *            object.
      */
-    public void setScheduler(Scheduler scheduler) {
+    public void setScheduler(LegacyScheduler scheduler) {
         m_scheduler = scheduler;
     }
 
@@ -120,22 +118,6 @@ public abstract class Discovery implements ReadyRunnable {
             throw new IllegalStateException(
                                             "Cannot schedule a service whose scheduler is set to null");
         m_scheduler.schedule(m_initial_sleep_time, this);
-    }
-
-    /**
-     * <p>
-     * unschedule
-     * </p>
-     */
-    public void unschedule() {
-        if (m_scheduler == null)
-            throw new IllegalStateException(
-                                            "rescedule: Cannot schedule a service whose scheduler is set to null");
-        if (m_runned) {
-            m_scheduler.unschedule(this, m_poll_interval);
-        } else {
-            m_scheduler.unschedule(this, m_initial_sleep_time);
-        }
     }
 
     /**
@@ -156,18 +138,7 @@ public abstract class Discovery implements ReadyRunnable {
      * @return a boolean.
      */
     public boolean isReady() {
-        return true;
-    }
-
-    /**
-     * <p>
-     * isSuspended
-     * </p>
-     * 
-     * @return Returns the suspendCollection.
-     */
-    public boolean isSuspended() {
-        return m_suspendCollection;
+        return !m_suspendCollection;
     }
 
     /**

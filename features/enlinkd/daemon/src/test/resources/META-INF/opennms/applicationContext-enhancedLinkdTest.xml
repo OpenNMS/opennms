@@ -127,7 +127,7 @@
         <property name="nodeDao" ref="nodeDao" />
     </bean>
 
-    <bean id="queryManager" class="org.opennms.netmgt.enlinkd.EnhancedLinkdServiceImpl">
+    <bean id="queryManager" class="org.opennms.features.enlinkd.service.impl.EnhancedLinkdServiceImpl">
       <property name="nodeDao" ref="nodeDao" />
       <property name="topologyDao" ref="topologyDao" />
       <property name="cdpLinkDao" ref="cdpLinkDao" />

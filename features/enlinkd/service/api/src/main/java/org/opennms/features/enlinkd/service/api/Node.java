@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd;
+package org.opennms.features.enlinkd.service.api;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 

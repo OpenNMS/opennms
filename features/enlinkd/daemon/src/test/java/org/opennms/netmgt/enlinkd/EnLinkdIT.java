@@ -50,6 +50,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.enlinkd.service.api.Node;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeElement;

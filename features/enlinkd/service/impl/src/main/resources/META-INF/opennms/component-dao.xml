@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi
+           http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+    <context:annotation-config />
+
+    <bean id="enhancedLinkdService" class="org.opennms.features.enlinkd.service.impl.EnhancedLinkdServiceImpl">
+      <property name="nodeDao" ref="nodeDao" />
+      <property name="topologyDao" ref="topologyDao" />
+      <property name="cdpLinkDao" ref="cdpLinkDao" />
+      <property name="lldpLinkDao" ref="lldpLinkDao" />
+      <property name="ospfLinkDao" ref="ospfLinkDao" />
+      <property name="isisLinkDao" ref="isisLinkDao" />
+      <property name="bridgeStpLinkDao" ref="bridgeStpLinkDao" />
+      <property name="cdpElementDao" ref="cdpElementDao" />
+      <property name="lldpElementDao" ref="lldpElementDao" />
+      <property name="ospfElementDao" ref="ospfElementDao" />
+      <property name="isisElementDao" ref="isisElementDao" />
+      <property name="bridgeElementDao" ref="bridgeElementDao" />
+      <property name="ipNetToMediaDao" ref="ipNetToMediaDao" />
+      <property name="bridgeTopologyDao" ref="bridgeTopologyDao" />
+    </bean>
+</beans>

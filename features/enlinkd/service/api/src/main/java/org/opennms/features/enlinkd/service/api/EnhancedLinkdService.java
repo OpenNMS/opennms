@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd;
+package org.opennms.features.enlinkd.service.api;
 
 import java.util.Date;
 import java.util.List;

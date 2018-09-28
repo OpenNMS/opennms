@@ -32,11 +32,10 @@
       <artifactId>org.opennms.core.daemon</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-      <scope>compile</scope>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.service.api</artifactId>
+      <version>${project.version}</version>
     </dependency>
-
 
     <!-- Test Dependencies -->
     <dependency>

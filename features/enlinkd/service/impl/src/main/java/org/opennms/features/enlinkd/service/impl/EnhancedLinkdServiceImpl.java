@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd;
+package org.opennms.features.enlinkd.service.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +41,7 @@ import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.features.enlinkd.service.api.Node;
 import org.opennms.netmgt.dao.api.BridgeElementDao;
 import org.opennms.netmgt.dao.api.BridgeStpLinkDao;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
@@ -84,7 +85,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
-public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
+public class EnhancedLinkdServiceImpl implements org.opennms.features.enlinkd.service.api.EnhancedLinkdService {
 
     private final static Logger LOG = LoggerFactory.getLogger(EnhancedLinkdServiceImpl.class);
 

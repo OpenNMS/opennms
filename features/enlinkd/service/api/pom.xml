@@ -26,6 +26,12 @@
     </plugins>
   </build>
   <dependencies>
+      <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-model</artifactId>
+      <scope>compile</scope>
+    </dependency>
+  
     <!-- Test Dependencies -->
     <dependency>
       <groupId>junit</groupId>

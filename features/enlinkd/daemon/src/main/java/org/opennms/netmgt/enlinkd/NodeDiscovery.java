@@ -32,6 +32,7 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 
+import org.opennms.features.enlinkd.service.api.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
