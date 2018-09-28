@@ -131,7 +131,6 @@ include::text/topology-provider/graphml-asset-topology-provider.adoc[]
 == Ticketing Adapaters
 include::text/ticketing-adapters/jira.adoc[]
 include::text/ticketing-adapters/remedy.adoc[]
-// TSRM Ticketer
 include::text/ticketing-adapters/tsrm.adoc[]
 
 [[ref-telemetryd]]
