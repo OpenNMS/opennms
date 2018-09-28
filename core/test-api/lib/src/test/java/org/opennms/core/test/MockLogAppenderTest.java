@@ -32,7 +32,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import junit.framework.AssertionFailedError;
 
 import org.junit.Before;
@@ -48,8 +47,24 @@ public class MockLogAppenderTest {
 
     @Before
     public void setUp() throws Exception {
-        MockLogAppender.resetLogLevel();
-        MockLogAppender.resetEvents();
+        MockLogAppender.setupLogging(true, MockLogAppender.DEFAULT_LOG_LEVEL);
+        MockLogAppender.resetState();
+    }
+
+    @Test
+    public void testDefaultLevelInfo() {
+        MockLogAppender.setupLogging(true, "INFO");
+        LoggerFactory.getLogger(getClass()).debug("A debug message");
+        MockLogAppender.assertNoLogging();
+    }
+
+    @Test
+    public void testDefaultLevelDebug() {
+        MockLogAppender.setupLogging(true, "DEBUG");
+        LoggerFactory.getLogger(getClass()).trace("A trace message");
+        MockLogAppender.assertNoLogging();
+        LoggerFactory.getLogger(getClass()).debug("A debug message");
+        MockLogAppender.assertLogAtLevel(Level.DEBUG);
     }
 
     @Test

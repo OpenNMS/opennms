@@ -36,8 +36,6 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.opennms.core.utils.Querier;
-import org.opennms.netmgt.config.PassiveStatusKey;
-import org.opennms.netmgt.config.PassiveStatusValue;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
@@ -178,7 +176,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
     /**
      * <p>setStatus</p>
      *
-     * @param key a {@link org.opennms.netmgt.config.PassiveStatusKey} object.
+     * @param key a {@link org.opennms.netmgt.passive.PassiveStatusKey} object.
      * @param pollStatus a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public void setStatus(PassiveStatusKey key, PollStatus pollStatus) {

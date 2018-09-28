@@ -98,7 +98,7 @@ public class BreadcrumbComponent extends CustomComponent implements GraphContain
                 button.setCaption("Multiple " + layerName);
                 button.setDescription(String.format("Multiple vertices from %s", sourceLayerName));
             } else {
-                button.setCaption(breadcrumb.getSourceVertices().stream().map(b -> b.getLabel()).collect(Collectors.joining(", ")));
+                button.setCaption(breadcrumb.getSourceVertices().stream().map(VertexRef::getLabel).collect(Collectors.joining(", ")));
                 button.setDescription(String.format("%s from %s", button.getCaption(), sourceLayerName));
             }
         }

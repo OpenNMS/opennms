@@ -29,20 +29,23 @@
 package org.opennms.netmgt.telemetry.listeners.api;
 
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.utils.LocationUtils;
-
-import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
+import java.util.Date;
 
 public class TelemetryMessage implements Message {
     private final InetSocketAddress source;
     private final ByteBuffer buffer;
+    private final Date receivedAt;
 
     public TelemetryMessage(InetSocketAddress source, ByteBuffer buffer) {
+        this(source, buffer, new Date());
+    }
+
+    public TelemetryMessage(InetSocketAddress source, ByteBuffer buffer, Date receivedAt) {
         this.source = source;
         this.buffer = buffer;
+        this.receivedAt = receivedAt;
     }
 
     public InetSocketAddress getSource() {
@@ -51,5 +54,9 @@ public class TelemetryMessage implements Message {
 
     public ByteBuffer getBuffer() {
         return buffer;
+    }
+
+    public Date getReceivedAt() {
+        return receivedAt;
     }
 }

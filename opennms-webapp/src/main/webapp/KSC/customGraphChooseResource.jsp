@@ -41,12 +41,6 @@
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
   <jsp:param name="breadcrumb" value="<a href='KSC/index.jsp'>KSC Reports</a>" />
   <jsp:param name="breadcrumb" value="Custom Graph" />
-  <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-growl-v2/build/angular-growl.css" />' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-growl-v2/build/angular-growl.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/underscore/underscore.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="js/onms-ksc/wizard.js"></script>' />
 </jsp:include>
 
 <div class="container-fluid" ng-app="onms-ksc-wizard" ng-controller="KSCResourceCtrl">
@@ -216,5 +210,9 @@
   </div> <!-- row -->
 
 <div>
+
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="ksc-wizard" />
+</jsp:include>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

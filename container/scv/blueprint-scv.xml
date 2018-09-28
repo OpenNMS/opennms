@@ -1,0 +1,35 @@
+<blueprint
+    xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+    xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+    xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0 
+        https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+        http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+        http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+
+        http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+        http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+">
+
+    <!-- Used for sytem properties -->
+    <ext:property-placeholder placeholder-prefix="$[" placeholder-suffix="]" />
+    <cm:property-placeholder id="scvProperties" persistent-id="org.opennms.features.scv" placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="key" value="QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <bean id="jceksSecureCredentialsVault" class="org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault">
+        <argument value="$[karaf.etc]$[file.separator]scv.jce"/>
+        <argument value="[[key]]"/>
+    </bean>
+
+    <service ref="jceksSecureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault">
+        <service-properties>
+            <entry key="type" value="jceks"/>
+        </service-properties>
+    </service>
+</blueprint>

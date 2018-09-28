@@ -187,6 +187,17 @@
       </div> <!-- panel-footer -->
     </div> <!-- panel -->
 
+      <div class="panel panel-default">
+          <div class="panel-heading">
+              <h3 class="panel-title">Flow Management</h3>
+          </div>
+          <div class="panel-body">
+              <ul class="list-unstyled">
+                  <li><a href="admin/classification/index.jsp">Manage Flow Classification</a></li>
+              </ul>
+          </div> <!-- panel-body -->
+      </div> <!-- panel -->
+
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Service Monitoring</h3>

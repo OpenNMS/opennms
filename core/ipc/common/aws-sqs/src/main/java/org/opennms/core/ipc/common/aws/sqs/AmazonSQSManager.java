@@ -30,9 +30,6 @@ package org.opennms.core.ipc.common.aws.sqs;
 
 import com.amazon.sqs.javamessaging.SQSConnectionFactory;
 import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.AmazonSQSException;
-
-import java.util.Properties;
 
 public interface AmazonSQSManager {
 

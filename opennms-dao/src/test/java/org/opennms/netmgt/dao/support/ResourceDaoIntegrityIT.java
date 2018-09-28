@@ -159,7 +159,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
 
         m_easyMockUtils.replayAll();
         InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/collectdconfiguration-testdata.xml");
-        m_collectdConfig = new CollectdConfigFactory(stream, "localhost", false);
+        m_collectdConfig = new CollectdConfigFactory(stream);
         m_easyMockUtils.verifyAll();
 
         m_resourceStorageDao.setRrdDirectory(m_tempFolder.getRoot());
@@ -199,7 +199,12 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         // We must have at least one resource for every known type
         for (OnmsResourceType type : m_resourceDao.getResourceTypes()) {
             // Ignore this type for now #needstoomanydbojects
-            if (type.getName() == DistributedStatusResourceType.TYPE_NAME) {
+            if (DistributedStatusResourceType.TYPE_NAME.equals(type.getName())) {
+                continue;
+            }
+            // Ignore the interfaceSnmpByIfIndex since it functions as a pure alias
+            // and should never be returned when enumerating resources
+            if (InterfaceSnmpByIfIndexResourceType.TYPE_NAME.equals(type.getName())) {
                 continue;
             }
             assertTrue("No resources of type: " + type.getLabel(), visitor.resourceTypes.contains(type));

@@ -30,8 +30,10 @@ package org.opennms.assemblies.karaf;
 
 import static org.ops4j.pax.exam.CoreOptions.maven;
 
+import java.util.EnumSet;
+
+import org.apache.karaf.features.FeaturesService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.karaf.KarafTestCase;
@@ -54,10 +56,11 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 
 	@Before
 	public void setUp() {
-		final String version = getOpenNMSVersion();
-		addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("org.opennms.container.karaf").version(version).type("xml").classifier("features").getURL());
-		addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("org.opennms.container.karaf").version(version).type("xml").classifier("spring-legacy").getURL());
+		addFeaturesUrl(maven().groupId("org.apache.karaf.features").artifactId("standard").version(getKarafVersion()).type("xml").classifier("features").getURL());
+		addFeaturesUrl(maven().groupId("org.apache.karaf.features").artifactId("spring-legacy").version(getKarafVersion()).type("xml").classifier("features").getURL());
+
 		// This artifact contains Minion-only Karaf features
+		final String version = getOpenNMSVersion();
 		addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("minion").getURL());
 	}
 
@@ -74,7 +77,6 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 	}
 
 	@Test
-	@Ignore("OSGi dependency problems: org.apache.activemq.broker")
 	public void testInstallFeatureOpennmsTrapdListener() {
 		installFeature("opennms-trapd-listener");
 		System.out.println(executeCommand("feature:list -i"));
@@ -88,19 +90,19 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 
 	@Test
 	public void testInstallFeatureMinionProvisiondDetectors() {
-		installFeature("minion-provisiond-detectors");
+		installFeature("minion-provisiond-detectors", EnumSet.of(FeaturesService.Option.NoAutoRefreshBundles));
 		System.out.println(executeCommand("feature:list -i"));
 	}
 
 	@Test
 	public void testInstallFeatureMinionProvisiondRequisitions() {
-		installFeature("minion-provisiond-requisitions");
+		installFeature("minion-provisiond-requisitions", EnumSet.of(FeaturesService.Option.NoAutoRefreshBundles));
 		System.out.println(executeCommand("feature:list -i"));
 	}
 
 	@Test
 	public void testInstallFeatureMinionCollection() {
-		installFeature("minion-collection");
+		installFeature("minion-collection", EnumSet.of(FeaturesService.Option.NoAutoRefreshBundles));
 		System.out.println(executeCommand("feature:list -i"));
 	}
 
@@ -112,7 +114,7 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 
 	@Test
 	public void testInstallFeatureMinionShellCollection() {
-		installFeature("minion-shell-collection");
+		installFeature("minion-shell-collection", EnumSet.of(FeaturesService.Option.NoAutoRefreshBundles));
 		System.out.println(executeCommand("feature:list -i"));
 	}
 
@@ -124,13 +126,13 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 
 	@Test
 	public void testInstallFeatureMinionShellProvision() {
-		installFeature("minion-shell-provision");
+		installFeature("minion-shell-provision", EnumSet.of(FeaturesService.Option.NoAutoRefreshBundles));
 		System.out.println(executeCommand("feature:list -i"));
 	}
 
 	@Test
 	public void testInstallFeatureMinionShell() {
-		installFeature("minion-shell");
+		installFeature("minion-shell", EnumSet.of(FeaturesService.Option.NoAutoRefreshBundles));
 		System.out.println(executeCommand("feature:list -i"));
 	}
 

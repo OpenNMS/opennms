@@ -55,6 +55,7 @@ import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionStatus;
+import org.opennms.netmgt.collection.api.InvalidCollectionAgentException;
 import org.opennms.netmgt.collection.api.LocationAwareCollectorClient;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
@@ -178,6 +179,11 @@ public class CollectCommand implements Action {
                 } catch (InterruptedException e) {
                     System.out.println("\nInterrupted.");
                 } catch (ExecutionException e) {
+                    final Throwable cause = e.getCause();
+                    if (cause != null && cause instanceof InvalidCollectionAgentException) {
+                        System.out.printf("The collector requires a valid node and interface. Try specifying a valid node using the --node option.\n", e);
+                        break;
+                    }
                     System.out.printf("\nCollect failed with:", e);
                     e.printStackTrace();
                     System.out.println();

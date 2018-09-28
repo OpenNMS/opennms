@@ -49,7 +49,7 @@ public class Defaults {
 
     private Supplier<Integer> szlSupplier = () -> DEFAULT_SEMANTIC_ZOOM_LEVEL;
     private Supplier<String> layoutSupplier = () -> DEFAULT_PREFERRED_LAYOUT;
-    private Supplier<List<Criteria>> criteriaSupplier = () -> Collections.emptyList();
+    private Supplier<List<Criteria>> criteriaSupplier = Collections::emptyList;
 
     public Defaults withSemanticZoomLevel(Supplier<Integer> szlSupplier) {
         this.szlSupplier = Objects.requireNonNull(szlSupplier);

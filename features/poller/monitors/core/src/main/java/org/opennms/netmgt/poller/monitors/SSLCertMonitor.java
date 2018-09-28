@@ -40,10 +40,7 @@ import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Map;
-import java.util.Optional;
-
 import javax.net.ssl.SNIHostName;
-import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocket;
 
@@ -54,13 +51,9 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.SocketUtils;
-import org.opennms.core.utils.SocketWrapper;
-import org.opennms.core.utils.SslSocketWrapper;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
@@ -200,7 +193,7 @@ public class SSLCertMonitor extends AbstractServiceMonitor {
                                 serviceStatus = PollStatus.available(tracker.elapsedTimeInMillis());
                                 break;
                             } else {
-                                String reason = "Certificate is valid, but will expire in " + validityDays + " days.";
+                                String reason = "Certificate is valid, but will expire within " + validityDays + " days (" + certx.getNotAfter() + ").";
                                 LOG.debug(reason);
                                 serviceStatus = PollStatus.unavailable(reason);
                                 break;

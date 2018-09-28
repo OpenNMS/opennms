@@ -63,7 +63,7 @@ public class ChooseResourcesPageIT extends OpenNMSSeleniumTestCase {
             // VERIFY
             findElementByLink("Resource Graphs").click();
             findElementByXpath("//button[contains(text(), \"Graph All\")]").click();
-            Assert.assertTrue("There should be graphs visible, but could not find any", !m_driver.findElements(By.xpath("//div[@id='graph-results']//img")).isEmpty());
+            Assert.assertTrue("There should be graphs visible, but could not find any", !m_driver.findElements(By.xpath("//div[@id='graph-results']//div[@class='graph-container']")).isEmpty());
         } finally {
             // CLEANUP
             deleteTestRequisition();

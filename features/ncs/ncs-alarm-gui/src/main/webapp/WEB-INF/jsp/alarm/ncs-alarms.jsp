@@ -121,7 +121,9 @@
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
 
-<link rel="stylesheet" href="lib/font-awesome/css/font-awesome.min.css">
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="font-awesome" />
+</jsp:include>
 
   <script type="text/javascript">
     function checkAllCheckboxes() {

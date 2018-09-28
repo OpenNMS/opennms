@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -79,9 +80,9 @@ public class TopologyLinkBuilder {
     public TopologyLinkBuilder focus(List<String> vertexIds) {
         if (vertexIds != null) {
             vertexIds.stream()
-                    .filter(id -> id != null)
-                    .map(id -> id.trim())
-                    .filter(id -> !id.trim().isEmpty())
+                    .filter(Objects::nonNull)
+                    .map(String::trim)
+                    .filter(id -> !id.isEmpty())
                     .collect(Collectors.toList());
             this.vertexIds = Collections.unmodifiableList(vertexIds);
         }

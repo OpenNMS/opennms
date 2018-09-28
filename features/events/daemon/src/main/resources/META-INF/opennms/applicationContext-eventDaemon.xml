@@ -36,7 +36,7 @@
     <property name="eventConfDao" ref="eventConfDao"/>
     <property name="eventUtil" ref="eventUtil"/>
   </bean>
-
+  
   <bean id="eventParmRegexFilter" class="org.opennms.netmgt.eventd.processor.EventParmRegexFilterProcessor">
     <property name="eventConfDao" ref="eventConfDao"/>
   </bean>
@@ -131,4 +131,6 @@
     <constructor-arg ref="eventIpcManagerImpl" />
   </bean>
 
+    <!-- Conditionally load event sink -->
+  <bean class="org.opennms.netmgt.eventd.sink.ConditionalEventSinkContext"/>
 </beans>

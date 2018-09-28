@@ -31,7 +31,6 @@ package org.opennms.netmgt.syslogd;
 import java.util.Objects;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
-import org.opennms.core.ipc.sink.api.AsyncPolicy;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.SyslogdConfig;

@@ -162,6 +162,7 @@ public class Telemetryd implements SpringServiceDaemon {
         }
         dispatchers.clear();
 
+        final AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
         // Stop the consumers
         for (TelemetryMessageConsumer consumer : consumers) {
             try {
@@ -170,6 +171,7 @@ public class Telemetryd implements SpringServiceDaemon {
             } catch (Exception e) {
                 LOG.error("Error while stopping consumer.", e);
             }
+            beanFactory.destroyBean(consumer);
         }
         consumers.clear();
 
@@ -192,7 +194,6 @@ public class Telemetryd implements SpringServiceDaemon {
 
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadEvent(Event e) {
-        LOG.info("Received a reload configuration event: {}", e);
         DaemonTools.handleReloadEvent(e, Telemetryd.NAME, (event) -> handleConfigurationChanged());
     }
 

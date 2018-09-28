@@ -51,7 +51,7 @@ public class TrendBoxController extends AbstractController implements Initializi
     @Override
     protected ModelAndView handleRequestInternal(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         final ModelAndView modelAndView = new ModelAndView("trend/trend-box");
-        final List<TrendDefinition> filteredTrendDefinitions = getConfiguration().getTrendDefinitions().stream().filter( trendDefinition -> trendDefinition.isVisible() ).collect(Collectors.toList());
+        final List<TrendDefinition> filteredTrendDefinitions = getConfiguration().getTrendDefinitions().stream().filter(TrendDefinition::isVisible).collect(Collectors.toList());
         modelAndView.addObject("trendDefinitions", filteredTrendDefinitions);
         return modelAndView;
     }

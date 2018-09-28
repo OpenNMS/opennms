@@ -1,0 +1,181 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-flow-support-classification-engine]]
+=== Classification Engine
+
+The _Classification Engine_ applies a set of user- and/or system-defined rules to each flow to classify it.
+This allows users to group flows by applications, e.g. if all flows to port 80 are marked as `http`.
+
+In order to classify a flow, a rule must be defined.
+A rule defines at least a name, which the flow is classified with, and additional parameters which must match for a successful classification.
+
+==== Rule definition
+A rule has the following fields:
+
+|===
+| Name | Mandatory | Description
+
+| `name`
+| `mandatory`
+| The name the flow is classified with, e.g. `http`
+
+
+| `dstPort`
+| `optional`
+| The `dstPort` of the flow must match this port.
+  May be a range or list of ports, e.g. 80,8080,8980, or 8000-9000.
+
+| `dstAddress`
+| `optional`
+| The `dstAddress` of the flow must match this address.
+  May contain wildcards.
+
+| `srcPort`
+| `optional`
+| The `srcPort` of the flow must match this port.
+  See `dstPort` for more details.
+
+| `srcAddress`
+| `optional`
+| The `srcAddress` of the flow must match this address.
+  See `dstAddress` for more details.
+
+| `exporterFilter`
+| `optional`
+| The exporter of the flow must match this criteria.
+  It supports all capabilities of the _https://wiki.opennms.org/wiki/Filters[{opennms-product-name} Filters API]_.
+
+| `protocol`
+| `optional`
+| The ip protocol of the flow must match this criteria.
+|===
+
+Even if all fields (besides `name`) are optional, at least one of them must be defined to be considered a valid rule.
+A list of pre-defined rules already exist.
+The pre-defined rules are inspired by the https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml[IANA Service Name and Transport Protocol Port Number Registry].
+New rules can be defined using the _Classification UI_ which can be found in the Admin Menu: *Admin -> Configure OpenNMS -> Manage Flow Classification*
+
+==== Rule Priority
+User-defined rules always have a higher priority than the pre-defined rules.
+For example, if the user defines a new rule, `http` with a `dstPort` of `8980` that rule has a higher priority than the pre-defined rule `www-alt`.
+
+The priorities are as follows:
+
+|===
+| Field | Priority
+
+| `srcAddress`
+| `+9`
+
+| `dstAddress`
+| `+9`
+
+| `srcPort`
+| `+3`
+
+| `dstPort`
+| `+3`
+
+| `protocol`
+| `+1`
+
+| `exporterFilter`
+| `+1`
+
+|===
+
+The priority is added for each field which is defined according to the table above.
+This means a rule with a `srcAddress` or `dstAddress` has a priority of at least 9 and is always higher than a rule with a `srcPort` or `dstPort`, etc.
+
+The calculation of the priority is implemented https://github.com/OpenNMS/opennms/blob/develop/features/flows/classification/persistence/api/src/main/java/org/opennms/netmgt/flows/classification/persistence/api/RuleDefinition.java#L52-61[here].
+
+NOTE:   At the moment it is not possible to manually define a priority.
+        This may be implemented at a later time.
+        See issue https://issues.opennms.org/browse/HZN-1265[HZN-1265].
+
+==== Verification
+
+With a more complex set of rules it is not always easy to verify if everything is configured correctly.
+To make things a bit easier, the _Classification UI_ allows to test/verify a classification.
+To do so, please navigate to the _Classification UI_:
+*Admin -> Configure OpenNMS -> Manage Flow Classification* and select the _Test Classification_ action in the top right.
+This allows to simulate a flow being send to the _Classification Engine_ with certain fields.
+
+==== Example
+
+Let's assume the following rules are defined:
+
+|===
+| name |  srcAddress | srcPort | dstAddress | dstPort | protocol | exporterFilter
+
+| `OpenNMS`
+|
+|
+| 10.0.0.1
+| 8980
+| tcp,udp
+|
+
+| `http`
+|
+|
+|
+| 80,8980,8080,9000
+| udp,tcp
+|
+
+| `https`
+|
+|
+|
+| 443
+|
+|
+
+| `Exporters`
+|
+|
+|
+|
+|
+| categoryName == 'Exporters'
+|===
+
+
+The following flows are send to _{opennms-product-name}_ and with the rules defined above classified accordingly.
+
+[%header, cols=2]
+|===
+| Flow
+| Classification
+
+| protocol: tcp,
+
+  srcAddress: 10.0.0.5, srcPort: 60123,
+
+  dstAddress: 54.246.188.65, dstPort: 80,
+
+  exporterAddress: 10.0.0.55
+| `http`
+
+| protocol: tcp,
+
+  srcAddress: 10.0.0.5, srcPort: 60123,
+
+  dstAddress: 54.246.188.65, dstPort: 443,
+
+  exporterAddress: 10.0.0.55
+| `https`
+
+| protocol: tcp,
+
+  srcAddress: 10.0.0.5, srcPort: 60123,
+
+  dstAddress: 10.0.0.1, dstPort: 8980,
+
+  exporterAddress: 10.0.0.55
+| `OpenNMS`
+
+|===

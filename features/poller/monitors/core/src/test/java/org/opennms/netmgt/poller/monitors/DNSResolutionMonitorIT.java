@@ -40,8 +40,6 @@ import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_LOOKU
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.HashMap;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -232,4 +230,21 @@ public class DNSResolutionMonitorIT {
         assertEquals(PollStatus.available(), monitor.poll(lookup, parms));
     }
 
+    @Test
+    public void testSubbedLookup() throws Exception {
+        MockMonitoredService lookup = new MockMonitoredService(1, "wipv6day.opennms.org", InetAddress.getLocalHost(), "RESOLVE");
+
+        DNSResolutionMonitor monitor = new DNSResolutionMonitor();
+
+        Map<String, Object> parms = new HashMap<String, Object>();
+        parms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_EITHER);
+        parms.put(PARM_LOOKUP, "{nodeLabel}");
+
+        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(lookup, parms);
+        // this would normally happen in the poller request builder implementation
+        subbedParams.forEach((k, v) -> {
+            parms.put(k, v);
+        });
+        assertEquals(PollStatus.available(), monitor.poll(lookup, parms));
+    }
 }

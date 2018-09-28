@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>21.1.0-SNAPSHOT</version>
+  <version>23.0.0-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <properties>
     <skipITs>true</skipITs>
@@ -12,9 +12,8 @@
     <camelVersion>2.19.1</camelVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <jackson2Version>2.6.6</jackson2Version>
+    <jestVersion>5.3.3</jestVersion>
     <karafVersion>4.1.5</karafVersion>
-    <nodeVersion>v6.10.2</nodeVersion>
-    <npmVersion>3.10.10</npmVersion>
     <test.fork.count>1</test.fork.count>
   </properties>
   <build>
@@ -26,42 +25,6 @@
     </testResources>
     <pluginManagement>
       <plugins>
-        <plugin>
-          <groupId>com.github.eirslett</groupId>
-          <artifactId>frontend-maven-plugin</artifactId>
-          <version>${frontendPluginVersion}</version>
-          <configuration>
-            <nodeDownloadRoot>http://mirror.internal.opennms.com/nodejs/dist/</nodeDownloadRoot>
-            <npmDownloadRoot>http://mirror.internal.opennms.com/npmjs/npm/-/</npmDownloadRoot>
-            <installDirectory>${java.io.tmpdir}/node-smoke-${project.version}</installDirectory>
-          </configuration>
-          <executions>
-            <execution>
-              <id>install-node-and-npm</id>
-              <goals><goal>install-node-and-npm</goal></goals>
-              <configuration>
-                <nodeVersion>${nodeVersion}</nodeVersion>
-                <npmVersion>${npmVersion}</npmVersion>
-              </configuration>
-            </execution>
-            <execution>
-              <id>install-node-dependencies</id>
-              <goals><goal>npm</goal></goals>
-              <phase>none</phase>
-              <configuration>
-                <arguments>install</arguments>
-              </configuration>
-            </execution>
-            <execution>
-              <id>run-tests</id>
-              <goals><goal>npm</goal></goals>
-              <phase>none</phase>
-              <configuration>
-                <arguments>test</arguments>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
         <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
@@ -122,6 +85,10 @@
          <version>2.7</version>
          <configuration>
            <encoding>UTF-8</encoding>
+           <nonFilteredFileExtensions>
+             <nonFilteredFileExtension>raw</nonFilteredFileExtension>
+             <nonFilteredFileExtension>dat</nonFilteredFileExtension>
+           </nonFilteredFileExtensions>
          </configuration>
       </plugin>
       <plugin>
@@ -149,48 +116,55 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-dependency</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/deploy-artifacts</outputDirectory>
+              <stripVersion>true</stripVersion>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.features.distributed</groupId>
+                  <artifactId>org.opennms.features.distributed.dao-test</artifactId>
+                  <version>${project.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Copy some resources required by some system tests -->
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-opennms-base-assembly-resources</id>
+            <phase>generate-test-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/system-test-resources</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${basedir}/../opennms-base-assembly/src/main/filtered</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
-  <!--
-  <profiles>
-    <profile>
-      <id>enable-skipITs-false</id>
-      <activation>
-        <property><name>skipITs</name><value>false</value></property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.github.eirslett</groupId>
-            <artifactId>frontend-maven-plugin</artifactId>
-            <executions>
-              <execution><id>install-node-dependencies</id><phase>verify</phase></execution>
-              <execution><id>run-tests</id><phase>verify</phase></execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>enable-smoke-true</id>
-      <activation>
-        <property><name>smoke</name><value>true</value></property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.github.eirslett</groupId>
-            <artifactId>frontend-maven-plugin</artifactId>
-            <executions>
-              <execution><id>install-node-dependencies</id><phase>verify</phase></execution>
-              <execution><id>run-tests</id><phase>verify</phase></execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-  -->
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -357,13 +331,13 @@
     <dependency>
       <groupId>io.searchbox</groupId>
       <artifactId>jest-complete-osgi</artifactId>
-      <version>2.0.3</version>
+      <version>${jestVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.telemetry.adapters</groupId>
-      <artifactId>org.opennms.features.telemetry.adapters.jti</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpasyncclient</artifactId>
+      <version>4.1.3</version>
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
@@ -372,10 +346,27 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.telemetry.adapters</groupId>
+      <artifactId>org.opennms.features.telemetry.adapters.netflow</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.flows.rest</groupId>
+      <artifactId>org.opennms.features.flows.rest.api</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.dao-test</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
       <version>3.0.3</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
   <repositories>

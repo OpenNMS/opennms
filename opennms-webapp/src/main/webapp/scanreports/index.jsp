@@ -35,18 +35,10 @@
 	<jsp:param name="title" value="Remote Poller Scan Reports" />
 	<jsp:param name="headTitle" value="Remote Poller Scan Reports" />
 	<jsp:param name="breadcrumb" value="Remote Poller Scan Reports" />
+</jsp:include>
 
-	<jsp:param name="meta" value='<script type="text/javascript" src="lib/moment/min/moment.min.js"></script>' />
-	<jsp:param name="meta" value='<script type="text/javascript" src="lib/js-joda/dist/js-joda.min.js"></script>' />
-	<jsp:param name="meta" value='<script type="text/javascript" src="lib/js-joda-timezone/dist/js-joda-timezone.min.js"></script>' />
-
-	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
-
-	<jsp:param name="script" value='<script type="text/javascript" src="js/onms-date-formatter.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-restresources.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList-scanreport.js"></script>' />
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="scanreport-elementList" />
 </jsp:include>
 
 <style>
@@ -62,6 +54,6 @@
 }
 </style>
 
-<ng-include src="'scanreports/main.html'"></ng-include>
+<onms-scanreport-list></onms-scanreport-list>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

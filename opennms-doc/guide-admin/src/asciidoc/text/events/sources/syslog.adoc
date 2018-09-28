@@ -37,11 +37,14 @@ The patterns should be arranged in the file from most specific to least specific
 
 [options="header, autowidth"]
 |===
-| Pattern   | Description
-| `INT`     | Positive integer.
-| `MONTH`   | 3-character English month abbreviation.
-| `NOSPACE` | String that contains no whitespace.
-| `STRING`  | String. Because this matches any character, it must be followed by a delimiter in the pattern string.
+| Pattern       | Description
+| `HOSTNAME`    | String containing only valid hostname characters (alphanumeric plus '.', '-' and '_').
+| `HOSTNAMEORIP | String containing only valid hostname characters or IP address characters (IPv4 or IPv6).
+| `INT`         | Positive integer.
+| `IPADDRESS    | String containing only valid IP address characters (IPv4 or IPv6).
+| `MONTH`       | 3-character English month abbreviation.
+| `NOSPACE`     | String that contains no whitespace.
+| `STRING`      | String. Because this matches any character, it must be followed by a delimiter in the pattern string.
 |===
 
 [options="header, autowidth"]
@@ -55,6 +58,7 @@ The patterns should be arranged in the file from most specific to least specific
 | `messageId` | String message ID.
 | `minute` | 2-digit minute (0-59).
 | `month` | 2-digit month (1-12).
+| `parm*` | String generic parameter where the parameter's key is the identifier following "parm" in the semantic token (e.x. parmComponentId maps to a string parameter with key "ComponentId").
 | `processId` | String process ID.
 | `processName` | String process name.
 | `second` | 2-digit second (0-59).

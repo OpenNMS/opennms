@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features
+  name="opennms-experimental-${project.version}"
+  xmlns="http://karaf.apache.org/xmlns/features/v1.4.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
+>
+
+    <!--
+      These features are not installed as part of OpenNMS. They represent experimental work to:
+
+      - Add new components to OpenNMS
+      - Get existing OpenNMS components to run in OSGi (especially the service daemons and web UI)
+    -->
+
+    <!-- OpenNMS Features -->
+    <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features</repository>
+
+    <!-- ActiveMQ service features -->
+
+    <feature name="opennms-activemq-dispatcher-config" description="OpenNMS :: Features :: ActiveMQ :: Dispatcher Broker Config" version="${project.version}">
+      <!-- This broker configuration will configure a broker to talk to a remote OpenNMS machine -->
+      <configfile override="true" finalname="/etc/activemq-dispatcher.xml">mvn:org.opennms.features.activemq/org.opennms.features.activemq.broker/${project.version}/xml/activemq-dispatcher</configfile>
+      <!-- Don't overwrite any existing properties file -->
+      <configfile finalname="/etc/org.apache.activemq.server-dispatcher.cfg">mvn:org.opennms.features.activemq/org.opennms.features.activemq.broker/${project.version}/cfg/activemq-dispatcher</configfile>
+    </feature>
+
+    <feature name="opennms-activemq-dispatcher" description="OpenNMS :: Features :: ActiveMQ :: Dispatcher Broker" version="${project.version}">
+      <feature>opennms-activemq-dispatcher-config</feature>
+      <feature>activemq</feature>
+    </feature>
+
+    <feature name="opennms-activemq-config" description="OpenNMS :: Features :: ActiveMQ :: Broker Config" version="${project.version}">
+      <!-- This broker configuration will configure a local ActiveMQ broker to process messages on the OpenNMS machine -->
+      <configfile override="true" finalname="/etc/activemq-receiver.xml">mvn:org.opennms.features.activemq/org.opennms.features.activemq.broker/${project.version}/xml/activemq-receiver</configfile>
+      <!-- Don't overwrite any existing properties file -->
+      <configfile finalname="/etc/org.apache.activemq.server-broker.cfg">mvn:org.opennms.features.activemq/org.opennms.features.activemq.broker/${project.version}/cfg/activemq-receiver</configfile>
+    </feature>
+
+    <feature name="opennms-activemq" description="OpenNMS :: Features :: ActiveMQ :: Broker" version="${project.version}">
+      <feature>opennms-activemq-config</feature>
+      <feature>activemq</feature>
+    </feature>
+
+    <feature name="opennms-activemq-component" description="OpenNMS :: Features :: ActiveMQ :: Component" version="${project.version}">
+      <feature>opennms-activemq-pool</feature>
+      <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.component/${project.version}</bundle>
+    </feature>
+
+    <!-- OpenNMS features -->
+
+    <feature name="opennms-discovery" description="OpenNMS :: Discovery" version="${project.version}">
+      <feature>guava</feature>
+      <feature>opennms-core-ipc-rpc-api</feature>
+
+      <feature>opennms-core-daemon</feature>
+      <feature>opennms-core-db</feature>
+      <feature>opennms-config</feature>
+      <feature>opennms-dao-api</feature>
+
+      <bundle>mvn:org.opennms.features/org.opennms.features.discovery/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-events-daemon" description="OpenNMS :: Events :: Daemon" version="${project.version}">
+      <feature>camel-netty4</feature>
+      <feature>commons-beanutils</feature>
+      <feature>guava</feature>
+      <feature>gemini-blueprint</feature>
+
+      <feature>opennms-core-daemon</feature>
+      <feature>opennms-dao-api</feature>
+      <feature>opennms-events-api</feature>
+
+      <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-reporting" description="OpenNMS :: Reporting" version="${project.version}">
+      <feature>commons-beanutils</feature>
+      <feature>commons-io</feature>
+      <feature>fop</feature>
+      <feature>quartz</feature>
+
+      <feature>opennms-config</feature>
+      <feature>opennms-core</feature>
+      <feature>opennms-core-db</feature>
+      <feature>opennms-dao-api</feature>
+      <feature>opennms-javamail</feature>
+
+      <bundle>mvn:org.opennms/opennms-reporting/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.availability/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.core/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.dao/${project.version}</bundle>
+      <!--
+      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.jasper-reports/${project.version}</bundle>
+      -->
+      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.model/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.repository/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.sdo/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-webapp" description="OpenNMS :: Webapp" version="${project.version}">
+      <feature>war</feature>
+
+      <feature>commons-beanutils</feature>
+      <feature>commons-configuration</feature>
+      <feature>commons-jexl</feature>
+      <feature>fop</feature>
+      <feature>hibernate-validator41</feature>
+      <feature>jfreechart</feature>
+      <feature>joda-time</feature>
+      <feature>jrobin</feature>
+      <feature>json-lib</feature>
+      <feature>quartz</feature>
+      <feature>spring-webflow</feature>
+
+      <feature>opennms-config</feature>
+      <feature>opennms-dao</feature>
+      <feature>opennms-provisioning</feature>
+      <feature>opennms-reporting</feature>
+
+      <bundle>wrap:mvn:xalan/xalan/2.7.2</bundle>
+      <bundle>wrap:mvn:xalan/serializer/2.7.2</bundle>
+      <bundle>wrap:mvn:org.w3c.css/sac/1.3</bundle>
+      <bundle>mvn:com.vaadin.external.flute/flute/1.3.0.gg2</bundle>
+      <bundle>wrap:mvn:net.sourceforge.cssparser/cssparser/0.9.11</bundle>
+      <!-- <bundle>wrap:mvn:com.google.gwt/gwt-servlet/${gwtVersion}</bundle> -->
+
+      <feature>commons-cli</feature>
+      <feature>commons-exec</feature>
+      <feature>commons-net</feature>
+      <bundle>mvn:org.opennms.features/org.opennms.features.system-report/${project.version}</bundle>
+
+      <feature>opennms-core-web</feature>
+      <bundle>mvn:org.opennms.features/org.opennms.features.request-tracker/${project.version}</bundle>
+
+      <!-- TODO: Make this JAR into a bundle -->
+      <bundle>wrap:mvn:org.opennms/rancid-api/1.0.3</bundle>
+
+      <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core/org.opennms.core.web-assets/${project.version}</bundle>
+
+      <feature>spring-security32</feature>
+      <bundle>mvn:org.opennms.features/org.opennms.features.springframework-security/${project.version}</bundle>
+
+      <!-- The main webapp WAR file -->
+      <bundle>mvn:org.opennms/opennms-webapp/${project.version}/war</bundle>
+    </feature>
+
+</features>

@@ -28,6 +28,7 @@
 
 package org.opennms.core.ipc.sink.xml;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import org.opennms.core.ipc.sink.api.SinkModule;
@@ -53,13 +54,13 @@ public abstract class AbstractXmlSinkModule<S extends Message, T extends Message
     }
 
     @Override
-    public String marshal(T message) {
-        return getXmlHandler().marshal(message);
+    public byte[] marshal(T message) {
+        return getXmlHandler().marshal(message).getBytes(StandardCharsets.UTF_8);
     }
 
     @Override
-    public T unmarshal(String message) {
-        return getXmlHandler().unmarshal(message);
+    public T unmarshal(byte[] bytes) {
+        return getXmlHandler().unmarshal(new String(bytes, StandardCharsets.UTF_8));
     }
 
     @Override

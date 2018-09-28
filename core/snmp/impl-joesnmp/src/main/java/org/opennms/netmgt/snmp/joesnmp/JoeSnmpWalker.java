@@ -31,6 +31,7 @@ package org.opennms.netmgt.snmp.joesnmp;
 import java.net.SocketException;
 
 import org.opennms.netmgt.snmp.CollectionTracker;
+import org.opennms.netmgt.snmp.SnmpException;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -206,9 +207,14 @@ public class JoeSnmpWalker extends SnmpWalker {
     }
 
         @Override
-    protected void sendNextPdu(WalkerPduBuilder pduBuilder) throws SocketException {
+    protected void sendNextPdu(WalkerPduBuilder pduBuilder) throws SnmpException {
         JoeSnmpPduBuilder joePduBuilder = (JoeSnmpPduBuilder)pduBuilder;
-        if (m_session == null) m_session = new SnmpSession(m_peer);
+        if (m_session == null)
+            try {
+                m_session = new SnmpSession(m_peer);
+            } catch (final SocketException e) {
+                throw new SnmpException("Failed to create session to peer " + m_peer.toString(), e);
+            }
         LOG.debug("Sending tracker pdu of size {}", joePduBuilder.getPdu().getLength());
         m_session.send(joePduBuilder.getPdu(), m_handler);
     }

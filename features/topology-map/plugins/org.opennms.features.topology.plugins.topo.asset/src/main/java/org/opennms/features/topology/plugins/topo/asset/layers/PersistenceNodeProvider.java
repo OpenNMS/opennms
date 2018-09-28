@@ -29,6 +29,7 @@
 package org.opennms.features.topology.plugins.topo.asset.layers;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.opennms.features.topology.plugins.topo.asset.NodeProvider;
@@ -50,7 +51,7 @@ public class PersistenceNodeProvider implements NodeProvider {
     @Override
     public List<OnmsNode> getNodes(List<LayerDefinition> definitions) {
         final StringBuilder queryBuilder = new StringBuilder("Select n from OnmsNode n join n.assetRecord assetRecord");
-        final List<String> restrictions = definitions.stream().map(eachMapping -> eachMapping.getRestriction()).filter(hql -> hql != null).collect(Collectors.toList());
+        final List<String> restrictions = definitions.stream().map(LayerDefinition::getRestriction).filter(Objects::nonNull).collect(Collectors.toList());
         if (!restrictions.isEmpty()) {
             queryBuilder.append(" WHERE ");
             queryBuilder.append(restrictions.stream().map(restriction -> "n." + restriction).collect(Collectors.joining(" AND ")));

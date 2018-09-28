@@ -44,8 +44,6 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -59,8 +57,6 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.AnyServerX509TrustManager;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;

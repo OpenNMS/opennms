@@ -102,8 +102,6 @@ public class PathOutageManagerDaoIT implements TemporaryDatabaseAware<MockDataba
 	@Before
 	public void setUp() throws Exception {
 
-		// System.setProperty("mock.logLevel", "DEBUG");
-		// System.setProperty("mock.debug", "true");
 		MockUtil.println("------------ Begin Test  --------------------------");
 		MockLogAppender.setupLogging();
 
@@ -141,11 +139,6 @@ public class PathOutageManagerDaoIT implements TemporaryDatabaseAware<MockDataba
 
 		m_db.populate(m_network);
 		DataSourceFactory.setInstance(m_db);
-
-//		DemandPollDao demandPollDao = new DemandPollDaoHibernate(m_db);
-//		demandPollDao.setAllocateIdStmt(m_db
-//				.getNextSequenceValStatement("demandPollNxtId"));
-//		m_demandPollDao = demandPollDao;
 
 		m_pollerConfig = new MockPollerConfig(m_network);
 		m_pollerConfig.setNextOutageIdSql(m_db.getNextOutageIdStatement());

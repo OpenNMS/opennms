@@ -30,23 +30,20 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Map;
 
 import org.opennms.core.utils.DefaultSocketWrapper;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.TimeoutSocketFactory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +64,7 @@ import com.novell.ldap.LDAPSocketFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 @Distributable
-public class LdapMonitor extends AbstractServiceMonitor {
+public class LdapMonitor extends ParameterSubstitutingMonitor {
 
     public static final Logger LOG = LoggerFactory.getLogger(LdapMonitor.class);
 
@@ -135,8 +132,8 @@ public class LdapMonitor extends AbstractServiceMonitor {
         final String searchBase = ParameterMap.getKeyedString(parameters, "searchbase", DEFAULT_BASE);
         final String searchFilter = ParameterMap.getKeyedString(parameters, "searchfilter", DEFAULT_FILTER);
 
-        final String password = (String) parameters.get("password");
-        final String ldapDn = (String) parameters.get("dn");
+        final String password = resolveKeyedString(parameters, "password", null);
+        final String ldapDn = resolveKeyedString(parameters, "dn", null);
 
         String address = InetAddrUtils.str(svc.getAddress());
 

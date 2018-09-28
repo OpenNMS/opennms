@@ -669,7 +669,8 @@ public abstract class NotificationManager {
             dbUtils.watch(connection);
             PreparedStatement statement = connection.prepareStatement("SELECT e.eventId FROM events e, alarms a WHERE e.alarmid = a.alarmid AND a.reductionkey= ?");
             dbUtils.watch(statement);
-            statement.setString(1, event.getAlarmData().getClearKey());
+            String resolvingKey = event.getAlarmData().getClearKey() == null ? event.getAlarmData().getReductionKey() : event.getAlarmData().getClearKey();
+            statement.setString(1, resolvingKey);
             ResultSet results = statement.executeQuery();
             dbUtils.watch(results);
             while (results.next()) {

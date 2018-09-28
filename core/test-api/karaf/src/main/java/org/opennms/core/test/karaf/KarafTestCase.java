@@ -47,6 +47,7 @@ import java.net.URI;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
@@ -93,7 +94,7 @@ public abstract class KarafTestCase {
     public static final String MIN_SSH_PORT = "8101";
     public static final String MAX_SSH_PORT = "8888";
 
-    private static String getKarafVersion() {
+    protected static String getKarafVersion() {
         final String karafVersion = System.getProperty("karafVersion", "4.1.5");
         Objects.requireNonNull(karafVersion, "Please define a system property 'karafVersion'.");
         return karafVersion;
@@ -239,6 +240,7 @@ public abstract class KarafTestCase {
                     // These repositories are unpacked by the opennms-full-assembly project's build
                     // for final integration testing
                     "file:${karaf.home}/../../opennms-repo@snapshots@id=opennms-repo",
+                    "file:${karaf.home}/../../experimental-repo@snapshots@id=experimental-repo",
                     "file:${karaf.home}/../../minion-core-repo@snapshots@id=minion-core-repo",
                     "file:${karaf.home}/../../minion-default-repo@snapshots@id=minion-default-repo"
                 })
@@ -325,6 +327,15 @@ public abstract class KarafTestCase {
         try {
             LOG.info("Installing feature {}", featureName);
             featuresService.installFeature(featureName);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected void installFeature(String featureName, EnumSet<FeaturesService.Option> options) {
+        try {
+            LOG.info("Installing feature {}", featureName);
+            featuresService.installFeature(featureName, options);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

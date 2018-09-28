@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,20 +35,11 @@
 	<jsp:param name="title" value="Outages" />
 	<jsp:param name="headTitle" value="Outages" />
 	<jsp:param name="breadcrumb" value="Outages" />
+</jsp:include>
 
-	<jsp:param name="meta" value='<script type="text/javascript" src="lib/moment/min/moment.min.js"></script>' />
-	<jsp:param name="meta" value='<script type="text/javascript" src="lib/js-joda/dist/js-joda.min.js"></script>' />
-	<jsp:param name="meta" value='<script type="text/javascript" src="lib/js-joda-timezone/dist/js-joda-timezone.min.js"></script>' />
-
-	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-sanitize/angular-sanitize.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
-
-	<jsp:param name="script" value='<script type="text/javascript" src="js/onms-date-formatter.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-restresources.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList-outage.js"></script>' />
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="outage-elementList" />
+  <jsp:param name="asset-defer" value="true" />
 </jsp:include>
 
 <style>
@@ -67,6 +58,6 @@
 }
 </style>
 
-<ng-include src="'outage/main.html'"></ng-include>
+<onms-outage-list></onms-outage-list>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

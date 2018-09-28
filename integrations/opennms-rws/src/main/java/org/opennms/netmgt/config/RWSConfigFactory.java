@@ -102,8 +102,6 @@ public final class RWSConfigFactory extends RWSConfigManager {
             // to reload, reload() will need to be called
             return;
         }
-        OpennmsServerConfigFactory.init();
-
         final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RWS_CONFIG_FILE_NAME);
 
         LOG.debug("init: config file path: {}", cfgFile.getPath());

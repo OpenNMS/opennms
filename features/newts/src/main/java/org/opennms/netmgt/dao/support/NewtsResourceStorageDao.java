@@ -33,7 +33,6 @@ import static org.opennms.netmgt.newts.support.NewtsUtils.toMetricName;
 import static org.opennms.netmgt.newts.support.NewtsUtils.toResourceId;
 import static org.opennms.netmgt.newts.support.NewtsUtils.toResourcePath;
 
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +66,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
@@ -215,7 +213,7 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
         try {
             stringAttributes.get().entrySet().stream()
                 .map(e -> new StringPropertyAttribute(e.getKey(), e.getValue()))
-                .forEach(attr -> attributes.add(attr));
+                .forEach(attributes::add);
         } catch (InterruptedException|ExecutionException e) {
             throw Throwables.propagate(e);
         }
@@ -303,18 +301,28 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
         return ResourcePath.get(els);
     }
 
-    @VisibleForTesting
-    protected void setSearchableCache(SearchableResourceMetadataCache searchableCache) {
+    public void setSearchableCache(SearchableResourceMetadataCache searchableCache) {
         m_searchableCache = searchableCache;
     }
 
-    @VisibleForTesting
-    protected void setSearcher(CassandraSearcher searcher) {
+    public void setSearcher(CassandraSearcher searcher) {
         m_searcher = searcher;
     }
 
-    @VisibleForTesting
-    protected void setContext(Context context) {
+    public void setContext(Context context) {
         m_context = context;
     }
+
+    public void setNewtsWriter(NewtsWriter newtsWriter) {
+        m_newtsWriter = newtsWriter;
+    }
+
+    public void setIndexer(CassandraIndexer indexer) {
+        m_indexer = indexer;
+    }
+
+    public void setSampleRepository(CassandraSampleRepository sampleRepository) {
+        m_sampleRepository = sampleRepository;
+    }
+
 }

@@ -95,7 +95,7 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
     }
 
     @Override
-    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
+    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) throws SnmpException {
         if (pduBuilder.getMaxVarsPerPdu() < 1) {
             throw new IllegalArgumentException("maxVarsPerPdu < 1");
         }
@@ -185,7 +185,7 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
         }
 
         @Override
-        public boolean processErrors(int errorStatus, int errorIndex) {
+        public boolean processErrors(int errorStatus, int errorIndex) throws SnmpException {
             
             /*
              * errorIndex is varBind index (1 based array of vars)
@@ -218,11 +218,11 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
         // Store each result
         responses.stream()
             .flatMap(res -> res.getResults().stream())
-            .forEach(res -> storeResult(res));
+            .forEach(this::storeResult);
         // Mark all of the base columns as completed
         m_columnTrackers.stream()
-            .map(c -> c.getBase())
-            .forEach(base -> m_tableResult.columnFinished(base));
+            .map(ColumnTracker::getBase)
+            .forEach(m_tableResult::columnFinished);
         // Mark all of the column trackers as completed
         m_columnTrackers.stream()
             .forEach(t -> t.setFinished(true));

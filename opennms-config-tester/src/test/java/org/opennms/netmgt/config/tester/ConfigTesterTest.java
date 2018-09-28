@@ -335,11 +335,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testOpennmsServer() {
-        testConfigFile("opennms-server.xml");
-    }
-
-    @Test
     public void testOpennms() {
         testConfigFile("opennms.properties");
     }
@@ -592,6 +587,11 @@ public class ConfigTesterTest {
     @Test
     public void testHardwareInventoryAdapterConfiguration() {
         ignoreConfigFile("snmp-hardware-inventory-adapter-configuration.xml");
+    }
+
+    @Test
+    public void testElasticCredentialsConfig() {
+        ignoreConfigFile("elastic-credentials.xml");
     }
 
     @Test

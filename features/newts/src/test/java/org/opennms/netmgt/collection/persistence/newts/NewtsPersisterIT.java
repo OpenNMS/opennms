@@ -32,7 +32,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.File;
 import java.nio.file.Paths;
 import java.util.Collections;
 
@@ -73,7 +72,7 @@ import com.google.common.base.Optional;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-newts.xml"
+        "classpath:/META-INF/opennms/applicationContext-timeseries-newts.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.timeseries.strategy=newts"

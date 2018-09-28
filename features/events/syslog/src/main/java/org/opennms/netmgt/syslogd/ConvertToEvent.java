@@ -145,13 +145,16 @@ public class ConvertToEvent {
 
         bldr.addParam("hostname", message.getHostName());
 
+        // Add any syslog message parameters as event parameters.
+        message.getParameters().forEach((k, v) -> bldr.addParam(k.toString(), v));
+
         final InetAddress hostAddress = message.getHostAddress();
         if (hostAddress != null) {
             // Set nodeId
             InterfaceToNodeCache cache = AbstractInterfaceToNodeCache.getInstance();
             if (cache != null) {
                 cache.getFirstNodeId(location, hostAddress)
-                        .ifPresent(nodeId -> bldr.setNodeid(nodeId));
+                        .ifPresent(bldr::setNodeid);
             }
 
             bldr.setInterface(hostAddress);

@@ -130,7 +130,6 @@
       <sysoidMask>.1.3.6.1.4.1.2636.1.</sysoidMask>
       <collect>
          <includeGroup>juniper-router</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>ietf-bgp4-peer-stats</includeGroup>
       </collect>
@@ -141,81 +140,80 @@
          <includeGroup>juniper-erx-router</includeGroup>
          <includeGroup>juniper-erx-systemslot</includeGroup>
          <includeGroup>juniper-erx-temperature</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
       </collect>
    </systemDef>
    <systemDef name="Juniper SRX210he2 Routers">
-      <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.36</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.2636.1.1.1.2.36</sysoid>
       <collect>
          <includeGroup>juniper-spu-monitor</includeGroup>
          <includeGroup>juniper-fwdd-process</includeGroup>
       </collect>
    </systemDef>
    <systemDef name="Juniper SRX240 Routers">
-      <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.39</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.2636.1.1.1.2.39</sysoid>
       <collect>
          <includeGroup>juniper-spu-monitor</includeGroup>
          <includeGroup>juniper-fwdd-process</includeGroup>
       </collect>
    </systemDef>
    <systemDef name="Juniper SRX100h Routers">
-      <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.41</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.2636.1.1.1.2.41</sysoid>
       <collect>
          <includeGroup>juniper-spu-monitor</includeGroup>
          <includeGroup>juniper-fwdd-process</includeGroup>
       </collect>
    </systemDef>
    <systemDef name="Juniper SRX220 Routers">
-      <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.58</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.2636.1.1.1.2.58</sysoid>
       <collect>
          <includeGroup>juniper-spu-monitor</includeGroup>
       </collect>
    </systemDef>
    <systemDef name="Juniper J-Routers (J2300)">
-      <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.13</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.2636.1.1.1.2.13</sysoid>
       <collect>
          <includeGroup>juniper-fwdd-process</includeGroup>
       </collect>
    </systemDef>
    <systemDef name="Juniper J-Routers (J4300)">
-      <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.14</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.2636.1.1.1.2.14</sysoid>
       <collect>
          <includeGroup>juniper-fwdd-process</includeGroup>
       </collect>
    </systemDef>
    <systemDef name="Juniper J-Routers (J6300)">
-      <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.15</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.2636.1.1.1.2.15</sysoid>
       <collect>
          <includeGroup>juniper-fwdd-process</includeGroup>
       </collect>
    </systemDef>
    <systemDef name="Juniper J-Routers (J4350)">
-      <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.19</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.2636.1.1.1.2.19</sysoid>
       <collect>
          <includeGroup>juniper-fwdd-process</includeGroup>
       </collect>
    </systemDef>
    <systemDef name="Juniper J-Routers (J6350)">
-      <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.20</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.2636.1.1.1.2.20</sysoid>
       <collect>
          <includeGroup>juniper-fwdd-process</includeGroup>
       </collect>
    </systemDef>
    <systemDef name="Juniper J-Routers (J4320)">
-      <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.22</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.2636.1.1.1.2.22</sysoid>
       <collect>
          <includeGroup>juniper-fwdd-process</includeGroup>
       </collect>
    </systemDef>
    <systemDef name="Juniper J-Routers (J2320)">
-      <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.23</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.2636.1.1.1.2.23</sysoid>
       <collect>
          <includeGroup>juniper-fwdd-process</includeGroup>
       </collect>
    </systemDef>
    <systemDef name="Juniper J-Routers (J2350)">
-      <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.24</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.2636.1.1.1.2.24</sysoid>
       <collect>
          <includeGroup>juniper-fwdd-process</includeGroup>
       </collect>

@@ -6,6 +6,7 @@
 
 If it is required to _HTTP POST_ any arbitrary content to a remote _URI_, the HttpPostMonitor can be used.
 A use case is to HTTP POST to a SOAP endpoint.
+This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
 ===== Monitor facts
 
@@ -20,19 +21,19 @@ A use case is to HTTP POST to a SOAP endpoint.
 .Monitor specific parameters for the HttpPostMonitor
 [options="header, autowidth"]
 |===
-| Parameter      | Description                                                           | Required | Default value
-| `payload`      | The body of the POST, for example properly escaped XML.               | required | `-`
-| `auth-password`| The password to use for HTTP BASIC auth.                              | optional | `-`
-| `auth-username`| The username to use for HTTP BASIC auth.                              | optional | `-`
+| Parameter      | Description                                                           | Required | Default value | Placeholder substitution
+| `payload`      | The body of the POST, for example properly escaped XML.               | required | `-` | No
+| `auth-password`| The password to use for HTTP BASIC auth.                              | optional | `-` | Yes
+| `auth-username`| The username to use for HTTP BASIC auth.                              | optional | `-` | Yes
 | `banner`       | A string that is matched against the response of the HTTP POST.
                    If the output contains the banner, the service is determined as up.
-                   Specify a regex by starting with `~`.                                 | optional | `-`
-| `charset`      | Set the character set for the POST.                                   | optional | `UTF-8`
-| `mimetype`     | Set the mimetype for the POST.                                        | optional | `text/xml`
-| `port`         | The port for the web server where the POST is send to.                | optional | `80`
-| `scheme`       | The connection scheme to use.                                         | optional | `http`
-| `usesslfilter` | Enables or disables the SSL ceritificate validation. `true - false`   | optional | `false`
-| `uri`          | The uri to use during the POST.                                       | optional | `/`
+                   Specify a regex by starting with `~`.                                 | optional | `-` | Yes
+| `charset`      | Set the character set for the POST.                                   | optional | `UTF-8` | No
+| `mimetype`     | Set the mimetype for the POST.                                        | optional | `text/xml` | No
+| `port`         | The port for the web server where the POST is send to.                | optional | `80` | No
+| `scheme`       | The connection scheme to use.                                         | optional | `http` | No
+| `usesslfilter` | Enables or disables the SSL ceritificate validation. `true - false`   | optional | `false` | No
+| `uri`          | The uri to use during the POST.                                       | optional | `/` | Yes
 |===
 
 This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

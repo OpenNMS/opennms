@@ -101,7 +101,7 @@ public class AbstractMeasurementQueryExecutorTest {
                 }
             }
         } finally {
-            MockLogAppender.resetEvents();
+            MockLogAppender.resetState();
         }
     }
 

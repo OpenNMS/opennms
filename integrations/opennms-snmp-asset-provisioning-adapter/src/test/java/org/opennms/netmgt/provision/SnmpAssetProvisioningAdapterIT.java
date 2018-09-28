@@ -81,7 +81,6 @@ public class SnmpAssetProvisioningAdapterIT implements InitializingBean {
 
 	@Before
 	public void setUp() throws Exception {
-		// Use the mock.logLevel system property to control the log level
 		MockLogAppender.setupLogging(true);
 
 		// Set the operation delay to 1 second so that queued operations execute immediately

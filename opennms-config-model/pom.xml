@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>21.1.0-SNAPSHOT</version>
+    <version>23.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-config-model</artifactId>
@@ -99,6 +99,8 @@
             <Import-Package>
               org.eclipse.persistence.internal.jaxb;resolution:=optional,
               org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
+              javassist.util.proxy,
+              org.hibernate.proxy,
               org.opennms.core.network,
               org.opennms.netmgt.collection.adapters,
               *

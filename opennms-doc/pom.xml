@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>opennms</artifactId>
-        <version>21.1.0-SNAPSHOT</version>
+        <version>23.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.doc</groupId>
     <artifactId>parent</artifactId>
@@ -14,7 +14,6 @@
     <description>Official documentation</description>
     <modules>
         <module>guide-install</module>
-        <module>guide-user</module>
         <module>guide-admin</module>
         <module>guide-development</module>
         <module>releasenotes</module>

@@ -1,0 +1,47 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+The system provides a robust licencing mechanism which would be difficult to spoof and is considered sufficient for most applications.
+However it should not be considered cryptographic secure to the extent that a determined hacker could not break the system.
+
+=== Licence Structure
+
+The following note describes how licence keys are structured.
+
+Licence keys contain machine readable metadata which can be accessed without decryption.
+The metadata is digitally signed with an encrypted hash which must be decrypted in order to verify the licence data.
+
+Licence keys may also contain additional encrypted secret properties. 
+The secret properties are intended to securely convey application specific secrets such as passwords or keys needed to access remote services.
+
+The entire licence has a Crc32 Checksum appended to ensure it is conveyed intact when it is installed.
+
+The licence keys consist of Hexadecimal strings as ascii printable characters in three (or four) sections separated by the ':' character as follows;
+
+```
+With secret properties:
+<licenceMetadataHexStr>:<encryptedHashStr>":"<aesSecretKeyStr>:<encryptedSecretPropertiesStr>-<Crc32Checksum>
+
+Without secret properties:
+<licenceMetadataHexStr>:<encryptedHashStr>":"<aesSecretKeyStr>-<Crc32Checksum>
+
+```
+The licenceMetadataHexStr is a Hexadecimal encoded version of the XML licence metadata. 
+This section is not encrypted and may be read without decoding so that the key features of the licence may be displayed without access to the licence keys.
+
+The encryptedHashStr is a Hexadecimal version of the encrypted hash of the licenceMetadataHexStr.
+If the hash can be decrypted and the resulting hash matches a hash of the licenceMetadataHexStr, then the licence is deemed to be validated.
+Note that the start time and duration of the licence and the unique system id in the licence must match the local context for the licence to be fully activated.
+
+If the encryptedSecretPropertiesStr is present it contains an encrypted version of the secret properties (as name value pairs) supplied with the licence. (Note that the size of the original properties are limited to 245 bytes by the encrypting algorithm).
+
+Private key encryption is used to encrypt the metadata hash and the secret properties. 
+The AesSymetricKeyCipher has a length of 124 bits which is the longest length key allowed without Government Export authorised without cryptographic extensions
+
+The encryption key is held in the licence creation server as part of the licence specification. 
+The decryption key is held in the remote licence authenticator where the licence is verified. 
+
+However the key held in the licence authenticator is itself encrypted and must first also be decrypted using the aesSecretKeyStr supplied with the licence.
+This means that a licence can only be validated and the secret properties decrypted if the remote licence authenticator is itself unlocked by the licence.
+

@@ -48,8 +48,8 @@ public class FeatureInstallKarafIT extends KarafTestCase {
     @Test
     public void testInstallAllOpenNMSFeatures() {
         final String version = getOpenNMSVersion();
-        addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("org.opennms.container.karaf").version(version).type("xml").classifier("features").getURL());
-        addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("org.opennms.container.karaf").version(version).type("xml").classifier("spring-legacy").getURL());
+        addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("standard").getURL());
+        addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("spring-legacy").getURL());
         addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("features").getURL());
 
         installFeature("atomikos");
@@ -83,10 +83,6 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("jrobin");
         installFeature("json-lib");
         installFeature("lmax-disruptor");
-        //installFeature("opennms-activemq-config");
-        //installFeature("opennms-activemq");
-        //installFeature("opennms-activemq-dispatcher-config");
-        //installFeature("opennms-activemq-dispatcher");
         // OSGi dependency problems: org.opennms.netmgt.alarmd.api
         //installFeature("opennms-amqp-alarm-northbounder");
         installFeature("opennms-amqp-event-forwarder");
@@ -105,16 +101,7 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("opennms-dao-api");
         // OSGi dependency problems: org.apache.activemq.broker
         //installFeature("opennms-dao");
-        // Minion-only feature
-        //installFeature("opennms-discoverer");
-        //installFeature("opennms-discovery-daemon");
-        // OSGi dependency problems: org.apache.activemq.broker
-        //installFeature("opennms-discovery");
-        // Minion-only feature
-        //installFeature("opennms-discovery-distPollerDaoMinion");
         installFeature("opennms-events-api");
-        // OSGi dependency problems: org.apache.activemq.broker
-        //installFeature("opennms-events-daemon");
         installFeature("opennms-icmp-api");
         installFeature("opennms-icmp-jna");
         installFeature("opennms-icmp-jni");
@@ -125,8 +112,6 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("opennms-poller-api");
         // OSGi dependency problems
         //installFeature("opennms-provisioning");
-        // OSGi dependency problems
-        //installFeature("opennms-reporting");
         installFeature("opennms-rrd-api");
         installFeature("opennms-rrd-jrobin");
         installFeature("opennms-snmp");
@@ -138,8 +123,6 @@ public class FeatureInstallKarafIT extends KarafTestCase {
 
         installFeature("opennms-trapd");
 
-        // OSGi dependency problems
-        //installFeature("opennms-webapp");
         installFeature("org.json");
         installFeature("postgresql");
         installFeature("spring-security32");

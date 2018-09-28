@@ -39,11 +39,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sf.json.JSON;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
-import net.sf.json.util.JSONUtils;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.JXPathException;

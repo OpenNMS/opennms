@@ -63,7 +63,6 @@
         <!-- <entry key="nsclient-config.xml" value="nsClientPeerFactory"/> -->
         <!-- <entry key="nsclient-datacollection-config.xml" value="nsClientDataCollectionConfigFactory"/> -->
         <entry key="opennms-datasources.xml" value="dataSourceTester"/>
-        <entry key="opennms-server.xml" value="opennmsServerConfigFactory"/>
         <entry key="opennms.properties" value="unknown"/>
         <!-- <entry key="otrs.properties" value="otrsConfigDaoCheck"/> --> <!-- Not part of standard build -->
         <entry key="poll-outages.xml" value="pollOutagesConfigFactory"/>
@@ -313,12 +312,6 @@
   <bean id="dataSourceTester" class="org.opennms.core.db.DataSourceConfigurationFactory">
     <constructor-arg value="${opennms.home}/etc/opennms-datasources.xml"/>
   </bean>
-
-  <bean id="opennmsServerConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.OpennmsServerConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="opennmsServerConfigFactory" class="org.opennms.netmgt.config.OpennmsServerConfigFactory" depends-on="opennmsServerConfigFactory-init" factory-method="getInstance"/>
 
   <bean id="otrsConfigDao" class="org.opennms.netmgt.ticketer.otrs.DefaultOtrsConfigDao"/>
 

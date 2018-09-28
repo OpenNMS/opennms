@@ -110,15 +110,6 @@
       <severity>Warning</severity>
    </event>
    <event>
-      <uei>uei.opennms.org/internal/demandPollService</uei>
-      <event-label>OpenNMS-defined node event: DemandPoll</event-label>
-      <descr>&lt;p>The Demand Poll requested on %nodeid% (%nodelabel%)</descr>
-      <logmsg dest="logndisplay">
-            &lt;p>The Demand Poll requested on %nodeid% (%nodelabel%).&lt;/p>
-        </logmsg>
-      <severity>Normal</severity>
-   </event>
-   <event>
       <uei>uei.opennms.org/internal/schedOutagesChanged</uei>
       <event-label>OpenNMS-defined internal event: scehduled outage configuration changed</event-label>
       <descr>This event is sent by the WebUI or the user when scheduled outage configuration has changed and shoule be

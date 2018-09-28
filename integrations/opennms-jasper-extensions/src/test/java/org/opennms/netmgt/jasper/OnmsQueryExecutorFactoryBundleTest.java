@@ -62,7 +62,7 @@ public class OnmsQueryExecutorFactoryBundleTest {
         verifyLanguage("measurement", true, MeasurementExecutorFactory.class);
     }
 
-    private static void verifyLanguage(String language, boolean supported, Class expectedFactoryClass) throws JRException {
+    private static void verifyLanguage(String language, boolean supported, Class<?> expectedFactoryClass) throws JRException {
         final OnmsQueryExecutorFactoryBundle executorBundle = new OnmsQueryExecutorFactoryBundle();
         final QueryExecuterFactory factory = executorBundle.getQueryExecuterFactory(language);
         Assert.assertEquals(supported, factory != null);

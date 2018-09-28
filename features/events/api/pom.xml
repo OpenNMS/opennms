@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.events</artifactId>
-    <version>21.1.0-SNAPSHOT</version>
+    <version>23.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.events</groupId>
@@ -82,6 +82,10 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator-annotation-processor</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.sink</groupId>
+      <artifactId>org.opennms.core.ipc.sink.api</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

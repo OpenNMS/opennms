@@ -37,9 +37,7 @@ import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQueryE
 import javax.management.JMException;
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 /**
  * Class for all commands which need a JMX server connection.

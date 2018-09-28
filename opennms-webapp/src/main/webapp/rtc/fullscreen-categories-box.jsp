@@ -47,11 +47,45 @@
     <meta http-equiv="Content-Script-Type" content="text/javascript"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 
-    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/bootstrap.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/opennms-theme.css" media="screen" />
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="manifest" />
+      <jsp:param name="asset-type" value="js" />
+    </jsp:include>
 
-    <script type="text/javascript" src="lib/jquery/dist/jquery.js"></script>
-    <script type="text/javascript" src="lib/bootstrap/dist/js/bootstrap.js"></script>
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="bootstrap" />
+      <jsp:param name="asset-media" value="screen" />
+      <jsp:param name="asset-type" value="css" />
+    </jsp:include>
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="opennms-theme" />
+      <jsp:param name="asset-media" value="screen" />
+      <jsp:param name="asset-type" value="css" />
+    </jsp:include>
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="font-awesome" />
+      <jsp:param name="asset-type" value="css" />
+    </jsp:include>
+
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="vendor" />
+    </jsp:include>
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="global" />
+    </jsp:include>
+
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="jquery-js" />
+    </jsp:include>
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="bootstrap" />
+      <jsp:param name="asset-type" value="js" />
+    </jsp:include>
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="opennms-theme" />
+      <jsp:param name="asset-media" value="screen" />
+      <jsp:param name="asset-type" value="js" />
+    </jsp:include>
 
     <title>RTC Console</title>
 </head>

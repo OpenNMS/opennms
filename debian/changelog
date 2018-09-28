@@ -1,3 +1,55 @@
+opennms (22.0.4-1) stable; urgency=log
+
+  * New stable release.  It contains a number of bug fixes and enhancements,
+    including fixes in upgrades, flows, date handling, topology UI performance,
+    and minion management.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/22.0.4/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 20 Sep 2018 12:22:27 +0100
+
+opennms (22.0.3-1) stable; urgency=high
+
+  * New stable release.  It contains a critical fix for RADIUS authentication,
+    as well as a number of smaller bug fixes and enhancements.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/22.0.3/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 16 Aug 2018 10:11:00 -0500
+
+opennms (22.0.2-1) stable; urgency=low
+
+  * New stable release.  It contains a number of bug fixes and enhancements,
+    including partial support for custom date formatting in the web UI.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/22.0.2/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 19 Jul 2018 15:10:00 -0500
+
+opennms (22.0.1-1) stable; urgency=low
+
+  * New stable release.  It contains a number of bug fixes and enhancements,
+    including an update to Drools 7, performance improvements to the flow
+    exporter ReST endpoint, and new karaf shell tools for diagnosing nodes.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/22.0.1/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 21 Jun 2018 12:20:00 -0500
+
+opennms (22.0.0-1) stable; urgency=low
+
+  * New major release.  It contains many bug fixes and enhancements, including
+    support for flow telemetry.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/22.0.0/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 21 May 2018 13:31:00 -0500
+
 opennms (21.1.0-1) stable; urgency=low
 
   * New stable release.  It contains bug fixes and a few enhancements, including

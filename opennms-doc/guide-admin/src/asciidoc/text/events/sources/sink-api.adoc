@@ -1,0 +1,25 @@
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-events-sources-sink-api]]
+
+==== Sink
+
+Events can also be created by routing them to a specific topic on _Kafka_ / _ActiveMQ_.
+
+The topic name should be of the form  `OpenNMS`.Sink.Events where `OpenNMS` is default instance id of {opennms-product-name}.
+The instance id is configurable through a system property `org.opennms.instance.id`.
+
+To enable Sink API to consume events, following system property needs to be added.
+[source, sh]
+----
+echo 'org.opennms.netmgt.eventd.sink.enable=true' > "$OPENNMS_HOME/etc/opennms.properties.d/event-sink.properties"
+----
+
+For events to be consumed from _Kafka_, sink strategy should be changed to kafka by following commands.
+
+[source, sh]
+----
+echo 'org.opennms.core.ipc.sink.strategy=kafka
+org.opennms.core.ipc.sink.kafka.bootstrap.servers=127.0.0.1:9092' >> "$OPENNMS_HOME/etc/opennms.properties.d/kafka.properties"
+----

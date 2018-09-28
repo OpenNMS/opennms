@@ -4090,6 +4090,30 @@ public final class OpennmsModelProtos {
      */
     com.google.protobuf.ByteString
         getManagedObjectTypeBytes();
+
+    /**
+     * <code>repeated .Alarm relatedAlarm = 22;</code>
+     */
+    java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm> 
+        getRelatedAlarmList();
+    /**
+     * <code>repeated .Alarm relatedAlarm = 22;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm getRelatedAlarm(int index);
+    /**
+     * <code>repeated .Alarm relatedAlarm = 22;</code>
+     */
+    int getRelatedAlarmCount();
+    /**
+     * <code>repeated .Alarm relatedAlarm = 22;</code>
+     */
+    java.util.List<? extends org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmOrBuilder> 
+        getRelatedAlarmOrBuilderList();
+    /**
+     * <code>repeated .Alarm relatedAlarm = 22;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmOrBuilder getRelatedAlarmOrBuilder(
+        int index);
   }
   /**
    * Protobuf type {@code Alarm}
@@ -4123,6 +4147,7 @@ public final class OpennmsModelProtos {
       clearKey_ = "";
       managedObjectInstance_ = "";
       managedObjectType_ = "";
+      relatedAlarm_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
@@ -4290,6 +4315,15 @@ public final class OpennmsModelProtos {
               managedObjectType_ = s;
               break;
             }
+            case 178: {
+              if (!((mutable_bitField0_ & 0x00200000) == 0x00200000)) {
+                relatedAlarm_ = new java.util.ArrayList<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm>();
+                mutable_bitField0_ |= 0x00200000;
+              }
+              relatedAlarm_.add(
+                  input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.parser(), extensionRegistry));
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -4298,6 +4332,9 @@ public final class OpennmsModelProtos {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00200000) == 0x00200000)) {
+          relatedAlarm_ = java.util.Collections.unmodifiableList(relatedAlarm_);
+        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
@@ -4421,6 +4458,7 @@ public final class OpennmsModelProtos {
       // @@protoc_insertion_point(enum_scope:Alarm.Type)
     }
 
+    private int bitField0_;
     public static final int ID_FIELD_NUMBER = 1;
     private long id_;
     /**
@@ -4923,6 +4961,41 @@ public final class OpennmsModelProtos {
       }
     }
 
+    public static final int RELATEDALARM_FIELD_NUMBER = 22;
+    private java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm> relatedAlarm_;
+    /**
+     * <code>repeated .Alarm relatedAlarm = 22;</code>
+     */
+    public java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm> getRelatedAlarmList() {
+      return relatedAlarm_;
+    }
+    /**
+     * <code>repeated .Alarm relatedAlarm = 22;</code>
+     */
+    public java.util.List<? extends org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmOrBuilder> 
+        getRelatedAlarmOrBuilderList() {
+      return relatedAlarm_;
+    }
+    /**
+     * <code>repeated .Alarm relatedAlarm = 22;</code>
+     */
+    public int getRelatedAlarmCount() {
+      return relatedAlarm_.size();
+    }
+    /**
+     * <code>repeated .Alarm relatedAlarm = 22;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm getRelatedAlarm(int index) {
+      return relatedAlarm_.get(index);
+    }
+    /**
+     * <code>repeated .Alarm relatedAlarm = 22;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmOrBuilder getRelatedAlarmOrBuilder(
+        int index) {
+      return relatedAlarm_.get(index);
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -4997,6 +5070,9 @@ public final class OpennmsModelProtos {
       }
       if (!getManagedObjectTypeBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 21, managedObjectType_);
+      }
+      for (int i = 0; i < relatedAlarm_.size(); i++) {
+        output.writeMessage(22, relatedAlarm_.get(i));
       }
       unknownFields.writeTo(output);
     }
@@ -5079,6 +5155,10 @@ public final class OpennmsModelProtos {
       if (!getManagedObjectTypeBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(21, managedObjectType_);
       }
+      for (int i = 0; i < relatedAlarm_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(22, relatedAlarm_.get(i));
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -5141,6 +5221,8 @@ public final class OpennmsModelProtos {
           .equals(other.getManagedObjectInstance());
       result = result && getManagedObjectType()
           .equals(other.getManagedObjectType());
+      result = result && getRelatedAlarmList()
+          .equals(other.getRelatedAlarmList());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -5203,6 +5285,10 @@ public final class OpennmsModelProtos {
       hash = (53 * hash) + getManagedObjectInstance().hashCode();
       hash = (37 * hash) + MANAGED_OBJECT_TYPE_FIELD_NUMBER;
       hash = (53 * hash) + getManagedObjectType().hashCode();
+      if (getRelatedAlarmCount() > 0) {
+        hash = (37 * hash) + RELATEDALARM_FIELD_NUMBER;
+        hash = (53 * hash) + getRelatedAlarmList().hashCode();
+      }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -5328,6 +5414,7 @@ public final class OpennmsModelProtos {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getRelatedAlarmFieldBuilder();
         }
       }
       public Builder clear() {
@@ -5382,6 +5469,12 @@ public final class OpennmsModelProtos {
 
         managedObjectType_ = "";
 
+        if (relatedAlarmBuilder_ == null) {
+          relatedAlarm_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00200000);
+        } else {
+          relatedAlarmBuilder_.clear();
+        }
         return this;
       }
 
@@ -5404,6 +5497,8 @@ public final class OpennmsModelProtos {
 
       public org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm buildPartial() {
         org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm result = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
         result.id_ = id_;
         result.uei_ = uei_;
         if (nodeCriteriaBuilder_ == null) {
@@ -5433,6 +5528,16 @@ public final class OpennmsModelProtos {
         result.clearKey_ = clearKey_;
         result.managedObjectInstance_ = managedObjectInstance_;
         result.managedObjectType_ = managedObjectType_;
+        if (relatedAlarmBuilder_ == null) {
+          if (((bitField0_ & 0x00200000) == 0x00200000)) {
+            relatedAlarm_ = java.util.Collections.unmodifiableList(relatedAlarm_);
+            bitField0_ = (bitField0_ & ~0x00200000);
+          }
+          result.relatedAlarm_ = relatedAlarm_;
+        } else {
+          result.relatedAlarm_ = relatedAlarmBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -5548,6 +5653,32 @@ public final class OpennmsModelProtos {
           managedObjectType_ = other.managedObjectType_;
           onChanged();
         }
+        if (relatedAlarmBuilder_ == null) {
+          if (!other.relatedAlarm_.isEmpty()) {
+            if (relatedAlarm_.isEmpty()) {
+              relatedAlarm_ = other.relatedAlarm_;
+              bitField0_ = (bitField0_ & ~0x00200000);
+            } else {
+              ensureRelatedAlarmIsMutable();
+              relatedAlarm_.addAll(other.relatedAlarm_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.relatedAlarm_.isEmpty()) {
+            if (relatedAlarmBuilder_.isEmpty()) {
+              relatedAlarmBuilder_.dispose();
+              relatedAlarmBuilder_ = null;
+              relatedAlarm_ = other.relatedAlarm_;
+              bitField0_ = (bitField0_ & ~0x00200000);
+              relatedAlarmBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getRelatedAlarmFieldBuilder() : null;
+            } else {
+              relatedAlarmBuilder_.addAllMessages(other.relatedAlarm_);
+            }
+          }
+        }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -5574,6 +5705,7 @@ public final class OpennmsModelProtos {
         }
         return this;
       }
+      private int bitField0_;
 
       private long id_ ;
       /**
@@ -6810,6 +6942,246 @@ public final class OpennmsModelProtos {
         managedObjectType_ = value;
         onChanged();
         return this;
+      }
+
+      private java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm> relatedAlarm_ =
+        java.util.Collections.emptyList();
+      private void ensureRelatedAlarmIsMutable() {
+        if (!((bitField0_ & 0x00200000) == 0x00200000)) {
+          relatedAlarm_ = new java.util.ArrayList<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm>(relatedAlarm_);
+          bitField0_ |= 0x00200000;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmOrBuilder> relatedAlarmBuilder_;
+
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm> getRelatedAlarmList() {
+        if (relatedAlarmBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(relatedAlarm_);
+        } else {
+          return relatedAlarmBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public int getRelatedAlarmCount() {
+        if (relatedAlarmBuilder_ == null) {
+          return relatedAlarm_.size();
+        } else {
+          return relatedAlarmBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm getRelatedAlarm(int index) {
+        if (relatedAlarmBuilder_ == null) {
+          return relatedAlarm_.get(index);
+        } else {
+          return relatedAlarmBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public Builder setRelatedAlarm(
+          int index, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm value) {
+        if (relatedAlarmBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureRelatedAlarmIsMutable();
+          relatedAlarm_.set(index, value);
+          onChanged();
+        } else {
+          relatedAlarmBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public Builder setRelatedAlarm(
+          int index, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.Builder builderForValue) {
+        if (relatedAlarmBuilder_ == null) {
+          ensureRelatedAlarmIsMutable();
+          relatedAlarm_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          relatedAlarmBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public Builder addRelatedAlarm(org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm value) {
+        if (relatedAlarmBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureRelatedAlarmIsMutable();
+          relatedAlarm_.add(value);
+          onChanged();
+        } else {
+          relatedAlarmBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public Builder addRelatedAlarm(
+          int index, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm value) {
+        if (relatedAlarmBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureRelatedAlarmIsMutable();
+          relatedAlarm_.add(index, value);
+          onChanged();
+        } else {
+          relatedAlarmBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public Builder addRelatedAlarm(
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.Builder builderForValue) {
+        if (relatedAlarmBuilder_ == null) {
+          ensureRelatedAlarmIsMutable();
+          relatedAlarm_.add(builderForValue.build());
+          onChanged();
+        } else {
+          relatedAlarmBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public Builder addRelatedAlarm(
+          int index, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.Builder builderForValue) {
+        if (relatedAlarmBuilder_ == null) {
+          ensureRelatedAlarmIsMutable();
+          relatedAlarm_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          relatedAlarmBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public Builder addAllRelatedAlarm(
+          java.lang.Iterable<? extends org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm> values) {
+        if (relatedAlarmBuilder_ == null) {
+          ensureRelatedAlarmIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, relatedAlarm_);
+          onChanged();
+        } else {
+          relatedAlarmBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public Builder clearRelatedAlarm() {
+        if (relatedAlarmBuilder_ == null) {
+          relatedAlarm_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00200000);
+          onChanged();
+        } else {
+          relatedAlarmBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public Builder removeRelatedAlarm(int index) {
+        if (relatedAlarmBuilder_ == null) {
+          ensureRelatedAlarmIsMutable();
+          relatedAlarm_.remove(index);
+          onChanged();
+        } else {
+          relatedAlarmBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.Builder getRelatedAlarmBuilder(
+          int index) {
+        return getRelatedAlarmFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmOrBuilder getRelatedAlarmOrBuilder(
+          int index) {
+        if (relatedAlarmBuilder_ == null) {
+          return relatedAlarm_.get(index);  } else {
+          return relatedAlarmBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public java.util.List<? extends org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmOrBuilder> 
+           getRelatedAlarmOrBuilderList() {
+        if (relatedAlarmBuilder_ != null) {
+          return relatedAlarmBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(relatedAlarm_);
+        }
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.Builder addRelatedAlarmBuilder() {
+        return getRelatedAlarmFieldBuilder().addBuilder(
+            org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.Builder addRelatedAlarmBuilder(
+          int index) {
+        return getRelatedAlarmFieldBuilder().addBuilder(
+            index, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .Alarm relatedAlarm = 22;</code>
+       */
+      public java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.Builder> 
+           getRelatedAlarmBuilderList() {
+        return getRelatedAlarmFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmOrBuilder> 
+          getRelatedAlarmFieldBuilder() {
+        if (relatedAlarmBuilder_ == null) {
+          relatedAlarmBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Alarm.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmOrBuilder>(
+                  relatedAlarm_,
+                  ((bitField0_ & 0x00200000) == 0x00200000),
+                  getParentForChildren(),
+                  isClean());
+          relatedAlarm_ = null;
+        }
+        return relatedAlarmBuilder_;
       }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -9221,6 +9593,2459 @@ public final class OpennmsModelProtos {
 
   }
 
+  public interface HwAliasOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:HwAlias)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>uint32 index = 1;</code>
+     */
+    int getIndex();
+
+    /**
+     * <code>string oid = 2;</code>
+     */
+    java.lang.String getOid();
+    /**
+     * <code>string oid = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getOidBytes();
+  }
+  /**
+   * Protobuf type {@code HwAlias}
+   */
+  public  static final class HwAlias extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:HwAlias)
+      HwAliasOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use HwAlias.newBuilder() to construct.
+    private HwAlias(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private HwAlias() {
+      index_ = 0;
+      oid_ = "";
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private HwAlias(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+
+              index_ = input.readUInt32();
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              oid_ = s;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_HwAlias_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_HwAlias_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias.class, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias.Builder.class);
+    }
+
+    public static final int INDEX_FIELD_NUMBER = 1;
+    private int index_;
+    /**
+     * <code>uint32 index = 1;</code>
+     */
+    public int getIndex() {
+      return index_;
+    }
+
+    public static final int OID_FIELD_NUMBER = 2;
+    private volatile java.lang.Object oid_;
+    /**
+     * <code>string oid = 2;</code>
+     */
+    public java.lang.String getOid() {
+      java.lang.Object ref = oid_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        oid_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string oid = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getOidBytes() {
+      java.lang.Object ref = oid_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        oid_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (index_ != 0) {
+        output.writeUInt32(1, index_);
+      }
+      if (!getOidBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, oid_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (index_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(1, index_);
+      }
+      if (!getOidBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, oid_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias)) {
+        return super.equals(obj);
+      }
+      org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias other = (org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias) obj;
+
+      boolean result = true;
+      result = result && (getIndex()
+          == other.getIndex());
+      result = result && getOid()
+          .equals(other.getOid());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + INDEX_FIELD_NUMBER;
+      hash = (53 * hash) + getIndex();
+      hash = (37 * hash) + OID_FIELD_NUMBER;
+      hash = (53 * hash) + getOid().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code HwAlias}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:HwAlias)
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAliasOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_HwAlias_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_HwAlias_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias.class, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias.Builder.class);
+      }
+
+      // Construct using org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        index_ = 0;
+
+        oid_ = "";
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_HwAlias_descriptor;
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias getDefaultInstanceForType() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias.getDefaultInstance();
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias build() {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias buildPartial() {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias result = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias(this);
+        result.index_ = index_;
+        result.oid_ = oid_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias) {
+          return mergeFrom((org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias other) {
+        if (other == org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias.getDefaultInstance()) return this;
+        if (other.getIndex() != 0) {
+          setIndex(other.getIndex());
+        }
+        if (!other.getOid().isEmpty()) {
+          oid_ = other.oid_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int index_ ;
+      /**
+       * <code>uint32 index = 1;</code>
+       */
+      public int getIndex() {
+        return index_;
+      }
+      /**
+       * <code>uint32 index = 1;</code>
+       */
+      public Builder setIndex(int value) {
+        
+        index_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint32 index = 1;</code>
+       */
+      public Builder clearIndex() {
+        
+        index_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object oid_ = "";
+      /**
+       * <code>string oid = 2;</code>
+       */
+      public java.lang.String getOid() {
+        java.lang.Object ref = oid_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          oid_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string oid = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getOidBytes() {
+        java.lang.Object ref = oid_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          oid_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string oid = 2;</code>
+       */
+      public Builder setOid(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        oid_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string oid = 2;</code>
+       */
+      public Builder clearOid() {
+        
+        oid_ = getDefaultInstance().getOid();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string oid = 2;</code>
+       */
+      public Builder setOidBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        oid_ = value;
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:HwAlias)
+    }
+
+    // @@protoc_insertion_point(class_scope:HwAlias)
+    private static final org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias();
+    }
+
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<HwAlias>
+        PARSER = new com.google.protobuf.AbstractParser<HwAlias>() {
+      public HwAlias parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new HwAlias(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<HwAlias> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<HwAlias> getParserForType() {
+      return PARSER;
+    }
+
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface HwEntityOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:HwEntity)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>uint32 ent_physical_index = 1;</code>
+     */
+    int getEntPhysicalIndex();
+
+    /**
+     * <code>uint32 entity_id = 2;</code>
+     */
+    int getEntityId();
+
+    /**
+     * <code>string ent_physical_class = 3;</code>
+     */
+    java.lang.String getEntPhysicalClass();
+    /**
+     * <code>string ent_physical_class = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getEntPhysicalClassBytes();
+
+    /**
+     * <code>string ent_physical_descr = 4;</code>
+     */
+    java.lang.String getEntPhysicalDescr();
+    /**
+     * <code>string ent_physical_descr = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getEntPhysicalDescrBytes();
+
+    /**
+     * <code>bool ent_physical_is_fru = 5;</code>
+     */
+    boolean getEntPhysicalIsFru();
+
+    /**
+     * <code>string ent_physical_name = 6;</code>
+     */
+    java.lang.String getEntPhysicalName();
+    /**
+     * <code>string ent_physical_name = 6;</code>
+     */
+    com.google.protobuf.ByteString
+        getEntPhysicalNameBytes();
+
+    /**
+     * <code>string ent_physical_vendor_type = 7;</code>
+     */
+    java.lang.String getEntPhysicalVendorType();
+    /**
+     * <code>string ent_physical_vendor_type = 7;</code>
+     */
+    com.google.protobuf.ByteString
+        getEntPhysicalVendorTypeBytes();
+
+    /**
+     * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+     */
+    java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias> 
+        getEntHwAliasList();
+    /**
+     * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias getEntHwAlias(int index);
+    /**
+     * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+     */
+    int getEntHwAliasCount();
+    /**
+     * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+     */
+    java.util.List<? extends org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAliasOrBuilder> 
+        getEntHwAliasOrBuilderList();
+    /**
+     * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAliasOrBuilder getEntHwAliasOrBuilder(
+        int index);
+
+    /**
+     * <code>repeated .HwEntity children = 9;</code>
+     */
+    java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity> 
+        getChildrenList();
+    /**
+     * <code>repeated .HwEntity children = 9;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity getChildren(int index);
+    /**
+     * <code>repeated .HwEntity children = 9;</code>
+     */
+    int getChildrenCount();
+    /**
+     * <code>repeated .HwEntity children = 9;</code>
+     */
+    java.util.List<? extends org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntityOrBuilder> 
+        getChildrenOrBuilderList();
+    /**
+     * <code>repeated .HwEntity children = 9;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntityOrBuilder getChildrenOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code HwEntity}
+   */
+  public  static final class HwEntity extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:HwEntity)
+      HwEntityOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use HwEntity.newBuilder() to construct.
+    private HwEntity(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private HwEntity() {
+      entPhysicalIndex_ = 0;
+      entityId_ = 0;
+      entPhysicalClass_ = "";
+      entPhysicalDescr_ = "";
+      entPhysicalIsFru_ = false;
+      entPhysicalName_ = "";
+      entPhysicalVendorType_ = "";
+      entHwAlias_ = java.util.Collections.emptyList();
+      children_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private HwEntity(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+
+              entPhysicalIndex_ = input.readUInt32();
+              break;
+            }
+            case 16: {
+
+              entityId_ = input.readUInt32();
+              break;
+            }
+            case 26: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              entPhysicalClass_ = s;
+              break;
+            }
+            case 34: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              entPhysicalDescr_ = s;
+              break;
+            }
+            case 40: {
+
+              entPhysicalIsFru_ = input.readBool();
+              break;
+            }
+            case 50: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              entPhysicalName_ = s;
+              break;
+            }
+            case 58: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              entPhysicalVendorType_ = s;
+              break;
+            }
+            case 66: {
+              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+                entHwAlias_ = new java.util.ArrayList<org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias>();
+                mutable_bitField0_ |= 0x00000080;
+              }
+              entHwAlias_.add(
+                  input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias.parser(), extensionRegistry));
+              break;
+            }
+            case 74: {
+              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+                children_ = new java.util.ArrayList<org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity>();
+                mutable_bitField0_ |= 0x00000100;
+              }
+              children_.add(
+                  input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.parser(), extensionRegistry));
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+          entHwAlias_ = java.util.Collections.unmodifiableList(entHwAlias_);
+        }
+        if (((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+          children_ = java.util.Collections.unmodifiableList(children_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_HwEntity_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_HwEntity_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.class, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int ENT_PHYSICAL_INDEX_FIELD_NUMBER = 1;
+    private int entPhysicalIndex_;
+    /**
+     * <code>uint32 ent_physical_index = 1;</code>
+     */
+    public int getEntPhysicalIndex() {
+      return entPhysicalIndex_;
+    }
+
+    public static final int ENTITY_ID_FIELD_NUMBER = 2;
+    private int entityId_;
+    /**
+     * <code>uint32 entity_id = 2;</code>
+     */
+    public int getEntityId() {
+      return entityId_;
+    }
+
+    public static final int ENT_PHYSICAL_CLASS_FIELD_NUMBER = 3;
+    private volatile java.lang.Object entPhysicalClass_;
+    /**
+     * <code>string ent_physical_class = 3;</code>
+     */
+    public java.lang.String getEntPhysicalClass() {
+      java.lang.Object ref = entPhysicalClass_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        entPhysicalClass_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string ent_physical_class = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getEntPhysicalClassBytes() {
+      java.lang.Object ref = entPhysicalClass_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        entPhysicalClass_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int ENT_PHYSICAL_DESCR_FIELD_NUMBER = 4;
+    private volatile java.lang.Object entPhysicalDescr_;
+    /**
+     * <code>string ent_physical_descr = 4;</code>
+     */
+    public java.lang.String getEntPhysicalDescr() {
+      java.lang.Object ref = entPhysicalDescr_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        entPhysicalDescr_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string ent_physical_descr = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getEntPhysicalDescrBytes() {
+      java.lang.Object ref = entPhysicalDescr_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        entPhysicalDescr_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int ENT_PHYSICAL_IS_FRU_FIELD_NUMBER = 5;
+    private boolean entPhysicalIsFru_;
+    /**
+     * <code>bool ent_physical_is_fru = 5;</code>
+     */
+    public boolean getEntPhysicalIsFru() {
+      return entPhysicalIsFru_;
+    }
+
+    public static final int ENT_PHYSICAL_NAME_FIELD_NUMBER = 6;
+    private volatile java.lang.Object entPhysicalName_;
+    /**
+     * <code>string ent_physical_name = 6;</code>
+     */
+    public java.lang.String getEntPhysicalName() {
+      java.lang.Object ref = entPhysicalName_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        entPhysicalName_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string ent_physical_name = 6;</code>
+     */
+    public com.google.protobuf.ByteString
+        getEntPhysicalNameBytes() {
+      java.lang.Object ref = entPhysicalName_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        entPhysicalName_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int ENT_PHYSICAL_VENDOR_TYPE_FIELD_NUMBER = 7;
+    private volatile java.lang.Object entPhysicalVendorType_;
+    /**
+     * <code>string ent_physical_vendor_type = 7;</code>
+     */
+    public java.lang.String getEntPhysicalVendorType() {
+      java.lang.Object ref = entPhysicalVendorType_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        entPhysicalVendorType_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string ent_physical_vendor_type = 7;</code>
+     */
+    public com.google.protobuf.ByteString
+        getEntPhysicalVendorTypeBytes() {
+      java.lang.Object ref = entPhysicalVendorType_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        entPhysicalVendorType_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int ENT_HW_ALIAS_FIELD_NUMBER = 8;
+    private java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias> entHwAlias_;
+    /**
+     * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+     */
+    public java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias> getEntHwAliasList() {
+      return entHwAlias_;
+    }
+    /**
+     * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+     */
+    public java.util.List<? extends org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAliasOrBuilder> 
+        getEntHwAliasOrBuilderList() {
+      return entHwAlias_;
+    }
+    /**
+     * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+     */
+    public int getEntHwAliasCount() {
+      return entHwAlias_.size();
+    }
+    /**
+     * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias getEntHwAlias(int index) {
+      return entHwAlias_.get(index);
+    }
+    /**
+     * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAliasOrBuilder getEntHwAliasOrBuilder(
+        int index) {
+      return entHwAlias_.get(index);
+    }
+
+    public static final int CHILDREN_FIELD_NUMBER = 9;
+    private java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity> children_;
+    /**
+     * <code>repeated .HwEntity children = 9;</code>
+     */
+    public java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity> getChildrenList() {
+      return children_;
+    }
+    /**
+     * <code>repeated .HwEntity children = 9;</code>
+     */
+    public java.util.List<? extends org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntityOrBuilder> 
+        getChildrenOrBuilderList() {
+      return children_;
+    }
+    /**
+     * <code>repeated .HwEntity children = 9;</code>
+     */
+    public int getChildrenCount() {
+      return children_.size();
+    }
+    /**
+     * <code>repeated .HwEntity children = 9;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity getChildren(int index) {
+      return children_.get(index);
+    }
+    /**
+     * <code>repeated .HwEntity children = 9;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntityOrBuilder getChildrenOrBuilder(
+        int index) {
+      return children_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (entPhysicalIndex_ != 0) {
+        output.writeUInt32(1, entPhysicalIndex_);
+      }
+      if (entityId_ != 0) {
+        output.writeUInt32(2, entityId_);
+      }
+      if (!getEntPhysicalClassBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, entPhysicalClass_);
+      }
+      if (!getEntPhysicalDescrBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, entPhysicalDescr_);
+      }
+      if (entPhysicalIsFru_ != false) {
+        output.writeBool(5, entPhysicalIsFru_);
+      }
+      if (!getEntPhysicalNameBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 6, entPhysicalName_);
+      }
+      if (!getEntPhysicalVendorTypeBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 7, entPhysicalVendorType_);
+      }
+      for (int i = 0; i < entHwAlias_.size(); i++) {
+        output.writeMessage(8, entHwAlias_.get(i));
+      }
+      for (int i = 0; i < children_.size(); i++) {
+        output.writeMessage(9, children_.get(i));
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (entPhysicalIndex_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(1, entPhysicalIndex_);
+      }
+      if (entityId_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(2, entityId_);
+      }
+      if (!getEntPhysicalClassBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, entPhysicalClass_);
+      }
+      if (!getEntPhysicalDescrBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, entPhysicalDescr_);
+      }
+      if (entPhysicalIsFru_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(5, entPhysicalIsFru_);
+      }
+      if (!getEntPhysicalNameBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, entPhysicalName_);
+      }
+      if (!getEntPhysicalVendorTypeBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(7, entPhysicalVendorType_);
+      }
+      for (int i = 0; i < entHwAlias_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(8, entHwAlias_.get(i));
+      }
+      for (int i = 0; i < children_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(9, children_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity)) {
+        return super.equals(obj);
+      }
+      org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity other = (org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity) obj;
+
+      boolean result = true;
+      result = result && (getEntPhysicalIndex()
+          == other.getEntPhysicalIndex());
+      result = result && (getEntityId()
+          == other.getEntityId());
+      result = result && getEntPhysicalClass()
+          .equals(other.getEntPhysicalClass());
+      result = result && getEntPhysicalDescr()
+          .equals(other.getEntPhysicalDescr());
+      result = result && (getEntPhysicalIsFru()
+          == other.getEntPhysicalIsFru());
+      result = result && getEntPhysicalName()
+          .equals(other.getEntPhysicalName());
+      result = result && getEntPhysicalVendorType()
+          .equals(other.getEntPhysicalVendorType());
+      result = result && getEntHwAliasList()
+          .equals(other.getEntHwAliasList());
+      result = result && getChildrenList()
+          .equals(other.getChildrenList());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + ENT_PHYSICAL_INDEX_FIELD_NUMBER;
+      hash = (53 * hash) + getEntPhysicalIndex();
+      hash = (37 * hash) + ENTITY_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getEntityId();
+      hash = (37 * hash) + ENT_PHYSICAL_CLASS_FIELD_NUMBER;
+      hash = (53 * hash) + getEntPhysicalClass().hashCode();
+      hash = (37 * hash) + ENT_PHYSICAL_DESCR_FIELD_NUMBER;
+      hash = (53 * hash) + getEntPhysicalDescr().hashCode();
+      hash = (37 * hash) + ENT_PHYSICAL_IS_FRU_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getEntPhysicalIsFru());
+      hash = (37 * hash) + ENT_PHYSICAL_NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getEntPhysicalName().hashCode();
+      hash = (37 * hash) + ENT_PHYSICAL_VENDOR_TYPE_FIELD_NUMBER;
+      hash = (53 * hash) + getEntPhysicalVendorType().hashCode();
+      if (getEntHwAliasCount() > 0) {
+        hash = (37 * hash) + ENT_HW_ALIAS_FIELD_NUMBER;
+        hash = (53 * hash) + getEntHwAliasList().hashCode();
+      }
+      if (getChildrenCount() > 0) {
+        hash = (37 * hash) + CHILDREN_FIELD_NUMBER;
+        hash = (53 * hash) + getChildrenList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code HwEntity}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:HwEntity)
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntityOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_HwEntity_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_HwEntity_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.class, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.Builder.class);
+      }
+
+      // Construct using org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getEntHwAliasFieldBuilder();
+          getChildrenFieldBuilder();
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        entPhysicalIndex_ = 0;
+
+        entityId_ = 0;
+
+        entPhysicalClass_ = "";
+
+        entPhysicalDescr_ = "";
+
+        entPhysicalIsFru_ = false;
+
+        entPhysicalName_ = "";
+
+        entPhysicalVendorType_ = "";
+
+        if (entHwAliasBuilder_ == null) {
+          entHwAlias_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000080);
+        } else {
+          entHwAliasBuilder_.clear();
+        }
+        if (childrenBuilder_ == null) {
+          children_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000100);
+        } else {
+          childrenBuilder_.clear();
+        }
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_HwEntity_descriptor;
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity getDefaultInstanceForType() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.getDefaultInstance();
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity build() {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity buildPartial() {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity result = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        result.entPhysicalIndex_ = entPhysicalIndex_;
+        result.entityId_ = entityId_;
+        result.entPhysicalClass_ = entPhysicalClass_;
+        result.entPhysicalDescr_ = entPhysicalDescr_;
+        result.entPhysicalIsFru_ = entPhysicalIsFru_;
+        result.entPhysicalName_ = entPhysicalName_;
+        result.entPhysicalVendorType_ = entPhysicalVendorType_;
+        if (entHwAliasBuilder_ == null) {
+          if (((bitField0_ & 0x00000080) == 0x00000080)) {
+            entHwAlias_ = java.util.Collections.unmodifiableList(entHwAlias_);
+            bitField0_ = (bitField0_ & ~0x00000080);
+          }
+          result.entHwAlias_ = entHwAlias_;
+        } else {
+          result.entHwAlias_ = entHwAliasBuilder_.build();
+        }
+        if (childrenBuilder_ == null) {
+          if (((bitField0_ & 0x00000100) == 0x00000100)) {
+            children_ = java.util.Collections.unmodifiableList(children_);
+            bitField0_ = (bitField0_ & ~0x00000100);
+          }
+          result.children_ = children_;
+        } else {
+          result.children_ = childrenBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity) {
+          return mergeFrom((org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity other) {
+        if (other == org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.getDefaultInstance()) return this;
+        if (other.getEntPhysicalIndex() != 0) {
+          setEntPhysicalIndex(other.getEntPhysicalIndex());
+        }
+        if (other.getEntityId() != 0) {
+          setEntityId(other.getEntityId());
+        }
+        if (!other.getEntPhysicalClass().isEmpty()) {
+          entPhysicalClass_ = other.entPhysicalClass_;
+          onChanged();
+        }
+        if (!other.getEntPhysicalDescr().isEmpty()) {
+          entPhysicalDescr_ = other.entPhysicalDescr_;
+          onChanged();
+        }
+        if (other.getEntPhysicalIsFru() != false) {
+          setEntPhysicalIsFru(other.getEntPhysicalIsFru());
+        }
+        if (!other.getEntPhysicalName().isEmpty()) {
+          entPhysicalName_ = other.entPhysicalName_;
+          onChanged();
+        }
+        if (!other.getEntPhysicalVendorType().isEmpty()) {
+          entPhysicalVendorType_ = other.entPhysicalVendorType_;
+          onChanged();
+        }
+        if (entHwAliasBuilder_ == null) {
+          if (!other.entHwAlias_.isEmpty()) {
+            if (entHwAlias_.isEmpty()) {
+              entHwAlias_ = other.entHwAlias_;
+              bitField0_ = (bitField0_ & ~0x00000080);
+            } else {
+              ensureEntHwAliasIsMutable();
+              entHwAlias_.addAll(other.entHwAlias_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.entHwAlias_.isEmpty()) {
+            if (entHwAliasBuilder_.isEmpty()) {
+              entHwAliasBuilder_.dispose();
+              entHwAliasBuilder_ = null;
+              entHwAlias_ = other.entHwAlias_;
+              bitField0_ = (bitField0_ & ~0x00000080);
+              entHwAliasBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getEntHwAliasFieldBuilder() : null;
+            } else {
+              entHwAliasBuilder_.addAllMessages(other.entHwAlias_);
+            }
+          }
+        }
+        if (childrenBuilder_ == null) {
+          if (!other.children_.isEmpty()) {
+            if (children_.isEmpty()) {
+              children_ = other.children_;
+              bitField0_ = (bitField0_ & ~0x00000100);
+            } else {
+              ensureChildrenIsMutable();
+              children_.addAll(other.children_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.children_.isEmpty()) {
+            if (childrenBuilder_.isEmpty()) {
+              childrenBuilder_.dispose();
+              childrenBuilder_ = null;
+              children_ = other.children_;
+              bitField0_ = (bitField0_ & ~0x00000100);
+              childrenBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getChildrenFieldBuilder() : null;
+            } else {
+              childrenBuilder_.addAllMessages(other.children_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private int entPhysicalIndex_ ;
+      /**
+       * <code>uint32 ent_physical_index = 1;</code>
+       */
+      public int getEntPhysicalIndex() {
+        return entPhysicalIndex_;
+      }
+      /**
+       * <code>uint32 ent_physical_index = 1;</code>
+       */
+      public Builder setEntPhysicalIndex(int value) {
+        
+        entPhysicalIndex_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint32 ent_physical_index = 1;</code>
+       */
+      public Builder clearEntPhysicalIndex() {
+        
+        entPhysicalIndex_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int entityId_ ;
+      /**
+       * <code>uint32 entity_id = 2;</code>
+       */
+      public int getEntityId() {
+        return entityId_;
+      }
+      /**
+       * <code>uint32 entity_id = 2;</code>
+       */
+      public Builder setEntityId(int value) {
+        
+        entityId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint32 entity_id = 2;</code>
+       */
+      public Builder clearEntityId() {
+        
+        entityId_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object entPhysicalClass_ = "";
+      /**
+       * <code>string ent_physical_class = 3;</code>
+       */
+      public java.lang.String getEntPhysicalClass() {
+        java.lang.Object ref = entPhysicalClass_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          entPhysicalClass_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string ent_physical_class = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getEntPhysicalClassBytes() {
+        java.lang.Object ref = entPhysicalClass_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          entPhysicalClass_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string ent_physical_class = 3;</code>
+       */
+      public Builder setEntPhysicalClass(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        entPhysicalClass_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string ent_physical_class = 3;</code>
+       */
+      public Builder clearEntPhysicalClass() {
+        
+        entPhysicalClass_ = getDefaultInstance().getEntPhysicalClass();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string ent_physical_class = 3;</code>
+       */
+      public Builder setEntPhysicalClassBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        entPhysicalClass_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object entPhysicalDescr_ = "";
+      /**
+       * <code>string ent_physical_descr = 4;</code>
+       */
+      public java.lang.String getEntPhysicalDescr() {
+        java.lang.Object ref = entPhysicalDescr_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          entPhysicalDescr_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string ent_physical_descr = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getEntPhysicalDescrBytes() {
+        java.lang.Object ref = entPhysicalDescr_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          entPhysicalDescr_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string ent_physical_descr = 4;</code>
+       */
+      public Builder setEntPhysicalDescr(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        entPhysicalDescr_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string ent_physical_descr = 4;</code>
+       */
+      public Builder clearEntPhysicalDescr() {
+        
+        entPhysicalDescr_ = getDefaultInstance().getEntPhysicalDescr();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string ent_physical_descr = 4;</code>
+       */
+      public Builder setEntPhysicalDescrBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        entPhysicalDescr_ = value;
+        onChanged();
+        return this;
+      }
+
+      private boolean entPhysicalIsFru_ ;
+      /**
+       * <code>bool ent_physical_is_fru = 5;</code>
+       */
+      public boolean getEntPhysicalIsFru() {
+        return entPhysicalIsFru_;
+      }
+      /**
+       * <code>bool ent_physical_is_fru = 5;</code>
+       */
+      public Builder setEntPhysicalIsFru(boolean value) {
+        
+        entPhysicalIsFru_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool ent_physical_is_fru = 5;</code>
+       */
+      public Builder clearEntPhysicalIsFru() {
+        
+        entPhysicalIsFru_ = false;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object entPhysicalName_ = "";
+      /**
+       * <code>string ent_physical_name = 6;</code>
+       */
+      public java.lang.String getEntPhysicalName() {
+        java.lang.Object ref = entPhysicalName_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          entPhysicalName_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string ent_physical_name = 6;</code>
+       */
+      public com.google.protobuf.ByteString
+          getEntPhysicalNameBytes() {
+        java.lang.Object ref = entPhysicalName_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          entPhysicalName_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string ent_physical_name = 6;</code>
+       */
+      public Builder setEntPhysicalName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        entPhysicalName_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string ent_physical_name = 6;</code>
+       */
+      public Builder clearEntPhysicalName() {
+        
+        entPhysicalName_ = getDefaultInstance().getEntPhysicalName();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string ent_physical_name = 6;</code>
+       */
+      public Builder setEntPhysicalNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        entPhysicalName_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object entPhysicalVendorType_ = "";
+      /**
+       * <code>string ent_physical_vendor_type = 7;</code>
+       */
+      public java.lang.String getEntPhysicalVendorType() {
+        java.lang.Object ref = entPhysicalVendorType_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          entPhysicalVendorType_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string ent_physical_vendor_type = 7;</code>
+       */
+      public com.google.protobuf.ByteString
+          getEntPhysicalVendorTypeBytes() {
+        java.lang.Object ref = entPhysicalVendorType_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          entPhysicalVendorType_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string ent_physical_vendor_type = 7;</code>
+       */
+      public Builder setEntPhysicalVendorType(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        entPhysicalVendorType_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string ent_physical_vendor_type = 7;</code>
+       */
+      public Builder clearEntPhysicalVendorType() {
+        
+        entPhysicalVendorType_ = getDefaultInstance().getEntPhysicalVendorType();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string ent_physical_vendor_type = 7;</code>
+       */
+      public Builder setEntPhysicalVendorTypeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        entPhysicalVendorType_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias> entHwAlias_ =
+        java.util.Collections.emptyList();
+      private void ensureEntHwAliasIsMutable() {
+        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
+          entHwAlias_ = new java.util.ArrayList<org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias>(entHwAlias_);
+          bitField0_ |= 0x00000080;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAliasOrBuilder> entHwAliasBuilder_;
+
+      /**
+       * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+       */
+      public java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias> getEntHwAliasList() {
+        if (entHwAliasBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(entHwAlias_);
+        } else {
+          return entHwAliasBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+       */
+      public int getEntHwAliasCount() {
+        if (entHwAliasBuilder_ == null) {
+          return entHwAlias_.size();
+        } else {
+          return entHwAliasBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias getEntHwAlias(int index) {
+        if (entHwAliasBuilder_ == null) {
+          return entHwAlias_.get(index);
+        } else {
+          return entHwAliasBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+       */
+      public Builder setEntHwAlias(
+          int index, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias value) {
+        if (entHwAliasBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEntHwAliasIsMutable();
+          entHwAlias_.set(index, value);
+          onChanged();
+        } else {
+          entHwAliasBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+       */
+      public Builder setEntHwAlias(
+          int index, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias.Builder builderForValue) {
+        if (entHwAliasBuilder_ == null) {
+          ensureEntHwAliasIsMutable();
+          entHwAlias_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          entHwAliasBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+       */
+      public Builder addEntHwAlias(org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias value) {
+        if (entHwAliasBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEntHwAliasIsMutable();
+          entHwAlias_.add(value);
+          onChanged();
+        } else {
+          entHwAliasBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+       */
+      public Builder addEntHwAlias(
+          int index, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias value) {
+        if (entHwAliasBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEntHwAliasIsMutable();
+          entHwAlias_.add(index, value);
+          onChanged();
+        } else {
+          entHwAliasBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+       */
+      public Builder addEntHwAlias(
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias.Builder builderForValue) {
+        if (entHwAliasBuilder_ == null) {
+          ensureEntHwAliasIsMutable();
+          entHwAlias_.add(builderForValue.build());
+          onChanged();
+        } else {
+          entHwAliasBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+       */
+      public Builder addEntHwAlias(
+          int index, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias.Builder builderForValue) {
+        if (entHwAliasBuilder_ == null) {
+          ensureEntHwAliasIsMutable();
+          entHwAlias_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          entHwAliasBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+       */
+      public Builder addAllEntHwAlias(
+          java.lang.Iterable<? extends org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias> values) {
+        if (entHwAliasBuilder_ == null) {
+          ensureEntHwAliasIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, entHwAlias_);
+          onChanged();
+        } else {
+          entHwAliasBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+       */
+      public Builder clearEntHwAlias() {
+        if (entHwAliasBuilder_ == null) {
+          entHwAlias_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000080);
+          onChanged();
+        } else {
+          entHwAliasBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+       */
+      public Builder removeEntHwAlias(int index) {
+        if (entHwAliasBuilder_ == null) {
+          ensureEntHwAliasIsMutable();
+          entHwAlias_.remove(index);
+          onChanged();
+        } else {
+          entHwAliasBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias.Builder getEntHwAliasBuilder(
+          int index) {
+        return getEntHwAliasFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAliasOrBuilder getEntHwAliasOrBuilder(
+          int index) {
+        if (entHwAliasBuilder_ == null) {
+          return entHwAlias_.get(index);  } else {
+          return entHwAliasBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+       */
+      public java.util.List<? extends org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAliasOrBuilder> 
+           getEntHwAliasOrBuilderList() {
+        if (entHwAliasBuilder_ != null) {
+          return entHwAliasBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(entHwAlias_);
+        }
+      }
+      /**
+       * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias.Builder addEntHwAliasBuilder() {
+        return getEntHwAliasFieldBuilder().addBuilder(
+            org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias.Builder addEntHwAliasBuilder(
+          int index) {
+        return getEntHwAliasFieldBuilder().addBuilder(
+            index, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .HwAlias ent_hw_alias = 8;</code>
+       */
+      public java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias.Builder> 
+           getEntHwAliasBuilderList() {
+        return getEntHwAliasFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAliasOrBuilder> 
+          getEntHwAliasFieldBuilder() {
+        if (entHwAliasBuilder_ == null) {
+          entHwAliasBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAlias.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwAliasOrBuilder>(
+                  entHwAlias_,
+                  ((bitField0_ & 0x00000080) == 0x00000080),
+                  getParentForChildren(),
+                  isClean());
+          entHwAlias_ = null;
+        }
+        return entHwAliasBuilder_;
+      }
+
+      private java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity> children_ =
+        java.util.Collections.emptyList();
+      private void ensureChildrenIsMutable() {
+        if (!((bitField0_ & 0x00000100) == 0x00000100)) {
+          children_ = new java.util.ArrayList<org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity>(children_);
+          bitField0_ |= 0x00000100;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntityOrBuilder> childrenBuilder_;
+
+      /**
+       * <code>repeated .HwEntity children = 9;</code>
+       */
+      public java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity> getChildrenList() {
+        if (childrenBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(children_);
+        } else {
+          return childrenBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .HwEntity children = 9;</code>
+       */
+      public int getChildrenCount() {
+        if (childrenBuilder_ == null) {
+          return children_.size();
+        } else {
+          return childrenBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .HwEntity children = 9;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity getChildren(int index) {
+        if (childrenBuilder_ == null) {
+          return children_.get(index);
+        } else {
+          return childrenBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .HwEntity children = 9;</code>
+       */
+      public Builder setChildren(
+          int index, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity value) {
+        if (childrenBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureChildrenIsMutable();
+          children_.set(index, value);
+          onChanged();
+        } else {
+          childrenBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .HwEntity children = 9;</code>
+       */
+      public Builder setChildren(
+          int index, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.Builder builderForValue) {
+        if (childrenBuilder_ == null) {
+          ensureChildrenIsMutable();
+          children_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          childrenBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .HwEntity children = 9;</code>
+       */
+      public Builder addChildren(org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity value) {
+        if (childrenBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureChildrenIsMutable();
+          children_.add(value);
+          onChanged();
+        } else {
+          childrenBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .HwEntity children = 9;</code>
+       */
+      public Builder addChildren(
+          int index, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity value) {
+        if (childrenBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureChildrenIsMutable();
+          children_.add(index, value);
+          onChanged();
+        } else {
+          childrenBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .HwEntity children = 9;</code>
+       */
+      public Builder addChildren(
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.Builder builderForValue) {
+        if (childrenBuilder_ == null) {
+          ensureChildrenIsMutable();
+          children_.add(builderForValue.build());
+          onChanged();
+        } else {
+          childrenBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .HwEntity children = 9;</code>
+       */
+      public Builder addChildren(
+          int index, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.Builder builderForValue) {
+        if (childrenBuilder_ == null) {
+          ensureChildrenIsMutable();
+          children_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          childrenBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .HwEntity children = 9;</code>
+       */
+      public Builder addAllChildren(
+          java.lang.Iterable<? extends org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity> values) {
+        if (childrenBuilder_ == null) {
+          ensureChildrenIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, children_);
+          onChanged();
+        } else {
+          childrenBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .HwEntity children = 9;</code>
+       */
+      public Builder clearChildren() {
+        if (childrenBuilder_ == null) {
+          children_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000100);
+          onChanged();
+        } else {
+          childrenBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .HwEntity children = 9;</code>
+       */
+      public Builder removeChildren(int index) {
+        if (childrenBuilder_ == null) {
+          ensureChildrenIsMutable();
+          children_.remove(index);
+          onChanged();
+        } else {
+          childrenBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .HwEntity children = 9;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.Builder getChildrenBuilder(
+          int index) {
+        return getChildrenFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .HwEntity children = 9;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntityOrBuilder getChildrenOrBuilder(
+          int index) {
+        if (childrenBuilder_ == null) {
+          return children_.get(index);  } else {
+          return childrenBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .HwEntity children = 9;</code>
+       */
+      public java.util.List<? extends org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntityOrBuilder> 
+           getChildrenOrBuilderList() {
+        if (childrenBuilder_ != null) {
+          return childrenBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(children_);
+        }
+      }
+      /**
+       * <code>repeated .HwEntity children = 9;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.Builder addChildrenBuilder() {
+        return getChildrenFieldBuilder().addBuilder(
+            org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .HwEntity children = 9;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.Builder addChildrenBuilder(
+          int index) {
+        return getChildrenFieldBuilder().addBuilder(
+            index, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .HwEntity children = 9;</code>
+       */
+      public java.util.List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.Builder> 
+           getChildrenBuilderList() {
+        return getChildrenFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntityOrBuilder> 
+          getChildrenFieldBuilder() {
+        if (childrenBuilder_ == null) {
+          childrenBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntityOrBuilder>(
+                  children_,
+                  ((bitField0_ & 0x00000100) == 0x00000100),
+                  getParentForChildren(),
+                  isClean());
+          children_ = null;
+        }
+        return childrenBuilder_;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:HwEntity)
+    }
+
+    // @@protoc_insertion_point(class_scope:HwEntity)
+    private static final org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity();
+    }
+
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<HwEntity>
+        PARSER = new com.google.protobuf.AbstractParser<HwEntity>() {
+      public HwEntity parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new HwEntity(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<HwEntity> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<HwEntity> getParserForType() {
+      return PARSER;
+    }
+
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface NodeOrBuilder extends
       // @@protoc_insertion_point(interface_extends:Node)
       com.google.protobuf.MessageOrBuilder {
@@ -9371,6 +12196,19 @@ public final class OpennmsModelProtos {
      */
     org.opennms.features.kafka.producer.model.OpennmsModelProtos.SnmpInterfaceOrBuilder getSnmpInterfaceOrBuilder(
         int index);
+
+    /**
+     * <code>.HwEntity hw_inventory = 13;</code>
+     */
+    boolean hasHwInventory();
+    /**
+     * <code>.HwEntity hw_inventory = 13;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity getHwInventory();
+    /**
+     * <code>.HwEntity hw_inventory = 13;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntityOrBuilder getHwInventoryOrBuilder();
   }
   /**
    * Protobuf type {@code Node}
@@ -9507,6 +12345,19 @@ public final class OpennmsModelProtos {
               }
               snmpInterface_.add(
                   input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.SnmpInterface.parser(), extensionRegistry));
+              break;
+            }
+            case 106: {
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.Builder subBuilder = null;
+              if (hwInventory_ != null) {
+                subBuilder = hwInventory_.toBuilder();
+              }
+              hwInventory_ = input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(hwInventory_);
+                hwInventory_ = subBuilder.buildPartial();
+              }
+
               break;
             }
           }
@@ -9898,6 +12749,27 @@ public final class OpennmsModelProtos {
       return snmpInterface_.get(index);
     }
 
+    public static final int HW_INVENTORY_FIELD_NUMBER = 13;
+    private org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity hwInventory_;
+    /**
+     * <code>.HwEntity hw_inventory = 13;</code>
+     */
+    public boolean hasHwInventory() {
+      return hwInventory_ != null;
+    }
+    /**
+     * <code>.HwEntity hw_inventory = 13;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity getHwInventory() {
+      return hwInventory_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.getDefaultInstance() : hwInventory_;
+    }
+    /**
+     * <code>.HwEntity hw_inventory = 13;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntityOrBuilder getHwInventoryOrBuilder() {
+      return getHwInventory();
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -9945,6 +12817,9 @@ public final class OpennmsModelProtos {
       }
       for (int i = 0; i < snmpInterface_.size(); i++) {
         output.writeMessage(12, snmpInterface_.get(i));
+      }
+      if (hwInventory_ != null) {
+        output.writeMessage(13, getHwInventory());
       }
       unknownFields.writeTo(output);
     }
@@ -9999,6 +12874,10 @@ public final class OpennmsModelProtos {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(12, snmpInterface_.get(i));
       }
+      if (hwInventory_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(13, getHwInventory());
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -10039,6 +12918,11 @@ public final class OpennmsModelProtos {
           .equals(other.getIpInterfaceList());
       result = result && getSnmpInterfaceList()
           .equals(other.getSnmpInterfaceList());
+      result = result && (hasHwInventory() == other.hasHwInventory());
+      if (hasHwInventory()) {
+        result = result && getHwInventory()
+            .equals(other.getHwInventory());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -10081,6 +12965,10 @@ public final class OpennmsModelProtos {
       if (getSnmpInterfaceCount() > 0) {
         hash = (37 * hash) + SNMP_INTERFACE_FIELD_NUMBER;
         hash = (53 * hash) + getSnmpInterfaceList().hashCode();
+      }
+      if (hasHwInventory()) {
+        hash = (37 * hash) + HW_INVENTORY_FIELD_NUMBER;
+        hash = (53 * hash) + getHwInventory().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -10245,6 +13133,12 @@ public final class OpennmsModelProtos {
         } else {
           snmpInterfaceBuilder_.clear();
         }
+        if (hwInventoryBuilder_ == null) {
+          hwInventory_ = null;
+        } else {
+          hwInventory_ = null;
+          hwInventoryBuilder_ = null;
+        }
         return this;
       }
 
@@ -10300,6 +13194,11 @@ public final class OpennmsModelProtos {
           result.snmpInterface_ = snmpInterface_;
         } else {
           result.snmpInterface_ = snmpInterfaceBuilder_.build();
+        }
+        if (hwInventoryBuilder_ == null) {
+          result.hwInventory_ = hwInventory_;
+        } else {
+          result.hwInventory_ = hwInventoryBuilder_.build();
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -10438,6 +13337,9 @@ public final class OpennmsModelProtos {
               snmpInterfaceBuilder_.addAllMessages(other.snmpInterface_);
             }
           }
+        }
+        if (other.hasHwInventory()) {
+          mergeHwInventory(other.getHwInventory());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -11575,6 +14477,123 @@ public final class OpennmsModelProtos {
         }
         return snmpInterfaceBuilder_;
       }
+
+      private org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity hwInventory_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntityOrBuilder> hwInventoryBuilder_;
+      /**
+       * <code>.HwEntity hw_inventory = 13;</code>
+       */
+      public boolean hasHwInventory() {
+        return hwInventoryBuilder_ != null || hwInventory_ != null;
+      }
+      /**
+       * <code>.HwEntity hw_inventory = 13;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity getHwInventory() {
+        if (hwInventoryBuilder_ == null) {
+          return hwInventory_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.getDefaultInstance() : hwInventory_;
+        } else {
+          return hwInventoryBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.HwEntity hw_inventory = 13;</code>
+       */
+      public Builder setHwInventory(org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity value) {
+        if (hwInventoryBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          hwInventory_ = value;
+          onChanged();
+        } else {
+          hwInventoryBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.HwEntity hw_inventory = 13;</code>
+       */
+      public Builder setHwInventory(
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.Builder builderForValue) {
+        if (hwInventoryBuilder_ == null) {
+          hwInventory_ = builderForValue.build();
+          onChanged();
+        } else {
+          hwInventoryBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.HwEntity hw_inventory = 13;</code>
+       */
+      public Builder mergeHwInventory(org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity value) {
+        if (hwInventoryBuilder_ == null) {
+          if (hwInventory_ != null) {
+            hwInventory_ =
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.newBuilder(hwInventory_).mergeFrom(value).buildPartial();
+          } else {
+            hwInventory_ = value;
+          }
+          onChanged();
+        } else {
+          hwInventoryBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.HwEntity hw_inventory = 13;</code>
+       */
+      public Builder clearHwInventory() {
+        if (hwInventoryBuilder_ == null) {
+          hwInventory_ = null;
+          onChanged();
+        } else {
+          hwInventory_ = null;
+          hwInventoryBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.HwEntity hw_inventory = 13;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.Builder getHwInventoryBuilder() {
+        
+        onChanged();
+        return getHwInventoryFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.HwEntity hw_inventory = 13;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntityOrBuilder getHwInventoryOrBuilder() {
+        if (hwInventoryBuilder_ != null) {
+          return hwInventoryBuilder_.getMessageOrBuilder();
+        } else {
+          return hwInventory_ == null ?
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.getDefaultInstance() : hwInventory_;
+        }
+      }
+      /**
+       * <code>.HwEntity hw_inventory = 13;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntityOrBuilder> 
+          getHwInventoryFieldBuilder() {
+        if (hwInventoryBuilder_ == null) {
+          hwInventoryBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntity.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.HwEntityOrBuilder>(
+                  getHwInventory(),
+                  getParentForChildren(),
+                  isClean());
+          hwInventory_ = null;
+        }
+        return hwInventoryBuilder_;
+      }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFieldsProto3(unknownFields);
@@ -11655,6 +14674,16 @@ public final class OpennmsModelProtos {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_SnmpInterface_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_HwAlias_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_HwAlias_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_HwEntity_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_HwEntity_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Node_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -11668,54 +14697,63 @@ public final class OpennmsModelProtos {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\034opennms-kafka-producer.proto\"F\n\014NodeCr" +
-      "iteria\022\n\n\002id\030\001 \001(\004\022\026\n\016foreign_source\030\002 \001" +
-      "(\t\022\022\n\nforeign_id\030\003 \001(\t\";\n\016EventParameter" +
-      "\022\014\n\004name\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\022\014\n\004type\030\003 " +
-      "\001(\t\"\245\002\n\005Event\022\n\n\002id\030\001 \001(\004\022\013\n\003uei\030\002 \001(\t\022\r" +
-      "\n\005label\030\003 \001(\t\022\014\n\004time\030\004 \001(\004\022\016\n\006source\030\005 " +
-      "\001(\t\022\"\n\tparameter\030\006 \003(\0132\017.EventParameter\022" +
-      "\023\n\013create_time\030\007 \001(\004\022\023\n\013description\030\010 \001(" +
-      "\t\022\023\n\013log_message\030\t \001(\t\022\033\n\010severity\030\n \001(\016" +
-      "2\t.Severity\022\013\n\003log\030\013 \001(\010\022\017\n\007display\030\014 \001(" +
-      "\010\022$\n\rnode_criteria\030\r \001(\0132\r.NodeCriteria\022" +
-      "\022\n\nip_address\030\016 \001(\t\"\263\004\n\005Alarm\022\n\n\002id\030\001 \001(" +
-      "\004\022\013\n\003uei\030\002 \001(\t\022$\n\rnode_criteria\030\003 \001(\0132\r." +
-      "NodeCriteria\022\022\n\nip_address\030\004 \001(\t\022\024\n\014serv" +
-      "ice_name\030\005 \001(\t\022\025\n\rreduction_key\030\006 \001(\t\022\031\n" +
-      "\004type\030\007 \001(\0162\013.Alarm.Type\022\r\n\005count\030\010 \001(\004\022" +
-      "\033\n\010severity\030\t \001(\0162\t.Severity\022\030\n\020first_ev" +
-      "ent_time\030\n \001(\004\022\023\n\013description\030\013 \001(\t\022\023\n\013l" +
-      "og_message\030\014 \001(\t\022\020\n\010ack_user\030\r \001(\t\022\020\n\010ac" +
-      "k_time\030\016 \001(\004\022\032\n\nlast_event\030\017 \001(\0132\006.Event" +
-      "\022\027\n\017last_event_time\030\020 \001(\004\022\020\n\010if_index\030\021 " +
-      "\001(\r\022\035\n\025operator_instructions\030\022 \001(\t\022\021\n\tcl" +
-      "ear_key\030\023 \001(\t\022\037\n\027managed_object_instance" +
-      "\030\024 \001(\t\022\033\n\023managed_object_type\030\025 \001(\t\"D\n\004T" +
-      "ype\022\026\n\022PROBLEM_WITH_CLEAR\020\000\022\t\n\005CLEAR\020\001\022\031" +
-      "\n\025PROBLEM_WITHOUT_CLEAR\020\002\"\275\001\n\013IpInterfac" +
-      "e\022\n\n\002id\030\001 \001(\004\022\022\n\nip_address\030\002 \001(\t\022\020\n\010if_" +
-      "index\030\003 \001(\r\022.\n\014primary_type\030\004 \001(\0162\030.IpIn" +
-      "terface.PrimaryType\022\017\n\007service\030\005 \003(\t\";\n\013" +
-      "PrimaryType\022\013\n\007PRIMARY\020\000\022\r\n\tSECONDARY\020\001\022" +
-      "\020\n\014NOT_ELIGIBLE\020\002\"\317\001\n\rSnmpInterface\022\n\n\002i" +
-      "d\030\001 \001(\004\022\020\n\010if_index\030\002 \001(\r\022\020\n\010if_descr\030\003 " +
-      "\001(\t\022\017\n\007if_type\030\004 \001(\r\022\017\n\007if_name\030\005 \001(\t\022\020\n" +
-      "\010if_speed\030\006 \001(\004\022\027\n\017if_phys_address\030\007 \001(\t" +
-      "\022\027\n\017if_admin_status\030\010 \001(\r\022\026\n\016if_oper_sta" +
-      "tus\030\t \001(\r\022\020\n\010if_alias\030\n \001(\t\"\227\002\n\004Node\022\n\n\002" +
-      "id\030\001 \001(\004\022\026\n\016foreign_source\030\002 \001(\t\022\022\n\nfore" +
-      "ign_id\030\003 \001(\t\022\020\n\010location\030\004 \001(\t\022\020\n\010catego" +
-      "ry\030\005 \003(\t\022\r\n\005label\030\006 \001(\t\022\023\n\013create_time\030\007" +
-      " \001(\004\022\023\n\013sys_contact\030\010 \001(\t\022\027\n\017sys_descrip" +
-      "tion\030\t \001(\t\022\025\n\rsys_object_id\030\n \001(\t\022\"\n\014ip_" +
-      "interface\030\013 \003(\0132\014.IpInterface\022&\n\016snmp_in" +
-      "terface\030\014 \003(\0132\016.SnmpInterface*g\n\010Severit" +
-      "y\022\021\n\rINDETERMINATE\020\000\022\013\n\007CLEARED\020\001\022\n\n\006NOR" +
-      "MAL\020\002\022\013\n\007WARNING\020\003\022\t\n\005MINOR\020\004\022\t\n\005MAJOR\020\005" +
-      "\022\014\n\010CRITICAL\020\006B?\n)org.opennms.features.k" +
-      "afka.producer.modelB\022OpennmsModelProtosb" +
-      "\006proto3"
+      "\n+src/main/proto/opennms-kafka-producer." +
+      "proto\"F\n\014NodeCriteria\022\n\n\002id\030\001 \001(\004\022\026\n\016for" +
+      "eign_source\030\002 \001(\t\022\022\n\nforeign_id\030\003 \001(\t\";\n" +
+      "\016EventParameter\022\014\n\004name\030\001 \001(\t\022\r\n\005value\030\002" +
+      " \001(\t\022\014\n\004type\030\003 \001(\t\"\245\002\n\005Event\022\n\n\002id\030\001 \001(\004" +
+      "\022\013\n\003uei\030\002 \001(\t\022\r\n\005label\030\003 \001(\t\022\014\n\004time\030\004 \001" +
+      "(\004\022\016\n\006source\030\005 \001(\t\022\"\n\tparameter\030\006 \003(\0132\017." +
+      "EventParameter\022\023\n\013create_time\030\007 \001(\004\022\023\n\013d" +
+      "escription\030\010 \001(\t\022\023\n\013log_message\030\t \001(\t\022\033\n" +
+      "\010severity\030\n \001(\0162\t.Severity\022\013\n\003log\030\013 \001(\010\022" +
+      "\017\n\007display\030\014 \001(\010\022$\n\rnode_criteria\030\r \001(\0132" +
+      "\r.NodeCriteria\022\022\n\nip_address\030\016 \001(\t\"\321\004\n\005A" +
+      "larm\022\n\n\002id\030\001 \001(\004\022\013\n\003uei\030\002 \001(\t\022$\n\rnode_cr" +
+      "iteria\030\003 \001(\0132\r.NodeCriteria\022\022\n\nip_addres" +
+      "s\030\004 \001(\t\022\024\n\014service_name\030\005 \001(\t\022\025\n\rreducti" +
+      "on_key\030\006 \001(\t\022\031\n\004type\030\007 \001(\0162\013.Alarm.Type\022" +
+      "\r\n\005count\030\010 \001(\004\022\033\n\010severity\030\t \001(\0162\t.Sever" +
+      "ity\022\030\n\020first_event_time\030\n \001(\004\022\023\n\013descrip" +
+      "tion\030\013 \001(\t\022\023\n\013log_message\030\014 \001(\t\022\020\n\010ack_u" +
+      "ser\030\r \001(\t\022\020\n\010ack_time\030\016 \001(\004\022\032\n\nlast_even" +
+      "t\030\017 \001(\0132\006.Event\022\027\n\017last_event_time\030\020 \001(\004" +
+      "\022\020\n\010if_index\030\021 \001(\r\022\035\n\025operator_instructi" +
+      "ons\030\022 \001(\t\022\021\n\tclear_key\030\023 \001(\t\022\037\n\027managed_" +
+      "object_instance\030\024 \001(\t\022\033\n\023managed_object_" +
+      "type\030\025 \001(\t\022\034\n\014relatedAlarm\030\026 \003(\0132\006.Alarm" +
+      "\"D\n\004Type\022\026\n\022PROBLEM_WITH_CLEAR\020\000\022\t\n\005CLEA" +
+      "R\020\001\022\031\n\025PROBLEM_WITHOUT_CLEAR\020\002\"\275\001\n\013IpInt" +
+      "erface\022\n\n\002id\030\001 \001(\004\022\022\n\nip_address\030\002 \001(\t\022\020" +
+      "\n\010if_index\030\003 \001(\r\022.\n\014primary_type\030\004 \001(\0162\030" +
+      ".IpInterface.PrimaryType\022\017\n\007service\030\005 \003(" +
+      "\t\";\n\013PrimaryType\022\013\n\007PRIMARY\020\000\022\r\n\tSECONDA" +
+      "RY\020\001\022\020\n\014NOT_ELIGIBLE\020\002\"\317\001\n\rSnmpInterface" +
+      "\022\n\n\002id\030\001 \001(\004\022\020\n\010if_index\030\002 \001(\r\022\020\n\010if_des" +
+      "cr\030\003 \001(\t\022\017\n\007if_type\030\004 \001(\r\022\017\n\007if_name\030\005 \001" +
+      "(\t\022\020\n\010if_speed\030\006 \001(\004\022\027\n\017if_phys_address\030" +
+      "\007 \001(\t\022\027\n\017if_admin_status\030\010 \001(\r\022\026\n\016if_ope" +
+      "r_status\030\t \001(\r\022\020\n\010if_alias\030\n \001(\t\"%\n\007HwAl" +
+      "ias\022\r\n\005index\030\001 \001(\r\022\013\n\003oid\030\002 \001(\t\"\210\002\n\010HwEn" +
+      "tity\022\032\n\022ent_physical_index\030\001 \001(\r\022\021\n\tenti" +
+      "ty_id\030\002 \001(\r\022\032\n\022ent_physical_class\030\003 \001(\t\022" +
+      "\032\n\022ent_physical_descr\030\004 \001(\t\022\033\n\023ent_physi" +
+      "cal_is_fru\030\005 \001(\010\022\031\n\021ent_physical_name\030\006 " +
+      "\001(\t\022 \n\030ent_physical_vendor_type\030\007 \001(\t\022\036\n" +
+      "\014ent_hw_alias\030\010 \003(\0132\010.HwAlias\022\033\n\010childre" +
+      "n\030\t \003(\0132\t.HwEntity\"\270\002\n\004Node\022\n\n\002id\030\001 \001(\004\022" +
+      "\026\n\016foreign_source\030\002 \001(\t\022\022\n\nforeign_id\030\003 " +
+      "\001(\t\022\020\n\010location\030\004 \001(\t\022\020\n\010category\030\005 \003(\t\022" +
+      "\r\n\005label\030\006 \001(\t\022\023\n\013create_time\030\007 \001(\004\022\023\n\013s" +
+      "ys_contact\030\010 \001(\t\022\027\n\017sys_description\030\t \001(" +
+      "\t\022\025\n\rsys_object_id\030\n \001(\t\022\"\n\014ip_interface" +
+      "\030\013 \003(\0132\014.IpInterface\022&\n\016snmp_interface\030\014" +
+      " \003(\0132\016.SnmpInterface\022\037\n\014hw_inventory\030\r \001" +
+      "(\0132\t.HwEntity*g\n\010Severity\022\021\n\rINDETERMINA" +
+      "TE\020\000\022\013\n\007CLEARED\020\001\022\n\n\006NORMAL\020\002\022\013\n\007WARNING" +
+      "\020\003\022\t\n\005MINOR\020\004\022\t\n\005MAJOR\020\005\022\014\n\010CRITICAL\020\006B?" +
+      "\n)org.opennms.features.kafka.producer.mo" +
+      "delB\022OpennmsModelProtosb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -11752,7 +14790,7 @@ public final class OpennmsModelProtos {
     internal_static_Alarm_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Alarm_descriptor,
-        new java.lang.String[] { "Id", "Uei", "NodeCriteria", "IpAddress", "ServiceName", "ReductionKey", "Type", "Count", "Severity", "FirstEventTime", "Description", "LogMessage", "AckUser", "AckTime", "LastEvent", "LastEventTime", "IfIndex", "OperatorInstructions", "ClearKey", "ManagedObjectInstance", "ManagedObjectType", });
+        new java.lang.String[] { "Id", "Uei", "NodeCriteria", "IpAddress", "ServiceName", "ReductionKey", "Type", "Count", "Severity", "FirstEventTime", "Description", "LogMessage", "AckUser", "AckTime", "LastEvent", "LastEventTime", "IfIndex", "OperatorInstructions", "ClearKey", "ManagedObjectInstance", "ManagedObjectType", "RelatedAlarm", });
     internal_static_IpInterface_descriptor =
       getDescriptor().getMessageTypes().get(4);
     internal_static_IpInterface_fieldAccessorTable = new
@@ -11765,12 +14803,24 @@ public final class OpennmsModelProtos {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_SnmpInterface_descriptor,
         new java.lang.String[] { "Id", "IfIndex", "IfDescr", "IfType", "IfName", "IfSpeed", "IfPhysAddress", "IfAdminStatus", "IfOperStatus", "IfAlias", });
-    internal_static_Node_descriptor =
+    internal_static_HwAlias_descriptor =
       getDescriptor().getMessageTypes().get(6);
+    internal_static_HwAlias_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_HwAlias_descriptor,
+        new java.lang.String[] { "Index", "Oid", });
+    internal_static_HwEntity_descriptor =
+      getDescriptor().getMessageTypes().get(7);
+    internal_static_HwEntity_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_HwEntity_descriptor,
+        new java.lang.String[] { "EntPhysicalIndex", "EntityId", "EntPhysicalClass", "EntPhysicalDescr", "EntPhysicalIsFru", "EntPhysicalName", "EntPhysicalVendorType", "EntHwAlias", "Children", });
+    internal_static_Node_descriptor =
+      getDescriptor().getMessageTypes().get(8);
     internal_static_Node_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Node_descriptor,
-        new java.lang.String[] { "Id", "ForeignSource", "ForeignId", "Location", "Category", "Label", "CreateTime", "SysContact", "SysDescription", "SysObjectId", "IpInterface", "SnmpInterface", });
+        new java.lang.String[] { "Id", "ForeignSource", "ForeignId", "Location", "Category", "Label", "CreateTime", "SysContact", "SysDescription", "SysObjectId", "IpInterface", "SnmpInterface", "HwInventory", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

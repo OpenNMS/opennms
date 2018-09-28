@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features
+        name="opennms-${project.version}"
+        xmlns="http://karaf.apache.org/xmlns/features/v1.4.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
+>
+
+    <!-- Install bootstrap feature to start all flow related features automatically -->
+    <feature name="autostart-sentinel-telemetry-flows" version="${project.version}" start-level="100" install="auto">
+        <!--
+            Starts the Netflow5Adapter to process Netflow5 Messages.
+            Be aware, that this requires a Listener with name "Netflow-5" on the Minion-side to have messages
+            processed properly.
+        -->
+        <config name="org.opennms.features.telemetry.adapters-netflow5">
+            name = Netflow-5
+            class-name = org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5Adapter
+        </config>
+        <config name="org.opennms.features.telemetry.adapters-netflow9">
+            name = Netflow-9
+            class-name = org.opennms.netmgt.telemetry.adapters.netflow.v9.Netflow9Adapter
+        </config>
+        <config name="org.opennms.features.telemetry.adapters-ipfix">
+            name = IPFIX
+            class-name = org.opennms.netmgt.telemetry.adapters.netflow.ipfix.IpfixAdapter
+        </config>
+        <config name="org.opennms.features.telemetry.adapters-sflow">
+            name = SFlow
+            class-name = org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowAdapter
+        </config>
+        <!-- Point sentinel to the correct elastic endpoint -->
+        <config name="org.opennms.features.flows.persistence.elastic">
+            elasticUrl = http://elasticsearch:9200
+        </config>
+        <feature>sentinel-kafka</feature>
+        <feature>sentinel-flows</feature>
+    </feature>
+</features>

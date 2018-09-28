@@ -31,20 +31,25 @@ package org.opennms.features.kafka.producer;
 import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
-import org.opennms.netmgt.alarmd.api.AlarmLifecycleSubscriptionService;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -68,7 +73,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private final NodeCache nodeCache;
     private final ConfigurationAdmin configAdmin;
     private final EventSubscriptionService eventSubscriptionService;
-    private final AlarmLifecycleSubscriptionService alarmLifecycleSubscriptionService;
+    private KafkaAlarmDataSync dataSync;
 
     private String eventTopic;
     private String alarmTopic;
@@ -76,6 +81,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     private boolean forwardEvents;
     private boolean forwardAlarms;
+    private boolean suppressIncrementalAlarms;
     private boolean forwardNodes;
     private Expression eventFilterExpression;
     private Expression alarmFilterExpression;
@@ -85,15 +91,17 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private final CountDownLatch forwardedNode = new CountDownLatch(1);
 
     private KafkaProducer<String, byte[]> producer;
+    
+    private final Map<String, OpennmsModelProtos.Alarm> outstandingAlarms = new ConcurrentHashMap<>();
+    private final AlarmEqualityChecker alarmEqualityChecker =
+            AlarmEqualityChecker.with(AlarmEqualityChecker.Exclusions::defaultExclusions);
 
     public OpennmsKafkaProducer(ProtobufMapper protobufMapper, NodeCache nodeCache,
-                                ConfigurationAdmin configAdmin, EventSubscriptionService eventSubscriptionService,
-                                AlarmLifecycleSubscriptionService alarmLifecycleSubscriptionService) {
+                                ConfigurationAdmin configAdmin, EventSubscriptionService eventSubscriptionService) {
         this.protobufMapper = Objects.requireNonNull(protobufMapper);
         this.nodeCache = Objects.requireNonNull(nodeCache);
         this.configAdmin = Objects.requireNonNull(configAdmin);
         this.eventSubscriptionService = Objects.requireNonNull(eventSubscriptionService);
-        this.alarmLifecycleSubscriptionService = Objects.requireNonNull(alarmLifecycleSubscriptionService);
     }
 
     public void init() throws IOException {
@@ -123,9 +131,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         if (forwardEvents) {
             eventSubscriptionService.addEventListener(this);
         }
-        if (forwardAlarms) {
-            alarmLifecycleSubscriptionService.addAlarmLifecyleListener(this);
-        }
     }
 
     public void destroy() {
@@ -136,9 +141,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
         if (forwardEvents) {
             eventSubscriptionService.removeEventListener(this);
-        }
-        if (forwardAlarms) {
-            alarmLifecycleSubscriptionService.removeAlarmLifecycleListener(this);
         }
     }
 
@@ -198,9 +200,25 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         return true;
     }
 
+    private boolean isIncrementalAlarm(String reductionKey, OnmsAlarm alarm) {
+        OpennmsModelProtos.Alarm existingAlarm = outstandingAlarms.get(reductionKey);
+        return existingAlarm != null && alarmEqualityChecker.equalsExcludingOnFirst(protobufMapper.toAlarm(alarm),
+                existingAlarm);
+    }
+
+    private void recordIncrementalAlarm(String reductionKey, OnmsAlarm alarm) {
+        // Apply the excluded fields when putting to the map so we do not have to perform this calculation
+        // on each equality check
+        outstandingAlarms.put(reductionKey,
+                AlarmEqualityChecker.Exclusions.defaultExclusions(protobufMapper.toAlarm(alarm)).build());
+    }
+
     private void updateAlarm(String reductionKey, OnmsAlarm alarm) {
         // Always push null records, no good way to perform filtering on these
         if (alarm == null) {
+            // The alarm has been deleted so we shouldn't track it in the map of outstanding alarms any longer
+            outstandingAlarms.remove(reductionKey);
+            
             // The alarm was deleted, push a null record to the reduction key
             sendRecord(() -> {
                 LOG.debug("Deleting alarm with reduction key: {}", reductionKey);
@@ -218,6 +236,10 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             return;
         }
 
+        if (suppressIncrementalAlarms && isIncrementalAlarm(reductionKey, alarm)) {
+            return;
+        }
+
         // Node handling
         if (forwardNodes && alarm.getNodeId() != null) {
             maybeUpdateNode(alarm.getNodeId());
@@ -227,6 +249,9 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         sendRecord(() -> {
             final OpennmsModelProtos.Alarm mappedAlarm = protobufMapper.toAlarm(alarm).build();
             LOG.debug("Sending alarm with reduction key: {}", reductionKey);
+            if (suppressIncrementalAlarms) {
+                recordIncrementalAlarm(reductionKey, alarm);
+            }
             return new ProducerRecord<>(alarmTopic, reductionKey, mappedAlarm.toByteArray());
         }, recordMetadata -> {
             // We've got an ACK from the server that the alarm was forwarded
@@ -294,12 +319,36 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     }
 
     @Override
+    public void handleAlarmSnapshot(List<OnmsAlarm> alarms) {
+        if (!forwardAlarms || dataSync == null) {
+            // Ignore
+            return;
+        }
+        
+        // Remove any outstanding alarms that are not present in the snapshot
+        Set<String> reductionKeysInSnapshot = alarms.stream()
+                .map(OnmsAlarm::getReductionKey)
+                .collect(Collectors.toSet());
+        outstandingAlarms.keySet().removeIf(reductionKey -> !reductionKeysInSnapshot.contains(reductionKey));
+
+        dataSync.handleAlarmSnapshot(alarms);
+    }
+
+    @Override
     public void handleNewOrUpdatedAlarm(OnmsAlarm alarm) {
+        if (!forwardAlarms) {
+            // Ignore
+            return;
+        }
         updateAlarm(alarm.getReductionKey(), alarm);
     }
 
     @Override
     public void handleDeletedAlarm(int alarmId, String reductionKey) {
+        if (!forwardAlarms) {
+            // Ignore
+            return;
+        }
         handleDeletedAlarm(reductionKey);
     }
 
@@ -348,6 +397,11 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         }
     }
 
+    public OpennmsKafkaProducer setDataSync(KafkaAlarmDataSync dataSync) {
+        this.dataSync = dataSync;
+        return this;
+    }
+
     public boolean isForwardingAlarms() {
         return forwardAlarms;
     }
@@ -362,5 +416,9 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     public CountDownLatch getNodeForwardedLatch() {
         return forwardedNode;
+    }
+
+    public void setSuppressIncrementalAlarms(boolean suppressIncrementalAlarms) {
+        this.suppressIncrementalAlarms = suppressIncrementalAlarms;
     }
 }

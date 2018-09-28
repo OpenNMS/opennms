@@ -1,0 +1,60 @@
+{
+  "@timestamp": 0,
+  "@version": 1,
+  "host": "192.168.1.1",
+  "location": "SomeLocation",
+  "netflow.bytes": 0,
+  "netflow.convo_key": "[\"SomeLocation\",0,\"192.168.1.2\",0,\"192.168.2.2\",0]",
+  "netflow.direction": "ingress",
+  "netflow.dst_addr": "192.168.2.2",
+  "netflow.dst_as": 0,
+  "netflow.dst_locality": "private",
+  "netflow.dst_mask_len": 0,
+  "netflow.dst_port": 0,
+  "netflow.engine_id": 0,
+  "netflow.engine_type": 0,
+  "netflow.first_switched": 0,
+  "netflow.flow_locality": "private",
+  "netflow.flow_records": 0,
+  "netflow.flow_seq_num": 0,
+  "netflow.input_snmp": 0,
+  "netflow.ip_protocol_version": 4,
+  "netflow.last_switched": 0,
+  "netflow.output_snmp": 0,
+  "netflow.packets": 0,
+  "netflow.protocol": 0,
+  "netflow.sampling_interval": 0,
+  "netflow.sampling_algorithm": "Unassigned",
+  "netflow.src_addr": "192.168.1.2",
+  "netflow.src_as": 0,
+  "netflow.src_locality": "private",
+  "netflow.src_mask_len": 0,
+  "netflow.src_port": 0,
+  "netflow.tcp_flags": 0,
+  "netflow.tos": 0,
+  "netflow.version": "Netflow v5",
+  "node_dst": {
+    "foreign_source": "SomeRequisition",
+    "foreign_id": "2",
+    "node_id": 2,
+    "categories": [
+      "SomeCategory"
+    ]
+  },
+  "node_exporter": {
+    "foreign_source": "SomeRequisition",
+    "foreign_id": "3",
+    "node_id": 3,
+    "categories": [
+      "SomeCategory"
+    ]
+  },
+  "node_src": {
+    "foreign_source": "SomeRequisition",
+    "foreign_id": "1",
+    "node_id": 1,
+    "categories": [
+      "SomeCategory"
+    ]
+  }
+}

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.telemetry</artifactId>
-    <version>21.1.0-SNAPSHOT</version>
+    <version>23.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.telemetry</groupId>
@@ -14,5 +14,8 @@
     <module>api</module>
     <module>collection</module>
     <module>jti</module>
+    <module>netflow</module>
+    <module>nxos</module>
+    <module>registry</module>
   </modules>
 </project>

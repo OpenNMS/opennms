@@ -241,6 +241,13 @@ public class RestClient {
         return getBuilder(target).get(events);
     }
 
+    public Long getFlowCount(long start, long end) {
+        final WebTarget target = getTarget().path("flows").path("count")
+                .queryParam("start", start)
+                .queryParam("end", end);
+        return getBuilder(target).get(Long.class);
+    }
+
     private WebTarget getTarget() {
         final Client client = ClientBuilder.newClient();
         return client.target(String.format("http://%s:%d/opennms/rest", addr.getHostString(), addr.getPort()));

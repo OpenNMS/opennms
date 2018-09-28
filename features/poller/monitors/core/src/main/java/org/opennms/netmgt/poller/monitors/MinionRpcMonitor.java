@@ -56,13 +56,13 @@ import com.google.common.base.Suppliers;
 @Distributable(DistributionContext.DAEMON)
 public class MinionRpcMonitor extends AbstractServiceMonitor implements RpcExceptionHandler<PollStatus> {
     private final Supplier<NodeDao> nodeDao = Suppliers.memoize(() -> BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class));
-    private final Supplier<RpcClientFactory> rpcClientFactory = Suppliers.memoize(() -> BeanUtils.getBean("daoContext", "camelRpcClientFactory", RpcClientFactory.class));
+    private final Supplier<RpcClientFactory> rpcClientFactory = Suppliers.memoize(() ->    BeanUtils.getBeanFactory("daoContext").getFactory().getBean(RpcClientFactory.class));
 
     private final static int DEFAULT_TTL_IN_MS = -1;
     private final static int DEFAULT_MESSAGE_SIZE = 1024;
 
     @Override
-    public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameters) {
+    public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameters) {  
         Long ttlInMs = ParameterMap.getKeyedLong(parameters, "ttl", DEFAULT_TTL_IN_MS);
         if (ttlInMs < 1) {
             // Use the global default

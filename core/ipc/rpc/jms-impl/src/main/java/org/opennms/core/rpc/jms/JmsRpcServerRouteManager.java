@@ -30,7 +30,6 @@ package org.opennms.core.rpc.jms;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.ExchangePattern;
-import org.apache.camel.RoutesBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jms.JmsEndpoint;
 import org.opennms.core.camel.JmsQueueNameFactory;
@@ -40,7 +39,7 @@ import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.core.rpc.camel.CamelRpcConstants;
 import org.opennms.core.rpc.camel.CamelRpcServerProcessor;
 import org.opennms.core.rpc.camel.CamelRpcServerRouteManager;
-import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.MinionIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

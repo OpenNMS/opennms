@@ -42,7 +42,11 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import javax.persistence.criteria.CriteriaBuilder;
+
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.transform.ResultTransformer;
 import org.opennms.core.criteria.Alias;
@@ -149,6 +153,18 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
 
     /** {@inheritDoc} */
     @Override
+    public List<OnmsNode> findByForeignId(String foreignId) {
+        return find("from OnmsNode as n where n.foreignId = ?", foreignId);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public List<OnmsNode> findByForeignIdForLocation(String foreignId, String location) {
+        return find("from OnmsNode as n where n.foreignId = ? and n.location.locationName = ?", foreignId, location);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
     public OnmsNode getHierarchy(Integer id) {
         OnmsNode node = findUnique(
                                    "select distinct n from OnmsNode as n "
@@ -175,6 +191,12 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         return find("from OnmsNode as n where n.label = ?", label);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public List<OnmsNode> findByLabelForLocation(String label, String location) {
+        return find("from OnmsNode as n where n.label = ? and n.location.locationName = ?", label, location);
+    }
+    
     /** {@inheritDoc} */
     @Override
     public List<OnmsNode> findAllByVarCharAssetColumn(
@@ -496,5 +518,17 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         Integer nextNodeId = null;
         nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id < ? and n.type != ? order by n.id desc limit 1", nodeId, String.valueOf(NodeType.DELETED.value())).get(0);
         return nextNodeId;
+    }
+
+    @Override
+    public void markHavingFlows(final Collection<Integer> ids) {
+        getHibernateTemplate().executeWithNativeSession(session -> session.createSQLQuery("update node set hasFlows = true where nodeid in (:ids)")
+                .setParameterList("ids", ids)
+                .executeUpdate());
+    }
+
+    @Override
+    public List<OnmsNode> findAllHavingFlows() {
+        return find("from OnmsNode as n where n.hasFlows = true");
     }
 }

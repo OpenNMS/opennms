@@ -97,7 +97,7 @@ public class AlarmElasticsearch5IT {
         installElasticsearchFeaturesOnOpenNMS(opennmsSshAddr);
 
         // There should be no alarms in ES currently
-        assertThat(getNumberOfAlarmsInEsWithUei(esRestAddr, EventConstants.IMPORT_FAILED_UEI), equalTo(0));
+        assertThat(getNumberOfAlarmsInEsWithUei(esRestAddr, EventConstants.IMPORT_FAILED_UEI), equalTo(0L));
 
         // Now send some event that will in turn trigger an alarm
         final EventBuilder builder = new EventBuilder(EventConstants.IMPORT_FAILED_UEI, "test");
@@ -109,7 +109,7 @@ public class AlarmElasticsearch5IT {
         // Now wait until the alarm is available in ES
         with().pollInterval(5, SECONDS).await().atMost(2, MINUTES)
                 .until(() -> getNumberOfAlarmsInEsWithUei(esRestAddr, EventConstants.IMPORT_FAILED_UEI),
-                        equalTo(1));
+                        equalTo(1L));
     }
 
     private static void installElasticsearchFeaturesOnOpenNMS(InetSocketAddress opennmsSshAddr) throws Exception {
@@ -118,9 +118,8 @@ public class AlarmElasticsearch5IT {
 
             // Configure and install the Elasticsearch REST event forwarder
             pipe.println("config:edit org.opennms.plugin.elasticsearch.rest.forwarder");
-            // Retry enough times that all events are eventually sent
-            // even if transient ES outages occur
-            pipe.println("config:property-set retries 200");
+            pipe.println("config:property-set elasticUrl http://elasticsearch:9200");
+            pipe.println("config:property-set retries 10");
             pipe.println("config:update");
             pipe.println("feature:install opennms-es-rest");
             pipe.println("feature:install alarm-change-notifier");
@@ -137,7 +136,7 @@ public class AlarmElasticsearch5IT {
         }
     }
 
-    private static int getNumberOfAlarmsInEsWithUei(InetSocketAddress esHttpAddr, String uei) throws IOException {
+    private static Long getNumberOfAlarmsInEsWithUei(InetSocketAddress esHttpAddr, String uei) throws IOException {
         JestClient client = null;
         try {
             JestClientFactory factory = new JestClientFactory();

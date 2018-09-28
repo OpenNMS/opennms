@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <changeSet author="smith" id="23.0.0-alarm-situations">
+    <addColumn tableName="alarms">
+      <!-- Differentiate between an OnmsAlarm type and a Situation type, both of which are stored in the same table -->
+      <column name="discriminator" type="TEXT" value="OnmsAlarm"/>
+    </addColumn>
+    <addNotNullConstraint tableName="alarms" columnName="discriminator"/>
+
+    <!-- table name chosen over 'situation_alarms' in order to group this table in close proximity of 'alarms' and 'alarm_attributes' -->
+    <createTable tableName="alarm_situations">
+        <column name="situation_id" type="integer">
+          <constraints nullable="false"/>
+        </column>
+        <column name="alarms_alarmid" type="integer">
+          <constraints nullable="false"/>
+        </column>
+    </createTable>
+  
+    <addUniqueConstraint tableName="alarm_situations" columnNames="situation_id, alarms_alarmid"/>
+    <addForeignKeyConstraint constraintName="fk_alarm_situations_situation_id"
+          baseTableName="alarm_situations" baseColumnNames="situation_id" 
+          referencedTableName="alarms" referencedColumnNames="alarmid"/>
+    <addForeignKeyConstraint constraintName="fk_alarm_situations_alarm_id" 
+          baseTableName="alarm_situations" baseColumnNames="alarms_alarmid" 
+          referencedTableName="alarms" referencedColumnNames="alarmid"/>
+
+  </changeSet>
+
+  <changeSet author="smith" id="23.0.0-ent_alias_inventory">
+	<createTable tableName="hwentityalias">
+		<column name="id" type="integer">
+			<constraints primaryKey="true" nullable="false" />
+		</column>
+		<column name="hwentityid" type="integer">
+			<constraints nullable="false" />
+		</column>
+		<column name="index" type="integer">
+			<constraints nullable="false" />
+		</column>
+		<column name="oid" type="text">
+			<constraints nullable="false" />
+		</column>
+	</createTable>
+
+	<ext:addAutoIncrement tableName="hwentityalias"
+		columnName="id" sequenceName="opennmsnxtid" />
+	<addForeignKeyConstraint
+		constraintName="fk_hwentity_hwentityalias" onDelete="CASCADE"
+		baseTableName="hwentityalias" baseColumnNames="hwentityid"
+		referencedTableName="hwentity" referencedColumnNames="id" />
+	<createIndex tableName="hwentityalias"
+		indexName="hwentityalias_unique_idx" unique="true">
+		<column name="hwentityid" />
+		<column name="index" />
+	</createIndex>
+
+	<rollback>
+		<dropTable tableName="hwentityalias" />
+	</rollback>
+  </changeSet>
+
+  <changeSet author="mvrueden" id="23.0.0-remove-pollresults-table">
+    <dropTable tableName="pollresults"></dropTable>
+  </changeSet>
+  <changeSet author="mvrueden" id="23.0.0-remove-pollresults-requence">
+    <preConditions onFail="MARK_RAN">
+        <sqlCheck expectedResult="1">
+            SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+            WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'pollresultnxtid'
+        </sqlCheck>
+    </preConditions>
+    <dropSequence sequenceName="pollresultnxtid" />
+  </changeSet>
+  <changeSet author="mvrueden" id="23.0.0-remove-demandpoll-table">
+    <dropTable tableName="demandpolls"></dropTable>
+  </changeSet>
+  <changeSet author="mvrueden" id="23.0.0-remove-demandpoll-requence">
+    <preConditions onFail="MARK_RAN">
+        <sqlCheck expectedResult="1">
+            SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+            WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'demandpollnxtid'
+        </sqlCheck>
+    </preConditions>
+    <dropSequence sequenceName="demandpollnxtid" />
+  </changeSet>
+
+ <changeSet author="smith" id="23.0.0-situations-reverted-to-alarms">
+   <!--  Dropping the Situation subtype. -->
+   <dropColumn columnName="discriminator" tableName="alarms"/>
+   <!--  Renaming member to 'relatedAlarms' in OnmsAlarm type. -->
+   <renameColumn newColumnName="related_alarm_id"
+           oldColumnName="alarms_alarmid"
+            tableName="alarm_situations"/>
+ </changeSet>
+ 
+  <changeSet author="jwhite" id="23.0.0-alarm-situations-cascades">
+    <dropForeignKeyConstraint baseTableName="alarm_situations" constraintName="fk_alarm_situations_alarm_id" />
+    <dropForeignKeyConstraint baseTableName="alarm_situations" constraintName="fk_alarm_situations_situation_id" />
+
+    <addForeignKeyConstraint constraintName="fk_alarm_situations_situation_id" onDelete="CASCADE"
+          baseTableName="alarm_situations" baseColumnNames="situation_id"
+          referencedTableName="alarms" referencedColumnNames="alarmid"/>
+    <addForeignKeyConstraint constraintName="fk_alarm_situations_alarm_id" onDelete="CASCADE"
+	    baseTableName="alarm_situations" baseColumnNames="related_alarm_id"
+          referencedTableName="alarms" referencedColumnNames="alarmid"/>
+  </changeSet>
+
+</databaseChangeLog>
+

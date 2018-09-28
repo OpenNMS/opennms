@@ -1,0 +1,782 @@
+{
+   "template":"opennms-*",
+   "settings":{
+      "index.refresh_interval":"5s"
+   },
+   "mappings": {
+      "_default_": {
+         "dynamic_templates": [
+            {
+               "parameter_fields": {
+                  "match_mapping_type": "string",
+                  "match": "p_*",
+                  "unmatch": "p_stickymemo",
+                  "mapping": {
+                     "index": true,
+                     "type": "keyword",
+                     "fields": {
+                        "raw": {
+                           "index": true,
+                           "type": "text"
+                        }
+                     }
+                  }
+               }
+            },
+            {
+               "asset_fields": {
+                  "match_mapping_type": "string",
+                  "match": "asset-*",
+                  "mapping": {
+                     "index": true,
+                     "type": "keyword",
+                     "fields": {
+                        "raw": {
+                           "index": true,
+                           "type": "text"
+                        }
+                     }
+                  }
+               }
+            },
+            {
+               "base_fields": {
+                  "match_mapping_type": "string",
+                  "match": "*",
+                  "unmatch": [
+                     "asset-*",
+                     "p_*"
+                  ],
+                  "mapping": {
+                     "index": true,
+                     "type": "keyword",
+                     "fields": {
+                        "raw": {
+                           "index": true,
+                           "type": "text"
+                        }
+                     }
+                  }
+               }
+            }
+         ],
+         "properties": {
+            "dow": {
+               "index": true,
+               "type": "long"
+            },
+            "dom": {
+               "index": true,
+               "type": "long"
+            },
+            "hour": {
+               "index": true,
+               "type": "long"
+            },
+            "eventdescr": {
+               "index": true,
+               "type": "text"
+            },
+            "eventseverity": {
+               "index": true,
+               "type": "byte"
+            },
+            "eventseverity_text": {
+               "index": true,
+               "type": "keyword"
+            },
+            "eventsource": {
+               "index": true,
+               "type": "keyword"
+            },
+            "eventuei": {
+               "index": true,
+               "type": "keyword"
+            },
+            "id": {
+               "index": true,
+               "type": "text"
+            },
+            "interface": {
+               "index": true,
+               "type": "ip"
+            },
+            "ipaddr": {
+               "index": true,
+               "type": "keyword"
+            },
+            "logmsg": {
+               "index": true,
+               "type": "text"
+            },
+            "logmsgdest": {
+               "index": true,
+               "type": "keyword"
+            },
+            "p_newalarmvalues": {
+               "properties": {
+                  "alarmacktime": {
+                     "index": true,
+                     "type": "date"
+                  },
+                  "alarmackuser": {
+                     "index": true,
+                     "type": "keyword"
+                  },
+                  "alarmid": {
+                     "index": true,
+                     "type": "long"
+                  },
+                  "alarmtype": {
+                     "index": true,
+                     "type": "short"
+                  },
+                  "applicationdn": {
+                     "index": true,
+                     "type": "keyword"
+                  },
+                  "clearkey": {
+                     "index": true,
+                     "type": "text"
+                  },
+                  "counter": {
+                     "index": true,
+                     "type": "long"
+                  },
+                  "description": {
+                     "index": true,
+                     "type": "text"
+                  },
+                  "eventparms": {
+                     "index": true,
+                     "type": "text"
+                  },
+                  "eventuei": {
+                     "index": true,
+                     "type": "keyword"
+                  },
+                  "firstautomationtime": {
+                     "index": true,
+                     "type": "date"
+                  },
+                  "firsteventtime": {
+                     "index": true,
+                     "type": "date"
+                  },
+                  "ifindex": {
+                     "index": true,
+                     "type": "keyword"
+                  },
+                  "ipaddr": {
+                     "index": true,
+                     "type": "ip"
+                  },
+                  "lastautomationtime": {
+                     "index": true,
+                     "type": "date"
+                  },
+                  "lasteventid": {
+                     "index": true,
+                     "type": "long"
+                  },
+                  "lasteventtime": {
+                     "index": true,
+                     "type": "date"
+                  },
+                  "logmsg": {
+                     "index": true,
+                     "type": "text"
+                  },
+                  "managedobjectinstance": {
+                     "index": true,
+                     "type": "text"
+                  },
+                  "managedobjecttype": {
+                     "index": true,
+                     "type": "text"
+                  },
+                  "mouseovertext": {
+                     "index": false,
+                     "type": "text"
+                  },
+                  "nodeid": {
+                     "index": true,
+                     "type": "long"
+                  },
+                  "operinstruct": {
+                     "index": false,
+                     "type": "text"
+                  },
+                  "ossprimarykey": {
+                     "index": true,
+                     "type": "keyword"
+                  },
+                  "qosalarmstate": {
+                     "index": true,
+                     "type": "text"
+                  },
+                  "reductionkey": {
+                     "index": false,
+                     "type": "text"
+                  },
+                  "serviceid": {
+                     "index": true,
+                     "type": "long"
+                  },
+                  "severity": {
+                     "index": true,
+                     "type": "byte"
+                  },
+                  "stickymemo": {
+                     "properties": {
+                        "p_author": {
+                           "index": true,
+                           "type": "keyword",
+                           "fields": {
+                              "raw": {
+                                 "index": true,
+                                 "type": "text"
+                              }
+                           }
+                        },
+                        "p_body": {
+                           "index": true,
+                           "type": "text"
+                        },
+                        "p_reductionkey": {
+                           "index": false,
+                           "type": "text"
+                        }
+                     }
+                  },
+                  "suppressedtime": {
+                     "index": true,
+                     "type": "date"
+                  },
+                  "suppresseduntil": {
+                     "index": true,
+                     "type": "date"
+                  },
+                  "suppresseduser": {
+                     "index": true,
+                     "type": "keyword"
+                  },
+                  "systemid": {
+                     "index": true,
+                     "type": "keyword"
+                  },
+                  "tticketid": {
+                     "index": true,
+                     "type": "keyword"
+                  },
+                  "tticketstate": {
+                     "index": true,
+                     "type": "byte"
+                  },
+                  "x733alarmtype": {
+                     "index": true,
+                     "type": "keyword"
+                  },
+                  "x733probablecause": {
+                     "index": true,
+                     "type": "short"
+                  }
+               }
+            },
+            "p_oldalarmvalues": {
+               "properties": {
+                  "alarmacktime": {
+                     "index": true,
+                     "type": "date"
+                  },
+                  "alarmackuser": {
+                     "index": true,
+                     "type": "keyword"
+                  },
+                  "alarmid": {
+                     "index": true,
+                     "type": "long"
+                  },
+                  "alarmtype": {
+                     "index": true,
+                     "type": "short"
+                  },
+                  "applicationdn": {
+                     "index": true,
+                     "type": "keyword"
+                  },
+                  "clearkey": {
+                     "index": true,
+                     "type": "text"
+                  },
+                  "counter": {
+                     "index": true,
+                     "type": "long"
+                  },
+                  "description": {
+                     "index": true,
+                     "type": "text"
+                  },
+                  "eventparms": {
+                     "index": true,
+                     "type": "text"
+                  },
+                  "eventuei": {
+                     "index": true,
+                     "type": "keyword"
+                  },
+                  "firstautomationtime": {
+                     "index": true,
+                     "type": "date"
+                  },
+                  "firsteventtime": {
+                     "index": true,
+                     "type": "date"
+                  },
+                  "ifindex": {
+                     "index": true,
+                     "type": "keyword"
+                  },
+                  "ipaddr": {
+                     "index": true,
+                     "type": "ip"
+                  },
+                  "lastautomationtime": {
+                     "index": true,
+                     "type": "date"
+                  },
+                  "lasteventid": {
+                     "index": true,
+                     "type": "long"
+                  },
+                  "lasteventtime": {
+                     "index": true,
+                     "type": "date"
+                  },
+                  "logmsg": {
+                     "index": true,
+                     "type": "text"
+                  },
+                  "managedobjectinstance": {
+                     "index": true,
+                     "type": "text"
+                  },
+                  "managedobjecttype": {
+                     "index": true,
+                     "type": "text"
+                  },
+                  "mouseovertext": {
+                     "index": false,
+                     "type": "text"
+                  },
+                  "nodeid": {
+                     "index": true,
+                     "type": "long"
+                  },
+                  "operinstruct": {
+                     "index": false,
+                     "type": "text"
+                  },
+                  "ossprimarykey": {
+                     "index": true,
+                     "type": "keyword"
+                  },
+                  "qosalarmstate": {
+                     "index": true,
+                     "type": "text"
+                  },
+                  "reductionkey": {
+                     "index": false,
+                     "type": "text"
+                  },
+                  "serviceid": {
+                     "index": true,
+                     "type": "long"
+                  },
+                  "severity": {
+                     "index": true,
+                     "type": "byte"
+                  },
+                  "stickymemo": {
+                     "properties": {
+                        "p_author": {
+                           "index": true,
+                           "type": "keyword",
+                           "fields": {
+                              "raw": {
+                                 "index": true,
+                                 "type": "text"
+                              }
+                           }
+                        },
+                        "p_body": {
+                           "index": true,
+                           "type": "text"
+                        },
+                        "p_reductionkey": {
+                           "index": false,
+                           "type": "text"
+                        }
+                     }
+                  },
+                  "suppressedtime": {
+                     "index": true,
+                     "type": "date"
+                  },
+                  "suppresseduntil": {
+                     "index": true,
+                     "type": "date"
+                  },
+                  "suppresseduser": {
+                     "index": true,
+                     "type": "keyword"
+                  },
+                  "systemid": {
+                     "index": true,
+                     "type": "keyword"
+                  },
+                  "tticketid": {
+                     "index": true,
+                     "type": "keyword"
+                  },
+                  "tticketstate": {
+                     "index": true,
+                     "type": "byte"
+                  },
+                  "x733alarmtype": {
+                     "index": true,
+                     "type": "keyword"
+                  },
+                  "x733probablecause": {
+                     "index": true,
+                     "type": "short"
+                  }
+               }
+            },
+            "p_oldseverity": {
+               "index": true,
+               "type": "byte"
+            },
+            "alarmackduration": {
+               "index": true,
+               "type": "long"
+            },
+            "alarmacktime": {
+               "index": true,
+               "type": "date"
+            },
+            "p_alarmacktime": {
+               "index": true,
+               "type": "date"
+            },
+            "alarmackuser": {
+               "index": true,
+               "type": "keyword"
+            },
+            "p_alarmackuser": {
+               "index": true,
+               "type": "keyword"
+            },
+            "alarmclearduration": {
+               "index": true,
+               "type": "long"
+            },
+            "alarmcleartime": {
+               "index": true,
+               "type": "date"
+            },
+            "p_alarmcleartime": {
+               "index": true,
+               "type": "date"
+            },
+            "alarmid": {
+               "index": true,
+               "type": "long"
+            },
+            "p_alarmid": {
+               "index": true,
+               "type": "long"
+            },
+            "alarmtype": {
+               "index": true,
+               "type": "short"
+            },
+            "p_alarmtype": {
+               "index": true,
+               "type": "short"
+            },
+            "applicationdn": {
+               "index": true,
+               "type": "keyword"
+            },
+            "categories": {
+               "index": true,
+               "type": "text"
+            },
+            "clearkey": {
+               "index": true,
+               "type": "text"
+            },
+            "counter": {
+               "index": true,
+               "type": "long"
+            },
+            "description": {
+               "index": true,
+               "type": "text"
+            },
+            "eventparms": {
+               "index": true,
+               "type": "text"
+            },
+            "p_eventuei": {
+               "index": true,
+               "type": "keyword"
+            },
+            "firstautomationtime": {
+               "index": true,
+               "type": "date"
+            },
+            "firsteventtime": {
+               "index": true,
+               "type": "date"
+            },
+            "foreignid": {
+               "index": true,
+               "type": "keyword"
+            },
+            "foreignsource": {
+               "index": true,
+               "type": "keyword"
+            },
+            "ifindex": {
+               "index": true,
+               "type": "keyword"
+            },
+            "lastautomationtime": {
+               "index": true,
+               "type": "date"
+            },
+            "lasteventid": {
+               "index": true,
+               "type": "long"
+            },
+            "lasteventtime": {
+               "index": true,
+               "type": "date"
+            },
+            "p_logmsg": {
+               "index": true,
+               "type": "text"
+            },
+            "managedobjectinstance": {
+               "index": true,
+               "type": "text"
+            },
+            "managedobjecttype": {
+               "index": true,
+               "type": "text"
+            },
+            "mouseovertext": {
+               "index": false,
+               "type": "text"
+            },
+            "nodeid": {
+               "index": true,
+               "type": "long"
+            },
+            "nodelabel": {
+               "index": true,
+               "type": "keyword",
+               "fields": {
+                  "raw": {
+                     "index": true,
+                     "type": "text"
+                  }
+               }
+            },
+            "nodesyslocation": {
+               "index": true,
+               "type": "keyword",
+               "fields": {
+                  "raw": {
+                     "index": true,
+                     "type": "text"
+                  }
+               }
+            },
+            "nodesysname": {
+               "index": true,
+               "type": "keyword",
+               "fields": {
+                  "raw": {
+                     "index": true,
+                     "type": "text"
+                  }
+               }
+            },
+            "p_oids": {
+               "type": "nested"
+            },
+            "operatingsystem": {
+               "index": true,
+               "type": "keyword",
+               "fields": {
+                  "raw": {
+                     "index": true,
+                     "type": "text"
+                  }
+               }
+            },
+            "operinstruct": {
+               "index": false,
+               "type": "text"
+            },
+            "ossprimarykey": {
+               "index": true,
+               "type": "keyword"
+            },
+            "p_reason": {
+               "index": true,
+               "type": "text"
+            },
+            "qosalarmstate": {
+               "index": true,
+               "type": "text"
+            },
+            "reductionkey": {
+               "index": false,
+               "type": "text"
+            },
+            "p_reductionkey": {
+               "index": false,
+               "type": "text"
+            },
+            "serviceid": {
+               "index": true,
+               "type": "long"
+            },
+            "p_serviceid": {
+               "index": false,
+               "type": "text"
+            },
+            "severity": {
+               "index": true,
+               "type": "byte"
+            },
+            "p_alarmseverity": {
+               "index": false,
+               "type": "byte"
+            },
+            "severity_text": {
+               "index": true,
+               "type": "keyword"
+            },
+            "stickymemo": {
+               "properties": {
+                  "p_author": {
+                     "index": true,
+                     "type": "keyword",
+                     "fields": {
+                        "raw": {
+                           "index": true,
+                           "type": "text"
+                        }
+                     }
+                  },
+                  "p_body": {
+                     "index": true,
+                     "type": "text"
+                  },
+                  "p_reductionkey": {
+                     "index": false,
+                     "type": "text"
+                  }
+               }
+            },
+            "p_stickymemo": {
+               "properties": {
+                  "p_author": {
+                     "index": true,
+                     "type": "keyword",
+                     "fields": {
+                        "raw": {
+                           "index": true,
+                           "type": "text"
+                        }
+                     }
+                  },
+                  "p_body": {
+                     "index": true,
+                     "type": "text"
+                  },
+                  "p_reductionkey": {
+                     "index": false,
+                     "type": "text"
+                  }
+               }
+            },
+            "suppressedtime": {
+               "index": true,
+               "type": "date"
+            },
+            "p_suppressedtime": {
+               "index": true,
+               "type": "date"
+            },
+            "suppresseduntil": {
+               "index": true,
+               "type": "date"
+            },
+            "p_suppresseduntil": {
+               "index": true,
+               "type": "date"
+            },
+            "suppresseduser": {
+               "index": true,
+               "type": "keyword"
+            },
+            "p_suppresseduser": {
+               "index": true,
+               "type": "keyword"
+            },
+            "systemid": {
+               "index": true,
+               "type": "keyword"
+            },
+            "p_systemid": {
+               "index": true,
+               "type": "keyword"
+            },
+            "tticketid": {
+               "index": true,
+               "type": "keyword"
+            },
+            "p_tticketid": {
+               "index": true,
+               "type": "keyword"
+            },
+            "tticketstate": {
+               "index": true,
+               "type": "byte"
+            },
+            "p_tticketstate": {
+               "index": true,
+               "type": "byte"
+            },
+            "x733alarmtype": {
+               "index": true,
+               "type": "keyword"
+            },
+            "x733probablecause": {
+               "index": true,
+               "type": "short"
+            }
+         },
+         "_all": {
+            "enabled": false
+         }
+      }
+   },
+   "aliases": {}
+}

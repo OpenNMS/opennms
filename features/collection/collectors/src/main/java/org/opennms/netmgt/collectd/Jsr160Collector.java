@@ -30,26 +30,11 @@ package org.opennms.netmgt.collectd;
 
 import org.opennms.netmgt.jmx.connection.JmxConnectors;
 
-/**
- * The Jsr160Collector class manages the querying and storage of data into RRD files.  The list of
- * MBeans to be queried is read from the jmx-datacollection-config.xml file using the "jsr160" service name.
- * The super class, JMXCollector, performs all the work.
- *
- * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- */
+// This collector's only purpose is backwards compatibility. Should be removed at some point
 public class Jsr160Collector extends JMXCollector {
 
-    /**
-     * <p>Constructor for Jsr160Collector.</p>
-     */
     public Jsr160Collector() {
         super();
         setServiceName(JmxConnectors.jsr160.toString());
-    }
-
-    @Override
-    protected JmxConnectors getConnectionName() {
-        return JmxConnectors.jsr160;
     }
 }

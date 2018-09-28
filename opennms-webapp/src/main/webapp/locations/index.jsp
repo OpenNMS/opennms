@@ -35,20 +35,12 @@
 	<jsp:param name="title" value="Monitoring Locations" />
 	<jsp:param name="headTitle" value="Monitoring Locations" />
 	<jsp:param name="breadcrumb" value="Monitoring Locations" />
-
-	<jsp:param name="meta" value='<script type="text/javascript" src="lib/moment/min/moment.min.js"></script>' />
-	<jsp:param name="meta" value='<script type="text/javascript" src="lib/js-joda/dist/js-joda.min.js"></script>' />
-	<jsp:param name="meta" value='<script type="text/javascript" src="lib/js-joda-timezone/dist/js-joda-timezone.min.js"></script>' />
-
-	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
-
-	<jsp:param name="script" value='<script type="text/javascript" src="js/onms-date-formatter.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-restresources.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList-monitoringLocation.js"></script>' />
 </jsp:include>
 
-<ng-include src="'locations/main.html'"></ng-include>
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="monitoringLocation-elementList" />
+</jsp:include>
+
+<onms-monitoring-location-list></onms-monitoring-location-list>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

@@ -48,7 +48,8 @@ import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.SystemType;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.provision.service.snmp.IpAddrTable;
@@ -113,6 +114,10 @@ public class LocationAwareSnmpClientIT extends CamelBlueprintTest {
                     @Override
                     public String getLocation() {
                         return REMOTE_LOCATION_NAME;
+                    }
+                    @Override
+                    public String getType() {
+                        return SystemType.Minion.name();
                     }
                 }, new Properties()));
 

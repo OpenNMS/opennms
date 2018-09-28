@@ -138,20 +138,6 @@ public abstract class MockEventUtil {
     }
     
     /**
-     * <p>createDemandPollServiceEvent</p>
-     *
-     * @param source a {@link java.lang.String} object.
-     * @param svc a {@link org.opennms.netmgt.mock.MockService} object.
-     * @param demandPollId a int.
-     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    public static Event createDemandPollServiceEvent(String source, MockService svc, int demandPollId) {
-        EventBuilder event = createServiceEventBuilder(source, EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI, svc, null);
-        event.addParam(EventConstants.PARM_DEMAND_POLL_ID, demandPollId);
-        return event.getEvent();
-    }
-    
-    /**
      * <p>createNodeGainedServiceEvent</p>
      *
      * @param source a {@link java.lang.String} object.
@@ -370,6 +356,27 @@ public abstract class MockEventUtil {
         event.setAlarmData(alarmData);
         return event;
     }
+    
+    /**
+     * <p>createNodeUpEventBuilder</p>
+     *
+     * @param source a {@link java.lang.String} object.
+     * @param node a {@link org.opennms.netmgt.mock.MockNode} object.
+     * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
+     */
+    public static EventBuilder createNodeUpEventBuilder(String source, MockNode node) {
+        EventBuilder event = createNodeEventBuilder(source, EventConstants.NODE_UP_EVENT_UEI, node);
+        event.setSeverity(OnmsSeverity.NORMAL.getLabel());
+        // <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" auto-clean="false" />
+        AlarmData alarmData = new AlarmData();
+        alarmData.setReductionKey("%uei%:%dpname%:%nodeid%");
+        alarmData.setClearKey("uei.opennms.org/nodes/nodeDown:%dpname%:%nodeid%");
+        alarmData.setAlarmType(2);
+        alarmData.setAutoClean(false);
+        event.setAlarmData(alarmData);
+        return event;
+    }
+
 
     /**
      * <p>createNodeUpEvent</p>

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,9 +28,15 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.daemon.DaemonTools;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +56,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  */
+@EventListener(name=Syslogd.NAME, logPrefix=Syslogd.LOG4J_CATEGORY)
 public class Syslogd extends AbstractServiceDaemon {
 
     private static final Logger LOG = LoggerFactory.getLogger(Syslogd.class);
@@ -57,6 +64,7 @@ public class Syslogd extends AbstractServiceDaemon {
     /**
      * The name of the logging category for Syslogd.
      */
+    public static final String NAME = "Syslogd";
     public static final String LOG4J_CATEGORY = "syslogd";
 
     @Autowired
@@ -66,7 +74,7 @@ public class Syslogd extends AbstractServiceDaemon {
      * <p>Constructor for Syslogd.</p>
      */
     public Syslogd() {
-        super(LOG4J_CATEGORY);
+        super(NAME);
     }
 
     public SyslogReceiver getSyslogReceiver() {
@@ -118,5 +126,20 @@ public class Syslogd extends AbstractServiceDaemon {
             }
             LOG.debug("stop: Stopped the Syslogd UDP receiver");
         }
+    }
+
+    private void handleConfigurationChanged() {
+        stop();
+        try {
+            m_udpEventReceiver.reload();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        start();
+    }
+
+    @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
+    public void handleReloadEvent(Event e) {
+        DaemonTools.handleReloadEvent(e, Syslogd.NAME, (event) -> handleConfigurationChanged());
     }
 }

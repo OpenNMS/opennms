@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.snmp</artifactId>
-    <version>21.1.0-SNAPSHOT</version>
+    <version>23.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.snmp</groupId>
@@ -28,7 +28,7 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.features.minion</groupId>
+      <groupId>org.opennms.features.distributed</groupId>
       <artifactId>core-api</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>

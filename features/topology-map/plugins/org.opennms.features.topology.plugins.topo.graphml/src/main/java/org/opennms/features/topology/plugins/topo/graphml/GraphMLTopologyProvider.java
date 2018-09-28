@@ -29,6 +29,7 @@
 package org.opennms.features.topology.plugins.topo.graphml;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -181,8 +182,8 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         Set<Integer> nodeIds = selectedVertices.stream()
                 .filter(eachVertex -> eachVertex.getNamespace().equals(getNamespace()) && eachVertex instanceof GraphMLVertex)
                 .map(eachVertex -> (GraphMLVertex) eachVertex)
-                .filter(eachVertex -> eachVertex.getNodeID() != null)
-                .map(eachVertex -> eachVertex.getNodeID())
+                .map(GraphMLVertex::getNodeID)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
         if (contentType == ContentType.Alarm) {
             return new SelectionChangedListener.AlarmNodeIdSelection(nodeIds);
