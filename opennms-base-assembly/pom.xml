@@ -714,6 +714,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.daemon</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.flows.classification.persistence</groupId>
       <artifactId>org.opennms.features.flows.classification.persistence.impl</artifactId>
       <version>${project.version}</version>

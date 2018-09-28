@@ -11,6 +11,9 @@
   <name>OpenNMS :: Features</name>
   <modules>
 
+    <!-- Enlinkd -->
+    <module>enlinkd</module>
+
     <!-- ActiveMQ broker -->
     <module>activemq</module>
 
