@@ -46,7 +46,7 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 public class WqlObj implements Serializable {
     private static final long serialVersionUID = 2L;
 
-    @XmlAttribute(name = "wql", required = true)
+    @XmlAttribute(name = "query", required = true)
     private String m_wql;
 
     @XmlAttribute(name = "resourceUri", required = true)
