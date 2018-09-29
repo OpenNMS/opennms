@@ -89,7 +89,7 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
         private NodeDao m_nodeDao;
         private EventForwarder m_eventForwarder;
         private WsManAssetAdapterConfig m_config;
-        private final WSManClientFactory m_factory = new CXFWSManClientFactory();
+        private WSManClientFactory m_factory = new CXFWSManClientFactory();
        // private WSManClientFactory m_factory;
         private WSManConfigDao m_wsManConfigDao;
 
@@ -116,19 +116,13 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
         @Override
         AdapterOperationSchedule createScheduleForNode(int nodeId, AdapterOperationType adapterOperationType) {
                 AdapterOperationSchedule aos = new AdapterOperationSchedule(m_delay, 60, 3, m_timeUnit);
-                LOG.info("createScheduleForNode: Scheduling {} for nodeid {} with schedule: {}", aos, nodeId, adapterOperationType);
+                LOG.info("createScheduleForNode: Scheduling {} for nodeid {} with schedule: {}", adapterOperationType, nodeId, aos);
                 return aos;
         }
 
         @Override
         public boolean isNodeReady(AdapterOperation op) {
-                boolean readyState = false;
-                OnmsNode node = m_nodeDao.get(op.getNodeId());
-
-                if (node != null && node.getSysObjectId() != null) {
-                        readyState = true;
-                }
-                return readyState;
+                return true;
         }
 
         /**
@@ -199,22 +193,22 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
 
         private static String fetchWsManAssetString(final WSManClient client, final WSManEndpoint endpoint, final List<WqlObj> wqlObjs, final String formatString) {
 
-                List<Node> nodes = Lists.newLinkedList();
                 final List<String> aliases = new ArrayList<>();
                 final List<String> wqls = new ArrayList<>();
                 final List<String> resourceUris = new ArrayList<>();
                 final List<String> values = new ArrayList<>();
                 for (final WqlObj wqlobj : wqlObjs) {
+                	List<Node> nodes = Lists.newLinkedList();
                         aliases.add(wqlobj.getAlias());
                         wqls.add(wqlobj.getWql());
                         resourceUris.add(wqlobj.getResourceUri());
-                        values.add(client.enumerateAndPullUsingFilter(wqlobj.getResourceUri(), WSManConstants.XML_NS_WQL_DIALECT, wqlobj.getWql(), nodes, true));
+			client.enumerateAndPullUsingFilter(wqlobj.getResourceUri(), WSManConstants.XML_NS_WQL_DIALECT, wqlobj.getWql(), nodes, true);
+                 	values.add(nodes.get(0).getTextContent());
                 }
                 if (values.size() == aliases.size() && values.size() == resourceUris.size() && values.size() == wqls.size()) {
                         final Properties substitutions = new Properties();
                         boolean foundAValue = false;
                         for (int i = 0; i < values.size(); i++) {
-                                // If the value is a NO_SUCH_OBJECT or NO_SUCH_INSTANCE error, then skip it
                                 if (values.get(i) == null) {
                                         // No value for this WQL
                                         continue;
