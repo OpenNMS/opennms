@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import org.opennms.netmgt.model.BridgeStpLink;
-import org.opennms.netmgt.model.BridgeStpLink.BridgeDot1dStpPortEnable;
-import org.opennms.netmgt.model.BridgeStpLink.BridgeDot1dStpPortState;
+import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
+import org.opennms.netmgt.enlinkd.model.BridgeStpLink.BridgeDot1dStpPortEnable;
+import org.opennms.netmgt.enlinkd.model.BridgeStpLink.BridgeDot1dStpPortState;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;

@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import org.opennms.netmgt.model.IsIsLink;
-import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
+import org.opennms.netmgt.enlinkd.model.IsIsLink;
+import org.opennms.netmgt.enlinkd.model.IsIsElement.IsisAdminState;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;

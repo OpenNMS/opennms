@@ -39,10 +39,11 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCOISIS_SNMP_RESOURCE;
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
-import org.opennms.netmgt.model.IsIsLink;
-import org.opennms.netmgt.model.IsIsLink.IsisISAdjNeighSysType;
-import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
+import org.opennms.netmgt.enlinkd.model.IsIsElement;
+import org.opennms.netmgt.enlinkd.model.IsIsLink;
+import org.opennms.netmgt.enlinkd.model.IsIsElement.IsisAdminState;
+import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjNeighSysType;
+import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjState;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms6802NetworkBuilder;
 
@@ -77,11 +78,11 @@ public class Nms6801EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.runSingleSnmpCollection(ciscoiosxr.getId()));
         assertEquals(4, m_isisLinkDao.countAll());
 
-        for (OnmsNode node: m_nodeDao.findAll()) {
-        	assertNotNull(node.getIsisElement());
-        	System.err.println(node.getIsisElement());
-        	assertEquals(CISCOISIS_ISIS_SYS_ID, node.getIsisElement().getIsisSysID());
-        	assertEquals(IsisAdminState.on,node.getIsisElement().getIsisSysAdminState());
+        for (IsIsElement node: m_isisElementDao.findAll()) {
+        	assertNotNull(node);
+        	System.err.println(node);
+        	assertEquals(CISCOISIS_ISIS_SYS_ID, node.getIsisSysID());
+        	assertEquals(IsisAdminState.on,node.getIsisSysAdminState());
         }
         
         for (IsIsLink link: m_isisLinkDao.findAll()) {

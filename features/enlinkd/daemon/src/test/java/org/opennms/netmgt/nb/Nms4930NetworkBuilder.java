@@ -31,11 +31,11 @@ package org.opennms.netmgt.nb;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.opennms.netmgt.dao.api.IpNetToMediaDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.IpNetToMedia;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia.IpNetToMediaType;
+import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.IpNetToMedia.IpNetToMediaType;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 
 public class Nms4930NetworkBuilder extends NmsNetworkBuilder {

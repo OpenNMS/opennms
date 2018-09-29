@@ -38,16 +38,23 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.features.enlinkd.service.api.EnhancedLinkdService;
-import org.opennms.features.enlinkd.service.api.Node;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.dao.api.TopologyDao;
+import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
+import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
+import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
+import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.Node;
+import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsTopologyException;
-import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
-import org.opennms.netmgt.model.topology.BridgeTopologyException;
-import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
@@ -79,8 +86,16 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     /**
      * The DB connection read and write handler
      */
-    private EnhancedLinkdService m_queryMgr;
+    private NodeTopologyService m_queryMgr;
 
+    private BridgeTopologyService m_bridgeTopologyService;
+    private CdpTopologyService m_cdpTopologyService;
+    private IsisTopologyService m_isisTopologyService;
+    private IpNetToMediaTopologyService m_ipNetToMediaTopologyService;
+    private LldpTopologyService m_lldpTopologyService;
+    private OspfTopologyService m_ospfTopologyService;
+
+    private TopologyDao m_topologyDao;
     /**
      * Linkd Configuration Initialization
      */
@@ -124,12 +139,14 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         Assert.state(m_eventForwarder != null,
                      "must set the eventForwarder property");
 
+        createScheduler();
+
         LOG.debug("init: Loading nodes.....");
-        List<Node> nodes = m_queryMgr.getSnmpNodeList();
+        List<Node> nodes = m_queryMgr.findAllSnmpNode();
         Assert.notNull(m_nodes);
         LOG.debug("init: Nodes loaded.");
         LOG.debug("init: Loading Bridge Topology.....");
-        m_queryMgr.loadBridgeTopology();
+        m_bridgeTopologyService.load();
         LOG.debug("init: Bridge Topology loaded.");
 
         scheduleCollection(nodes);
@@ -143,7 +160,19 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         }
 
     }
-    
+
+    private void createScheduler() {
+
+        // Create a scheduler
+        //
+        try {
+            LOG.debug("init: Creating EnhancedLinkd scheduler");
+            setScheduler(new LegacyScheduler("EnhancedLinkd", getLinkdConfig().getThreads()));
+        } catch (RuntimeException e) {
+            LOG.error("init: Failed to create EnhancedLinkd scheduler", e);
+            throw e;
+        }
+    }
     public void scheduleDiscoveryCdpTopology() {
          try {
             m_discoveryCdpTopology = DiscoveryCdpTopology.createAndRegister(this);
@@ -359,10 +388,16 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             m_nodes.remove(nodeid).stream().forEach(coll -> coll.suspend());
         }
         try {
-            m_queryMgr.delete(nodeid);
+            m_bridgeTopologyService.delete(nodeid);
         } catch (BridgeTopologyException e) {
             LOG.error("deleteNode: {}", e.getMessage());
         }
+        m_cdpTopologyService.delete(nodeid);
+        m_isisTopologyService.delete(nodeid);
+        m_lldpTopologyService.delete(nodeid);
+        m_ospfTopologyService.delete(nodeid);
+        m_ipNetToMediaTopologyService.delete(nodeid);
+        //FIXME update with a delete topologyService
 
     }
 
@@ -386,7 +421,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         } 
     }
 
-    public EnhancedLinkdService getQueryManager() {
+    public NodeTopologyService getQueryManager() {
         return m_queryMgr;
     }
 
@@ -396,9 +431,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      * </p>
      * 
      * @param queryMgr
-     *            a {@link org.opennms.features.enlinkd.persistence.api.linkd.EnhancedLinkdService} object.
+     *            a {@link org.opennms.features.NodeTopologyService.persistence.api.linkd.EnhancedLinkdService} object.
      */
-    public void setQueryManager(EnhancedLinkdService queryMgr) {
+    public void setQueryManager(NodeTopologyService queryMgr) {
         m_queryMgr = queryMgr;
     }
 
@@ -496,7 +531,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     }
     
     public synchronized boolean collectBft(int nodeid) {
-    	if (getQueryManager().getUpdateBftMap().size()+m_bridgecollectionsscheduled.size() >= m_linkdConfig.getMaxBft() )
+    	if (m_bridgeTopologyService.getUpdateBftMap().size()+m_bridgecollectionsscheduled.size() >= m_linkdConfig.getMaxBft() )
     		return false;
     	synchronized (m_bridgecollectionsscheduled) {
         	m_bridgecollectionsscheduled.add(nodeid);
@@ -509,5 +544,64 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         	m_bridgecollectionsscheduled.remove(nodeid);
 		}
     }
+
+    public BridgeTopologyService getBridgeTopologyService() {
+        return m_bridgeTopologyService;
+    }
+
+    public void setBridgeTopologyService(
+            BridgeTopologyService bridgeTopologyService) {
+        m_bridgeTopologyService = bridgeTopologyService;
+    }
+
+    public CdpTopologyService getCdpTopologyService() {
+        return m_cdpTopologyService;
+    }
+
+    public void setCdpTopologyService(CdpTopologyService cdpTopologyService) {
+        m_cdpTopologyService = cdpTopologyService;
+    }
+
+    public IsisTopologyService getIsisTopologyService() {
+        return m_isisTopologyService;
+    }
+
+    public void setIsisTopologyService(IsisTopologyService isisTopologyService) {
+        m_isisTopologyService = isisTopologyService;
+    }
+
+    public LldpTopologyService getLldpTopologyService() {
+        return m_lldpTopologyService;
+    }
+
+    public void setLldpTopologyService(LldpTopologyService lldpTopologyService) {
+        m_lldpTopologyService = lldpTopologyService;
+    }
+
+    public OspfTopologyService getOspfTopologyService() {
+        return m_ospfTopologyService;
+    }
+
+    public void setOspfTopologyService(OspfTopologyService ospfTopologyService) {
+        m_ospfTopologyService = ospfTopologyService;
+    }
+
+    public TopologyDao getTopologyDao() {
+        return m_topologyDao;
+    }
+
+    public void setTopologyDao(TopologyDao topologyDao) {
+        this.m_topologyDao = topologyDao;
+    }
+    
+    public IpNetToMediaTopologyService getIpNetToMediaTopologyService() {
+        return m_ipNetToMediaTopologyService;
+    }
+
+    public void setIpNetToMediaTopologyService(
+            IpNetToMediaTopologyService ipNetToMediaTopologyService) {
+        m_ipNetToMediaTopologyService = ipNetToMediaTopologyService;
+    }
+
 
 }

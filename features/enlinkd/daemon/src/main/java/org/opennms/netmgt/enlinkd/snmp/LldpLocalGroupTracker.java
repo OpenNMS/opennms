@@ -30,7 +30,7 @@ package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.core.utils.LldpUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
-import org.opennms.netmgt.model.LldpElement;
+import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.ErrorStatus;
 import org.opennms.netmgt.snmp.ErrorStatusException;

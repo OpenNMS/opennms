@@ -34,8 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.model.CdpElement;
-import org.opennms.netmgt.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.CdpElement;
+import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsTopology;
 import org.opennms.netmgt.model.OnmsTopologyEdge;
@@ -52,7 +52,7 @@ public class DiscoveryCdpTopology extends Discovery implements OnmsTopologyUpdat
 
     public static DiscoveryCdpTopology createAndRegister(EnhancedLinkd linkd) throws OnmsTopologyException {
         DiscoveryCdpTopology discoveryCdpTopology = new DiscoveryCdpTopology(linkd);
-        linkd.getQueryManager().register(discoveryCdpTopology);
+        linkd.getTopologyDao().register(discoveryCdpTopology);
         return discoveryCdpTopology;
     }
 
@@ -68,10 +68,18 @@ public class DiscoveryCdpTopology extends Discovery implements OnmsTopologyUpdat
         LOG.debug("run: start");
         OnmsTopology topo = getTopology();
         topo.getVertices().stream().forEach(vertex -> {
-                m_linkd.getQueryManager().update(this, OnmsTopologyMessage.update(vertex));
+            try {
+                m_linkd.getTopologyDao().update(this, OnmsTopologyMessage.update(vertex));
+            } catch (OnmsTopologyException e) {
+                LOG.error("update: cannot {}: {} {} {}", e.getMessageStatus(), e.getId(), e.getProtocol(),e.getMessage());
+            }
         });
         topo.getEdges().stream().forEach(edge -> {
-                m_linkd.getQueryManager().update(this, OnmsTopologyMessage.update(edge));
+            try {
+                m_linkd.getTopologyDao().update(this, OnmsTopologyMessage.update(edge));
+            } catch (OnmsTopologyException e) {
+                LOG.error("update: cannot {}: {} {} {}", e.getMessageStatus(), e.getId(), e.getProtocol(),e.getMessage());
+            }
         });
         LOG.debug("run: end");
     }
@@ -84,17 +92,17 @@ public class DiscoveryCdpTopology extends Discovery implements OnmsTopologyUpdat
     @Override
     public OnmsTopology getTopology() {
         Map<Integer, OnmsNode> nodeMap=new HashMap<Integer, OnmsNode>();
-        m_linkd.getQueryManager().getAllOnmsNodes().stream().forEach(node -> nodeMap.put(node.getId(), node));
+        m_linkd.getQueryManager().findAll().stream().forEach(node -> nodeMap.put(node.getId(), node));
         Map<Integer, CdpElement> cdpelementmap = new HashMap<Integer, CdpElement>();
         OnmsTopology topology = new OnmsTopology();
-        m_linkd.getQueryManager().getAllCdpElements().stream().forEach(cdpelement -> {
+        m_linkd.getCdpTopologyService().findAllCdpElements().stream().forEach(cdpelement -> {
             cdpelementmap.put(cdpelement.getNode().getId(), cdpelement);
             OnmsTopologyVertex vertex = OnmsTopologyVertex.create(nodeMap.get(cdpelement.getNode().getId()));
             vertex.getProtocolSupported().add(ProtocolSupported.CDP.name());
             topology.getVertices().add(vertex);
         });
         
-        List<CdpLink> allLinks = m_linkd.getQueryManager().getAllCdpLinks();
+        List<CdpLink> allLinks = m_linkd.getCdpTopologyService().findAllCdpLinks();
         Set<Integer> parsed = new HashSet<Integer>();
 
         for (CdpLink sourceLink : allLinks) {

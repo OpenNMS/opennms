@@ -42,7 +42,8 @@ import java.util.List;
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.LldpElement;
+import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms0123NetworkBuilder;
 
@@ -82,9 +83,8 @@ public class Nms0123EnIT extends EnLinkdBuilderITCase {
 
         assertTrue(m_linkd.runSingleSnmpCollection(itpn0111.getId()));
         
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-        	if (node.getLldpElement() != null)
-        		printLldpElement(node.getLldpElement());
+        for (final LldpElement node: m_lldpElementDao.findAll()) {
+        		printLldpElement(node);
         }
         final List<LldpLink> topologyA = m_lldpLinkDao.findAll();
         assertEquals(4,topologyA.size());
@@ -121,9 +121,8 @@ public class Nms0123EnIT extends EnLinkdBuilderITCase {
 
         assertTrue(m_linkd.runSingleSnmpCollection(itpn0112.getId()));
         
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-                if (node.getLldpElement() != null)
-                        printLldpElement(node.getLldpElement());
+        for (final LldpElement node: m_lldpElementDao.findAll()) {
+            printLldpElement(node);
         }
         final List<LldpLink> topologyA = m_lldpLinkDao.findAll();
         assertEquals(2,topologyA.size());

@@ -88,12 +88,14 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
-import org.opennms.netmgt.model.CdpLink;
-import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
-import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.CdpElement;
+import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.LldpElement;
+import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.CdpLink.CiscoNetworkProtocolType;
+import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsTopology;
-import org.opennms.netmgt.model.OspfElement.TruthValue;
 import org.opennms.netmgt.model.topology.Topology.ProtocolSupported;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
 
@@ -184,25 +186,25 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.runSingleSnmpCollection(switch5.getId()));
         assertEquals(12,m_lldpLinkDao.countAll());
 
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-            assertNotNull(node.getLldpElement());
-            printLldpElement(node.getLldpElement());
-            assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, node.getLldpElement().getLldpChassisIdSubType());
+        for (final LldpElement node: m_lldpElementDao.findAll()) {
+            assertNotNull(node);
+            printLldpElement(node);
+            assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, node.getLldpChassisIdSubType());
             if        (node.getId().intValue() == switch1.getId().intValue()) {
-                assertEquals(SWITCH1_LLDP_CHASSISID, node.getLldpElement().getLldpChassisId());
-                assertEquals(SWITCH1_NAME, node.getLldpElement().getLldpSysname());
+                assertEquals(SWITCH1_LLDP_CHASSISID, node.getLldpChassisId());
+                assertEquals(SWITCH1_NAME, node.getLldpSysname());
             } else if (node.getId().intValue() == switch2.getId().intValue()) {
-                assertEquals(SWITCH2_LLDP_CHASSISID, node.getLldpElement().getLldpChassisId());
-                assertEquals(SWITCH2_NAME, node.getLldpElement().getLldpSysname());                
+                assertEquals(SWITCH2_LLDP_CHASSISID, node.getLldpChassisId());
+                assertEquals(SWITCH2_NAME, node.getLldpSysname());                
             } else if (node.getId().intValue() == switch3.getId().intValue()) {
-                assertEquals(SWITCH3_LLDP_CHASSISID, node.getLldpElement().getLldpChassisId());
-                assertEquals(SWITCH3_NAME, node.getLldpElement().getLldpSysname());
+                assertEquals(SWITCH3_LLDP_CHASSISID, node.getLldpChassisId());
+                assertEquals(SWITCH3_NAME, node.getLldpSysname());
             } else if (node.getId().intValue() == switch4.getId().intValue()) {
-                assertEquals(SWITCH4_LLDP_CHASSISID, node.getLldpElement().getLldpChassisId());
-                assertEquals(SWITCH4_NAME, node.getLldpElement().getLldpSysname());
+                assertEquals(SWITCH4_LLDP_CHASSISID, node.getLldpChassisId());
+                assertEquals(SWITCH4_NAME, node.getLldpSysname());
             } else if (node.getId().intValue() == switch5.getId().intValue()) {
-                assertEquals(SWITCH5_LLDP_CHASSISID, node.getLldpElement().getLldpChassisId());
-                assertEquals(SWITCH5_NAME, node.getLldpElement().getLldpSysname());
+                assertEquals(SWITCH5_LLDP_CHASSISID, node.getLldpChassisId());
+                assertEquals(SWITCH5_NAME, node.getLldpSysname());
             } else {
                 assertTrue(false);
             }
@@ -438,28 +440,28 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.runSingleSnmpCollection(router4.getId()));
         assertEquals(26, m_cdpLinkDao.countAll());
 
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-            assertNotNull(node.getCdpElement());
-            printCdpElement(node.getCdpElement());
-            assertEquals(TruthValue.TRUE, node.getCdpElement().getCdpGlobalRun());
+        for (final CdpElement node: m_cdpElementDao.findAll()) {
+            assertNotNull(node);
+            printCdpElement(node);
+            assertEquals(TruthValue.TRUE, node.getCdpGlobalRun());
             if        (node.getId().intValue() == switch1.getId().intValue()) {
-                assertEquals(SWITCH1_NAME,node.getCdpElement().getCdpGlobalDeviceId());
+                assertEquals(SWITCH1_NAME,node.getCdpGlobalDeviceId());
             } else if (node.getId().intValue() == switch2.getId().intValue()) {
-                assertEquals(SWITCH2_NAME,node.getCdpElement().getCdpGlobalDeviceId());
+                assertEquals(SWITCH2_NAME,node.getCdpGlobalDeviceId());
             } else if (node.getId().intValue() == switch3.getId().intValue()) {
-                assertEquals(SWITCH3_NAME,node.getCdpElement().getCdpGlobalDeviceId());
+                assertEquals(SWITCH3_NAME,node.getCdpGlobalDeviceId());
             } else if (node.getId().intValue() == switch4.getId().intValue()) {
-                assertEquals(SWITCH4_NAME,node.getCdpElement().getCdpGlobalDeviceId());
+                assertEquals(SWITCH4_NAME,node.getCdpGlobalDeviceId());
             } else if (node.getId().intValue() == switch5.getId().intValue()) {
-                assertEquals(SWITCH5_NAME,node.getCdpElement().getCdpGlobalDeviceId());
+                assertEquals(SWITCH5_NAME,node.getCdpGlobalDeviceId());
             } else if (node.getId().intValue() == router1.getId().intValue()) {
-                assertEquals(ROUTER1_NAME,node.getCdpElement().getCdpGlobalDeviceId());
+                assertEquals(ROUTER1_NAME,node.getCdpGlobalDeviceId());
             } else if (node.getId().intValue() == router2.getId().intValue()) {
-                assertEquals(ROUTER2_NAME,node.getCdpElement().getCdpGlobalDeviceId());
+                assertEquals(ROUTER2_NAME,node.getCdpGlobalDeviceId());
             } else if (node.getId().intValue() == router3.getId().intValue()) {
-                assertEquals(ROUTER3_NAME,node.getCdpElement().getCdpGlobalDeviceId());
+                assertEquals(ROUTER3_NAME,node.getCdpGlobalDeviceId());
             } else if (node.getId().intValue() == router4.getId().intValue()) {
-                assertEquals(ROUTER4_NAME,node.getCdpElement().getCdpGlobalDeviceId());
+                assertEquals(ROUTER4_NAME,node.getCdpGlobalDeviceId());
             } else {
                 assertTrue(false);
             }

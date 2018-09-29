@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
-import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
+import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
+import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;

@@ -41,7 +41,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
-import org.opennms.features.enlinkd.service.api.Node;
+import org.opennms.netmgt.enlinkd.model.BridgeElement;
+import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
+import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dBaseType;
+import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
+import org.opennms.netmgt.enlinkd.service.api.Node;
+import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.enlinkd.snmp.CiscoVtpTracker;
 import org.opennms.netmgt.enlinkd.snmp.CiscoVtpVlanTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker;
@@ -49,11 +54,6 @@ import org.opennms.netmgt.enlinkd.snmp.Dot1dBaseTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dStpPortTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dTpFdbTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1qTpFdbTableTracker;
-import org.opennms.netmgt.model.BridgeElement;
-import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
-import org.opennms.netmgt.model.BridgeStpLink;
-import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
-import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,7 +124,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             if (bridge != null) {
                 bridge.setVlan(entry.getKey());
                 bridge.setVlanname(vlanmap.get(entry.getKey()));
-                m_linkd.getQueryManager().store(getNodeId(), bridge);
+                m_linkd.getBridgeTopologyService().store(getNodeId(), bridge);
             } else {
                 LOG.debug("run: node: [{}], vlan {}. no dot1d bridge data found. skipping other operations",
                           getNodeId(), entry.getValue());
@@ -144,20 +144,20 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                                  bridge.getBaseBridgeAddress())) {
                     stplink.setVlan(entry.getKey());
                     stplink.setStpPortIfIndex(bridgeifindex.get(stplink.getStpPort()));
-                    m_linkd.getQueryManager().store(getNodeId(), stplink);
+                    m_linkd.getBridgeTopologyService().store(getNodeId(), stplink);
                 }
             }
             bft = walkDot1dTpFdp(entry.getValue(),entry.getKey(), bridgeifindex, bft, vlanSnmpAgentConfigMap.get(entry.getKey()));
         }
         LOG.debug("run: node [{}]: deleting older the time {}", getNodeId(), now);
-        m_linkd.getQueryManager().reconcileBridge(getNodeId(), now);
+        m_linkd.getBridgeTopologyService().reconcile(getNodeId(), now);
 		
         bft = walkDot1qTpFdb(peer,bridgeifindex, bft);
         LOG.debug("run: node [{}]: bft size:{}", getNodeId(), bft.size());
 
         if (bft.size() > 0) {
             LOG.debug("run: node [{}]: updating topology", getNodeId());
-        	m_linkd.getQueryManager().store(getNodeId(), bft);
+        	m_linkd.getBridgeTopologyService().store(getNodeId(), bft);
         }
         m_linkd.collectedBft(getNodeId());
     }

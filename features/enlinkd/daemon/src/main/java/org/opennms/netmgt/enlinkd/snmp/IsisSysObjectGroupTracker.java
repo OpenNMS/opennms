@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import org.opennms.netmgt.model.IsIsElement;
-import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
+import org.opennms.netmgt.enlinkd.model.IsIsElement;
+import org.opennms.netmgt.enlinkd.model.IsIsElement.IsisAdminState;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.ErrorStatus;
 import org.opennms.netmgt.snmp.ErrorStatusException;

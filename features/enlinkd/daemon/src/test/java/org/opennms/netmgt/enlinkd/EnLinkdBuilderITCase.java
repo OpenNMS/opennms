@@ -37,22 +37,26 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.enlinkd.persistence.api.BridgeBridgeLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.BridgeElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.BridgeMacLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.BridgeStpLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
+import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
+import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
-import org.opennms.netmgt.dao.api.BridgeElementDao;
-import org.opennms.netmgt.dao.api.BridgeStpLinkDao;
-import org.opennms.netmgt.dao.api.BridgeTopologyDao;
-import org.opennms.netmgt.dao.api.CdpLinkDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.IpNetToMediaDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
-import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
-import org.opennms.netmgt.dao.api.IsIsLinkDao;
-import org.opennms.netmgt.dao.api.LldpLinkDao;
-import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.dao.api.TopologyDao;
-import org.opennms.netmgt.model.BridgeBridgeLink;
-import org.opennms.netmgt.model.IpNetToMedia;
+import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -85,15 +89,27 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
 
     @Autowired
     protected CdpLinkDao m_cdpLinkDao;
-    
+
+    @Autowired
+    protected CdpElementDao m_cdpElementDao;    
+
     @Autowired
     protected LldpLinkDao m_lldpLinkDao;
+        
+    @Autowired
+    protected LldpElementDao m_lldpElementDao;
         
     @Autowired
     protected OspfLinkDao m_ospfLinkDao;
 
     @Autowired
+    protected OspfElementDao m_ospfElementDao;
+
+    @Autowired
     protected IsIsLinkDao m_isisLinkDao;
+
+    @Autowired
+    protected IsIsElementDao m_isisElementDao;
 
     @Autowired
     protected BridgeElementDao m_bridgeElementDao;
@@ -111,7 +127,7 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
     protected IpNetToMediaDao m_ipNetToMediaDao;
 
     @Autowired
-    protected BridgeTopologyDao m_bridgeTopologyDao;
+    protected BridgeTopologyService m_bridgeTopologyService;
 
     @Autowired
     protected TopologyDao m_topologyDao;

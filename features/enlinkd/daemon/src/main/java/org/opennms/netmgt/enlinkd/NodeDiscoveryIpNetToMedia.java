@@ -33,10 +33,10 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
-import org.opennms.features.enlinkd.service.api.Node;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia.IpNetToMediaType;
+import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker;
-import org.opennms.netmgt.model.IpNetToMedia;
-import org.opennms.netmgt.model.IpNetToMedia.IpNetToMediaType;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +83,7 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
                               str(macep.getNetAddress()),
                               macep.getIpNetToMediaType());
                     }
-                    m_linkd.getQueryManager().store(getNodeId(), macep);
+                    m_linkd.getIpNetToMediaTopologyService().store(getNodeId(), macep);
                     return;
                 } 
                 if (macep.getPhysAddress() == null && macep.getNetAddress() == null) {
@@ -129,7 +129,7 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
             return;       
         }
 
-        m_linkd.getQueryManager().reconcileIpNetToMedia(getNodeId(), now);
+        m_linkd.getIpNetToMediaTopologyService().reconcile(getNodeId(), now);
     }
 
 	@Override

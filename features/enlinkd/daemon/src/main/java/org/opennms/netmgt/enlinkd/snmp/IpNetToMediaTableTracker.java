@@ -33,8 +33,8 @@ import static org.opennms.core.utils.InetAddressUtils.isValidBridgeAddress;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.model.IpNetToMedia;
-import org.opennms.netmgt.model.IpNetToMedia.IpNetToMediaType;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia.IpNetToMediaType;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;

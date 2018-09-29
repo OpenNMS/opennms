@@ -57,7 +57,8 @@ import java.util.List;
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.LldpElement;
+import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms0002NetworkBuilder;
 
@@ -115,9 +116,9 @@ public class Nms0002EnIT extends EnLinkdBuilderITCase {
         final List<LldpLink> topologyA = m_lldpLinkDao.findAll();
         printLldpTopology(topologyA);
         assertEquals(1,m_lldpLinkDao.countAll());
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-        	if (node.getLldpElement() != null)
-        		printLldpElement(node.getLldpElement());
+        for (final LldpElement node: m_lldpElementDao.findAll()) {
+        	if (node != null)
+        		printLldpElement(node);
         }
 
         assertTrue(m_linkd.runSingleSnmpCollection(switchCisco.getId()));
@@ -126,9 +127,9 @@ public class Nms0002EnIT extends EnLinkdBuilderITCase {
         final List<LldpLink> topologyB = m_lldpLinkDao.findAll();
         printLldpTopology(topologyB);
         assertEquals(2,topologyB.size());
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-        	if (node.getLldpElement() != null)
-        		printLldpElement(node.getLldpElement());
+        for (final LldpElement node: m_lldpElementDao.findAll()) {
+        	if (node != null)
+        		printLldpElement(node);
         }
        
     }
@@ -270,9 +271,9 @@ public class Nms0002EnIT extends EnLinkdBuilderITCase {
         final List<LldpLink> topologyB = m_lldpLinkDao.findAll();
         printLldpTopology(topologyB);
         assertEquals(6,topologyB.size());
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-        	if (node.getLldpElement() != null)
-        		printLldpElement(node.getLldpElement());
+        for (final LldpElement node: m_lldpElementDao.findAll()) {
+        	if (node != null)
+        		printLldpElement(node);
         }
 
 

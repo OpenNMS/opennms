@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import org.opennms.netmgt.model.IsIsLink;
-import org.opennms.netmgt.model.IsIsLink.IsisISAdjNeighSysType;
-import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
+import org.opennms.netmgt.enlinkd.model.IsIsLink;
+import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjNeighSysType;
+import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjState;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;

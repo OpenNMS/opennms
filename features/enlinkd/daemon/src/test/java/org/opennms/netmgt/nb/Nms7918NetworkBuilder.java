@@ -29,7 +29,7 @@
 package org.opennms.netmgt.nb;
 
 
-import org.opennms.netmgt.dao.api.IpNetToMediaDao;
+import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode.NodeType;

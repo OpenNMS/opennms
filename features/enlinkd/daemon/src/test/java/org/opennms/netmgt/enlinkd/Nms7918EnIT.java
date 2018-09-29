@@ -52,11 +52,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.netmgt.model.BridgeBridgeLink;
-import org.opennms.netmgt.model.BridgeMacLink;
-import org.opennms.netmgt.model.BridgeMacLink.BridgeMacLinkType;
+import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
+import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
+import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
+import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.nb.Nms7918NetworkBuilder;
 
 public class Nms7918EnIT extends EnLinkdBuilderITCase {
@@ -150,7 +150,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
 
-        Set<BridgeForwardingTableEntry> links  = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(stcasw01.getId());
+        Set<BridgeForwardingTableEntry> links  = m_linkd.getBridgeTopologyService().useBridgeTopologyUpdateBFT(stcasw01.getId());
         
         assertEquals(34, links.size());
         for (BridgeForwardingTableEntry link: links) {
@@ -196,7 +196,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
 
         m_linkd.runDiscoveryBridgeDomains();
         
-        assertNull(m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(stcasw01.getId()));
+        assertNull(m_linkd.getBridgeTopologyService().useBridgeTopologyUpdateBFT(stcasw01.getId()));
         assertEquals(1,m_bridgeElementDao.countAll());
         assertEquals(0,m_bridgeStpLinkDao.countAll());
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
@@ -256,7 +256,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
 
-        Set<BridgeForwardingTableEntry> links  = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(samasw01.getId());
+        Set<BridgeForwardingTableEntry> links  = m_linkd.getBridgeTopologyService().useBridgeTopologyUpdateBFT(samasw01.getId());
         
         assertEquals(31, links.size());
         for (BridgeForwardingTableEntry link: links) {
@@ -302,7 +302,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
 
         m_linkd.runDiscoveryBridgeDomains();
         
-        assertNull(m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(samasw01.getId()));
+        assertNull(m_linkd.getBridgeTopologyService().useBridgeTopologyUpdateBFT(samasw01.getId()));
         assertEquals(1,m_bridgeElementDao.countAll());
         assertEquals(0,m_bridgeStpLinkDao.countAll());
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
@@ -362,7 +362,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
 
-        Set<BridgeForwardingTableEntry> links  = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(asw01.getId());
+        Set<BridgeForwardingTableEntry> links  = m_linkd.getBridgeTopologyService().useBridgeTopologyUpdateBFT(asw01.getId());
         
         assertEquals(40, links.size());;
         for (BridgeForwardingTableEntry link: links) {
@@ -407,7 +407,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
 
         m_linkd.runDiscoveryBridgeDomains();
         
-        assertNull(m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(asw01.getId()));
+        assertNull(m_linkd.getBridgeTopologyService().useBridgeTopologyUpdateBFT(asw01.getId()));
         assertEquals(1,m_bridgeElementDao.countAll());
         assertEquals(0,m_bridgeStpLinkDao.countAll());
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());

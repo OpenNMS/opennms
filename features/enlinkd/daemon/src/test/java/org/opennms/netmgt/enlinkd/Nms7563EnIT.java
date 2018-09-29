@@ -40,14 +40,12 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO01_LLDP_CHASSID_ID;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO01_LLDP_SYSNAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO01_IF_IFDESCR_MAP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO01_IF_IFNAME_MAP;
-
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH02_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH02_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH02_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH02_LLDP_CHASSID_ID;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH02_LLDP_SYSNAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH02_CDP_GLOBAL_DEVICE_ID;
-
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.HOMESERVER_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.HOMESERVER_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.HOMESERVER_SNMP_RESOURCE;
@@ -56,17 +54,18 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.HOMESERVER_LLDP_SYSNAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.HOMESERVER_IF_MAC_MAP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.HOMESERVER_CDP_GLOBAL_DEVICE_ID;
 
-
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
-import org.opennms.netmgt.model.CdpLink;
-import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
-import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.CdpElement;
+import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.LldpElement;
+import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.CdpLink.CiscoNetworkProtocolType;
+import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OspfElement.TruthValue;
 import org.opennms.netmgt.nb.Nms7563NetworkBuilder;
 
 public class Nms7563EnIT extends EnLinkdBuilderITCase {
@@ -98,17 +97,18 @@ public class Nms7563EnIT extends EnLinkdBuilderITCase {
 
         assertTrue(m_linkd.runSingleSnmpCollection(cisco01.getId()));
 
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-            assertNotNull(node.getLldpElement());
-            printLldpElement(node.getLldpElement());
-            assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, node.getLldpElement().getLldpChassisIdSubType());
-            assertEquals(CISCO01_LLDP_CHASSID_ID,node.getLldpElement().getLldpChassisId());
-            assertEquals(CISCO01_LLDP_SYSNAME, node.getLldpElement().getLldpSysname());
-            
-            assertNotNull(node.getCdpElement());
-            printCdpElement(node.getCdpElement());
-            assertEquals(TruthValue.TRUE, node.getCdpElement().getCdpGlobalRun());
-            assertEquals(CISCO01_CDP_GLOBAL_DEVICE_ID,node.getCdpElement().getCdpGlobalDeviceId());
+        for (final LldpElement node: m_lldpElementDao.findAll()) {
+            assertNotNull(node);
+            printLldpElement(node);
+            assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, node.getLldpChassisIdSubType());
+            assertEquals(CISCO01_LLDP_CHASSID_ID,node.getLldpChassisId());
+            assertEquals(CISCO01_LLDP_SYSNAME, node.getLldpSysname());
+        }
+        for (final CdpElement node: m_cdpElementDao.findAll()) {
+            assertNotNull(node);
+            printCdpElement(node);
+            assertEquals(TruthValue.TRUE, node.getCdpGlobalRun());
+            assertEquals(CISCO01_CDP_GLOBAL_DEVICE_ID,node.getCdpGlobalDeviceId());
         }
 
         assertEquals(1, m_lldpLinkDao.countAll());
@@ -164,12 +164,12 @@ public class Nms7563EnIT extends EnLinkdBuilderITCase {
 
         assertTrue(m_linkd.runSingleSnmpCollection(homeserver.getId()));
 
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-            assertNotNull(node.getLldpElement());
-            printLldpElement(node.getLldpElement());
-            assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, node.getLldpElement().getLldpChassisIdSubType());
-            assertEquals(HOMESERVER_LLDP_CHASSID_ID,node.getLldpElement().getLldpChassisId());
-            assertEquals(HOMESERVER_LLDP_SYSNAME, node.getLldpElement().getLldpSysname());
+        for (final LldpElement node: m_lldpElementDao.findAll()) {
+            assertNotNull(node);
+            printLldpElement(node);
+            assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, node.getLldpChassisIdSubType());
+            assertEquals(HOMESERVER_LLDP_CHASSID_ID,node.getLldpChassisId());
+            assertEquals(HOMESERVER_LLDP_SYSNAME, node.getLldpSysname());
         }
 
         assertEquals(1, m_lldpLinkDao.countAll());
@@ -228,11 +228,11 @@ public class Nms7563EnIT extends EnLinkdBuilderITCase {
 
         assertTrue(m_linkd.runSingleSnmpCollection(switch02.getId()));
 
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-            assertNotNull(node.getCdpElement());
-            printCdpElement(node.getCdpElement());
-            assertEquals(TruthValue.TRUE, node.getCdpElement().getCdpGlobalRun());
-            assertEquals(SWITCH02_CDP_GLOBAL_DEVICE_ID,node.getCdpElement().getCdpGlobalDeviceId());
+        for (final CdpElement node: m_cdpElementDao.findAll()) {
+            assertNotNull(node);
+            printCdpElement(node);
+            assertEquals(TruthValue.TRUE, node.getCdpGlobalRun());
+            assertEquals(SWITCH02_CDP_GLOBAL_DEVICE_ID,node.getCdpGlobalDeviceId());
         }
 
         assertEquals(3, m_cdpLinkDao.countAll());

@@ -37,6 +37,7 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.DW_SNMP_RESOURCE;
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
+import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms7777DWNetworkBuilder;
 
@@ -70,10 +71,9 @@ public class Nms7777DWEnIT extends EnLinkdBuilderITCase {
 
         assertTrue(m_linkd.runSingleSnmpCollection(dw.getId()));
 
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-            if (node.getLldpElement() != null)
-                    printLldpElement(node.getLldpElement());
-    }
+        for (final LldpElement node: m_lldpElementDao.findAll()) {
+                    printLldpElement(node);
+        }
 
         assertEquals(0, m_lldpLinkDao.countAll());
 

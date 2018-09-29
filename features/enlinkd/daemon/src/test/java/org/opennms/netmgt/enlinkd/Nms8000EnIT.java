@@ -50,7 +50,6 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMSW2_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMSW2_SNMP_RESOURCE_2;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
 
 import java.util.HashSet;
 import java.util.List;
@@ -61,11 +60,12 @@ import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
-import org.opennms.netmgt.model.CdpLink;
-import org.opennms.netmgt.model.LldpElement;
-import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.CdpElement;
+import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.LldpElement;
+import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.nb.Nms8000NetworkBuilder;
 
 public class Nms8000EnIT extends EnLinkdBuilderITCase {
@@ -147,9 +147,8 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.runSingleSnmpCollection(nmmsw2.getId()));
         assertEquals(13, m_cdpLinkDao.countAll());
 
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-            assertNotNull(node.getCdpElement());
-            printCdpElement(node.getCdpElement());
+        for (final CdpElement node: m_cdpElementDao.findAll()) {
+            printCdpElement(node);
         }
         
         for (CdpLink link: m_cdpLinkDao.findAll()) {
@@ -216,9 +215,8 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.runSingleSnmpCollection(nmmsw2.getId()));
         assertEquals(12, m_lldpLinkDao.countAll());
 
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-            assertNotNull(node.getLldpElement());
-            printLldpElement(node.getLldpElement());
+        for (final LldpElement node: m_lldpElementDao.findAll()) {
+            printLldpElement(node);
         }
         
         for (LldpLink link: m_lldpLinkDao.findAll()) {
@@ -234,13 +232,13 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
                 continue;
             }
             parsed.add(sourceLink.getId());
-            LldpElement sourceElement = m_nodeDao.get(sourceLink.getNode().getId()).getLldpElement();
+            LldpElement sourceElement = m_lldpElementDao.get(sourceLink.getNode().getId());
             LldpLink targetLink = null;
             for (LldpLink link : allLinks) {
                 if (parsed.contains(link.getId())) {
                     continue;
                 }
-                LldpElement element = m_nodeDao.get(link.getNode().getId()).getLldpElement();
+                LldpElement element = m_lldpElementDao.get(link.getNode().getId());
                 //Compare the remote data to the targetNode element data
                 if (!sourceLink.getLldpRemChassisId().equals(element.getLldpChassisId()) || !link.getLldpRemChassisId().equals(sourceElement.getLldpChassisId())) 
                     continue;
@@ -260,7 +258,7 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
                 final org.opennms.core.criteria.Criteria criteria = new org.opennms.core.criteria.Criteria(OnmsNode.class).addRestriction(new EqRestriction("sysName", sourceLink.getLldpRemSysname()));
                 List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
                 if (nodes.size() == 1) {
-                    targetLink = reverseLldpLink(nodes.get(0), sourceLink.getNode().getLldpElement(), sourceLink); 
+                    targetLink = reverseLldpLink(nodes.get(0), sourceElement, sourceLink); 
                     System.err.println("loadtopology: found using sysname: lldp link with id "+ targetLink + " is target.");
                 }
             }

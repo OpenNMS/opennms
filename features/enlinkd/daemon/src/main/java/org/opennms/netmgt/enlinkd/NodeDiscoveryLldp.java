@@ -34,11 +34,11 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
-import org.opennms.features.enlinkd.service.api.Node;
+import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
-import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,7 +105,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
     				lldpLocalGroup.getLldpElement());
         }
 
-        m_linkd.getQueryManager().store(getNodeId(),
+        m_linkd.getLldpTopologyService().store(getNodeId(),
                 lldpLocalGroup.getLldpElement());
 
         if (getSysoid() == null || getSysoid().equals(DW_SYSOID) ) {
@@ -156,10 +156,10 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
                                 m_linkd.getLocationAwareSnmpClient(),
                                 getLocation(),getNodeId());
         for (LldpLink link: links) {
-            m_linkd.getQueryManager().store(getNodeId(),lldpLocPort.getLldpLink(link));
+            m_linkd.getLldpTopologyService().store(getNodeId(),lldpLocPort.getLldpLink(link));
         }
         
-        m_linkd.getQueryManager().reconcileLldp(getNodeId(),now);
+        m_linkd.getLldpTopologyService().reconcile(getNodeId(),now);
     }
 
 	@Override

@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import org.opennms.netmgt.model.BridgeElement;
-import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
-import org.opennms.netmgt.model.BridgeElement.BridgeDot1dStpProtocolSpecification;
+import org.opennms.netmgt.enlinkd.model.BridgeElement;
+import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dBaseType;
+import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dStpProtocolSpecification;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.ErrorStatus;
 import org.opennms.netmgt.snmp.ErrorStatusException;

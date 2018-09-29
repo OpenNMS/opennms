@@ -45,17 +45,17 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
 import org.opennms.netmgt.config.EnhancedLinkdConfigManager;
 import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
-import org.opennms.netmgt.model.BridgeElement;
-import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.enlinkd.model.BridgeElement;
+import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
+import org.opennms.netmgt.enlinkd.service.api.Bridge;
+import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTable;
+import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
+import org.opennms.netmgt.enlinkd.service.api.BridgePort;
+import org.opennms.netmgt.enlinkd.service.api.BridgePortWithMacs;
+import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
+import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
+import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.topology.Bridge;
-import org.opennms.netmgt.model.topology.BridgeForwardingTable;
-import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
-import org.opennms.netmgt.model.topology.BridgePort;
-import org.opennms.netmgt.model.topology.BridgePortWithMacs;
-import org.opennms.netmgt.model.topology.BridgeTopologyException;
-import org.opennms.netmgt.model.topology.BroadcastDomain;
-import org.opennms.netmgt.model.topology.SharedSegment;
 
 import com.google.common.collect.Sets;
 

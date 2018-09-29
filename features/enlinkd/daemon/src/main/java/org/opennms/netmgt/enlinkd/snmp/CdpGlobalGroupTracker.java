@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import org.opennms.netmgt.model.CdpElement;
-import org.opennms.netmgt.model.CdpElement.CdpGlobalDeviceIdFormat;
-import org.opennms.netmgt.model.OspfElement.TruthValue;
+import org.opennms.netmgt.enlinkd.model.CdpElement;
+import org.opennms.netmgt.enlinkd.model.CdpElement.CdpGlobalDeviceIdFormat;
+import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.ErrorStatus;
 import org.opennms.netmgt.snmp.ErrorStatusException;

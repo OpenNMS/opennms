@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import org.opennms.netmgt.model.VlanStatus;
-import org.opennms.netmgt.model.VlanType;
+import org.opennms.netmgt.enlinkd.model.VlanStatus;
+import org.opennms.netmgt.enlinkd.model.VlanType;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;

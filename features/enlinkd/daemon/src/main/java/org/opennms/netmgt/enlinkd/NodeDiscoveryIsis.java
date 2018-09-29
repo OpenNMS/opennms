@@ -33,11 +33,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import org.opennms.features.enlinkd.service.api.Node;
+import org.opennms.netmgt.enlinkd.model.IsIsLink;
+import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisSysObjectGroupTracker;
-import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +89,7 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
             return;
         }
 
-        m_linkd.getQueryManager().store(getNodeId(),
+        m_linkd.getIsisTopologyService().store(getNodeId(),
                                         isisSysObject.getIsisElement());
     
         
@@ -148,9 +148,9 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
         }
         
         for (IsIsLink link:links) {
-            m_linkd.getQueryManager().store(getNodeId(), link);
+            m_linkd.getIsisTopologyService().store(getNodeId(), link);
         }
-        m_linkd.getQueryManager().reconcileIsis(getNodeId(), now);
+        m_linkd.getIsisTopologyService().reconcile(getNodeId(), now);
     }
 
 	@Override

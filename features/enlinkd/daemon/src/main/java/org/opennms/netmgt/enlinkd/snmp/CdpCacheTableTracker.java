@@ -35,8 +35,8 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.model.CdpLink;
-import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
+import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;

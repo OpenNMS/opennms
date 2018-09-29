@@ -30,9 +30,9 @@ package org.opennms.netmgt.enlinkd.snmp;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.model.OspfElement;
-import org.opennms.netmgt.model.OspfElement.Status;
-import org.opennms.netmgt.model.OspfElement.TruthValue;
+import org.opennms.netmgt.enlinkd.model.OspfElement;
+import org.opennms.netmgt.enlinkd.model.OspfElement.Status;
+import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.ErrorStatus;
 import org.opennms.netmgt.snmp.ErrorStatusException;

@@ -62,9 +62,11 @@ import java.util.List;
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.LldpElement;
+import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.OspfElement;
+import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.nb.Nms10205bNetworkBuilder;
 
 public class Nms10205bEnIT extends EnLinkdBuilderITCase {
@@ -283,9 +285,8 @@ it has a link to Mysore that does not support LLDP
         final List<LldpLink> topologyC = m_lldpLinkDao.findAll();
         printLldpTopology(topologyC);
         assertEquals(10,topologyC.size());
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-        	if (node.getLldpElement() != null)
-        		printLldpElement(node.getLldpElement());
+        for (final LldpElement node: m_lldpElementDao.findAll()) {
+            printLldpElement(node);
         }
 
     }
@@ -413,9 +414,8 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> topologyA = m_ospfLinkDao.findAll();
         printOspfTopology(topologyA);
         assertEquals(4,topologyA.size());
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-        	if (node.getOspfElement() != null)
-        		printOspfElement(node.getOspfElement());
+        for (final OspfElement node: m_ospfElementDao.findAll()) {
+            printOspfElement(node);
         }
         
         Thread.sleep(1000);
@@ -424,9 +424,8 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> topologyB = m_ospfLinkDao.findAll();
         printOspfTopology(topologyB);
         assertEquals(7,topologyB.size());
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-        	if (node.getOspfElement() != null)
-        		printOspfElement(node.getOspfElement());
+        for (final OspfElement node: m_ospfElementDao.findAll()) {
+            printOspfElement(node);
         }
         
         Thread.sleep(1000);
@@ -435,9 +434,8 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> topologyC = m_ospfLinkDao.findAll();
         printOspfTopology(topologyC);
         assertEquals(11,topologyC.size());
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-        	if (node.getOspfElement() != null)
-        		printOspfElement(node.getOspfElement());
+        for (final OspfElement node: m_ospfElementDao.findAll()) {
+            printOspfElement(node);
         }
         
         Thread.sleep(1000);
@@ -446,9 +444,8 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> topologyD = m_ospfLinkDao.findAll();
         printOspfTopology(topologyD);
         assertEquals(15,topologyD.size());
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-        	if (node.getOspfElement() != null)
-        		printOspfElement(node.getOspfElement());
+        for (final OspfElement node: m_ospfElementDao.findAll()) {
+            printOspfElement(node);
         }
         
         Thread.sleep(1000);
@@ -457,9 +454,8 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> topologyE = m_ospfLinkDao.findAll();
         printOspfTopology(topologyE);
         assertEquals(17,topologyE.size());
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-        	if (node.getOspfElement() != null)
-        		printOspfElement(node.getOspfElement());
+        for (final OspfElement node: m_ospfElementDao.findAll()) {
+            printOspfElement(node);
         }
         
         Thread.sleep(1000);
@@ -468,9 +464,8 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> topologyF = m_ospfLinkDao.findAll();
         printOspfTopology(topologyF);
         assertEquals(19,topologyF.size());
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-        	if (node.getOspfElement() != null)
-        		printOspfElement(node.getOspfElement());
+        for (final OspfElement node: m_ospfElementDao.findAll()) {
+            printOspfElement(node);
         }
         
         Thread.sleep(1000);
@@ -479,9 +474,8 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> topologyG = m_ospfLinkDao.findAll();
         printOspfTopology(topologyG);
         assertEquals(21,topologyG.size());
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-        	if (node.getOspfElement() != null)
-        		printOspfElement(node.getOspfElement());
+        for (final OspfElement node: m_ospfElementDao.findAll()) {
+            printOspfElement(node);
         }
         
         Thread.sleep(1000);
@@ -490,18 +484,16 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> topologyH = m_ospfLinkDao.findAll();
         printOspfTopology(topologyH);
         assertEquals(22,topologyH.size());
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-        	if (node.getOspfElement() != null)
-        		printOspfElement(node.getOspfElement());
+        for (final OspfElement node: m_ospfElementDao.findAll()) {
+            printOspfElement(node);
         }
         assertTrue(m_linkd.runSingleSnmpCollection(srx100.getId()));
         
         final List<OspfLink> topologyI = m_ospfLinkDao.findAll();
         printOspfTopology(topologyI);
         assertEquals(22,topologyI.size());
-        for (final OnmsNode node: m_nodeDao.findAll()) {
-        	if (node.getOspfElement() != null)
-        		printOspfElement(node.getOspfElement());
+        for (final OspfElement node: m_ospfElementDao.findAll()) {
+            printOspfElement(node);
         }
 
     }

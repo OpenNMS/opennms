@@ -21,18 +21,17 @@
 
     <bean id="linkdConfig" class="org.opennms.netmgt.config.EnhancedLinkdConfigFactory" lazy-init="true"/>
 
-    <bean id="scheduler" class="org.opennms.netmgt.enlinkd.scheduler.Scheduler">
-      <constructor-arg value="EnhancedLinkd" />
-      <constructor-arg>
-        <util:property-path path="linkdConfig.threads" />
-      </constructor-arg>
-    </bean>
-
     <bean name="daemon" class="org.opennms.netmgt.enlinkd.EnhancedLinkd">
       <property name="eventForwarder" ref="eventForwarder" />
-      <property name="queryManager"   ref="enhancedLinkdService" />
       <property name="linkdConfig"    ref="linkdConfig" />
-      <property name="scheduler"      ref="scheduler" />
+      <property name="queryManager"   ref="nodeTopologyService" />
+      <property name="bridgeTopologyService"   ref="bridgeTopologyService" />
+      <property name="cdpTopologyService"   ref="cdpTopologyService" />
+      <property name="isisTopologyService"   ref="isisTopologyService" />
+      <property name="ipNetToMediaTopologyService"   ref="ipNetToMediaTopologyService" />
+      <property name="lldpTopologyService"   ref="lldpTopologyService" />
+      <property name="ospfTopologyService"   ref="ospfTopologyService" />
+      <property name="topologyDao"   ref="topologyDao" />
     </bean>
 
     <bean id="receiver" class="org.opennms.netmgt.enlinkd.EventProcessor">

@@ -35,10 +35,11 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.netmgt.model.CdpElement.CdpGlobalDeviceIdFormat;
-import org.opennms.netmgt.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.CdpElement;
+import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.CdpElement.CdpGlobalDeviceIdFormat;
+import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OspfElement.TruthValue;
 import org.opennms.netmgt.nb.Nms7467NetworkBuilder;
 
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_WS_C2948_IP;
@@ -76,13 +77,13 @@ public class Nms7467EnIT extends EnLinkdBuilderITCase {
 
         assertTrue(m_linkd.runSingleSnmpCollection(cisco01.getId()));
 
-        for (final OnmsNode node: m_nodeDao.findAll()) {
+        for (final CdpElement node: m_cdpElementDao.findAll()) {
             
-            assertNotNull(node.getCdpElement());
-            printCdpElement(node.getCdpElement());
-            assertEquals(TruthValue.TRUE, node.getCdpElement().getCdpGlobalRun());
-            assertEquals(CISCO_WS_C2948_GLOBAL_DEVICEID,node.getCdpElement().getCdpGlobalDeviceId());
-            assertEquals(CdpGlobalDeviceIdFormat.other, node.getCdpElement().getCdpGlobalDeviceIdFormat());
+            assertNotNull(node);
+            printCdpElement(node);
+            assertEquals(TruthValue.TRUE, node.getCdpGlobalRun());
+            assertEquals(CISCO_WS_C2948_GLOBAL_DEVICEID,node.getCdpGlobalDeviceId());
+            assertEquals(CdpGlobalDeviceIdFormat.other, node.getCdpGlobalDeviceIdFormat());
         }
 
         assertEquals(5, m_cdpLinkDao.countAll());

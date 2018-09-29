@@ -38,7 +38,7 @@ public class TopologyLogger implements OnmsTopologyConsumer {
 
     public static TopologyLogger createAndSubscribe(String protocol, EnhancedLinkd linkd) {
         TopologyLogger tl = new TopologyLogger(protocol);
-        linkd.getQueryManager().subscribe(tl);
+        linkd.getTopologyDao().subscribe(tl);
         return tl;
     }
     

@@ -11,8 +11,8 @@
   <packaging>pom</packaging>
   <name>OpenNMS :: Features :: Enlinkd</name>
   <modules>
-    <module>daemon</module>
-    <module>service</module>
     <module>persistence</module>
+    <module>service</module>
+    <module>daemon</module>
   </modules>
 </project>

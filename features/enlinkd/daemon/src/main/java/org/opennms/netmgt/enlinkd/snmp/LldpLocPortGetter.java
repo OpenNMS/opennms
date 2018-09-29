@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
-import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;

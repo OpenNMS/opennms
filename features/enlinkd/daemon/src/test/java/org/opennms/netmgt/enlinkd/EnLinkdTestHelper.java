@@ -41,24 +41,24 @@ import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
-import org.opennms.netmgt.model.BridgeBridgeLink;
-import org.opennms.netmgt.model.BridgeElement;
-import org.opennms.netmgt.model.BridgeMacLink;
-import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
-import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
-import org.opennms.netmgt.model.BridgeMacLink.BridgeMacLinkType;
-import org.opennms.netmgt.model.CdpElement;
-import org.opennms.netmgt.model.CdpLink;
-import org.opennms.netmgt.model.LldpElement;
-import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
+import org.opennms.netmgt.enlinkd.model.BridgeElement;
+import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
+import org.opennms.netmgt.enlinkd.model.CdpElement;
+import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.LldpElement;
+import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.OspfElement;
+import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
+import org.opennms.netmgt.enlinkd.service.api.Bridge;
+import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
+import org.opennms.netmgt.enlinkd.service.api.BridgePortWithMacs;
+import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
+import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
+import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
+import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OspfElement;
-import org.opennms.netmgt.model.topology.Bridge;
-import org.opennms.netmgt.model.topology.BridgePortWithMacs;
-import org.opennms.netmgt.model.topology.BridgeTopologyException;
-import org.opennms.netmgt.model.topology.BroadcastDomain;
-import org.opennms.netmgt.model.topology.SharedSegment;
-import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 import com.google.common.base.Predicate;
@@ -180,15 +180,6 @@ public abstract class EnLinkdTestHelper {
             }
         }
         return true;
-    }
-
-    public static Predicate<OspfLink> ospfLinkMatcher(OnmsNode node, OnmsNode parentNode, int ifIndex, int parentIfIndex) {
-        return (link) -> {
-           return node.equals(link.getNode()) &&
-                   parentNode.getOspfElement().getOspfRouterId().equals(link.getOspfRemRouterId()) &&
-                   ifIndex == link.getOspfIfIndex() &&
-                   parentIfIndex == link.getOspfAddressLessIndex();
-        };
     }
     
     /*

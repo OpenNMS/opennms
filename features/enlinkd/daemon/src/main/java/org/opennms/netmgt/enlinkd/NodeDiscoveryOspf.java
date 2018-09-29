@@ -38,13 +38,13 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.features.enlinkd.service.api.Node;
+import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.model.OspfElement.Status;
+import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
 import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
-import org.opennms.netmgt.model.OspfElement.Status;
-import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,7 +116,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
             return;
         }
 
-        m_linkd.getQueryManager().store(getNodeId(), ipAddrTableGetter.get(ospfGeneralGroup.getOspfElement()));
+        m_linkd.getOspfTopologyService().store(getNodeId(), ipAddrTableGetter.get(ospfGeneralGroup.getOspfElement()));
 
         final List<OspfLink> links = new ArrayList<>();
         OspfNbrTableTracker ospfNbrTableTracker = new OspfNbrTableTracker() {
@@ -186,10 +186,10 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
                     break;
                 }
             }
-            m_linkd.getQueryManager().store(getNodeId(),link);
+            m_linkd.getOspfTopologyService().store(getNodeId(),link);
         }
 
-        m_linkd.getQueryManager().reconcileOspf(getNodeId(),now);
+        m_linkd.getOspfTopologyService().reconcile(getNodeId(),now);
     }
 
 	@Override

@@ -31,6 +31,12 @@
       <artifactId>opennms-model</artifactId>
       <scope>compile</scope>
     </dependency>
+
+      <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.netmgt.enlinkd.persistence.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   
     <!-- Test Dependencies -->
     <dependency>

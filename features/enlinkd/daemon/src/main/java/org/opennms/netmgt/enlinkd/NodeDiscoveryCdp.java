@@ -39,13 +39,13 @@ import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.features.enlinkd.service.api.Node;
+import org.opennms.netmgt.enlinkd.model.CdpElement;
+import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
+import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.CdpCacheTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.CdpGlobalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.CdpInterfacePortNameGetter;
-import org.opennms.netmgt.model.CdpElement;
-import org.opennms.netmgt.model.CdpLink;
-import org.opennms.netmgt.model.OspfElement.TruthValue;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
@@ -97,7 +97,7 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
             return;
        } 
        CdpElement cdpElement = cdpGlobalGroup.getCdpElement();
-       m_linkd.getQueryManager().store(getNodeId(), cdpElement);
+       m_linkd.getCdpTopologyService().store(getNodeId(), cdpElement);
        if (cdpElement.getCdpGlobalRun() == TruthValue.FALSE) {
            LOG.info("run: node [{}]. CDP_MIB disabled.",
                     getNodeId());
@@ -132,9 +132,9 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
                                                                                                      getLocation(),
                                                                                                      getNodeId());
         for (CdpLink link: links)
-            m_linkd.getQueryManager().store(getNodeId(),cdpInterfacePortNameGetter.get(link));
+            m_linkd.getCdpTopologyService().store(getNodeId(),cdpInterfacePortNameGetter.get(link));
         
-        m_linkd.getQueryManager().reconcileCdp(getNodeId(),now);
+        m_linkd.getCdpTopologyService().reconcile(getNodeId(),now);
     }
 
 	@Override

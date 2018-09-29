@@ -50,8 +50,8 @@ import java.util.Set;
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.netmgt.model.IsIsElement;
-import org.opennms.netmgt.model.IsIsLink;
+import org.opennms.netmgt.enlinkd.model.IsIsElement;
+import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms0001NetworkBuilder;
 
@@ -99,10 +99,10 @@ public class Nms0001EnIT extends EnLinkdBuilderITCase {
         assertEquals(6, m_isisLinkDao.countAll());
 
         Map<Integer,IsIsElement> elementmap = new HashMap<Integer, IsIsElement>();
-        for (OnmsNode node: m_nodeDao.findAll()) {
-        	assertNotNull(node.getIsisElement());
-        	System.err.println(node.getIsisElement().printTopology());
-        	elementmap.put(node.getId(), node.getIsisElement());
+        for (IsIsElement node: m_isisElementDao.findAll()) {
+        	assertNotNull(node);
+        	System.err.println(node.printTopology());
+        	elementmap.put(node.getNode().getId(), node);
         }
 
         List<IsIsLink> isislinks = m_isisLinkDao.findAll();
