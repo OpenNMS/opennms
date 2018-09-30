@@ -71,15 +71,18 @@ public class RequestTracker {
     private String m_password;
     private int m_timeout;
     private int m_retries;
+    private boolean m_useSystemProxy;
 
     private HttpClientWrapper m_clientWrapper;
 
-    public RequestTracker(final String baseURL, final String username, final String password, int timeout, int retries) {
+    public RequestTracker(final String baseURL, final String username, final String password, int timeout, int retries,
+                          boolean useSystemProxy) {
         m_baseURL = baseURL;
         m_user = username;
         m_password = password;
         m_timeout = timeout;
         m_retries = retries;
+        m_useSystemProxy = useSystemProxy;
     }
 
     public Long createTicket(final RTTicket ticket) throws RequestTrackerException {
@@ -464,6 +467,9 @@ public class RequestTracker {
                     .setRetries(m_retries)
                     .useBrowserCompatibleCookies()
                     .dontReuseConnections();
+            if(m_useSystemProxy){
+                m_clientWrapper.useSystemProxySettings();
+            }
 
             final HttpPost post = new HttpPost(m_baseURL + "/REST/1.0/user/" + m_user);
             final List<NameValuePair> params = new ArrayList<>();
@@ -514,6 +520,7 @@ public class RequestTracker {
         .append("password", m_password.replaceAll(".", "*"))
         .append("timeout", m_timeout)
         .append("retries", m_retries)
+        .append("useSystemProxy", m_useSystemProxy)
         .toString();
     }
 
