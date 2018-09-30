@@ -234,7 +234,9 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         public void changeIcon(String iconName){
             this.select();
             this.contextMenu().click("Change Icon");
+            testCase.waitFor(1);
             testCase.findElementByXpath("//*[name()='title' and text()='"+iconName+"']/../*[name()='rect']").click();
+            testCase.waitFor(1);
             testCase.findElementById("iconSelectionDialog.button.ok").click();
         }
     }
