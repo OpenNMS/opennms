@@ -147,6 +147,9 @@ public class EnhancedLinkdMockDataPopulator {
         final String snmp = "SNMP";
         final String http = "HTTP";
 
+        m_nodes = new ArrayList<OnmsNode>();
+        m_lldpnodes = new ArrayList<LldpElement>();
+        
         final NetworkBuilder builder = new NetworkBuilder();
 
         builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType(OnmsNode.NodeType.ACTIVE).setSysObjectId("1.3.6.1.4.1.5813.1.25");
@@ -680,10 +683,6 @@ public class EnhancedLinkdMockDataPopulator {
             elements.addAll(node.getSnmpInterfaces());
         return elements;
         
-    }
-
-    public void setNodes(List<OnmsNode> nodes) {
-        m_nodes = nodes;
     }
 
     public OperationContext getOperationContext() {

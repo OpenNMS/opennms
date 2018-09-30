@@ -38,13 +38,13 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
-      <artifactId>org.opennms.features.enlinkd.persistence.dao</artifactId>
+      <artifactId>org.opennms.features.enlinkd.persistence.api</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
-      <artifactId>org.opennms.features.enlinkd.service.dao</artifactId>
+      <artifactId>org.opennms.features.enlinkd.service.api</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
