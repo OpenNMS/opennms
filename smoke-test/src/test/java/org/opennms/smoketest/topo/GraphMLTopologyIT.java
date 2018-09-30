@@ -241,10 +241,13 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
     @Test
     public void verifyCanChangeIcon() throws IOException, InterruptedException {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
+        waitFor(1);
         topologyUIPage.findVertex("North Region").contextMenu().click("Navigate To", "Markets (North Region)");
         String label = "North 1";
         String newIconName = "microwave_backhaul_1";
+        waitFor(1);
         topologyUIPage.findVertex(label).changeIcon(newIconName);
+        waitFor(1);
         assertEquals(newIconName, topologyUIPage.findVertex(label).getIconName());
     }
 
