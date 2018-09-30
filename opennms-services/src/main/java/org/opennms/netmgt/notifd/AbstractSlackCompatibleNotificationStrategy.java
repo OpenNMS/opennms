@@ -43,6 +43,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.opennms.core.web.HttpClientWrapper;
+import org.opennms.core.web.HttpClientWrapperConfigHelper;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.model.notifd.Argument;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
@@ -175,7 +176,7 @@ public abstract class AbstractSlackCompatibleNotificationStrategy implements Not
 	}
 
 	protected boolean getUseSystemProxy() {
-		String useSystemProxy = getValueFromSwitchOrProp("Use System Proxy", "useSystemProxy", getUseSystemProxyPropertyName());
+		String useSystemProxy = getValueFromSwitchOrProp("Use System Proxy", HttpClientWrapperConfigHelper.PARAMETER_KEYS.useSystemProxy.name(), getUseSystemProxyPropertyName());
 
 		if (useSystemProxy == null) {
 			LOG.info("useSystemProxy is not specified as a notification command switch or via system property {}. Setting it to true (use system proxy settings).", getUseSystemProxyPropertyName());
