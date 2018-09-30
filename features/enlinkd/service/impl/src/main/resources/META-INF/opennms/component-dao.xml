@@ -23,6 +23,7 @@
         <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
         <property name="bridgeStpLinkDao" ref="bridgeStpLinkDao" />
     </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService" ref="bridgeTopologyService" />
 
     <bean id="ipNetToMediaTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.IpNetToMediaTopologyServiceImpl">
         <property name="ipNetToMediaDao" ref="ipNetToMediaDao" />

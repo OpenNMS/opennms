@@ -48,36 +48,36 @@ import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.dao.api.BridgeTopologyDao;
-import org.opennms.netmgt.dao.api.CdpElementDao;
-import org.opennms.netmgt.dao.api.CdpLinkDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.IpNetToMediaDao;
-import org.opennms.netmgt.dao.api.IsIsElementDao;
-import org.opennms.netmgt.dao.api.IsIsLinkDao;
-import org.opennms.netmgt.dao.api.LldpElementDao;
-import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.api.TopologyDao;
-import org.opennms.netmgt.model.CdpElement;
-import org.opennms.netmgt.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.CdpElement;
+import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
+import org.opennms.netmgt.enlinkd.model.IsIsElement;
+import org.opennms.netmgt.enlinkd.model.IsIsLink;
+import org.opennms.netmgt.enlinkd.model.LldpElement;
+import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
+import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
+import org.opennms.netmgt.enlinkd.service.api.BridgePort;
+import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
+import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
+import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
 import org.opennms.netmgt.model.FilterManager;
-import org.opennms.netmgt.model.IpNetToMedia;
-import org.opennms.netmgt.model.IsIsElement;
-import org.opennms.netmgt.model.IsIsLink;
-import org.opennms.netmgt.model.LldpElement;
-import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.model.topology.BridgePort;
-import org.opennms.netmgt.model.topology.BridgeTopologyException;
-import org.opennms.netmgt.model.topology.BroadcastDomain;
-import org.opennms.netmgt.model.topology.SharedSegment;
 import org.opennms.netmgt.model.topology.Topology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,7 +131,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private OspfLinkDao m_ospfLinkDao;
     private IsIsLinkDao m_isisLinkDao;
     private IsIsElementDao m_isisElementDao;
-    private BridgeTopologyDao m_bridgeTopologyDao;
+    private BridgeTopologyService m_bridgeTopologyDao;
     private IpNetToMediaDao m_ipNetToMediaDao;
 
     private Map<Integer, OnmsIpInterface> m_nodeToOnmsIpPrimaryMap =new HashMap<>();
@@ -572,7 +572,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private void getBridgeLinks() throws BridgeTopologyException {
         
-        for (BroadcastDomain domain: m_bridgeTopologyDao.load()) {
+        for (BroadcastDomain domain: m_bridgeTopologyDao.findAll()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getBridgeLinks:\n {}", domain.printTopology());
             }
@@ -794,11 +794,11 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         m_isisElementDao = isisElementDao;
     }
 
-    public BridgeTopologyDao getBridgeTopologyDao() {
+    public BridgeTopologyService getBridgeTopologyService() {
         return m_bridgeTopologyDao;
     }
 
-    public void setBridgeTopologyDao(BridgeTopologyDao bridgeTopologyDao) {
+    public void setBridgeTopologyService(BridgeTopologyService bridgeTopologyDao) {
         m_bridgeTopologyDao = bridgeTopologyDao;
     }
 
