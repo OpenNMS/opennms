@@ -16,6 +16,7 @@
         <module>guide-install</module>
         <module>guide-admin</module>
         <module>guide-development</module>
+        <module>reference</module>
         <module>releasenotes</module>
         <module>guide-all</module>
     </modules>
