@@ -30,8 +30,14 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -41,11 +47,16 @@ import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Sets;
+import com.vmware.vim25.AlarmState;
 import com.vmware.vim25.HostRuntimeInfo;
 import com.vmware.vim25.HostSystemPowerState;
+import com.vmware.vim25.ManagedEntityStatus;
 import com.vmware.vim25.VirtualMachinePowerState;
 import com.vmware.vim25.VirtualMachineRuntimeInfo;
 import com.vmware.vim25.mo.HostSystem;
+import com.vmware.vim25.mo.ManagedEntity;
 import com.vmware.vim25.mo.VirtualMachine;
 
 /**
@@ -57,6 +68,10 @@ import com.vmware.vim25.mo.VirtualMachine;
  */
 @Distributable(DistributionContext.DAEMON)
 public class VmwareMonitor extends AbstractVmwareMonitor {
+    /**
+     * valid states for vSphere alarms
+     */
+    private static final Set<String> VALID_VSPHERE_ALARM_STATES = Sets.newHashSet("red", "yellow", "green", "gray");
 
     /**
      * logging for VMware monitor
@@ -83,6 +98,16 @@ public class VmwareMonitor extends AbstractVmwareMonitor {
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         final boolean ignoreStandBy = getKeyedBoolean(parameters, "ignoreStandBy", false);
+
+        final List<String> severitiesToReport =
+                Splitter.on(",")
+                    .trimResults()
+                    .omitEmptyStrings()
+                    .splitToList(getKeyedString(parameters, "reportAlarms", ""))
+                    .stream()
+                    .filter(e -> VALID_VSPHERE_ALARM_STATES.contains(e))
+                    .collect(Collectors.toList());
+
         final String vmwareManagementServer = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_KEY, null);
         final String vmwareManagedEntityType = getKeyedString(parameters, VMWARE_MANAGED_ENTITY_TYPE_KEY, null);
         final String vmwareManagedObjectId = getKeyedString(parameters, VMWARE_MANAGED_OBJECT_ID_KEY, null);
@@ -98,10 +123,7 @@ public class VmwareMonitor extends AbstractVmwareMonitor {
             final VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(vmwareManagementServer, vmwareMangementServerUsername, vmwareMangementServerPassword);
             try {
                 vmwareViJavaAccess.connect();
-            } catch (MalformedURLException e) {
-                logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
-                return PollStatus.unavailable("Error connecting VMware management server '" + vmwareManagementServer + "'");
-            } catch (RemoteException e) {
+            } catch (MalformedURLException | RemoteException e) {
                 logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
                 return PollStatus.unavailable("Error connecting VMware management server '" + vmwareManagementServer + "'");
             }
@@ -111,6 +133,7 @@ public class VmwareMonitor extends AbstractVmwareMonitor {
             }
 
             String powerState = "unknown";
+            Map<String, Long> alarmCountMap;
 
             if ("HostSystem".equals(vmwareManagedEntityType)) {
                 HostSystem hostSystem = vmwareViJavaAccess.getHostSystemByManagedObjectId(vmwareManagedObjectId);
@@ -126,6 +149,7 @@ public class VmwareMonitor extends AbstractVmwareMonitor {
                             return PollStatus.unknown("hostSystemPowerState=null");
                         } else {
                             powerState = hostSystemPowerState.toString();
+                            alarmCountMap = getUnacknowledgedAlarmCountForEntity(hostSystem, severitiesToReport);
                         }
                     }
                 }
@@ -144,6 +168,7 @@ public class VmwareMonitor extends AbstractVmwareMonitor {
                                 return PollStatus.unknown("virtualMachinePowerState=null");
                             } else {
                                 powerState = virtualMachinePowerState.toString();
+                                alarmCountMap = getUnacknowledgedAlarmCountForEntity(virtualMachine, severitiesToReport);
                             }
                         }
                     }
@@ -156,13 +181,16 @@ public class VmwareMonitor extends AbstractVmwareMonitor {
                 }
             }
 
+            final boolean anyUnacknowledgedAlarms = severitiesToReport.size() > 0 && alarmCountMap != null && alarmCountMap.size() > 0;
+            final String alarmCountString = getMessageForAlarmCountMap(alarmCountMap);
+
             if ("poweredOn".equals(powerState)) {
-                serviceStatus = PollStatus.available();
+                serviceStatus = anyUnacknowledgedAlarms ? PollStatus.unavailable(alarmCountString) : PollStatus.available();
             } else {
                 if (ignoreStandBy && "standBy".equals(powerState)) {
-                    serviceStatus = PollStatus.up();
+                    serviceStatus = anyUnacknowledgedAlarms ? PollStatus.unavailable(alarmCountString) : PollStatus.available();
                 } else {
-                    serviceStatus = PollStatus.unavailable("The system's state is '" + powerState + "'");
+                    serviceStatus = PollStatus.unavailable("The system's state is '" + powerState + "'" + (anyUnacknowledgedAlarms ? ", " + alarmCountString : ""));
                 }
             }
 
@@ -170,5 +198,19 @@ public class VmwareMonitor extends AbstractVmwareMonitor {
         }
 
         return serviceStatus;
+    }
+
+    private Map<String, Long> getUnacknowledgedAlarmCountForEntity(final ManagedEntity managedEntity, final List<String> severitiesToReport) {
+        return Arrays.stream(managedEntity.getDeclaredAlarmState()).filter(s -> !s.acknowledged && severitiesToReport.contains(s.overallStatus.name())).collect(Collectors.groupingBy(s -> s.overallStatus.name(), Collectors.counting()));
+    }
+
+    private String getMessageForAlarmCountMap(final Map<String, Long> alarmCountMap) {
+        StringBuilder alarmCountString = new StringBuilder();
+        for (final String alarmSeverity : VALID_VSPHERE_ALARM_STATES) {
+            if (alarmCountMap.containsKey(alarmSeverity)) {
+                alarmCountString.append(alarmCountString.length() > 0 ? ", " : "").append(alarmCountMap.get(alarmSeverity)).append(" ").append(alarmSeverity);
+            }
+        }
+        return "Alarms: " + alarmCountString;
     }
 }
