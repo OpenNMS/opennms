@@ -311,6 +311,7 @@ include::text/operation/daemon-config-files/trapd.adoc[]
 == System Properties
 include::text/system-properties/introduction.adoc[]
 include::text/system-properties/system-proxies.adoc[]
+include::text/system-properties/opennms-properties.adoc[]
 
 [[ga-ticketing]]
 == Ticketing

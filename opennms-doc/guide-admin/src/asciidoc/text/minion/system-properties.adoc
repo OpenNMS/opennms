@@ -1,0 +1,11 @@
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-minion-properties]]
+=== System Properties
+
+The `system.properties` file allows you to set global properties for the Minion application.
+These properties will be set as system properties at the beginning of Java startup.
+Any properties set on the Java command-line with `-Dproperty=value` will be overridden by these values.
+
+Since the Minion application is able to use the same properties than OpenNMS does, the <<ga-snmp-settings, OpenNMS SNMP properties>> can be set.
