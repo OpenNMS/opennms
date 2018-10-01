@@ -5,7 +5,7 @@
 [[ga-opennms-properties]]
 === OpenNMS Properties
 
-The properties file allows you to set global properties for the OpenNMS application.
+The properties file allows you to set global properties for the _{opennms-product-title}_ application.
 These properties will be set as system properties at the beginning of Java startup.
 Any properties set on the Java command-line with `-Dproperty=value` will be overridden by these values.
 
