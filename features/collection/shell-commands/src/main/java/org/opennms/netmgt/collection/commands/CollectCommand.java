@@ -237,7 +237,7 @@ public class CollectCommand implements Action {
         }
     }
 
-    private static Map<String, Object> parse(List<String> attributeList) {
+    private Map<String, Object> parse(List<String> attributeList) {
         final Map<String, Object> properties = new HashMap<>();
         if (attributeList != null) {
             for (String keyValue : attributeList) {
@@ -250,6 +250,10 @@ public class CollectCommand implements Action {
                     properties.put(key, value);
                 }
             }
+        }
+        //SnmpCollector uses proxy rpc, so need to pass ttl in params.
+        if(ttlInMs != null) {
+            properties.put("SERVICE_INTERVAL", ttlInMs);
         }
         return properties;
     }

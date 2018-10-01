@@ -47,27 +47,27 @@
             <!-- Dropped Messages -->
             <mbean name="org.apache.cassandra.metrics.DroppedMessage"
                    objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=READ,name=Dropped">
-                <attrib name="Count" alias="drpdMsgRead" type="gauge"/>
+                <attrib name="Count" alias="drpdMsgRead" type="counter"/>
             </mbean>
             <mbean name="org.apache.cassandra.metrics.DroppedMessage"
                    objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=READ_REPAIR,name=Dropped">
-                <attrib name="Count" alias="drpdMsgReadRepair" type="gauge"/>
+                <attrib name="Count" alias="drpdMsgReadRepair" type="counter"/>
             </mbean>
             <mbean name="org.apache.cassandra.metrics.DroppedMessage"
                    objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=REQUEST_RESPONSE,name=Dropped">
-                <attrib name="Count" alias="drpdMsgReqResp" type="gauge"/>
+                <attrib name="Count" alias="drpdMsgReqResp" type="counter"/>
             </mbean>
             <mbean name="org.apache.cassandra.metrics.DroppedMessage"
                    objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=RANGE_SLICE,name=Dropped">
-                <attrib name="Count" alias="drpdMsgRangeSlice" type="gauge"/>
+                <attrib name="Count" alias="drpdMsgRangeSlice" type="counter"/>
             </mbean>
             <mbean name="org.apache.cassandra.metrics.DroppedMessage"
                    objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=MUTATION,name=Dropped">
-                <attrib name="Count" alias="drpdMsgMutation" type="gauge"/>
+                <attrib name="Count" alias="drpdMsgMutation" type="counter"/>
             </mbean>
             <mbean name="org.apache.cassandra.metrics.DroppedMessage"
                    objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=PAGED_RANGE,name=Dropped">
-                <attrib name="Count" alias="drpdMsgPagedRange" type="gauge"/>
+                <attrib name="Count" alias="drpdMsgPagedRange" type="counter"/>
             </mbean>
 
             <!-- ThreadPools :: MemtableFlushWriter -->
