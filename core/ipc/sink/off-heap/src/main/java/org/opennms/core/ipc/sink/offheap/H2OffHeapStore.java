@@ -85,7 +85,7 @@ public class H2OffHeapStore implements OffHeapQueue {
             }
         }
         reporter = JmxReporter.forRegistry(offheapMetrics).inDomain(this.getClass().getPackage().getName()).build();
-        offheapMetrics.register(MetricRegistry.name("currentSize"), new Gauge<Long>() {
+        offheapMetrics.register(MetricRegistry.name("offHeapSize"), new Gauge<Long>() {
             @Override
             public Long getValue() {
                 return getSize();

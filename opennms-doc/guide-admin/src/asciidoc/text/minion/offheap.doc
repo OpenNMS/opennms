@@ -28,3 +28,9 @@ enableOffHeap=true' > "$MINION_HOME/etc/org.opennms.core.ipc.sink.offheap.cfg"
 Specify offHeapSize in KB, MB or GB. For ex: 1.2GB, 2.5MB, 845KB. It will be converted to bytes.
 In above example, offHeapSize is configured to 1.2GB. That is 1288490188 bytes.
 For ex: 1.2MB is valid.  1gb is not valid.
+
+When using Offheap storage option, it is best to reduce default queue size of sink module to match batch size. So all the buffering happens on offheap.
+
+When using _Kafka_ as sink strategy, each sink message will expire after 30sec by default.
+To queue it for extended period, kafka producer property `retries` can be updated.
+For ex: for `retries` 100, each sink message will queue atleast for 30 mins before getting dropped.
