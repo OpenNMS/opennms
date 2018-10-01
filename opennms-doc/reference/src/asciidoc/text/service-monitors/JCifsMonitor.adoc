@@ -63,7 +63,7 @@ The _JCifsMonitor_ can *not* test:
                         `folder_empty` and `folder_not_empty`, otherwise it will be ignored.                            | optional | `-` | No
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<ref-monitors-common-parameters, Common Configuration Parameters>>.
 
 TIP: It makes little sense to have retries higher than `1`.
      It is a waste of resources during the monitoring.

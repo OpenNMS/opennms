@@ -48,7 +48,7 @@ The following metrics are collected:
 | `port`          | TCP port connecting to Memcached.                                              | optional | `11211`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<ref-monitors-common-parameters, Common Configuration Parameters>>.
 
 ==== Examples
 

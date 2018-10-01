@@ -3,7 +3,7 @@
 
 This monitor tests reachability of a node by using the _isReachable_ method of the _InetAddress_ java class.
 The service is considered available if isReachable returns true.
-See link:http://docs.oracle.com/javase/7/docs/api/java/net/InetAddress.html#isReachable%28int%29[Oracle's documentation] for more details.
+See link:https://docs.oracle.com/javase/8/docs/api/java/net/InetAddress.html#isReachable-int-[Oracle's documentation] for more details.
 
 IMPORTANT: This monitor is deprecated in favour of the <<poller-icmp-monitor,IcmpMonitor>> monitor. You should only use this monitor on remote pollers
 running on unusual configurations (See <<poller-availability-monitor-vs-icmp-monitor,below>> for more details).
@@ -18,7 +18,7 @@ running on unusual configurations (See <<poller-availability-monitor-vs-icmp-mon
 
 ==== Configuration and Usage
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<ref-monitors-common-parameters, Common Configuration Parameters>>.
 
 ==== Examples
 

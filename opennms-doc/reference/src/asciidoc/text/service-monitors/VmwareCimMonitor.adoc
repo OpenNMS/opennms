@@ -52,7 +52,7 @@ state can be changed see the `ignoreStandBy` configuration parameter.
 | `ignoreStandBy` | Treat power state _standBy_ as _up_.                           | optional | `false`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<ref-monitors-common-parameters, Common Configuration Parameters>>.
 
 ==== Examples
 Some example configuration how to configure the monitor in the `poller-configuration.xml`.

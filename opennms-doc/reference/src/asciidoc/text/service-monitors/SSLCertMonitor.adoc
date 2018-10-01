@@ -39,7 +39,7 @@ You can configure a threshold in days applied on the `notAfter` date.
                   (See: link:https://www.ietf.org/rfc/rfc3546.txt[RFC3546] section 3.1)             | optional | `-`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<ref-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Variables which can be passed in the configuration for `server-name`
 [options="header, autowidth"]

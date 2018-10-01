@@ -42,7 +42,7 @@ If one of the tests in the sample above fails the service is marked _down_.
 | `port`      | The port of the IMAP server.                                                                         | optional | `143`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<ref-monitors-common-parameters, Common Configuration Parameters>>.
 
 ==== Examples
 

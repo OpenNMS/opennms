@@ -23,7 +23,7 @@ This monitor implements the same <<ga-service-assurance-monitors-placeholder-sub
 | `port`                 | The destination port where connections shall be attempted. | optional | `636`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<ref-monitors-common-parameters, Common Configuration Parameters>>.
 
 ==== Examples
 

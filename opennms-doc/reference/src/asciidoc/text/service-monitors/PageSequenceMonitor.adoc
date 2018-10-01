@@ -52,7 +52,7 @@ Additionally, it is possible to configure a page sequence containing a path thro
 | `sequence-retry` | The retry parameter for the entire page sequence.                                                    | optional | `0`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<ref-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Page Sequence Parameter
 [options="header, autowidth"]

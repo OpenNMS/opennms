@@ -96,7 +96,7 @@ It won't store the time spent during the last successful attempt.
                       parameters. See also the `match-all`, `minimum`, and `maximum` parameters.                       | optional | `false`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<ref-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Variables which can be used in the reason-template parameter
 [options="header, autowidth"]

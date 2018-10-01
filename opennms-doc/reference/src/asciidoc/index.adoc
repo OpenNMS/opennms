@@ -18,6 +18,7 @@
 // Included in alphabetical order
 [[ref-service-monitors]]
 == Service monitors
+include::text/service-monitors/common-configuration-parameters.adoc[]
 include::text/service-monitors/AvailabilityMonitor.adoc[]
 include::text/service-monitors/BgpSessionMonitor.adoc[]
 include::text/service-monitors/BSFMonitor.adoc[]

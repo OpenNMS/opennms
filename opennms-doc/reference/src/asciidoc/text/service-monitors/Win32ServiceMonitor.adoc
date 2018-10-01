@@ -29,7 +29,7 @@ of a given service by the display name.
                     work here.                                                                                         | required | `Server`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<ref-monitors-common-parameters, Common Configuration Parameters>>.
 
 NOTE: Non-English Windows
 The `service-name` is sometime encoded in languages other than English.

@@ -63,7 +63,7 @@ If you want to monitor the DNS resolution of some of your nodes from a client's 
 | `max-answers`          | Maximal number of records in the DNS server respone for the given lookup                     | optional | `-`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<ref-monitors-common-parameters, Common Configuration Parameters>>.
 
 ==== Examples
 

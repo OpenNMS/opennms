@@ -47,7 +47,7 @@ CAUTION: Make sure no DHCP client is running on the _{opennms-product-name}_ ser
 | `ds-name`        | This is the name as reference for this particular data source in the RRD file                  | optional | `dhcp`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<ref-monitors-common-parameters, Common Configuration Parameters>>.
 
 ==== _Dhcpd_ configuration
 

@@ -30,7 +30,7 @@ CAUTION: The information for the status of a virtual machine is collected from t
 | `reportAlarms`  | Checks for unacknowledged vSphere alarms for a given comma-separated list of severities (red, yellow, green, gray). | optional | ``
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<ref-monitors-common-parameters, Common Configuration Parameters>>.
 
 ==== Examples
 Some example configuration how to configure the monitor in the `poller-configuration.xml`.

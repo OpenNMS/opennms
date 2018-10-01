@@ -30,7 +30,7 @@ WARNING: Microsoft deprecated the usage of _NetBIOS_.
 | `do-node-status` | Try to get the _NetBIOS_ node status type for the given address | optional | `true`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<ref-monitors-common-parameters, Common Configuration Parameters>>.
 
 ==== Examples
 
