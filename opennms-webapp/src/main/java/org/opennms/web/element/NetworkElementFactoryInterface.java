@@ -34,6 +34,7 @@ import java.util.Map;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 
 public interface NetworkElementFactoryInterface {
 
@@ -453,4 +454,6 @@ public interface NetworkElementFactoryInterface {
 	List<OnmsMonitoringLocation> getMonitoringLocations();
 
 	List<OnmsMonitoringSystem> getMonitoringSystems();
+
+	boolean nodeExistsInRequisition(final String foreignSource, final String foreignId);
 }

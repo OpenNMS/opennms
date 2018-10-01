@@ -63,6 +63,11 @@ public class DefaultAlarmEntityListener implements AlarmEntityListener {
     }
 
     @Override
+    public void onAlarmArchived(OnmsAlarm alarm, String previousReductionKey) {
+
+    }
+
+    @Override
     public void onAlarmDeleted(OnmsAlarm alarm) {
 
     }

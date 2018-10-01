@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features
+        name="opennms-${project.version}"
+        xmlns="http://karaf.apache.org/xmlns/features/v1.4.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
+>
+
+    <!-- Install bootstrap feature to start all flow related features automatically -->
+    <feature name="autostart-sentinel-telemetry-collectionset-adapters" version="${project.version}" start-level="200" install="auto">
+        <!-- Configure an SFLOW Adapter to persist SFlows and also Samples -->
+        <config name="org.opennms.features.telemetry.adapters-sflow">
+            name = SFlow
+            adapters.1.name = SFlow-Adapter
+            adapters.1.class-name = org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowAdapter
+            adapters.2.name = SFlow-Telemeetry
+            adapters.2.class-name = org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowTelemetryAdapter
+            adapters.2.parameters.script = /opt/sentinel/etc/sflow-host.groovy
+        </config>
+        <!-- Point sentinel to the correct elastic endpoint -->
+        <config name="org.opennms.features.flows.persistence.elastic">
+            elasticUrl = http://elasticsearch:9200
+        </config>
+        <!-- Point sentinel to cassandra -->
+        <config name="org.opennms.newts.config">
+            hostname = cassandra
+            port = 9042
+        </config>
+        <feature>sentinel-jms</feature>
+        <feature>sentinel-newts</feature>
+        <feature>sentinel-flows</feature>
+    </feature>
+</features>

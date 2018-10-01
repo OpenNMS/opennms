@@ -15,6 +15,7 @@
         <module>distributed</module>
         <module>healthcheck</module>
         <module>impl</module>
+        <module>shell</module>
         <module>test</module>
     </modules>
 </project>
