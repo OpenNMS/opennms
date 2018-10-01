@@ -65,12 +65,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-@EventListener(name=Trapd.NAME, logPrefix=Trapd.LOG4J_CATEGORY)
+@EventListener(name=Trapd.LOG4J_CATEGORY, logPrefix=Trapd.LOG4J_CATEGORY)
 public class Trapd extends AbstractServiceDaemon {
     
     private static final Logger LOG = LoggerFactory.getLogger(Trapd.class);
 
-    public static final String NAME = "Trapd";
 
     public static final String LOG4J_CATEGORY = "trapd";
     
@@ -96,7 +95,7 @@ public class Trapd extends AbstractServiceDaemon {
      * @see org.opennms.protocols.snmp.SnmpTrapSession
      */
     public Trapd() {
-        super(NAME);
+        super(LOG4J_CATEGORY);
     }
 
 
@@ -198,7 +197,7 @@ public class Trapd extends AbstractServiceDaemon {
 
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadEvent(Event e) {
-        DaemonTools.handleReloadEvent(e, Trapd.NAME, (event) -> handleConfigurationChanged());
+        DaemonTools.handleReloadEvent(e, Trapd.LOG4J_CATEGORY, (event) -> handleConfigurationChanged());
     }
 
     private void handleConfigurationChanged() {
