@@ -226,7 +226,7 @@ public class BridgeStpLink implements Serializable, Topology{
 
 
     @Column(name="stpPortState", nullable = false)
-    @Type(type="org.opennms.netmgt.model.BridgeDot1dStpPortStateUserType")
+    @Type(type="org.opennms.netmgt.enlinkd.model.BridgeDot1dStpPortStateUserType")
 	public BridgeDot1dStpPortState getStpPortState() {
 		return m_stpPortState;
 	}
@@ -238,7 +238,7 @@ public class BridgeStpLink implements Serializable, Topology{
 
 
     @Column(name="stpPortEnable", nullable = false)
-    @Type(type="org.opennms.netmgt.model.BridgeDot1dStpPortEnableUserType")
+    @Type(type="org.opennms.netmgt.enlinkd.model.BridgeDot1dStpPortEnableUserType")
 	public BridgeDot1dStpPortEnable getStpPortEnable() {
 		return m_stpPortEnable;
 	}

@@ -145,7 +145,7 @@ public final class IsIsElement implements Serializable, Topology {
     }
 
     @Column(name="isisSysAdminState", nullable = false)
-    @Type(type="org.opennms.netmgt.model.IsIsAdminStateUserType")
+    @Type(type="org.opennms.netmgt.enlinkd.model.IsIsAdminStateUserType")
     public IsisAdminState getIsisSysAdminState() {
 		return m_isisSysAdminState;
 	}

@@ -221,7 +221,7 @@ public class IsIsLink implements Serializable, Topology {
 	}
 
     @Column(name="isisCircAdminState", nullable = true)
-    @Type(type="org.opennms.netmgt.model.IsIsAdminStateUserType")
+    @Type(type="org.opennms.netmgt.enlinkd.model.IsIsAdminStateUserType")
 	public IsisAdminState getIsisCircAdminState() {
 		return m_isisCircAdminState;
 	}
@@ -232,7 +232,7 @@ public class IsIsLink implements Serializable, Topology {
 	}
 
     @Column(name="isisISAdjState", nullable = false)
-    @Type(type="org.opennms.netmgt.model.IsIsISAdjStateUserType")
+    @Type(type="org.opennms.netmgt.enlinkd.model.IsIsISAdjStateUserType")
 	public IsisISAdjState getIsisISAdjState() {
 		return m_isisISAdjState;
 	}
@@ -254,7 +254,7 @@ public class IsIsLink implements Serializable, Topology {
 
 
     @Column(name="isisISAdjNeighSysType", nullable = false)
-    @Type(type="org.opennms.netmgt.model.IsIsISAdjNeighSysTypeUserType")
+    @Type(type="org.opennms.netmgt.enlinkd.model.IsIsISAdjNeighSysTypeUserType")
 	public IsisISAdjNeighSysType getIsisISAdjNeighSysType() {
 		return m_isisISAdjNeighSysType;
 	}

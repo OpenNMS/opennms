@@ -53,6 +53,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
+import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
@@ -333,8 +334,10 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         lnodeD.setLocation(location);
         elementD.setNode(lnodeD);
         elementD.setBaseBridgeAddress("dddddddddddd");
-        
-
+        elementD.setBaseNumPorts(10);
+        elementD.setBaseType(BridgeDot1dBaseType.DOT1DBASETYPE_TRANSPARENT_ONLY);
+        elementD.setBridgeNodeLastPollTime(elementD.getBridgeNodeCreateTime());
+ 
         OnmsNode lnodeE= new OnmsNode();
         lnodeE.setId(topology.nodeBId+1234);
         lnodeE.setForeignSource("linkd");
@@ -343,6 +346,9 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         lnodeE.setLocation(location);
         elementE.setNode(lnodeE);
         elementE.setBaseBridgeAddress("eeeeeeeeeeee");
+        elementE.setBaseNumPorts(20);
+        elementE.setBaseType(BridgeDot1dBaseType.DOT1DBASETYPE_TRANSPARENT_ONLY);
+        elementE.setBridgeNodeLastPollTime(elementE.getBridgeNodeCreateTime());
 
         OnmsNode lnodeK= new OnmsNode();
         lnodeK.setId(topology.nodeCId+12345);
@@ -352,6 +358,9 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         lnodeK.setLocation(location);
         elementK.setNode(lnodeK);
         elementK.setBaseBridgeAddress("aaaabbbbcccc");
+        elementK.setBaseNumPorts(3);
+        elementK.setBaseType(BridgeDot1dBaseType.DOT1DBASETYPE_TRANSPARENT_ONLY);
+        elementK.setBridgeNodeLastPollTime(elementK.getBridgeNodeCreateTime());
 
         
         m_nodeDao.save(lnodeA);

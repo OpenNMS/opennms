@@ -57,78 +57,71 @@
     <property name="transactionManager" ref="transactionManager" />
   </bean>
 
-  <bean id="nodeDao" class="org.opennms.netmgt.dao.hibernate.NodeDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
+  	<bean id="nodeDao" class="org.opennms.netmgt.dao.hibernate.NodeDaoHibernate">
+    	<property name="sessionFactory" ref="sessionFactory" />
+  	</bean>
   
-  <bean id="lldpLinkDao" class="org.opennms.netmgt.dao.hibernate.LldpLinkDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-
-  <bean id="lldpElementDao" class="org.opennms.netmgt.dao.hibernate.LldpElementDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-
-  <bean id="cdpLinkDao" class="org.opennms.netmgt.dao.hibernate.CdpLinkDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-
-  <bean id="cdpElementDao" class="org.opennms.netmgt.dao.hibernate.CdpElementDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-
-  <bean id="ospfLinkDao" class="org.opennms.netmgt.dao.hibernate.OspfLinkDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-   
-  <bean id="ospfElementDao" class="org.opennms.netmgt.dao.hibernate.OspfElementDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-
-  <bean id="isisLinkDao" class="org.opennms.netmgt.dao.hibernate.IsIsLinkDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-
-  <bean id="isisElementDao" class="org.opennms.netmgt.dao.hibernate.IsIsElementDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
+    <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
   
-    <bean id="ipNetToMediaDao" class="org.opennms.netmgt.dao.hibernate.IpNetToMediaDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-
-  <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
+	<bean id="topologyDao" class="org.opennms.netmgt.dao.hibernate.TopologyDaoHibernate">
+    	<property name="nodeDao" ref="nodeDao" />
+  	</bean>
   
-  <bean id="bridgeMacLinkDao" class="org.opennms.netmgt.dao.hibernate.BridgeMacLinkDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-      
-  <bean id="bridgeBridgeLinkDao" class="org.opennms.netmgt.dao.hibernate.BridgeBridgeLinkDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-      
-  <bean id="bridgeStpLinkDao" class="org.opennms.netmgt.dao.hibernate.BridgeStpLinkDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-      
-  <bean id="bridgeElementDao" class="org.opennms.netmgt.dao.hibernate.BridgeElementDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>  
-
-  <bean id="bridgeTopologyDao" class="org.opennms.netmgt.dao.hibernate.BridgeTopologyDaoHibernate">
-    <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
-    <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
-    <property name="bridgeElementDao" ref="bridgeElementDao" />
-    <property name="nodeDao" ref="nodeDao" />
-  </bean>
-
-    <bean id="topologyDao" class="org.opennms.netmgt.dao.hibernate.TopologyDaoHibernate">
-        <property name="nodeDao" ref="nodeDao" />
+     <bean id="cdpLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.CdpLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
     </bean>
 
-    <bean id="nodeTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.NodeTopologyServiceImpl">
+    <bean id="cdpElementDao" class="org.opennms.netmgt.enlinkd.persistence.impl.CdpElementDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="lldpLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.LldpLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="lldpElementDao" class="org.opennms.netmgt.enlinkd.persistence.impl.LldpElementDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="ospfLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.OspfLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="ospfElementDao" class="org.opennms.netmgt.enlinkd.persistence.impl.OspfElementDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="isisLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.IsIsLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="isisElementDao" class="org.opennms.netmgt.enlinkd.persistence.impl.IsIsElementDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="ipNetToMediaDao" class="org.opennms.netmgt.enlinkd.persistence.impl.IpNetToMediaDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="bridgeMacLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.BridgeMacLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="bridgeBridgeLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.BridgeBridgeLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="bridgeStpLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.BridgeStpLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="bridgeElementDao" class="org.opennms.netmgt.enlinkd.persistence.impl.BridgeElementDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+  
+      <bean id="nodeTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.NodeTopologyServiceImpl">
       <property name="nodeDao" ref="nodeDao" />
     </bean>
 
@@ -163,15 +156,7 @@
       <property name="ospfElementDao" ref="ospfElementDao" />
    </bean>
    
-
-    <bean id="receiver" class="org.opennms.netmgt.enlinkd.EventProcessor">
-      <property name="linkd" ref="daemon"/>
-    </bean>
-
-    <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
-      <property name="annotatedListener" ref="receiver" />
-      <property name="eventSubscriptionService" ref="eventSubscriptionService" />
-    </bean>
+    <bean id="linkdConfig" class="org.opennms.netmgt.config.EnhancedLinkdConfigFactory" lazy-init="true"/>
 
     <bean name="daemon" class="org.opennms.netmgt.enlinkd.EnhancedLinkd">
       <property name="eventForwarder" ref="eventForwarder" />
@@ -185,6 +170,16 @@
       <property name="ospfTopologyService"   ref="ospfTopologyService" />
       <property name="topologyDao"   ref="topologyDao" />
     </bean>
- 
-    <bean id="enlinkdConfig" class="org.opennms.netmgt.config.EnhancedLinkdConfigFactory" lazy-init="true"/>
+
+    <bean id="receiver" class="org.opennms.netmgt.enlinkd.EventProcessor">
+      <property name="linkd" ref="daemon"/>
+    </bean>
+
+    <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+      <property name="annotatedListener" ref="receiver" />
+      <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+    </bean>
+   
+  
+  
 </beans>

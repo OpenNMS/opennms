@@ -50,6 +50,7 @@ import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
 import org.opennms.netmgt.enlinkd.service.api.Bridge;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
@@ -3582,9 +3583,13 @@ public abstract class EnLinkdTestHelper {
 
         public OneBridgeCompleteTopology() {
             nodeA.setId(nodeAId);
+            nodeA.setLabel("nodeA");
             nodeA.setLocation(new OnmsMonitoringLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
             element.setNode(nodeA);
             element.setBaseBridgeAddress("aaaaaaaaaaaa");
+            element.setBaseNumPorts(10);
+            element.setBaseType(BridgeDot1dBaseType.DOT1DBASETYPE_TRANSPARENT_ONLY);
+            element.setBridgeNodeLastPollTime(element.getBridgeNodeCreateTime());
             elemlist.add(element);
 
 

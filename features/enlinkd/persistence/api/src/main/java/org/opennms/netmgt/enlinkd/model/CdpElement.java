@@ -164,7 +164,7 @@ public final class CdpElement implements Serializable, Topology {
     }
 
     @Column(name="cdpGlobalRun", nullable = false)
-    @Type(type="org.opennms.netmgt.model.TruthValueUserType")
+    @Type(type="org.opennms.netmgt.enlinkd.model.TruthValueUserType")
 	public TruthValue getCdpGlobalRun() {
 		return m_cdpGlobalRun;
 	}
@@ -175,7 +175,7 @@ public final class CdpElement implements Serializable, Topology {
 	}
 
     @Column(name="cdpGlobalDeviceIdFormat" , nullable = true)
-    @Type(type="org.opennms.netmgt.model.CdpGlobalDeviceIdFormatUserType")
+    @Type(type="org.opennms.netmgt.enlinkd.model.CdpGlobalDeviceIdFormatUserType")
     public CdpGlobalDeviceIdFormat getCdpGlobalDeviceIdFormat() {
         return m_cdpGlobalDeviceIdFormat;
     }

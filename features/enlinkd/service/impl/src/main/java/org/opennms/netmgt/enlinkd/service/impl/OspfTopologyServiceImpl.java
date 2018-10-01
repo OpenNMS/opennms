@@ -81,14 +81,16 @@ public class OspfTopologyServiceImpl implements OspfTopologyService {
         OspfElement dbelement = m_ospfElementDao.findByNodeId(nodeId);
         if (dbelement != null) {
             dbelement.merge(element);
-        } else {
-            dbelement=element;
-            OnmsNode node = new OnmsNode();
-            dbelement.setNode(node);
-            dbelement.setOspfNodeLastPollTime(element.getOspfNodeCreateTime());
+            m_ospfElementDao.saveOrUpdate(dbelement);
+            m_ospfElementDao.flush();
+            return;
         }
 
-        m_ospfElementDao.saveOrUpdate(dbelement);
+        OnmsNode node = new OnmsNode();
+        node.setId(nodeId);
+        element.setNode(node);
+        element.setOspfNodeLastPollTime(element.getOspfNodeCreateTime());
+        m_ospfElementDao.saveOrUpdate(element);
         m_ospfElementDao.flush();
 
     }

@@ -228,7 +228,7 @@ public class BridgeElement implements Serializable, Topology{
 
 
     @Column(name="baseType", nullable = false)
-    @Type(type="org.opennms.netmgt.model.BridgeDot1dBaseTypeUserType")
+    @Type(type="org.opennms.netmgt.enlinkd.model.BridgeDot1dBaseTypeUserType")
 	public BridgeDot1dBaseType getBaseType() {
 		return m_baseType;
 	}
@@ -262,7 +262,7 @@ public class BridgeElement implements Serializable, Topology{
 
 
     @Column(name="stpProtocolSpecification", nullable = true)
-    @Type(type="org.opennms.netmgt.model.BridgeDot1dStpProtocolSpecificationUserType")
+    @Type(type="org.opennms.netmgt.enlinkd.model.BridgeDot1dStpProtocolSpecificationUserType")
 	public BridgeDot1dStpProtocolSpecification getStpProtocolSpecification() {
 		return m_stpProtocolSpecification;
 	}

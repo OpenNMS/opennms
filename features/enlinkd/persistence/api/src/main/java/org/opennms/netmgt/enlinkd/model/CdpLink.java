@@ -286,7 +286,7 @@ public class CdpLink implements Serializable, Topology {
     }
 
     @Column(name="cdpCacheAddressType", nullable = false)
-    @Type(type="org.opennms.netmgt.model.CiscoNetworkProtocolTypeUserType")
+    @Type(type="org.opennms.netmgt.enlinkd.model.CiscoNetworkProtocolTypeUserType")
     public CiscoNetworkProtocolType getCdpCacheAddressType() {
         return m_cdpCacheAddressType;
     }

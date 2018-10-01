@@ -26,13 +26,13 @@
     </plugins>
   </build>
   <dependencies>
-      <dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
       <scope>compile</scope>
     </dependency>
 
-      <dependency>
+    <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.persistence.api</artifactId>
       <version>${project.version}</version>

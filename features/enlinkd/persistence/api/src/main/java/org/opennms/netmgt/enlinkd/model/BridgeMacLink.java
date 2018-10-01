@@ -196,7 +196,7 @@ public class BridgeMacLink implements Serializable, Topology{
 	}
 
     @Column(name = "linkType", nullable = false)
-    @Type(type = "org.opennms.netmgt.model.BridgeMacLinkTypeUserType")
+    @Type(type = "org.opennms.netmgt.enlinkd.model.BridgeMacLinkTypeUserType")
     public BridgeMacLinkType getLinkType() {
         return m_linkType;
     }

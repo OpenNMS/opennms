@@ -103,7 +103,7 @@ public final class LldpElement implements Serializable, Topology {
     }
 
     @Column(name="lldpChassisIdSubType", nullable = false)
-    @Type(type="org.opennms.netmgt.model.LldpChassisIdSubTypeUserType")
+    @Type(type="org.opennms.netmgt.enlinkd.model.LldpChassisIdSubTypeUserType")
     public LldpChassisIdSubType getLldpChassisIdSubType() {
 		return m_lldpChassisIdSubType;
 	}

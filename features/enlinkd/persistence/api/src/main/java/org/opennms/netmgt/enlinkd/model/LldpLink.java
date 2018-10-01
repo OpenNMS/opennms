@@ -139,7 +139,7 @@ public class LldpLink implements Serializable, Topology {
 
 
     @Column(name="lldpPortIdSubType", nullable = false)
-    @Type(type="org.opennms.netmgt.model.LldpPortIdSubTypeUserType")
+    @Type(type="org.opennms.netmgt.enlinkd.model.LldpPortIdSubTypeUserType")
 	public LldpPortIdSubType getLldpPortIdSubType() {
 		return m_lldpPortIdSubType;
 	}
@@ -203,7 +203,7 @@ public class LldpLink implements Serializable, Topology {
 
 
     @Column(name="lldpRemChassisIdSubType", nullable = false)
-    @Type(type="org.opennms.netmgt.model.LldpChassisIdSubTypeUserType")
+    @Type(type="org.opennms.netmgt.enlinkd.model.LldpChassisIdSubTypeUserType")
 	public LldpChassisIdSubType getLldpRemChassisIdSubType() {
 		return m_lldpRemChassisIdSubType;
 	}
@@ -216,7 +216,7 @@ public class LldpLink implements Serializable, Topology {
 
 
     @Column(name="lldpRemPortIdSubType", nullable = false)
-    @Type(type="org.opennms.netmgt.model.LldpPortIdSubTypeUserType")
+    @Type(type="org.opennms.netmgt.enlinkd.model.LldpPortIdSubTypeUserType")
 	public LldpPortIdSubType getLldpRemPortIdSubType() {
 		return m_lldpRemPortIdSubType;
 	}

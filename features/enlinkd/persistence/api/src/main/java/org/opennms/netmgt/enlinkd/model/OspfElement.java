@@ -201,7 +201,7 @@ public final class OspfElement implements Serializable, Topology {
 	}
 
     @Column(name="ospfAdminStat", nullable = false)
-    @Type(type="org.opennms.netmgt.model.StatusUserType")
+    @Type(type="org.opennms.netmgt.enlinkd.model.StatusUserType")
 	public Status getOspfAdminStat() {
 		return m_ospfAdminStat;
 	}
@@ -212,13 +212,13 @@ public final class OspfElement implements Serializable, Topology {
 	}
 
     @Column(name="ospfBdrRtrStatus", nullable = false)
-    @Type(type="org.opennms.netmgt.model.TruthValueUserType")
+    @Type(type="org.opennms.netmgt.enlinkd.model.TruthValueUserType")
 	public TruthValue getOspfBdrRtrStatus() {
 		return m_ospfBdrRtrStatus;
 	}
 
     @Column(name="ospfASBdrRtrStatus", nullable = false)
-    @Type(type="org.opennms.netmgt.model.TruthValueUserType")
+    @Type(type="org.opennms.netmgt.enlinkd.model.TruthValueUserType")
 	public TruthValue getOspfASBdrRtrStatus() {
 		return m_ospfASBdrRtrStatus;
 	}

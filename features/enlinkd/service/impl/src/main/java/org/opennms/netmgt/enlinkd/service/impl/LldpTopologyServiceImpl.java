@@ -120,14 +120,16 @@ public class LldpTopologyServiceImpl implements LldpTopologyService {
         LldpElement dbelement = m_lldpElementDao.findByNodeId(nodeId);
         if (dbelement != null) {
             dbelement.merge(element);
-        } else {
-            dbelement=element;
-            OnmsNode node = new OnmsNode();
-            node.setId(nodeId);
-            dbelement.setLldpNodeLastPollTime(element.getLldpNodeCreateTime());
+            m_lldpElementDao.saveOrUpdate(dbelement);
+            m_lldpElementDao.flush();
+            return;
         }
 
-        m_lldpElementDao.saveOrUpdate(dbelement);
+        OnmsNode node = new OnmsNode();
+        node.setId(nodeId);
+        element.setNode(node);
+        element.setLldpNodeLastPollTime(element.getLldpNodeCreateTime());
+        m_lldpElementDao.saveOrUpdate(element);
         m_lldpElementDao.flush();
     }
 

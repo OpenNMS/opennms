@@ -80,18 +80,21 @@ public class CdpTopologyServiceImpl implements CdpTopologyService {
             return;
 
         CdpElement dbelement = m_cdpElementDao.findByNodeId(nodeId);
+        
         if (dbelement != null) {
             dbelement.merge(element);
-        } else {
-            dbelement = element;
-            OnmsNode node = new OnmsNode();
-            node.setId(nodeId);
-            dbelement.setNode(node);
-            dbelement.setCdpNodeLastPollTime(element.getCdpNodeCreateTime());
-        }
-
-        m_cdpElementDao.saveOrUpdate(dbelement);
+            m_cdpElementDao.saveOrUpdate(dbelement);
+            m_cdpElementDao.flush();
+            return;
+        } 
+        
+        OnmsNode node = new OnmsNode();
+        node.setId(nodeId);
+        element.setNode(node);
+        element.setCdpNodeLastPollTime(element.getCdpNodeCreateTime());
+        m_cdpElementDao.saveOrUpdate(element);
         m_cdpElementDao.flush();
+
     }
 
     @Override

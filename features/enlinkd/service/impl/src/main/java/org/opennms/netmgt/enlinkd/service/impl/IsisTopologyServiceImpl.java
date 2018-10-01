@@ -120,18 +120,21 @@ public class IsisTopologyServiceImpl implements IsisTopologyService {
             return;
 
         IsIsElement dbelement = m_isisElementDao.findByNodeId(nodeId);
+        
         if (dbelement != null) {
             dbelement.merge(element);
-        } else {
-            dbelement=element;
-            OnmsNode node = new OnmsNode();
-            dbelement.setNode(node);
-            element.setIsisNodeLastPollTime(element.getIsisNodeCreateTime());
+            m_isisElementDao.saveOrUpdate(dbelement);
+            m_isisElementDao.flush();
+            return;
         }
-
-        m_isisElementDao.saveOrUpdate(dbelement);
+        
+        OnmsNode node = new OnmsNode();
+        node.setId(nodeId);
+        element.setNode(node);
+        element.setIsisNodeLastPollTime(element.getIsisNodeCreateTime());
+        m_isisElementDao.saveOrUpdate(element);
         m_isisElementDao.flush();
-
+    
     }
 
     public IsIsLinkDao getIsisLinkDao() {
