@@ -17,6 +17,8 @@
     <!-- Pax JDBC features -->
     <repository>mvn:org.ops4j.pax.jdbc/pax-jdbc-features/1.0.1/xml/features</repository>
 
+    <repository>mvn:org.opennms.integration.api/karaf-features/${opennmsApiVersion}/xml</repository>
+
     <feature name="opennms-amqp-event-forwarder" description="OpenNMS :: Features :: AMQP :: Event Forwarder" version="${project.version}">
       <feature>camel-core</feature>
       <feature>camel-blueprint</feature>
@@ -1300,4 +1302,8 @@
         <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.netflow/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-api-layer" description="OpenNMS :: Features :: API Layer" version="${project.version}">
+        <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
+        <bundle>mvn:org.opennms.features/org.opennms.features.api-layer/${project.version}</bundle>
+    </feature>
 </features>

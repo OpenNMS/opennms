@@ -10,9 +10,10 @@
   <packaging>pom</packaging>
   <name>OpenNMS :: Features</name>
   <modules>
-
     <!-- ActiveMQ broker -->
     <module>activemq</module>
+
+    <module>api-layer</module>
 
     <!-- AMQP Event Gateway and Alarm Northbounder -->
     <module>amqp</module>
