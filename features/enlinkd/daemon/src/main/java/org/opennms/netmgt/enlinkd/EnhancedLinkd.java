@@ -67,6 +67,20 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class EnhancedLinkd extends AbstractServiceDaemon {
+    
+    public static DiscoveryCdpTopology createAndRegister(EnhancedLinkd linkd) throws OnmsTopologyException {
+        DiscoveryCdpTopology discoveryCdpTopology = new DiscoveryCdpTopology(
+                                                                             linkd.getEventForwarder(),
+                                                                             linkd.getTopologyDao(),
+                                                                             linkd.getCdpTopologyService(),
+                                                                             linkd.getQueryManager(),
+                                                                             linkd.getBridgeTopologyInterval(),
+                                                                             linkd.getInitialSleepTime()
+                                                                                     + linkd.getBridgeTopologyInterval());
+        linkd.getTopologyDao().register(discoveryCdpTopology);
+        return discoveryCdpTopology;
+    }
+
     private final static Logger LOG = LoggerFactory.getLogger(EnhancedLinkd.class);
     /**
      * The log4j category used to log messages.
@@ -170,7 +184,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     }
     public void scheduleDiscoveryCdpTopology() {
          try {
-            m_discoveryCdpTopology = DiscoveryCdpTopology.createAndRegister(this);
+            m_discoveryCdpTopology = createAndRegister(this);
         } catch (OnmsTopologyException e) {
             LOG.error("OnmsTopologyException: cannote schedule: {} {} {}", e.getMessage(),e.getId(),e.getProtocol());
             return;

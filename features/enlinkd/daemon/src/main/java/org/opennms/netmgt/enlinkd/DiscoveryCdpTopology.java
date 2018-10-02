@@ -39,6 +39,7 @@ import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsTopology;
 import org.opennms.netmgt.model.OnmsTopologyEdge;
@@ -53,25 +54,20 @@ import org.slf4j.LoggerFactory;
 
 public class DiscoveryCdpTopology extends Discovery implements OnmsTopologyUpdater {
 
-    public static DiscoveryCdpTopology createAndRegister(EnhancedLinkd linkd) throws OnmsTopologyException {
-        DiscoveryCdpTopology discoveryCdpTopology = new DiscoveryCdpTopology(linkd);
-        linkd.getTopologyDao().register(discoveryCdpTopology);
-        return discoveryCdpTopology;
-    }
-
     private static final Logger LOG = LoggerFactory.getLogger(DiscoveryCdpTopology.class);
 
     protected final TopologyDao m_topologyDao;
     protected final CdpTopologyService m_cdpTopologyService;
     protected final NodeTopologyService m_nodeTopologyService;
 
-    private DiscoveryCdpTopology(EnhancedLinkd linkd) {
-        super(linkd.getEventForwarder(), linkd.getBridgeTopologyInterval(), linkd.getInitialSleepTime()+linkd.getBridgeTopologyInterval());
-        m_topologyDao = linkd.getTopologyDao();
-        m_cdpTopologyService = linkd.getCdpTopologyService();
-        m_nodeTopologyService = linkd.getQueryManager();
-    }
-            
+    public DiscoveryCdpTopology(EventForwarder eventforwarder,
+            TopologyDao topologyDao, CdpTopologyService cdpTopologyService, NodeTopologyService nodeTopologyService,
+            long interval, long initialsleeptime) {
+        super(eventforwarder, interval, initialsleeptime);
+        m_topologyDao = topologyDao;
+        m_cdpTopologyService = cdpTopologyService;
+        m_nodeTopologyService = nodeTopologyService;
+    }            
     
     @Override
     public void runDiscovery() {
