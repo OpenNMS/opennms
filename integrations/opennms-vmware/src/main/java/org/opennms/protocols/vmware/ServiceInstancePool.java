@@ -83,8 +83,14 @@ public class ServiceInstancePool {
         return new ServiceInstance(new URL("https://" + hostname + "/sdk"), username, password);
     }
 
-    public synchronized ServiceInstance retain(final String host, final String username, final String password) throws MalformedURLException, RemoteException {
-        return this.serviceInstancePoolEntries.computeIfAbsent(host + "/" + username + "/" + password, k -> new ServiceInstancePoolEntry(this, host, username, password)).retain();
+    public ServiceInstance retain(final String host, final String username, final String password) throws MalformedURLException, RemoteException {
+        final ServiceInstancePoolEntry serviceInstancePoolEntry;
+
+        synchronized (this) {
+            serviceInstancePoolEntry = this.serviceInstancePoolEntries.computeIfAbsent(host + "/" + username + "/" + password, k -> new ServiceInstancePoolEntry(this, host, username, password));
+        }
+
+        return serviceInstancePoolEntry.retain();
     }
 
     public synchronized void release(final ServiceInstance serviceInstance) {
