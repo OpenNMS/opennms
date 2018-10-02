@@ -29,6 +29,8 @@
 package org.opennms.netmgt.enlinkd;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +46,7 @@ import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,13 +55,11 @@ public class DiscoveryBridgeDomains extends Discovery {
     private static final Logger LOG = LoggerFactory.getLogger(DiscoveryBridgeDomains.class);
     private final int m_maxthreads;
     private final BridgeTopologyService m_bridgeTopologyService;
-    private final EnhancedLinkd m_linkd;
 
-    public DiscoveryBridgeDomains(EnhancedLinkd linkd) {
-        super(linkd.getEventForwarder(), linkd.getBridgeTopologyInterval(), linkd.getInitialSleepTime()+linkd.getBridgeTopologyInterval());
-        m_maxthreads=linkd.getDiscoveryBridgeThreads();
-        m_bridgeTopologyService = linkd.getBridgeTopologyService();
-        m_linkd = linkd;
+    public DiscoveryBridgeDomains(EventForwarder eventforwarder, BridgeTopologyService bridgeTopologyService, long interval, long initialsleeptime, int maxthreads) {
+        super(eventforwarder, interval, initialsleeptime);
+        m_maxthreads=maxthreads;
+        m_bridgeTopologyService = bridgeTopologyService;
     }
             
     private BroadcastDomain find(Set<Integer> nodes, Set<String> setA) throws BridgeTopologyException {
@@ -166,13 +167,38 @@ public class DiscoveryBridgeDomains extends Discovery {
             try {
                 BroadcastDomain domain = find(nodeondomainbft.get(nodeid).keySet(),
                                               nodeMacs.get(nodeid));
-                DiscoveryBridgeTopology nodebridgetopology = m_linkd.getNodeBridgeDiscoveryTopology(domain);
-                for (Integer bridgeId : nodeondomainbft.get(nodeid).keySet()) {
-                    nodebridgetopology.addUpdatedBFT(bridgeId,
-                                                     nodeondomainbft.get(nodeid).get(bridgeId));
+                DiscoveryBridgeTopology nodebridgetopology = new DiscoveryBridgeTopology(domain);
+                
+                synchronized (domain) {
+                    for (Integer bridgeId : nodeondomainbft.get(nodeid).keySet()) {
+                        nodebridgetopology.addUpdatedBFT(bridgeId,
+                                                         nodeondomainbft.get(nodeid).get(bridgeId));
+                        m_bridgeTopologyService.updateBridgeOnDomain(domain,bridgeId);
+                    }
                 }
+                                
                 Callable<String> task = () -> {
-                    nodebridgetopology.runDiscovery();
+                    synchronized (domain) {
+                        
+                        Date now = new Date();
+                        LOG.debug("run: calculate start"); 
+                        nodebridgetopology.calculate();
+                        LOG.debug("run: calculate end"); 
+                    
+                        LOG.debug("run: save start");
+                        try {
+                            m_bridgeTopologyService.store(domain, now);
+                        } catch (BridgeTopologyException e) {
+                            LOG.error("run: saving topology failed: {}. {}", 
+                                      e.getMessage(),
+                                      e.printTopology());
+                        } catch (ConcurrentModificationException e) {
+                            LOG.error("run: bridge:[{}], saving topology failed: {}. {}", 
+                                      e.getMessage(),
+                                      domain.printTopology());
+                        }
+                        LOG.debug("run: save end");
+                    }
                     return "executed Task: " + nodebridgetopology.getInfo();
                 };
                 taskList.add(task);

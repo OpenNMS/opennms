@@ -40,10 +40,8 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.TopologyDao;
-import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
-import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
@@ -185,7 +183,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
     public void scheduleDiscoveryBridgeDomain() {
             m_discoveryBridgeDomains=
-                    new DiscoveryBridgeDomains(this);
+                    new DiscoveryBridgeDomains(getEventForwarder(),
+                                               getBridgeTopologyService(),
+                                               getBridgeTopologyInterval(),
+                                               getBridgeTopologyInterval()+getInitialSleepTime(),
+                                               getDiscoveryBridgeThreads());
             LOG.debug("scheduleDiscoveryBridgeDomain: Scheduling {}",
                      m_discoveryBridgeDomains.getInfo());
             m_discoveryBridgeDomains.setScheduler(m_scheduler);
@@ -258,9 +260,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         }
     }
 
-    public DiscoveryBridgeTopology getNodeBridgeDiscoveryTopology(BroadcastDomain domain) {
-        return new DiscoveryBridgeTopology(this,domain);
-    }
     /**
      * <p>
      * onStart
@@ -358,17 +357,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     
     public DiscoveryCdpTopology getDiscoveryCdpTopology() {
         return m_discoveryCdpTopology;
-    }
-
-    public void scheduleNodeBridgeTopologyDiscovery(BroadcastDomain domain, Map<Integer,Set<BridgeForwardingTableEntry>> updateBfpMap) {
-        final DiscoveryBridgeTopology bridgediscovery = getNodeBridgeDiscoveryTopology(domain);
-        for (Integer bridgeid: updateBfpMap.keySet()) {
-            bridgediscovery.addUpdatedBFT(bridgeid, updateBfpMap.get(bridgeid));
-        }
-        LOG.debug("scheduleBridgeTopologyDiscovery: Scheduling {}",
-                    bridgediscovery.getInfo());
-        bridgediscovery.setScheduler(m_scheduler);
-        bridgediscovery.schedule();
     }
 
     void wakeUpNodeCollection(int nodeid) {

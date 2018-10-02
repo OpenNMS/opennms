@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import java.util.ConcurrentModificationException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -48,7 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
-public class DiscoveryBridgeTopology extends Discovery {
+public class DiscoveryBridgeTopology {
 
     private static final Logger LOG = LoggerFactory.getLogger(DiscoveryBridgeTopology.class);
 
@@ -56,7 +54,7 @@ public class DiscoveryBridgeTopology extends Discovery {
     private final BroadcastDomain m_domain;
     private Set<Integer> m_failed;
     private Set<Integer> m_parsed;
-    private final EnhancedLinkd m_linkd;    
+    
     public BroadcastDomain getDomain() {
         return m_domain;
     }
@@ -84,14 +82,11 @@ public class DiscoveryBridgeTopology extends Discovery {
         }
     }
 
-    public DiscoveryBridgeTopology(EnhancedLinkd linkd,BroadcastDomain domain) {
-        super(linkd.getEventForwarder(),linkd.getBridgeTopologyInterval(),0);
+    public DiscoveryBridgeTopology(BroadcastDomain domain) {
         Assert.notNull(domain);
         m_domain=domain;
-        m_linkd=linkd;
     }
         
-    @Override
     public String getInfo() {
                 StringBuffer info = new StringBuffer();
                 info.append(getName());
@@ -113,40 +108,7 @@ public class DiscoveryBridgeTopology extends Discovery {
                 }
                 return  info.toString();
     }
-
-    @Override
-    public void runDiscovery() {
-        Assert.notNull(m_bridgeFtMapUpdate);
-        Date now = new Date();
-
-        synchronized (m_domain) {
-            for (Integer bridgeid : m_bridgeFtMapUpdate.keySet()) {
-                m_linkd.getBridgeTopologyService().updateBridgeOnDomain(m_domain,bridgeid);
-            }
             
-            LOG.debug("run: calculate start"); 
-            calculate(); 
-            LOG.debug("run: calculate end"); 
-            
-            LOG.debug("run: save start");
-            try {
-                m_linkd.getBridgeTopologyService().store(m_domain, now);
-            } catch (BridgeTopologyException e) {
-                LOG.error("run: saving topology failed: {}. {}", 
-                          e.getMessage(),
-                          e.printTopology());
-                return;
-            } catch (ConcurrentModificationException e) {
-                LOG.error("run: bridge:[{}], saving topology failed: {}. {}", 
-                          e.getMessage(),
-                          m_domain.printTopology());
-                return;
-            }
-            LOG.debug("run: save end");
-        }
-   }
-            
-    @Override
     public String getName() {
         return "DiscoveryBridgeTopology";
     }
@@ -227,6 +189,7 @@ public class DiscoveryBridgeTopology extends Discovery {
     }
 
     protected  void calculate() {
+        Assert.notNull(m_bridgeFtMapUpdate);
         if (LOG.isDebugEnabled()) {
             LOG.debug("calculate: domain\n{}", 
                       m_domain.printTopology());
