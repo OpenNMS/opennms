@@ -59,6 +59,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.AnyServerX509TrustManager;
+import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
 import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.dao.VmwareConfigDao;
@@ -106,6 +107,12 @@ import com.vmware.vim25.ws.Client;
  */
 public class VmwareViJavaAccess {
 
+    private final int DEFAULT_TIMEOUT = PropertiesUtils.getProperty(
+            System.getProperties(),
+            "org.opennms.protocols.vmware.timeout",
+            3000
+    );
+
     /**
      * logging for VMware library VI Java
      */
@@ -131,6 +138,8 @@ public class VmwareViJavaAccess {
     private Map<HostSystem, String> m_hostSystemCimUrls = new HashMap<HostSystem, String>();
 
     private static ServiceInstancePool m_serviceInstancePool = new ServiceInstancePool();
+
+    private int m_timeout = DEFAULT_TIMEOUT;
 
     /**
      * Constructor for creating a instance for a given server and credentials.
@@ -204,6 +213,12 @@ public class VmwareViJavaAccess {
         relax();
 
         m_serviceInstance = m_serviceInstancePool.retain(m_hostname, m_username, m_password);
+
+        setTimeout(DEFAULT_TIMEOUT);
+    }
+
+    public int getTimeout() {
+        return m_timeout;
     }
 
     /**
@@ -222,6 +237,8 @@ public class VmwareViJavaAccess {
                     if (client != null) {
                         client.setConnectTimeout(timeout);
                         client.setReadTimeout(timeout);
+                        m_timeout = timeout;
+                        logger.debug("Set VMware service instance timeout to " + timeout + " ms.");
                         return true;
                     }
                 }
