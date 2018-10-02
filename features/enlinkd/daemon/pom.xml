@@ -70,6 +70,11 @@
       <artifactId>org.opennms.features.enlinkd.adapters.collectors.ospf</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.adapters.updaters.cdp</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- Test Dependencies -->
    <dependency>
