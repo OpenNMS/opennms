@@ -26,22 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd;
+package org.opennms.netmgt.enlinkd.service.api;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.enlinkd.service.api.Bridge;
-import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTable;
-import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
-import org.opennms.netmgt.enlinkd.service.api.BridgePort;
-import org.opennms.netmgt.enlinkd.service.api.BridgePortWithMacs;
-import org.opennms.netmgt.enlinkd.service.api.BridgeSimpleConnection;
-import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
-import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
-import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -188,7 +179,7 @@ public class DiscoveryBridgeTopology {
         down(oldRootBft,rootBft,sp,bridgeFtMapCalcul,0);
     }
 
-    protected  void calculate() {
+    public  void calculate() {
         Assert.notNull(m_bridgeFtMapUpdate);
         if (LOG.isDebugEnabled()) {
             LOG.debug("calculate: domain\n{}", 
