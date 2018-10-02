@@ -311,6 +311,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
     public boolean scheduleNodeCollection(int nodeid) {
 
+        if (m_nodes.containsKey(nodeid)) {
+            LOG.debug("scheduleNodeCollection: node:[{}], node Collection already Scheduled ",
+                      nodeid);
+            return false;
+        }
         LOG.debug("scheduleNodeCollection: Loading node {} from database",
                   nodeid);
         Node node = m_queryMgr.getSnmpNode(nodeid);

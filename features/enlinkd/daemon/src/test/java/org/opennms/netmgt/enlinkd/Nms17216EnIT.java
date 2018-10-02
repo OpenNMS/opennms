@@ -166,43 +166,49 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.scheduleNodeCollection(switch5.getId()));
  
         assertEquals(0,m_lldpLinkDao.countAll());
+        assertEquals(0,m_lldpElementDao.countAll());
         
         assertTrue(m_linkd.runSingleSnmpCollection(switch1.getId()));
         assertEquals(4, m_lldpLinkDao.countAll());
+        assertEquals(1,m_lldpElementDao.countAll());
         
         Thread.sleep(1000);
         assertTrue(m_linkd.runSingleSnmpCollection(switch2.getId()));
         assertEquals(10,m_lldpLinkDao.countAll());
-       
+        assertEquals(2,m_lldpElementDao.countAll());
+
         Thread.sleep(1000);
         assertTrue(m_linkd.runSingleSnmpCollection(switch3.getId()));
         assertEquals(12,m_lldpLinkDao.countAll());
+        assertEquals(3,m_lldpElementDao.countAll());
 
         Thread.sleep(1000);
         assertTrue(m_linkd.runSingleSnmpCollection(switch4.getId()));
         assertEquals(12,m_lldpLinkDao.countAll());
+        assertEquals(4,m_lldpElementDao.countAll());
 
         Thread.sleep(1000);
         assertTrue(m_linkd.runSingleSnmpCollection(switch5.getId()));
         assertEquals(12,m_lldpLinkDao.countAll());
+        assertEquals(5,m_lldpElementDao.countAll());
 
         for (final LldpElement node: m_lldpElementDao.findAll()) {
             assertNotNull(node);
             printLldpElement(node);
             assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, node.getLldpChassisIdSubType());
-            if        (node.getId().intValue() == switch1.getId().intValue()) {
+            if (node.getNode().getId().intValue() == switch1.getId().intValue()) {
                 assertEquals(SWITCH1_LLDP_CHASSISID, node.getLldpChassisId());
                 assertEquals(SWITCH1_NAME, node.getLldpSysname());
-            } else if (node.getId().intValue() == switch2.getId().intValue()) {
+            } else if (node.getNode().getId().intValue() == switch2.getId().intValue()) {
                 assertEquals(SWITCH2_LLDP_CHASSISID, node.getLldpChassisId());
                 assertEquals(SWITCH2_NAME, node.getLldpSysname());                
-            } else if (node.getId().intValue() == switch3.getId().intValue()) {
+            } else if (node.getNode().getId().intValue() == switch3.getId().intValue()) {
                 assertEquals(SWITCH3_LLDP_CHASSISID, node.getLldpChassisId());
                 assertEquals(SWITCH3_NAME, node.getLldpSysname());
-            } else if (node.getId().intValue() == switch4.getId().intValue()) {
+            } else if (node.getNode().getId().intValue() == switch4.getId().intValue()) {
                 assertEquals(SWITCH4_LLDP_CHASSISID, node.getLldpChassisId());
                 assertEquals(SWITCH4_NAME, node.getLldpSysname());
-            } else if (node.getId().intValue() == switch5.getId().intValue()) {
+            } else if (node.getNode().getId().intValue() == switch5.getId().intValue()) {
                 assertEquals(SWITCH5_LLDP_CHASSISID, node.getLldpChassisId());
                 assertEquals(SWITCH5_NAME, node.getLldpSysname());
             } else {
@@ -415,52 +421,61 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
 
         assertTrue(m_linkd.runSingleSnmpCollection(switch1.getId()));
         assertEquals(5, m_cdpLinkDao.countAll());
+        assertEquals(1, m_cdpElementDao.countAll());
         
         assertTrue(m_linkd.runSingleSnmpCollection(switch2.getId()));
         assertEquals(11, m_cdpLinkDao.countAll());
+        assertEquals(2, m_cdpElementDao.countAll());
        
         assertTrue(m_linkd.runSingleSnmpCollection(switch3.getId()));
         assertEquals(15, m_cdpLinkDao.countAll());
+        assertEquals(3, m_cdpElementDao.countAll());
 
         assertTrue(m_linkd.runSingleSnmpCollection(switch4.getId()));
         assertEquals(16, m_cdpLinkDao.countAll());
+        assertEquals(4, m_cdpElementDao.countAll());
 
         assertTrue(m_linkd.runSingleSnmpCollection(switch5.getId()));
         assertEquals(18, m_cdpLinkDao.countAll());
+        assertEquals(5, m_cdpElementDao.countAll());
 
         assertTrue(m_linkd.runSingleSnmpCollection(router1.getId()));
         assertEquals(20, m_cdpLinkDao.countAll());
+        assertEquals(6, m_cdpElementDao.countAll());
 
         assertTrue(m_linkd.runSingleSnmpCollection(router2.getId()));
         assertEquals(22, m_cdpLinkDao.countAll());
+        assertEquals(7, m_cdpElementDao.countAll());
 
         assertTrue(m_linkd.runSingleSnmpCollection(router3.getId()));
         assertEquals(25, m_cdpLinkDao.countAll());
+        assertEquals(8, m_cdpElementDao.countAll());
 
         assertTrue(m_linkd.runSingleSnmpCollection(router4.getId()));
         assertEquals(26, m_cdpLinkDao.countAll());
+        assertEquals(9, m_cdpElementDao.countAll());
 
         for (final CdpElement node: m_cdpElementDao.findAll()) {
             assertNotNull(node);
             printCdpElement(node);
             assertEquals(TruthValue.TRUE, node.getCdpGlobalRun());
-            if        (node.getId().intValue() == switch1.getId().intValue()) {
+            if (node.getNode().getId().intValue() == switch1.getId().intValue()) {
                 assertEquals(SWITCH1_NAME,node.getCdpGlobalDeviceId());
-            } else if (node.getId().intValue() == switch2.getId().intValue()) {
+            } else if (node.getNode().getId().intValue() == switch2.getId().intValue()) {
                 assertEquals(SWITCH2_NAME,node.getCdpGlobalDeviceId());
-            } else if (node.getId().intValue() == switch3.getId().intValue()) {
+            } else if (node.getNode().getId().intValue() == switch3.getId().intValue()) {
                 assertEquals(SWITCH3_NAME,node.getCdpGlobalDeviceId());
-            } else if (node.getId().intValue() == switch4.getId().intValue()) {
+            } else if (node.getNode().getId().intValue() == switch4.getId().intValue()) {
                 assertEquals(SWITCH4_NAME,node.getCdpGlobalDeviceId());
-            } else if (node.getId().intValue() == switch5.getId().intValue()) {
+            } else if (node.getNode().getId().intValue() == switch5.getId().intValue()) {
                 assertEquals(SWITCH5_NAME,node.getCdpGlobalDeviceId());
-            } else if (node.getId().intValue() == router1.getId().intValue()) {
+            } else if (node.getNode().getId().intValue() == router1.getId().intValue()) {
                 assertEquals(ROUTER1_NAME,node.getCdpGlobalDeviceId());
-            } else if (node.getId().intValue() == router2.getId().intValue()) {
+            } else if (node.getNode().getId().intValue() == router2.getId().intValue()) {
                 assertEquals(ROUTER2_NAME,node.getCdpGlobalDeviceId());
-            } else if (node.getId().intValue() == router3.getId().intValue()) {
+            } else if (node.getNode().getId().intValue() == router3.getId().intValue()) {
                 assertEquals(ROUTER3_NAME,node.getCdpGlobalDeviceId());
-            } else if (node.getId().intValue() == router4.getId().intValue()) {
+            } else if (node.getNode().getId().intValue() == router4.getId().intValue()) {
                 assertEquals(ROUTER4_NAME,node.getCdpGlobalDeviceId());
             } else {
                 assertTrue(false);
