@@ -76,7 +76,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
     	final Date now = new Date(); 
 
         final LldpLocalGroupTracker lldpLocalGroup = new LldpLocalGroupTracker();
-        SnmpAgentConfig peer = m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), getLocation());
+        SnmpAgentConfig peer = getSnmpAgentConfig();
 
         try {
             m_linkd.getLocationAwareSnmpClient().walk(peer,

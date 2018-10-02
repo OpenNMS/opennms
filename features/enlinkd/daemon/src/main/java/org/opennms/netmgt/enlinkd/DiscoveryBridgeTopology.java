@@ -56,7 +56,7 @@ public class DiscoveryBridgeTopology extends Discovery {
     private final BroadcastDomain m_domain;
     private Set<Integer> m_failed;
     private Set<Integer> m_parsed;
-        
+    private final EnhancedLinkd m_linkd;    
     public BroadcastDomain getDomain() {
         return m_domain;
     }
@@ -85,9 +85,10 @@ public class DiscoveryBridgeTopology extends Discovery {
     }
 
     public DiscoveryBridgeTopology(EnhancedLinkd linkd,BroadcastDomain domain) {
-        super(linkd,linkd.getBridgeTopologyInterval(),0);
+        super(linkd.getEventForwarder(),linkd.getBridgeTopologyInterval(),0);
         Assert.notNull(domain);
         m_domain=domain;
+        m_linkd=linkd;
     }
         
     @Override

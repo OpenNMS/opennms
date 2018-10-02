@@ -32,7 +32,9 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.enlinkd.service.api.Node;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +52,7 @@ public abstract class NodeDiscovery extends Discovery {
      * The node ID of the system used to collect the SNMP information
      */
     protected final Node m_node;
+    protected final EnhancedLinkd m_linkd;
     
     /**
      * Constructs a new SNMP collector for a node using the passed interface
@@ -61,8 +64,9 @@ public abstract class NodeDiscovery extends Discovery {
      *            The SnmpPeer object to collect from.
      */
     public NodeDiscovery(final EnhancedLinkd linkd, final Node node) {
-        super(linkd,linkd.getRescanInterval(), linkd.getInitialSleepTime());
+        super(linkd.getEventForwarder(),linkd.getRescanInterval(), linkd.getInitialSleepTime());
         m_node = node;
+        m_linkd = linkd;
     }
 
 
@@ -133,39 +137,38 @@ public abstract class NodeDiscovery extends Discovery {
     public String getLocation() {
         return m_node.getLocation();
     }
-    
+
+
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = 1;
-        result = prime
-                * result
-                + (int) (m_initial_sleep_time ^ (m_initial_sleep_time >>> 32));
+        int result = super.hashCode();
         result = prime * result + ((m_node == null) ? 0 : m_node.hashCode());
-        result = prime * result
-                + (int) (m_poll_interval ^ (m_poll_interval >>> 32));
         return result;
     }
+
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (obj == null)
+        if (!super.equals(obj))
             return false;
         if (getClass() != obj.getClass())
             return false;
         NodeDiscovery other = (NodeDiscovery) obj;
-        if (m_initial_sleep_time != other.m_initial_sleep_time)
-            return false;
         if (m_node == null) {
             if (other.m_node != null)
                 return false;
         } else if (!m_node.equals(other.m_node))
             return false;
-        if (m_poll_interval != other.m_poll_interval)
-            return false;
         return true;
     }
+    
+    public SnmpAgentConfig getSnmpAgentConfig() {
+        return SnmpPeerFactory.getInstance().getAgentConfig(m_node.getSnmpPrimaryIpAddr(), m_node.getLocation());
+    }
+
+    
 	
 }

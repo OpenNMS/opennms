@@ -42,6 +42,7 @@ import java.util.concurrent.Future;
 
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
+import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,18 +50,22 @@ import org.slf4j.LoggerFactory;
 public class DiscoveryBridgeDomains extends Discovery {
 
     private static final Logger LOG = LoggerFactory.getLogger(DiscoveryBridgeDomains.class);
-    final int m_maxthreads;
-    
+    private final int m_maxthreads;
+    private final BridgeTopologyService m_bridgeTopologyService;
+    private final EnhancedLinkd m_linkd;
+
     public DiscoveryBridgeDomains(EnhancedLinkd linkd) {
-        super(linkd, linkd.getBridgeTopologyInterval(), linkd.getInitialSleepTime()+linkd.getBridgeTopologyInterval());
+        super(linkd.getEventForwarder(), linkd.getBridgeTopologyInterval(), linkd.getInitialSleepTime()+linkd.getBridgeTopologyInterval());
         m_maxthreads=linkd.getDiscoveryBridgeThreads();
+        m_bridgeTopologyService = linkd.getBridgeTopologyService();
+        m_linkd = linkd;
     }
             
     private BroadcastDomain find(Set<Integer> nodes, Set<String> setA) throws BridgeTopologyException {
         
         BroadcastDomain domain = null;
         
-        for (BroadcastDomain curBDomain : m_linkd.getBridgeTopologyService().findAll()) {
+        for (BroadcastDomain curBDomain : m_bridgeTopologyService.findAll()) {
             if (BroadcastDomain.checkMacSets(setA, curBDomain.getMacsOnSegments())) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("find: node:{}, domain:{}",
@@ -77,18 +82,18 @@ public class DiscoveryBridgeDomains extends Discovery {
         if (domain == null) {
             LOG.debug("find: nodes: [{}]. No domain found, creating new Domain", nodes);
             domain = new BroadcastDomain();
-            m_linkd.getBridgeTopologyService().add(domain);
+            m_bridgeTopologyService.add(domain);
         }
 
         for (Integer nodeid: nodes) {
-            BroadcastDomain olddomain = m_linkd.getBridgeTopologyService().getBroadcastDomain(nodeid);
+            BroadcastDomain olddomain = m_bridgeTopologyService.getBroadcastDomain(nodeid);
             if (olddomain == null) {
                 continue;
             }
             if ( domain == olddomain ) {
                 continue;
             }
-            m_linkd.getBridgeTopologyService().reconcile(olddomain, nodeid);
+            m_bridgeTopologyService.reconcile(olddomain, nodeid);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("find: node:[{}]. Removed from Old Domain \n{}", 
                      nodeid, olddomain.printTopology());
@@ -112,12 +117,12 @@ public class DiscoveryBridgeDomains extends Discovery {
 
         Set<Integer> nodeids 
         = new HashSet<Integer>(
-                m_linkd.getBridgeTopologyService().getUpdateBftMap().keySet());
+                m_bridgeTopologyService.getUpdateBftMap().keySet());
         
         LOG.debug("run: nodes with updated bft {}", nodeids);
 
         for (Integer nodeid : nodeids) {
-            Set<BridgeForwardingTableEntry> links = m_linkd.getBridgeTopologyService().useBridgeTopologyUpdateBFT(nodeid);
+            Set<BridgeForwardingTableEntry> links = m_bridgeTopologyService.useBridgeTopologyUpdateBFT(nodeid);
 
             if (links == null || links.size() == 0) {
                 LOG.warn("run: node:[{}]. no updated bft. Return", nodeid);

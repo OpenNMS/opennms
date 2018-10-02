@@ -75,7 +75,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
 
     	final Date now = new Date(); 
 
-        SnmpAgentConfig peer = m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), getLocation());
+        SnmpAgentConfig peer = getSnmpAgentConfig();
 
         final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(peer,
                                                                                   m_linkd.getLocationAwareSnmpClient(),

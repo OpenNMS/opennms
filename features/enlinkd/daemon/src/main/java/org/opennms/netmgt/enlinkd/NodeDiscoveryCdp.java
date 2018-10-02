@@ -75,7 +75,7 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
     	final Date now = new Date(); 
         final CdpGlobalGroupTracker cdpGlobalGroup = new CdpGlobalGroupTracker();
 
-        SnmpAgentConfig peer = m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), getLocation());
+        SnmpAgentConfig peer = getSnmpAgentConfig();
         try {
             m_linkd.getLocationAwareSnmpClient().walk(peer, cdpGlobalGroup).
             withDescription("cdpGlobalGroup").

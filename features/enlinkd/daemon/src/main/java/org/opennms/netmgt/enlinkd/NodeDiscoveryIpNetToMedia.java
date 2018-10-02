@@ -115,7 +115,7 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
             }
         };
 		
-        SnmpAgentConfig peer = m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), getLocation());
+        SnmpAgentConfig peer = getSnmpAgentConfig();
         try {
             m_linkd.getLocationAwareSnmpClient().walk(peer,
                                                       ipNetToMediaTableTracker).withDescription("ipNetToMedia").withLocation(getLocation()).execute().get();

@@ -69,7 +69,7 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
 
         final IsisSysObjectGroupTracker isisSysObject = new IsisSysObjectGroupTracker();
 
-        SnmpAgentConfig peer = m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), getLocation());
+        SnmpAgentConfig peer = getSnmpAgentConfig();
         try {
             m_linkd.getLocationAwareSnmpClient().walk(peer,
                                                       isisSysObject).withDescription("isisSysObjectCollection").withLocation(getLocation()).execute().get();

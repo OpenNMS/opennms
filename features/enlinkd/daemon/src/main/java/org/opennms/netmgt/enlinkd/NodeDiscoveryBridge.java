@@ -86,7 +86,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
     protected void runNodeDiscovery() {
         final Date now = new Date();
 
-        SnmpAgentConfig peer = m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), getLocation());
+        SnmpAgentConfig peer = getSnmpAgentConfig();
         String community = peer.getReadCommunity();
         Map<Integer, String> vlanmap = getVtpVlanMap(peer);
         Map<Integer,SnmpAgentConfig> vlanSnmpAgentConfigMap = new HashMap<Integer, SnmpAgentConfig>();
@@ -94,7 +94,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             LOG.debug("run: node [{}], support cisco vtp: setting peer community for vlan: {}, vlanname: {}",
            		 getNodeId(),vlanId,vlanmap.get(vlanId));
             
-            SnmpAgentConfig vlanpeer = m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), getLocation());
+            SnmpAgentConfig vlanpeer = getSnmpAgentConfig();
         	if (vlanpeer.isVersion3()) {
         		vlanpeer.setContextName("vlan-"+vlanId);
         	} else {

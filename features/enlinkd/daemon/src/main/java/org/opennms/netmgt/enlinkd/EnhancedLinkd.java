@@ -29,7 +29,6 @@
 package org.opennms.netmgt.enlinkd;
 
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,7 +38,6 @@ import java.util.Set;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
@@ -56,7 +54,6 @@ import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsTopologyException;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -507,10 +504,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 	public String getSource() {
 		return "enlinkd";
 	}
-
-    public SnmpAgentConfig getSnmpAgentConfig(InetAddress ipaddr, String location) {
-    	return SnmpPeerFactory.getInstance().getAgentConfig(ipaddr, location);
-    }
 
     public long getInitialSleepTime() {
     	return m_linkdConfig.getInitialSleepTime();

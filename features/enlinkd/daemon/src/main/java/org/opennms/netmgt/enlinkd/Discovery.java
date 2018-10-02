@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.enlinkd;
 
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
@@ -49,8 +50,8 @@ public abstract class Discovery implements ReadyRunnable {
     /**
      * The interval, default value 30 minutes
      */
-    protected long m_poll_interval = 1800000;
-    protected long m_initial_sleep_time = 600000;
+    private long m_poll_interval = 1800000;
+    private long m_initial_sleep_time = 600000;
 
     /**
      * The initial sleep time, default value 5 minutes
@@ -58,7 +59,7 @@ public abstract class Discovery implements ReadyRunnable {
 
     protected boolean m_suspendCollection = false;
 
-    protected final EnhancedLinkd m_linkd;
+    private final EventForwarder m_eventForwarder;
     
     /**
      * Constructs a new SNMP collector for a node using the passed interface
@@ -69,8 +70,8 @@ public abstract class Discovery implements ReadyRunnable {
      * @param config
      *            The SnmpPeer object to collect from.
      */
-    public Discovery(final EnhancedLinkd linkd, long interval, long initial) {
-        m_linkd = linkd;
+    public Discovery(final EventForwarder eventforwarder, long interval, long initial) {
+        m_eventForwarder = eventforwarder;
         m_poll_interval = interval;
         m_initial_sleep_time = initial;
    }
@@ -249,7 +250,7 @@ public abstract class Discovery implements ReadyRunnable {
                                    "EnhancedLinkd");
                            builder.setNodeid(nodeid);
                            builder.addParam("runnable", getName());
-       m_linkd.getEventForwarder().sendNow(builder.getEvent());
+       m_eventForwarder.sendNow(builder.getEvent());
     }
     
     protected void sendStartEvent(int nodeid) {
@@ -258,7 +259,7 @@ public abstract class Discovery implements ReadyRunnable {
                                    "EnhancedLinkd");
                            builder.setNodeid(nodeid);
                            builder.addParam("runnable", getName());
-                           m_linkd.getEventForwarder().sendNow(builder.getEvent());
+                           m_eventForwarder.sendNow(builder.getEvent());
         
     }
     
@@ -268,7 +269,7 @@ public abstract class Discovery implements ReadyRunnable {
                                    "EnhancedLinkd");
                            builder.setNodeid(nodeid);
                            builder.addParam("runnable", getName());
-                           m_linkd.getEventForwarder().sendNow(builder.getEvent());
+                           m_eventForwarder.sendNow(builder.getEvent());
     }
 
 
