@@ -13,6 +13,7 @@
   <modules>
     <module>persistence</module>
     <module>service</module>
+    <module>adapters</module>
     <module>daemon</module>
   </modules>
 </project>
