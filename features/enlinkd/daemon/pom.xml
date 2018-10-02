@@ -42,32 +42,32 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
-      <artifactId>org.opennms.features.enlinkd.adapters.bridge</artifactId>
+      <artifactId>org.opennms.features.enlinkd.adapters.collectors.bridge</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
-      <artifactId>org.opennms.features.enlinkd.adapters.cdp</artifactId>
+      <artifactId>org.opennms.features.enlinkd.adapters.collectors.cdp</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
-      <artifactId>org.opennms.features.enlinkd.adapters.ipnettomedia</artifactId>
+      <artifactId>org.opennms.features.enlinkd.adapters.collectors.ipnettomedia</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
-      <artifactId>org.opennms.features.enlinkd.adapters.isis</artifactId>
+      <artifactId>org.opennms.features.enlinkd.adapters.collectors.isis</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
-      <artifactId>org.opennms.features.enlinkd.adapters.lldp</artifactId>
+      <artifactId>org.opennms.features.enlinkd.adapters.collectors.lldp</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
-      <artifactId>org.opennms.features.enlinkd.adapters.ospf</artifactId>
+      <artifactId>org.opennms.features.enlinkd.adapters.collectors.ospf</artifactId>
       <version>${project.version}</version>
     </dependency>
 
