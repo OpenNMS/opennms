@@ -55,7 +55,9 @@ import org.opennms.netmgt.enlinkd.snmp.Dot1dBaseTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dStpPortTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dTpFdbTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1qTpFdbTableTracker;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,10 +84,14 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
      * @param LinkableNode
      *            node
      */
-    public NodeDiscoveryBridge(final EnhancedLinkd linkd, final Node node) {
-        super(linkd, node);
-        m_bridgeTopologyService = linkd.getBridgeTopologyService();
-        m_maxSize = linkd.getMaxbft();
+    public NodeDiscoveryBridge(final EventForwarder eventForwarder,
+            final BridgeTopologyService bridgeTopologyService,
+            final int maxSize,
+            final LocationAwareSnmpClient locationAwareSnmpClient,
+            final long interval,final long initial, final Node node) {
+        super(eventForwarder, locationAwareSnmpClient, interval, initial,node);
+        m_bridgeTopologyService = bridgeTopologyService;
+        m_maxSize = maxSize;
     }
 
     protected void runNodeDiscovery() {

@@ -46,7 +46,9 @@ import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
 import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,9 +72,13 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
 	 * @param EnhancedLinkd linkd
 	 * @param LinkableNode node
 	 */
-    public NodeDiscoveryOspf(final EnhancedLinkd linkd, final Node node) {
-    	super(linkd, node);
-    	m_ospfTopologyService = linkd.getOspfTopologyService();
+    public NodeDiscoveryOspf(final EventForwarder eventForwarder,
+            final OspfTopologyService ospfTopologyService,
+            final LocationAwareSnmpClient locationAwareSnmpClient,
+            final long interval,final long initial,
+            final Node node) {
+        super(eventForwarder, locationAwareSnmpClient, interval, initial,node);
+    	m_ospfTopologyService = ospfTopologyService;
     }
 
     protected void runNodeDiscovery() {

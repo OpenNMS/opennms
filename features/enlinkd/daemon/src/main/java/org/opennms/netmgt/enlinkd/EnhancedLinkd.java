@@ -227,35 +227,66 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         if (m_linkdConfig.useLldpDiscovery()) {
             LOG.debug("getSnmpCollections: adding Lldp Discovery: {}",
                     node);
-            colls.add(new NodeDiscoveryLldp(this, node));
+            colls.add(new NodeDiscoveryLldp(getEventForwarder(), 
+                                            getLldpTopologyService(),
+                                            getLocationAwareSnmpClient(), 
+                                            getRescanInterval(),
+                                            getInitialSleepTime(),
+                                             node));
         }
         
         if (m_linkdConfig.useCdpDiscovery()) {
             LOG.debug("getSnmpCollections: adding Cdp Discovery: {}",
                     node);
-             colls.add(new NodeDiscoveryCdp(this, node));       
+             colls.add(new NodeDiscoveryCdp(getEventForwarder(), 
+                                            getCdpTopologyService(),
+                                            getLocationAwareSnmpClient(), 
+                                            getRescanInterval(),
+                                            getInitialSleepTime(),
+                                            node));       
         }
         
         if (m_linkdConfig.useBridgeDiscovery()) {
                 LOG.debug("getSnmpCollections: adding IpNetToMedia Discovery: {}",
                     node);
-                colls.add(new NodeDiscoveryIpNetToMedia(this, node));
+                colls.add(new NodeDiscoveryIpNetToMedia(getEventForwarder(), 
+                                                        getIpNetToMediaTopologyService(),
+                                                        getLocationAwareSnmpClient(), 
+                                                        getRescanInterval(),
+                                                        getInitialSleepTime(),
+                                                        node));
                 
                 LOG.debug("getSnmpCollections: adding Bridge Discovery: {}",
                     node);
-                colls.add(new NodeDiscoveryBridge(this, node));
+                colls.add(new NodeDiscoveryBridge(getEventForwarder(), 
+                                                  getBridgeTopologyService(),
+                                                  getMaxbft(),
+                                                  getLocationAwareSnmpClient(), 
+                                                  getRescanInterval(),
+                                                  getInitialSleepTime(),
+                                                  node));
         }
 
         if (m_linkdConfig.useOspfDiscovery()) {
             LOG.debug("getSnmpCollections: adding Ospf Discovery: {}",
                     node);
-                colls.add(new NodeDiscoveryOspf(this, node));
+                colls.add(new NodeDiscoveryOspf(getEventForwarder(), 
+                                                getOspfTopologyService(),
+                                                getLocationAwareSnmpClient(), 
+                                                getRescanInterval(),
+                                                getInitialSleepTime(),
+                                                node));
         }
 
         if (m_linkdConfig.useIsisDiscovery()) {
             LOG.debug("getSnmpCollections: adding Is-Is Discovery: {}",
                     node);
-                colls.add(new NodeDiscoveryIsis(this, node));
+                colls.add(new NodeDiscoveryIsis(getEventForwarder(), 
+                        getIsisTopologyService(),
+                        getLocationAwareSnmpClient(), 
+                        getRescanInterval(),
+                        getInitialSleepTime(), 
+                        node));
         }
        
         for (final NodeDiscovery coll : colls ){

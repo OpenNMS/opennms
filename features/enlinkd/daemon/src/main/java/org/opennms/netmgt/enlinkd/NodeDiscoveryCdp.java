@@ -47,7 +47,9 @@ import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.CdpCacheTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.CdpGlobalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.CdpInterfacePortNameGetter;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 
 /**
  * This class is designed to collect the necessary SNMP information from the
@@ -68,9 +70,13 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
 	 * @param EnhancedLinkd linkd
 	 * @param LinkableNode node
 	 */
-    public NodeDiscoveryCdp(final EnhancedLinkd linkd, final Node node) {
-    	super(linkd, node);
-    	m_cdpTopologyService = linkd.getCdpTopologyService();
+    public NodeDiscoveryCdp(final EventForwarder eventForwarder,
+            final CdpTopologyService cdpTopologyService,
+            final LocationAwareSnmpClient locationAwareSnmpClient,
+            final long interval,final long initial,
+            final Node node) {
+        super(eventForwarder, locationAwareSnmpClient, interval, initial,node);
+    	m_cdpTopologyService = cdpTopologyService;
     }
 
     protected void runNodeDiscovery() {
