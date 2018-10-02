@@ -85,6 +85,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
     public NodeDiscoveryBridge(final EnhancedLinkd linkd, final Node node) {
         super(linkd, node);
         m_bridgeTopologyService = linkd.getBridgeTopologyService();
+        m_maxSize = linkd.getMaxbft();
     }
 
     protected void runNodeDiscovery() {
@@ -163,7 +164,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             LOG.debug("run: node [{}]: updating topology", getNodeId());
         	m_bridgeTopologyService.store(getNodeId(), bft);
         }
-        m_linkd.collectedBft(getNodeId());
+        m_bridgeTopologyService.collectedBft(getNodeId());
     }
 
     private BridgeElement getDot1dBridgeBase(SnmpAgentConfig peer) {
@@ -565,6 +566,6 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 
     @Override
     public boolean isReady() {
-        return m_linkd.collectBft(getNodeId());
+        return m_bridgeTopologyService.collectBft(getNodeId(),m_maxSize);
     }
 }
