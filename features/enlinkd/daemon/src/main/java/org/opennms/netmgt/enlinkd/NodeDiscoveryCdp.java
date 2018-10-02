@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
+import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.CdpCacheTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.CdpGlobalGroupTracker;
@@ -58,6 +59,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 public final class NodeDiscoveryCdp extends NodeDiscovery {
 	private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryCdp.class);
 
+	private final CdpTopologyService m_cdpTopologyService;
 	/**
 	 * Constructs a new SNMP collector for Cdp Node Discovery. 
 	 * The collection does not occur until the
@@ -68,6 +70,7 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
 	 */
     public NodeDiscoveryCdp(final EnhancedLinkd linkd, final Node node) {
     	super(linkd, node);
+    	m_cdpTopologyService = linkd.getCdpTopologyService();
     }
 
     protected void runNodeDiscovery() {
@@ -77,7 +80,7 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
 
         SnmpAgentConfig peer = getSnmpAgentConfig();
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(peer, cdpGlobalGroup).
+            getLocationAwareSnmpClient().walk(peer, cdpGlobalGroup).
             withDescription("cdpGlobalGroup").
             withLocation(getLocation()).
             execute().
@@ -97,7 +100,7 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
             return;
        } 
        CdpElement cdpElement = cdpGlobalGroup.getCdpElement();
-       m_linkd.getCdpTopologyService().store(getNodeId(), cdpElement);
+       m_cdpTopologyService.store(getNodeId(), cdpElement);
        if (cdpElement.getCdpGlobalRun() == TruthValue.FALSE) {
            LOG.info("run: node [{}]. CDP_MIB disabled.",
                     getNodeId());
@@ -113,7 +116,7 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
        };
 
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(peer, cdpCacheTable).
+            getLocationAwareSnmpClient().walk(peer, cdpCacheTable).
             withDescription("cdpCacheTable").
             withLocation(getLocation()).
             execute().
@@ -128,13 +131,13 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
             return;
         }
         final CdpInterfacePortNameGetter cdpInterfacePortNameGetter = new CdpInterfacePortNameGetter(peer, 
-                                                                                                     m_linkd.getLocationAwareSnmpClient(),
+                                                                                                     getLocationAwareSnmpClient(),
                                                                                                      getLocation(),
                                                                                                      getNodeId());
         for (CdpLink link: links)
-            m_linkd.getCdpTopologyService().store(getNodeId(),cdpInterfacePortNameGetter.get(link));
+            m_cdpTopologyService.store(getNodeId(),cdpInterfacePortNameGetter.get(link));
         
-        m_linkd.getCdpTopologyService().reconcile(getNodeId(),now);
+        m_cdpTopologyService.reconcile(getNodeId(),now);
     }
 
 	@Override

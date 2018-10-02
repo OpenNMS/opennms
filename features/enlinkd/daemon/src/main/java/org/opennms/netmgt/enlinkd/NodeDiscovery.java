@@ -35,6 +35,7 @@ import java.net.InetAddress;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,8 +53,9 @@ public abstract class NodeDiscovery extends Discovery {
      * The node ID of the system used to collect the SNMP information
      */
     protected final Node m_node;
-    protected final EnhancedLinkd m_linkd;
-    
+    final EnhancedLinkd m_linkd;
+    private final LocationAwareSnmpClient m_locationAwareSnmpClient;
+
     /**
      * Constructs a new SNMP collector for a node using the passed interface
      * as the collection point. The collection does not occur until the
@@ -67,6 +69,7 @@ public abstract class NodeDiscovery extends Discovery {
         super(linkd.getEventForwarder(),linkd.getRescanInterval(), linkd.getInitialSleepTime());
         m_node = node;
         m_linkd = linkd;
+        m_locationAwareSnmpClient=m_linkd.getLocationAwareSnmpClient();
     }
 
 
@@ -169,6 +172,9 @@ public abstract class NodeDiscovery extends Discovery {
         return SnmpPeerFactory.getInstance().getAgentConfig(m_node.getSnmpPrimaryIpAddr(), m_node.getLocation());
     }
 
-    
-	
+
+    public LocationAwareSnmpClient getLocationAwareSnmpClient() {
+        return m_locationAwareSnmpClient;
+    }
+    	
 }

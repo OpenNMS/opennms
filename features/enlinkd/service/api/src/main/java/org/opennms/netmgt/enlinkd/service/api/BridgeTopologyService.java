@@ -39,6 +39,10 @@ import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
 
 public interface BridgeTopologyService {
 
+    // this indicates the total size of in memory bft
+    boolean collectBft(int nodeid, int maxsize);
+
+    void collectedBft(int nodeid);
     // Load the topology from the scratch
     void load();
     

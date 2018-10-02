@@ -41,6 +41,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.model.OspfElement.Status;
 import org.opennms.netmgt.enlinkd.service.api.Node;
+import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
@@ -59,6 +60,8 @@ import org.slf4j.LoggerFactory;
 public final class NodeDiscoveryOspf extends NodeDiscovery {
     
 	private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryOspf.class);
+	
+	private final OspfTopologyService m_ospfTopologyService;
 	/**
 	 * Constructs a new SNMP collector for Ospf Node Discovery. 
 	 * The collection does not occur until the
@@ -69,6 +72,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
 	 */
     public NodeDiscoveryOspf(final EnhancedLinkd linkd, final Node node) {
     	super(linkd, node);
+    	m_ospfTopologyService = linkd.getOspfTopologyService();
     }
 
     protected void runNodeDiscovery() {
@@ -78,11 +82,11 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
         SnmpAgentConfig peer = getSnmpAgentConfig();
 
         final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(peer,
-                                                                                  m_linkd.getLocationAwareSnmpClient(),
+                                                                                  getLocationAwareSnmpClient(),
                                                                                   getLocation(),getNodeId());
         final OspfGeneralGroupTracker ospfGeneralGroup = new OspfGeneralGroupTracker();
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(peer, ospfGeneralGroup).
+            getLocationAwareSnmpClient().walk(peer, ospfGeneralGroup).
             withDescription("ospfGeneralGroup").
             withLocation(getLocation()).
             execute().
@@ -116,7 +120,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
             return;
         }
 
-        m_linkd.getOspfTopologyService().store(getNodeId(), ipAddrTableGetter.get(ospfGeneralGroup.getOspfElement()));
+        m_ospfTopologyService.store(getNodeId(), ipAddrTableGetter.get(ospfGeneralGroup.getOspfElement()));
 
         final List<OspfLink> links = new ArrayList<>();
         OspfNbrTableTracker ospfNbrTableTracker = new OspfNbrTableTracker() {
@@ -127,7 +131,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
         };
 
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(peer, ospfNbrTableTracker).
+            getLocationAwareSnmpClient().walk(peer, ospfNbrTableTracker).
             withDescription("ospfNbrTable").
             withLocation(getLocation()).
             execute().
@@ -150,7 +154,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
         };
 
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(peer, ospfIfTableTracker).
+            getLocationAwareSnmpClient().walk(peer, ospfIfTableTracker).
             withDescription("ospfIfTable").
             withLocation(getLocation()).
             execute().
@@ -186,10 +190,10 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
                     break;
                 }
             }
-            m_linkd.getOspfTopologyService().store(getNodeId(),link);
+            m_ospfTopologyService.store(getNodeId(),link);
         }
 
-        m_linkd.getOspfTopologyService().reconcile(getNodeId(),now);
+        m_ospfTopologyService.reconcile(getNodeId(),now);
     }
 
 	@Override

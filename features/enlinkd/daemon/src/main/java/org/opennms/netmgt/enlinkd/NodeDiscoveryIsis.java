@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
+import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker;
@@ -50,7 +51,10 @@ import org.slf4j.LoggerFactory;
  * allows the collection to occur in a thread if necessary.
  */
 public final class NodeDiscoveryIsis extends NodeDiscovery {
-private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.class);
+
+    private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.class);
+    
+    private final IsisTopologyService m_isisTopologyService;
 	/**
 	 * Constructs a new SNMP collector for IsIs Node Discovery. 
 	 * The collection does not occur until the
@@ -61,6 +65,7 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
 	 */
     public NodeDiscoveryIsis(final EnhancedLinkd linkd, final Node node) {
     	super(linkd, node);
+    	m_isisTopologyService = linkd.getIsisTopologyService();
     }
 
     protected void runNodeDiscovery() {
@@ -71,7 +76,7 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
 
         SnmpAgentConfig peer = getSnmpAgentConfig();
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(peer,
+            getLocationAwareSnmpClient().walk(peer,
                                                       isisSysObject).withDescription("isisSysObjectCollection").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
             LOG.info("run: node [{}]: ExecutionException: Is-Is mib not supported: {}", 
@@ -89,7 +94,7 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
             return;
         }
 
-        m_linkd.getIsisTopologyService().store(getNodeId(),
+        m_isisTopologyService.store(getNodeId(),
                                         isisSysObject.getIsisElement());
     
         
@@ -102,7 +107,7 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
         };
         
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(peer,
+            getLocationAwareSnmpClient().walk(peer,
                       isisISAdjTableTracker)
                       .withDescription("isisISAdjTable")
                       .withLocation(getLocation())
@@ -132,7 +137,7 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
         };
 
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(peer,
+            getLocationAwareSnmpClient().walk(peer,
                               isisCircTableTracker)
                               .withDescription("isisCircTable")
                               .withLocation(getLocation())
@@ -148,9 +153,9 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
         }
         
         for (IsIsLink link:links) {
-            m_linkd.getIsisTopologyService().store(getNodeId(), link);
+            m_isisTopologyService.store(getNodeId(), link);
         }
-        m_linkd.getIsisTopologyService().reconcile(getNodeId(), now);
+        m_isisTopologyService.reconcile(getNodeId(), now);
     }
 
 	@Override

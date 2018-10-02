@@ -75,6 +75,8 @@ public class BridgeTopologyServiceImpl implements BridgeTopologyService {
 
     volatile Map<Integer, Set<BridgeForwardingTableEntry>> m_nodetoBroadcastDomainMap= new HashMap<Integer, Set<BridgeForwardingTableEntry>>();
     volatile Set<BroadcastDomain> m_domains;
+    private volatile Set<Integer> m_bridgecollectionsscheduled = new HashSet<>();
+
 
     
     public BridgeElementDao getBridgeElementDao() {
@@ -712,6 +714,21 @@ SEG:        for (SharedSegment segment : bmlsegments) {
             }
         }
         return domains;
+    }
+
+    public synchronized boolean collectBft(int nodeid, int maxsize) {
+        if (getUpdateBftMap().size()+m_bridgecollectionsscheduled.size() >= maxsize )
+                return false;
+        synchronized (m_bridgecollectionsscheduled) {
+                m_bridgecollectionsscheduled.add(nodeid);
+                }
+        return true;
+    }
+    
+    public synchronized void collectedBft(int nodeid) {
+        synchronized (m_bridgecollectionsscheduled) {
+                m_bridgecollectionsscheduled.remove(nodeid);
+                }
     }
 
     public BridgeStpLinkDao getBridgeStpLinkDao() {

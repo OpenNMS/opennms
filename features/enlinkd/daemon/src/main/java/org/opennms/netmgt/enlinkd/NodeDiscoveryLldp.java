@@ -35,6 +35,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
@@ -57,6 +58,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
     private static final String DW_NULL_CHASSIS_ID="cf";
     private static final String DW_NULL_SYSOID_ID="NuDesign";
 
+    private final LldpTopologyService m_lldpTopologyService;
     /**
      * Constructs a new SNMP collector for Lldp Node Discovery. 
      * The collection does not occur until the
@@ -69,6 +71,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
      */
     public NodeDiscoveryLldp(final EnhancedLinkd linkd, final Node node) {
     	super(linkd, node);
+    	m_lldpTopologyService = linkd.getLldpTopologyService();
     }
 
     protected void runNodeDiscovery() {
@@ -79,7 +82,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
         SnmpAgentConfig peer = getSnmpAgentConfig();
 
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(peer,
+            getLocationAwareSnmpClient().walk(peer,
                           lldpLocalGroup)
                           .withDescription("lldpLocalGroup")
                           .withLocation(getLocation())
@@ -105,7 +108,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
     				lldpLocalGroup.getLldpElement());
         }
 
-        m_linkd.getLldpTopologyService().store(getNodeId(),
+        m_lldpTopologyService.store(getNodeId(),
                 lldpLocalGroup.getLldpElement());
 
         if (getSysoid() == null || getSysoid().equals(DW_SYSOID) ) {
@@ -134,7 +137,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
         	}
         };
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(peer,
+            getLocationAwareSnmpClient().walk(peer,
                                       lldpRemTable)
                                   .withDescription("lldpRemTable")
                                   .withLocation(getLocation())
@@ -153,13 +156,13 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
         
         final LldpLocPortGetter lldpLocPort = 
                 new LldpLocPortGetter(peer,
-                                m_linkd.getLocationAwareSnmpClient(),
+                                getLocationAwareSnmpClient(),
                                 getLocation(),getNodeId());
         for (LldpLink link: links) {
-            m_linkd.getLldpTopologyService().store(getNodeId(),lldpLocPort.getLldpLink(link));
+            m_lldpTopologyService.store(getNodeId(),lldpLocPort.getLldpLink(link));
         }
         
-        m_linkd.getLldpTopologyService().reconcile(getNodeId(),now);
+        m_lldpTopologyService.reconcile(getNodeId(),now);
     }
 
 	@Override

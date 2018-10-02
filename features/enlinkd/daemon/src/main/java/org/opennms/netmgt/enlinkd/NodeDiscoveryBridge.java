@@ -45,6 +45,7 @@ import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
 import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
+import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.enlinkd.snmp.CiscoVtpTracker;
@@ -70,6 +71,8 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 
     // public final static String CISCO_ENTERPRISE_OID = ".1.3.6.1.4.1.9";
 
+    private final BridgeTopologyService m_bridgeTopologyService;
+    private final int m_maxSize;
     /**
      * Constructs a new SNMP collector for Bridge Node Discovery. The
      * collection does not occur until the <code>run</code> method is invoked.
@@ -81,6 +84,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
      */
     public NodeDiscoveryBridge(final EnhancedLinkd linkd, final Node node) {
         super(linkd, node);
+        m_bridgeTopologyService = linkd.getBridgeTopologyService();
     }
 
     protected void runNodeDiscovery() {
@@ -124,7 +128,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             if (bridge != null) {
                 bridge.setVlan(entry.getKey());
                 bridge.setVlanname(vlanmap.get(entry.getKey()));
-                m_linkd.getBridgeTopologyService().store(getNodeId(), bridge);
+                m_bridgeTopologyService.store(getNodeId(), bridge);
             } else {
                 LOG.debug("run: node: [{}], vlan {}. no dot1d bridge data found. skipping other operations",
                           getNodeId(), entry.getValue());
@@ -144,20 +148,20 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                                  bridge.getBaseBridgeAddress())) {
                     stplink.setVlan(entry.getKey());
                     stplink.setStpPortIfIndex(bridgeifindex.get(stplink.getStpPort()));
-                    m_linkd.getBridgeTopologyService().store(getNodeId(), stplink);
+                    m_bridgeTopologyService.store(getNodeId(), stplink);
                 }
             }
             bft = walkDot1dTpFdp(entry.getValue(),entry.getKey(), bridgeifindex, bft, vlanSnmpAgentConfigMap.get(entry.getKey()));
         }
         LOG.debug("run: node [{}]: deleting older the time {}", getNodeId(), now);
-        m_linkd.getBridgeTopologyService().reconcile(getNodeId(), now);
+        m_bridgeTopologyService.reconcile(getNodeId(), now);
 		
         bft = walkDot1qTpFdb(peer,bridgeifindex, bft);
         LOG.debug("run: node [{}]: bft size:{}", getNodeId(), bft.size());
 
         if (bft.size() > 0) {
             LOG.debug("run: node [{}]: updating topology", getNodeId());
-        	m_linkd.getBridgeTopologyService().store(getNodeId(), bft);
+        	m_bridgeTopologyService.store(getNodeId(), bft);
         }
         m_linkd.collectedBft(getNodeId());
     }
@@ -166,7 +170,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         final Dot1dBaseTracker dot1dbase = new Dot1dBaseTracker();
 
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(peer, dot1dbase).withDescription("dot1dbase").withLocation(getLocation()).execute().get();
+            getLocationAwareSnmpClient().walk(peer, dot1dbase).withDescription("dot1dbase").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
             LOG.info("run: node [{}]: ExecutionException: BRIDGE_MIB not supported: {}", 
                      getNodeId(), e.getMessage());
@@ -220,7 +224,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         final CiscoVtpTracker vtpStatus = new CiscoVtpTracker();
         
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(peer, vtpStatus).
+            getLocationAwareSnmpClient().walk(peer, vtpStatus).
             withDescription("vtpVersion").
             withLocation(getLocation()).
             execute().
@@ -251,7 +255,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             }
         };
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(peer, ciscoVtpVlanTableTracker).
+            getLocationAwareSnmpClient().walk(peer, ciscoVtpVlanTableTracker).
             withDescription("ciscoVtpVlan").
             withLocation(getLocation()).
             execute().
@@ -277,7 +281,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             };
     
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(peer, dot1dBasePortTableTracker).
+            getLocationAwareSnmpClient().walk(peer, dot1dBasePortTableTracker).
             withDescription("dot1dBasePortTable").
             withLocation(getLocation()).
             execute().
@@ -349,7 +353,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         };
         
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(peer,
+            getLocationAwareSnmpClient().walk(peer,
                                                       dot1dTpFdbTableTracker).withDescription("dot1dTbFdbPortTable").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
             LOG.debug("run: node [{}]: ExecutionException: {}", 
@@ -498,7 +502,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 
         };
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(peer,
+            getLocationAwareSnmpClient().walk(peer,
                                                       dot1qTpFdbTableTracker).withDescription("dot1qTbFdbPortTable").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
             LOG.debug("run: node [{}]: ExecutionException: {}", 
@@ -542,7 +546,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         };
 
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(peer,
+            getLocationAwareSnmpClient().walk(peer,
                                                       stpPortTableTracker).withDescription("dot1dStpPortTable").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
             LOG.info("run: node [{}]: ExecutionException: {}", 

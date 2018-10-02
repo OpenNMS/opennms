@@ -127,7 +127,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     private DiscoveryCdpTopology m_discoveryCdpTopology;
     private DiscoveryBridgeDomains m_discoveryBridgeDomains;
 
-    private volatile Set<Integer> m_bridgecollectionsscheduled = new HashSet<>();
     /**
      * <p>
      * Constructor for EnhancedLinkd.
@@ -530,21 +529,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     	return m_linkdConfig.getMaxBft();
     }
     
-    public synchronized boolean collectBft(int nodeid) {
-    	if (m_bridgeTopologyService.getUpdateBftMap().size()+m_bridgecollectionsscheduled.size() >= m_linkdConfig.getMaxBft() )
-    		return false;
-    	synchronized (m_bridgecollectionsscheduled) {
-        	m_bridgecollectionsscheduled.add(nodeid);
-		}
-    	return true;
-    }
-    
-    public synchronized void collectedBft(int nodeid) {
-    	synchronized (m_bridgecollectionsscheduled) {
-        	m_bridgecollectionsscheduled.remove(nodeid);
-		}
-    }
-
     public BridgeTopologyService getBridgeTopologyService() {
         return m_bridgeTopologyService;
     }

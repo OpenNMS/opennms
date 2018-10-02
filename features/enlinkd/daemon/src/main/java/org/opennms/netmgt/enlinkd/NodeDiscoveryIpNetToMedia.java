@@ -35,6 +35,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia.IpNetToMediaType;
+import org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -52,6 +53,7 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
     
 	private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIpNetToMedia.class);
 	
+	private final IpNetToMediaTopologyService m_ipNetToMediaTopologyService;
 	/**
 	 * Constructs a new SNMP collector for IpNetToMedia Node Discovery. 
 	 * The collection does not occur until the
@@ -62,6 +64,7 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
 	 */
     public NodeDiscoveryIpNetToMedia(final EnhancedLinkd linkd, final Node node) {
     	super(linkd, node);
+    	m_ipNetToMediaTopologyService = linkd.getIpNetToMediaTopologyService();
     }
 
     protected void runNodeDiscovery() {
@@ -83,7 +86,7 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
                               str(macep.getNetAddress()),
                               macep.getIpNetToMediaType());
                     }
-                    m_linkd.getIpNetToMediaTopologyService().store(getNodeId(), macep);
+                    m_ipNetToMediaTopologyService.store(getNodeId(), macep);
                     return;
                 } 
                 if (macep.getPhysAddress() == null && macep.getNetAddress() == null) {
@@ -117,7 +120,7 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
 		
         SnmpAgentConfig peer = getSnmpAgentConfig();
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(peer,
+            getLocationAwareSnmpClient().walk(peer,
                                                       ipNetToMediaTableTracker).withDescription("ipNetToMedia").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
             LOG.debug("run: node [{}]: ExecutionException: {}", 
@@ -129,7 +132,7 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
             return;       
         }
 
-        m_linkd.getIpNetToMediaTopologyService().reconcile(getNodeId(), now);
+        m_ipNetToMediaTopologyService.reconcile(getNodeId(), now);
     }
 
 	@Override
