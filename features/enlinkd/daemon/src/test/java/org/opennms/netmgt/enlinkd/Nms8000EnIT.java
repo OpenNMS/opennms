@@ -232,13 +232,13 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
                 continue;
             }
             parsed.add(sourceLink.getId());
-            LldpElement sourceElement = m_lldpElementDao.get(sourceLink.getNode().getId());
+            LldpElement sourceElement = m_lldpElementDao.findByNodeId(sourceLink.getNode().getId());
             LldpLink targetLink = null;
             for (LldpLink link : allLinks) {
                 if (parsed.contains(link.getId())) {
                     continue;
                 }
-                LldpElement element = m_lldpElementDao.get(link.getNode().getId());
+                LldpElement element = m_lldpElementDao.findByNodeId(link.getNode().getId());
                 //Compare the remote data to the targetNode element data
                 if (!sourceLink.getLldpRemChassisId().equals(element.getLldpChassisId()) || !link.getLldpRemChassisId().equals(sourceElement.getLldpChassisId())) 
                     continue;
