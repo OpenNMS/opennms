@@ -79,6 +79,9 @@
             <repository>mvn:org.opennms.features/jmxconfiggenerator/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features/vaadin-jmxconfiggenerator/${project.version}/xml/features</repository>
 
+            <!-- Enlinkd features -->
+            <repository>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.service.api/${project.version}/xml/features</repository>
+
             <!-- BSM features -->
             <repository>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service.api/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features.bsm/org.opennms.features.bsm.shell-commands/${project.version}/xml/features</repository>
@@ -334,6 +337,9 @@
             <feature>opennms-telemetry-collection</feature>
             <feature>opennms-telemetry-jti</feature>
             <feature>opennms-telemetry-nxos</feature>
+
+            <!-- Enlinkd -->
+            <feature>org.opennms.features.enlinkd.service.api</feature>
 
             <!-- BSM -->
             <feature>org.opennms.features.bsm.service.api</feature>
