@@ -27,13 +27,53 @@ var opennmsVersion = pkginfo.version;
 
 var argv = require('yargs').argv;
 var isProduction = argv.env === 'production';
+var doVaadin = true;
+if (typeof argv.vaadin !== 'undefined') {
+  doVaadin = argv.vaadin;
+}
 var distdir = path.join(__dirname, 'target', 'dist', 'assets');
 var variants = {
   production: [ false ]
 };
 
 if (isProduction) {
-  variants.production = [ true, false, 'vaadin' ];
+  variants.production = [ true, false ];
+  if (doVaadin) {
+    variants.production.push('vaadin');
+  }
+}
+
+var getLatest = function getLatest(searchPath, latest = 0) {
+  var ret = latest;
+//  console.log('getLatest(' + searchPath + ')');
+  if (!fs.existsSync(searchPath)) {
+    return ret;
+  }
+  var entries = fs.readdirSync(searchPath);
+  for (var entry of entries) {
+    var entryPath = path.join(searchPath, entry);
+    if (!isProduction && entryPath.match(/\.min\./)) {
+      continue;
+    }
+    var stat = fs.statSync(entryPath);
+    if (stat.isDirectory()) {
+      ret = Math.max(ret, getLatest(entryPath));
+    } else if (fs.existsSync(entryPath)) {
+      ret = Math.max(ret, stat.ctimeMs);
+    }
+  }
+  return ret;
+};
+
+var srcModified = getLatest(path.join(__dirname, 'src'));
+var targetModified = getLatest(path.join(__dirname, 'target'));
+
+if (targetModified > srcModified) {
+  var checkFile = path.join(__dirname, 'target', 'dist', 'assets', isProduction? 'vendor.min.js' : 'vendor.js');
+  if (fs.existsSync(checkFile)) {
+    console.log('=== Files are unchanged.  Skipping build.');
+    process.exit(0);
+  }
 }
 
 console.log('=== running ' + (isProduction? 'production':'development') + ' build of OpenNMS ' + opennmsVersion + ' assets ===');
