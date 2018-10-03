@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.kafka.server;
+package org.opennms.core.ipc.common.kafka;
 
 import java.util.Objects;
 import java.util.function.Supplier;

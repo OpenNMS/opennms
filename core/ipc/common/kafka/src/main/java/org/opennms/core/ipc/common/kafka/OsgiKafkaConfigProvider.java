@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.kafka.server.config;
+package org.opennms.core.ipc.common.kafka;
 
 import java.io.IOException;
 import java.util.Dictionary;
@@ -34,28 +34,38 @@ import java.util.Enumeration;
 import java.util.Objects;
 import java.util.Properties;
 
-import org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 public class OsgiKafkaConfigProvider implements KafkaConfigProvider {
 
     private final String groupId;
 
+    private final String pid;
+
     private final ConfigurationAdmin configAdmin;
 
-    public OsgiKafkaConfigProvider(final String groupId, final ConfigurationAdmin configAdmin) {
-        this.groupId = Objects.requireNonNull(groupId);
+
+    public OsgiKafkaConfigProvider(final String groupId, final String pid, final  ConfigurationAdmin configAdmin) {
+        this.groupId = groupId;
+        this.pid = pid;
         this.configAdmin = Objects.requireNonNull(configAdmin);
+    }
+
+    public OsgiKafkaConfigProvider(final String pid, final  ConfigurationAdmin configAdmin) {
+        this(null, pid, configAdmin);
     }
 
     @Override
     public synchronized Properties getProperties() {
         final Properties kafkaConfig = new Properties();
-        kafkaConfig.put("group.id", groupId);
+        // Only consumer properties require group.id
+        if (groupId != null) {
+            kafkaConfig.put("group.id", groupId);
+        }
 
         // Retrieve all of the properties from org.opennms.core.ipc.sink.kafka.consumer.cfg
         try {
-            final Dictionary<String, Object> properties = configAdmin.getConfiguration(KafkaSinkConstants.KAFKA_CONFIG_CONSUMER_PID).getProperties();
+            final Dictionary<String, Object> properties = configAdmin.getConfiguration(pid).getProperties();
             if (properties != null) {
                 final Enumeration<String> keys = properties.keys();
                 while (keys.hasMoreElements()) {

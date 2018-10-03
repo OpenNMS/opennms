@@ -45,7 +45,7 @@ import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
-import org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants;
+import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.logging.Logging.MDCCloseable;
 import org.osgi.framework.BundleContext;
@@ -66,7 +66,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     @Override
     public <S extends Message, T extends Message> String getModuleMetadata(final SinkModule<S, T> module) {
-        final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory(org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants.KAFKA_TOPIC_PREFIX, module.getId());
+        final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory(KafkaSinkConstants.KAFKA_TOPIC_PREFIX, module.getId());
         return topicNameFactory.getName();
     }
 

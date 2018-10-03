@@ -51,9 +51,10 @@ import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageConsumerManager;
-import org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants;
-import org.opennms.core.ipc.sink.kafka.server.config.KafkaConfigProvider;
-import org.opennms.core.ipc.sink.kafka.server.config.OnmsKafkaConfigProvider;
+import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
+import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
+import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
+import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,7 +125,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     }
 
     public KafkaMessageConsumerManager() {
-        this(new OnmsKafkaConfigProvider());
+        this(new OnmsKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX));
     }
 
     public KafkaMessageConsumerManager(KafkaConfigProvider configProvider) {

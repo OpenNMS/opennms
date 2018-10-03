@@ -16,10 +16,7 @@
   <bean id="kafkaMessageConsumerManager" class="org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager" />
   <onmsgi:service ref="kafkaMessageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager" />
 
-
-  <bean id="kafkaConfigProvider" class="org.opennms.core.ipc.sink.kafka.server.config.OnmsKafkaConfigProvider" />
   <bean id="kafkaOffsetProvider" class="org.opennms.core.ipc.sink.kafka.server.offset.KafkaOffsetProvider" init-method="start" destroy-method="stop" >
-      <constructor-arg ref="kafkaConfigProvider" />
   </bean>
 
 </beans>

@@ -26,35 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.kafka.server.config;
+package org.opennms.core.ipc.common.kafka;
 
 import java.util.Map;
 import java.util.Properties;
 
-import org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants;
 import org.opennms.core.utils.SystemInfoUtils;
 
 public class OnmsKafkaConfigProvider implements KafkaConfigProvider {
+
+    private final String kafkaSysPropPrefix;
+
+    public OnmsKafkaConfigProvider(String kafkaSysPropPrefix) {
+        this.kafkaSysPropPrefix = kafkaSysPropPrefix;
+    }
 
     @Override
     public Properties getProperties() {
         final Properties kafkaConfig = new Properties();
         kafkaConfig.put("group.id", SystemInfoUtils.getInstanceId());
 
-        // Find all of the system properties that start with
-        // 'org.opennms.core.ipc.sink.kafka.'
-        // and add them to the config. See
-        // https://kafka.apache.org/0100/documentation.html#newconsumerconfigs
-        // for the list of supported properties
+        // Find all of the system properties that start with provided prefix (kafkaSysPropPrefix)
+        // and add them to the config.
+        // See https://kafka.apache.org/0100/documentation.html#newconsumerconfigs for the list of supported properties
         for (Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {
             final Object keyAsObject = entry.getKey();
             if (keyAsObject == null || !(keyAsObject instanceof String)) {
                 continue;
             }
             final String key = (String) keyAsObject;
-            if (key.length() > KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX.length()
-                    && key.startsWith(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX)) {
-                final String kafkaConfigKey = key.substring(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX.length());
+            if (key.length() > kafkaSysPropPrefix.length()
+                    && key.startsWith(kafkaSysPropPrefix)) {
+                final String kafkaConfigKey = key.substring(kafkaSysPropPrefix.length());
                 kafkaConfig.put(kafkaConfigKey, entry.getValue());
             }
         }

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.kafka.server.config;
+package org.opennms.core.ipc.common.kafka;
 
 import java.util.Properties;
 
