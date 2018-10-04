@@ -1184,20 +1184,20 @@
 
     <feature name="opennms-telemetry-collection" description="OpenNMS :: Telemetry :: Collection" version="${project.version}">
       <feature>guava</feature>
+      <feature>camel-netty4</feature>
 
       <feature>opennms-collection-api</feature>
       <feature>opennms-osgi-jsr223</feature>
+
+      <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+
       <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.simple/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.smart/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.collection/${project.version}</bundle>
-    </feature>
-
-    <feature name="opennms-telemetry-flow" description="OpenNMS :: Telemetry :: Flow" version="${project.version}">
-      <feature>opennms-telemetry-collection</feature>
-      <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
-      <bundle>mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
-      <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.flows/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-telemetry-daemon" description="OpenNMS :: Telemetry :: Daemon" version="${project.version}">
@@ -1213,12 +1213,14 @@
 
       <bundle dependency="true">mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
 
+      <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.daemon/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.registry/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.jaxb/${project.version}</bundle>
-      <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.api/${project.version}</bundle>
-      <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.udp/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.simple/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.smart/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-telemetry-jti" description="OpenNMS :: Telemetry :: JTI" version="${project.version}">
@@ -1274,7 +1276,12 @@
         <feature>opennms-health</feature>
         <feature>opennms-jest</feature>
         <feature>quartz</feature>
+        <feature>camel-netty4</feature>
+
         <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
+
+        <bundle>mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
+        <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
 
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>
@@ -1289,7 +1296,12 @@
         <bundle>mvn:com.google.guava/guava/${guavaVersion}</bundle>
         <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.simple/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.smart/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.flows/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.parser/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.adapter/${project.version}</bundle>
     </feature>

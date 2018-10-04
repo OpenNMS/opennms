@@ -5,11 +5,11 @@
     <listener name="JTI-UDP-50000" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="false">
         <parameter key="port" value="50000"/>
 
-        <parser name="JTI-Parser" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" enabled="true" queue="JTI" />
+        <parser name="JTI-Parser" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" enabled="false" queue="JTI" />
     </listener>
 
     <queue name="JTI">
-        <adapter name="JTI-GPB" class-name="org.opennms.netmgt.telemetry.protocols.jti.adapter.JtiGpbAdapter" enabled="true">
+        <adapter name="JTI-GPB" class-name="org.opennms.netmgt.telemetry.protocols.jti.adapter.JtiGpbAdapter" enabled="false">
             <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/junos-telemetry-interface.groovy"/>
 
             <package name="JTI-Default">
@@ -28,56 +28,56 @@
     <listener name="Netflow-5-UDP-8877" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="false">
         <parameter key="port" value="8877"/>
 
-        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5" enabled="true" queue="Netflow-5" />
+        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5" enabled="false" queue="Netflow-5" />
     </listener>
 
     <queue name="Netflow-5">
-        <adapter name="Netflow-5-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter" enabled="true">
+        <adapter name="Netflow-5-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter" enabled="false">
         </adapter>
     </queue>
 
     <!-- Netflow v9 listener & adapters -->
-    <listener name="Netflow-9-UDP-4729" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="true">
+    <listener name="Netflow-9-UDP-4729" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="false">
         <parameter key="port" value="4729"/>
 
-        <parser name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9" enabled="true" queue="Netflow-9" />
+        <parser name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9" enabled="false" queue="Netflow-9" />
     </listener>
 
     <queue name="Netflow-9">
-        <adapter name="Netflow-9-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9Adapter" enabled="true">
+        <adapter name="Netflow-9-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9Adapter" enabled="false">
         </adapter>
     </queue>
 
     <!-- IPFIX listener & adapters -->
-    <listener name="IPFIX-UDP-4730" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="true">
+    <listener name="IPFIX-UDP-4730" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="false">
         <parameter key="port" value="4730"/>
 
-        <parser name="IPFIX-UDP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Ipfix" enabled="true" queue="IPFIX" />
+        <parser name="IPFIX-UDP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Ipfix" enabled="false" queue="IPFIX" />
     </listener>
 
-    <listener name="IPFIX-TCP-4730" class-name="org.opennms.netmgt.telemetry.listeners.simple.Tcp" enabled="true">
+    <listener name="IPFIX-TCP-4730" class-name="org.opennms.netmgt.telemetry.listeners.simple.Tcp" enabled="false">
         <parameter key="port" value="4730"/>
 
-        <parser name="IPFIX-TCP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Ipfix" enabled="true" queue="IPFIX" />
+        <parser name="IPFIX-TCP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Ipfix" enabled="false" queue="IPFIX" />
     </listener>
 
     <queue name="IPFIX">
-        <adapter name="IPFIX-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapter" enabled="true">
+        <adapter name="IPFIX-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapter" enabled="false">
         </adapter>
     </queue>
 
     <!-- SFlow listener & adapters -->
-    <listener name="SFlow-UDP-6343" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="true">
+    <listener name="SFlow-UDP-6343" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="false">
         <parameter key="port" value="6343"/>
 
-        <parser name="SFlow-Parser" class-name="org.opennms.netmgt.telemetry.protocols.sflow.parser.Sflow" enabled="true" queue="SFlow" />
+        <parser name="SFlow-Parser" class-name="org.opennms.netmgt.telemetry.protocols.sflow.parser.Sflow" enabled="false" queue="SFlow" />
     </listener>
 
     <queue name="SFlow">
-        <adapter name="SFlow-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter" enabled="true">
+        <adapter name="SFlow-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter" enabled="false">
         </adapter>
 
-        <adapter name="SFlow-Telemetry" class-name="org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowTelemetryAdapter" enabled="true">
+        <adapter name="SFlow-Telemetry" class-name="org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowTelemetryAdapter" enabled="false">
             <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/sflow-host.groovy"/>
 
             <package name="SFlow-Default">
@@ -96,11 +96,11 @@
     <listener name="NXOS-UDP-50001" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="false">
         <parameter key="port" value="50001"/>
 
-        <parser name="NXOS-GPB" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" enabled="true" queue="NXOS" />
+        <parser name="NXOS-GPB" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" enabled="false" queue="NXOS" />
     </listener>
 
     <queue name="NXOS">
-        <adapter name="NXOS-GPB" class-name="org.opennms.netmgt.telemetry.protocols.nxos.adapter.NxosGpbAdapter" enabled="true">
+        <adapter name="NXOS-GPB" class-name="org.opennms.netmgt.telemetry.protocols.nxos.adapter.NxosGpbAdapter" enabled="false">
             <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/cisco-nxos-telemetry-interface.groovy"/>
 
             <package name="NXOS-Default">
