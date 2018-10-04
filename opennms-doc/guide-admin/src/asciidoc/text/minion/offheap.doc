@@ -1,23 +1,27 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-=== Using Offheap storage for Sink Messages
+=== Using Off-heap Storage for Sink Messages
 
-If minion experiences connectivity issues with _Kafka_ or _ActiveMQ_ there is a chance that Traps and Syslog messages may be lost as the internal queue is limited by heap size.
-Offheap option will extend the queues outside heap to facilitate more storage for the sink messages.
+If a _Minion_ loses connectivity with the broker (i.e. _Kafka_ or _ActiveMQ_), then any received messages (i.e. syslog, flows, SNMP traps) are queued in the JVM heap until connectivity is restored.
+This queue is limited by a fixed (and configurable) number of messages.
+Once the queue is full, additional messages will be dropped.
 
-NOTE: For now, offheap still uses device RAM memory outside java heap, doesn't use any file storage.
+The off-heap storage feature allows us to extend the storage capacity by queuing messages outside of the JVM heap.
 
-==== Configuring offheap storage
+NOTE: The current implementation of the off-heap storage supports storing messages in the system memory outside of the heap.
+      No file-system based storage is currently support.
 
-Install offheap feature on minion:
+==== Configuring Off-heap Storage
+
+Install off-heap feature on _Minion_:
 
 [source, sh]
 ----
 echo 'opennms-core-ipc-sink-offheap' >> "$MINION_HOME/etc/featuresBoot.d/features.boot"
 ----
 
-Configure storage and enable offheap as below:
+Configure storage limits and enable the feature with:
 
 [source, sh]
 ----
@@ -25,12 +29,14 @@ echo 'offHeapSize=1.2GB
 enableOffHeap=true' > "$MINION_HOME/etc/org.opennms.core.ipc.sink.offheap.cfg"
 ----
 
-Specify offHeapSize in KB, MB or GB. For ex: 1.2GB, 2.5MB, 845KB. It will be converted to bytes.
-In above example, offHeapSize is configured to 1.2GB. That is 1288490188 bytes.
-For ex: 1.2MB is valid.  1gb is not valid.
-
-When using Offheap storage option, it is best to reduce default queue size of sink module to match batch size. So all the buffering happens on offheap.
+Specify offHeapSize in KB, MB or GB. For ex: 1.2GB, 2.5MB, 845KB.
+It will be converted to bytes.
+In above example, offHeapSize is configured to 1.2GB.
+That is 1288490188 bytes.
+For ex: 1.2MB is valid.
+1gb is not valid.
 
 When using _Kafka_ as sink strategy, each sink message will expire after 30sec by default.
 To queue it for extended period, kafka producer property `retries` can be updated.
 For ex: for `retries` 100, each sink message will queue atleast for 30 mins before getting dropped.
+
