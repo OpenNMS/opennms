@@ -58,39 +58,39 @@ if [ -r "${SENTINEL_HOME}/etc/sentinel.conf" ]; then
 	. "${SENTINEL_HOME}/etc/sentinel.conf"
 fi
 
-validate_icmp() {
-	if [ "$RUNAS" != "root" ]; then
-		if [ "$(uname -s)" = "Linux" ]; then
-			# validate that we have permissions to ping as non-root
-			_group_range="$(sysctl net.ipv4.ping_group_range 2>/dev/null | cut -d= -f2 | sed -e 's,^ *,,' -e 's, *$,,' -e 's,\t, ,g')"
-			if [ -n "${_group_range}" ]; then
-				_group_range_start="$(echo "${_group_range}" | cut -d' ' -f1)"
-				_group_range_end="$(echo "${_group_range}" | cut -d' ' -f2)"
-				_sentinel_group="$(id -g sentinel)"
-				if [ -z "${_sentinel_group}" ]; then
-					>&2 printf 'ERROR: sentinel group does not exist!'
-					exit 6 # program is not configured
-				fi
-				if [ "${_sentinel_group}" -lt "${_group_range_start}" ]; then
-					>&2 printf 'ERROR: sentinel gid %d is not in the range of valid groups for ping (%d-%d)\n' "${_sentinel_group}" "${_group_range_start}" "${_group_range_end}"
-					exit 4 # insufficient privilege
-				elif [ "${_sentinel_group}" -gt "${_group_range_end}" ]; then
-					>&2 printf 'ERROR: sentinel gid %d is not in the range of valid groups for ping (%d-%d)\n' "${_sentinel_group}" "${_group_range_start}" "${_group_range_end}"
-					exit 4 # insufficient privilege
-				fi
-			else
-				# shellcheck disable=SC2016
-				>&2 printf 'ERROR: `sysctl net.ipv4.ping_group_range` gave no output! Unable to validate non-root ping support.\n'
-			fi
-		fi
-	fi
-}
+# The user config can set JAVA_OPTS, but Karaf will not
+# do ANY of its own JAVA_OPTS processing if it is already
+# set, so work around this by grabbing DEFAULT_JAVA_OPTS
+# now, rather than letting Karaf init do it.
+
+# shellcheck disable=SC1090,SC1091
+. "${SENTINEL_HOME}/bin/inc"
+setupDefaults
 
 # always dump heap if we OOM
-JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
+DEFAULT_JAVA_OPTS="${DEFAULT_JAVA_OPTS} -XX:+HeapDumpOnOutOfMemoryError"
+
+# combine user JAVA_OPTS with the defaults from Karaf
+JAVA_OPTS="${DEFAULT_JAVA_OPTS} ${JAVA_OPTS}"
 
 # export any default configurable variables from sysconf
 export JAVA_HOME JAVA_MIN_MEM JAVA_MAX_MEM MAX_FD JAVA JAVA_DEBUG_OPTS JAVA_DEBUG_PORT JAVA_OPTS CLASSPATH KARAF_DEBUG LD_LIBRARY_PATH
+
+run_as() {
+	if [ "$(id -n -u)" "!=" "${RUNAS}" ]; then
+		DAEMON="$(daemon --user="${RUNAS}" true >/dev/null 2>&1 && echo daemon)"
+		RUNUSER="$(runuser -u "${RUNAS}" true 2>/dev/null && which runuser 2>/dev/null)"
+		if [ -n "${DAEMON}" ]; then
+			"$DAEMON" --user="${RUNAS}" "$@" >/dev/null 2>&1
+		elif [ -n "${RUNUSER}" ] && [ -x "${RUNUSER}" ]; then
+			exec "${RUNUSER}" -u "${RUNAS}" "$@"
+		else
+			exec /usr/bin/sudo -u "${RUNAS}" "$@"
+		fi
+	else
+		exec "$@"
+	fi
+}
 
 get_root_pid() {
 	ROOT_INSTANCE_PID=0
@@ -111,7 +111,7 @@ is_running() {
 }
 
 stop_sentinel() {
-	"$SENTINEL_HOME"/bin/stop >/dev/null
+	run_as "$SENTINEL_HOME"/bin/stop >/dev/null
 }
 
 kill_sentinel() {
@@ -128,15 +128,6 @@ kill_sentinel() {
 
 COMMAND="$1"
 
-if [ "$(id -n -u)" "!=" "${RUNAS}" ]; then
-	RUNUSER="$(which runuser 2>/dev/null)"
-	if [ -n "${RUNUSER}" ] && [ -x "${RUNUSER}" ]; then
-		exec "${RUNUSER}" -u "${RUNAS}" "${ME}" "$@"
-	else
-		exec /usr/bin/sudo -u "${RUNAS}" "${ME}" "$@"
-	fi
-fi
-
 case "$COMMAND" in
 
 	start)
@@ -145,11 +136,11 @@ case "$COMMAND" in
 			exit 0
 		fi
 
-		validate_icmp
+		"${SENTINEL_HOME}/bin/ensure-user-ping.sh" "${RUNAS}" || :
 		if [ ! -d "${SENTINEL_HOME}/data/tmp" ]; then
-			mkdir -p "${SENTINEL_HOME}/data/tmp"
+			install -d -m 755 -o "${RUNAS}" "${SENTINEL_HOME}/data/tmp"
 		fi
-		"$SENTINEL_HOME"/bin/start
+		run_as "$SENTINEL_HOME"/bin/start
 		exit $?
 		;;
 
@@ -216,7 +207,7 @@ case "$COMMAND" in
 		;;
 
 	status)
-		"$SENTINEL_HOME"/bin/status >/dev/null
+		run_as "$SENTINEL_HOME"/bin/status >/dev/null
 		RETVAL="$?"
 		if [ $RETVAL -eq 0 ]; then
 			echo "$DESC is running."

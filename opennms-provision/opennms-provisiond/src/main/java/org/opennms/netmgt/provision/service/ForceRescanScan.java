@@ -92,8 +92,9 @@ public class ForceRescanScan implements Scan {
             OnmsIpInterface iface = m_provisionService.getPrimaryInterfaceForNode(node);
             if (iface == null) { // NMS-6380, a discovered node added with wrong SNMP settings doesn't have a primary interface yet.
                 iface = node.getIpInterfaces().isEmpty() ? null : node.getIpInterfaces().iterator().next();
-            } else {
-                LOG.info("The node with ID OP does not have a primary interface", m_nodeId);
+                if (iface != null) {
+                    LOG.info("The node with ID {} does not have a primary interface", m_nodeId);
+                }
             }
             if (iface == null) {
                 LOG.info("The node with ID {} does not have any IP addresses", m_nodeId);

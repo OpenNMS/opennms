@@ -30,6 +30,7 @@
                                 <descriptor>mvn:org.apache.karaf.features/spring/${karafVersion}/xml/features</descriptor>
                                 <descriptor>mvn:org.apache.karaf.features/spring-legacy/${karafVersion}/xml/features</descriptor>
                                 <!-- Add OpenNMS features -->
+                                <descriptor>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</descriptor>
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
                                 <!-- Add Sentinel features -->
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/sentinel</descriptor>
@@ -60,6 +61,9 @@
                                 <feature>sentinel-coordination-common</feature>
                                 <feature>sentinel-coordination-zookeeper</feature>
                                 <feature>sentinel-coordination-shell</feature>
+                                <feature>sentinel-newts</feature>
+                                <feature>sentinel-telemetry-nxos</feature>
+                                <feature>sentinel-telemetry-jti</feature>
 
                                 <!-- Other features -->
                                 <feature>hawtio-offline</feature>
@@ -260,11 +264,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.distributed</groupId>
-            <artifactId>org.opennms.features.distributed.dao-healthcheck</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.features.flows</groupId>
             <artifactId>org.opennms.features.flows.elastic</artifactId>
             <version>${project.version}</version>
@@ -272,6 +271,11 @@
         <dependency>
             <groupId>org.opennms.features.flows.classification.engine</groupId>
             <artifactId>org.opennms.features.flows.classification.engine.impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features</groupId>
+            <artifactId>org.opennms.features.newts</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -290,7 +294,17 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.features.telemetry.adapters</groupId>
+            <artifactId>org.opennms.features.telemetry.adapters.jti</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.telemetry.adapters</groupId>
             <artifactId>org.opennms.features.telemetry.adapters.netflow</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.telemetry.adapters</groupId>
+            <artifactId>org.opennms.features.telemetry.adapters.nxos</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -328,6 +342,21 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>coordination-shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>coordination-zookeeper</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.collection</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
             <artifactId>org.opennms.features.distributed.dao-api</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -345,6 +374,23 @@
             <groupId>org.opennms.features.distributed</groupId>
             <artifactId>org.opennms.features.distributed.datasource</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.dao-healthcheck</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.dao-shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.newts</groupId>
+            <artifactId>newts-karaf</artifactId>
+            <version>${newtsVersion}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
         </dependency>
     </dependencies>
 

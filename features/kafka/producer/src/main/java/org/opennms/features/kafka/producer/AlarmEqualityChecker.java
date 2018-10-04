@@ -28,13 +28,19 @@
 
 package org.opennms.features.kafka.producer;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 
 /**
  * Checks equality between two alarms based on a defined set of excluded fields.
+ * <p>
+ * Equality methods in this class modify their parameters as a side effect of comparison (by clearing certain fields).
+ * This is done to avoid needlessly cloning parameters by default. If modification is undesirable the parameters must
+ * be cloned before being passed to this class and discarded afterwards.
  */
 public class AlarmEqualityChecker {
     /**
@@ -99,6 +105,24 @@ public class AlarmEqualityChecker {
          */
         public static OpennmsModelProtos.Alarm.Builder defaultExclusions(
                 OpennmsModelProtos.Alarm.Builder alarmBuilder) {
+            // Recursively apply these exclusions to any related alarms
+            if (!alarmBuilder.getRelatedAlarmList().isEmpty()) {
+                List<OpennmsModelProtos.Alarm> relatedAlarmsWithExclusions = alarmBuilder.getRelatedAlarmList().stream()
+                        // Convert the related alarm into a builder
+                        .map(OpennmsModelProtos.Alarm::newBuilder)
+                        // Apply the exclusions
+                        .map(Exclusions::defaultExclusions)
+                        // Convert the alarm back
+                        .map(OpennmsModelProtos.Alarm.Builder::build)
+                        .collect(Collectors.toList());
+                // Doesn't look like we can just replace the list at this point so we need to clear it and repopulate
+                // it iteratively
+                // Clear all the untouched related alarms
+                alarmBuilder.clearRelatedAlarm();
+                // Replace them with the excluded related alarms
+                relatedAlarmsWithExclusions.forEach(alarmBuilder::addRelatedAlarm);
+            }
+
             return alarmBuilder
                     .clearCount()
                     .clearLastEvent()

@@ -174,7 +174,7 @@ find %{buildroot}%{minioninstprefix} -type d | \
 rm -rf %{buildroot}
 
 %files
-%defattr(664 root root 775)
+%defattr(664 minion minion 775)
 
 %files container -f %{_tmppath}/files.container
 %defattr(664 minion minion 775)
@@ -199,7 +199,9 @@ ROOT_INST="${RPM_INSTALL_PREFIX0}"
 # Clean out the data directory
 if [ -d "${ROOT_INST}/data" ]; then
     find "$ROOT_INST/data/"* -maxdepth 0 -name tmp -prune -o -print0 | xargs -0 rm -rf
-    find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
+    if [ -d "${ROOT_INST}/data/tmp"  ]; then
+        find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
+    fi
 fi
 
 # Generate an SSH key if necessary
@@ -207,6 +209,9 @@ if [ ! -f "${ROOT_INST}/etc/host.key" ]; then
     /usr/bin/ssh-keygen -t rsa -N "" -b 4096 -f "${ROOT_INST}/etc/host.key"
     chown minion:minion "${ROOT_INST}/etc/"host.key*
 fi
+
+# Set up ICMP for non-root users
+"${ROOT_INST}/bin/ensure-user-ping.sh" "minion" >/dev/null 2>&1 || echo "WARNING: Unable to enable ping by the 'minion' user. Try running ${ROOT_INST}/bin/ensure-user-ping.sh manually or run the minion as root."
 
 %files features-core
 %defattr(644 minion minion 755)

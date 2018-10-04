@@ -155,6 +155,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
                 alarm.archive();
                 m_alarmDao.save(alarm);
                 m_alarmDao.flush();
+
+                m_alarmEntityNotifier.didArchiveAlarm(alarm, reductionKey);
             }
 
             alarm = createNewAlarm(persistedEvent, event);

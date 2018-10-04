@@ -192,7 +192,9 @@
     nodeModel.put("criticalPath", PathOutageManagerDaoImpl.getInstance().getPrettyCriticalPath(nodeId));
     nodeModel.put("noCriticalPath", PathOutageManagerDaoImpl.NO_CRITICAL_PATH);
     nodeModel.put("admin", request.isUserInRole(Authentication.ROLE_ADMIN));
-    
+    nodeModel.put("provision", request.isUserInRole(Authentication.ROLE_PROVISION));
+    nodeModel.put("existsInRequisition", NetworkElementFactory.getInstance(getServletContext()).nodeExistsInRequisition(node_db.getForeignSource(), node_db.getForeignId()));
+
     // get the child interfaces
     Interface[] intfs = NetworkElementFactory.getInstance(getServletContext()).getActiveInterfacesOnNode(nodeId);
     if (intfs != null) { 
@@ -413,7 +415,13 @@ function confirmAssetEdit() {
         <a href="<c:out value="${createOutage}"/>">Schedule Outage</a>
       </li>
     </c:if>
-    
+
+    <c:if test="${model.existsInRequisition && (model.admin || model.provision)}">
+        <li>
+            <a href="<c:out value="admin/ng-requisitions/index.jsp#/requisitions/${model.foreignSource}/nodes/${model.foreignId}"/>">Edit in Requisition</a>
+        </li>
+    </c:if>
+
     <c:forEach items="${navEntries}" var="entry">
       <li>
       	<c:out value="${entry}" escapeXml="false" />

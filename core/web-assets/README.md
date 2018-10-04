@@ -62,7 +62,7 @@ Then, there are a number of commands you can run while developing:
 * `yarn build`: build all assets in "development" mode -- `.min.js` assets will not be generated (more on this below)
 * `yarn release`: build all assets in "production" mode -- this generates both normal `.js` assets and prod `.min.js` assets
 * `yarn watch`: build "development" assets continually, whenever files change
-* `yarn release`: build "production" assets continually, whenever files change
+* `yarn watch-release`: build "production" assets continually, whenever files change
 * `yarn lint`: check for errors or warnings in your JavaScript code
 * `yarn test`: run unit tests
 
