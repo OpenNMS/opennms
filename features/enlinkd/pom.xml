@@ -11,9 +11,11 @@
   <packaging>pom</packaging>
   <name>OpenNMS :: Features :: Enlinkd</name>
   <modules>
+    <module>config</module>
     <module>persistence</module>
     <module>service</module>
     <module>adapters</module>
     <module>daemon</module>
+    <module>tests</module>
   </modules>
 </project>
