@@ -107,6 +107,12 @@
       <artifactId>org.opennms.features.discovery</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.daemon</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
 
     <!-- Contains model code for the WillItUnmarshall test -->
     <dependency>
