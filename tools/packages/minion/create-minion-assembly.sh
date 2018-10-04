@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 export OPTS_MAVEN="-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false"
-export OPTS_SKIP_TESTS="-DskipITs=true -Dmaven.test.skip.exec=true"
+export OPTS_SKIP_TESTS="-DskipITs=true -Dmaven.test.skip.exec=true -DskipTests=true"
 export OPTS_SKIP_TARBALL="-Dbuild.skip.tarball=true"
 export OPTS_ASSEMBLIES="-Passemblies"
 export OPTS_PROFILES="-Prun-expensive-tasks"
