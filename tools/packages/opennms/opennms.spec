@@ -535,7 +535,7 @@ rm -rf %{buildroot}
 DONT_GPRINTIFY="yes, please do not"
 export DONT_GPRINTIFY
 
-export OPTS_SKIP_TESTS="-DskipITs=true -Dmaven.test.skip.exec=true"
+export OPTS_SKIP_TESTS="-DskipITs=true -Dmaven.test.skip.exec=true -DskipTests=true"
 
 if [ -e "settings.xml" ]; then
 	export OPTS_SETTINGS_XML="-s `pwd`/settings.xml"
