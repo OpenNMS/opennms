@@ -244,10 +244,15 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         waitFor(1);
         topologyUIPage.findVertex("North Region").contextMenu().click("Navigate To", "Markets (North Region)");
         String label = "North 1";
+
+        String oldIconName = topologyUIPage.findVertex(label).getIconName();
         String newIconName = "microwave_backhaul_1";
-        waitFor(1);
+        if(newIconName.equals(oldIconName)){
+            // make sure we actually change the icon
+            newIconName = "IP_service";
+        }
         topologyUIPage.findVertex(label).changeIcon(newIconName);
-        waitFor(1);
+        topologyUIPage.refreshNow();
         assertEquals(newIconName, topologyUIPage.findVertex(label).getIconName());
     }
 
