@@ -102,7 +102,7 @@ public class KafkaRpcServerManager {
         // Retrieve all of the properties from org.opennms.core.ipc.rpc.kafka.cfg
         kafkaConfig.putAll(kafkaConfigProvider.getProperties());
         LOG.info("initializing the Kafka producer with: {}", kafkaConfig);
-        producer = Utils.runWithNullContextClassLoader(() -> new KafkaProducer<String, byte[]>(kafkaConfig));
+        producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<String, byte[]>(kafkaConfig), KafkaProducer.class.getClassLoader());
         // Configurable cache config if needed.
         String cacheConfig = kafkaConfig.getProperty("rpcid.cache.config", "maximumSize=1000,expireAfterWrite=10m");
         rpcIdCache = CacheBuilder.from(cacheConfig).build();
@@ -124,7 +124,7 @@ public class KafkaRpcServerManager {
     private void startConsumerForModule(RpcModule<RpcRequest, RpcResponse> rpcModule) {
         final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory(KafkaRpcConstants.RPC_REQUEST_TOPIC_NAME, rpcModule.getId(),
                 minionIdentity.getLocation());
-        KafkaConsumer<String, byte[]> consumer = Utils.runWithNullContextClassLoader(() -> new KafkaConsumer<>(kafkaConfig));
+        KafkaConsumer<String, byte[]> consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(kafkaConfig), KafkaConsumer.class.getClassLoader());
         KafkaConsumerRunner kafkaConsumerRunner = new KafkaConsumerRunner(rpcModule, consumer, topicNameFactory.getName());
         executor.execute(kafkaConsumerRunner);
         LOG.info("started kafka consumer for module : {}", rpcModule.getId());

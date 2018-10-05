@@ -44,7 +44,6 @@ public class KafkaHealthCheck implements HealthCheck {
     private KafkaConfigProvider kafkaConfigProvider;
     // Differentiate between Sink/RPC
     private final String type;
-    private Properties kafkaConfig = new Properties();
 
     public KafkaHealthCheck(KafkaConfigProvider kafkaConfigProvider, String type) {
         this.kafkaConfigProvider = kafkaConfigProvider;
@@ -59,7 +58,7 @@ public class KafkaHealthCheck implements HealthCheck {
 
     @Override
     public Response perform(Context context) throws Exception {
-        kafkaConfig = kafkaConfigProvider.getProperties();
+        Properties kafkaConfig = kafkaConfigProvider.getProperties();
         int timeout = Math.toIntExact(context.getTimeout());
         kafkaConfig.put("request.timeout.ms", timeout);
         try (AdminClient client = Utils.runWithNullContextClassLoader(() -> AdminClient.create(kafkaConfig))) {

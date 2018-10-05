@@ -89,7 +89,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory(KafkaSinkConstants.KAFKA_TOPIC_PREFIX, module.getId());
             topic = topicNameFactory.getName();
 
-            consumer = Utils.runWithNullContextClassLoader(() -> new KafkaConsumer<>(kafkaConfig));
+            consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(kafkaConfig), KafkaConsumer.class.getClassLoader());
         }
 
         @Override

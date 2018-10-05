@@ -29,8 +29,6 @@
 package org.opennms.core.ipc.sink.kafka.client;
 
 import java.io.IOException;
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -41,11 +39,14 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.camel.JmsQueueNameFactory;
+import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
+import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
+import org.opennms.core.ipc.common.kafka.OsgiKafkaConfigProvider;
+import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
-import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.logging.Logging.MDCCloseable;
 import org.osgi.framework.BundleContext;
@@ -94,27 +95,11 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             kafkaConfig.clear();
             kafkaConfig.put("key.serializer", StringSerializer.class.getCanonicalName());
             kafkaConfig.put("value.serializer", ByteArraySerializer.class.getCanonicalName());
-
             // Retrieve all of the properties from org.opennms.core.ipc.sink.kafka.cfg
-            final Dictionary<String, Object> properties = configAdmin.getConfiguration(KafkaSinkConstants.KAFKA_CONFIG_PID).getProperties();
-            if (properties != null) {
-                final Enumeration<String> keys = properties.keys();
-                while (keys.hasMoreElements()) {
-                  final String key = keys.nextElement();
-                  kafkaConfig.put(key, properties.get(key));
-                }
-            }
-
+            KafkaConfigProvider configProvider = new OsgiKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_PID, configAdmin);
+            kafkaConfig.putAll(configProvider.getProperties());
             LOG.info("KafkaRemoteMessageDispatcherFactory: initializing the Kafka producer with: {}", kafkaConfig);
-            final ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-            try {
-                // Class-loader hack for accessing the org.apache.kafka.common.serialization.ByteArraySerializer
-                Thread.currentThread().setContextClassLoader(null);
-                producer = new KafkaProducer<>(kafkaConfig);
-            } finally {
-                Thread.currentThread().setContextClassLoader(currentClassLoader);
-            }
-
+            producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
             onInit();
         }
     }
