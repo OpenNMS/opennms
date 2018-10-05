@@ -97,6 +97,7 @@ public class DaoIT {
                     try (final SshClient sshClient = new SshClient(sentinelSshAddress, "admin", "admin")) {
                         final PrintStream pipe = sshClient.openShell();
                         final String command ="bundle:list";
+                        pipe.println("shell:exec touch deploy/features.xml");
                         pipe.println(command);
                         pipe.println("logout");
 

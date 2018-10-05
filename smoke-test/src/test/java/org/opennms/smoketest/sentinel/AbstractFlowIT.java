@@ -148,13 +148,14 @@ public abstract class AbstractFlowIT {
         }
     }
 
-    private void waitForSentinelStartup(InetSocketAddress sentinelSshAddress) throws Exception {
+    private void waitForSentinelStartup(InetSocketAddress sentinelSshAddress) throws Exception {        
         // Ensure we are actually started the sink and are ready to listen for messages
         await().atMost(5, MINUTES)
                 .pollInterval(5, SECONDS)
                 .until(() -> {
                     try (final SshClient sshClient = new SshClient(sentinelSshAddress, "admin", "admin")) {
                         final PrintStream pipe = sshClient.openShell();
+                        pipe.println("shell:exec touch deploy/features.xml");
                         pipe.println("log:display");
                         pipe.println("logout");
 

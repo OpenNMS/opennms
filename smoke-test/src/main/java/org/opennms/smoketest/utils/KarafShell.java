@@ -81,6 +81,7 @@ public class KarafShell {
                         if (command != null) {
                             pipe.println(command);
                         }
+                        pipe.println("shell:exec touch deploy/features.xml");
                         pipe.println("log:display");
                         pipe.println("logout");
 

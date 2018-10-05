@@ -126,7 +126,8 @@ public class HealthCheckIT {
                 .until(() -> {
                     try (final SshClient sshClient = new SshClient(sshAddress, "admin", "admin")) {
                         final PrintStream pipe = sshClient.openShell();
-                        pipe.println("health:check");
+                        pipe.println("shell:exec touch deploy/features.xml");
+                        pipe.println("health:check");                        
                         pipe.println("logout");
 
                         // Wait for karaf to process the commands
