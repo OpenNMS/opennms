@@ -907,6 +907,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                     LOG.debug("refresh: ipNetToMedia: {}:{}. No OnmsIpInterface found.", ipnettomedia.getPhysAddress(),InetAddressUtils.str(ipnettomedia.getNetAddress()));
                     continue;
                 }
+                LOG.debug("refresh: ipNetToMedia: {}:{}. OnmsIpInterface found node:[{}].", ipnettomedia.getPhysAddress(),
+                          InetAddressUtils.str(ipnettomedia.getNetAddress()),onmsip.getNodeId());
                 if (!m_macToNodeidMap.containsKey(ipnettomedia.getPhysAddress())) {
                     m_macToNodeidMap.put(ipnettomedia.getPhysAddress(), onmsip.getNodeId());
                 }
@@ -916,6 +918,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                     multiIpMacs.add(ipnettomedia.getPhysAddress());
                     LOG.debug("refresh: ipNetToMedia: {}:{}. Multiple OnmsIpInterface found.", ipnettomedia.getPhysAddress(),InetAddressUtils.str(ipnettomedia.getNetAddress()));
                 }
+                if (m_nodeToOnmsSnmpMap.containsKey(onmsip.getNodeId())) {
                 for (OnmsSnmpInterface onmssnmp : m_nodeToOnmsSnmpMap.get(onmsip.getNodeId()).values() ) {
                     if (onmssnmp.getId().intValue() == onmssnmp.getId().intValue()) {
                         if (!m_macToOnmsSnmpMap.containsKey(ipnettomedia.getPhysAddress())) {
@@ -927,6 +930,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                             LOG.debug("refresh: ipNetToMedia: {}:{}. Multiple OnmsSnmpInterface found.", ipnettomedia.getPhysAddress(),InetAddressUtils.str(ipnettomedia.getNetAddress()));                                
                         }
                     }
+                }
+                } else {
+                    LOG.debug("refresh: ipNetToMedia: {}:{}. No OnmsSnmpInterface found.", ipnettomedia.getPhysAddress(),InetAddressUtils.str(ipnettomedia.getNetAddress()));
                 }
             }
             LOG.info("refresh: IpNetToMedia loaded");
