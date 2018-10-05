@@ -192,7 +192,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
             try {
                 return offHeapAdapter.writeMessage(message);
             } catch (WriteFailedException e) {
-                LOG.error("OffHeap write failed ", e);
+                rateLimittedLogger.error("OffHeap write failed ", e);
             }
         }
         try {

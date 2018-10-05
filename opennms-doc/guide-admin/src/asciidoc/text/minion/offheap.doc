@@ -36,7 +36,4 @@ That is 1288490188 bytes.
 For ex: 1.2MB is valid.
 1gb is not valid.
 
-When using _Kafka_ as sink strategy, each sink message will expire after 30sec by default.
-To queue it for extended period, kafka producer property `retries` can be updated.
-For ex: for `retries` 100, each sink message will queue atleast for 30 mins before getting dropped.
-
+When using _Kafka_ as sink strategy, each sink message will expire after 30sec by default, see issue: link:https://issues.opennms.org/browse/NMS-10395[NMS-10395]

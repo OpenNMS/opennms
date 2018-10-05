@@ -36,7 +36,7 @@ public interface OffHeapQueue {
     /**
      * Write Message for a Sink Module and a key that is unique to message.
      *
-     * @param message
+     * @param message sink message in byte array.
      * @param moduleName Sink Module Name.
      * @param key  unique id for the sink message.
      */
@@ -52,8 +52,17 @@ public interface OffHeapQueue {
      */
     AbstractMap.SimpleImmutableEntry<String, byte[]> readNextMessage(String moduleName) throws InterruptedException;
 
+    /**
+     *
+     * @return size of OffHeap in bytes.
+     */
     public long getSize();
 
+    /**
+     *
+     * @param moduleName, Sink module Name.
+     * @return number of messages per module.
+     */
     public int getNumOfMessages(String moduleName);
 
 
