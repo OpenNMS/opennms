@@ -46,6 +46,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.opennms.core.web.HttpClientWrapper;
@@ -239,6 +240,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
     }
 
     @Test
+    @Ignore("flapping")
     public void verifyCanChangeIcon() throws IOException, InterruptedException {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
         waitFor(1);
