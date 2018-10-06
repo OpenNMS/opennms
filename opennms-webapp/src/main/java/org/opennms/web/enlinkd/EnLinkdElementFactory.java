@@ -126,7 +126,7 @@ public class EnLinkdElementFactory implements InitializingBean,
     private BridgeElementDao m_bridgeElementDao;
 
     @Autowired
-    private BridgeTopologyService m_bridgetopologyDao;
+    private BridgeTopologyService m_bridgeTopologyService;
 
     @Autowired
     private IpNetToMediaDao m_ipNetToMediaDao;
@@ -758,7 +758,7 @@ public class EnLinkdElementFactory implements InitializingBean,
     @Override
     public Collection<BridgeLinkNode> getBridgeLinks(int nodeId) {
         List<BridgeLinkNode> bridgelinks = new ArrayList<BridgeLinkNode>();
-        for (SharedSegment segment: m_bridgetopologyDao.getSharedSegments(nodeId)) {
+        for (SharedSegment segment: m_bridgeTopologyService.getSharedSegments(nodeId)) {
             try {
                 bridgelinks.add(convertFromModel(nodeId, segment));
             } catch (BridgeTopologyException e) {
@@ -785,7 +785,7 @@ public class EnLinkdElementFactory implements InitializingBean,
         });
 
         for (String mac : mactoIpNodeMap.keySet()) {
-            SharedSegment segment = m_bridgetopologyDao.getSharedSegment(mac);
+            SharedSegment segment = m_bridgeTopologyService.getSharedSegment(mac);
             if (segment.isEmpty()) {
                 continue;
             }

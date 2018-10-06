@@ -78,7 +78,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class EnhancedLinkdMockDataPopulator {
 
     @Autowired
-    private BridgeTopologyService m_bridgeTopologyDao;
+    private BridgeTopologyService m_bridgeTopologyService;
 
     @Autowired
     private CdpLinkDao m_cdpLinkDao;
@@ -400,7 +400,7 @@ public class EnhancedLinkdMockDataPopulator {
     public void setUpMock() {
         EasyMock.expect(m_cdpLinkDao.findAll()).andReturn(new ArrayList<CdpLink>()).anyTimes();
         EasyMock.expect(m_cdpElementDao.findAll()).andReturn(new ArrayList<CdpElement>()).anyTimes();
-        EasyMock.expect(m_bridgeTopologyDao.findAll()).andReturn(new HashSet<BroadcastDomain>()).anyTimes();
+        EasyMock.expect(m_bridgeTopologyService.findAll()).andReturn(new HashSet<BroadcastDomain>()).anyTimes();
         EasyMock.expect(m_isisLinkDao.findAll()).andReturn(new ArrayList<IsIsLink>()).anyTimes();
         EasyMock.expect(m_isisElementDao.findAll()).andReturn(new ArrayList<IsIsElement>()).anyTimes();
 
@@ -421,7 +421,7 @@ public class EnhancedLinkdMockDataPopulator {
             EasyMock.expect(m_ipInterfaceDao.findByNodeId(i)).andReturn(getList(getNode(i).getIpInterfaces())).anyTimes();
         }
         
-        EasyMock.replay(m_cdpLinkDao, m_isisLinkDao,m_bridgeTopologyDao);
+        EasyMock.replay(m_cdpLinkDao, m_isisLinkDao,m_bridgeTopologyService);
         EasyMock.replay(m_cdpElementDao);
         EasyMock.replay(m_lldpLinkDao);
         EasyMock.replay(m_lldpElementDao);
@@ -434,7 +434,7 @@ public class EnhancedLinkdMockDataPopulator {
     }
 
     public void tearDown() {
-        EasyMock.reset(m_cdpLinkDao, m_isisLinkDao,m_bridgeTopologyDao);
+        EasyMock.reset(m_cdpLinkDao, m_isisLinkDao,m_bridgeTopologyService);
         EasyMock.reset(m_cdpElementDao);
         EasyMock.reset(m_lldpElementDao);
         EasyMock.reset(m_isisElementDao);

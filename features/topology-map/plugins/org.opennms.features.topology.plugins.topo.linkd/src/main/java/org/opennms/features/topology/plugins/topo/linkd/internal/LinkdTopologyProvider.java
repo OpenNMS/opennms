@@ -131,7 +131,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private OspfLinkDao m_ospfLinkDao;
     private IsIsLinkDao m_isisLinkDao;
     private IsIsElementDao m_isisElementDao;
-    private BridgeTopologyService m_bridgeTopologyDao;
+    private BridgeTopologyService m_bridgeTopologyService;
     private IpNetToMediaDao m_ipNetToMediaDao;
 
     private Map<Integer, OnmsIpInterface> m_nodeToOnmsIpPrimaryMap =new HashMap<>();
@@ -572,7 +572,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private void getBridgeLinks() throws BridgeTopologyException {
         
-        for (BroadcastDomain domain: m_bridgeTopologyDao.findAll()) {
+        for (BroadcastDomain domain: m_bridgeTopologyService.findAll()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getBridgeLinks:\n {}", domain.printTopology());
             }
@@ -795,11 +795,11 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     public BridgeTopologyService getBridgeTopologyService() {
-        return m_bridgeTopologyDao;
+        return m_bridgeTopologyService;
     }
 
-    public void setBridgeTopologyService(BridgeTopologyService bridgeTopologyDao) {
-        m_bridgeTopologyDao = bridgeTopologyDao;
+    public void setBridgeTopologyService(BridgeTopologyService bridgeTopologyService) {
+        m_bridgeTopologyService = bridgeTopologyService;
     }
 
     public IpNetToMediaDao getIpNetToMediaDao() {
