@@ -51,7 +51,6 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
@@ -121,7 +120,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private NodeDao m_nodeDao;
     private SnmpInterfaceDao m_snmpInterfaceDao;
     private IpInterfaceDao m_ipInterfaceDao;
-    private TopologyDao m_topologyDao;
     private FilterManager m_filterManager;
 
     private LldpLinkDao m_lldpLinkDao;
@@ -738,10 +736,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         m_ipInterfaceDao = ipInterfaceDao;
     }
 
-    public void setTopologyDao(TopologyDao topologyDao) {
-        m_topologyDao = topologyDao;
-    }
-
     public void setFilterManager(FilterManager filterManager) {
         m_filterManager = filterManager;
     }
@@ -832,7 +826,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 .withSemanticZoomLevel(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL)
                 .withPreferredLayout("D3 Layout") // D3 Layout
                 .withCriteria(() -> {
-                    final OnmsNode node = m_topologyDao.getDefaultFocusPoint();
+                    final OnmsNode node = m_nodeDao.getDefaultFocusPoint();
 
                     if (node != null) {
                         final Vertex defaultVertex = getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getNodeId());

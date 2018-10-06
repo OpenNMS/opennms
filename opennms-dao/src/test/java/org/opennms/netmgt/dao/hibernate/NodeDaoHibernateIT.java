@@ -34,7 +34,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.api.TopologyDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,10 +54,10 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class TopologyDaoHibernateIT {
+public class NodeDaoHibernateIT {
 
     @Autowired
-    private TopologyDao m_topologyDao;
+    private NodeDao m_nodeDao;
 
     @Autowired
     private DatabasePopulator m_populator;
@@ -75,12 +75,12 @@ public class TopologyDaoHibernateIT {
     @Test
     @Transactional
     public void testGetDefaultFocus() {
-        OnmsNode node = m_topologyDao.getDefaultFocusPoint();
+        OnmsNode node = m_nodeDao.getDefaultFocusPoint();
         Assert.assertNull(node);
         
         m_populator.populateDatabase();
         
-        OnmsNode node2 = m_topologyDao.getDefaultFocusPoint();
+        OnmsNode node2 = m_nodeDao.getDefaultFocusPoint();
         Assert.assertNotNull(node2);
     }
 

@@ -30,7 +30,6 @@ package org.opennms.netmgt.dao.api;
 
 import java.util.Set;
 
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsTopology;
 import org.opennms.netmgt.model.OnmsTopologyConsumer;
 import org.opennms.netmgt.model.OnmsTopologyException;
@@ -39,8 +38,6 @@ import org.opennms.netmgt.model.OnmsTopologyUpdater;
 
 public interface TopologyDao {
 
-    OnmsNode getDefaultFocusPoint();
-    
     OnmsTopology getTopology(String protocol) throws OnmsTopologyException;
     
     Set<String> getSupportedProtocols();

@@ -33,9 +33,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.TopologyDao;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsTopology;
 import org.opennms.netmgt.model.OnmsTopologyConsumer;
 import org.opennms.netmgt.model.OnmsTopologyException;
@@ -45,14 +43,8 @@ import org.opennms.netmgt.model.OnmsTopologyUpdater;
 public class TopologyDaoHibernate implements TopologyDao {
 
 
-    private NodeDao m_nodeDao;
     private Map<String,OnmsTopologyUpdater> m_updatersMap = new HashMap<String, OnmsTopologyUpdater>();
     Set<OnmsTopologyConsumer> m_consumers = new HashSet<OnmsTopologyConsumer>();
-
-    @Override
-    public OnmsNode getDefaultFocusPoint() {
-        return m_nodeDao.getTopIfSpeed();
-    }
 
     @Override
     public OnmsTopology getTopology(String protocolSupported) throws OnmsTopologyException {
@@ -61,15 +53,6 @@ public class TopologyDaoHibernate implements TopologyDao {
         }
         throw new OnmsTopologyException(protocolSupported + "protocol not supported");
     }
-
-    public NodeDao getNodeDao() {
-        return m_nodeDao;
-    }
-
-    public void setNodeDao(NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
-    }
-
 
     @Override
     public void subscribe(OnmsTopologyConsumer consumer) {

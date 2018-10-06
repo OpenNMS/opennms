@@ -873,7 +873,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
     }
     
     @Test
-    public void checkBridgeTopologyDao() throws BridgeTopologyException {
+    public void checkBridgeTopologyService() throws BridgeTopologyException {
         
         NetworkBuilder nb = new NetworkBuilder();
         nb.addNode("pe01").

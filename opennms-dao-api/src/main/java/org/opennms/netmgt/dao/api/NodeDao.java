@@ -291,5 +291,7 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
 
     List<OnmsNode> findAllHavingFlows();
     
-    OnmsNode getTopIfSpeed();
+    OnmsNode getDefaultFocusPoint();
+    
+
 }
