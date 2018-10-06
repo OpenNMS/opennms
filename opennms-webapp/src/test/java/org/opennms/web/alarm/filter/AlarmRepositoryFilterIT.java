@@ -48,6 +48,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventParameter;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.alarm.AlarmUtil;
@@ -60,6 +61,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -490,6 +492,61 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
         
         // alarm2 and the alarm from DatabasePopulator match this criteria
+        assertEquals(2, alarms.length);
+    }
+
+    @Test
+    @Transactional
+    @JUnitTemporaryDatabase
+    public void testSituations() {
+        OnmsDistPoller poller = m_dbPopulator.getDistPollerDao().whoami();
+
+        final OnmsEvent event = new OnmsEvent();
+        event.setEventLog("Y");
+        event.setEventDisplay("Y");
+        event.setEventCreateTime(new Date());
+        event.setDistPoller(poller);
+        event.setEventTime(new Date());
+        event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
+        event.setEventUei("uei://org/opennms/test/EventDaoTest");
+        event.setEventSource("test");
+        m_dbPopulator.getEventDao().save(event);
+        m_dbPopulator.getEventDao().flush();
+
+        final OnmsNode node = m_dbPopulator.getNodeDao().findAll().iterator().next();
+
+        final OnmsAlarm alarm1 = new OnmsAlarm();
+        alarm1.setNode(node);
+        alarm1.setUei(event.getEventUei());
+        alarm1.setSeverityId(event.getEventSeverity());
+        alarm1.setFirstEventTime(event.getEventTime());
+        alarm1.setLastEvent(event);
+        alarm1.setCounter(1);
+        alarm1.setDistPoller(poller);
+        m_dbPopulator.getAlarmDao().save(alarm1);
+        m_dbPopulator.getAlarmDao().flush();
+
+        final OnmsAlarm alarm2 = new OnmsAlarm();
+        alarm2.setNode(node);
+        alarm2.setUei(event.getEventUei());
+        alarm2.setSeverityId(event.getEventSeverity());
+        alarm2.setFirstEventTime(event.getEventTime());
+        alarm2.setLastEvent(event);
+        alarm2.setCounter(1);
+        alarm2.setDistPoller(poller);
+        alarm2.setRelatedAlarms(Sets.newHashSet(alarm1));
+        m_dbPopulator.getAlarmDao().save(alarm2);
+        m_dbPopulator.getAlarmDao().flush();
+
+        assertEquals(3, m_dbPopulator.getAlarmDao().findAll().size());
+
+        AlarmCriteria criteriaForSituations = new AlarmCriteria(new SituationFilter(true));
+        AlarmCriteria criteriaForAlarms = new AlarmCriteria(new SituationFilter(false));
+
+        final OnmsAlarm[] situations = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteriaForSituations));
+        final OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteriaForAlarms));
+
+        assertEquals(1, situations.length);
         assertEquals(2, alarms.length);
     }
     
