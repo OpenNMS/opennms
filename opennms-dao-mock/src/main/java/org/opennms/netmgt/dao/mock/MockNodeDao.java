@@ -495,7 +495,7 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     }
 
     @Override
-    public OnmsNode getTopIfSpeed() {
+    public OnmsNode getDefaultFocusPoint() {
         return null;
     }
 
