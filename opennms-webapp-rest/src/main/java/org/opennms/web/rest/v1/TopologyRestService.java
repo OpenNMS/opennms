@@ -42,9 +42,9 @@ import org.opennms.features.graphml.model.GraphMLGraph;
 import org.opennms.features.graphml.model.GraphMLNode;
 import org.opennms.features.graphml.model.GraphMLWriter;
 import org.opennms.features.graphml.model.InvalidGraphException;
-import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.OnmsTopology;
 import org.opennms.netmgt.model.OnmsTopologyException;
+import org.opennms.netmgt.topologies.service.api.TopologyDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

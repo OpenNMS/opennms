@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
@@ -49,6 +48,7 @@ import org.opennms.netmgt.model.OnmsTopologyUpdater;
 import org.opennms.netmgt.model.OnmsTopologyVertex;
 import org.opennms.netmgt.model.topology.Topology;
 import org.opennms.netmgt.model.topology.Topology.ProtocolSupported;
+import org.opennms.netmgt.topologies.service.api.TopologyDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

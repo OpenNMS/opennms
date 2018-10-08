@@ -41,7 +41,8 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao-api</artifactId>
+      <artifactId>opennms-model</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
