@@ -12,6 +12,5 @@
   <name>OpenNMS :: Features :: Topologies</name>
   <modules>
     <module>service</module>
-    <module>rest</module>
   </modules>
 </project>

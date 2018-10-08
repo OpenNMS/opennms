@@ -272,9 +272,6 @@
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor" ref="genericHibernateAccessor" />
 
-    <bean id="topologyDao" class="org.opennms.netmgt.dao.hibernate.TopologyDaoHibernate"/>
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyDao" ref="topologyDao" />
-
     <bean id="alarmStatisticsService" class="org.opennms.netmgt.dao.stats.DefaultAlarmStatisticsService" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.AlarmStatisticsService" ref="alarmStatisticsService" />
 
