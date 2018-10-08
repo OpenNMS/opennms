@@ -355,7 +355,7 @@ public class MockNodeDao implements NodeDao {
     }
 
     @Override
-    public OnmsNode getTopIfSpeed() {
+    public OnmsNode getDefaultFocusPoint() {
         // TODO Auto-generated method stub
         return null;
     }
