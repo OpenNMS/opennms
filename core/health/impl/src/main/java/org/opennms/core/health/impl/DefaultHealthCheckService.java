@@ -115,7 +115,7 @@ public class DefaultHealthCheckService implements HealthCheckService {
                 }
                 currentFuture = executorService.submit(() -> {
                     try {
-                        final Response response = check.perform();
+                        final Response response = check.perform(context);
                         if (response == null) {
                             return new Response(Status.Unknown);
                         }

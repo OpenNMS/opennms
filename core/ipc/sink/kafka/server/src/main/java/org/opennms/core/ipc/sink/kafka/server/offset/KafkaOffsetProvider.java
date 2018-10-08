@@ -56,6 +56,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -71,11 +72,11 @@ import org.apache.kafka.common.protocol.types.Field;
 import org.apache.kafka.common.protocol.types.Schema;
 import org.apache.kafka.common.protocol.types.Struct;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
-import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
 import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.Utils;
+import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.slf4j.Logger;
@@ -227,7 +228,7 @@ public class KafkaOffsetProvider {
     }
 
     public KafkaOffsetProvider(KafkaConfigProvider configProvider) {
-        this.configProvider = configProvider;
+        this.configProvider = Objects.requireNonNull(configProvider);
     }
 
     private long readOffsetMessageValue(ByteBuffer buffer) {

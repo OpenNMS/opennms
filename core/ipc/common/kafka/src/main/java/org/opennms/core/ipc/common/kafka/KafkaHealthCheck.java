@@ -33,6 +33,7 @@ import java.util.Properties;
 
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
+import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
@@ -40,21 +41,16 @@ import org.opennms.core.health.api.Status;
 
 public class KafkaHealthCheck implements HealthCheck {
 
-    private OsgiKafkaConfigProvider osgiKafkaConfigProvider;
-    private OnmsKafkaConfigProvider kafkaConfigProvider;
-    // Differentiate Sink/RPC
+    private KafkaConfigProvider kafkaConfigProvider;
+    // Differentiate between Sink/RPC
     private final String type;
     private Properties kafkaConfig = new Properties();
 
-    public KafkaHealthCheck(OsgiKafkaConfigProvider kafkaConfigProvider, String type) {
-        this.osgiKafkaConfigProvider = kafkaConfigProvider;
+    public KafkaHealthCheck(KafkaConfigProvider kafkaConfigProvider, String type) {
+        this.kafkaConfigProvider = kafkaConfigProvider;
         this.type = type;
     }
 
-    public KafkaHealthCheck(String sysPropPrefix, String type) {
-        this.kafkaConfigProvider = new OnmsKafkaConfigProvider(sysPropPrefix);
-        this.type = type;
-    }
 
     @Override
     public String getDescription() {
@@ -62,15 +58,10 @@ public class KafkaHealthCheck implements HealthCheck {
     }
 
     @Override
-    public Response perform() throws Exception {
-        if (osgiKafkaConfigProvider != null) {
-            kafkaConfig = osgiKafkaConfigProvider.getProperties();
-        }
-        if (kafkaConfigProvider != null) {
-            kafkaConfig = kafkaConfigProvider.getProperties();
-        }
-        // Default 1 sec should be sufficient, need changes to health check API to make it configurable.
-        kafkaConfig.put("request.timeout.ms", 1000);
+    public Response perform(Context context) throws Exception {
+        kafkaConfig = kafkaConfigProvider.getProperties();
+        int timeout = Math.toIntExact(context.getTimeout());
+        kafkaConfig.put("request.timeout.ms", timeout);
         try (AdminClient client = Utils.runWithNullContextClassLoader(() -> AdminClient.create(kafkaConfig))) {
             ListTopicsResult listTopicsResult = client.listTopics();
             listTopicsResult.names().get();

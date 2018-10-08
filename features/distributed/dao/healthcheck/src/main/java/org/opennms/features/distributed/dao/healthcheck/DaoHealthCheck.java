@@ -30,6 +30,7 @@ package org.opennms.features.distributed.dao.healthcheck;
 
 import java.util.Objects;
 
+import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
@@ -59,7 +60,7 @@ public class DaoHealthCheck implements HealthCheck {
     }
 
     @Override
-    public Response perform() {
+    public Response perform(Context context) {
         // IMPORTANT: Do not change to Class reference here. This is a string on purpose to not have the maven bundle
         // plugin put a IMPORT-Package statement for org.opennms.netmgt.dao.api. Otherwise this Health Check is never
         // loaded and will never be invoked, thus can not fullfil its purpose.
