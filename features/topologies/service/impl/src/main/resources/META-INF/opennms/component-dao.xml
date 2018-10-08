@@ -13,7 +13,7 @@
 
     <context:annotation-config />
 
-    <bean id="topologyDao" class="org.opennms.netmgt.dao.hibernate.TopologyDaoHibernate"/>
+    <bean id="topologyDao" class="org.opennms.netmgt.topologies.service.impl.TopologyDaoInMemoryImpl"/>
     <onmsgi:service interface="org.opennms.netmgt.topologies.service.api.TopologyDao" ref="topologyDao" />   
     
 </beans>

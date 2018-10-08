@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.hibernate;
+package org.opennms.netmgt.topologies.service.impl;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,7 +40,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyUpdater;
 import org.opennms.netmgt.topologies.service.api.TopologyDao;
 
-public class TopologyDaoHibernate implements TopologyDao {
+public class TopologyDaoInMemoryImpl implements TopologyDao {
 
 
     private Map<String,OnmsTopologyUpdater> m_updatersMap = new HashMap<String, OnmsTopologyUpdater>();
