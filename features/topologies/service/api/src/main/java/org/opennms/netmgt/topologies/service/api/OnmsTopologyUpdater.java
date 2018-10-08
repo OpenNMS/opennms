@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model;
+package org.opennms.netmgt.topologies.service.api;
 
 public interface OnmsTopologyUpdater extends OnmsTopologyRef {
     

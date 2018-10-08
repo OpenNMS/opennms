@@ -30,12 +30,6 @@ package org.opennms.netmgt.topologies.service.api;
 
 import java.util.Set;
 
-import org.opennms.netmgt.model.OnmsTopology;
-import org.opennms.netmgt.model.OnmsTopologyConsumer;
-import org.opennms.netmgt.model.OnmsTopologyException;
-import org.opennms.netmgt.model.OnmsTopologyMessage;
-import org.opennms.netmgt.model.OnmsTopologyUpdater;
-
 public interface TopologyDao {
 
     OnmsTopology getTopology(String protocol) throws OnmsTopologyException;

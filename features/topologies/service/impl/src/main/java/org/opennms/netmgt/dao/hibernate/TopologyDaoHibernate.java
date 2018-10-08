@@ -33,11 +33,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.model.OnmsTopology;
-import org.opennms.netmgt.model.OnmsTopologyConsumer;
-import org.opennms.netmgt.model.OnmsTopologyException;
-import org.opennms.netmgt.model.OnmsTopologyMessage;
-import org.opennms.netmgt.model.OnmsTopologyUpdater;
+import org.opennms.netmgt.topologies.service.api.OnmsTopology;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyUpdater;
 import org.opennms.netmgt.topologies.service.api.TopologyDao;
 
 public class TopologyDaoHibernate implements TopologyDao {

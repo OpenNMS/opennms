@@ -26,9 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model;
+package org.opennms.netmgt.topologies.service.api;
 
-import org.opennms.netmgt.model.OnmsTopologyMessage.TopologyMessageStatus;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage.TopologyMessageStatus;
 
 public class OnmsTopologyException extends Exception {
 

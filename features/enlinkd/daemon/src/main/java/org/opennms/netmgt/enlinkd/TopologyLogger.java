@@ -31,8 +31,8 @@ package org.opennms.netmgt.enlinkd;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.opennms.netmgt.model.OnmsTopologyConsumer;
-import org.opennms.netmgt.model.OnmsTopologyMessage;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 
 public class TopologyLogger implements OnmsTopologyConsumer {
 
