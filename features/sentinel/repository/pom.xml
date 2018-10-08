@@ -264,11 +264,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.distributed</groupId>
-            <artifactId>org.opennms.features.distributed.dao-healthcheck</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.features.flows</groupId>
             <artifactId>org.opennms.features.flows.elastic</artifactId>
             <version>${project.version}</version>
@@ -276,6 +271,11 @@
         <dependency>
             <groupId>org.opennms.features.flows.classification.engine</groupId>
             <artifactId>org.opennms.features.flows.classification.engine.impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features</groupId>
+            <artifactId>org.opennms.features.newts</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -294,7 +294,17 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.features.telemetry.adapters</groupId>
+            <artifactId>org.opennms.features.telemetry.adapters.jti</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.telemetry.adapters</groupId>
             <artifactId>org.opennms.features.telemetry.adapters.netflow</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.telemetry.adapters</groupId>
+            <artifactId>org.opennms.features.telemetry.adapters.nxos</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -342,6 +352,11 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.collection</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
             <artifactId>org.opennms.features.distributed.dao-api</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -358,6 +373,16 @@
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
             <artifactId>org.opennms.features.distributed.datasource</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.dao-healthcheck</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.dao-shell</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

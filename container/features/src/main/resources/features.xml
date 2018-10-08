@@ -759,8 +759,6 @@
       <feature>commons-jexl</feature>
       <feature>dropwizard-metrics</feature>
       <feature>guava</feature>
-       <!-- This is needed for reload:daemon command  -->
-      <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
       <!--
       These classes are in the system classpath inside OpenNMS
       <feature>opennms-core</feature>

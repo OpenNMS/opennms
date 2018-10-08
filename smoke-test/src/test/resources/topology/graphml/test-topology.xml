@@ -13,6 +13,7 @@
     <key id="semantic-zoom-level" for="graph" attr.name="semantic-zoom-level" attr.type="int"/>
     <key id="foreignSource" for="node" attr.name="foreignSource" attr.type="string"></key>
     <key id="foreignID" for="node" attr.name="foreignID" attr.type="string"></key>
+    <key id="iconKey" for="node" attr.name="iconKey" attr.type="string"/>
     <data key="label">GraphML Topology Provider (test-graph)</data>
     <data key="breadcrumb-strategy">SHORTEST_PATH_TO_ROOT</data>
     <graph id="regions" edgedefault="undirected">
@@ -41,6 +42,7 @@
         <data key="semantic-zoom-level">0</data>
         <node id="north.1">
             <data key="label">North 1</data>
+            <data key="iconKey">linkd.system</data>
         </node>
         <node id="north.2">
             <data key="label">North 2</data>
