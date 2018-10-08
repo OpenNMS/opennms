@@ -51,7 +51,7 @@ import org.opennms.netmgt.dao.api.NodeLabel;
 import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.dao.api.SessionFactoryWrapper;
 import org.opennms.netmgt.dao.api.StatisticsService;
-import org.opennms.netmgt.dao.api.TopologyDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.osgi.framework.Bundle;
@@ -107,7 +107,7 @@ public class DaoServiceTester {
             .withTest(GenericPersistenceAccessor .class, bean -> {
                 bean.get(OnmsNode.class, 1);
             })
-            .withTest(TopologyDao .class, bean -> {
+            .withTest(NodeDao .class, bean -> {
                 bean.getDefaultFocusPoint();
             })
             .withTest(StatisticsService.class, bean -> {
