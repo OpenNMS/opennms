@@ -1271,12 +1271,14 @@
         <bundle>mvn:org.opennms.container/spring-extender/${project.version}</bundle>
     </feature>
 
+    <!-- TODO fooker rework feature -->
     <feature name="opennms-flows" description="OpenNMS :: Features :: Flows :: Feature Definition" version="${project.version}">
         <details>Feature definition to start all required bundles related to *flow-support.</details>
         <feature>opennms-health</feature>
         <feature>opennms-jest</feature>
         <feature>quartz</feature>
         <feature>camel-netty4</feature>
+        <feature>opennms-telemetry-collection</feature>
 
         <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
 
@@ -1304,6 +1306,8 @@
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.flows/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.parser/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.adapter/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.parser/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.adapter/${project.version}</bundle>
     </feature>
 
 </features>
