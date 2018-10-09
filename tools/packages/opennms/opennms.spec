@@ -211,61 +211,6 @@ The Hawtio web console.
 %{extrainfo}
 %{extrainfo2}
 
-
-%package ncs
-Summary:	Network Component Services
-Group:		Applications/System
-Requires:	%{name}-webapp-jetty = %{version}-%{release}
-
-%description ncs
-NCS provides a framework for doing correlation of service events across
-disparate nodes.
-
-%{extrainfo}
-%{extrainfo2}
-
-
-%package plugins
-Summary:	All Plugins
-Group:		Applications/System
-Requires(pre):	%{name}-plugin-northbounder-jms
-Requires:	%{name}-plugin-northbounder-jms
-Requires(pre):	%{name}-plugin-provisioning-dns
-Requires:	%{name}-plugin-provisioning-dns
-Requires(pre):	%{name}-plugin-provisioning-rancid
-Requires:	%{name}-plugin-provisioning-rancid
-Requires(pre):	%{name}-plugin-provisioning-reverse-dns
-Requires:	%{name}-plugin-provisioning-reverse-dns
-Requires(pre):	%{name}-plugin-provisioning-snmp-asset
-Requires:	%{name}-plugin-provisioning-snmp-asset
-Requires(pre):	%{name}-plugin-provisioning-snmp-hardware-inventory
-Requires:	%{name}-plugin-provisioning-snmp-hardware-inventory
-Requires(pre):	%{name}-plugin-ticketer-jira
-Requires:	%{name}-plugin-ticketer-jira
-Requires(pre):	%{name}-plugin-ticketer-otrs
-Requires:	%{name}-plugin-ticketer-otrs
-Requires(pre):	%{name}-plugin-ticketer-rt
-Requires:	%{name}-plugin-ticketer-rt
-Requires(pre):	%{name}-plugin-protocol-cifs
-Requires:	%{name}-plugin-protocol-cifs
-Requires(pre):	%{name}-plugin-protocol-dhcp
-Requires:	%{name}-plugin-protocol-dhcp
-Requires(pre):	%{name}-plugin-protocol-nsclient
-Requires:	%{name}-plugin-protocol-nsclient
-Requires(pre):	%{name}-plugin-protocol-radius
-Requires:	%{name}-plugin-protocol-radius
-Requires(pre):	%{name}-plugin-protocol-xmp
-Requires:	%{name}-plugin-protocol-xmp
-Requires(pre):	%{name}-plugin-collector-vtdxml-handler
-Requires:	%{name}-plugin-collector-vtdxml-handler
-
-%description plugins
-This installs all optional plugins.
-
-%{extrainfo}
-%{extrainfo2}
-
-
 %package plugin-northbounder-jms
 Summary:	JMS Alarm Northbounder
 Group:		Applications/System
@@ -638,8 +583,6 @@ find %{buildroot}%{instprefix}/etc ! -type d | \
 	sed -e "s,^%{buildroot},%config(noreplace) ," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
-	grep -v 'ncs-northbounder-configuration.xml' | \
-	grep -v 'drools-engine.d/ncs' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'jira.properties' | \
 	grep -v 'jms-northbounder-configuration.xml' | \
@@ -660,9 +603,6 @@ find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
 	sed -e "s,^%{buildroot},," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
-	grep -v 'ncs-northbounder-configuration.xml' | \
-	grep -v 'ncs.xml' | \
-	grep -v 'drools-engine.d/ncs' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'jira.properties' | \
 	grep -v 'jms-northbounder-configuration.xml' | \
@@ -687,7 +627,6 @@ find %{buildroot}%{instprefix}/bin ! -type d | \
 find %{buildroot}%{sharedir} ! -type d | \
 	sed -e "s,^%{buildroot},," | \
 	grep -v 'etc-pristine' | \
-	grep -v 'ncs-' | \
 	grep -v 'nsclient-config.xsd' | \
 	grep -v 'nsclient-datacollection.xsd' | \
 	grep -v 'xmp-config.xsd' | \
@@ -702,7 +641,6 @@ find %{buildroot}%{instprefix}/lib ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
 	grep -v 'jdhcp' | \
 	grep -v 'jradius' | \
-	grep -v 'org.opennms.features.ncs.ncs-' | \
 	grep -v 'opennms-alarm-northbounder-jms' | \
 	grep -v 'opennms-integration-otrs' | \
 	grep -v 'opennms-integration-rt' | \
@@ -735,15 +673,11 @@ find %{buildroot}%{jettydir} ! -type d | \
 	grep -v '/opennms/source/' | \
 	grep -v '/WEB-INF/[^/]*\.xml$' | \
 	grep -v '/WEB-INF/[^/]*\.properties$' | \
-	grep -v '/WEB-INF/jsp/alarm/ncs' | \
-	grep -v '/WEB-INF/jsp/ncs/' | \
-	grep -v '/WEB-INF/lib/org.opennms.features.ncs.ncs' | \
 	sort >> %{_tmppath}/files.jetty
 find %{buildroot}%{jettydir}/*/WEB-INF/*.xml | \
 	sed -e "s,^%{buildroot},%config ," | \
 	grep -v '/opennms-remoting' | \
 	grep -v '/hawtio' | \
-	grep -v '/WEB-INF/ncs' | \
 	sort >> %{_tmppath}/files.jetty
 find %{buildroot}%{jettydir} -type d | \
 	sed -e "s,^%{buildroot},%dir ," | \
@@ -765,7 +699,6 @@ rm -rf %{buildroot}
 
 %files core -f %{_tmppath}/files.main
 %defattr(664 root root 775)
-%exclude %dir %{instprefix}/etc/drools-engine.d/ncs
 %attr(755,root,root)	%{profiledir}/%{name}.sh
 %attr(755,root,root)	%{logdir}
 %attr(640,root,root)	%config(noreplace) %{instprefix}/etc/users.xml
@@ -785,21 +718,6 @@ rm -rf %{buildroot}
 %files jmx-config-generator
 %attr(755,root,root) %{bindir}/jmx-config-generator
 %{instprefix}/lib/opennms_jmx_config_generator.jar
-
-%files ncs
-%defattr(644 root root 755)
-%{instprefix}/lib/org.opennms.features.ncs.ncs-*.jar
-%{jettydir}/%{servletdir}/WEB-INF/lib/org.opennms.features.ncs.ncs-*.jar
-%dir %{instprefix}/etc/drools-engine.d/ncs
-%config(noreplace) %{instprefix}/etc/drools-engine.d/ncs/*
-%config(noreplace) %{instprefix}/etc/ncs-northbounder-configuration.xml
-%{sharedir}/xsds/ncs-*.xsd
-%config %{jettydir}/%{servletdir}/WEB-INF/ncs*.xml
-%config %{jettydir}/%{servletdir}/WEB-INF/jsp/alarm/ncs-*
-%config %{jettydir}/%{servletdir}/WEB-INF/jsp/ncs
-%dir %{sharedir}/etc-pristine/drools-engine.d/ncs
-%{sharedir}/etc-pristine/drools-engine.d/ncs/*
-%{sharedir}/etc-pristine/ncs-northbounder-configuration.xml
 
 %files source
 %defattr(644 root root 755)

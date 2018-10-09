@@ -729,36 +729,6 @@
       <classifier>lib</classifier>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>org.opennms.features.ncs.ncs-model</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>org.opennms.features.ncs.ncs-persistence</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>org.opennms.features.ncs.ncs-drools</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>org.opennms.features.ncs.ncs-drools</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>etc</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>org.opennms.features.ncs.ncs-northbounder</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>org.opennms.features.ncs.ncs-northbounder</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>etc</classifier>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.juniper-tca-collector</artifactId>
       <version>${project.version}</version>
