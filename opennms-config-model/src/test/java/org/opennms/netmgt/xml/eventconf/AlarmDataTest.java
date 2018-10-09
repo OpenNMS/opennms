@@ -51,13 +51,24 @@ public class AlarmDataTest extends XmlTestNoCastor<AlarmData> {
 		alarmData1.setAlarmType(3);
 		alarmData1.setAutoClean(true);
 		alarmData1.setClearKey("uei.opennms.org/internal/importer/importFailed:%parm[importResource]%");
+		AlarmData alarmData2 = new AlarmData();
+		alarmData2.setReductionKey("%uei%:%dpname%:%nodeid%");
+		alarmData2.setAlarmType(3);
+		alarmData2.setAutoClean(false);
+		ManagedObject managedObject = new ManagedObject();
+		managedObject.setType("node");
+		alarmData2.setManagedObject(managedObject);
 		return Arrays.asList(new Object[][] {
 				{alarmData0,
 				"<alarm-data reduction-key=\"%uei%:%dpname%:%nodeid%\" alarm-type=\"3\"/>",
 				"target/classes/xsds/eventconf.xsd" },
 				{alarmData1,
 				"<alarm-data reduction-key=\"%uei%:%dpname%:%nodeid%\" alarm-type=\"3\" auto-clean=\"true\" clear-key=\"uei.opennms.org/internal/importer/importFailed:%parm[importResource]%\"/>",
-				"target/classes/xsds/eventconf.xsd" } 
+				"target/classes/xsds/eventconf.xsd" },
+				{alarmData2,
+				"<alarm-data reduction-key=\"%uei%:%dpname%:%nodeid%\" alarm-type=\"3\" auto-clean=\"false\"> <managed-object type=\"node\"/> </alarm-data>",
+				"target/classes/xsds/eventconf.xsd"
+				}
 		});
 	}
 
