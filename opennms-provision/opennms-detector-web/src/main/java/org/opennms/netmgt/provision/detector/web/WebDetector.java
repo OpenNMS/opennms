@@ -79,6 +79,8 @@ public class WebDetector extends BasicDetector<WebRequest, WebResponse> {
 
     private boolean useSSLFilter = false;
 
+    private boolean useSystemProxy = false;
+
     /**
      * Default constructor
      */
@@ -132,6 +134,7 @@ public class WebDetector extends BasicDetector<WebRequest, WebResponse> {
             client.setAuth(getAuthUser(), getAuthPassword());
             client.setAuthPreemtive(isAuthPreemtive());
         }
+        client.setUseSystemProxy(getUseSystemProxy());
         return client;
     }
 
@@ -245,6 +248,14 @@ public class WebDetector extends BasicDetector<WebRequest, WebResponse> {
 
     public void setResponseRange(String responseRange) {
         this.responseRange = responseRange;
+    }
+
+    public void setUseSystemProxy(boolean useSystemProxy){
+        this.useSystemProxy = useSystemProxy;
+    }
+
+    public boolean getUseSystemProxy(){
+        return this.useSystemProxy;
     }
 
 }
