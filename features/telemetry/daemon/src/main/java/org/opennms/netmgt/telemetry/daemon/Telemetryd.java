@@ -104,6 +104,11 @@ public class Telemetryd implements SpringServiceDaemon {
         final AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
 
         for (final QueueConfig queueConfig : config.getQueues()) {
+            final List<AdapterConfig> enabledAdapters = queueConfig.getAdapters().stream().filter(AdapterConfig::isEnabled).collect(Collectors.toList());
+            if (enabledAdapters.isEmpty()) {
+                LOG.debug("Skipping queue: {} (no adapters enabled/defined)", queueConfig.getName());
+                continue;
+            }
 
             // Create a Sink module using the queue definition.
             // This allows for queue to have their respective queues and thread
@@ -112,19 +117,11 @@ public class Telemetryd implements SpringServiceDaemon {
             beanFactory.autowireBean(sinkModule);
             beanFactory.initializeBean(sinkModule, "sinkModule");
 
-            for (final AdapterConfig adapterConfig : queueConfig.getAdapters()) {
-                if (!adapterConfig.isEnabled()) {
-                    LOG.debug("Skipping disabled adapter: {}", adapterConfig.getName());
-                    continue;
-                }
-                LOG.debug("Setting up adapter: {}", adapterConfig.getName());
-
-                // Create the consumer, but don't start it yet
-                final TelemetryMessageConsumer consumer = new TelemetryMessageConsumer(queueConfig, sinkModule);
-                beanFactory.autowireBean(consumer);
-                beanFactory.initializeBean(consumer, "consumer");
-                consumers.add(consumer);
-            }
+            // Create the consumer, but don't start it yet
+            final TelemetryMessageConsumer consumer = new TelemetryMessageConsumer(queueConfig, enabledAdapters, sinkModule);
+            beanFactory.autowireBean(consumer);
+            beanFactory.initializeBean(consumer, "consumer");
+            consumers.add(consumer);
 
             // Build the dispatcher, and all of
             final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
