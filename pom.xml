@@ -1309,6 +1309,7 @@
     <guavaOldVersion>17.0</guavaOldVersion>
     <gwtVersion>2.6.1</gwtVersion>
     <gwtPluginVersion>2.6.1</gwtPluginVersion>
+    <h2databaseVersion>1.4.197</h2databaseVersion>
     <hawtioVersion>1.4.68</hawtioVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
     <hikaricpVersion>2.5.1</hikaricpVersion>

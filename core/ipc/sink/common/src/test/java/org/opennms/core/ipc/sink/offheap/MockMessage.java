@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,52 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.mock;
+package org.opennms.core.ipc.sink.offheap;
 
-import org.opennms.core.ipc.sink.api.AggregationPolicy;
-import org.opennms.core.ipc.sink.api.AsyncPolicy;
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.SinkModule;
 
-public class MockSinkModule<S extends Message, T extends Message> implements SinkModule<S, T> {
+public class MockMessage implements Message{
 
-    @Override
-    public String getId() {
-        return getClass().getCanonicalName();
+    private String id;
+
+    public MockMessage(String id) {
+          this.id = id;
     }
 
-    @Override
-    public int getNumConsumerThreads() {
-        return 1;
-    }
-
-    @Override
-    public byte[] marshal(T message) {
-        return null;
-    }
-
-    @Override
-    public T unmarshal(byte[] bytes) {
-        return null;
-    }
-
-    @Override
-    public byte[] marshalSingleMessage(S message) {
-        return new byte[0];
-    }
-
-    @Override
-    public S unmarshalSingleMessage(byte[] message) {
-        return null;
-    }
-
-    @Override
-    public AggregationPolicy<S, T, ?> getAggregationPolicy() {
-        return null;
-    }
-
-    @Override
-    public AsyncPolicy getAsyncPolicy() {
-        return null;
+    public String getId(){
+        return this.id;
     }
 }

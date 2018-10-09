@@ -311,6 +311,7 @@ ifndef::opennms-prime[]
 == Minion
 include::text/minion/kafka.adoc[]
 include::text/minion/aws-sqs.adoc[]
+include::text/minion/offheap.adoc[]
 endif::opennms-prime[]
 
 [[ga-sentinel]]

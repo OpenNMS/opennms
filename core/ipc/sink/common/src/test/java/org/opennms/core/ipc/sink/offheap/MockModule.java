@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,52 +26,74 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.mock;
+package org.opennms.core.ipc.sink.offheap;
 
 import org.opennms.core.ipc.sink.api.AggregationPolicy;
 import org.opennms.core.ipc.sink.api.AsyncPolicy;
-import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
 
-public class MockSinkModule<S extends Message, T extends Message> implements SinkModule<S, T> {
+public class MockModule implements SinkModule<MockMessage, MockMessage> {
+
+    private static final int QUEUE_SIZE = 100;
+    private static final int NUM_THREADS = 16;
+    private boolean blocked = false;
 
     @Override
     public String getId() {
-        return getClass().getCanonicalName();
+        return "Mock";
     }
 
     @Override
     public int getNumConsumerThreads() {
-        return 1;
+        return NUM_THREADS;
     }
 
     @Override
-    public byte[] marshal(T message) {
-        return null;
+    public byte[] marshal(MockMessage message) {
+        return message.getId().getBytes();
     }
 
     @Override
-    public T unmarshal(byte[] bytes) {
-        return null;
+    public MockMessage unmarshal(byte[] message) {
+        return new MockMessage(new String(message));
     }
 
     @Override
-    public byte[] marshalSingleMessage(S message) {
-        return new byte[0];
+    public byte[] marshalSingleMessage(MockMessage message) {
+        return message.getId().getBytes();
     }
 
     @Override
-    public S unmarshalSingleMessage(byte[] message) {
-        return null;
+    public MockMessage unmarshalSingleMessage(byte[] message) {
+        return new MockMessage(new String(message));
     }
 
     @Override
-    public AggregationPolicy<S, T, ?> getAggregationPolicy() {
+    public AggregationPolicy<MockMessage, MockMessage, ?> getAggregationPolicy() {
         return null;
     }
 
     @Override
     public AsyncPolicy getAsyncPolicy() {
-        return null;
+        return new AsyncPolicy() {
+            @Override
+            public int getQueueSize() {
+                return QUEUE_SIZE;
+            }
+
+            @Override
+            public int getNumThreads() {
+                return NUM_THREADS;
+            }
+
+            @Override
+            public boolean isBlockWhenFull() {
+                return blocked;
+            }
+        };
+    }
+
+    protected void setBlocked(boolean blocked) {
+         this.blocked = blocked;
     }
 }
