@@ -4,22 +4,16 @@ JAVA_SEARCH_DIRS="$JAVA_SEARCH_DIRS /usr/lib/jvm /usr/java /System/Library/Java/
 # set DEBUG=true to enable debugging
 
 compare_versions() {
-	a="$(printf '%s' "${1}" | sed -e 's,^1\.\([123456789]\),\1.0,' -e 's,_,.,g')"
-	b="$(printf '%s' "${2}" | sed -e 's,^1\.\([123456789]\),\1.0,' -e 's,_,.,g')"
+	a="$(printf '%s.0.0.0' "${1}" | sed -e 's,^1\.\([123456789]\),\1.0,' -e 's,_,.,g')"
+	b="$(printf '%s.0.0.0' "${2}" | sed -e 's,^1\.\([123456789]\),\1.0,' -e 's,_,.,g')"
+
 	for place in 1 2 3 4; do
 		aplace="$(printf '%s' "$a" | cut -d. "-f${place}")"
 		bplace="$(printf '%s' "$b" | cut -d. "-f${place}")"
 
-		if [ "x${aplace}" = "x" ]; then
-			aplace=0
-		fi
-		if [ "x${bplace}" = "x" ]; then
-			bplace=0
-		fi
-
-		if [ $aplace -eq $bplace ]; then
+		if [ "$aplace" -eq "$bplace" ]; then
 			continue
-		elif [ $aplace -lt $bplace ]; then
+		elif [ "$aplace" -lt "$bplace" ]; then
 			printf '%s' '1'
 			return
 		else
@@ -53,7 +47,7 @@ usage: $0 [-h] [-v] [minimum_jdk_version] [maximum_jdk_version]
 	-v   print the version matched, rather than the JAVA_HOME
 
 This script will print the location of the newest JDK in the range
-of minimum_jdk_version to maximum_jdk_version.
+of minimum_jdk_version (inclusive) to maximum_jdk_version (exclusive).
 
 END
 }
@@ -75,6 +69,8 @@ main() {
 			v)
 				SHOW_VERSION=1
 				#shift
+				;;
+			*)
 				;;
 		esac
 	done
