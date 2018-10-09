@@ -211,6 +211,48 @@ The Hawtio web console.
 %{extrainfo}
 %{extrainfo2}
 
+
+%package plugins
+Summary:	All Plugins
+Group:		Applications/System
+Requires(pre):	%{name}-plugin-northbounder-jms
+Requires:	%{name}-plugin-northbounder-jms
+Requires(pre):	%{name}-plugin-provisioning-dns
+Requires:	%{name}-plugin-provisioning-dns
+Requires(pre):	%{name}-plugin-provisioning-rancid
+Requires:	%{name}-plugin-provisioning-rancid
+Requires(pre):	%{name}-plugin-provisioning-reverse-dns
+Requires:	%{name}-plugin-provisioning-reverse-dns
+Requires(pre):	%{name}-plugin-provisioning-snmp-asset
+Requires:	%{name}-plugin-provisioning-snmp-asset
+Requires(pre):	%{name}-plugin-provisioning-snmp-hardware-inventory
+Requires:	%{name}-plugin-provisioning-snmp-hardware-inventory
+Requires(pre):	%{name}-plugin-ticketer-jira
+Requires:	%{name}-plugin-ticketer-jira
+Requires(pre):	%{name}-plugin-ticketer-otrs
+Requires:	%{name}-plugin-ticketer-otrs
+Requires(pre):	%{name}-plugin-ticketer-rt
+Requires:	%{name}-plugin-ticketer-rt
+Requires(pre):	%{name}-plugin-protocol-cifs
+Requires:	%{name}-plugin-protocol-cifs
+Requires(pre):	%{name}-plugin-protocol-dhcp
+Requires:	%{name}-plugin-protocol-dhcp
+Requires(pre):	%{name}-plugin-protocol-nsclient
+Requires:	%{name}-plugin-protocol-nsclient
+Requires(pre):	%{name}-plugin-protocol-radius
+Requires:	%{name}-plugin-protocol-radius
+Requires(pre):	%{name}-plugin-protocol-xmp
+Requires:	%{name}-plugin-protocol-xmp
+Requires(pre):	%{name}-plugin-collector-vtdxml-handler
+Requires:	%{name}-plugin-collector-vtdxml-handler
+
+%description plugins
+This installs all optional plugins.
+
+%{extrainfo}
+%{extrainfo2}
+
+
 %package plugin-northbounder-jms
 Summary:	JMS Alarm Northbounder
 Group:		Applications/System
