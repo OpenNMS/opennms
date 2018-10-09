@@ -42,6 +42,7 @@ import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
+// TODO fooker remove me and replace me with TelemetryListenerRegistry and TelemetryParserRegistry *yay*
 public class Beans {
 
     public static <F> F createFactory(final Class<F> factoryClass, final String className) {

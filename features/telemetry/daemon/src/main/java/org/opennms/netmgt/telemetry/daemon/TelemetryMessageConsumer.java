@@ -61,6 +61,7 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     @Autowired
     private TelemetryAdapterRegistry adapterRegistry;
 
+    // TODO fooker rename queueDefinition
     private final QueueDefinition protocolDef;
     private final TelemetrySinkModule sinkModule;
     private final List<AdapterDefinition> adapterDefs;
@@ -126,6 +127,7 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
         return sinkModule;
     }
 
+    // TODO fooker rename queueDefinition
     public QueueDefinition getProtocol() {
         return protocolDef;
     }
