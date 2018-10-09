@@ -65,7 +65,7 @@
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
   
-	<bean id="topologyDao" class="org.opennms.netmgt.dao.hibernate.TopologyDaoHibernate"/>
+	<bean id="topologyDao" class="org.opennms.netmgt.topologies.service.impl.TopologyDaoInMemoryImpl"/>
   
      <bean id="cdpLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.CdpLinkDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />
