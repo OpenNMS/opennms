@@ -168,6 +168,8 @@ public class JtiTelemetryIT {
             pipe.println("config:property-set name JTI");
             pipe.println("config:property-set class-name org.opennms.netmgt.telemetry.listeners.simple.Udp");
             pipe.println("config:property-set listener.port 50000");
+            pipe.println("config:property-set parsers.1.name JTI");
+            pipe.println("config:property-set parsers.1.class-name org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser");
             pipe.println("config:update");
             pipe.println("logout");
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
