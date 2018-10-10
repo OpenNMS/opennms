@@ -4,7 +4,7 @@
 [[ga-elasticsearch-integration-situation-feedback]]
 ==== Situation Feedback
 
-Full documentation on Situation Feedback is available  <<ga-situation-feedback, here>>.
+NOTE: Full documentation on _Situation Feedback_ is available  <<ga-situation-feedback, here>>.
 
 When persisting `Situation Feedback`, feedback on each related alarm  is represented by a document as follows:
 

@@ -12,12 +12,14 @@ It is a simple API that allows for the submission and retrieval of Correlation F
 [options="header", cols="1,10"]
 |===
 | Parameter                 | Description
-| `/situation-feedback/{situationId}` | Get Situation Feedback for the Situation with AlarmId = {situationId}.v
+| `/situation-feedback/{situationId}` | Get Situation Feedback for the Situation with AlarmId = {situationId}.
 |===
+
+NOTE: _situationId_ is the same as the _AlarmId_ for the Situation.
 
 ===== Usage examples with curl
 
-.Retrieve CPU counter metrics over the last 2 hours for node 1
+.Retrieve Situation Feedback for the Situaiton with AlarmId == 210
 [source,bash]
 ----
 curl -u admin:admin "http://localhost:8980/opennms/rest/situation-feedback/210"
