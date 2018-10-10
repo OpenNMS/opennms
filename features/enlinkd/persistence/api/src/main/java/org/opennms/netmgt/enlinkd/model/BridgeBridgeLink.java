@@ -46,7 +46,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Filter;
 import org.opennms.netmgt.model.FilterManager;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.topology.Topology;
+import org.opennms.netmgt.topologies.service.api.Topology;
 
 @Entity
 @Table(name="bridgeBridgeLink")

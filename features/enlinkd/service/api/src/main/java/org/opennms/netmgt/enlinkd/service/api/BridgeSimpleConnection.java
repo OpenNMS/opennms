@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.model.topology.Topology;
+import org.opennms.netmgt.topologies.service.api.Topology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -39,7 +39,7 @@ import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.topology.Topology;
+import org.opennms.netmgt.topologies.service.api.Topology;
 
 public class BridgeForwardingTableEntry implements Topology {
 

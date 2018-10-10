@@ -36,7 +36,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.topology.Topology;
+import org.opennms.netmgt.topologies.service.api.Topology;
 
 public class LinkdVertex extends SimpleLeafVertex {
 

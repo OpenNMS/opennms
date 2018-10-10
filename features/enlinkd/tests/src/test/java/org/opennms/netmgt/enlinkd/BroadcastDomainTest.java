@@ -67,7 +67,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     @Before
     public void setUp() throws Exception {
         Properties p = new Properties();
-        p.setProperty("log4j.logger.org.opennms.netmgt.model.topology", "DEBUG");
+        p.setProperty("log4j.logger.org.opennms.netmgt.enlinkd.service.api", "DEBUG");
         MockLogAppender.setupLogging(p);
         linkd = new EnhancedLinkd();
         EnhancedLinkdConfig config = new EnhancedLinkdConfigManager() {

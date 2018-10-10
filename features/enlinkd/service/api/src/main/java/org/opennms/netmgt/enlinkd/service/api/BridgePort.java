@@ -30,7 +30,7 @@ package org.opennms.netmgt.enlinkd.service.api;
 
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
-import org.opennms.netmgt.model.topology.Topology;
+import org.opennms.netmgt.topologies.service.api.Topology;
 
 public class BridgePort implements Topology {
 

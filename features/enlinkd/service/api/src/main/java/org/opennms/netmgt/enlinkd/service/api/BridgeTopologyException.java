@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
-import org.opennms.netmgt.model.topology.Topology;
+import org.opennms.netmgt.topologies.service.api.Topology;
 
 public class BridgeTopologyException extends Exception implements Topology {
 

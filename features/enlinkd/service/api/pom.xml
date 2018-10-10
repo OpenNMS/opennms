@@ -44,14 +44,6 @@
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.criteria</artifactId>
     </dependency>
-<!--
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-model</artifactId>
-      <scope>compile</scope>
-    </dependency>
--->
-
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.persistence.api</artifactId>

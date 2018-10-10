@@ -82,7 +82,6 @@
                             org.opennms.netmgt.model.minion,
                             org.opennms.netmgt.model.monitoringLocations,
                             org.opennms.netmgt.model.outage,
-                            org.opennms.netmgt.model.topology,
                             org.opennms.netmgt.xml.event
                         </Import-Package>
                         <Private-Package>
