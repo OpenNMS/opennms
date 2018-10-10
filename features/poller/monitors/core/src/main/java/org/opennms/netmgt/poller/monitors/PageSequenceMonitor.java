@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import static org.opennms.core.web.HttpClientWrapperConfigHelper.setUseSystemProxyIfDefined;
+
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -645,6 +647,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     .setSocketTimeout(getTimeout())
                     .setRetries(getRetries())
                     .useBrowserCompatibleCookies();
+            setUseSystemProxyIfDefined(clientWrapper, m_parameterMap);
             return clientWrapper;
         }
     }

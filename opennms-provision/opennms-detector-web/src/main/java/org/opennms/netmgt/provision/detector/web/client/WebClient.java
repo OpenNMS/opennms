@@ -72,6 +72,7 @@ public class WebClient implements Client<WebRequest, WebResponse> {
     private String m_password;
     private boolean m_overrideSSL = false;
     private boolean m_authPreemptive = false;
+    private boolean m_useSystemProxy = false;
 
     public WebClient(boolean override) {
         m_overrideSSL = override;
@@ -117,6 +118,9 @@ public class WebClient implements Client<WebRequest, WebResponse> {
         }
         if (m_authPreemptive) {
             m_httpClientWrapper.usePreemptiveAuth();
+        }
+        if(m_useSystemProxy){
+            m_httpClientWrapper.useSystemProxySettings();
         }
     }
 
@@ -180,6 +184,10 @@ public class WebClient implements Client<WebRequest, WebResponse> {
 
     public void setAuthPreemtive(final boolean authPreemtive) {
         m_authPreemptive = authPreemtive;
+    }
+
+    public void setUseSystemProxy(boolean useSystemProxy){
+        m_useSystemProxy = useSystemProxy;
     }
 
 }

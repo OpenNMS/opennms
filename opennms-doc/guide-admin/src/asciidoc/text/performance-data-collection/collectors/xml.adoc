@@ -59,10 +59,24 @@ Here is a snippet providing a collection definition named `xml-opennms-nodes`:
     <rra>RRA:MIN:0.5:288:366</rra>
   </rrd>
   <xml-source url="http://admin:admin@{ipaddr}:8980/opennms/rest/nodes">
+     <request method="GET">
+        <parameter name="use-system-proxy" value="true"/>
+      </request>
     <import-groups>xml-datacollection/opennms-nodes.xml</import-groups>
   </xml-source>
 </xml-collection
 ----
+
+The request element can have the following child elements:
+
+|===
+| Parameter               | Description                                                           | Required | Default value
+| `timeout`               | The connection and socket timeout in milliseconds                    | optional |
+| `retries`               | How often should the request be repeated in case of an error?         | optional | 0
+| `use-system-proxy`      | Should the system wide proxy settings be used? The system proxy
+                            settings can be configured
+                            in link:#ga-opennms-system-properties[opennms.conf]                   | optional | false
+|===
 
 The referenced `opennms-nodes.xml` file contains:
 
