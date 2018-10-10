@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <telemetryd-config>
-  <listener name="NXOS-UDP-50001" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="false">
+  <listener name="NXOS-UDP-50001" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="true">
     <parameter key="port" value="50001"/>
 
     <parser name="NXOS-GPB" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" enabled="true" queue="NXOS" />

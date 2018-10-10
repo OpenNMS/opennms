@@ -148,8 +148,10 @@ public class NxosTelemetryIT {
             PrintStream pipe = sshClient.openShell();
             pipe.println("config:edit org.opennms.features.telemetry.listeners-udp-50000");
             pipe.println("config:property-set name NXOS");
-            pipe.println("config:property-set class-name org.opennms.netmgt.telemetry.listeners.udp.UdpListener");
+            pipe.println("config:property-set class-name org.opennms.netmgt.telemetry.listeners.simple.Udp");
             pipe.println("config:property-set listener.port 50000");
+            pipe.println("config:property-set parsers.1.name NXOS");
+            pipe.println("config:property-set parsers.1.class-name org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser");
             pipe.println("config:update");
             pipe.println("logout");
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
