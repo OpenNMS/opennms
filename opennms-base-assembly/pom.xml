@@ -952,7 +952,6 @@
       <artifactId>org.opennms.features.topologies.service.impl</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
     <!-- Enlinkd -->
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
