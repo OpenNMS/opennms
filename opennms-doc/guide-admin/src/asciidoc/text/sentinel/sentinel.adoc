@@ -159,7 +159,7 @@ featuresBoot = \
       instance/4.1.5, \
       package/4.1.5, \
       log/4.1.5, \
-      scv/23.0.0-SNAPSHOT, \
+      scv/24.0.0-SNAPSHOT, \
       ssh/4.1.5, \
       framework/4.1.5, \
       system/4.1.5, \
