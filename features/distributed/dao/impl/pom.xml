@@ -26,6 +26,9 @@
                             org.opennms.netmgt.dao.util,
                             org.opennms.netmgt.dao.stats,
                             org.opennms.netmgt.dao.api,
+                            org.opennms.netmgt.enlinkd.persistence.api,
+                            org.opennms.netmgt.enlinkd.service.api,
+                            org.opennms.netmgt.topologies.service.api,
                             org.opennms.netmgt.bsm.persistence.api,
                             org.opennms.netmgt.bsm.persistence.api.functions,
                             org.opennms.netmgt.bsm.persistence.api.functions.reduce,
@@ -113,10 +116,13 @@
                             org.opennms.netmgt.model.minion,
                             org.opennms.netmgt.model.monitoringLocations,
                             org.opennms.netmgt.model.outage,
-                            org.opennms.netmgt.model.topology,
                             org.opennms.netmgt.poller,
                             org.opennms.netmgt.rrd,
                             org.opennms.netmgt.xml.event,
+
+                            org.opennms.netmgt.enlinkd.persistence.api,
+                            org.opennms.netmgt.enlinkd.service.api,
+                            org.opennms.netmgt.topologies.service.api,
 
                             org.opennms.netmgt.bsm.persistence.api,
                             org.opennms.netmgt.bsm.persistence.api.functions.map,
@@ -160,6 +166,9 @@
                             org.springframework.jdbc.core,
                         </Import-Package>
                         <Private-Package>
+                            org.opennms.netmgt.enlinkd.persistence.impl,
+                            org.opennms.netmgt.enlinkd.service.impl,
+                            org.opennms.netmgt.topologies.service.impl,
                             org.opennms.netmgt.bsm.persistence.impl,
                             org.opennms.netmgt.dao.jmx,
                             org.opennms.netmgt.dao.hibernate,
@@ -217,6 +226,21 @@
         <dependency>
             <groupId>org.opennms.features.bsm</groupId>
             <artifactId>org.opennms.features.bsm.persistence.impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.enlinkd</groupId>
+            <artifactId>org.opennms.features.enlinkd.persistence.impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.enlinkd</groupId>
+            <artifactId>org.opennms.features.enlinkd.service.impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.topologies</groupId>
+            <artifactId>org.opennms.features.topologies.service.impl</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
