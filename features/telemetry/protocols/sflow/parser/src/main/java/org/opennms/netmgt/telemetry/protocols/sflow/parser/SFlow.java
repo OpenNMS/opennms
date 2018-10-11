@@ -26,33 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
+package org.opennms.netmgt.telemetry.protocols.sflow.parser;
 
-import java.nio.ByteBuffer;
+import java.util.Map;
 
-import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
-import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
+import org.opennms.netmgt.telemetry.listeners.smart.SmartUdpParser;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 
-import com.google.common.base.MoreObjects;
-
-// typedef unsigned int sflow_data_source;
-
-public class SflowDataSource {
-    public final long sflow_data_source;
-
-    public SflowDataSource(final ByteBuffer buffer) throws InvalidPacketException {
-        this.sflow_data_source = BufferUtils.uint32(buffer);
-    }
+public class SFlow implements SmartUdpParser.Factory {
 
     @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("sflow_data_source", this.sflow_data_source)
-                .toString();
-    }
+    public SmartUdpParser createUdpParser(final String name,
+                                          final Map<String, String> parameters,
+                                          final AsyncDispatcher<TelemetryMessage> dispatcher) {
+        final SFlowUdpParser parser = new SFlowUdpParser(name, dispatcher);
 
-    public void writeBson(final BsonWriter bsonWriter) {
-        bsonWriter.writeInt64(this.sflow_data_source);
+        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(parser);
+        wrapper.setPropertyValues(parameters);
+
+        return parser;
     }
 }

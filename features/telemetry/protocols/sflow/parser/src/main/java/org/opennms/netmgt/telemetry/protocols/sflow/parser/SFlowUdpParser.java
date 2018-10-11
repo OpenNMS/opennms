@@ -47,14 +47,14 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows.SampleDat
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SflowUdpParser implements SimpleUdpParser, SmartUdpParser {
-    private static final Logger LOG = LoggerFactory.getLogger(SflowUdpParser.class);
+public class SFlowUdpParser implements SimpleUdpParser, SmartUdpParser {
+    private static final Logger LOG = LoggerFactory.getLogger(SFlowUdpParser.class);
 
     private final String name;
 
     private final AsyncDispatcher<TelemetryMessage> dispatcher;
 
-    public SflowUdpParser(final String name,
+    public SFlowUdpParser(final String name,
                           final AsyncDispatcher<TelemetryMessage> dispatcher) {
         this.name = Objects.requireNonNull(name);
         this.dispatcher = Objects.requireNonNull(dispatcher);

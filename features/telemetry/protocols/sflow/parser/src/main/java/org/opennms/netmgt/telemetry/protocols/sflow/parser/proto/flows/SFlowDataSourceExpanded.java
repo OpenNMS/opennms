@@ -41,11 +41,11 @@ import com.google.common.base.MoreObjects;
 //    unsigned int source_id_index;  /* sFlowDataSource index */
 // };
 
-public class SflowDataSourceExpanded {
+public class SFlowDataSourceExpanded {
     public final long source_id_type;
     public final long source_id_index;
 
-    public SflowDataSourceExpanded(final ByteBuffer buffer) throws InvalidPacketException {
+    public SFlowDataSourceExpanded(final ByteBuffer buffer) throws InvalidPacketException {
         this.source_id_type = BufferUtils.uint32(buffer);
         this.source_id_index = BufferUtils.uint32(buffer);
     }

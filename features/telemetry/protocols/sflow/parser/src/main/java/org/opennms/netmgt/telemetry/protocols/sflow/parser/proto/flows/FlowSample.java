@@ -73,7 +73,7 @@ import com.google.common.base.MoreObjects;
 
 public class FlowSample implements SampleData {
     public final long sequence_number;
-    public final SflowDataSource source_id;
+    public final SFlowDataSource source_id;
     public final long sampling_rate;
     public final long sample_pool;
     public final long drops;
@@ -83,7 +83,7 @@ public class FlowSample implements SampleData {
 
     public FlowSample(final ByteBuffer buffer) throws InvalidPacketException {
         this.sequence_number = BufferUtils.uint32(buffer);
-        this.source_id = new SflowDataSource(buffer);
+        this.source_id = new SFlowDataSource(buffer);
         this.sampling_rate = BufferUtils.uint32(buffer);
         this.sample_pool = BufferUtils.uint32(buffer);
         this.drops = BufferUtils.uint32(buffer);

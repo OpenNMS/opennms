@@ -55,12 +55,12 @@ import com.google.common.base.MoreObjects;
 
 public class CountersSample implements SampleData {
     public final long sequence_number;
-    public final SflowDataSource source_id;
+    public final SFlowDataSource source_id;
     public final Array<CounterRecord> counters;
 
     public CountersSample(final ByteBuffer buffer) throws InvalidPacketException {
         this.sequence_number = BufferUtils.uint32(buffer);
-        this.source_id = new SflowDataSource(buffer);
+        this.source_id = new SFlowDataSource(buffer);
         this.counters = new Array(buffer, Optional.empty(), CounterRecord::new);
     }
 
