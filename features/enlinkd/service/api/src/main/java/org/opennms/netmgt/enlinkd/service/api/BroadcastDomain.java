@@ -350,7 +350,7 @@ public class BroadcastDomain implements Topology {
         }
         
         BridgePort toberemoved = topsegment.getBridgePort(bridge.getNodeId());
-        domain.getForwarding().remove(bridge.getNodeId());
+        domain.cleanForwarders(bridge.getNodeId());
         bridge.setRootPort(null);
         if (toberemoved == null) {
             return;

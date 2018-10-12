@@ -29,7 +29,6 @@
     <dependency>
 	  <groupId>org.opennms.features.enlinkd</groupId>
 	  <artifactId>org.opennms.features.enlinkd.service.api</artifactId>
-	  <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

@@ -6,7 +6,6 @@
     <version>23.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms.features.enlinkd</groupId>
   <artifactId>org.opennms.features.enlinkd.adapters.collectors</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS :: Features :: Enlinkd :: Adapters :: Collectors</name>
