@@ -26,22 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd;
+package org.opennms.netmgt.topologies.service.impl;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TopologyLogger implements OnmsTopologyConsumer {
-
-    public static TopologyLogger createAndSubscribe(String protocol, EnhancedLinkd linkd) {
-        TopologyLogger tl = new TopologyLogger(protocol);
-        linkd.getTopologyDao().subscribe(tl);
-        return tl;
-    }
     
+    private final static Logger LOG = LoggerFactory.getLogger(TopologyLogger.class);
+
     private Set<String> m_protocols;
     public TopologyLogger(String protocol) {
         m_protocols = new HashSet<String>();
@@ -50,7 +48,7 @@ public class TopologyLogger implements OnmsTopologyConsumer {
 
     @Override
     public String getId() {
-        return "CDP:Consumer:Logger";
+        return m_protocols+":Consumer:Logger";
     }
 
     @Override
@@ -60,7 +58,7 @@ public class TopologyLogger implements OnmsTopologyConsumer {
 
     @Override
     public void consume(OnmsTopologyMessage message) {
-        System.out.println("received message type:" +  message.getMessagestatus() + " ref:"+message.getMessagebody().getId());
+        LOG.debug("received message type:" +  message.getMessagestatus() + " ref:"+message.getMessagebody().getId());
     }
 
 }

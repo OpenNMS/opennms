@@ -98,9 +98,16 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.Topology.ProtocolSupported;
+import org.opennms.netmgt.topologies.service.impl.TopologyLogger;
 
 public class Nms17216EnIT extends EnLinkdBuilderITCase {
         
+    public static TopologyLogger createAndSubscribe(String protocol, EnhancedLinkd linkd) {
+        TopologyLogger tl = new TopologyLogger(protocol);
+        linkd.getTopologyDao().subscribe(tl);
+        return tl;
+    }
+
 	Nms17216NetworkBuilder builder = new Nms17216NetworkBuilder();    
     /*
      * These are the links among the following nodes discovered using 
@@ -760,7 +767,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertEquals(2, topology.getVertices().size());
         assertEquals(4, topology.getEdges().size());
         
-        TopologyLogger tl = TopologyLogger.createAndSubscribe(
+        TopologyLogger tl = createAndSubscribe(
                   ProtocolSupported.CDP.name(),m_linkd);
         assertEquals("CDP:Consumer:Logger", tl.getId());
                 
