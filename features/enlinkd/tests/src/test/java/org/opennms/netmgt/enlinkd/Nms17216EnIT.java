@@ -82,6 +82,9 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH5_LLDP_CHASSISID;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH5_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH5_SNMP_RESOURCE;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
@@ -767,9 +770,11 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertEquals(2, topology.getVertices().size());
         assertEquals(4, topology.getEdges().size());
         
+        Set<String> protocols= new HashSet<>();
+        protocols.add(ProtocolSupported.CDP.name());
         TopologyLogger tl = createAndSubscribe(
                   ProtocolSupported.CDP.name(),m_linkd);
-        assertEquals("CDP:Consumer:Logger", tl.getId());
+        assertEquals(protocols+":Consumer:Logger", tl.getId());
                 
         m_linkd.runDiscoveryCdpTopology();
         
