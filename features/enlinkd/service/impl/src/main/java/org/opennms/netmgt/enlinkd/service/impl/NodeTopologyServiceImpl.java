@@ -41,13 +41,8 @@ import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.PrimaryType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.PlatformTransactionManager;
 
 public class NodeTopologyServiceImpl implements org.opennms.netmgt.enlinkd.service.api.NodeTopologyService {
-
-    @Autowired
-    private PlatformTransactionManager m_transactionManager;
 
     private NodeDao m_nodeDao;
     
