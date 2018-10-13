@@ -48,12 +48,14 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
-import org.springframework.core.style.ToStringCreator;
+import org.opennms.netmgt.model.topology.Topology;
 
 @Entity
 @Table(name="ipNetToMedia")
-public class IpNetToMedia implements Serializable {
+@Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
+public class IpNetToMedia implements Serializable, Topology {
 /**
  * ipNetToMediaType OBJECT-TYPE
  *   SYNTAX     INTEGER {
@@ -284,14 +286,23 @@ public class IpNetToMedia implements Serializable {
      */
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-        .append("ipaddr", getNetAddress())
-        .append("physaddr", getPhysAddress())
-        .append("sourcenode", getSourceNode())
-        .append("sourceifindex", getSourceIfIndex())
-        .append("createTime", getCreateTime())
-        .append("lastPollTime", getLastPollTime())
-        .toString();
+        StringBuffer strb = new StringBuffer();
+        strb.append("ipnettomedia: source nodeid:["); 
+        strb.append(getSourceNode().getId());
+        strb.append("]. source ifindex:[");
+        strb.append(getSourceIfIndex());
+        strb.append("]. ipaddr:[");
+        strb.append(getNetAddress());
+        strb.append("]. physaddr:[");
+        strb.append(getPhysAddress());
+        strb.append("]");
+
+        return strb.toString();
+    }
+
+    @Override
+    public String printTopology() {
+        return toString();
     }
 
 }

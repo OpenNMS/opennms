@@ -44,16 +44,16 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
 import org.opennms.netmgt.model.topology.Topology;
 
 @Entity
 @Table(name="isisLink")
-public class IsIsLink implements Serializable,Topology {
+@Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
+public class IsIsLink implements Serializable, Topology {
 
 	/**
 	 * 
@@ -326,24 +326,6 @@ public class IsIsLink implements Serializable,Topology {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String toString() {
-		return new ToStringBuilder(this)
-			.append("NodeId", m_node.getId())
-			.append("isisCircIndex", m_isisCircIndex)
-			.append("isisISAdjIndex", m_isisISAdjIndex)
-			.append("isisCircIfIndex", m_isisCircIfIndex)
-			.append("isisCircAdminState", IsisAdminState.getTypeString(m_isisCircAdminState.getValue()))
-			.append("isisISAdjState", IsisISAdjState.getTypeString(m_isisISAdjState.getValue()))
-			.append("isisISAdjNeighSNPAAddress", m_isisISAdjNeighSNPAAddress)
-			.append("isisISAdjNeighSysType", IsisISAdjNeighSysType.getTypeString(m_isisISAdjNeighSysType.getValue()))
-			.append("isisISAdjNeighSysID", m_isisISAdjNeighSysID)
-			.append("isisISAdjNbrExtendedCircID", m_isisISAdjNbrExtendedCircID)
-			.append("createTime", m_isisLinkCreateTime)
-			.append("lastPollTime", m_isisLinkLastPollTime)
-			.toString();
-	}
-
-        @Transient
-        public String printTopology() {
             StringBuffer strb = new StringBuffer();
                 strb.append("isislink: nodeid:["); 
                 strb.append(getNode().getId());
@@ -363,6 +345,11 @@ public class IsIsLink implements Serializable,Topology {
 
             return strb.toString();
         }
+
+    @Override
+    public String printTopology() {
+        return toString();
+    }
 
 
 }

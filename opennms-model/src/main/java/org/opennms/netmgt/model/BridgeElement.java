@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,13 +46,21 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
+import org.opennms.netmgt.model.topology.Topology;
 
 @Entity
 @Table(name="bridgeElement")
-public class BridgeElement {
+@Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
+public class BridgeElement implements Serializable, Topology{
 
-	public enum BridgeDot1dStpProtocolSpecification {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3137257592300016141L;
+
+    public enum BridgeDot1dStpProtocolSpecification {
 		DOT1D_STP_PROTOCOL_SPECIFICATION_UNKNOWN(1),
 		DOT1D_STP_PROTOCOL_SPECIFICATION_DECLB100(2),
 		DOT1D_STP_PROTOCOL_SPECIFICATION_IEEE8021D(3),
@@ -363,5 +372,11 @@ public class BridgeElement {
 		
 		setBridgeNodeLastPollTime(element.getBridgeNodeCreateTime());
 	}
+
+
+    @Override
+    public String printTopology() {
+        return toString();
+    }
 	
 }

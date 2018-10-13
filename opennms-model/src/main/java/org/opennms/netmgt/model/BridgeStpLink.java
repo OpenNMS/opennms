@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,14 +47,22 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.topology.Topology;
 
 @Entity
 @Table(name="bridgeStpLink")
-public class BridgeStpLink {
+@Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
+public class BridgeStpLink implements Serializable, Topology{
 
-	public enum BridgeDot1dStpPortState {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -5550390569444249173L;
+
+    public enum BridgeDot1dStpPortState {
 		DOT1D_STP_PORT_STATUS_DISABLED(1),
     	DOT1D_STP_PORT_STATUS_BLOCKING(2),
     	DOT1D_STP_PORT_STATUS_LISTENING(3),
@@ -395,5 +404,11 @@ public class BridgeStpLink {
 		setDesignatedPort(element.getDesignatedPort());
 		setBridgeStpLinkLastPollTime(element.getBridgeStpLinkCreateTime());
 	}
+
+
+    @Override
+    public String printTopology() {
+        return toString();
+    }
 
 }

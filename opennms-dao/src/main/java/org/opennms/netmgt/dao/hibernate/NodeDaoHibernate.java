@@ -531,4 +531,30 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     public List<OnmsNode> findAllHavingFlows() {
         return find("from OnmsNode as n where n.hasFlows = true");
     }
+
+    @Override
+    public OnmsNode getTopIfSpeed() {
+        // getting the node which has the most ifspeed
+        final String query2 = "select node.id from OnmsSnmpInterface as snmp join snmp.node as node group by node order by sum(snmp.ifSpeed) desc";
+
+        // is there already a node?
+        OnmsNode focusNode = getHibernateTemplate().execute(new HibernateCallback<OnmsNode>() {
+            public OnmsNode doInHibernate(Session session) throws HibernateException, SQLException {
+                Integer nodeId = (Integer)session.createQuery(query2).setMaxResults(1).uniqueResult();
+                return getNode(nodeId, session);
+            }
+        });
+
+        return focusNode;
+    }
+
+    private OnmsNode getNode(Integer nodeId, Session session) {
+        if (nodeId != null) {
+            Query q = session.createQuery("from OnmsNode as n where n.id = :nodeId");
+            q.setInteger("nodeId",  nodeId);
+            return (OnmsNode)q.uniqueResult();
+        }
+        return null;
+    }
+
 }

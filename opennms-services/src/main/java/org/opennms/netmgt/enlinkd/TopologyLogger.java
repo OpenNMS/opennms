@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,31 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.enlinkd;
 
+import java.util.HashSet;
 import java.util.Set;
 
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsTopology;
 import org.opennms.netmgt.model.OnmsTopologyConsumer;
-import org.opennms.netmgt.model.OnmsTopologyException;
 import org.opennms.netmgt.model.OnmsTopologyMessage;
-import org.opennms.netmgt.model.OnmsTopologyUpdater;
 
-public interface TopologyDao {
+public class TopologyLogger implements OnmsTopologyConsumer {
 
-    OnmsNode getDefaultFocusPoint();
+    public static TopologyLogger createAndSubscribe(String protocol, EnhancedLinkd linkd) {
+        TopologyLogger tl = new TopologyLogger(protocol);
+        linkd.getQueryManager().subscribe(tl);
+        return tl;
+    }
     
-    OnmsTopology getTopology(String protocol) throws OnmsTopologyException;
-    
-    Set<String> getSupportedProtocols();
+    private Set<String> m_protocols;
+    public TopologyLogger(String protocol) {
+        m_protocols = new HashSet<String>();
+        m_protocols.add(protocol);
+    }
 
-    void register(OnmsTopologyUpdater updater) throws OnmsTopologyException;
-    void unregister(OnmsTopologyUpdater updater) throws OnmsTopologyException;
+    @Override
+    public String getId() {
+        return "CDP:Consumer:Logger";
+    }
 
-    void subscribe(OnmsTopologyConsumer consumer);
-    void unsubscribe(OnmsTopologyConsumer consumer);
-    
-    void update(OnmsTopologyUpdater updater, OnmsTopologyMessage message) throws OnmsTopologyException;
+    @Override
+    public Set<String> getProtocols() {
+        return m_protocols;
+    }
+
+    @Override
+    public void consume(OnmsTopologyMessage message) {
+        System.out.println("received message type:" +  message.getMessagestatus() + " ref:"+message.getMessagebody().getId());
+    }
 
 }

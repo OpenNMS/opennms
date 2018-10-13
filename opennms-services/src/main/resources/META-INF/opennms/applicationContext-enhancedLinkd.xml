@@ -21,6 +21,7 @@
 
     <bean id="queryManager" class="org.opennms.netmgt.enlinkd.EnhancedLinkdServiceImpl">
       <property name="nodeDao" ref="nodeDao" />
+      <property name="topologyDao" ref="topologyDao" />
       <property name="cdpLinkDao" ref="cdpLinkDao" />
       <property name="lldpLinkDao" ref="lldpLinkDao" />
       <property name="ospfLinkDao" ref="ospfLinkDao" />

@@ -42,16 +42,16 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.model.topology.Topology;
 
 @Entity
 @Table(name="lldpElement")
-public final class LldpElement implements Serializable,Topology {
+@Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
+public final class LldpElement implements Serializable, Topology {
 
 	/**
 	 * 
@@ -173,18 +173,6 @@ public final class LldpElement implements Serializable,Topology {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String toString() {
-		return new ToStringBuilder(this)
-			.append("Nodeid", m_node == null ? null : m_node.getId())
-			.append("lldpChassisSubType", LldpChassisIdSubType.getTypeString(m_lldpChassisIdSubType.getValue()))
-			.append("lldpChassisId", m_lldpChassisId)
-			.append("lldpSysName", m_lldpSysname)
-			.append("lldpNodeCreateTime", m_lldpNodeCreateTime)
-			.append("lldpNodeLastPollTime", m_lldpNodeLastPollTime)
-			.toString();
-	}
-	
-	@Transient
-	public String printTopology() {
             StringBuffer strb = new StringBuffer();
             strb.append("lldpelement: nodeid:["); 
             strb.append(getNode().getId());
@@ -205,4 +193,9 @@ public final class LldpElement implements Serializable,Topology {
 		setLldpSysname(element.getLldpSysname());
 		setLldpNodeLastPollTime(element.getLldpNodeCreateTime());
 	}
+
+    @Override
+    public String printTopology() {
+        return toString();
+    }
 }

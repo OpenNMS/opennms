@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,31 +26,44 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsTopology;
-import org.opennms.netmgt.model.OnmsTopologyConsumer;
-import org.opennms.netmgt.model.OnmsTopologyException;
-import org.opennms.netmgt.model.OnmsTopologyMessage;
-import org.opennms.netmgt.model.OnmsTopologyUpdater;
+public class OnmsTopology {
 
-public interface TopologyDao {
-
-    OnmsNode getDefaultFocusPoint();
+    private Set<OnmsTopologyVertex> m_vertices;
+    private Set<OnmsTopologyEdge> m_edges;
     
-    OnmsTopology getTopology(String protocol) throws OnmsTopologyException;
-    
-    Set<String> getSupportedProtocols();
+    public OnmsTopology() {
+        m_vertices = new HashSet<OnmsTopologyVertex>();
+        m_edges = new HashSet<OnmsTopologyEdge>();
+    }
 
-    void register(OnmsTopologyUpdater updater) throws OnmsTopologyException;
-    void unregister(OnmsTopologyUpdater updater) throws OnmsTopologyException;
+    public OnmsTopologyVertex getVertex(String id) {
+        return m_vertices.stream().filter(vertex -> id.equals(vertex.getId())).findAny().orElse(null);
+    }
 
-    void subscribe(OnmsTopologyConsumer consumer);
-    void unsubscribe(OnmsTopologyConsumer consumer);
-    
-    void update(OnmsTopologyUpdater updater, OnmsTopologyMessage message) throws OnmsTopologyException;
+    public OnmsTopologyEdge getEdge(String id) {
+        return m_edges.stream().filter(edge -> id.equals(edge.getId())).findAny().orElse(null);
+    }
+
+    public Set<OnmsTopologyVertex> getVertices() {
+        return m_vertices;
+    }
+
+    public void setVertices(Set<OnmsTopologyVertex> vertices) {
+        m_vertices = vertices;
+    }
+
+    public Set<OnmsTopologyEdge> getEdges() {
+        return m_edges;
+    }
+
+    public void setConnections(Set<OnmsTopologyEdge> edges) {
+        m_edges = edges;
+    }    
 
 }
+

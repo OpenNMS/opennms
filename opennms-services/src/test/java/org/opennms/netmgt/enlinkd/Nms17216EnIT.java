@@ -92,7 +92,9 @@ import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsTopology;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
+import org.opennms.netmgt.model.topology.Topology.ProtocolSupported;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
 
 public class Nms17216EnIT extends EnLinkdBuilderITCase {
@@ -690,4 +692,63 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
             }
         }
     }
+
+    /* 
+     * only two node topology
+     * switch1 GigabitEthernet 0/9 0/10 0/11 0/12 <---> switch2 GigabitEthernet 0/1 0/2 0/3 0/4
+     *
+     */
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource=SWITCH1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource=SWITCH2_SNMP_RESOURCE)
+
+    })
+    public void testNetwork17216CdpTopology() throws Exception {
+        m_nodeDao.save(builder.getSwitch1());
+        m_nodeDao.save(builder.getSwitch2());
+        
+        m_nodeDao.flush();
+
+        m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseCdpDiscovery(true);
+        m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
+
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
+        assertTrue(!m_linkdConfig.useBridgeDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
+
+        final OnmsNode switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME);
+        final OnmsNode switch2 = m_nodeDao.findByForeignId("linkd", SWITCH2_NAME);
+
+        assertTrue(m_linkd.scheduleNodeCollection(switch1.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(switch2.getId()));
+
+        assertTrue(m_linkd.runSingleSnmpCollection(switch1.getId()));
+        assertEquals(5, m_cdpLinkDao.countAll());
+        
+        assertTrue(m_linkd.runSingleSnmpCollection(switch2.getId()));
+        assertEquals(11, m_cdpLinkDao.countAll());
+        
+        assertEquals(1, m_topologyDao.getSupportedProtocols().size());
+        assertEquals(ProtocolSupported.CDP.name(), m_topologyDao.getSupportedProtocols().iterator().next());
+
+        DiscoveryCdpTopology cdptopology = m_linkd.getDiscoveryCdpTopology();
+        assertNotNull(cdptopology);
+        OnmsTopology topology = cdptopology.getTopology();
+        assertEquals(2, topology.getVertices().size());
+        assertEquals(4, topology.getEdges().size());
+        
+        TopologyLogger tl = TopologyLogger.createAndSubscribe(
+                  ProtocolSupported.CDP.name(),m_linkd);
+        assertEquals("CDP:Consumer:Logger", tl.getId());
+                
+        m_linkd.runDiscoveryCdpTopology();
+        
+    }
+
 }

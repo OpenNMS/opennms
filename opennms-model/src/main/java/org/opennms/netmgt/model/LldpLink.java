@@ -42,9 +42,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
@@ -52,7 +51,8 @@ import org.opennms.netmgt.model.topology.Topology;
 
 @Entity
 @Table(name="lldpLink")
-public class LldpLink implements Serializable,Topology {
+@Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
+public class LldpLink implements Serializable, Topology {
 
 	/**
 	 * 
@@ -294,26 +294,6 @@ public class LldpLink implements Serializable,Topology {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String toString() {
-		return new ToStringBuilder(this)
-			.append("NodeId", m_node.getId())
-			.append("lldpLocalPortNum", m_lldpLocalPortNum)
-			.append("lldpPortIdSubType", LldpPortIdSubType.getTypeString(m_lldpPortIdSubType.getValue()))
-			.append("lldpPortId", m_lldpPortId)
-			.append("lldpPortDescr", m_lldpPortDescr)
-			.append("lldpPortIfindex", m_lldpPortIfindex)
-			.append("lldpRemChassisId", m_lldpRemChassisId)
-			.append("lldpRemChassisSubType",LldpChassisIdSubType.getTypeString(m_lldpRemChassisIdSubType.getValue()))
-			.append("lldpRemSysname", m_lldpRemSysname)
-			.append("lldpRemPortIdSubType", LldpPortIdSubType.getTypeString(m_lldpRemPortIdSubType.getValue()))
-			.append("lldpRemPortId", m_lldpRemPortId)
-			.append("lldpRemPortDescr", m_lldpRemPortDescr)
-			.append("createTime", m_lldpLinkCreateTime)
-			.append("lastPollTime", m_lldpLinkLastPollTime)
-.toString();
-	}
-	
-	@Transient
-	public String printTopology() {
 	    StringBuffer strb = new StringBuffer();
 	        strb.append("lldplink: nodeid:["); 
 	        strb.append(getNode().getId());
@@ -343,4 +323,9 @@ public class LldpLink implements Serializable,Topology {
 
 	    return strb.toString();
 	}
+
+    @Override
+    public String printTopology() {
+        return toString();
+    }
 }

@@ -28,39 +28,106 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.sql.SQLException;
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.Session;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.OnmsNode;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+import org.opennms.netmgt.model.OnmsTopology;
+import org.opennms.netmgt.model.OnmsTopologyConsumer;
+import org.opennms.netmgt.model.OnmsTopologyException;
+import org.opennms.netmgt.model.OnmsTopologyMessage;
+import org.opennms.netmgt.model.OnmsTopologyUpdater;
 
-public class TopologyDaoHibernate extends HibernateDaoSupport implements TopologyDao {
+public class TopologyDaoHibernate implements TopologyDao {
+
+
+    private NodeDao m_nodeDao;
+    private Map<String,OnmsTopologyUpdater> m_updatersMap = new HashMap<String, OnmsTopologyUpdater>();
+    Set<OnmsTopologyConsumer> m_consumers = new HashSet<OnmsTopologyConsumer>();
+
     @Override
     public OnmsNode getDefaultFocusPoint() {
-
-        // getting the node which has the most ifspeed
-        final String query2 = "select node.id from OnmsSnmpInterface as snmp join snmp.node as node group by node order by sum(snmp.ifSpeed) desc";
-
-        // is there already a node?
-        OnmsNode focusNode = getHibernateTemplate().execute(new HibernateCallback<OnmsNode>() {
-            public OnmsNode doInHibernate(Session session) throws HibernateException, SQLException {
-                Integer nodeId = (Integer)session.createQuery(query2).setMaxResults(1).uniqueResult();
-                return getNode(nodeId, session);
-            }
-        });
-
-        return focusNode;
+        return m_nodeDao.getTopIfSpeed();
     }
 
-    private OnmsNode getNode(Integer nodeId, Session session) {
-        if (nodeId != null) {
-            Query q = session.createQuery("from OnmsNode as n where n.id = :nodeId");
-            q.setInteger("nodeId",  nodeId);
-            return (OnmsNode)q.uniqueResult();
+    @Override
+    public OnmsTopology getTopology(String protocolSupported) throws OnmsTopologyException {
+        if (m_updatersMap.containsKey(protocolSupported)) {
+            return m_updatersMap.get(protocolSupported).getTopology();
         }
-        return null;
+        throw new OnmsTopologyException(protocolSupported + "protocol not supported");
+    }
+
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
+    }
+
+
+    @Override
+    public void subscribe(OnmsTopologyConsumer consumer) {
+        synchronized (m_consumers) {
+            m_consumers.add(consumer);            
+        }
+    }
+
+    @Override
+    public void unsubscribe(OnmsTopologyConsumer consumer) {
+        synchronized (m_consumers) {
+            m_consumers.remove(consumer);
+        }
+    }
+
+    @Override
+    public void register(OnmsTopologyUpdater updater) throws OnmsTopologyException {
+        synchronized (m_updatersMap) {
+            if (m_updatersMap.containsKey(updater.getProtocol())) {
+                throw new OnmsTopologyException("Protocol already registered", updater, updater.getProtocol());
+            }
+            m_updatersMap.put(updater.getProtocol(), updater);
+        }
+    }
+
+    @Override
+    public void unregister(OnmsTopologyUpdater updater) throws OnmsTopologyException {
+        synchronized (m_updatersMap) {
+            OnmsTopologyUpdater subscribed =  m_updatersMap.remove(updater.getProtocol());
+            if (subscribed == null) {
+                throw new OnmsTopologyException("updater is not registered", updater, updater.getProtocol());
+            }
+        }
+    }
+
+    @Override
+    public Set<String> getSupportedProtocols() {
+        Set<String> protocols = new HashSet<String>();
+        synchronized (m_updatersMap) {
+            protocols.addAll(m_updatersMap.keySet());
+        }
+        return protocols;
+    }
+
+    @Override
+    public void update(OnmsTopologyUpdater updater,
+            OnmsTopologyMessage message) throws OnmsTopologyException {
+        if (!m_updatersMap.containsKey(updater.getProtocol())) {
+            throw new OnmsTopologyException("cannot update message with id: " + message.getMessagebody().getId() + ". Protocol not supported", updater,updater.getProtocol(), message.getMessagestatus());
+        }
+        if ( m_updatersMap.get(updater.getProtocol()) != updater
+                           ) {
+            throw new OnmsTopologyException("cannot update message with id: " + message.getMessagebody().getId() + ". updater not supported", updater,updater.getProtocol(), message.getMessagestatus());
+        }
+        synchronized (m_consumers) {
+            m_consumers.stream().
+            filter(consumer -> consumer.getProtocols().contains(updater.getProtocol())).
+            forEach(consumer -> consumer.consume(message));            
+        }
     }
 }

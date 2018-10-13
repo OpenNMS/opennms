@@ -50,6 +50,7 @@ import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
 import org.opennms.netmgt.dao.api.IsIsLinkDao;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
+import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.OnmsNode;
@@ -111,6 +112,9 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
 
     @Autowired
     protected BridgeTopologyDao m_bridgeTopologyDao;
+
+    @Autowired
+    protected TopologyDao m_topologyDao;
 
     @Override
     public void afterPropertiesSet() throws Exception {

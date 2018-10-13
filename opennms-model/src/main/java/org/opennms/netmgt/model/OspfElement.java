@@ -45,9 +45,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.netmgt.model.topology.Topology;
 
@@ -55,7 +54,8 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 @Entity
 @Table(name="ospfElement")
-public final class OspfElement implements Serializable,Topology {
+@Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
+public final class OspfElement implements Serializable, Topology {
 
 	public enum TruthValue {
         /**
@@ -294,22 +294,6 @@ public final class OspfElement implements Serializable,Topology {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String toString() {
-		return new ToStringBuilder(this)
-			.append("NodeId", m_node.getId())
-			.append("ospfRouterId", str(m_ospfRouterId))
-			.append("ospfRouterIdNetmask", str(m_ospfRouterIdNetmask))
-			.append("ospfRouterIdIfindex", m_ospfRouterIdIfindex)
-			.append("ospfAdminStat", Status.getTypeString(m_ospfAdminStat.getValue()))
-			.append("ospfVersionNumber", m_ospfVersionNumber)
-			.append("ospfBdrRtrStatus", TruthValue.getTypeString(m_ospfBdrRtrStatus.getValue()))
-			.append("ospfASBdrRtrStatus", TruthValue.getTypeString(m_ospfASBdrRtrStatus.getValue()))
-			.append("createTime", m_ospfNodeCreateTime)
-			.append("lastPollTime", m_ospfNodeLastPollTime)
-			.toString();
-	}
-	
-	    @Transient
-	    public String printTopology() {
 	        StringBuffer strb = new StringBuffer();
 	        strb.append("ospfelement: nodeid:[");
 	        strb.append(getNode().getId());
@@ -342,5 +326,11 @@ public final class OspfElement implements Serializable,Topology {
 		setOspfBdrRtrStatus(element.getOspfASBdrRtrStatus());
 		setOspfNodeLastPollTime(element.getOspfNodeCreateTime());
 	}
+
+
+    @Override
+    public String printTopology() {
+        return toString();
+    }
 
 }

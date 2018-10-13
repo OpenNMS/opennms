@@ -34,15 +34,14 @@ import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
-import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.topology.Topology;
 
 public class LinkdVertex extends SimpleLeafVertex {
 
     private static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
     private static final String HTML_TOOLTIP_TAG_END  = "</p>";
-
     private static final EnumMap<OnmsNode.NodeType, String> s_nodeStatusMap;
 
     static {
@@ -77,10 +76,10 @@ public class LinkdVertex extends SimpleLeafVertex {
     private String m_sysObjectId;
     private String m_isManaged;
 
-    private Set<ProtocolSupported> m_protocolSupported = EnumSet.noneOf(ProtocolSupported.class);
+    private Set<Topology.ProtocolSupported> m_protocolSupported = EnumSet.noneOf(Topology.ProtocolSupported.class);
     
     
-    public Set<ProtocolSupported> getProtocolSupported() {
+    public Set<Topology.ProtocolSupported> getProtocolSupported() {
         return m_protocolSupported;
     }
 

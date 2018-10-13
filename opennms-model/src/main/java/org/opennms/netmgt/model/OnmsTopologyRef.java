@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,31 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.model;
 
-import java.util.Set;
+public interface OnmsTopologyRef {
 
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsTopology;
-import org.opennms.netmgt.model.OnmsTopologyConsumer;
-import org.opennms.netmgt.model.OnmsTopologyException;
-import org.opennms.netmgt.model.OnmsTopologyMessage;
-import org.opennms.netmgt.model.OnmsTopologyUpdater;
-
-public interface TopologyDao {
-
-    OnmsNode getDefaultFocusPoint();
+    String getId();    
     
-    OnmsTopology getTopology(String protocol) throws OnmsTopologyException;
-    
-    Set<String> getSupportedProtocols();
-
-    void register(OnmsTopologyUpdater updater) throws OnmsTopologyException;
-    void unregister(OnmsTopologyUpdater updater) throws OnmsTopologyException;
-
-    void subscribe(OnmsTopologyConsumer consumer);
-    void unsubscribe(OnmsTopologyConsumer consumer);
-    
-    void update(OnmsTopologyUpdater updater, OnmsTopologyMessage message) throws OnmsTopologyException;
-
 }
