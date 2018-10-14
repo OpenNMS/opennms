@@ -120,6 +120,10 @@ public class HttpUrlConnection extends URLConnection {
                     LOG.warn("Failed to set up relaxed SSL.", e);
                 }
             }
+
+            if(m_request.getParameterAsBoolean("use-system-proxy")){
+                m_clientWrapper.useSystemProxySettings();
+            }
         }
 
         m_clientWrapper.addRequestInterceptor(new RequestAcceptEncoding())
