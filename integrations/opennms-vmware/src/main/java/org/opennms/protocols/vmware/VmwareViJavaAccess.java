@@ -642,4 +642,8 @@ public class VmwareViJavaAccess {
             }
         }
     }
+
+    public static void setServiceInstancePool(final ServiceInstancePool serviceInstancePool) {
+        m_serviceInstancePool = serviceInstancePool;
+    }
 }
