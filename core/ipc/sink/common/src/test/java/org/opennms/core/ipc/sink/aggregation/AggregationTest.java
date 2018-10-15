@@ -417,6 +417,16 @@ public class AggregationTest {
         }
 
         @Override
+        public byte[] marshalSingleMessage(S message) {
+            return null;
+        }
+
+        @Override
+        public S unmarshalSingleMessage(byte[] message) {
+            return null;
+        }
+
+        @Override
         public AsyncPolicy getAsyncPolicy() {
             return null;
         }

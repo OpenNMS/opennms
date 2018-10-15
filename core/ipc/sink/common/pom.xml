@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core.ipc</groupId>
     <artifactId>org.opennms.core.ipc.sink</artifactId>
-    <version>23.0.0-SNAPSHOT</version>
+    <version>24.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.ipc.sink</groupId>
@@ -21,6 +21,7 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <Bundle-Activator>org.opennms.core.ipc.sink.offheap.Activator</Bundle-Activator>
           </instructions>
         </configuration>
       </plugin>
@@ -64,6 +65,15 @@
       <artifactId>opennms-util</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.soa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.compendium</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.swrve</groupId>
       <artifactId>rate-limited-logger</artifactId>
     </dependency>
@@ -85,6 +95,12 @@
     <dependency>
       <groupId>com.jayway.awaitility</groupId>
       <artifactId>awaitility</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.sink</groupId>
+      <artifactId>org.opennms.core.ipc.sink.offheap</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

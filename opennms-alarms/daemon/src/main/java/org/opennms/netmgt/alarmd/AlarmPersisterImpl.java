@@ -339,6 +339,9 @@ public class AlarmPersisterImpl implements AlarmPersister {
         alarm.setSuppressedUntil(e.getEventTime()); //UI requires this be set
         alarm.setSuppressedTime(e.getEventTime()); // UI requires this be set
         alarm.setUei(e.getEventUei());
+        if (event.getAlarmData().getManagedObject() != null) {
+            alarm.setManagedObjectType(event.getAlarmData().getManagedObject().getType());
+        }
         e.setAlarm(alarm);
         return alarm;
     }

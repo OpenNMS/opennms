@@ -121,6 +121,12 @@ public class EventModule extends AbstractXmlSinkModule<Event, Log> {
     }
 
     @Override
+    public Event unmarshalSingleMessage(byte[] bytes) {
+        Log log = unmarshal(bytes);
+        return log.getEvents().getEvent(0);
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(MODULE_ID);
     }

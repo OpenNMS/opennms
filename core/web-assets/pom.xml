@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>23.0.0-SNAPSHOT</version>
+    <version>24.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
@@ -22,6 +22,7 @@
             <nodeDownloadRoot>http://mirror.internal.opennms.com/nodejs/dist/</nodeDownloadRoot>
             <npmDownloadRoot>http://mirror.internal.opennms.com/npmjs/npm/-/</npmDownloadRoot>
             <installDirectory>target</installDirectory>
+            <srcdir>${basedir}/src/main/assets</srcdir>
             <triggerfiles>
               <triggerfile>package.json</triggerfile>
             </triggerfiles>
@@ -159,6 +160,10 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.lib</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.logging</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
