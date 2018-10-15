@@ -42,12 +42,12 @@ public class SFlowAdapterFactory implements AdapterFactory {
     private FlowRepository flowRepository;
 
     @Override
-    public Class<? extends Adapter> getAdapterClass() {
+    public Class<? extends Adapter> getBeanClass() {
         return SFlowAdapter.class;
     }
 
     @Override
-    public Adapter createAdapter(final AdapterDefinition adapterConfig) {
+    public Adapter createBean(final AdapterDefinition adapterConfig) {
         Objects.requireNonNull(metricRegistry);
         Objects.requireNonNull(flowRepository);
 

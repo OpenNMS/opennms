@@ -32,9 +32,9 @@ public enum Protocol {
     NETFLOW9(org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header.VERSION),
     IPFIX(org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header.VERSION);
 
-    public final int magic;
+    public final int version;
 
-    Protocol(final int magic) {
-        this.magic = magic;
+    Protocol(final int version) {
+        this.version = version;
     }
 }

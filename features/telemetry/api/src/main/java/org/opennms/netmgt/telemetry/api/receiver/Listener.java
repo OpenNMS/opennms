@@ -28,11 +28,6 @@
 
 package org.opennms.netmgt.telemetry.api.receiver;
 
-import java.util.Map;
-import java.util.Set;
-
-import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
-
 /**
  * Interface used by the daemon to manage listeners.
  *
@@ -45,12 +40,4 @@ public interface Listener {
 
     void start() throws InterruptedException;
     void stop() throws InterruptedException;
-
-    interface Factory {
-        Parser.Creator parser(final ParserDefinition parserDefinition);
-
-        Listener create(final String name,
-                        final Map<String, String> parameters,
-                        final Set<Parser> parsers);
-    }
 }

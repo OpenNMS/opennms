@@ -47,6 +47,13 @@ public class MapBasedParserDef extends MapBasedQueueDef implements ParserDefinit
         return className;
     }
 
+    // TODO MVR verify that this is correct
+    // TODO fooker verify that this is the correct way
+    @Override
+    public String getQueueName() {
+        return getParameterMap().get("queueName");
+    }
+
     @Override
     public Map<String, String> getParameterMap() {
         return parameters;

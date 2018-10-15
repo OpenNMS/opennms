@@ -10,6 +10,7 @@
   <artifactId>org.opennms.features.telemetry.listeners.smart</artifactId>
   <name>OpenNMS :: Features :: Telemetry :: Listeners :: Smart</name>
   <packaging>bundle</packaging>
+  <!-- TODO MVR this bundle can be removed -->
   <build>
     <plugins>
       <plugin>

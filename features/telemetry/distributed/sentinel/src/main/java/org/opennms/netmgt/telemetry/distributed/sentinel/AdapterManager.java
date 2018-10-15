@@ -36,7 +36,7 @@ import java.util.Map;
 
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
-import org.opennms.features.telemetry.protocols.registry.api.TelemetryAdapterRegistry;
+import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
 import org.opennms.netmgt.telemetry.daemon.TelemetryMessageConsumer;
@@ -66,7 +66,7 @@ public class AdapterManager implements ManagedServiceFactory {
     private Map<String, TelemetryMessageConsumer> consumersById = new LinkedHashMap<>();
     private Map<String, ServiceRegistration<HealthCheck>> healthChecksById = new LinkedHashMap<>();
 
-    private TelemetryAdapterRegistry telemetryAdapterRegistry;
+    private TelemetryRegistry telemetryRegistry;
 
     private MessageConsumerManager messageConsumerManager;
 
@@ -105,7 +105,7 @@ public class AdapterManager implements ManagedServiceFactory {
 
             // Create the consumer
             final TelemetryMessageConsumer consumer = new TelemetryMessageConsumer(adapterDef, Arrays.asList(adapterDef), sinkModule);
-            consumer.setAdapterRegistry(telemetryAdapterRegistry);
+            consumer.setRegistry(telemetryRegistry);
             consumer.init();
             messageConsumerManager.registerConsumer(consumer);
             consumersById.put(pid, consumer);
@@ -152,8 +152,8 @@ public class AdapterManager implements ManagedServiceFactory {
         this.distPollerDao = distPollerDao;
     }
 
-    public void setTelemetryAdapterRegistry(TelemetryAdapterRegistry telemetryAdapterRegistry) {
-        this.telemetryAdapterRegistry = telemetryAdapterRegistry;
+    public void setTelemetryRegistry(TelemetryRegistry telemetryRegistry) {
+        this.telemetryRegistry = telemetryRegistry;
     }
 
     public void setMessageConsumerManager(MessageConsumerManager messageConsumerManager) {

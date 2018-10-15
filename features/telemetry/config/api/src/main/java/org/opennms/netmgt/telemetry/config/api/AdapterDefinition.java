@@ -29,24 +29,24 @@
 package org.opennms.netmgt.telemetry.config.api;
 
 import java.util.List;
-import java.util.Map;
 
 /**
- * Telemetry protocol configuration.
+ * Telemetry adapter configuration.
  */
-public interface AdapterDefinition {
+// TODO MVR verify javadoc
+// TODO fooker verify javadoc
+public interface AdapterDefinition extends TelemetryBeanDefinition {
 
     /**
-     * The name of the protocol.
+     * The name of the adapter.
      *
      * This is used as a suffix for any associated queues that are created and
      * must be the same on both OpenNMS and Minion.
      *
      * @return the protocol name
      */
+    @Override
     String getName();
-
-    String getClassName();
 
     /**
      * Packages may contain settings for specific sources.
@@ -54,6 +54,4 @@ public interface AdapterDefinition {
      * @return the list of configured packages
      */
     List<? extends PackageDefinition> getPackages();
-
-    Map<String, String> getParameterMap();
 }

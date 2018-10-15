@@ -46,12 +46,12 @@ public class JtiAdapterFactory extends AbstractCollectionAdapterFactory {
     }
 
     @Override
-    public Class<? extends Adapter> getAdapterClass() {
+    public Class<? extends Adapter> getBeanClass() {
         return JtiGpbAdapter.class;
     }
 
     @Override
-    public Adapter createAdapter(final AdapterDefinition adapterConfig) {
+    public Adapter createBean(final AdapterDefinition adapterConfig) {
         final JtiGpbAdapter adapter = new JtiGpbAdapter();
         adapter.setConfig(adapterConfig);
         adapter.setCollectionAgentFactory(getCollectionAgentFactory());

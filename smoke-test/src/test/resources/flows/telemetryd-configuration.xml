@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <telemetryd-config>
-    <listener name="Netflow-5" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="true">
+    <listener name="Netflow-5" class-name="org.opennms.netmgt.telemetry.listeners.simple.UdpListener" enabled="true">
         <parameter key="port" value="50000"/>
         <parameter key="host" value="0.0.0.0"/>
 
-        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5" enabled="true" queue="Netflow-5" />
+        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser" enabled="true" queue="Netflow-5" />
     </listener>
 
     <queue name="Netflow-5">
@@ -13,11 +13,11 @@
     </queue>
 
 
-    <listener name="Netflow-9" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="true">
+    <listener name="Netflow-9" class-name="org.opennms.netmgt.telemetry.listeners.simple.UdpListener" enabled="true">
         <parameter key="port" value="50001"/>
         <parameter key="host" value="0.0.0.0"/>
 
-        <parser name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9" enabled="true" queue="Netflow-9" />
+        <parser name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser" enabled="true" queue="Netflow-9" />
     </listener>
 
     <queue name="Netflow-9">
@@ -25,11 +25,11 @@
         </adapter>
     </queue>
 
-    <listener name="IPFIX" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="true">
+    <listener name="IPFIX" class-name="org.opennms.netmgt.telemetry.listeners.simple.UdpListener" enabled="true">
         <parameter key="port" value="50002"/>
         <parameter key="host" value="0.0.0.0"/>
 
-        <parser name="IPFIX-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Ipfix" enabled="true" queue="IPFIX" />
+        <parser name="IPFIX-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser" enabled="true" queue="IPFIX" />
     </listener>
 
     <queue name="IPFIX">
@@ -37,11 +37,11 @@
         </adapter>
     </queue>
 
-    <listener name="SFlow" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="true">
+    <listener name="SFlow" class-name="org.opennms.netmgt.telemetry.listeners.simple.UdpListener" enabled="true">
         <parameter key="port" value="50003"/>
         <parameter key="host" value="0.0.0.0"/>
 
-        <parser name="SFlow-Parser" class-name="org.opennms.netmgt.telemetry.protocols.sflow.parser.Sflow" enabled="true" queue="SFlow" />
+        <parser name="SFlow-Parser" class-name="org.opennms.netmgt.telemetry.protocols.sflow.parser.SFlowUdpParser" enabled="true" queue="SFlow" />
     </listener>
 
     <queue name="SFlow">

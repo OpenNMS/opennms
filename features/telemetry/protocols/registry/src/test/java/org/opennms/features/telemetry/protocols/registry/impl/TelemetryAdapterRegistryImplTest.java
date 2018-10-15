@@ -30,8 +30,8 @@ package org.opennms.features.telemetry.protocols.registry.impl;
 
 import static org.junit.Assert.assertNull;
 import static org.opennms.core.soa.lookup.BlockingServiceLookupTest.verifyConsiderPeriods;
-import static org.opennms.features.telemetry.protocols.registry.impl.TelemetryAdapterRegistryImpl.TYPE;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -43,18 +43,15 @@ import org.junit.Test;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.adapter.AdapterFactory;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
-import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
-
-import com.google.common.collect.ImmutableMap;
 
 public class TelemetryAdapterRegistryImplTest {
 
     // We just need the type of the adapter
     private static class DummyAdapterFactory implements AdapterFactory {
-        @Override public Class<? extends Adapter> getAdapterClass() { return DummyAdapter.class; }
-        @Override public Adapter createAdapter(AdapterDefinition adapterConfig) { return new DummyAdapter(); }
+        @Override public Class<DummyAdapter> getBeanClass() { return DummyAdapter.class; }
+        @Override public DummyAdapter createBean(AdapterDefinition adapterConfig) { return new DummyAdapter(); }
     }
 
     // Dummy Adapter implementation
@@ -74,7 +71,7 @@ public class TelemetryAdapterRegistryImplTest {
         final long initialDelay = 1000; // Delay before service is made available
         final TelemetryAdapterRegistryImpl registry = new TelemetryAdapterRegistryImpl(gracePeriod, 500, lookupDelay);
 
-        verifyConsiderPeriods(registry, () -> DummyAdapter.class.getName(), () -> registry.onBind(new DummyAdapterFactory(), ImmutableMap.of(TYPE, DummyAdapter.class.getName())), initialDelay, lookupDelay);
+        verifyConsiderPeriods(registry, () -> DummyAdapter.class.getName(), () -> registry.onBind(new DummyAdapterFactory(), new HashMap()), initialDelay, lookupDelay);
     }
 
     // Here we verify that when the grace period has passed, we try at least until the waitPeriodMs has passed
@@ -86,7 +83,7 @@ public class TelemetryAdapterRegistryImplTest {
         final long waitPeriod = 5000;
         final TelemetryAdapterRegistryImpl registry = new TelemetryAdapterRegistryImpl(gracePeriod, waitPeriod, lookupDelay);
 
-        verifyConsiderPeriods(registry, () -> DummyAdapter.class.getName(), () -> registry.onBind(new DummyAdapterFactory(), ImmutableMap.of(TYPE, DummyAdapter.class.getName())), initialDelay, lookupDelay);
+        verifyConsiderPeriods(registry, () -> DummyAdapter.class.getName(), () -> registry.onBind(new DummyAdapterFactory(), new HashMap()), initialDelay, lookupDelay);
     }
 
     // Verifies that after a certain time, we bail even if the service is not yet available
@@ -99,7 +96,7 @@ public class TelemetryAdapterRegistryImplTest {
 
         final CompletableFuture<Adapter> future = new CompletableFuture();
         CompletableFuture.runAsync(() -> {
-            final Adapter adapter = registry.getAdapter(new AdapterDefinition() {
+            final Adapter adapter = registry.getService(new AdapterDefinition() {
                 @Override
                 public String getName() {
                     return DummyAdapter.class.getName();

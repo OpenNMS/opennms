@@ -40,7 +40,7 @@ import javax.annotation.PreDestroy;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.logging.Logging;
-import org.opennms.features.telemetry.protocols.registry.api.TelemetryAdapterRegistry;
+import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos;
@@ -59,7 +59,7 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     private final Logger LOG = LoggerFactory.getLogger(TelemetryMessageConsumer.class);
 
     @Autowired
-    private TelemetryAdapterRegistry adapterRegistry;
+    private TelemetryRegistry telemetryRegistry;
 
     // TODO fooker rename queueDefinition
     private final QueueDefinition protocolDef;
@@ -89,7 +89,7 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
         for (AdapterDefinition adapterDef : adapterDefs) {
             final Adapter adapter;
             try {
-                adapter = adapterRegistry.getAdapter(adapterDef);
+                adapter = telemetryRegistry.getAdapter(adapterDef);
             } catch (Exception e) {
                 throw new Exception("Failed to create adapter from definition: " + adapterDef, e);
             }
@@ -132,7 +132,7 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
         return protocolDef;
     }
 
-    public void setAdapterRegistry(TelemetryAdapterRegistry adapterRegistry) {
-        this.adapterRegistry = adapterRegistry;
+    public void setRegistry(TelemetryRegistry telemetryRegistry) {
+        this.telemetryRegistry = telemetryRegistry;
     }
 }

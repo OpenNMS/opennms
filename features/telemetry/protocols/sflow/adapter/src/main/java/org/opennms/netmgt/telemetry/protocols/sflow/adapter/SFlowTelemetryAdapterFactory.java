@@ -36,6 +36,7 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
 public class SFlowTelemetryAdapterFactory extends AbstractCollectionAdapterFactory {
+
     public SFlowTelemetryAdapterFactory() {
         super(null);
     }
@@ -45,12 +46,12 @@ public class SFlowTelemetryAdapterFactory extends AbstractCollectionAdapterFacto
     }
 
     @Override
-    public Class<? extends Adapter> getAdapterClass() {
+    public Class<? extends Adapter> getBeanClass() {
         return SFlowAdapter.class;
     }
 
     @Override
-    public Adapter createAdapter(final AdapterDefinition adapterConfig) {
+    public Adapter createBean(final AdapterDefinition adapterConfig) {
         final SFlowTelemetryAdapter adapter = new SFlowTelemetryAdapter();
         adapter.setConfig(adapterConfig);
         adapter.setCollectionAgentFactory(getCollectionAgentFactory());

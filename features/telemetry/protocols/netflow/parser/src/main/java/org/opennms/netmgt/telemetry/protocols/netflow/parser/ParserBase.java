@@ -107,7 +107,7 @@ public class ParserBase {
         final BasicOutputBuffer output = new BasicOutputBuffer();
         try (final BsonBinaryWriter writer = new BsonBinaryWriter(output)) {
             writer.writeStartDocument();
-            writer.writeInt32("@version", protocol.magic);
+            writer.writeInt32("@version", protocol.version);
 
             final FlowBuilderVisitor visitor = new FlowBuilderVisitor(writer);
             for (final Value<?> value : record) {

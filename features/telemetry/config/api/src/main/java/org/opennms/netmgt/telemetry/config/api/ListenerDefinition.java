@@ -29,15 +29,8 @@
 package org.opennms.netmgt.telemetry.config.api;
 
 import java.util.List;
-import java.util.Map;
 
-public interface ListenerDefinition {
-
-    String getName();
-
-    String getClassName();
-
-    Map<String, String> getParameterMap();
+public interface ListenerDefinition extends TelemetryBeanDefinition {
 
     List<? extends ParserDefinition> getParsers();
 

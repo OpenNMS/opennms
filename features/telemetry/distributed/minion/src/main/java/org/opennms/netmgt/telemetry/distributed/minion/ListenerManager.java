@@ -34,20 +34,15 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.telemetry.api.receiver.Parser;
-import org.opennms.netmgt.telemetry.common.Beans;
-import org.opennms.netmgt.telemetry.distributed.common.MapBasedListenerDef;
-import org.opennms.netmgt.telemetry.distributed.common.MapBasedParserDef;
-import org.opennms.netmgt.telemetry.distributed.common.MapBasedQueueDef;
-import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
+import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
+import org.opennms.netmgt.telemetry.distributed.common.MapBasedListenerDef;
 import org.opennms.netmgt.telemetry.distributed.common.PropertyTree;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -108,21 +103,22 @@ public class ListenerManager implements ManagedServiceFactory {
         entity.healthCheck = bundleContext.registerService(HealthCheck.class, healthCheck, null);
 
         try {
-            final Listener.Factory listenerFactory = Beans.createFactory(Listener.Factory.class, listenerDef.getClassName());
-
-            // Create Parsers
-            for (final MapBasedParserDef parserDef : listenerDef.getParsers()) {
-                final TelemetrySinkModule sinkModule = new TelemetrySinkModule(parserDef);
-                sinkModule.setDistPollerDao(distPollerDao);
-                final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
-
-                entity.dispatchers.add(dispatcher);
-
-                final Parser parser = listenerFactory.parser(parserDef).create(dispatcher);
-                entity.parsers.add(parser);
-            }
-
-            entity.listener = listenerFactory.create(listenerDef.getName(), listenerDef.getParameterMap(), entity.parsers);
+            // TODO MVR
+//            final Listener.Factory listenerFactory = Beans.createFactory(Listener.Factory.class, listenerDef.getClassName());
+//
+//            // Create Parsers
+//            for (final MapBasedParserDef parserDef : listenerDef.getParsers()) {
+//                final TelemetrySinkModule sinkModule = new TelemetrySinkModule(parserDef);
+//                sinkModule.setDistPollerDao(distPollerDao);
+//                final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
+//
+//                entity.dispatchers.add(dispatcher);
+//
+//                final Parser parser = listenerFactory.parser(parserDef).create(dispatcher);
+//                entity.parsers.add(parser);
+//            }
+//
+//            entity.listener = listenerFactory.create(listenerDef.getName(), listenerDef.getParameterMap(), entity.parsers);
             entity.listener.start();
 
             // At this point the listener should be up and running,

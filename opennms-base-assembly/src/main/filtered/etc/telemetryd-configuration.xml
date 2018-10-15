@@ -28,7 +28,7 @@
     <listener name="Netflow-5-UDP-8877" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="false">
         <parameter key="port" value="8877"/>
 
-        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5" enabled="false" queue="Netflow-5" />
+        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.factory.Netflow5" enabled="false" queue="Netflow-5" />
     </listener>
 
     <queue name="Netflow-5">
@@ -40,7 +40,7 @@
     <listener name="Netflow-9-UDP-4729" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="false">
         <parameter key="port" value="4729"/>
 
-        <parser name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9" enabled="false" queue="Netflow-9" />
+        <parser name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.factory.Netflow9" enabled="false" queue="Netflow-9" />
     </listener>
 
     <queue name="Netflow-9">
@@ -52,13 +52,13 @@
     <listener name="IPFIX-UDP-4730" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="false">
         <parameter key="port" value="4730"/>
 
-        <parser name="IPFIX-UDP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Ipfix" enabled="false" queue="IPFIX" />
+        <parser name="IPFIX-UDP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.factory.IpfixUdpParserFactory" enabled="false" queue="IPFIX" />
     </listener>
 
-    <listener name="IPFIX-TCP-4730" class-name="org.opennms.netmgt.telemetry.listeners.simple.Tcp" enabled="false">
+    <listener name="IPFIX-TCP-4730" class-name="org.opennms.netmgt.telemetry.listeners.simple.factories.SimpleTcpListenerFactory" enabled="false">
         <parameter key="port" value="4730"/>
 
-        <parser name="IPFIX-TCP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Ipfix" enabled="false" queue="IPFIX" />
+        <parser name="IPFIX-TCP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.factory.IpfixUdpParserFactory" enabled="false" queue="IPFIX" />
     </listener>
 
     <queue name="IPFIX">

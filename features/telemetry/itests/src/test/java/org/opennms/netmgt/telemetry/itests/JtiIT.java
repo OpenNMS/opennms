@@ -54,6 +54,7 @@ import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.telemetry.listeners.simple.factory.UdpListenerFactory;
 import org.opennms.netmgt.telemetry.protocols.jti.adapter.JtiGpbAdapter;
 import org.opennms.netmgt.telemetry.config.dao.TelemetrydConfigDao;
 import org.opennms.netmgt.telemetry.config.model.AdapterConfig;
@@ -64,7 +65,6 @@ import org.opennms.netmgt.telemetry.config.model.ParserConfig;
 import org.opennms.netmgt.telemetry.config.model.QueueConfig;
 import org.opennms.netmgt.telemetry.config.model.TelemetrydConfig;
 import org.opennms.netmgt.telemetry.daemon.Telemetryd;
-import org.opennms.netmgt.telemetry.listeners.simple.SimpleUdpListener;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -168,7 +168,7 @@ public class JtiIT {
         ListenerConfig jtiListener = new ListenerConfig();
         jtiListener.setEnabled(true);
         jtiListener.setName("JTI");
-        jtiListener.setClassName(org.opennms.netmgt.telemetry.listeners.simple.Udp.class.getCanonicalName());
+        jtiListener.setClassName(UdpListenerFactory.class.getCanonicalName());
         jtiListener.getParameters().add(new Parameter("port", Integer.toString(port)));
         telemetrydConfig.getListeners().add(jtiListener);
 

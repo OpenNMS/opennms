@@ -42,12 +42,12 @@ public class NxosAdapterFactory extends AbstractCollectionAdapterFactory {
     }
 
     @Override
-    public Class<? extends Adapter> getAdapterClass() {
+    public Class<? extends Adapter> getBeanClass() {
         return NxosGpbAdapter.class;
     }
 
     @Override
-    public Adapter createAdapter(final AdapterDefinition adapterConfig) {
+    public Adapter createBean(final AdapterDefinition adapterConfig) {
         final NxosGpbAdapter adapter = new NxosGpbAdapter();
         adapter.setConfig(adapterConfig);
         adapter.setCollectionAgentFactory(getCollectionAgentFactory());

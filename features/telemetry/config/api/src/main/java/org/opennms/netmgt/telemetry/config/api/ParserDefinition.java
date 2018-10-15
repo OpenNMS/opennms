@@ -28,13 +28,12 @@
 
 package org.opennms.netmgt.telemetry.config.api;
 
-import java.util.Map;
-
-public interface ParserDefinition {
-
-    String getName();
-
-    String getClassName();
-
-    Map<String, String> getParameterMap();
+// TODO fooker, this only defines a name, but no queue name whereas the Parserconfig defines both via ParserConfig.getQueue().getName() and ParserConfig.getName().
+public interface ParserDefinition extends TelemetryBeanDefinition {
+    /**
+     * The name of the queue the parser "writes" to.
+     *
+     * @return The name of the queue the parser "writes" to.
+     */
+    String getQueueName();
 }

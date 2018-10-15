@@ -28,39 +28,34 @@
 
 package org.opennms.netmgt.telemetry.daemon;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
-import org.opennms.netmgt.telemetry.api.adapter.Adapter;
-import org.opennms.netmgt.telemetry.api.receiver.Parser;
-import org.opennms.netmgt.telemetry.common.Beans;
-import org.opennms.netmgt.telemetry.config.dao.TelemetrydConfigDao;
-import org.opennms.netmgt.telemetry.config.model.AdapterConfig;
-import org.opennms.netmgt.telemetry.config.model.ListenerConfig;
-import org.opennms.netmgt.telemetry.config.model.ParserConfig;
-import org.opennms.netmgt.telemetry.config.model.QueueConfig;
-import org.opennms.netmgt.telemetry.config.model.TelemetrydConfig;
-import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
+import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
+import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
+import org.opennms.netmgt.telemetry.config.dao.TelemetrydConfigDao;
+import org.opennms.netmgt.telemetry.config.model.AdapterConfig;
+import org.opennms.netmgt.telemetry.config.model.ListenerConfig;
+import org.opennms.netmgt.telemetry.config.model.QueueConfig;
+import org.opennms.netmgt.telemetry.config.model.TelemetrydConfig;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * telemetryd is responsible for managing the life cycle of
@@ -89,8 +84,10 @@ public class Telemetryd implements SpringServiceDaemon {
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Autowired
+    private TelemetryRegistry telemetryRegistry;
+
     private List<TelemetryMessageConsumer> consumers = new ArrayList<>();
-    private Map<QueueConfig, AsyncDispatcher<TelemetryMessage>> dispatchers = new HashMap<>();
     private List<Listener> listeners = new ArrayList<>();
 
 
@@ -103,6 +100,7 @@ public class Telemetryd implements SpringServiceDaemon {
         final TelemetrydConfig config = telemetrydConfigDao.getContainer().getObject();
         final AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
 
+        // First we create the queues as parsers may reference them
         for (final QueueConfig queueConfig : config.getQueues()) {
             final List<AdapterConfig> enabledAdapters = queueConfig.getAdapters().stream().filter(AdapterConfig::isEnabled).collect(Collectors.toList());
             if (enabledAdapters.isEmpty()) {
@@ -125,25 +123,30 @@ public class Telemetryd implements SpringServiceDaemon {
 
             // Build the dispatcher, and all of
             final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
-            dispatchers.put(queueConfig, dispatcher);
+            telemetryRegistry.registerDispatcher(queueConfig.getName(), dispatcher);
         }
 
+        // Create listeners AND parsers
         for (final ListenerConfig listenerConfig : config.getListeners()) {
             if (!listenerConfig.isEnabled()) {
                 LOG.debug("Skipping disabled listener: {}", listenerConfig.getName());
                 continue;
             }
 
-            final Listener.Factory listenerFactory = Beans.createFactory(Listener.Factory.class, listenerConfig.getClassName());
+            // TODO MVR encounter for empty and disabled parsers
+            final Listener listener = telemetryRegistry.getListener(listenerConfig);
 
-            // Create all parsers for this listener
-            final Set<Parser> parsers = listenerConfig.getParsers().stream()
-                    .filter(ParserConfig::isEnabled)
-                    .map(parserConfig -> listenerFactory.parser(parserConfig)
-                            .create(this.dispatchers.get(parserConfig.getQueue())))
-                    .collect(Collectors.toSet());
-
-            final Listener listener = listenerFactory.create(listenerConfig.getName(), listenerConfig.getParameterMap(), parsers);
+            // TODO MVR remove this
+//            final Listener.Factory listenerFactory = Beans.createFactory(Listener.Factory.class, listenerConfig.getClassName());
+//
+//            // Create all parsers for this listener
+//            final Set<Parser> parsers = listenerConfig.getParsers().stream()
+//                    .filter(ParserConfig::isEnabled)
+//                    .map(parserConfig -> listenerFactory.parser(parserConfig)
+//                            .create(this.dispatchers.get(parserConfig.getQueue())))
+//                    .collect(Collectors.toSet());
+//
+//            final Listener listener = listenerFactory.create(listenerConfig.getName(), listenerConfig.getParameterMap(), parsers);
 
             listeners.add(listener);
         }
@@ -179,7 +182,7 @@ public class Telemetryd implements SpringServiceDaemon {
         listeners.clear();
 
         // Stop the dispatchers
-        for (AsyncDispatcher<?> dispatcher : dispatchers.values()) {
+        for (AsyncDispatcher<?> dispatcher : telemetryRegistry.getDispatchers()) {
             try {
                 LOG.info("Closing dispatcher.", dispatcher);
                 dispatcher.close();
@@ -187,7 +190,7 @@ public class Telemetryd implements SpringServiceDaemon {
                 LOG.warn("Error while closing dispatcher.", e);
             }
         }
-        dispatchers.clear();
+        telemetryRegistry.clearDispatchers();
 
         final AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
         // Stop the consumers

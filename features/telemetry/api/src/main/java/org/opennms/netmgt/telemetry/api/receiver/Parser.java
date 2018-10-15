@@ -44,13 +44,4 @@ public interface Parser {
 
     void start(final ScheduledExecutorService executorService);
     void stop();
-
-    /**
-     * The creator is used by the {@link Listener.Factory} to create {@link Parser} instances by calling the different
-     * factories supported by a listener.
-     */
-    @FunctionalInterface
-    interface Creator {
-        Parser create(final AsyncDispatcher<TelemetryMessage> dispatcher);
-    }
 }

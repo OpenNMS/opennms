@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
 
@@ -65,6 +66,7 @@ public class ParserConfig implements ParserDefinition {
     @XmlElement(name="parameter")
     private List<Parameter> parameters = new ArrayList<>();
 
+    @Override
     public String getName() {
         return this.name;
     }
@@ -73,11 +75,12 @@ public class ParserConfig implements ParserDefinition {
         this.name = name;
     }
 
+    @Override
     public String getClassName() {
         return this.className;
     }
 
-    public void setClassName(final String className) {
+   public void setClassName(final String className) {
         this.className = className;
     }
 
@@ -87,6 +90,15 @@ public class ParserConfig implements ParserDefinition {
 
     public void setQueue(final QueueConfig queue) {
         this.queue = queue;
+    }
+
+    @Override
+    @XmlTransient
+    public String getQueueName() {
+        if (queue != null) {
+            return queue.getName();
+        }
+        return null;
     }
 
     public boolean isEnabled() {
