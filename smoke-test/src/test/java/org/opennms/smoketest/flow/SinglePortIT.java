@@ -36,10 +36,19 @@ import static org.opennms.smoketest.flow.FlowStackIT.TEMPLATE_NAME;
 import static org.opennms.smoketest.flow.FlowStackIT.sendNetflowPacket;
 import static org.opennms.smoketest.flow.FlowStackIT.verify;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
+import org.junit.Assume;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.Timeout;
+import org.opennms.smoketest.NullTestEnvironment;
+import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.smoketest.utils.RestClient;
+import org.opennms.test.system.api.TestEnvironment;
+import org.opennms.test.system.api.TestEnvironmentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,11 +60,46 @@ import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 import io.searchbox.indices.template.GetTemplate;
 
+/**
+ * Verifies that sending flow packets to a single port is dispatching the flows in the according queues.
+ * See issue HZN-1270 for more details.
+ */
+// TODO MVR consolidate with FlowStackIT
 public class SinglePortIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(SinglePortIT.class);
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    @Rule
+    public TestEnvironment testEnvironment = getTestEnvironment();
+
+    @Rule
+    public Timeout timeout = new Timeout(20, TimeUnit.MINUTES);
+
+    private final TestEnvironment getTestEnvironment() {
+        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
+            return new NullTestEnvironment();
+        }
+        try {
+            final TestEnvironmentBuilder builder = TestEnvironment.builder().opennms().es5();
+            // Enable flow adapter
+            builder.withOpenNMSEnvironment().addFile(getClass().getResource("/flows/telemetryd-configuration-single-port.xml"), "etc/telemetryd-configuration.xml");
+            builder.withOpenNMSEnvironment().addFile(getClass().getResource("/flows/org.opennms.features.flows.persistence.elastic.cfg"), "etc/org.opennms.features.flows.persistence.elastic.cfg");
+            OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
+            return builder.build();
+        } catch (final Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    @Before
+    public void checkForDocker() {
+        Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
+    }
+
+    // Verifies that when OpenNMS and ElasticSearch is running and configured, that sending a flow packet
+    // will actually be persisted in elastic
+    @Test
+    public void verifyFlowStack() throws Exception {
         final InetSocketAddress opennnmsSinglePortAddress = new InetSocketAddress("localhost", 50000);
         final String elasticRestUrl = "http://localhost:9200";
 
