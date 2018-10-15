@@ -59,7 +59,6 @@ public class UdpListenerFactory implements ListenerFactory {
         if (listenerDefinition.getParsers().size() != 1) {
             throw new IllegalArgumentException("The simple UDP listener supports exactly one (enabled) parser");
         }
-        // TODO MVR encounter for disabled parsers
         final List<UdpParser> parsers = listenerDefinition.getParsers().stream()
                 .map(p -> telemetryRegistry.getParser(p))
                 .filter(p -> p instanceof UdpParser && p != null)

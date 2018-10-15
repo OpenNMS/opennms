@@ -3,7 +3,7 @@
   <listener name="JTI-UDP-50000" class-name="org.opennms.netmgt.telemetry.listeners.simple.UdpListener" enabled="true">
     <parameter key="port" value="50000"/>
 
-    <parser name="JTI-Parser" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" enabled="true" queue="JTI" />
+    <parser name="JTI-Parser" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" queue="JTI" />
   </listener>
 
   <queue name="JTI">

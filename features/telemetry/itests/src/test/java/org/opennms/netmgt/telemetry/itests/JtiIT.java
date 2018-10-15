@@ -173,7 +173,6 @@ public class JtiIT {
         telemetrydConfig.getListeners().add(jtiListener);
 
         ParserConfig jtiParser = new ParserConfig();
-        jtiParser.setEnabled(true);
         jtiParser.setName("JTI-UDP-" + port);
         jtiParser.setClassName(org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser.class.getCanonicalName());
         jtiParser.setQueue(jtiQueue);

@@ -60,9 +60,6 @@ public class ParserConfig implements ParserDefinition {
     @XmlIDREF()
     private QueueConfig queue;
 
-    @XmlAttribute(name="enabled")
-    private boolean enabled;
-
     @XmlElement(name="parameter")
     private List<Parameter> parameters = new ArrayList<>();
 
@@ -101,14 +98,6 @@ public class ParserConfig implements ParserDefinition {
         return null;
     }
 
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    public void setEnabled(final boolean enabled) {
-        this.enabled = enabled;
-    }
-
     public List<Parameter> getParameters() {
         return this.parameters;
     }
@@ -131,13 +120,12 @@ public class ParserConfig implements ParserDefinition {
         return Objects.equals(this.name, that.name) &&
                 Objects.equals(this.className, that.className) &&
                 Objects.equals(this.queue, that.queue) &&
-                Objects.equals(this.enabled, that.enabled) &&
                 Objects.equals(this.parameters, that.parameters);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.name, this.className, this.queue, this.enabled, this.parameters);
+        return Objects.hash(this.name, this.className, this.queue, this.parameters);
     }
 
     @Override
@@ -146,7 +134,6 @@ public class ParserConfig implements ParserDefinition {
                 .add("name", this.name)
                 .add("class-name", this.className)
                 .add("queue", this.queue.getName())
-                .add("enabled", this.enabled)
                 .add("parameters", this.parameters)
                 .toString();
     }

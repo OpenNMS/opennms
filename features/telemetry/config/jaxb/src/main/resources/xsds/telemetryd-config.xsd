@@ -43,7 +43,6 @@
     <xs:attribute name="name" type="xs:string"/>
     <xs:attribute name="class-name" type="xs:string"/>
     <xs:attribute name="queue" type="xs:IDREF"/>
-    <xs:attribute name="enabled" type="xs:boolean"/>
   </xs:complexType>
 
   <xs:complexType name="listener">

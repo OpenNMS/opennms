@@ -132,22 +132,7 @@ public class Telemetryd implements SpringServiceDaemon {
                 LOG.debug("Skipping disabled listener: {}", listenerConfig.getName());
                 continue;
             }
-
-            // TODO MVR encounter for empty and disabled parsers
             final Listener listener = telemetryRegistry.getListener(listenerConfig);
-
-            // TODO MVR remove this
-//            final Listener.Factory listenerFactory = Beans.createFactory(Listener.Factory.class, listenerConfig.getClassName());
-//
-//            // Create all parsers for this listener
-//            final Set<Parser> parsers = listenerConfig.getParsers().stream()
-//                    .filter(ParserConfig::isEnabled)
-//                    .map(parserConfig -> listenerFactory.parser(parserConfig)
-//                            .create(this.dispatchers.get(parserConfig.getQueue())))
-//                    .collect(Collectors.toSet());
-//
-//            final Listener listener = listenerFactory.create(listenerConfig.getName(), listenerConfig.getParameterMap(), parsers);
-
             listeners.add(listener);
         }
 

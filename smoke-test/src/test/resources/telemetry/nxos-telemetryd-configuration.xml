@@ -3,7 +3,7 @@
   <listener name="NXOS-UDP-50001" class-name="org.opennms.netmgt.telemetry.listeners.simple.UdpListener" enabled="true">
     <parameter key="port" value="50001"/>
 
-    <parser name="NXOS-GPB" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" enabled="true" queue="NXOS" />
+    <parser name="NXOS-GPB" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" queue="NXOS" />
   </listener>
 
   <queue name="NXOS">

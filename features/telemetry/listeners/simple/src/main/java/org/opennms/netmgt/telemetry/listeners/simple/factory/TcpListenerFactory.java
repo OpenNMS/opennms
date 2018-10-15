@@ -59,8 +59,6 @@ public class TcpListenerFactory implements ListenerFactory {
         if (listenerDefinition.getParameterMap().size() != 1) {
             throw new IllegalArgumentException("The simple TCP listener supports exactly one parser");
         }
-
-        // TODO MVR encounter for disabled parsers
         final List<TcpParser> parser = listenerDefinition.getParsers().stream()
                 .map(p -> telemetryRegistry.getParser(p))
                 .filter(p -> p instanceof TcpParser && p != null)

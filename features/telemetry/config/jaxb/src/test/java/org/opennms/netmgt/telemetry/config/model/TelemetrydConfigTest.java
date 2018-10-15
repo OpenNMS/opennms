@@ -53,7 +53,6 @@ public class TelemetrydConfigTest extends XmlTestNoCastor<TelemetrydConfig> {
         ParserConfig jtiParser = new ParserConfig();
         jtiParser.setName("JTI");
         jtiParser.setClassName("org.opennms.netmgt.collection.streaming.jti.JtiParser");
-        jtiParser.setEnabled(false);
         udpListener.getParsers().add(jtiParser);
 
         QueueConfig jtiQueue = new QueueConfig();
@@ -87,7 +86,7 @@ public class TelemetrydConfigTest extends XmlTestNoCastor<TelemetrydConfig> {
                 "<telemetryd-config>\n" +
                 "  <listener name=\"JTI-UDP-50000\" class-name=\"org.opennms.netmgt.collection.streaming.udp.UdpListener\" enabled=\"true\">\n" +
                 "    <parameter key=\"port\" value=\"50000\"/>\n" +
-                "    <parser name=\"JTI\" class-name=\"org.opennms.netmgt.collection.streaming.jti.JtiParser\" queue=\"jti\" enabled=\"false\" />\n" +
+                "    <parser name=\"JTI\" class-name=\"org.opennms.netmgt.collection.streaming.jti.JtiParser\" queue=\"jti\" />\n" +
                 "  </listener>\n" +
                 "  \n" +
                 "  <queue name=\"jti\">\n" +
