@@ -12,6 +12,5 @@
   <name>OpenNMS :: Features :: Telemetry :: Listeners</name>
   <modules>
     <module>simple</module>
-    <module>smart</module>
   </modules>
 </project>
