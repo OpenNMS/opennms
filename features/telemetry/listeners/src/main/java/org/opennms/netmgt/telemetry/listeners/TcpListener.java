@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.simple;
+package org.opennms.netmgt.telemetry.listeners;
 
 import java.net.InetSocketAddress;
 import java.util.Objects;

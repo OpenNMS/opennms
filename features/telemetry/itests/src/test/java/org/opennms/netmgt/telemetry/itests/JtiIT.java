@@ -54,7 +54,7 @@ import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.telemetry.listeners.simple.factory.UdpListenerFactory;
+import org.opennms.netmgt.telemetry.listeners.factory.UdpListenerFactory;
 import org.opennms.netmgt.telemetry.protocols.jti.adapter.JtiGpbAdapter;
 import org.opennms.netmgt.telemetry.config.dao.TelemetrydConfigDao;
 import org.opennms.netmgt.telemetry.config.model.AdapterConfig;

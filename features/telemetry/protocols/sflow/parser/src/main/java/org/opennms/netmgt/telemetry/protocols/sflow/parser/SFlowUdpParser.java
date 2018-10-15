@@ -40,7 +40,7 @@ import org.bson.BsonBinaryWriter;
 import org.bson.io.BasicOutputBuffer;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
-import org.opennms.netmgt.telemetry.listeners.simple.UdpParser;
+import org.opennms.netmgt.telemetry.listeners.UdpParser;
 import org.opennms.netmgt.telemetry.api.receiver.Dispatchable;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows.DatagramVersion;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows.SampleDatagram;

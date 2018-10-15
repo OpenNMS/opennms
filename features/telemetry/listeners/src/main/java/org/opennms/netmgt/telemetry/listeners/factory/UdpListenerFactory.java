@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.simple.factory;
+package org.opennms.netmgt.telemetry.listeners.factory;
 
 import java.util.List;
 import java.util.Objects;
@@ -36,8 +36,8 @@ import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
 import org.opennms.netmgt.telemetry.api.receiver.ListenerFactory;
 import org.opennms.netmgt.telemetry.config.api.ListenerDefinition;
-import org.opennms.netmgt.telemetry.listeners.simple.UdpListener;
-import org.opennms.netmgt.telemetry.listeners.simple.UdpParser;
+import org.opennms.netmgt.telemetry.listeners.UdpListener;
+import org.opennms.netmgt.telemetry.listeners.UdpParser;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 

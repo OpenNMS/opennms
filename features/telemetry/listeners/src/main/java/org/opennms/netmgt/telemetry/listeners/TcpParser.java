@@ -26,15 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.simple;
+package org.opennms.netmgt.telemetry.listeners;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 
-public interface UdpParser extends Parser {
-    void parse(final ByteBuffer buffer,
-               final InetSocketAddress remoteAddress,
-               final InetSocketAddress localAddress) throws Exception;
+public interface TcpParser extends Parser {
+    interface Handler {
+        void parse(final ByteBuffer buffer) throws Exception;
+    }
+
+    Handler accept(final InetSocketAddress remoteAddress,
+                   final InetSocketAddress localAddress);
 }

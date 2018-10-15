@@ -35,9 +35,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
-import org.opennms.netmgt.telemetry.listeners.simple.TcpParser;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ParserBase;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
+import org.opennms.netmgt.telemetry.listeners.TcpParser;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;

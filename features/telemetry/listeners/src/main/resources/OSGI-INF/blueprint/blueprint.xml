@@ -11,7 +11,7 @@
     <reference id="telemetryRegistry" interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" availability="mandatory" />
 
     <!-- TCP Listener Factory -->
-    <bean id="tcpListenerFactory" class="org.opennms.netmgt.telemetry.listeners.simple.factory.TcpListenerFactory">
+    <bean id="tcpListenerFactory" class="org.opennms.netmgt.telemetry.listeners.factory.TcpListenerFactory">
         <argument ref="telemetryRegistry" />
     </bean>
     <service ref="tcpListenerFactory" interface="org.opennms.netmgt.telemetry.api.receiver.ListenerFactory">
@@ -21,7 +21,7 @@
     </service>
 
     <!-- UDP Listener Factory -->
-    <bean id="udpListenerFactory" class="org.opennms.netmgt.telemetry.listeners.simple.factory.UdpListenerFactory">
+    <bean id="udpListenerFactory" class="org.opennms.netmgt.telemetry.listeners.factory.UdpListenerFactory">
         <argument ref="telemetryRegistry" />
     </bean>
     <service ref="udpListenerFactory" interface="org.opennms.netmgt.telemetry.api.receiver.ListenerFactory">

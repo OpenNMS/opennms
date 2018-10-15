@@ -36,7 +36,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
-import org.opennms.netmgt.telemetry.listeners.simple.UdpParser;
+import org.opennms.netmgt.telemetry.listeners.UdpParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
