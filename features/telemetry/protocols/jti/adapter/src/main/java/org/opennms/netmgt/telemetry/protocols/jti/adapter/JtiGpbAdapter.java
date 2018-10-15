@@ -28,9 +28,12 @@
 
 package org.opennms.netmgt.telemetry.protocols.jti.adapter;
 
-import com.google.common.collect.Iterables;
-import com.google.protobuf.ExtensionRegistry;
-import com.google.protobuf.InvalidProtocolBufferException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import javax.script.ScriptException;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
@@ -39,30 +42,27 @@ import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
+import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.protocols.collection.AbstractScriptPersistingAdapter;
 import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.protocols.collection.ScriptedCollectionSetBuilder;
-import org.opennms.netmgt.telemetry.adapters.jti.proto.CpuMemoryUtilizationOuterClass;
-import org.opennms.netmgt.telemetry.adapters.jti.proto.FirewallOuterClass;
-import org.opennms.netmgt.telemetry.adapters.jti.proto.LogicalPortOuterClass;
-import org.opennms.netmgt.telemetry.adapters.jti.proto.LspMon;
-import org.opennms.netmgt.telemetry.adapters.jti.proto.LspStatsOuterClass;
-import org.opennms.netmgt.telemetry.adapters.jti.proto.Port;
-import org.opennms.netmgt.telemetry.adapters.jti.proto.TelemetryTop;
+import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass;
+import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass;
+import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass;
+import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon;
+import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass;
+import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.Port;
+import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Optional;
-import java.util.stream.Stream;
-
-import javax.script.ScriptException;
+import com.google.common.collect.Iterables;
+import com.google.protobuf.ExtensionRegistry;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
  * An adapter for handling Junos Telemetry Interface packets.

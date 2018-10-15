@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.jti.adapter;
 
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.telemetry.adapters.jti.proto.Port;
-import org.opennms.netmgt.telemetry.adapters.jti.proto.TelemetryTop;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Date;
+
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.Port;
+import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop;
 
 /**
  * Example code for generating JTI messages.
