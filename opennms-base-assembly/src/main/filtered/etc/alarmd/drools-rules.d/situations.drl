@@ -29,6 +29,7 @@
 package org.opennms.netmgt.alarmd.drools;
 
 import java.util.Date;
+import java.util.List;
 import org.kie.api.time.SessionClock;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -52,3 +53,25 @@ rule "setSituationSeverityToMaxAlarmSeverity"
     Date now = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
     alarmService.setSeverity($situation, $maxSeverity, now);
 end
+
+rule "acknowledgeSituation"
+  when
+    $situation : OnmsAlarm( isSituation() == true, $relatedAlarmIds : relatedAlarmIds, isAcknowledged() == true )
+    $relatedAlarms : LinkedList() from collect( OnmsAlarm($relatedAlarmIds contains id, isAcknowledged() == false,  firstEventTime < $situation.getAlarmAckTime() ) )
+  then
+    Date acknowledgeTime = $situation.getAlarmAckTime();
+    for (int i=0; i < $relatedAlarms.size(); i++) {
+    	alarmService.acknowledgeAlarm((OnmsAlarm)$relatedAlarms.get(i), acknowledgeTime);
+    }
+end
+
+rule "allAlarmsAcknowledgeSituation"
+  when
+    $situation : OnmsAlarm( isSituation() == true, $relatedAlarmIds : relatedAlarmIds, isAcknowledged() == false )
+    List(size == $relatedAlarmIds.size) from collect (OnmsAlarm($relatedAlarmIds contains id, isAcknowledged() == true) )
+  then
+    // TODO - pull latest AckTime from Alarms - Date acknowledgeTime = $situation.getAlarmAckTime();
+    Date acknowledgeTime = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
+   	alarmService.acknowledgeAlarm((OnmsAlarm)$situation, acknowledgeTime);
+end
+

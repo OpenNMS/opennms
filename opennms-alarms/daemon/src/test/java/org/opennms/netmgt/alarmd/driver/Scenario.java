@@ -108,6 +108,11 @@ public class Scenario {
             return this;
         }
 
+        public ScenarioBuilder withAcknowledgmentForSituation(long time, String situtationId) {
+            actions.add(new AcknowledgeAlarmAction("test", new Date(time), String.format("%s:%s", EventConstants.SITUATION_EVENT_UEI, situtationId)));
+            return this;
+        }
+
         public ScenarioBuilder withSituationForNodeDownAlarms(long time, String situtationId, int... nodesIds) {
             EventBuilder builder = new EventBuilder(EventConstants.SITUATION_EVENT_UEI, "test");
             builder.setTime(new Date(time));
