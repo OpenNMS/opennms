@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.telemetry.protocols.registry.api;
+package org.opennms.netmgt.telemetry.protocols.registry.api;
 
 public interface TelemetryServiceRegistry<BD, T> {
     T getService(BD beanDefinition);

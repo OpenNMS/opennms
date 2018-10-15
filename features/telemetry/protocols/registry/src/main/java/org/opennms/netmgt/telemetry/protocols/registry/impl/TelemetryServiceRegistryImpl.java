@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.telemetry.protocols.registry.impl;
+package org.opennms.netmgt.telemetry.protocols.registry.impl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 
 import org.opennms.core.soa.lookup.ServiceLookup;
 import org.opennms.core.soa.lookup.ServiceLookupBuilder;
-import org.opennms.features.telemetry.protocols.registry.api.TelemetryServiceRegistry;
+import org.opennms.netmgt.telemetry.protocols.registry.api.TelemetryServiceRegistry;
 import org.opennms.netmgt.telemetry.api.TelemetryBeanFactory;
 import org.opennms.netmgt.telemetry.config.api.TelemetryBeanDefinition;
 import org.slf4j.Logger;

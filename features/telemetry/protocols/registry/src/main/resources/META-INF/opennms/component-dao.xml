@@ -10,22 +10,22 @@
 
     <context:annotation-config />
 
-	<bean id="adapterRegistry" class="org.opennms.features.telemetry.protocols.registry.impl.TelemetryAdapterRegistryImpl" />
+	<bean id="adapterRegistry" class="org.opennms.netmgt.telemetry.protocols.registry.impl.TelemetryAdapterRegistryImpl" />
 	<onmsgi:list id="adapterFactoryList" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
 		<onmsgi:listener ref="adapterRegistry" bind-method="onBind" unbind-method="onUnbind" />
 	</onmsgi:list>
 
-	<bean id="listenerRegistry" class="org.opennms.features.telemetry.protocols.registry.impl.TelemetryListenerRegistryImpl" />
+	<bean id="listenerRegistry" class="org.opennms.netmgt.telemetry.protocols.registry.impl.TelemetryListenerRegistryImpl" />
 	<onmsgi:list id="listenerFactoryList" interface="org.opennms.netmgt.telemetry.api.receiver.ListenerFactory">
 		<onmsgi:listener ref="listenerRegistry" bind-method="onBind" unbind-method="onUnbind" />
 	</onmsgi:list>
 
-	<bean id="parserRegistry" class="org.opennms.features.telemetry.protocols.registry.impl.TelemetryParserRegistryImpl" />
+	<bean id="parserRegistry" class="org.opennms.netmgt.telemetry.protocols.registry.impl.TelemetryParserRegistryImpl" />
 	<onmsgi:list id="parserFactoryList" interface="org.opennms.netmgt.telemetry.api.receiver.ParserFactory">
 		<onmsgi:listener ref="parserRegistry" bind-method="onBind" unbind-method="onUnbind" />
 	</onmsgi:list>
 
-	<bean id="telemetryRegistry" class="org.opennms.features.telemetry.protocols.registry.impl.TelemetryRegistryImpl" />
+	<bean id="telemetryRegistry" class="org.opennms.netmgt.telemetry.protocols.registry.impl.TelemetryRegistryImpl" />
 	<onmsgi:service interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" ref="telemetryRegistry" />
 
 </beans>

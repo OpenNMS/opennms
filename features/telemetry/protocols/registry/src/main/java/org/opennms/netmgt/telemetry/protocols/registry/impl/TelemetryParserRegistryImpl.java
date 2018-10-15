@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,33 +26,40 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.telemetry.protocols.registry.impl;
+package org.opennms.netmgt.telemetry.protocols.registry.impl;
 
 import java.util.Map;
 import java.util.ServiceLoader;
 
 import org.opennms.core.soa.lookup.ServiceLookupBuilder;
-import org.opennms.netmgt.telemetry.api.receiver.Listener;
-import org.opennms.netmgt.telemetry.api.receiver.ListenerFactory;
-import org.opennms.netmgt.telemetry.config.api.ListenerDefinition;
+import org.opennms.netmgt.telemetry.api.receiver.Parser;
+import org.opennms.netmgt.telemetry.api.receiver.ParserFactory;
+import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
 
-public class TelemetryListenerRegistryImpl extends TelemetryServiceRegistryImpl<ListenerFactory, ListenerDefinition, Listener> {
+/**
+ * Maintains the list of available telemtryd adapters, aggregating
+ * those expose the the service loader and via the OSGi registry.
+ *
+ * @author chandrag
+ * @author jwhite
+ */
+public class TelemetryParserRegistryImpl extends TelemetryServiceRegistryImpl<ParserFactory, ParserDefinition, Parser> {
 
-    public TelemetryListenerRegistryImpl() {
+    public TelemetryParserRegistryImpl() {
         this(ServiceLookupBuilder.GRACE_PERIOD_MS, ServiceLookupBuilder.WAIT_PERIOD_MS, ServiceLookupBuilder.LOOKUP_DELAY_MS);
     }
 
-    public TelemetryListenerRegistryImpl(long gracePeriodMs, long waitPeriodMs, long lookupDelayMs) {
-        super(() -> ServiceLoader.load(ListenerFactory.class), gracePeriodMs, waitPeriodMs, lookupDelayMs);
+    public TelemetryParserRegistryImpl(long gracePeriodMs, long waitPeriodMs, long lookupDelayMs) {
+        super(() -> ServiceLoader.load(ParserFactory.class), gracePeriodMs, waitPeriodMs, lookupDelayMs);
     }
 
     @Override
-    public synchronized void onBind(ListenerFactory listenerFactory, Map properties) {
-        super.onBind(listenerFactory, properties);
+    public synchronized void onBind(ParserFactory parserFactory, Map properties) {
+        super.onBind(parserFactory, properties);
     }
 
     @Override
-    public synchronized void onUnbind(ListenerFactory listenerFactory, Map properties) {
-        super.onUnbind(listenerFactory, properties);
+    public synchronized void onUnbind(ParserFactory parserFactory, Map properties) {
+        super.onUnbind(parserFactory, properties);
     }
 }

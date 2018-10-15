@@ -26,14 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.telemetry.protocols.registry.impl;
+package org.opennms.netmgt.telemetry.protocols.registry.impl;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
-import org.opennms.features.telemetry.protocols.registry.api.TelemetryServiceRegistry;
+import org.opennms.netmgt.telemetry.protocols.registry.api.TelemetryServiceRegistry;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
 import org.opennms.netmgt.telemetry.api.receiver.Parser;

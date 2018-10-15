@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.telemetry.protocols.registry.impl;
+package org.opennms.netmgt.telemetry.protocols.registry.impl;
 
 import static org.junit.Assert.assertNull;
 import static org.opennms.core.soa.lookup.BlockingServiceLookupTest.verifyConsiderPeriods;

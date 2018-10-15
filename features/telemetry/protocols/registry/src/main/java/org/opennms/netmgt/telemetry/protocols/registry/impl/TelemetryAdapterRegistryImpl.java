@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.telemetry.protocols.registry.impl;
+package org.opennms.netmgt.telemetry.protocols.registry.impl;
 
 import java.util.Map;
 import java.util.ServiceLoader;
