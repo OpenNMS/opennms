@@ -51,7 +51,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.jline.utils.Log;
 import org.joda.time.Duration;
 import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
@@ -147,7 +146,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         // Start processing records that have been queued for sending
         if(kafkaSendQueueCapacity <= 0) {
             kafkaSendQueueCapacity = 1000;
-            Log.info("Defaulted the 'kafkaSendQueueCapacity' to 1000 since no property was set");
+            LOG.info("Defaulted the 'kafkaSendQueueCapacity' to 1000 since no property was set");
         }
         
         kafkaSendQueue = new LinkedBlockingQueue<>(kafkaSendQueueCapacity);
