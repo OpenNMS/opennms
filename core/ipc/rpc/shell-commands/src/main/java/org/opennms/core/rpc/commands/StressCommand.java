@@ -67,7 +67,7 @@ public class StressCommand implements Action {
     @Option(name = "-d", aliases = "--delay", description = "Response delay (miliseconds)")
     Long delay;
 
-    @Option (name="-s", aliases = "--message-size", description="Message size (number of charaters)")
+    @Option (name="-ms", aliases = "--message-size", description="Message size (number of charaters)")
     int messageSize = 1024;
 
     @Option (name="-f", aliases = "--throw-exception", description="Throw ")

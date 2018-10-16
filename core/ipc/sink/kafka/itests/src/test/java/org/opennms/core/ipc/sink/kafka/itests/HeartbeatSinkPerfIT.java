@@ -50,7 +50,7 @@ import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.api.SyncDispatcher;
 import org.opennms.core.ipc.sink.kafka.client.KafkaRemoteMessageDispatcherFactory;
-import org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants;
+import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
 import org.opennms.core.ipc.sink.kafka.itests.heartbeat.Heartbeat;
 import org.opennms.core.ipc.sink.kafka.itests.heartbeat.HeartbeatModule;
 import org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager;
@@ -113,12 +113,12 @@ public class HeartbeatSinkPerfIT {
         Hashtable<String, Object> kafkaConfig = new Hashtable<String, Object>();
         kafkaConfig.put("bootstrap.servers", kafkaServer.getKafkaConnectString());
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
-        when(configAdmin.getConfiguration(org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants.KAFKA_CONFIG_PID).getProperties())
+        when(configAdmin.getConfiguration(KafkaSinkConstants.KAFKA_CONFIG_PID).getProperties())
             .thenReturn(kafkaConfig);
         messageDispatcherFactory.setConfigAdmin(configAdmin);
         messageDispatcherFactory.init();
 
-        System.setProperty(String.format("%sbootstrap.servers", org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),
+        System.setProperty(String.format("%sbootstrap.servers", KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),
                 kafkaServer.getKafkaConnectString());
         System.setProperty(String.format("%sauto.offset.reset", KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),
                 "earliest");

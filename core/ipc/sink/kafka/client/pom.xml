@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core.ipc.sink</groupId>
     <artifactId>org.opennms.core.ipc.sink.kafka</artifactId>
-    <version>23.0.0-SNAPSHOT</version>
+    <version>24.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.ipc.sink.kafka</groupId>
@@ -44,8 +44,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core.ipc.sink.kafka</groupId>
-      <artifactId>org.opennms.core.ipc.sink.kafka.common</artifactId>
+      <groupId>org.opennms.core.ipc.common</groupId>
+      <artifactId>org.opennms.core.ipc.common.kafka</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

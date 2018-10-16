@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.ipc</artifactId>
-    <version>23.0.0-SNAPSHOT</version>
+    <version>24.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.ipc</groupId>
@@ -12,5 +12,6 @@
   <name>OpenNMS :: Core :: IPC :: Common</name>
   <modules>
     <module>aws-sqs</module>
+    <module>kafka</module>
   </modules>
 </project>

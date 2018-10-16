@@ -17,11 +17,26 @@
 
     <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
 
+    <!-- Config Provider -->
+    <bean id="kafkaConfigProvider" class="org.opennms.core.ipc.common.kafka.OsgiKafkaConfigProvider" >
+        <!-- same as persistent-id -->
+        <argument value="org.opennms.core.ipc.sink.kafka"/>
+        <argument ref="configAdmin" />
+    </bean>
+
 	<bean id="kafkaRemoteMessageDispatcherFactory" class="org.opennms.core.ipc.sink.kafka.client.KafkaRemoteMessageDispatcherFactory"
 	  init-method="init" destroy-method="destroy">
 	  <property name="configAdmin" ref="configAdmin"/>
       <property name="bundleContext" ref="blueprintBundleContext"/>
 	</bean>
     <service ref="kafkaRemoteMessageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>
+
+    <!-- Kafka HealthCheck for Sink -->
+    <service interface="org.opennms.core.health.api.HealthCheck">
+        <bean class="org.opennms.core.ipc.common.kafka.KafkaHealthCheck" >
+            <argument ref="kafkaConfigProvider"/>
+            <argument value="Sink" />
+        </bean>
+    </service>
 
 </blueprint>

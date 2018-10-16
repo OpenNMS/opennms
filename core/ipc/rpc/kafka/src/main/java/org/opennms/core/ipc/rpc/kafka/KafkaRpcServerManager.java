@@ -30,8 +30,6 @@ package org.opennms.core.ipc.rpc.kafka;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
@@ -54,12 +52,13 @@ import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.camel.JmsQueueNameFactory;
+import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
+import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.core.ipc.rpc.kafka.model.RpcMessageProtos;
 import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.distributed.core.api.MinionIdentity;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +73,7 @@ public class KafkaRpcServerManager {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaRpcServerManager.class);
     private final Map<String, RpcModule<RpcRequest, RpcResponse>> registerdModules = new ConcurrentHashMap<>();
     private final Properties kafkaConfig = new Properties();
-    private ConfigurationAdmin configAdmin;
+    private final KafkaConfigProvider kafkaConfigProvider;
     private KafkaProducer<String, byte[]> producer;
     private MinionIdentity minionIdentity;
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
@@ -85,8 +84,8 @@ public class KafkaRpcServerManager {
     // cache to hold rpcId for directed RPCs and expire them
     private Cache<String, Long>  rpcIdCache;
 
-    public KafkaRpcServerManager(ConfigurationAdmin configAdmin, MinionIdentity minionIdentity) {
-        this.configAdmin = configAdmin;
+    public KafkaRpcServerManager(KafkaConfigProvider configProvider, MinionIdentity minionIdentity) {
+        this.kafkaConfigProvider = configProvider;
         this.minionIdentity = minionIdentity;
     }
 
@@ -101,23 +100,9 @@ public class KafkaRpcServerManager {
         kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getCanonicalName());
         kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getCanonicalName());
         // Retrieve all of the properties from org.opennms.core.ipc.rpc.kafka.cfg
-        final Dictionary<String, Object> properties = configAdmin.getConfiguration(KafkaRpcConstants.KAFKA_CONFIG_PID).getProperties();
-        if (properties != null) {
-            final Enumeration<String> keys = properties.keys();
-            while (keys.hasMoreElements()) {
-                final String key = keys.nextElement();
-                kafkaConfig.put(key, properties.get(key));
-            }
-        }
+        kafkaConfig.putAll(kafkaConfigProvider.getProperties());
         LOG.info("initializing the Kafka producer with: {}", kafkaConfig);
-        final ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-        try {
-            // Class-loader hack for accessing the org.apache.kafka.common.serialization.ByteArraySerializer
-            Thread.currentThread().setContextClassLoader(null);
-            producer = new KafkaProducer<>(kafkaConfig);
-        } finally {
-            Thread.currentThread().setContextClassLoader(currentClassLoader);
-        }
+        producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<String, byte[]>(kafkaConfig), KafkaProducer.class.getClassLoader());
         // Configurable cache config if needed.
         String cacheConfig = kafkaConfig.getProperty("rpcid.cache.config", "maximumSize=1000,expireAfterWrite=10m");
         rpcIdCache = CacheBuilder.from(cacheConfig).build();
@@ -139,15 +124,7 @@ public class KafkaRpcServerManager {
     private void startConsumerForModule(RpcModule<RpcRequest, RpcResponse> rpcModule) {
         final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory(KafkaRpcConstants.RPC_REQUEST_TOPIC_NAME, rpcModule.getId(),
                 minionIdentity.getLocation());
-        KafkaConsumer<String, byte[]> consumer;
-        final ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-        try {
-            // Class-loader hack for accessing the org.apache.kafka.common.serialization.ByteArraySerializer
-            Thread.currentThread().setContextClassLoader(null);
-            consumer = new KafkaConsumer<String, byte[]>(kafkaConfig);
-        } finally {
-            Thread.currentThread().setContextClassLoader(currentClassLoader);
-        }
+        KafkaConsumer<String, byte[]> consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(kafkaConfig), KafkaConsumer.class.getClassLoader());
         KafkaConsumerRunner kafkaConsumerRunner = new KafkaConsumerRunner(rpcModule, consumer, topicNameFactory.getName());
         executor.execute(kafkaConsumerRunner);
         LOG.info("started kafka consumer for module : {}", rpcModule.getId());
@@ -173,9 +150,6 @@ public class KafkaRpcServerManager {
 
     }
 
-    public void setConfigAdmin(ConfigurationAdmin configAdmin) {
-        this.configAdmin = configAdmin;
-    }
 
     private class KafkaConsumerRunner implements Runnable {
 

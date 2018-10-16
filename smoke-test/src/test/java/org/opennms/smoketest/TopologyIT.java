@@ -193,6 +193,13 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             return getElement().getLocation();
         }
 
+        public String getIconName() {
+            String iconName = getElement().findElement(By.xpath("//*[@id='TopologyComponent']//*[@class='vertex-label' and text()='"
+                    +getLabel()+"']/../*[@class='icon-container']/*[@class='upIcon']")).getAttribute("href");
+            iconName = iconName.substring(1, iconName.length()); // remove the leading '#'
+            return iconName;
+        }
+
         public void select() {
             testCase.waitUntil(null, null, new Callable<Boolean>() {
                 @Override public Boolean call() throws Exception {
@@ -222,6 +229,15 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             } finally {
                 testCase.setImplicitWait();
             }
+        }
+
+        public void changeIcon(String iconName){
+            this.select();
+            this.contextMenu().click("Change Icon");
+            testCase.waitFor(1);
+            testCase.findElementByXpath("//*[name()='title' and text()='"+iconName+"']/../*[name()='rect']").click();
+            testCase.waitFor(1);
+            testCase.findElementById("iconSelectionDialog.button.ok").click();
         }
     }
 

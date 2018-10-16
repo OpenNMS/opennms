@@ -31,6 +31,7 @@ package org.opennms.netmgt.flows.elastic.health;
 import java.io.IOException;
 import java.util.Objects;
 
+import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
@@ -64,7 +65,7 @@ public class ElasticHealthCheck implements HealthCheck {
     }
 
     @Override
-    public Response perform() {
+    public Response perform(Context context) {
         final Ping ping = new Ping.Builder().build();
         try {
             final JestResult result = client.execute(ping);

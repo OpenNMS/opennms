@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>23.0.0-SNAPSHOT</version>
+    <version>24.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -786,6 +786,11 @@
     <dependency>
       <groupId>org.opennms.core.ipc.sink.aws.sqs</groupId>
       <artifactId>org.opennms.core.ipc.sink.aws.sqs.server</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.sink</groupId>
+      <artifactId>org.opennms.core.ipc.sink.offheap</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

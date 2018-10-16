@@ -639,6 +639,11 @@ if [ `echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -c -- -Djava.io.tmpdir=` -eq 0 ]
 	ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djava.io.tmpdir=$OPENNMS_HOME/data/tmp"
 fi
 
+# Fix for Attach API listener sometimes going AWOL
+if [ `echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -c StartAttachListener` -eq 0 ]; then
+	ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -XX:+StartAttachListener"
+fi
+
 if [ x"$ADDITIONAL_MANAGER_OPTIONS" != x"" ]; then
 	MANAGER_OPTIONS="$MANAGER_OPTIONS $ADDITIONAL_MANAGER_OPTIONS"
 fi
