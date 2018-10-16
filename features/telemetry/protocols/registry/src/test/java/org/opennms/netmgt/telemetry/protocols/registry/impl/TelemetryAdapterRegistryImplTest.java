@@ -71,7 +71,7 @@ public class TelemetryAdapterRegistryImplTest {
         final long initialDelay = 1000; // Delay before service is made available
         final TelemetryAdapterRegistryImpl registry = new TelemetryAdapterRegistryImpl(gracePeriod, 500, lookupDelay);
 
-        verifyConsiderPeriods(registry, () -> DummyAdapter.class.getName(), () -> registry.onBind(new DummyAdapterFactory(), new HashMap()), initialDelay, lookupDelay);
+        verifyConsiderPeriods(registry, () -> DummyAdapter.class.getCanonicalName(), () -> registry.onBind(new DummyAdapterFactory(), new HashMap()), initialDelay, lookupDelay);
     }
 
     // Here we verify that when the grace period has passed, we try at least until the waitPeriodMs has passed
@@ -83,7 +83,7 @@ public class TelemetryAdapterRegistryImplTest {
         final long waitPeriod = 5000;
         final TelemetryAdapterRegistryImpl registry = new TelemetryAdapterRegistryImpl(gracePeriod, waitPeriod, lookupDelay);
 
-        verifyConsiderPeriods(registry, () -> DummyAdapter.class.getName(), () -> registry.onBind(new DummyAdapterFactory(), new HashMap()), initialDelay, lookupDelay);
+        verifyConsiderPeriods(registry, () -> DummyAdapter.class.getCanonicalName(), () -> registry.onBind(new DummyAdapterFactory(), new HashMap()), initialDelay, lookupDelay);
     }
 
     // Verifies that after a certain time, we bail even if the service is not yet available
