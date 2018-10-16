@@ -20,8 +20,10 @@
     <reference id="configurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" availability="mandatory" />
 
     <!-- Config Provider -->
-    <bean id="kafkaConfigProvider" class="org.opennms.core.ipc.sink.kafka.server.config.OsgiKafkaConfigProvider" >
+    <bean id="kafkaConfigProvider" class="org.opennms.core.ipc.common.kafka.OsgiKafkaConfigProvider" >
         <argument value="[[group.id]]"/>
+        <!-- same as persistent-id -->
+        <argument value="org.opennms.core.ipc.sink.kafka.consumer"/>
         <argument ref="configurationAdmin" />
     </bean>
 
@@ -35,4 +37,13 @@
     <bean id="kafkaOffsetProvider" class="org.opennms.core.ipc.sink.kafka.server.offset.KafkaOffsetProvider" init-method="start" destroy-method="stop" >
         <argument ref="kafkaConfigProvider"/>
     </bean>
+
+    <!-- Kafka HealthCheck for Sink (Sentinel) -->
+    <service interface="org.opennms.core.health.api.HealthCheck">
+        <bean class="org.opennms.core.ipc.common.kafka.KafkaHealthCheck" >
+            <argument ref="kafkaConfigProvider"/>
+            <argument value="Sink" />
+        </bean>
+    </service>
+
 </blueprint>

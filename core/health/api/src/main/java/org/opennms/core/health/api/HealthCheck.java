@@ -58,6 +58,7 @@ public interface HealthCheck {
      * @return The response indicating the Success/Failure/Timeout/etc of the check
      * @throws Exception In case of an error
      * @see HealthCheckService
+     * @param context
      */
-    Response perform() throws Exception;
+    Response perform(Context context) throws Exception;
 }

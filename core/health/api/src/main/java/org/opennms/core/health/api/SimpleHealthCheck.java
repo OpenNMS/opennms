@@ -52,7 +52,7 @@ public class SimpleHealthCheck implements HealthCheck {
     }
 
     @Override
-    public Response perform() throws Exception {
+    public Response perform(Context context) throws Exception {
         return response;
     }
 

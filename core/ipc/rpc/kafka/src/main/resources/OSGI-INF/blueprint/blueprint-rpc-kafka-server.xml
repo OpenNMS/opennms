@@ -15,19 +15,37 @@
 
     <!-- See https://kafka.apache.org/10/documentation.html#producerconfigs, https://kafka.apache.org/10/documentation.html#consumerconfigs
          for the list of supported properties -->
-    <cm:property-placeholder id="kafkaProperties" persistent-id="org.opennms.core.ipc.rpc.kafka" update-strategy="reload" />
+    <cm:property-placeholder id="kafkaProperties" persistent-id="org.opennms.core.ipc.rpc.kafka"
+                             update-strategy="reload"/>
     <!-- Provided by minion-core -->
-    <reference id="minionIdentity" interface="org.opennms.distributed.core.api.MinionIdentity" />
+    <reference id="minionIdentity" interface="org.opennms.distributed.core.api.MinionIdentity"/>
 
-    <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
+    <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/>
+
+    <!-- Config Provider -->
+    <bean id="kafkaConfigProvider" class="org.opennms.core.ipc.common.kafka.OsgiKafkaConfigProvider">
+      <!-- same as persistent-id -->
+      <argument value="org.opennms.core.ipc.rpc.kafka"/>
+      <argument ref="configAdmin"/>
+    </bean>
 
     <bean id="kafkaRpcServerManager" class="org.opennms.core.ipc.rpc.kafka.KafkaRpcServerManager"
-	  init-method="init" destroy-method="destroy">
-	   <argument ref="configAdmin"/>
-	   <argument ref="minionIdentity"/>
-	</bean>
+          init-method="init" destroy-method="destroy">
+      <argument ref="kafkaConfigProvider"/>
+      <argument ref="minionIdentity"/>
+    </bean>
 
     <reference-list id="rpcModulesRef" interface="org.opennms.core.rpc.api.RpcModule" availability="optional">
-        <reference-listener bind-method="bind" unbind-method="unbind" ref="kafkaRpcServerManager"/>
+      <reference-listener bind-method="bind" unbind-method="unbind" ref="kafkaRpcServerManager"/>
     </reference-list>
+
+    <!-- Kafka HealthCheck for RPC -->
+
+    <service interface="org.opennms.core.health.api.HealthCheck">
+      <bean class="org.opennms.core.ipc.common.kafka.KafkaHealthCheck" >
+        <argument ref="kafkaConfigProvider"/>
+        <argument value="RPC" />
+      </bean>
+    </service>
+
 </blueprint>
