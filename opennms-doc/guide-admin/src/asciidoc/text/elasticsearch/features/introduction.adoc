@@ -20,4 +20,9 @@ Therefore the following table provides a version overview.
 | yes
 | `opennms-flows`
 
+| Correlation Situation Feedback
+| >= 6.2.4
+| no
+| `opennms-situation-feedback`
+
 |===
