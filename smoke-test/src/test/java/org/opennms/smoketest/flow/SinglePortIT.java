@@ -47,6 +47,7 @@ import org.junit.rules.Timeout;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.smoketest.utils.RestClient;
+import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
 import org.slf4j.Logger;
@@ -100,20 +101,21 @@ public class SinglePortIT {
     // will actually be persisted in elastic
     @Test
     public void verifyFlowStack() throws Exception {
-        final InetSocketAddress opennnmsSinglePortAddress = new InetSocketAddress("localhost", 50000);
+        final InetSocketAddress opennmsSinglePortAddress = testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 50000, "udp");
+        final InetSocketAddress opennmsWebAddress = testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 8980);
         final String elasticRestUrl = "http://localhost:9200";
 
         // Proxy the REST service
-        final RestClient restClient = new RestClient("localhost", 8980);
+        final RestClient restClient = new RestClient(opennmsWebAddress);
 
         final JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder(elasticRestUrl).multiThreaded(true).build());
         try (final JestClient client = factory.getObject()) {
             // Send packets
-            sendNetflowPacket(opennnmsSinglePortAddress, "/flows/netflow5.dat");
-            sendNetflowPacket(opennnmsSinglePortAddress, "/flows/netflow9.dat");
-            sendNetflowPacket(opennnmsSinglePortAddress, "/flows/ipfix.dat");
-            sendNetflowPacket(opennnmsSinglePortAddress, "/flows/sflow.dat");
+            sendNetflowPacket(opennmsSinglePortAddress, "/flows/netflow5.dat");
+            sendNetflowPacket(opennmsSinglePortAddress, "/flows/netflow9.dat");
+            sendNetflowPacket(opennmsSinglePortAddress, "/flows/ipfix.dat");
+            sendNetflowPacket(opennmsSinglePortAddress, "/flows/sflow.dat");
 
             // Ensure that the template has been created
             verify(() -> {
