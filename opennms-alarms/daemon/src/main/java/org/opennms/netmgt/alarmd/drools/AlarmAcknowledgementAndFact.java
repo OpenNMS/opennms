@@ -28,29 +28,31 @@
 
 package org.opennms.netmgt.alarmd.drools;
 
-import java.util.Date;
+import org.kie.api.runtime.rule.FactHandle;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsSeverity;
+public class AlarmAcknowledgementAndFact {
+    private OnmsAcknowledgment acknowledgement;
+    private FactHandle fact;
 
-/**
- * This API is intended to provide RHS functionality for Drools Alarmd and
- * Situation rules.
- */
-public interface AlarmService {
+    public AlarmAcknowledgementAndFact(OnmsAcknowledgment acknowledgement, FactHandle fact) {
+        this.acknowledgement = acknowledgement;
+        this.fact = fact;
+    }
 
-    void clearAlarm(OnmsAlarm alarm, Date clearTime);
+    public OnmsAcknowledgment getAcknowledgement() {
+        return acknowledgement;
+    }
 
-    void deleteAlarm(OnmsAlarm alarm);
+    public void setAcknowledgement(OnmsAcknowledgment acknowledgement) {
+        this.acknowledgement = acknowledgement;
+    }
 
-    void unclearAlarm(OnmsAlarm alarm, Date now);
+    public FactHandle getFact() {
+        return fact;
+    }
 
-    void escalateAlarm(OnmsAlarm alarm, Date now);
-
-    void acknowledgeAlarm(OnmsAlarm alarm, Date now);
-
-    void unacknowledgeAlarm(OnmsAlarm alarm, Date now);
-
-    void setSeverity(OnmsAlarm alarm, OnmsSeverity severity, Date now);
-
+    public void setFact(FactHandle fact) {
+        this.fact = fact;
+    }
 }

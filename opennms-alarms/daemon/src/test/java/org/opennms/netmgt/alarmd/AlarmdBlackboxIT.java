@@ -38,7 +38,6 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.fail;
 import static org.opennms.netmgt.alarmd.driver.AlarmMatchers.acknowledged;
-import static org.opennms.netmgt.alarmd.driver.AlarmMatchers.areAllAcked;
 import static org.opennms.netmgt.alarmd.driver.AlarmMatchers.hasSeverity;
 
 import java.util.List;
@@ -344,6 +343,7 @@ public class AlarmdBlackboxIT {
         // t=3, two problem alarms + 1 situation, situation is not acknowledged
         assertThat(results.getAlarms(3), hasSize(3)); // the situation is also an alarm, so it is counted here
         assertThat(results.getSituation(3), not(acknowledged()));
+        assertThat(results.getAlarms(3), everyItem(not(acknowledged())));
         // t=4, everything should be Ack'd
         assertThat(results.getSituation(4), acknowledged());
         assertThat(results.getAlarms(4), everyItem(acknowledged()));
@@ -355,12 +355,43 @@ public class AlarmdBlackboxIT {
     public void canUnAckSituation() {
         // Unacking a situation should unack all acked alarms
         // TODO give higher salience to this rule and check unack timestamp. 
-        fail("not implemented");
+        Scenario scenario = Scenario.builder()
+                .withLegacyAlarmBehavior()
+                // Create some node down alarms
+                .withNodeDownEvent(1, 1)
+                .withNodeDownEvent(2, 2)
+                // Create a situation that contains the node down alarms
+                .withSituationForNodeDownAlarms(3, "situation#1", 1, 2)
+                // Now ACK the situation
+                .withAcknowledgmentForSituation(4, "situation#1")
+                .withUnAcknowledgmentForSituation(5, "situation#1")
+                .build();
+        ScenarioResults results = play(scenario);
+
+        // Verify the set of alarms at various points in time
+
+        // t=0, no alarms
+        assertThat(results.getAlarms(0), hasSize(0));
+        // t=1, a single problem alarm
+        assertThat(results.getAlarms(1), hasSize(1));
+        // t=2, two problem alarms
+        assertThat(results.getAlarms(2), hasSize(2));
+        // t=3, two problem alarms + 1 situation, situation is not acknowledged
+        assertThat(results.getAlarms(3), hasSize(3)); // the situation is also an alarm, so it is counted here
+        assertThat(results.getSituation(3), not(acknowledged()));
+        assertThat(results.getAlarms(3), everyItem(not(acknowledged())));
+        // t=4, everything should be Ack'd
+        assertThat(results.getSituation(4), acknowledged());
+        assertThat(results.getAlarms(4), everyItem(acknowledged()));
+        // t=5, all alarms and situation should be unacked
+        assertThat(results.getAlarms(5), everyItem(not(acknowledged())));
+        // t=∞
+        assertThat(results.getAlarmsAtLastKnownTime(), hasSize(0));
     }
 
     @Test
     public void alarmsAckSituation() {
-        // A situation is deemed "acked" if the situation and all related alarms are acked
+        // A situation is deemed "acked" if all the related alarms are acked
         Scenario scenario = Scenario.builder()
                 .withLegacyAlarmBehavior()
                 // Create some node down alarms
@@ -391,15 +422,46 @@ public class AlarmdBlackboxIT {
         assertThat(results.getAlarms(4), everyItem(acknowledged()));
         // t=∞
         assertThat(results.getAlarmsAtLastKnownTime(), hasSize(0));
-
     }
 
     @Test
-    public void alarmCanUnAckSituation() {
-        // If a new unacked alarm gets added to an acked situation, then the
-        // situation itself should be unacked
+    public void alarmsUnAckSituation() {
+        // If a new unacked alarm gets added to an acked situation, or an existing related alarm is unacknowledged,
+        // then the situation itself should be unacked
         // (but all other related alarms which were acked should remain acked)
-        fail("not implemented");
+        Scenario scenario = Scenario.builder()
+                .withLegacyAlarmBehavior()
+                // Create some node down alarms
+                .withNodeDownEvent(1, 1)
+                .withNodeDownEvent(2, 2)
+                // Create a situation that contains the node down alarms
+                .withSituationForNodeDownAlarms(3, "situation#1", 1, 2)
+                // Now ACK the situation
+                .withAcknowledgmentForSituation(4, "situation#1")
+                // now un-acknowledge one of the alarms
+                .withUnAcknowledgmentForNodeDownAlarm(5, 1)
+                .build();
+        ScenarioResults results = play(scenario);
+
+        // Verify the set of alarms at various points in time
+
+        // t=0, no alarms
+        assertThat(results.getAlarms(0), hasSize(0));
+        // t=1, a single problem alarm
+        assertThat(results.getAlarms(1), hasSize(1));
+        // t=2, two problem alarms
+        assertThat(results.getAlarms(2), hasSize(2));
+        // t=3, two problem alarms + 1 situation, situation is not acknowledged
+        assertThat(results.getAlarms(3), hasSize(3)); // the situation is also an alarm, so it is counted here
+        assertThat(results.getSituation(3), not(acknowledged()));
+
+        // t=4, everything should be Ack'd
+        assertThat(results.getSituation(4), acknowledged());
+        assertThat(results.getAlarms(4), everyItem(acknowledged()));
+        // t=5, alarm and situation should be unacked
+        assertThat(results.getSituation(5), not(acknowledged()));
+        // t=∞
+        assertThat(results.getAlarmsAtLastKnownTime(), hasSize(0));
     }
 
     private ScenarioResults play(Scenario scenario) {

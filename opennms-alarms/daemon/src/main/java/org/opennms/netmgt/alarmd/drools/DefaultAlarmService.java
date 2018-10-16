@@ -30,8 +30,11 @@ package org.opennms.netmgt.alarmd.drools;
 
 import java.util.Date;
 
+import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
+import org.opennms.netmgt.model.AckAction;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
@@ -46,6 +49,9 @@ public class DefaultAlarmService implements AlarmService {
 
     @Autowired
     private AlarmDao alarmDao;
+
+    @Autowired
+    private AcknowledgmentDao acknowledgmentDao;
 
     @Autowired
     private AlarmEntityNotifier alarmEntityNotifier;
@@ -85,7 +91,7 @@ public class DefaultAlarmService implements AlarmService {
         LOG.info("Un-clearing alarm with id: {} at: {}", alarm.getId(), alarm.getLastEventTime());
         final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
         if (alarmInTrans == null) {
-            LOG.warn("Alarm disappeared: {}. Skipping clear.", alarm);
+            LOG.warn("Alarm disappeared: {}. Skipping un-clear.", alarm);
             return;
         }
         final OnmsSeverity previousSeverity = alarmInTrans.getSeverity();
@@ -120,12 +126,23 @@ public class DefaultAlarmService implements AlarmService {
             LOG.warn("Alarm disappeared: {}. Skipping ack.", alarm);
             return;
         }
-        final String previousAckUser = alarmInTrans.getAlarmAckUser();
-        final Date previousAckTime = alarmInTrans.getAlarmAckTime();
-        alarmInTrans.setAlarmAckUser(DEFAULT_USER);
-        alarmInTrans.setAlarmAckTime(now);
-        alarmDao.update(alarmInTrans);
-        alarmEntityNotifier.didAcknowledgeAlarm(alarmInTrans, previousAckUser, previousAckTime);
+        OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, DEFAULT_USER, now);
+        ack.setAckAction(AckAction.ACKNOWLEDGE);
+        acknowledgmentDao.processAck(ack);
+    }
+
+    @Override
+    @Transactional
+    public void unacknowledgeAlarm(OnmsAlarm alarm, Date now) {
+        LOG.info("Un-Acknowledging alarm with id: {}", alarm.getId());
+        final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
+        if (alarmInTrans == null) {
+            LOG.warn("Alarm disappeared: {}. Skipping un-ack.", alarm);
+            return;
+        }
+        OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, DEFAULT_USER, now);
+        ack.setAckAction(AckAction.UNACKNOWLEDGE);
+        acknowledgmentDao.processAck(ack);
     }
 
     @Override

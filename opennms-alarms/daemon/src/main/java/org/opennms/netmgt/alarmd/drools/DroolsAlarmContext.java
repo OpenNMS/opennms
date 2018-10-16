@@ -38,9 +38,12 @@ import java.util.stream.Collectors;
 import org.hibernate.Hibernate;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.alarmd.Alarmd;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
+import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,9 +68,14 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     private AlarmService alarmService;
 
     @Autowired
+    private AcknowledgmentDao acknowledgmentDao;
+
+    @Autowired
     private AlarmTicketerService alarmTicketerService;
 
     private final Map<Integer, AlarmAndFact> alarmsById = new HashMap<>();
+
+    private final Map<Integer, AlarmAcknowledgementAndFact> acknowledgementsById = new HashMap<>();
 
     public DroolsAlarmContext() {
         super(Paths.get(ConfigFileConstants.getHome(), "etc", "alarmd", "drools-rules.d").toFile(), Alarmd.NAME, "DroolsAlarmContext");
@@ -154,6 +162,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             final FactHandle fact = kieSession.insert(alarm);
             alarmAndFact.setFact(fact);
         }
+        handleAlarmAcknowledgements(alarm);
     }
 
     @Override
@@ -167,6 +176,42 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             handleDeletedAlarmNoLock(alarmId);
         } finally {
             unlockIfNotFiring();
+        }
+    }
+
+    private OnmsAcknowledgment getLatestAcknowledgement(OnmsAlarm alarm) {
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsAcknowledgment.class)
+                .eq("refId", alarm.getId())
+                .limit(1)
+                .orderBy("ackTime")
+                .desc();
+        List<OnmsAcknowledgment> acks = acknowledgmentDao.findMatching(builder.toCriteria());
+        if (acks.isEmpty()) {
+            return null;
+        } else {
+            return acks.get(0);
+        }
+    }
+
+    private void handleAlarmAcknowledgements(OnmsAlarm alarm) {
+        final AlarmAcknowledgementAndFact acknowledgmentFact = acknowledgementsById.get(alarm.getId());
+        if (acknowledgmentFact == null) {
+            if (alarm.isAcknowledged()) {
+                LOG.debug("Inserting alarm acknowledgement into session: {}", alarm);
+                OnmsAcknowledgment ack = getLatestAcknowledgement(alarm);
+                if (ack != null) {
+                    final FactHandle fact = getKieSession().insert(ack);
+                    acknowledgementsById.put(alarm.getId(), new AlarmAcknowledgementAndFact(ack, fact));
+                }
+            }
+        } else {
+            if (alarm.isAcknowledged()) {
+                LOG.debug("Inserting alarm acknowledgement into session: {}", alarm);
+                final FactHandle fact = getKieSession().insert(alarm);
+                alarmsById.put(alarm.getId(), new AlarmAndFact(alarm, fact));
+            } else {
+                // need to inject a NAK to the context.
+            }
         }
     }
 
