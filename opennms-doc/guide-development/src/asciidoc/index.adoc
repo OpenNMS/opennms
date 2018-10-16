@@ -74,6 +74,7 @@ include::text/rest/javamail-config.adoc[]
 include::text/rest/syslognbi-config.adoc[]
 include::text/bsm/bsm-development.adoc[]
 include::text/rest/discovery.adoc[]
+include::text/rest/situation-feedback.adoc[]
 
 === ReST API Examples
 include::text/rest/examples.adoc[]
