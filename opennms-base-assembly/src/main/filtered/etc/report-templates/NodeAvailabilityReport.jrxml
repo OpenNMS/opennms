@@ -379,6 +379,9 @@ ORDER BY
 						<datasetParameter name="DS_TIME_RANGE">
 							<datasetParameterExpression><![CDATA[$P{TIME_RANGE}]]></datasetParameterExpression>
 						</datasetParameter>
+						<datasetParameter name="DS_TIME_RANGE_NUMBER">
+							<datasetParameterExpression><![CDATA[$P{TIME_RANGE_NUMBER}]]></datasetParameterExpression>
+						</datasetParameter>
 						<datasetParameter name="DS_START_TIME">
 							<datasetParameterExpression><![CDATA[$P{START_TIME}]]></datasetParameterExpression>
 						</datasetParameter>
