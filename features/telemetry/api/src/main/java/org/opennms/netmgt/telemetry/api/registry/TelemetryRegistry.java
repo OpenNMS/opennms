@@ -46,6 +46,7 @@ public interface TelemetryRegistry {
 
     void registerDispatcher(String queueName, AsyncDispatcher<TelemetryMessage> dispatcher);
     void clearDispatchers();
+    void removeDispatcher(String queueName);
     Collection<AsyncDispatcher<TelemetryMessage>> getDispatchers();
     AsyncDispatcher<TelemetryMessage> getDispatcher(String queueName);
 }

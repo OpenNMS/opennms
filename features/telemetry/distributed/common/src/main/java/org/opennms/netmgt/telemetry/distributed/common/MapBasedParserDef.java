@@ -51,7 +51,7 @@ public class MapBasedParserDef extends MapBasedQueueDef implements ParserDefinit
     // TODO fooker verify that this is the correct way
     @Override
     public String getQueueName() {
-        return getParameterMap().get("queueName");
+        return getName();
     }
 
     @Override

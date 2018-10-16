@@ -98,4 +98,21 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
     public AsyncDispatcher<TelemetryMessage> getDispatcher(String queueName) {
         return dispatchers.get(queueName);
     }
+
+    @Override
+    public void removeDispatcher(String queueName) {
+        dispatchers.remove(queueName);
+    }
+
+    public void setAdapterRegistryDelegate(TelemetryServiceRegistry<AdapterDefinition, Adapter> adapterRegistryDelegate) {
+        this.adapterRegistryDelegate = adapterRegistryDelegate;
+    }
+
+    public void setListenerRegistryDelegate(TelemetryServiceRegistry<ListenerDefinition, Listener> listenerRegistryDelegate) {
+        this.listenerRegistryDelegate = listenerRegistryDelegate;
+    }
+
+    public void setParserRegistryDelegate(TelemetryServiceRegistry<ParserDefinition, Parser> parserRegistryDelegate) {
+        this.parserRegistryDelegate = parserRegistryDelegate;
+    }
 }

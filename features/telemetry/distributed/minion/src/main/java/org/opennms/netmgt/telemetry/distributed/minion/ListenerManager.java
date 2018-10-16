@@ -33,15 +33,18 @@ import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
-import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
+import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
+import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
 import org.opennms.netmgt.telemetry.distributed.common.MapBasedListenerDef;
 import org.opennms.netmgt.telemetry.distributed.common.PropertyTree;
 import org.osgi.framework.BundleContext;
@@ -64,12 +67,12 @@ public class ListenerManager implements ManagedServiceFactory {
 
     private MessageDispatcherFactory messageDispatcherFactory;
     private DistPollerDao distPollerDao;
+    private TelemetryRegistry telemetryRegistry;
 
     private static class Entity {
-        private Listener listener = null;
-        private Set<Parser> parsers = new HashSet<>();
-        private Set<AsyncDispatcher<TelemetryMessage>> dispatchers = new HashSet<>();
-        private ServiceRegistration<HealthCheck> healthCheck = null;
+        private Listener listener;
+        private Set<String> queueNames = new HashSet<>();
+        private ServiceRegistration<HealthCheck> healthCheck;
     }
 
     private Map<String, Entity> entities = new LinkedHashMap<>();
@@ -89,64 +92,63 @@ public class ListenerManager implements ManagedServiceFactory {
         } else {
             LOG.info("Creating new listener/dispatcher for pid: {}", pid);
         }
+        final PropertyTree definition = PropertyTree.from(properties);
+        final MapBasedListenerDef listenerDef = new MapBasedListenerDef(definition);
+        final ListenerHealthCheck healthCheck = new ListenerHealthCheck(listenerDef);
 
         final Entity entity = new Entity();
-
-        // Convert the dictionary to a map
-        final PropertyTree definition = PropertyTree.from(properties);
-
-        // Build the protocol and listener definitions
-        final MapBasedListenerDef listenerDef = new MapBasedListenerDef(definition);
-
-        // Register health check
-        final ListenerHealthCheck healthCheck = new ListenerHealthCheck(listenerDef);
         entity.healthCheck = bundleContext.registerService(HealthCheck.class, healthCheck, null);
 
         try {
-            // TODO MVR
-//            final Listener.Factory listenerFactory = Beans.createFactory(Listener.Factory.class, listenerDef.getClassName());
-//
-//            // Create Parsers
-//            for (final MapBasedParserDef parserDef : listenerDef.getParsers()) {
-//                final TelemetrySinkModule sinkModule = new TelemetrySinkModule(parserDef);
-//                sinkModule.setDistPollerDao(distPollerDao);
-//                final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
-//
-//                entity.dispatchers.add(dispatcher);
-//
-//                final Parser parser = listenerFactory.parser(parserDef).create(dispatcher);
-//                entity.parsers.add(parser);
-//            }
-//
-//            entity.listener = listenerFactory.create(listenerDef.getName(), listenerDef.getParameterMap(), entity.parsers);
+            // Ensure that the queues have not yet been created
+            final Set<String> queueNames = listenerDef.getParsers().stream().map(pd -> pd.getQueueName()).collect(Collectors.toSet());
+            for (String eachQueue : queueNames) {
+                if (telemetryRegistry.getDispatcher(eachQueue) != null) {
+                    throw new IllegalArgumentException("A queue with name " + eachQueue + " is already defined. Bailing.");
+                }
+            }
+
+            // Create Sink Modules for all defined queues
+            listenerDef.getParsers().stream()
+                    .forEach(parserDef -> {
+                        final TelemetrySinkModule sinkModule = new TelemetrySinkModule(parserDef);
+                        sinkModule.setDistPollerDao(distPollerDao);
+
+                        final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
+                        final String queueName = Objects.requireNonNull(parserDef.getQueueName());
+                        telemetryRegistry.registerDispatcher(queueName, dispatcher);
+
+                        // Remember queue name
+                        entity.queueNames.add(parserDef.getQueueName());
+                    });
+
+            // Start listener
+            entity.listener = telemetryRegistry.getListener(listenerDef);
             entity.listener.start();
 
             // At this point the listener should be up and running,
             // so we mark the underlying health check as success
             healthCheck.markSucess();
 
+            this.entities.put(pid, entity);
         } catch (Exception e) {
+            LOG.error("Failed to build listener.", e);
+
             // In case of error, we mark the health check as failure as well
             healthCheck.markError(e);
-            LOG.error("Failed to build listener.", e);
-            try {
-                for (final AsyncDispatcher<TelemetryMessage> dispatcher : entity.dispatchers) {
-                    dispatcher.close();
-                }
-            } catch (Exception ee) {
-                LOG.error("Failed to close dispatcher.", e);
-            }
-        }
 
+            // Close all already started dispatcher
+            stopQueues(entity.queueNames);
+        }
         LOG.info("Successfully started listener/dispatcher for pid: {}", pid);
     }
 
     @Override
     public void deleted(String pid) {
         final Entity entity = this.entities.remove(pid);
-
-        entity.healthCheck.unregister();
-
+        if (entity.healthCheck != null) {
+            entity.healthCheck.unregister();
+        }
         if (entity.listener != null) {
             LOG.info("Stopping listener for pid: {}", pid);
             try {
@@ -155,23 +157,8 @@ public class ListenerManager implements ManagedServiceFactory {
                 LOG.error("Error occurred while stopping listener for pid: {}", pid, e);
             }
         }
-
-        for (final Parser parser : entity.parsers) {
-            LOG.info("Closing parser for pid: {}", pid);
-            try {
-                parser.stop();
-            } catch (Exception e) {
-                LOG.error("Error occurred while closing parser for pid: {}", pid, e);
-            }
-        }
-
-        for (final AsyncDispatcher<TelemetryMessage> dispatcher : entity.dispatchers) {
-            LOG.info("Closing dispatcher for pid: {}", pid);
-            try {
-                dispatcher.close();
-            } catch (Exception e) {
-                LOG.error("Error occurred while closing dispatcher for pid: {}", pid, e);
-            }
+        if (entity.queueNames != null) {
+            stopQueues(entity.queueNames);
         }
     }
 
@@ -203,4 +190,23 @@ public class ListenerManager implements ManagedServiceFactory {
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
     }
+
+    public void setTelemetryRegistry(TelemetryRegistry telemetryRegistry) {
+        this.telemetryRegistry = telemetryRegistry;
+    }
+
+    private void stopQueues(Set<String> queueNames) {
+        Objects.requireNonNull(queueNames);
+        for (String queueName : queueNames) {
+            try {
+                final AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(queueName);
+                dispatcher.close();
+            } catch (Exception ex) {
+                LOG.error("Failed to close dispatcher.", ex);
+            } finally {
+                telemetryRegistry.removeDispatcher(queueName);
+            }
+        }
+    }
+
 }
