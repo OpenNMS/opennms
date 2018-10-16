@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.kafka.common;
+package org.opennms.core.ipc.common.kafka;
 
 public interface KafkaSinkConstants {
     String KAFKA_TOPIC_PREFIX = "Sink";

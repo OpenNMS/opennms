@@ -44,7 +44,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.camel.JmsQueueNameFactory;
-import org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants;
+import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
 import org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.kafka.JUnitKafkaServer;

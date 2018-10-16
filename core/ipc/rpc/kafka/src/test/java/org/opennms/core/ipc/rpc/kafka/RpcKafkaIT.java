@@ -59,6 +59,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.opennms.core.ipc.common.kafka.OsgiKafkaConfigProvider;
 import org.opennms.core.rpc.api.RemoteExecutionException;
 import org.opennms.core.rpc.api.RequestTimedOutException;
 import org.opennms.core.rpc.echo.EchoRequest;
@@ -110,7 +111,7 @@ public class RpcKafkaIT {
         when(configAdmin.getConfiguration(KafkaRpcConstants.KAFKA_CONFIG_PID).getProperties())
                 .thenReturn(kafkaConfig);
         minionIdentity = new MockMinionIdentity(REMOTE_LOCATION_NAME);
-        kafkaRpcServer = new KafkaRpcServerManager(configAdmin, minionIdentity);
+        kafkaRpcServer = new KafkaRpcServerManager(new OsgiKafkaConfigProvider(KafkaRpcConstants.KAFKA_CONFIG_PID, configAdmin), minionIdentity);
         kafkaRpcServer.init();
         kafkaRpcServer.bind(echoRpcModule);
     }

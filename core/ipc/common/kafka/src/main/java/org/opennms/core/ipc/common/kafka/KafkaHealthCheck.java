@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,35 +26,47 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.distributed.core.impl;
+package org.opennms.core.ipc.common.kafka;
 
+
+import java.util.Properties;
+
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.opennms.core.health.api.Context;
-import org.opennms.distributed.core.api.RestClient;
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
 
-/**
- * Verifies the connection to the OpenNMS ReST API.
- *
- * @author mvrueden
- */
-public class RestConnectionHealthCheck implements HealthCheck {
 
-    private final RestClient restClient;
+public class KafkaHealthCheck implements HealthCheck {
 
-    public RestConnectionHealthCheck(final RestClient restClient) {
-        this.restClient = restClient;
+    private KafkaConfigProvider kafkaConfigProvider;
+    // Differentiate between Sink/RPC
+    private final String type;
+
+    public KafkaHealthCheck(KafkaConfigProvider kafkaConfigProvider, String type) {
+        this.kafkaConfigProvider = kafkaConfigProvider;
+        this.type = type;
+    }
+
+
+    @Override
+    public String getDescription() {
+        return "Connecting to Kafka from " + type ;
     }
 
     @Override
     public Response perform(Context context) throws Exception {
-        restClient.ping();
-        return new Response(Status.Success);
-    }
-
-    @Override
-    public String getDescription() {
-        return "Connecting to OpenNMS ReST API";
+        Properties kafkaConfig = kafkaConfigProvider.getProperties();
+        int timeout = Math.toIntExact(context.getTimeout());
+        kafkaConfig.put("request.timeout.ms", timeout);
+        try (AdminClient client = Utils.runWithNullContextClassLoader(() -> AdminClient.create(kafkaConfig))) {
+            ListTopicsResult listTopicsResult = client.listTopics();
+            listTopicsResult.names().get();
+            return new Response(Status.Success);
+        } catch (Exception e) {
+            return new Response(e);
+        }
     }
 }

@@ -31,7 +31,7 @@ package org.opennms.core.ipc.sink.kafka.itests;
 import java.util.Properties;
 
 import org.junit.Test;
-import org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants;
+import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 
 public class KafkaDispatcherBlueprintIT extends CamelBlueprintTest {

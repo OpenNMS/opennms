@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.kafka.server;
+package org.opennms.core.ipc.common.kafka;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -38,13 +38,17 @@ public class Utils {
     // By setting the ClassLoader to null, the BundleContextClassLoader of the kafka client library is used instead,
     // which can instantiate those classes more likely (depending on Import/DynamicImport-Package definitions)
     public static <T> T runWithNullContextClassLoader(final Supplier<T> supplier) {
+       return runWithGivenClassLoader(supplier, null);
+    }
+
+    public static <T> T runWithGivenClassLoader(final Supplier<T> supplier, ClassLoader classLoader) {
         Objects.requireNonNull(supplier);
-        final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         try {
-            Thread.currentThread().setContextClassLoader(null);
+            Thread.currentThread().setContextClassLoader(classLoader);
             return supplier.get();
         } finally {
-            Thread.currentThread().setContextClassLoader(classLoader);
+            Thread.currentThread().setContextClassLoader(contextClassLoader);
         }
     }
 }

@@ -44,16 +44,16 @@ public interface HealthCheckService {
      * contains the {@link Health} representing each {@link HealthCheck}s {@link Response}.
      *
      * It is up to the implementator to respect timeouts and handle exceptions accordingly, when
-     * these situations arise when calling {@link HealthCheck#perform()}.
+     * these situations arise when calling {@link HealthCheck#perform(Context)}.
      *
      * Callback methods can be provided to print information before and after a {@link HealthCheck} is invoked.
      * When providing a <code>onFinishConsumer</code> please note, that this is
-     * invoked even if the {@link HealthCheck#perform()} execution failed or timed out and therefore may not
-     * represent the value when calling {@link HealthCheck#perform()} directly.
+     * invoked even if the {@link HealthCheck#perform(Context)} execution failed or timed out and therefore may not
+     * represent the value when calling {@link HealthCheck#perform(Context)} directly.
      *
      * @param context The context object
-     * @param onStartConsumer Callback method which is invoked before the {@link HealthCheck#perform()} method is invoked. May be null.
-     * @param onFinishConsumer Callback method which is invoked after the {@link HealthCheck#perform()} method is invoked. May be null.
+     * @param onStartConsumer Callback method which is invoked before the {@link HealthCheck#perform(Context)} method is invoked. May be null.
+     * @param onFinishConsumer Callback method which is invoked after the {@link HealthCheck#perform(Context)} method is invoked. May be null.
      * @return The {@link CompletableFuture} to retrieve the {@link Health} from.
      */
     CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer);
