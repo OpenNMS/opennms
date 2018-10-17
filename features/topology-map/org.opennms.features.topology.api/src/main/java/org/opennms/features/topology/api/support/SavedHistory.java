@@ -53,6 +53,7 @@ import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HistoryOperation;
 import org.opennms.features.topology.api.Layout;
+import org.opennms.core.utils.PerformanceOptimizedHelper;
 import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -192,18 +193,21 @@ public class SavedHistory {
 
     public void apply(GraphContainer graphContainer, Collection<HistoryOperation> operations, ServiceLocator serviceLocator) {
         LOG.debug("Applying " + toString());
-
+        PerformanceOptimizedHelper.TimeLogger timer = new PerformanceOptimizedHelper.TimeLogger("history 1");
         graphContainer.clearCriteria();
-
+        PerformanceOptimizedHelper.TimeLogger opTimer;
         // Apply the history for each registered HistoryOperation
         for (HistoryOperation operation : operations) {
             try {
+                opTimer = new PerformanceOptimizedHelper.TimeLogger(operation.toString());
                 operation.applyHistory(graphContainer, m_settings);
+                opTimer.logTimeStop();
             } catch (Throwable e) {
                 LOG.warn("Failed to perform applyHistory() operation", e);
             }
         }
-
+        timer.logTimeStop();
+        timer = new PerformanceOptimizedHelper.TimeLogger("history 2");
         // Browse through all available search providers that have a "history" functionality
         List<SearchProvider> searchProviders = serviceLocator.findServices(SearchProvider.class,null);
         for (SearchProvider searchProvider : searchProviders) {
@@ -218,14 +222,18 @@ public class SavedHistory {
                 }
             }
         }
-
+        timer.logTimeStop();
+        timer = new PerformanceOptimizedHelper.TimeLogger("history 3");
         // Set Vertices in Focus after all other operations are applied, otherwise the topology provider may have changed
         // which results in a graphContainer.clearCriteria()
         applyVerticesInFocus(m_focusVertices, graphContainer);
+        timer.logTimeStop();
+        timer = new PerformanceOptimizedHelper.TimeLogger("history 4");
         applySavedLocations(m_locations, graphContainer.getGraph().getLayout());
         graphContainer.setSemanticZoomLevel(getSemanticZoomLevel());
         graphContainer.getSelectionManager().setSelectedVertexRefs(m_selectedVertices); // Apply the selected vertices
         graphContainer.getMapViewManager().setBoundingBox(getBoundingBox());
+        timer.logTimeStop();
     }
 
     @Override

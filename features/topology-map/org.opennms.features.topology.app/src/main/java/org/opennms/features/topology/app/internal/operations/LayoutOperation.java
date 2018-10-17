@@ -28,6 +28,8 @@
 
 package org.opennms.features.topology.app.internal.operations;
 
+import static org.opennms.core.utils.PerformanceOptimizedHelper.isPerformanceOptimized;
+
 import java.util.List;
 import java.util.Map;
 
@@ -59,7 +61,9 @@ public abstract class LayoutOperation extends AbstractCheckedOperation {
      */
     private void execute(GraphContainer container) {
         container.setLayoutAlgorithm(m_factory.getLayoutAlgorithm());
-        container.redoLayout();
+        if(!isPerformanceOptimized()){
+            container.redoLayout(); // I think we can omit this call since the redoLayout will be called later in init() and uiFragmentChanged
+        }
     }
 
     @Override

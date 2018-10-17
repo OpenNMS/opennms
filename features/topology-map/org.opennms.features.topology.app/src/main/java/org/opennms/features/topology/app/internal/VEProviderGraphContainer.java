@@ -29,6 +29,7 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -44,6 +45,7 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.IconManager;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.MapViewManager;
+import org.opennms.core.utils.PerformanceOptimizedHelper;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.TopologyService;
 import org.opennms.features.topology.api.TopologyServiceClient;
@@ -242,12 +244,13 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
     public void redoLayout() {
-        s_log.debug("redoLayout()");
+        PerformanceOptimizedHelper.TimeLogger timer = new PerformanceOptimizedHelper.TimeLogger();
         getGraph();
         if(m_layoutAlgorithm != null) {
             m_layoutAlgorithm.updateLayout(m_graph);
             fireGraphChanged();
         }
+        timer.logTimeStop();
     }
 
     @Override
@@ -400,8 +403,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     @Override
 	public void fireGraphChanged() {
 		for(ChangeListener listener : m_listeners) {
-			listener.graphChanged(this);
-		}
+			listener.graphChanged(this); // TODO: patrick slow: node table, appliction table, bussinesserviceTable
+ 		}
 	}
 
     @Override
@@ -446,14 +449,33 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     @Override
     public void selectTopologyProvider(GraphProvider graphProvider, Callback... callbacks) {
         // Do not get the graph here, as it is received when invoking the "redoLayout" method.
+        PerformanceOptimizedHelper.TimeLogger timeLogger = new PerformanceOptimizedHelper.TimeLogger();
         setSelectedNamespace(graphProvider.getNamespace());
         setLayoutAlgorithm(getTopologyServiceClient().getPreferredLayoutAlgorithm());
         if (callbacks != null) {
+            PerformanceOptimizedHelper.TimeLogger callbackLogger;
             for (Callback eachCallback : callbacks) {
+                callbackLogger = new PerformanceOptimizedHelper.TimeLogger(eachCallback.toString());
                 eachCallback.callback(this, graphProvider);
+                callbackLogger.logTimeStop();
             }
         }
-        redoLayout();
+        if(PerformanceOptimizedHelper.isPerformanceOptimized()) {
+            // we don't need to call the expensive redoLayout() method if we are called from the init method since
+            // redoLayout will be triggered later in that method. This is a dirty hack here of course and needs to be
+            // done properly. This is just for demonstration purposes
+            boolean isCalledFromInit = Arrays
+                    .stream(Thread.currentThread().getStackTrace())
+                    .anyMatch(element -> "init".equals(element.getMethodName())
+                            && TopologyUI.class.getName().equals(element.getClassName()));
+            if(!isCalledFromInit){
+                redoLayout();
+            }
+
+        } else {
+            redoLayout();
+        }
+        timeLogger.logTimeStop();
     }
 
     public void saveLayout() {

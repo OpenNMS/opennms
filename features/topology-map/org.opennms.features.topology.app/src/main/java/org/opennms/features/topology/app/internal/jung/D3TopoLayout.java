@@ -28,6 +28,8 @@
 
 package org.opennms.features.topology.app.internal.jung;
 
+import static org.opennms.core.utils.PerformanceOptimizedHelper.isPerformanceOptimized;
+
 import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,10 +55,10 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
 
     private double m_alpha = 0.1;
     private Map<V, VertexData> m_vertexData = LazyMap.decorate(new HashMap<V, VertexData>(), new Factory<VertexData>(){
-
+        boolean optimized = isPerformanceOptimized();
         @Override
         public VertexData create() {
-            return new VertexData();
+            return new VertexData(optimized);
         }
     });
 
@@ -340,14 +342,24 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
         private double m_strength = LINK_STRENGTH;
         private int m_charge = DEFAULT_CHARGE;
         private Point2D m_previous = null;
+        private final boolean m_optimized;
+
+        VertexData(boolean optimized){
+            m_optimized = optimized;
+        }
 
         protected void offset(double x, double y)
         {
-            String before = this.toString();
-            this.x += x;
-            this.y += y;
-            String after = this.toString();
-            print(before, after);
+            if(m_optimized){
+                this.x += x;
+                this.y += y;
+            } else {
+                String before = this.toString();
+                this.x += x;
+                this.y += y;
+                String after = this.toString();
+                print(before, after);
+            }
         }
         
         protected void offsetPrevious(double x, double y) {
@@ -367,10 +379,15 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
 
         @Override
         public void setLocation(double x, double y) {
-            String before = this.toString();
-            super.setLocation(x, y);
-            String after = this.toString();
-            print(before, after);
+            if(m_optimized){
+                super.setLocation(x, y);
+            }
+            else {
+                String before = this.toString();
+                super.setLocation(x, y);
+                String after = this.toString();
+                print(before, after);
+            }
         }
 
         private void print(String before, String after) {
@@ -378,10 +395,14 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
 
         @Override
         public void setLocation(Point2D p) {
-            String before = this.toString();
-            super.setLocation(p);
-            String after = this.toString();
-            print(before, after);
+            if(m_optimized){
+                super.setLocation(p);
+            } else {
+                String before = this.toString();
+                super.setLocation(p);
+                String after = this.toString();
+                print(before, after);
+            }
         }
 
         protected double norm()

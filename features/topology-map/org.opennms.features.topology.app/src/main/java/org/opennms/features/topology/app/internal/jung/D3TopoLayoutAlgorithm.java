@@ -33,6 +33,7 @@ import java.util.Collection;
 
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.Layout;
+import org.opennms.core.utils.PerformanceOptimizedHelper;
 import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -67,8 +68,10 @@ public class D3TopoLayoutAlgorithm extends AbstractLayoutAlgorithm {
         // Resize the graph to accommodate the number of vertices
         layout.setSize(size);
 
-        while(!layout.done()) {
-            layout.step();
+        if(!(PerformanceOptimizedHelper.isPerformanceOptimized() && vertices.isEmpty())) { // we don't need to do all these steps on an empty layout
+            while(!layout.done()) {
+                layout.step();
+            }
         }
 
         // Store the new positions in the layout

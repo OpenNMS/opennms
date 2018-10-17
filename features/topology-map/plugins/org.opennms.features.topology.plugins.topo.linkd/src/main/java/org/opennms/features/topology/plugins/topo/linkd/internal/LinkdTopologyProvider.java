@@ -30,7 +30,6 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,6 +39,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.PerformanceOptimizedHelper;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAware;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
@@ -215,14 +215,16 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
     
     private void loadVertices() {
+        PerformanceOptimizedHelper.TimeLogger timer = new PerformanceOptimizedHelper.TimeLogger();
         for (OnmsNode node : m_nodeDao.findAll()) {
             OnmsIpInterface primary = m_nodeToOnmsIpPrimaryMap.get(node.getId());
             addVertices(LinkdVertex.create(node,primary));
         }
+        timer.logTimeStop();
     }
     
     private void loadEdges() {
-
+        PerformanceOptimizedHelper.TimeLogger timer = new PerformanceOptimizedHelper.TimeLogger();
         Timer.Context context = m_loadLldpLinksTimer.time();
         try{
             getLldpLinks();
@@ -272,6 +274,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         } finally {
             context.stop();
         }
+        timer.logTimeStop();
     }
 
 

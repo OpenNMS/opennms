@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -50,6 +51,7 @@ import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.NeRestriction;
+import org.opennms.core.utils.PerformanceOptimizedHelper;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -62,6 +64,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.util.StringUtils;
+
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 
 /**
  * <p>NodeDaoHibernate class.</p>
@@ -408,8 +413,21 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
      */
     @Override
     public List<OnmsNode> findAll() {
-        return find("from OnmsNode order by label");
+        PerformanceOptimizedHelper.TimeLogger timer = new PerformanceOptimizedHelper.TimeLogger();
+        List<OnmsNode> result;
+        if (PerformanceOptimizedHelper.isPerformanceOptimized()) {
+            // use some caching, before putting in production we need to make sure the list ist not modifiable.
+            // Unfortunately OnmsNode is :-/
+            result = onmsNodes.get();
+        } else {
+            result = find("from OnmsNode order by label");
+        }
+        timer.logTimeStop();
+        return result;
     }
+
+    Supplier<List<OnmsNode>> onmsNodes = Suppliers.memoizeWithExpiration(
+            ()-> find("from OnmsNode order by label"), 5, TimeUnit.MINUTES);
 
     /**
      * <p>findAllProvisionedNodes</p>

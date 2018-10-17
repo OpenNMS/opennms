@@ -29,6 +29,7 @@
 package org.opennms.features.topology.app.internal;
 
 import static org.opennms.features.topology.api.support.VertexHopGraphProvider.getWrappedVertexHopCriteria;
+import static org.opennms.core.utils.PerformanceOptimizedHelper.isPerformanceOptimized;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -54,6 +55,7 @@ import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.MapViewManagerListener;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.OperationContext.DisplayLocation;
+import org.opennms.core.utils.PerformanceOptimizedHelper;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionManager;
@@ -218,10 +220,13 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         @Override
         public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response) throws IOException {
             handleRequestParameter(request);
+            if(isPerformanceOptimized()){
+                m_graphContainer.redoLayout(); // we moved this method out of handleRequestParameter(request);
+            }
             return false;
         }
 
-        public void handleRequestParameter(VaadinRequest request) {
+        private void handleRequestParameter(VaadinRequest request) {
             boolean updateURL = false;
             for (RequestParameterHandler handler : requestHandlerList) {
                 if (handler.handleRequest(request)) {
@@ -229,7 +234,12 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                 }
             }
             // we redo the layout before we save the history
-            m_graphContainer.redoLayout();
+            if(isPerformanceOptimized()){
+                // we do not need to redo the layout here since this method can be called from init() and from
+                // handleRequest(). The init method redoes the layout anyway.
+            } else {
+                m_graphContainer.redoLayout();
+            }
             m_topologyComponent.getState().setPhysicalWidth(0);
             m_topologyComponent.getState().setPhysicalHeight(0);
             m_topologyComponent.markAsDirtyRecursive();
@@ -543,6 +553,8 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
 	@Override
     protected void init(final VaadinRequest request) {
+        PerformanceOptimizedHelper.TimeLogger timer = new PerformanceOptimizedHelper.TimeLogger();
+        PerformanceOptimizedHelper.TimeLogger timerPart = new PerformanceOptimizedHelper.TimeLogger("init 1");
         // Register a cleanup
         request.getService().addSessionDestroyListener((SessionDestroyListener) event -> m_widgetManager.removeUpdateListener(TopologyUI.this));
 
@@ -565,6 +577,8 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         });
         m_verticesUpdateManager = new OsgiVerticesUpdateManager(m_serviceManager, m_applicationContext);
         m_serviceManager.getEventRegistry().addPossibleEventConsumer(this, m_applicationContext);
+        timerPart.logTimeStop();
+        timerPart = new PerformanceOptimizedHelper.TimeLogger("init 2");
 
         // Set the algorithm last so that the criteria and SZLs are
         // in place before we run the layout algorithm.
@@ -575,17 +589,30 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         setupAutoRefresher(); // Add an auto refresh handler to the GraphContainer
         loadUserSettings();
 
+        timerPart.logTimeStop();
+        timerPart = new PerformanceOptimizedHelper.TimeLogger("init 3");
+
         // If no Topology Provider was selected (due to loadUserSettings(), fallback to default
         if (Strings.isNullOrEmpty(m_graphContainer.getMetaTopologyId())) {
+
+            PerformanceOptimizedHelper.TimeLogger timerPart2 = new PerformanceOptimizedHelper.TimeLogger("init 3.1");
+
             CheckedOperation defaultTopologySelectorOperation = getDefaultTopologySelectorOperation(m_bundlecontext);
             Objects.requireNonNull(defaultTopologySelectorOperation, "No default GraphProvider found."); // no default found, abort
+            timerPart2.logTimeStop();
+            timerPart2 = new PerformanceOptimizedHelper.TimeLogger("init 3.2 "+defaultTopologySelectorOperation.toString());
             defaultTopologySelectorOperation.execute(Lists.newArrayList(), new DefaultOperationContext(TopologyUI.this, m_graphContainer, DisplayLocation.MENUBAR));
+            timerPart2.logTimeStop();
         }
 
         // Add a request handler that parses incoming focusNode and szl query parameters
         TopologyUIRequestHandler handler = new TopologyUIRequestHandler();
         getSession().addRequestHandler(handler);
         handler.handleRequestParameter(request); // deal with those in init case
+
+
+        timerPart.logTimeStop();
+        timerPart = new PerformanceOptimizedHelper.TimeLogger("init 4");
 
         // Add the default criteria if we do not have already a criteria set
         if (getWrappedVertexHopCriteria(m_graphContainer).isEmpty() && noAdditionalFocusCriteria()) {
@@ -604,6 +631,8 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
         // Trigger a selectionChanged
         m_selectionManager.selectionChanged(m_selectionManager);
+        timerPart.logTimeStop();
+        timer.logTimeStop();
     }
 
     private void setupListeners() {
@@ -650,6 +679,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     }
 
     private void createLayouts() {
+        PerformanceOptimizedHelper.TimeLogger timer = new PerformanceOptimizedHelper.TimeLogger();
         m_rootLayout = new VerticalLayout();
         m_rootLayout.setSizeFull();
         m_rootLayout.addStyleName("root-layout");
@@ -661,6 +691,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         addContentLayout();
 
         addNoContentWindow();
+        timer.logTimeStop();
     }
 
     private void addNoContentWindow() {
@@ -872,8 +903,12 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     // this user. Do this before laying out the UI because the history
     // may change during layout.
     private void loadUserSettings() {
+        PerformanceOptimizedHelper.TimeLogger timer = new PerformanceOptimizedHelper.TimeLogger();
         applyHistory(m_applicationContext.getUsername(), m_historyManager.getHistoryFragment(m_applicationContext.getUsername()));
-        m_graphContainer.redoLayout();
+        if(!isPerformanceOptimized()) {
+            m_graphContainer.redoLayout(); // I think we can omit this call here since the redo Layout will be called late in the init() method again
+        }
+        timer.logTimeStop();
     }
 
     private void applyHistory(String username, String fragment) {
