@@ -56,15 +56,17 @@ public class TcpListenerFactory implements ListenerFactory {
 
     @Override
     public Listener createBean(ListenerDefinition listenerDefinition) {
-        if (listenerDefinition.getParameterMap().size() != 1) {
+        // TcpListener only supports one parser at a time
+        if (listenerDefinition.getParsers().size() != 1) {
             throw new IllegalArgumentException("The simple TCP listener supports exactly one parser");
         }
+        // Ensure each defined parser is of type TcpParser
         final List<TcpParser> parser = listenerDefinition.getParsers().stream()
                 .map(p -> telemetryRegistry.getParser(p))
                 .filter(p -> p instanceof TcpParser && p != null)
                 .map(p -> (TcpParser) p).collect(Collectors.toList());
         if (parser.size() != listenerDefinition.getParsers().size()) {
-            throw new IllegalArgumentException(); // TODO MVR add error message
+            throw new IllegalArgumentException("Each parser must be of type TcpParser but was not.");
         }
         final TcpListener listener = new TcpListener(listenerDefinition.getName(), parser.iterator().next());
         final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(listener);

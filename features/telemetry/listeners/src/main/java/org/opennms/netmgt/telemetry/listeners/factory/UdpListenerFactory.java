@@ -62,7 +62,7 @@ public class UdpListenerFactory implements ListenerFactory {
                 .filter(p -> p instanceof UdpParser && p != null)
                 .map(p -> (UdpParser) p).collect(Collectors.toList());
         if (parsers.size() != listenerDefinition.getParsers().size()) {
-            throw new IllegalArgumentException(); // TODO MVR add error message
+            throw new IllegalArgumentException("Each parser must be of type UdpParser but was not.");
         }
         final Listener listener = new UdpListener(listenerDefinition.getName(), parsers);
         final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(listener);
