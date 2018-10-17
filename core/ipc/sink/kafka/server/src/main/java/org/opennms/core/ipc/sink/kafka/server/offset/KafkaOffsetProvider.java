@@ -335,7 +335,7 @@ public class KafkaOffsetProvider {
         kafkaConfig.put("key.deserializer", ByteArrayDeserializer.class.getCanonicalName());
         kafkaConfig.put("value.deserializer", ByteArrayDeserializer.class.getCanonicalName());
         kafkaConfig.putAll(configProvider.getProperties());
-        consumerRunner = Utils.runWithNullContextClassLoader(() -> new KafkaOffsetConsumerRunner());
+        consumerRunner = Utils.runWithGivenClassLoader(() -> new KafkaOffsetConsumerRunner(), KafkaConsumer.class.getClassLoader());
         reporter = JmxReporter.forRegistry(kafkaOffsetMetrics).inDomain("org.opennms.core.ipc.sink.kafka").build();
 
         reporter.start();
