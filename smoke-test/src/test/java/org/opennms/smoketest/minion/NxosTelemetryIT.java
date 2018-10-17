@@ -127,7 +127,7 @@ public class NxosTelemetryIT {
         Date startOfTest = new Date();
 
         OnmsNode onmsNode = addRequisition(opennmsHttp, false, startOfTest);
-        final InetSocketAddress opennmsUdp = m_testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 50000, "udp");
+        final InetSocketAddress opennmsUdp = m_testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 50001, "udp");
         sendNxosTelemetryMessage(opennmsUdp);
 
         await().atMost(30, SECONDS).pollDelay(0, SECONDS).pollInterval(5, SECONDS)
@@ -145,10 +145,10 @@ public class NxosTelemetryIT {
         try (final SshClient sshClient = new SshClient(sshAddr, "admin", "admin")) {
             // Modify minion configuration for telemetry
             PrintStream pipe = sshClient.openShell();
-            pipe.println("config:edit org.opennms.features.telemetry.listeners-udp-50000");
+            pipe.println("config:edit org.opennms.features.telemetry.listeners-udp-50001");
             pipe.println("config:property-set name NXOS");
             pipe.println("config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener");
-            pipe.println("config:property-set parameters.port 50000");
+            pipe.println("config:property-set parameters.port 50001");
             pipe.println("config:property-set parsers.1.name NXOS");
             pipe.println("config:property-set parsers.1.class-name org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser");
             pipe.println("config:update");
@@ -157,7 +157,7 @@ public class NxosTelemetryIT {
         }
 
         OnmsNode onmsNode = addRequisition(opennmsHttp, true, startOfTest);
-        final InetSocketAddress minionUdp = m_testEnvironment.getServiceAddress(ContainerAlias.MINION, 50000, "udp");
+        final InetSocketAddress minionUdp = m_testEnvironment.getServiceAddress(ContainerAlias.MINION, 50001, "udp");
         sendNxosTelemetryMessage(minionUdp);
 
         await().atMost(2, MINUTES).pollDelay(0, SECONDS).pollInterval(15, SECONDS)
