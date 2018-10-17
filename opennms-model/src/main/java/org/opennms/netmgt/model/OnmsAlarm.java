@@ -51,6 +51,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -200,7 +201,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     
     private OnmsReductionKeyMemo m_reductionKeyMemo;
 
-    private Set<OnmsAlarm> m_relatedAlarms = new HashSet<>();
+    private Set<RelatedAlarm> m_relatedAlarms = new HashSet<>();
 
     /**
      * default constructor
@@ -1175,24 +1176,32 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
 
     /**
-     * <p>getRelatedAlarms</p>
+     * <p>getRelatedAlarmsForSituation</p>
      *
      * @return a {@link java.util.Set} object.
      */
+    @Transient
     @XmlTransient
-    @ElementCollection
-    @JoinTable(name = "alarm_situations", joinColumns = @JoinColumn(name = "situation_id"), inverseJoinColumns = @JoinColumn(name = "related_alarm_id"))
-    @Column(name="alarm_id", nullable=false)
-    public Set<OnmsAlarm> getRelatedAlarms() {
-        return m_relatedAlarms;
+    public Set<OnmsAlarm> getRelatedAlarmsForSituation() {
+        return m_relatedAlarms.stream().map(RelatedAlarm::getRelatedAlarm).collect(Collectors.toSet());
     }
 
     @Transient
     @XmlTransient
     public Set<Integer> getRelatedAlarmIds() {
-        return getRelatedAlarms().stream()
+        return getRelatedAlarmsForSituation().stream()
                 .map(OnmsAlarm::getId)
                 .collect(Collectors.toSet());
+    }
+
+    @XmlTransient
+    @OneToMany(mappedBy = "situationAlarm")
+    public Set<RelatedAlarm> getRelatedAlarms() {
+        return m_relatedAlarms;
+    }
+
+    public void setRelatedAlarms(Set<RelatedAlarm> alarms) {
+        m_relatedAlarms = alarms;
     }
 
     /**
@@ -1200,19 +1209,21 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @param alarms a {@link java.util.Set} object.
      */
-    public void setRelatedAlarms(Set<OnmsAlarm> alarms) {
-        m_relatedAlarms = alarms;
+    public void setRelatedAlarmsForSituation(Set<OnmsAlarm> alarms) {
+        m_relatedAlarms.clear();
+        alarms.stream().forEach(relatedAlarm -> m_relatedAlarms.add(new RelatedAlarm(this, relatedAlarm)));
     }
 
     public void addRelatedAlarm(OnmsAlarm alarm) {
-        m_relatedAlarms.add(alarm);
+        m_relatedAlarms.add(new RelatedAlarm(this, alarm));
     }
+
 
     // Any alarm with related alarms is a 'Situation'
     @Transient
     @XmlTransient
     public boolean isSituation() {
-        return ! m_relatedAlarms.isEmpty();
+        return !m_relatedAlarms.isEmpty();
     }
 
     @Transient
@@ -1221,7 +1232,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         if (m_relatedAlarms == null || m_relatedAlarms.isEmpty()) {
             return m_node == null ? 0 : 1;
         }
-        Set<Integer> nodes = m_relatedAlarms.stream().map(OnmsAlarm::getNode).filter(Objects::nonNull).map(OnmsNode::getId).collect(Collectors.toSet());
+        Set<Integer> nodes = getRelatedAlarmsForSituation().stream().map(OnmsAlarm::getNode).filter(Objects::nonNull).map(OnmsNode::getId).collect(Collectors.toSet());
         // count the Situtation's node if it is different
         if (m_node != null) {
             nodes.add(m_node.getId());

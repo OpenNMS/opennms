@@ -118,14 +118,14 @@ public class SituationIT {
         situation.setDistPoller(m_distPollerDao.whoami());
         situation.setCounter(1);
         situation.setUei("cardDown");
-        situation.setRelatedAlarms(new HashSet<>(Arrays.asList(linkDownAlarmOnR1, linkDownAlarmOnR2)));
+        situation.setRelatedAlarmsForSituation(new HashSet<>(Arrays.asList(linkDownAlarmOnR1, linkDownAlarmOnR2)));
         situation.setReductionKey("situation/reduction/key");
         
         m_alarmDao.saveOrUpdate(situation);
         
         OnmsAlarm retrieved = m_alarmDao.findByReductionKey("situation/reduction/key");
-        assertThat(retrieved.getRelatedAlarms().size(), is(2));
-        assertThat(retrieved.getRelatedAlarms(), containsInAnyOrder(linkDownAlarmOnR1, linkDownAlarmOnR2));
+        assertThat(retrieved.getRelatedAlarmsForSituation().size(), is(2));
+        assertThat(retrieved.getRelatedAlarmsForSituation(), containsInAnyOrder(linkDownAlarmOnR1, linkDownAlarmOnR2));
     }
 
     @Test
@@ -136,13 +136,13 @@ public class SituationIT {
         situation.setDistPoller(m_distPollerDao.whoami());
         situation.setCounter(1);
         situation.setUei("cardDown");
-        situation.setRelatedAlarms(new HashSet<>(Arrays.asList(linkDownAlarmOnR1, linkDownAlarmOnR2)));
+        situation.setRelatedAlarmsForSituation(new HashSet<>(Arrays.asList(linkDownAlarmOnR1, linkDownAlarmOnR2)));
         situation.setReductionKey("situation/reduction/key");
         
         m_alarmDao.saveOrUpdate(situation);
 
         OnmsAlarm retrieved = m_alarmDao.findByReductionKey("situation/reduction/key");
-        assertThat(retrieved.getRelatedAlarms().size(), is(2));
+        assertThat(retrieved.getRelatedAlarmsForSituation().size(), is(2));
 
         // update the situation by adding an alarm
         OnmsAlarm alarm3 = new OnmsAlarm();
@@ -150,12 +150,12 @@ public class SituationIT {
         alarm3.setCounter(1);
         alarm3.setUei("linkDown");
         retrieved.addRelatedAlarm(alarm3);
-        assertThat(retrieved.getRelatedAlarms().size(), is(3));
+        assertThat(retrieved.getRelatedAlarmsForSituation().size(), is(3));
 
         m_alarmDao.saveOrUpdate(retrieved);
 
         OnmsAlarm retrieved2 = m_alarmDao.findByReductionKey("situation/reduction/key");
-        assertThat(retrieved2.getRelatedAlarms().size(), is(3));
+        assertThat(retrieved2.getRelatedAlarmsForSituation().size(), is(3));
         assertThat(retrieved2.getAffectedNodeCount(), is(1));
    }
 
@@ -166,23 +166,23 @@ public class SituationIT {
         situation.setDistPoller(m_distPollerDao.whoami());
         situation.setCounter(1);
         situation.setUei("cardDown");
-        situation.setRelatedAlarms(new HashSet<>(Arrays.asList(linkDownAlarmOnR1, linkDownAlarmOnR2)));
+        situation.setRelatedAlarmsForSituation(new HashSet<>(Arrays.asList(linkDownAlarmOnR1, linkDownAlarmOnR2)));
         situation.setReductionKey("situation/reduction/key");
 
         m_alarmDao.saveOrUpdate(situation);
 
         OnmsAlarm retrieved = m_alarmDao.findByReductionKey("situation/reduction/key");
-        assertThat(retrieved.getRelatedAlarms().size(), is(2));
+        assertThat(retrieved.getRelatedAlarmsForSituation().size(), is(2));
 
         // remove one of the alarms
-        retrieved.setRelatedAlarms(new HashSet<>(Arrays.asList(linkDownAlarmOnR1)));
-        assertThat(retrieved.getRelatedAlarms().size(), is(1));
+        retrieved.setRelatedAlarmsForSituation(new HashSet<>(Arrays.asList(linkDownAlarmOnR1)));
+        assertThat(retrieved.getRelatedAlarmsForSituation().size(), is(1));
         
         m_alarmDao.saveOrUpdate(retrieved);
 
         OnmsAlarm retrieved2 = m_alarmDao.findByReductionKey("situation/reduction/key");
-        assertThat(retrieved2.getRelatedAlarms().size(), is(1));
-        assertThat(retrieved2.getRelatedAlarms().stream().findFirst(), is(Optional.of(linkDownAlarmOnR1)));
+        assertThat(retrieved2.getRelatedAlarmsForSituation().size(), is(1));
+        assertThat(retrieved2.getRelatedAlarmsForSituation().stream().findFirst(), is(Optional.of(linkDownAlarmOnR1)));
     }
 
     @Test
@@ -192,13 +192,13 @@ public class SituationIT {
         situation.setDistPoller(m_distPollerDao.whoami());
         situation.setCounter(1);
         situation.setUei("cardDown");
-        situation.setRelatedAlarms(new HashSet<>(Arrays.asList(linkDownAlarmOnR1, linkDownAlarmOnR2)));
+        situation.setRelatedAlarmsForSituation(new HashSet<>(Arrays.asList(linkDownAlarmOnR1, linkDownAlarmOnR2)));
         situation.setReductionKey("situation/reduction/key");
         
         m_alarmDao.saveOrUpdate(situation);
 
         OnmsAlarm retrieved = m_alarmDao.findByReductionKey("situation/reduction/key");
-        assertThat(retrieved.getRelatedAlarms().size(), is(2));
+        assertThat(retrieved.getRelatedAlarmsForSituation().size(), is(2));
         
         // delete the situation
         m_alarmDao.delete(retrieved);

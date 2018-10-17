@@ -1113,6 +1113,7 @@ CREATE UNIQUE INDEX alarm_attributes_aan_idx ON alarm_attributes(alarmID, attrib
 CREATE TABLE alarm_situations (
     situation_id    INTEGER NOT NULL,
     related_alarm_id  INTEGER NOT NULL,
+    mapped_time timestamp with time zone,
     
     CONSTRAINT fk_alarm_situations_alarm_id FOREIGN KEY (related_alarm_id) REFERENCES alarms (alarmid) ON DELETE CASCADE,
     CONSTRAINT fk_alarm_situations_situation_id FOREIGN KEY (situation_id) REFERENCES alarms (alarmid) ON DELETE CASCADE

@@ -58,6 +58,7 @@ public abstract class AlarmMapper {
     @Autowired
     private EventConfDao eventConfDao;
 
+
     @Mappings({
             @Mapping(source = "distPoller.location", target = "location"),
             @Mapping(source = "ipAddr", target = "ipAddress"),
@@ -96,7 +97,7 @@ public abstract class AlarmMapper {
         // If there are no related alarms, we do not add them to the DTO and
         // the field will not be serialized.
         if (alarm.isSituation()) {
-            alarmDTO.setRelatedAlarms(alarm.getRelatedAlarms().stream()
+            alarmDTO.setRelatedAlarms(alarm.getRelatedAlarmsForSituation().stream()
                                       .map(a -> alarmToAlarmSummaryDTO(a))
                                       .sorted(Comparator.comparing(AlarmSummaryDTO::getId))
                                       .collect(Collectors.toList()));
