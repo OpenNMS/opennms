@@ -42,6 +42,7 @@
       </sequence>
 
       <attribute name="enabled" type="boolean" use="optional" default="true" />
+      <attribute name="reloadable" type="boolean" use="optional" default="false" />
 
     </complexType>
   </element>
