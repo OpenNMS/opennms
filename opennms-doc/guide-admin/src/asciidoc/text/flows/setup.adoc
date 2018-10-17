@@ -88,7 +88,7 @@ $ ssh -p 8201 admin@localhost
 admin@minion()> config:edit org.opennms.features.telemetry.listeners-udp-8877
 admin@minion()> config:property-set name Netflow-5
 admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.udp.UdpListener
-admin@minion()> config:property-set listener.port 8877
+admin@minion()> config:property-set parameters.port 8877
 admin@minion()> config:update
 ----
 
@@ -98,7 +98,7 @@ TIP: If a configuration management tool is used, the properties file can be crea
 ----
 name = Netflow-5
 class-name = org.opennms.netmgt.telemetry.listeners.udp.UdpListener
-listener.port = 8877
+parameters.port = 8877
 ----
 
 NOTE: The associated protocol, in this case `Netflow-5` must also be enabled on _{opennms-product-name}_ for the messages to be processed.

@@ -35,7 +35,7 @@ $ ssh -p 8201 admin@localhost
 admin@minion()> config:edit org.opennms.features.telemetry.listeners-udp-50000
 admin@minion()> config:property-set name NXOS
 admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.udp.UdpListener
-admin@minion()> config:property-set listener.port 50001
+admin@minion()> config:property-set parameters.port 50001
 admin@minion()> config:update
 ----
 

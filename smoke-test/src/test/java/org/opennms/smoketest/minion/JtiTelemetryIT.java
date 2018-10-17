@@ -167,8 +167,8 @@ public class JtiTelemetryIT {
             pipe.println("config:edit org.opennms.features.telemetry.listeners-udp-50000");
             pipe.println("config:property-set name JTI");
             pipe.println("config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener");
-            pipe.println("config:property-set listener.port 50000");
-            pipe.println("config:property-set parsers.1.name JTI");
+            pipe.println("config:property-set parameters.port 50000");
+            pipe.println("config:property-set parsers.1.name JTI"); // Is also the queueName to dispatch to
             pipe.println("config:property-set parsers.1.class-name org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser");
             pipe.println("config:update");
             pipe.println("logout");

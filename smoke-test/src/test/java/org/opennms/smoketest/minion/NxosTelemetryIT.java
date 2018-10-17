@@ -82,7 +82,6 @@ import com.google.common.io.Resources;
 public class NxosTelemetryIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(NxosTelemetryIT.class);
-    public static final String SENDER_IP = "192.168.1.1";
 
     private static TestEnvironment m_testEnvironment;
     private static Executor executor;
@@ -148,8 +147,8 @@ public class NxosTelemetryIT {
             PrintStream pipe = sshClient.openShell();
             pipe.println("config:edit org.opennms.features.telemetry.listeners-udp-50000");
             pipe.println("config:property-set name NXOS");
-            pipe.println("config:property-set class-name org.opennms.netmgt.telemetry.listeners.simple.Udp");
-            pipe.println("config:property-set listener.port 50000");
+            pipe.println("config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener");
+            pipe.println("config:property-set parameters.port 50000");
             pipe.println("config:property-set parsers.1.name NXOS");
             pipe.println("config:property-set parsers.1.class-name org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser");
             pipe.println("config:update");
