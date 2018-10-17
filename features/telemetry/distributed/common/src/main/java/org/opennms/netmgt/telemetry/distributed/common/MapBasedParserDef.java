@@ -37,9 +37,8 @@ public class MapBasedParserDef extends MapBasedQueueDef implements ParserDefinit
 
     public MapBasedParserDef(final PropertyTree definition) {
         super(definition);
-
         this.className = definition.getRequiredString("class-name");
-        this.parameters = definition.getMap("parser");
+        this.parameters = definition.getMap("parameters");
     }
 
     @Override
