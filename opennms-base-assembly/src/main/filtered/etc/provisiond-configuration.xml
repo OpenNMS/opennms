@@ -111,8 +111,15 @@
          The username to use to authenticate against the VMware vCenter server. 
 
        password - 
-         The password to use to authenticate against the VMware vCenter server       
- 
+         The password to use to authenticate against the VMware vCenter server
+
+       timeout -
+         The default VMware connection timeout in milliseconds used for provisioning. The default value is 3000 ms.
+
+       cimTimeout -
+         Timeout used to test interface addresses for a reachable CIM service. Do only increase this value if you have
+         problems discovering CIM services on host systems. The default value is 3000 ms.
+
        key -
          Use this key to lookup a user defined attributes for entities being imported, only virtual machines
          and host systems with a matching key=value pair will be imported. Can only be in conjunction with the 'value'
