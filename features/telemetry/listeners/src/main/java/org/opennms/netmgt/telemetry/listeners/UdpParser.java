@@ -30,11 +30,12 @@ package org.opennms.netmgt.telemetry.listeners;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 
 public interface UdpParser extends Parser {
-    void parse(final ByteBuffer buffer,
-               final InetSocketAddress remoteAddress,
-               final InetSocketAddress localAddress) throws Exception;
+    CompletableFuture<?> parse(final ByteBuffer buffer,
+                               final InetSocketAddress remoteAddress,
+                               final InetSocketAddress localAddress) throws Exception;
 }

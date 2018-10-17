@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -55,11 +56,13 @@ public abstract class UdpParserBase extends ParserBase {
 
     protected abstract RecordProvider parse(final Session session, final ByteBuffer buffer) throws Exception;
 
-    public final void parse(final ByteBuffer buffer, final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) throws Exception {
+    public final CompletableFuture<?> parse(final ByteBuffer buffer,
+                                            final InetSocketAddress remoteAddress,
+                                            final InetSocketAddress localAddress) throws Exception {
         final Session session = this.sessionManager.getSession(remoteAddress, localAddress);
 
         try {
-            this.transmit(this.parse(session, buffer), remoteAddress);
+            return this.transmit(this.parse(session, buffer), remoteAddress);
         } catch (Exception e) {
             this.sessionManager.drop(remoteAddress, localAddress);
             throw e;

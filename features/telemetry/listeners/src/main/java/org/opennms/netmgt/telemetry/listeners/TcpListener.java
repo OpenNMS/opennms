@@ -95,7 +95,13 @@ public class TcpListener implements Listener {
                                     @Override
                                     protected void channelRead0(final ChannelHandlerContext ctx,
                                                                 final ByteBuf msg) throws Exception {
-                                        session.parse(msg.nioBuffer());
+                                        session.parse(msg.nioBuffer())
+                                                .handle((result, ex) -> {
+                                                    if (ex != null) {
+                                                        ctx.fireExceptionCaught(ex);
+                                                    }
+                                                    return result;
+                                                });;
                                     }
                                 })
                                 .addLast(new ChannelInboundHandlerAdapter() {

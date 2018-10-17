@@ -61,8 +61,7 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     @Autowired
     private TelemetryRegistry telemetryRegistry;
 
-    // TODO fooker rename queueDefinition
-    private final QueueDefinition protocolDef;
+    private final QueueDefinition queueDef;
     private final TelemetrySinkModule sinkModule;
     private final List<AdapterDefinition> adapterDefs;
 
@@ -75,10 +74,10 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
                 sinkModule);
     }
 
-    public TelemetryMessageConsumer(QueueDefinition protocolDef,
+    public TelemetryMessageConsumer(QueueDefinition queueDef,
                                     Collection<? extends AdapterDefinition> adapterDefs,
                                     TelemetrySinkModule sinkModule) {
-        this.protocolDef = Objects.requireNonNull(protocolDef);
+        this.queueDef = Objects.requireNonNull(queueDef);
         this.sinkModule = Objects.requireNonNull(sinkModule);
         this.adapterDefs = new ArrayList(adapterDefs);
     }
@@ -127,9 +126,8 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
         return sinkModule;
     }
 
-    // TODO fooker rename queueDefinition
-    public QueueDefinition getProtocol() {
-        return protocolDef;
+    public QueueDefinition getQueue() {
+        return queueDef;
     }
 
     public void setRegistry(TelemetryRegistry telemetryRegistry) {

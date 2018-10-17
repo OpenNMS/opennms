@@ -64,9 +64,9 @@ public class ForwardParser implements UdpParser {
     }
 
     @Override
-    public void parse(final ByteBuffer buffer,
-                      final InetSocketAddress remoteAddress,
-                      final InetSocketAddress localAddress) throws Exception {
+    public CompletableFuture<?> parse(final ByteBuffer buffer,
+                                      final InetSocketAddress remoteAddress,
+                                      final InetSocketAddress localAddress) throws Exception {
         LOG.trace("Got packet from: {}", remoteAddress);
 
         // Build the message to dispatch
@@ -74,15 +74,8 @@ public class ForwardParser implements UdpParser {
 
         // Dispatch and retain a reference to the packet
         // in the case that we are sharing the underlying byte array
-        final CompletableFuture<TelemetryMessage> future = dispatcher.send(msg);
+        return dispatcher.send(msg);
 
         // Pass exception if dispatching fails
-        // FIXME: fooker - use futures everywhere
-//        future.handle((result, ex) -> {
-//            if (ex != null) {
-//                ctx.fireExceptionCaught(ex);
-//            }
-//            return result;
-//        });
     }
 }

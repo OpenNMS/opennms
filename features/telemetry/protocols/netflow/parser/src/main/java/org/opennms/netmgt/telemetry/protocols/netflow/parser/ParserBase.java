@@ -32,6 +32,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.IntFunction;
 
 import org.bson.BsonBinary;
 import org.bson.BsonBinaryWriter;
@@ -78,10 +79,11 @@ public class ParserBase {
         return this.name;
     }
 
-    protected void transmit(final RecordProvider packet, final InetSocketAddress remoteAddress) throws Exception {
+    protected CompletableFuture<?> transmit(final RecordProvider packet, final InetSocketAddress remoteAddress) throws Exception {
         LOG.trace("Got packet: {}", packet);
 
-        packet.getRecords().forEach(record -> {
+        // Return a future which completes when message is parsed and all records are transmitted
+        return CompletableFuture.allOf(packet.getRecords().map(record -> {
             final ByteBuffer buffer = serialize(this.protocol, record);
 
             // Build the message to dispatch
@@ -89,17 +91,8 @@ public class ParserBase {
 
             // Dispatch and retain a reference to the packet
             // in the case that we are sharing the underlying byte array
-            final CompletableFuture<TelemetryMessage> future = dispatcher.send(msg);
-
-            // Pass exception if dispatching fails
-            // FIXME: fooker - use futures everywhere
-//            future.handle((result, ex) -> {
-//                if (ex != null) {
-//                    ctx.fireExceptionCaught(ex);
-//                }
-//                return result;
-//            });
-        });
+            return dispatcher.send(msg);
+        }).toArray(CompletableFuture[]::new));
     }
 
     public static ByteBuffer serialize(final Protocol protocol, final Iterable<Value<?>> record) {

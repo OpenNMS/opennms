@@ -64,7 +64,7 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
             final Header header = new Header(slice(buffer, Header.SIZE));
             final Packet packet = new Packet(session, header, buffer);
 
-            this.transmit(packet, remoteAddress);
+            return this.transmit(packet, remoteAddress);
         };
     }
 }

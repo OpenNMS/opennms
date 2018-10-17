@@ -67,9 +67,9 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
     }
 
     @Override
-    public void parse(final ByteBuffer buffer,
-                      final InetSocketAddress remoteAddress,
-                      final InetSocketAddress localAddress) throws Exception {
+    public CompletableFuture<?> parse(final ByteBuffer buffer,
+                                      final InetSocketAddress remoteAddress,
+                                      final InetSocketAddress localAddress) throws Exception {
         final SampleDatagram packet = new SampleDatagram(buffer);
 
         LOG.trace("Got packet: {}", packet);
@@ -89,16 +89,7 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
 
         // Build the message to be sent
         final TelemetryMessage msg = new TelemetryMessage(remoteAddress, output.getByteBuffers().get(0).asNIO());
-        final CompletableFuture<TelemetryMessage> future = dispatcher.send(msg);
-
-        // Pass exception if dispatching fails
-        // FIXME: fooker - use futures everywhere
-//        future.handle((result, ex) -> {
-//            if (ex != null) {
-//                ctx.fireExceptionCaught(ex);
-//            }
-//            return result;
-//        });
+        return dispatcher.send(msg);
     }
 
     @Override

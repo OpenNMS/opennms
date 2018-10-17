@@ -105,31 +105,49 @@ public class UdpListener implements Listener {
                 .handler(new ChannelInitializer<DatagramChannel>() {
                     @Override
                     protected void initChannel(DatagramChannel ch) throws Exception {
-                        ch.pipeline()
-                                .addLast(new SimpleChannelInboundHandler<DatagramPacket>() {
-                                    @Override
-                                    protected void channelRead0(final ChannelHandlerContext ctx, final DatagramPacket msg) throws Exception {
-                                        if (parsers.size() == 1) {
-                                            parsers.iterator().next().parse(msg.content().nioBuffer(), msg.sender(), msg.recipient());
-                                        } else {
-                                            final ByteBuffer buffer = msg.content().nioBuffer();
-                                            for (final UdpParser parser : parsers) {
-                                                if (BufferUtils.peek(buffer, ((Dispatchable) parser)::handles)) {
-                                                    parser.parse(buffer, msg.sender(), msg.recipient());
-                                                    break;
+                        if (parsers.size() == 1) {
+                            final UdpParser parser = parsers.iterator().next();
+                            ch.pipeline().addLast(new SimpleChannelInboundHandler<DatagramPacket>() {
+                                @Override
+                                protected void channelRead0(final ChannelHandlerContext ctx, final DatagramPacket msg) throws Exception {
+                                    parser.parse(msg.content().nioBuffer(), msg.sender(), msg.recipient())
+                                            .handle((result, ex) -> {
+                                                if (ex != null) {
+                                                    ctx.fireExceptionCaught(ex);
                                                 }
-                                            }
-                                            LOG.warn("Unhandled packet from {}", msg.sender());
+                                                return result;
+                                            });
+                                }
+                            });
+                        } else {
+                            ch.pipeline().addLast(new SimpleChannelInboundHandler<DatagramPacket>() {
+                                @Override
+                                protected void channelRead0(final ChannelHandlerContext ctx, final DatagramPacket msg) throws Exception {
+                                    final ByteBuffer buffer = msg.content().nioBuffer();
+                                    for (final UdpParser parser : parsers) {
+                                        if (BufferUtils.peek(buffer, ((Dispatchable) parser)::handles)) {
+                                            parser.parse(buffer, msg.sender(), msg.recipient())
+                                                    .handle((result, ex) -> {
+                                                        if (ex != null) {
+                                                            ctx.fireExceptionCaught(ex);
+                                                        }
+                                                        return result;
+                                                    });
+                                            break;
                                         }
                                     }
-                                })
-                                .addLast(new ChannelInboundHandlerAdapter() {
-                                    @Override
-                                    public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
-                                        LOG.warn("Invalid packet: {}", cause.getMessage());
-                                        LOG.debug("", cause);
-                                    }
-                                });
+                                    LOG.warn("Unhandled packet from {}", msg.sender());
+                                }
+                            });
+                        }
+
+                        ch.pipeline().addLast(new ChannelInboundHandlerAdapter() {
+                            @Override
+                            public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
+                                LOG.warn("Invalid packet: {}", cause.getMessage());
+                                LOG.debug("", cause);
+                            }
+                        });
                     }
                 })
                 .bind(address)

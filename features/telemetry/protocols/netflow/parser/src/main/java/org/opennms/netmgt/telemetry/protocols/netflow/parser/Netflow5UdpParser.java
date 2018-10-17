@@ -36,7 +36,6 @@ import org.opennms.netmgt.telemetry.api.receiver.Dispatchable;
 import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser;
 
-// TODO (fooker): This should do parsing on the receiver side for protocol separation
 public class Netflow5UdpParser extends ForwardParser implements Dispatchable {
 
     public Netflow5UdpParser(final String name, final AsyncDispatcher<TelemetryMessage> dispatcher) {

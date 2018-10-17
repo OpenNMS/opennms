@@ -138,7 +138,7 @@ public class Telemetryd implements SpringServiceDaemon {
 
         // Start the consumers
         for (TelemetryMessageConsumer consumer : consumers) {
-            LOG.info("Starting consumer for {} adapter.", consumer.getProtocol().getName());
+            LOG.info("Starting consumer for {} adapter.", consumer.getQueue().getName());
             messageConsumerManager.registerConsumer(consumer);
         }
 
@@ -181,7 +181,7 @@ public class Telemetryd implements SpringServiceDaemon {
         // Stop the consumers
         for (TelemetryMessageConsumer consumer : consumers) {
             try {
-                LOG.info("Stopping consumer for {} protocol.", consumer.getProtocol().getName());
+                LOG.info("Stopping consumer for {} protocol.", consumer.getQueue().getName());
                 messageConsumerManager.unregisterConsumer(consumer);
             } catch (Exception e) {
                 LOG.error("Error while stopping consumer.", e);

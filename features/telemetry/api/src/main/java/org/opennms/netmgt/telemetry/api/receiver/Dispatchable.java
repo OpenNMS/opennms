@@ -41,10 +41,10 @@ import java.nio.ByteBuffer;
 public interface Dispatchable {
 
     /**
-     * Returns true if the implementator can handle the incoming data, otherwise false.
+     * Returns true if the implementor can handle the incoming data, otherwise false.
      *
      * @param buffer Representing the incoming data
-     * @return true if the implementator can handle the data, otherwise false.
+     * @return true if the implementor can handle the data, otherwise false.
      */
     boolean handles(final ByteBuffer buffer);
 }
