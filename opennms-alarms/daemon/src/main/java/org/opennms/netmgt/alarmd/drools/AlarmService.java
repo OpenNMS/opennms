@@ -53,4 +53,6 @@ public interface AlarmService {
 
     void setSeverity(OnmsAlarm alarm, OnmsSeverity severity, Date now);
 
+    void warn(String message);
+
 }

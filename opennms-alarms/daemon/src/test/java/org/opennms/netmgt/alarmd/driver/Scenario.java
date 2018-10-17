@@ -109,7 +109,7 @@ public class Scenario {
         }
 
         public ScenarioBuilder withUnAcknowledgmentForNodeDownAlarm(long time, int nodeId) {
-            actions.add(new AcknowledgeAlarmAction("test", new Date(time), String.format("%s:%d", EventConstants.NODE_DOWN_EVENT_UEI, nodeId)));
+            actions.add(new AcknowledgeAlarmAction("test", new Date(time), String.format("%s:%d", EventConstants.NODE_DOWN_EVENT_UEI, nodeId, true)));
             return this;
         }
 
@@ -119,7 +119,7 @@ public class Scenario {
         }
 
         public ScenarioBuilder withUnAcknowledgmentForSituation(long time, String situtationId) {
-            actions.add(new AcknowledgeAlarmAction("test", new Date(time), String.format("%s:%s", EventConstants.SITUATION_EVENT_UEI, situtationId)));
+            actions.add(new AcknowledgeAlarmAction("test", new Date(time), String.format("%s:%s", EventConstants.SITUATION_EVENT_UEI, situtationId, true)));
             return this;
         }
 

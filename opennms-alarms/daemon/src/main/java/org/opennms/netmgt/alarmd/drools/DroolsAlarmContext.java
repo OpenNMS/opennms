@@ -43,6 +43,7 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.alarmd.Alarmd;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.slf4j.Logger;
@@ -187,7 +188,9 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                 .desc();
         List<OnmsAcknowledgment> acks = acknowledgmentDao.findMatching(builder.toCriteria());
         if (acks.isEmpty()) {
-            return null;
+            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, DefaultAlarmService.DEFAULT_USER, alarm.getFirstEventTime());
+            ack.setAckAction(AckAction.UNACKNOWLEDGE);
+            return ack;
         } else {
             return acks.get(0);
         }
@@ -195,23 +198,21 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 
     private void handleAlarmAcknowledgements(OnmsAlarm alarm) {
         final AlarmAcknowledgementAndFact acknowledgmentFact = acknowledgementsById.get(alarm.getId());
+        final KieSession kieSession = getKieSession();
         if (acknowledgmentFact == null) {
-            if (alarm.isAcknowledged()) {
-                LOG.debug("Inserting alarm acknowledgement into session: {}", alarm);
-                OnmsAcknowledgment ack = getLatestAcknowledgement(alarm);
-                if (ack != null) {
-                    final FactHandle fact = getKieSession().insert(ack);
-                    acknowledgementsById.put(alarm.getId(), new AlarmAcknowledgementAndFact(ack, fact));
-                }
-            }
+            OnmsAcknowledgment ack = getLatestAcknowledgement(alarm);
+            LOG.warn("Inserting first alarm acknowledgement into session: {}", ack);
+            final FactHandle fact = kieSession.insert(ack);
+            acknowledgementsById.put(alarm.getId(), new AlarmAcknowledgementAndFact(ack, fact));
         } else {
-            if (alarm.isAcknowledged()) {
-                LOG.debug("Inserting alarm acknowledgement into session: {}", alarm);
-                final FactHandle fact = getKieSession().insert(alarm);
-                alarmsById.put(alarm.getId(), new AlarmAndFact(alarm, fact));
-            } else {
-                // need to inject a NAK to the context.
-            }
+            // TODO - once working move away from DELETE idiom to UPDATE idiom.....
+            LOG.trace("Deleting ack from session (for re-insertion): {}", acknowledgmentFact);
+            kieSession.delete(acknowledgmentFact.getFact());
+
+            OnmsAcknowledgment ack = getLatestAcknowledgement(alarm);
+            LOG.warn("Inserting alarm {} into session: {}", ack.getAckAction(), ack);
+            final FactHandle fact = kieSession.insert(ack);
+            acknowledgementsById.put(alarm.getId(), new AlarmAcknowledgementAndFact(ack, fact));
         }
     }
 
@@ -220,6 +221,15 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         if (alarmAndFact != null) {
             LOG.debug("Deleting alarm from session: {}", alarmAndFact.getAlarm());
             getKieSession().delete(alarmAndFact.getFact());
+        }
+        deleteAlarmAcknowledgement(alarmId);
+    }
+
+    private void deleteAlarmAcknowledgement(int alarmId) {
+        final AlarmAcknowledgementAndFact acknowledgmentFact = acknowledgementsById.remove(alarmId);
+        if (acknowledgmentFact != null) {
+            LOG.debug("Deleting ack from session: {}", acknowledgmentFact.getAcknowledgement());
+            getKieSession().delete(acknowledgmentFact.getFact());
         }
     }
 

@@ -175,4 +175,8 @@ public class DefaultAlarmService implements AlarmService {
     public void setAlarmEntityNotifier(AlarmEntityNotifier alarmEntityNotifier) {
         this.alarmEntityNotifier = alarmEntityNotifier;
     }
+
+    public void warn(String message) {
+        LOG.warn(message);
+    }
 }

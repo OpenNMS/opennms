@@ -31,6 +31,8 @@ package org.opennms.netmgt.alarmd.drools;
 import java.util.Date;
 import java.util.List;
 import org.kie.api.time.SessionClock;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
+import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
@@ -54,48 +56,53 @@ rule "setSituationSeverityToMaxAlarmSeverity"
     alarmService.setSeverity($situation, $maxSeverity, now);
 end
 
-rule "acknowledgeSituation"
+rule "SituationHasBeenAcknowledged" salience 20
   when
     $situation : OnmsAlarm( isSituation() == true, $relatedAlarmIds : relatedAlarmIds, isAcknowledged() == true )
-    $relatedAlarms : LinkedList() from collect( OnmsAlarm($relatedAlarmIds contains id, isAcknowledged() == false,  firstEventTime < $situation.getAlarmAckTime() ) )
+    $relatedAlarms : LinkedList() from collect( OnmsAlarm($relatedAlarmIds contains id, isAcknowledged() == false, firstEventTime <= $situation.getAlarmAckTime() ) )
+    List(size > 0) from $relatedAlarms
   then
+    alarmService.warn("FIRE: SituationHasBeenAcknowledged :" + $situation.getId() + " tick: " +  drools.getWorkingMemory().getSessionClock().getCurrentTime());
     Date acknowledgeTime = $situation.getAlarmAckTime();
     for (int i=0; i < $relatedAlarms.size(); i++) {
+    	alarmService.warn("SITUATION ACK ALARM :" + $relatedAlarms.get(i) );
     	alarmService.acknowledgeAlarm((OnmsAlarm)$relatedAlarms.get(i), acknowledgeTime);
     }
 end
 
-rule "unacknowledgeSituation"
+rule "SituationHasBeenUnAcknowledged" salience 20
   when
-    // TODO - this needs to fire after 'allAlarmsAcknowledgeSituation' as the constraints on this are looser
     $situation : OnmsAlarm( isSituation() == true, $relatedAlarmIds : relatedAlarmIds, isAcknowledged() == false )
-    // FIXME - $situation.getAlarmAckTime will be null - need to find the related ACK Fact in working memory
-    $relatedAlarms : LinkedList() from collect( OnmsAlarm($relatedAlarmIds contains id, isAcknowledged() == true,  firstEventTime < $situation.getAlarmAckTime() ) )
+    $previousAck : OnmsAcknowledgment( refId == $situation.id, ackAction == AckAction.UNACKNOWLEDGE)
+    $relatedAlarms : LinkedList() from collect (OnmsAlarm($relatedAlarmIds contains id, isAcknowledged() == true, alarmAckTime < $previousAck.getAckTime() ) )
+    List(size > 0) from $relatedAlarms
   then
-    Date acknowledgeTime = $situation.getAlarmAckTime();
+    alarmService.warn("FIRE: SituationHasBeenUnAcknowledged :" + $situation.getId() + " tick: " +  drools.getWorkingMemory().getSessionClock().getCurrentTime());
+    Date acknowledgeTime = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
     for (int i=0; i < $relatedAlarms.size(); i++) {
-    	alarmService.unacknowledgeAlarm((OnmsAlarm)$relatedAlarms.get(i), acknowledgeTime);
+    	alarmService.unacknowledgeAlarm((OnmsAlarm)$relatedAlarms.get(i), $previousAck.getAckTime());
     }
 end
 
-rule "allAlarmsAcknowledgeSituation"
+rule "AllRelatedAlarmsAcknowledged" salience 10
   when
     $situation : OnmsAlarm( isSituation() == true, $relatedAlarmIds : relatedAlarmIds, isAcknowledged() == false )
     List(size == $relatedAlarmIds.size) from collect (OnmsAlarm($relatedAlarmIds contains id, isAcknowledged() == true) )
   then
+    alarmService.warn("FIRE: AllRelatedAlarmsAcknowledged :" + $situation.getId() + " tick: " +  drools.getWorkingMemory().getSessionClock().getCurrentTime());
     // TODO - pull latest AckTime from Alarms - Date acknowledgeTime = $situation.getAlarmAckTime();
     Date acknowledgeTime = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
    	alarmService.acknowledgeAlarm((OnmsAlarm)$situation, acknowledgeTime);
 end
 
-
-rule "newAlarmsUnAcknowledgeSituation"
+rule "newAlarmsUnAcknowledgesSituation" salience 10
   when
     $situation : OnmsAlarm( isSituation() == true, $relatedAlarmIds : relatedAlarmIds, isAcknowledged() == true )
-    List(size != $relatedAlarmIds.size) from collect (OnmsAlarm($relatedAlarmIds contains id, isAcknowledged() == true) )
+    $situationAck : OnmsAcknowledgment( refId == $situation.id, ackAction == AckAction.ACKNOWLEDGE)
+    $unAkedRelatedAlarms : LinkedList() from collect (OnmsAcknowledgment($relatedAlarmIds contains refId, ackAction == AckAction.UNACKNOWLEDGE, ackTime > $situationAck.getAckTime() ) )
+    List(size > 0) from $unAkedRelatedAlarms
   then
-    // TODO - pull latest AckTime from Alarms - Date acknowledgeTime = $situation.getAlarmAckTime();
+    alarmService.warn("FIRE: newAlarmsUnAcknowledgeSituation :" + $situation.getId() + " tick: " +  drools.getWorkingMemory().getSessionClock().getCurrentTime());
     Date acknowledgeTime = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
-   	alarmService.acknowledgeAlarm((OnmsAlarm)$situation, acknowledgeTime);
+   	alarmService.unacknowledgeAlarm($situation, acknowledgeTime);
 end
-

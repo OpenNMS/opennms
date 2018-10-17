@@ -36,11 +36,17 @@ public class AcknowledgeAlarmAction implements Action {
     private final Date ackTime;
     private final String reductionKey;
 
+    private final boolean isNack;
 
     public AcknowledgeAlarmAction(String ackUser, Date ackTime, String reductionKey) {
+        this(ackUser, ackTime, reductionKey, false);
+    }
+
+    public AcknowledgeAlarmAction(String ackUser, Date ackTime, String reductionKey, boolean isNack) {
         this.ackUser = Objects.requireNonNull(ackUser);
         this.ackTime = Objects.requireNonNull(ackTime);
         this.reductionKey = Objects.requireNonNull(reductionKey);
+        this.isNack = isNack;
     }
 
     @Override
@@ -50,6 +56,10 @@ public class AcknowledgeAlarmAction implements Action {
 
     @Override
     public void visit(ActionVisitor visitor) {
-        visitor.acknowledgeAlarm(ackUser, ackTime, (a) -> Objects.equals(reductionKey, a.getReductionKey()));
+        if (isNack) {
+            visitor.unacknowledgeAlarm(ackUser, ackTime, (a) -> Objects.equals(reductionKey, a.getReductionKey()));
+        } else {
+            visitor.acknowledgeAlarm(ackUser, ackTime, (a) -> Objects.equals(reductionKey, a.getReductionKey()));
+        }
     }
 }
