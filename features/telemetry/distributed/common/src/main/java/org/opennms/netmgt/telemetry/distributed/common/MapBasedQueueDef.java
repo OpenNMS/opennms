@@ -42,6 +42,8 @@ public class MapBasedQueueDef implements QueueDefinition {
     public MapBasedQueueDef(final PropertyTree definition) {
         this.name = definition.getRequiredString("name");
 
+        // TODO MVR verify path parsers.1.queue.threads=5 vs parsers.1.threads
+        // TODO fooker verify path parsers.1.queue.threads=5 vs parsers.1.threads
         this.threads = definition.getOptionalInteger("threads");
         this.queueSize = definition.getOptionalInteger("queue", "size");
         this.batchSize = definition.getOptionalInteger("batch", "size");
