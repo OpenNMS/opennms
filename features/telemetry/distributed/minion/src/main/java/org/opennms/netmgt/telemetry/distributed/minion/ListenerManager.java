@@ -35,7 +35,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
@@ -100,20 +99,19 @@ public class ListenerManager implements ManagedServiceFactory {
         entity.healthCheck = bundleContext.registerService(HealthCheck.class, healthCheck, null);
 
         try {
-            // Ensure that the queues have not yet been created
-            final Set<String> queueNames = listenerDef.getParsers().stream().map(pd -> pd.getQueueName()).collect(Collectors.toSet());
-            for (String eachQueue : queueNames) {
-                if (telemetryRegistry.getDispatcher(eachQueue) != null) {
-                    throw new IllegalArgumentException("A queue with name " + eachQueue + " is already defined. Bailing.");
-                }
-            }
-
-            // Create Sink Modules for all defined queues
+            // Create sink modules for all defined queues
             listenerDef.getParsers().stream()
                     .forEach(parserDef -> {
+                        // Ensure that the queues have not yet been created
+                        if (telemetryRegistry.getDispatcher(parserDef.getQueueName()) != null) {
+                            throw new IllegalArgumentException("A queue with name " + parserDef.getQueueName() + " is already defined. Bailing.");
+                        }
+
+                        // Create sink module
                         final TelemetrySinkModule sinkModule = new TelemetrySinkModule(parserDef);
                         sinkModule.setDistPollerDao(distPollerDao);
 
+                        // Create dispatcher
                         final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
                         final String queueName = Objects.requireNonNull(parserDef.getQueueName());
                         telemetryRegistry.registerDispatcher(queueName, dispatcher);
