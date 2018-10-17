@@ -36,9 +36,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -47,6 +51,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.joda.time.Duration;
 import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
@@ -62,9 +67,14 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import com.google.common.base.Strings;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListener {
     private static final Logger LOG = LoggerFactory.getLogger(OpennmsKafkaProducer.class);
+    private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
+            .withRateLimit(LOG)
+            .maxRate(5).every(Duration.standardSeconds(30))
+            .build();
 
     public static final String KAFKA_CLIENT_PID = "org.opennms.features.kafka.producer.client";
     private static final ExpressionParser SPEL_PARSER = new SpelExpressionParser();
@@ -95,6 +105,11 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private final Map<String, OpennmsModelProtos.Alarm> outstandingAlarms = new ConcurrentHashMap<>();
     private final AlarmEqualityChecker alarmEqualityChecker =
             AlarmEqualityChecker.with(AlarmEqualityChecker.Exclusions::defaultExclusions);
+
+    private int kafkaSendQueueCapacity;
+    private BlockingQueue<KafkaRecord> kafkaSendQueue;
+    private final ExecutorService kafkaSendQueueExecutor =
+            Executors.newSingleThreadExecutor(runnable -> new Thread(runnable, "KafkaSendQueueProcessor"));
 
     public OpennmsKafkaProducer(ProtobufMapper protobufMapper, NodeCache nodeCache,
                                 ConfigurationAdmin configAdmin, EventSubscriptionService eventSubscriptionService) {
@@ -128,12 +143,23 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
 
+        // Start processing records that have been queued for sending
+        if(kafkaSendQueueCapacity <= 0) {
+            kafkaSendQueueCapacity = 1000;
+            LOG.info("Defaulted the 'kafkaSendQueueCapacity' to 1000 since no property was set");
+        }
+        
+        kafkaSendQueue = new LinkedBlockingQueue<>(kafkaSendQueueCapacity);
+        kafkaSendQueueExecutor.execute(this::processKafkaSendQueue);
+
         if (forwardEvents) {
             eventSubscriptionService.addEventListener(this);
         }
     }
 
     public void destroy() {
+        kafkaSendQueueExecutor.shutdownNow();
+
         if (producer != null) {
             producer.close();
             producer = null;
@@ -294,12 +320,12 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         sendRecord(callable, null);
     }
 
-    private void sendRecord(Callable<ProducerRecord<String,byte[]>> callable, Consumer<RecordMetadata> callback) {
+    private void sendRecord(Callable<ProducerRecord<String, byte[]>> callable, Consumer<RecordMetadata> callback) {
         if (producer == null) {
             return;
         }
 
-        final ProducerRecord<String,byte[]> record;
+        final ProducerRecord<String, byte[]> record;
         try {
             record = callable.call();
         } catch (Exception e) {
@@ -307,15 +333,41 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             throw new RuntimeException(e);
         }
 
-        producer.send(record, (recordMetadata, e) -> {
-            if (e != null) {
-                LOG.warn("Failed to send record to producer: {}.", record, e);
-                return;
+        // Rather than attempt to send, we instead queue the record to avoid blocking since KafkaProducer's send()
+        // method can block if Kafka is not available when metadata is attempted to be retrieved
+
+        // Any offer that fails due to capacity overflow will simply be dropped and will have to wait until the next
+        // sync to be processed so this is just a best effort attempt
+        if (!kafkaSendQueue.offer(new KafkaRecord(record, callback))) {
+            RATE_LIMITED_LOGGER.warn("Dropped a Kafka record due to queue capacity being full.");
+        }
+    }
+
+    private void processKafkaSendQueue() {
+        //noinspection InfiniteLoopStatement
+        while (true) {
+            try {
+                KafkaRecord kafkaRecord = kafkaSendQueue.take();
+                ProducerRecord<String, byte[]> producerRecord = kafkaRecord.getProducerRecord();
+                Consumer<RecordMetadata> consumer = kafkaRecord.getConsumer();
+
+                try {
+                    producer.send(producerRecord, (recordMetadata, e) -> {
+                        if (e != null) {
+                            LOG.warn("Failed to send record to producer: {}.", producerRecord, e);
+                            return;
+                        }
+                        if (consumer != null) {
+                            consumer.accept(recordMetadata);
+                        }
+                    });
+                } catch (RuntimeException e) {
+                    LOG.warn("Failed to send record to producer: {}.", producerRecord, e);
+                }
+            } catch (InterruptedException ignore) {
+                break;
             }
-            if (callback != null) {
-                callback.accept(recordMetadata);
-            }
-        });
+        }
     }
 
     @Override
@@ -420,5 +472,27 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     public void setSuppressIncrementalAlarms(boolean suppressIncrementalAlarms) {
         this.suppressIncrementalAlarms = suppressIncrementalAlarms;
+    }
+
+    public void setKafkaSendQueueCapacity(int kafkaSendQueueCapacity) {
+        this.kafkaSendQueueCapacity = kafkaSendQueueCapacity;
+    }
+
+    private static final class KafkaRecord {
+        private final ProducerRecord<String, byte[]> producerRecord;
+        private final Consumer<RecordMetadata> consumer;
+
+        KafkaRecord(ProducerRecord<String, byte[]> producerRecord, Consumer<RecordMetadata> consumer) {
+            this.producerRecord = producerRecord;
+            this.consumer = consumer;
+        }
+
+        ProducerRecord<String, byte[]> getProducerRecord() {
+            return producerRecord;
+        }
+
+        Consumer<RecordMetadata> getConsumer() {
+            return consumer;
+        }
     }
 }

@@ -100,6 +100,11 @@
       <groupId>org.apache.karaf.shell</groupId>
       <artifactId>org.apache.karaf.shell.core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.swrve</groupId>
+      <artifactId>rate-limited-logger</artifactId>
+      <version>${rateLimitedLoggerVersion}</version>
+    </dependency>
 
     <!-- Test -->
     <dependency>
