@@ -47,6 +47,7 @@ import org.junit.rules.Timeout;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.smoketest.utils.RestClient;
+import org.opennms.test.system.api.NewTestEnvironment;
 import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
@@ -103,7 +104,8 @@ public class SinglePortIT {
     public void verifyFlowStack() throws Exception {
         final InetSocketAddress opennmsSinglePortAddress = testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 50000, "udp");
         final InetSocketAddress opennmsWebAddress = testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 8980);
-        final String elasticRestUrl = "http://localhost:9200";
+        final InetSocketAddress elasticRestAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.ELASTICSEARCH_5, 9200, "tcp");
+        final String elasticRestUrl = String.format("http://%s:%d", elasticRestAddress.getHostString(), elasticRestAddress.getPort());
 
         // Proxy the REST service
         final RestClient restClient = new RestClient(opennmsWebAddress);

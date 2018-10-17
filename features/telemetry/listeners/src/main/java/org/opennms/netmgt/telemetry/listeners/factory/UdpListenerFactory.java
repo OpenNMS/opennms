@@ -56,9 +56,7 @@ public class UdpListenerFactory implements ListenerFactory {
 
     @Override
     public Listener createBean(ListenerDefinition listenerDefinition) {
-        if (listenerDefinition.getParsers().size() != 1) {
-            throw new IllegalArgumentException("The simple UDP listener supports exactly one (enabled) parser");
-        }
+        // Ensure each defined parser is of type UdpParser
         final List<UdpParser> parsers = listenerDefinition.getParsers().stream()
                 .map(p -> telemetryRegistry.getParser(p))
                 .filter(p -> p instanceof UdpParser && p != null)
