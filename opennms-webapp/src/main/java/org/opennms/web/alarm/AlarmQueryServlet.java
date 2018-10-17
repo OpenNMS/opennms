@@ -223,7 +223,7 @@ public class AlarmQueryServlet extends HttpServlet {
 
         String situation = WebSecurityUtils.sanitizeString(request.getParameter("situation"));
         if (situation != null && !situation.equalsIgnoreCase("any")) {
-            filterArray.add(new SituationFilter(Boolean.getBoolean(situation)));
+            filterArray.add(new SituationFilter(Boolean.valueOf(situation)));
         }
 
         String queryString = "";

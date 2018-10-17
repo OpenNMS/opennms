@@ -99,7 +99,7 @@
 	</div>
 
 	<!-- Use clear:left to make sure that this column breaks onto a new row -->
-	<div class="form-group col-sm-4" style="clear: left;">
+	<div class="form-group col-sm-3" style="clear: left;">
 		<label for="service">Service:</label>
 		<select class="form-control" name="service">
 			<option selected><%=AlarmUtil.ANY_SERVICES_OPTION%></option>
@@ -110,7 +110,7 @@
 		</select>
 	</div>
 
-	<div class="form-group col-sm-4">
+	<div class="form-group col-sm-3">
 		<label for="sortby">Sort By:</label>
 		<select class="form-control" name="sortby">
 			<option value="id">Alarm ID (Descending)</option>
@@ -128,7 +128,7 @@
 		</select>
 	</div>
 
-	<div class="form-group col-sm-4">
+	<div class="form-group col-sm-3">
 		<label for="limit">Number of Alarms Per Page:</label>
 		<select class="form-control" name="limit">
 			<option value="10">10 alarms</option>
@@ -137,6 +137,15 @@
 			<option value="50">50 alarms</option>
 			<option value="100">100 alarms</option>
 			<option value="-1">All alarms</option>
+		</select>
+	</div>
+
+	<div class="form-group col-sm-3">
+		<label for="situation">Alarm type:</label>
+		<select class="form-control" name="situation">
+			<option value="any">All Alarms and Situations</option>
+			<option value="false">Only Alarms</option>
+			<option value="true">Only Situations</option>
 		</select>
 	</div>
 
