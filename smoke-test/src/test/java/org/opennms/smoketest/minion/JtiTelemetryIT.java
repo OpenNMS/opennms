@@ -144,7 +144,7 @@ public class JtiTelemetryIT {
 
         Date startOfTest = new Date();
 
-        OnmsNode onmsNode = sendnewSuspectEvent(executor, opennmsHttp, m_testEnvironment, false, startOfTest);
+        OnmsNode onmsNode = sendNewSuspectEvent(executor, opennmsHttp, m_testEnvironment, false, startOfTest);
 
         final InetSocketAddress opennmsUdp = m_testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 50000, "udp");
 
@@ -166,7 +166,7 @@ public class JtiTelemetryIT {
             PrintStream pipe = sshClient.openShell();
             pipe.println("config:edit org.opennms.features.telemetry.listeners-udp-50000");
             pipe.println("config:property-set name JTI");
-            pipe.println("config:property-set class-name org.opennms.netmgt.telemetry.listeners.simple.Udp");
+            pipe.println("config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener");
             pipe.println("config:property-set listener.port 50000");
             pipe.println("config:property-set parsers.1.name JTI");
             pipe.println("config:property-set parsers.1.class-name org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser");
@@ -175,7 +175,7 @@ public class JtiTelemetryIT {
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
         }
 
-        OnmsNode onmsNode = sendnewSuspectEvent(executor, opennmsHttp, m_testEnvironment, true, startOfTest);
+        OnmsNode onmsNode = sendNewSuspectEvent(executor, opennmsHttp, m_testEnvironment, true, startOfTest);
 
         final InetSocketAddress minionUdp = m_testEnvironment.getServiceAddress(ContainerAlias.MINION, 50000, "udp");
 
@@ -220,9 +220,8 @@ public class JtiTelemetryIT {
         };
     }
 
-
-    public static OnmsNode sendnewSuspectEvent(Executor executor, InetSocketAddress opennmsHttp,
-            TestEnvironment m_testEnvironment, boolean isMinion, Date startOfTest)
+    public static OnmsNode sendNewSuspectEvent(Executor executor, InetSocketAddress opennmsHttp,
+                                               TestEnvironment m_testEnvironment, boolean isMinion, Date startOfTest)
             throws ClientProtocolException, IOException {
 
         Event minionEvent = new Event();
