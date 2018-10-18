@@ -174,6 +174,24 @@ This reduces the complexity of the UI code and will make it easier for developer
 * Fix startup on systems without any IPv6 support.
 * Reverse lookups in provisioning now handle IPs without a corresponding A record.
 
+[releasenotes-changelog-Meridian-2017.1.12]
+
+==== Release Meridian-2017.1.12
+
+Release 2017.1.12 is a small update to OpenNMS Meridian 2017.1.11.
+It contains a few small system-level bug fixes and improvements to VMware connection pooling.
+
+The codename for 2017.1.12 is _Meridian of Alexandria_.
+
+===== Bug
+
+* `find-java.sh` doesn't understand newer JDK output (Issue http://issues.opennms.org/browse/NMS-10401[NMS-10401])
+* int overflow in InstallerDb causes bamboo failures (Issue http://issues.opennms.org/browse/NMS-10402[NMS-10402])
+
+===== Enhancement
+
+* Improve concurrency in Vmware Connection Pool (Issue http://issues.opennms.org/browse/NMS-10373[NMS-10373])
+
 [releasenotes-changelog-Meridian-2017.1.11]
 
 ==== Release Meridian-2017.1.11

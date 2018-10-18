@@ -84,6 +84,30 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.2]
+
+==== Release Meridian-2018.1.2
+
+Release 2018.1.2 is an update to Meridian 2018.1.1.
+It contains a number of bug fixes and a few enhancements, including improvements to VMware connection pooling.
+
+The codename for 2018.1.2 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_2[Light breeze]_.
+
+===== Bug
+
+* Wrong data type for certain Cassandra JMX counters (Issue http://issues.opennms.org/browse/NMS-10352[NMS-10352])
+* Cannot override TTL when running the Karaf Command collections:collect through Minions (Issue http://issues.opennms.org/browse/NMS-10367[NMS-10367])
+* Erroneous INFO-level log messages during every forced node rescan (Issue http://issues.opennms.org/browse/NMS-10370[NMS-10370])
+* Wrong JMX MBeans for minions (Issue http://issues.opennms.org/browse/NMS-10372[NMS-10372])
+* `find-java.sh` doesn't understand newer JDK output (Issue http://issues.opennms.org/browse/NMS-10401[NMS-10401])
+* int overflow in InstallerDb causes bamboo failures (Issue http://issues.opennms.org/browse/NMS-10402[NMS-10402])
+
+===== Enhancement
+
+* Be able to use Proxy for any Monitor or Collector that uses HttpClientWrapper directly (Issue http://issues.opennms.org/browse/NMS-10312[NMS-10312])
+* Be able to use Proxy for any Monitor or Collector that uses HttpClient via UrlFactory (Issue http://issues.opennms.org/browse/NMS-10313[NMS-10313])
+* Improve concurrency in Vmware Connection Pool (Issue http://issues.opennms.org/browse/NMS-10373[NMS-10373])
+
 [releasenotes-changelog-Meridian-2018.1.1]
 
 ==== Release Meridian-2018.1.1
