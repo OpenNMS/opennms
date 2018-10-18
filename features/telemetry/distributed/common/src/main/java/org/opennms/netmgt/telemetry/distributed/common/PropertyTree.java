@@ -43,6 +43,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
 
+// TODO MVR verify if this is used or if should be reverted to MapUtils instead. If this is kept, add javadoc and more error handling
 public class PropertyTree {
 
     public static class Node {

@@ -30,27 +30,30 @@ package org.opennms.netmgt.telemetry.distributed.common;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import javax.xml.bind.JAXB;
 
-import org.apache.commons.collections.MapUtils;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
-import org.opennms.netmgt.telemetry.config.api.QueueDefinition;
 
 import com.google.common.collect.Lists;
 
-public class MapBasedAdapterDef extends MapBasedQueueDef implements AdapterDefinition {
+// TODO MVR: Verify queue definitions here
+// TODO fooker: Verify queue definitions here
+public class MapBasedAdapterDef implements AdapterDefinition {
+    private final String name;
     private final String className;
     private final Map<String, String> parameters;
 
-    public MapBasedAdapterDef(final PropertyTree definition) {
-        super(definition);
+    protected MapBasedAdapterDef(Map<String, String> properties) {
+        this(PropertyTree.from(Objects.requireNonNull(properties)));
+    }
 
+    public MapBasedAdapterDef(final PropertyTree definition) {
+        this.name = definition.getRequiredString("name");
         this.className = definition.getRequiredString("class-name");
         this.parameters = definition.getMap("parameters");
     }
@@ -63,6 +66,11 @@ public class MapBasedAdapterDef extends MapBasedQueueDef implements AdapterDefin
     @Override
     public Map<String, String> getParameterMap() {
         return parameters;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -79,13 +87,13 @@ public class MapBasedAdapterDef extends MapBasedQueueDef implements AdapterDefin
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final MapBasedAdapterDef that = (MapBasedAdapterDef) o;
-        return Objects.equals(this.getName(), that.getName())
+        return Objects.equals(this.name, that.name)
                 && Objects.equals(this.className, that.className)
                 && Objects.equals(this.parameters, that.parameters);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getName(), this.className, this.parameters);
+        return Objects.hash(this.name, this.className, this.parameters);
     }
 }
