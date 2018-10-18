@@ -141,6 +141,23 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
+[releasenotes-changelog-Meridian-2016.1.17]
+
+==== Release Meridian-2016.1.17
+
+Release 2016.1.17 is an update to 2016.1.15 that fixes a bug with long-running PostgreSQL instances, and
+makes improvements to VMware connection pooling.
+
+The codename for 2016.1.17 is _Van der Grinten_.
+
+===== Bug
+
+* int overflow in InstallerDb causes bamboo failures (Issue http://issues.opennms.org/browse/NMS-10402[NMS-10402])
+
+===== Enhancement
+
+* Improve concurrency in Vmware Connection Pool (Issue http://issues.opennms.org/browse/NMS-10373[NMS-10373])
+
 [releasenotes-changelog-Meridian-2016.1.16]
 
 ==== Release Meridian-2016.1.16
