@@ -268,6 +268,13 @@
     <!-- <scope>provided</scope> -->
     <!-- </dependency> -->
 
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.junit</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>test</scope>
+    </dependency>
+
 
   </dependencies>
   <pluginRepositories>
