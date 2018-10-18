@@ -329,7 +329,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         // Increment the alarm and re-send
         alarm.setCounter(2);
         // Also update the related alarm
-        alarm.getRelatedAlarmsForSituation().iterator().next().setCounter(2);
+        alarm.getRelatedAlarms().iterator().next().setCounter(2);
         alarmDao.save(alarm);
         kafkaProducer.handleNewOrUpdatedAlarm(alarm);
 
@@ -355,7 +355,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         // Increment the alarm and write directly to db
         alarm.setCounter(2);
         // Also update the related alarm
-        alarm.getRelatedAlarmsForSituation().iterator().next().setCounter(2);
+        alarm.getRelatedAlarms().iterator().next().setCounter(2);
         alarmDao.save(alarm);
 
         // Fire up the consumer

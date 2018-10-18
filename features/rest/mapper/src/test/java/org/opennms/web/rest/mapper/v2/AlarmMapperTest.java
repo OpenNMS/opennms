@@ -142,7 +142,7 @@ public class AlarmMapperTest {
         alarm.setSuppressedTime(new Date(1503412443118L));
         alarm.setLastEventTime(new Date(1503412443118L));
         alarm.setX733ProbableCause(0);
-        alarm.setRelatedAlarmsForSituation(getRelatedAlarms());
+        alarm.setRelatedAlarms(getRelatedAlarms());
 
         alarm.setLastEvent(getOnmsEvent(getOnmsMonitoringSystem(alarm), node, getOnmsServiceType(alarm)));
 

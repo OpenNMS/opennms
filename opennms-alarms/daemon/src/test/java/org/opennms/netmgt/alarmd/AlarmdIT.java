@@ -319,14 +319,14 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         sendSituationEvent("Situation1", node, reductionKeys);
         await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
         OnmsAlarm situation = m_alarmDao.findByReductionKey("Situation1");
-        assertEquals(2, situation.getRelatedAlarmsForSituation().size());
+        assertEquals(2, situation.getRelatedAlarms().size());
 
         //send situation in with 3rd alarm, should result in 1 situation with 3 alarms
         List<String> newReductionKeys = new ArrayList<>(Arrays.asList("Alarm3"));
         sendSituationEvent("Situation1", node, newReductionKeys);
         await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
         situation = m_alarmDao.findByReductionKey("Situation1");
-        assertEquals(3, situation.getRelatedAlarmsForSituation().size());
+        assertEquals(3, situation.getRelatedAlarms().size());
     }
     
     @Test
@@ -778,7 +778,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     
     private void assertEmptyAlarmSituationTable() {
         List<String> alarmDescriptions = m_alarmDao.findAll().stream()
-                .map(a -> a.getRelatedAlarmsForSituation())
+                .map(a -> a.getRelatedAlarms())
                 .flatMap(Collection::stream)
                 .map(a -> String.format("Alarm[id=%s, reductionKey=%s, severity=%s]", a.getId(), a.getReductionKey(), a.getSeverity()))
                 .collect(Collectors.toList());

@@ -67,7 +67,7 @@ public class ProtoBufMapperTest {
         String childLogMsg = "test msg";
         childAlarm.setLogMsg(childLogMsg);
 
-        parentAlarm.setRelatedAlarmsForSituation(new HashSet<>(Collections.singletonList(childAlarm)));
+        parentAlarm.setRelatedAlarms(new HashSet<>(Collections.singletonList(childAlarm)));
         ProtobufMapper protobufMapper = new ProtobufMapper(mock(EventConfDao.class), mock(HwEntityDao.class),
                 mock(TransactionOperations.class), mock(NodeDao.class), 1);
         OpennmsModelProtos.Alarm.Builder mappedAlarm = protobufMapper.toAlarm(parentAlarm);

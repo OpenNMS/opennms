@@ -746,7 +746,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
             OnmsAlarm alarm = m_databasePopulator.getAlarmDao().findByReductionKey(reductionKey);
             relatedAlarms.add(alarm);
         }
-        situation.setRelatedAlarmsForSituation(relatedAlarms);
+        situation.setRelatedAlarms(relatedAlarms);
         m_databasePopulator.getAlarmDao().save(situation);
         m_databasePopulator.getAlarmDao().flush();
     }

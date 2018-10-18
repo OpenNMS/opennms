@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.hibernate.Hibernate;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -194,7 +195,7 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
                 results.addAlarms(now, m_transactionTemplate.execute((t) -> {
                             final List<OnmsAlarm> alarms = m_alarmDao.findAll();
                     alarms.forEach(a -> {
-                       // Hibernate.initialize(a.getRelatedAlarms());
+                       Hibernate.initialize(a.getAssociatedAlarms());
 
                     });
                             return alarms;
@@ -225,8 +226,7 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
             results.addAlarms(now, m_transactionTemplate.execute((t) -> {
                 final List<OnmsAlarm> alarms = m_alarmDao.findAll();
                 alarms.forEach(a -> {
-/*                    a.getRelatedAlarms().size();
-                    Hibernate.initialize(a.getRelatedAlarms());*/
+                    Hibernate.initialize(a.getAssociatedAlarms());
                 });
                 return alarms;
             }));

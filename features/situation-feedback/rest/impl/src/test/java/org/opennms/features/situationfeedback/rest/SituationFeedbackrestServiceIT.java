@@ -111,7 +111,7 @@ public class SituationFeedbackrestServiceIT {
         situation.setDistPoller(distPollerDao.whoami());
         situation.setCounter(1);
         situation.setUei("cardDown");
-        situation.setRelatedAlarmsForSituation(new HashSet<>(Arrays.asList(linkDownAlarmOnR1, linkDownAlarmOnR2)));
+        situation.setRelatedAlarms(new HashSet<>(Arrays.asList(linkDownAlarmOnR1, linkDownAlarmOnR2)));
         situation.setReductionKey("situation/reduction/key");
 
         alarmDao.saveOrUpdate(situation);
@@ -126,15 +126,15 @@ public class SituationFeedbackrestServiceIT {
         List<AlarmFeedback> feedback = Collections.singletonList(falsePositive);
 
         OnmsAlarm prior = alarmDao.findByReductionKey(situation.getReductionKey());
-        assertThat(prior.getRelatedAlarmsForSituation().size(), is(2));
+        assertThat(prior.getRelatedAlarms().size(), is(2));
 
         int situationId = prior.getId();
 
         sut.setFeedback(situationId, feedback);
 
         OnmsAlarm restrieved = alarmDao.findByReductionKey(situation.getReductionKey());
-        assertThat(restrieved.getRelatedAlarmsForSituation().size(), is(1));
-        assertThat(restrieved.getRelatedAlarmsForSituation().stream().findFirst(), is(Optional.of(linkDownAlarmOnR2)));
+        assertThat(restrieved.getRelatedAlarms().size(), is(1));
+        assertThat(restrieved.getRelatedAlarms().stream().findFirst(), is(Optional.of(linkDownAlarmOnR2)));
     }
 
 }
