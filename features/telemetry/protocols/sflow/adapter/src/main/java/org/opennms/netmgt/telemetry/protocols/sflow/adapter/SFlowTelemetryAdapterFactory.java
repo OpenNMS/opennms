@@ -47,7 +47,7 @@ public class SFlowTelemetryAdapterFactory extends AbstractCollectionAdapterFacto
 
     @Override
     public Class<? extends Adapter> getBeanClass() {
-        return SFlowAdapter.class;
+        return SFlowTelemetryAdapter.class;
     }
 
     @Override
@@ -58,6 +58,7 @@ public class SFlowTelemetryAdapterFactory extends AbstractCollectionAdapterFacto
         adapter.setPersisterFactory(getPersisterFactory());
         adapter.setFilterDao(getFilterDao());
         adapter.setPersisterFactory(getPersisterFactory());
+        adapter.setInterfaceToNodeCache(getInterfaceToNodeCache());
         adapter.setBundleContext(getBundleContext());
 
         final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(adapter);

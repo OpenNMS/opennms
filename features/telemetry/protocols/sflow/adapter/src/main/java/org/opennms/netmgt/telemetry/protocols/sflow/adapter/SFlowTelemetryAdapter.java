@@ -45,15 +45,13 @@ import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
+import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.protocols.collection.AbstractScriptPersistingAdapter;
 import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.protocols.collection.ScriptedCollectionSetBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.support.TransactionOperations;
 
 public class SFlowTelemetryAdapter extends AbstractScriptPersistingAdapter {
 
@@ -62,10 +60,6 @@ public class SFlowTelemetryAdapter extends AbstractScriptPersistingAdapter {
     private CollectionAgentFactory collectionAgentFactory;
 
     private InterfaceToNodeCache interfaceToNodeCache;
-
-    private NodeDao nodeDao;
-
-    private TransactionOperations transactionTemplate;
 
     public SFlowTelemetryAdapter() {
     }
@@ -136,13 +130,5 @@ public class SFlowTelemetryAdapter extends AbstractScriptPersistingAdapter {
 
     public void setInterfaceToNodeCache(InterfaceToNodeCache interfaceToNodeCache) {
         this.interfaceToNodeCache = interfaceToNodeCache;
-    }
-
-    public void setNodeDao(NodeDao nodeDao) {
-        this.nodeDao = nodeDao;
-    }
-
-    public void setTransactionTemplate(TransactionOperations transactionTemplate) {
-        this.transactionTemplate = transactionTemplate;
     }
 }
