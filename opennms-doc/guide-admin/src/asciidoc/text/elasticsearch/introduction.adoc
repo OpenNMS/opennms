@@ -121,8 +121,8 @@ NOTE: If credentials are provided preemptive auth is used for all defined Elasti
 ----
 elasticUrl=http://elastic:9200
 elasticIndexStrategy=daily
-elasticGlobalUser=elastic
-elasticGlobalPassword=changeme
+globalElasticUser=elastic
+globalElasticPassword=changeme
 ----
 
 === Credentials

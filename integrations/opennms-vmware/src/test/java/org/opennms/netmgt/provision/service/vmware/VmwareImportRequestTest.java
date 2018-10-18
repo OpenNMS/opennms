@@ -53,7 +53,7 @@ public class VmwareImportRequestTest extends XmlTestNoCastor<VmwareImportRequest
         return Arrays.asList(new Object[][] {
             {
                 request,
-                "<vmware-requisition-request import-vm-powered-on=\"true\" import-vm-powered-off=\"false\" import-vm-suspended=\"false\" import-host-powered-on=\"true\" import-host-powered-off=\"false\" import-host-standby=\"false\" import-host-unknown=\"false\" persist-ipv4=\"true\" persist-ipv6=\"true\" persist-vms=\"true\" persist-hosts=\"true\" topology-port-groups=\"false\" topology-networks=\"true\" topology-datastores=\"true\">\n" +
+                "<vmware-requisition-request import-vm-powered-on=\"true\" import-vm-powered-off=\"false\" import-vm-suspended=\"false\" import-host-powered-on=\"true\" import-host-powered-off=\"false\" import-host-standby=\"false\" import-host-unknown=\"false\" persist-ipv4=\"true\" persist-ipv6=\"true\" persist-vms=\"true\" persist-hosts=\"true\" topology-port-groups=\"false\" topology-networks=\"true\" topology-datastores=\"true\" timeout=\"3000\" cim-timeout=\"3000\">\n" +
                 "   <custom-attribute key=\"k\">v</custom-attribute>\n" +
                 "</vmware-requisition-request>"
             }
