@@ -22,7 +22,6 @@
 	<service id="nxosFactoryService" ref="nxosAdapterFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
 		<service-properties>
 			<entry key="registration.export" value="true" />
-			<entry key="type" value="org.opennms.netmgt.telemetry.protocols.nxos.adapter.NxosGpbAdapter" />
 		</service-properties>
 	</service>
 

@@ -18,7 +18,6 @@
 	<service ref="netflow5Factory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
 		<service-properties>
 			<entry key="registration.export" value="true" />
-			<entry key="type" value="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter" />
 		</service-properties>
 	</service>
 
@@ -30,7 +29,6 @@
 	<service ref="netflow9Factory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
 		<service-properties>
 			<entry key="registration.export" value="true" />
-			<entry key="type" value="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9Adapter" />
 		</service-properties>
 	</service>
 
@@ -42,7 +40,6 @@
 	<service ref="ipfixFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
 		<service-properties>
 			<entry key="registration.export" value="true" />
-			<entry key="type" value="org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapter" />
 		</service-properties>
 	</service>
 

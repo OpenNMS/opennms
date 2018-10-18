@@ -25,7 +25,6 @@
 	<service ref="sflowFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
 		<service-properties>
 			<entry key="registration.export" value="true" />
-			<entry key="type" value="org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter" />
 		</service-properties>
 	</service>
 
@@ -41,7 +40,6 @@
 	<service ref="sflowTelemetryFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
 		<service-properties>
 			<entry key="registration.export" value="true" />
-			<entry key="type" value="org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowTelemetryAdapter" />
 		</service-properties>
 	</service>
 
