@@ -230,7 +230,7 @@ public class ManagedDroolsContext {
         }
         LOG.info("Using rules files: {}", rulesFiles);
         for (File file : rulesFiles) {
-            kfs.write(ResourceFactory.newFileResource(file));
+            kfs.write("src/main/resources/" + file.getName(), ResourceFactory.newFileResource(file));
         }
 
         // Validate
