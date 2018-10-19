@@ -36,7 +36,6 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Every.everyItem;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.fail;
 import static org.opennms.netmgt.alarmd.driver.AlarmMatchers.acknowledged;
 import static org.opennms.netmgt.alarmd.driver.AlarmMatchers.hasSeverity;
 
@@ -319,7 +318,7 @@ public class AlarmdBlackboxIT {
      * Verifies ACK'ing a situation will ACK all of the related alarms which are unacked.
      */
     @Test
-    public void canAckSituation() {
+    public void situationAcknowledgmentAcknowledgesAllAlarms() {
         Scenario scenario = Scenario.builder()
                 .withLegacyAlarmBehavior()
                 // Create some node down alarms
@@ -351,10 +350,12 @@ public class AlarmdBlackboxIT {
         assertThat(results.getAlarmsAtLastKnownTime(), hasSize(0));
     }
 
+    /**
+     * Verifies Unacking a situation should unack all previously acked related
+     * alarms.
+     */
     @Test
-    public void canUnAckSituation() {
-        // Unacking a situation should unack all acked alarms
-        // TODO give higher salience to this rule and check unack timestamp. 
+    public void situationUnAcknowledgmentUnAcknowledgesAllAlarms() {
         Scenario scenario = Scenario.builder()
                 .withLegacyAlarmBehavior()
                 // Create some node down alarms

@@ -120,7 +120,7 @@ public class DefaultAlarmService implements AlarmService {
     @Override
     @Transactional
     public void acknowledgeAlarm(OnmsAlarm alarm, Date now) {
-        LOG.info("Acknowledging alarm with id: {}", alarm.getId());
+        LOG.info("Acknowledging alarm with id: {} @ {}", alarm.getId(), now);
         final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
         if (alarmInTrans == null) {
             LOG.warn("Alarm disappeared: {}. Skipping ack.", alarm);
@@ -134,7 +134,7 @@ public class DefaultAlarmService implements AlarmService {
     @Override
     @Transactional
     public void unacknowledgeAlarm(OnmsAlarm alarm, Date now) {
-        LOG.info("Un-Acknowledging alarm with id: {}", alarm.getId());
+        LOG.info("Un-Acknowledging alarm with id: {} @ {}", alarm.getId(), now);
         final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
         if (alarmInTrans == null) {
             LOG.warn("Alarm disappeared: {}. Skipping un-ack.", alarm);
@@ -176,7 +176,15 @@ public class DefaultAlarmService implements AlarmService {
         this.alarmEntityNotifier = alarmEntityNotifier;
     }
 
-    public void warn(String message) {
-        LOG.warn(message);
+    public void debug(String message, Object... objects) {
+        LOG.warn(message, objects);
+    }
+
+    public void info(String message, Object... objects) {
+        LOG.warn(message, objects);
+    }
+
+    public void warn(String message, Object... objects) {
+        LOG.warn(message, objects);
     }
 }

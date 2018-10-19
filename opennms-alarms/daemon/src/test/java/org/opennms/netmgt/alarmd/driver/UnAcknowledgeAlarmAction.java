@@ -31,12 +31,12 @@ package org.opennms.netmgt.alarmd.driver;
 import java.util.Date;
 import java.util.Objects;
 
-public class AcknowledgeAlarmAction implements Action {
+public class UnAcknowledgeAlarmAction implements Action {
     private final String ackUser;
     private final Date ackTime;
     private final String reductionKey;
 
-    public AcknowledgeAlarmAction(String ackUser, Date ackTime, String reductionKey) {
+    public UnAcknowledgeAlarmAction(String ackUser, Date ackTime, String reductionKey) {
         this.ackUser = Objects.requireNonNull(ackUser);
         this.ackTime = Objects.requireNonNull(ackTime);
         this.reductionKey = Objects.requireNonNull(reductionKey);
@@ -49,6 +49,6 @@ public class AcknowledgeAlarmAction implements Action {
 
     @Override
     public void visit(ActionVisitor visitor) {
-        visitor.acknowledgeAlarm(ackUser, ackTime, (a) -> Objects.equals(reductionKey, a.getReductionKey()));
+        visitor.unacknowledgeAlarm(ackUser, ackTime, (a) -> Objects.equals(reductionKey, a.getReductionKey()));
     }
 }
