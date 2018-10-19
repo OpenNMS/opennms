@@ -28,10 +28,13 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -43,6 +46,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
+import org.opennms.netmgt.model.alarm.SituationSummary;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 /**
@@ -105,6 +109,42 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         sql.append("GROUP BY node.id, node.label ");
         sql.append("ORDER BY min(alarm.lastEventTime) DESC, node.label ASC");
         return findObjects(AlarmSummary.class, sql.toString());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<SituationSummary> getSituationSummaries() {
+        return getHibernateTemplate().execute(session -> (List<SituationSummary>) session.createSQLQuery(
+                "SELECT " +
+                        "  a1.alarmid, " +
+                        "  a1.severity, " +
+                        "  string_agg(DISTINCT n2.location, ', ')," +
+                        "  COUNT(DISTINCT n2.nodeid) AS nodeCount, " +
+                        "  COUNT(DISTINCT s1.related_alarm_id) AS alarmCount, " +
+                        "  MIN(a2.lastEventTime) " +
+                        "FROM " +
+                        "  alarms a1 JOIN alarm_situations s1 ON a1.alarmid=s1.situation_id " +
+                        "  LEFT JOIN alarms a2 ON s1.related_alarm_id = a2.alarmid " +
+                        "  LEFT JOIN node n2 ON a2.nodeid = n2.nodeid " +
+                        "WHERE " +
+                        "  a1.alarmAckTime IS NULL " +
+                        "GROUP BY " +
+                        "  a1.alarmid " +
+                        "ORDER BY " +
+                        "  a1.severity DESC, " +
+                        "  COUNT(DISTINCT s1.related_alarm_id) DESC")
+                .setResultTransformer(new ResultTransformer() {
+                    @Override
+                    public Object transformTuple(Object[] tuple, String[] aliases) {
+                        return new SituationSummary((Integer) tuple[0], OnmsSeverity.get((Integer) tuple[1]), (String) tuple[2], ((BigInteger) tuple[3]).longValue(), ((BigInteger) tuple[4]).longValue(), (Date) tuple[5]);
+                    }
+
+                    @SuppressWarnings("rawtypes")
+                    @Override
+                    public List transformList(List collection) {
+                        return collection;
+                    }
+                }).list());
     }
 
     @Override
