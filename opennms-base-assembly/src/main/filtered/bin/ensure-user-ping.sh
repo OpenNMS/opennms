@@ -83,8 +83,9 @@ configure_permissions() {
 	fi
 	
 	if [ "${group_end}" -eq 0 ]; then
-		rm /etc/sysctl.d/99-opennms-non-root-icmp.conf
+		rm -f /etc/sysctl.d/99-opennms-non-root-icmp.conf || :
 	else
+		install -d -m 755 /etc/sysctl.d
 		echo "net.ipv4.ping_group_range=${group_start} ${group_end}" > /etc/sysctl.d/99-opennms-non-root-icmp.conf
 	fi
 	

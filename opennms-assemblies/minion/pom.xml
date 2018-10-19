@@ -12,7 +12,10 @@
   <name>OpenNMS Minion</name>
   <url>http://maven.apache.org</url>
   <properties>
+    <NAME_DISPLAY>Minion</NAME_DISPLAY>
+    <NAME_LC>minion</NAME_LC>
     <INSTPREFIX>/opt/minion</INSTPREFIX>
+    <RUNAS>root</RUNAS>
     <SYSCONFDIR>/opt/minion/etc</SYSCONFDIR>
   </properties>
   <build>
