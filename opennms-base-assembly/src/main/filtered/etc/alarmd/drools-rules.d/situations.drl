@@ -99,7 +99,7 @@ rule "AllRelatedAlarmsAcknowledged"
     // All the relatedAlarms are Acknowledged.
     List(size == $relatedAlarmIds.size) from collect (OnmsAcknowledgment($relatedAlarmIds contains refId, ackAction == AckAction.ACKNOWLEDGE ) )
     // There is at least one alarm ACK after the Situation ACK.
-    $triggeringAlarmAcks : LinkedList( size > 0 ) from collect (OnmsAcknowledgment($relatedAlarmIds contains refId, ackAction == AckAction.ACKNOWLEDGE, id > $situationAck.getId() ) )
+    $triggeringAlarmAcks : LinkedList( size > 0 ) from collect (OnmsAcknowledgment($relatedAlarmIds contains refId, ackAction == AckAction.ACKNOWLEDGE, ackTime > $situationAck.getAckTime() ) )
   then
     Date acknowledgeTime = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
    	alarmService.acknowledgeAlarm((OnmsAlarm)$situation, acknowledgeTime);
@@ -112,7 +112,7 @@ rule "newAlarmsUnAcknowledgesSituation"
     // The Acknowledgment is in Working Memory.
     $situationAck : OnmsAcknowledgment( refId == $situation.id, ackAction == AckAction.ACKNOWLEDGE)
     // There is at least one un-Acknowledgment for one of the related alarms with a time after the Situation was acknowledged.
-    $unAkedRelatedAlarms : LinkedList(size > 0) from collect (OnmsAcknowledgment($relatedAlarmIds contains refId, ackAction == AckAction.UNACKNOWLEDGE, id > $situationAck.getId() ) )
+    $unAkedRelatedAlarms : LinkedList(size > 0) from collect (OnmsAcknowledgment($relatedAlarmIds contains refId, ackAction == AckAction.UNACKNOWLEDGE, ackTime > $situationAck.getAckTime() ) )
   then
     Date acknowledgeTime = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
    	alarmService.unacknowledgeAlarm($situation, acknowledgeTime);
