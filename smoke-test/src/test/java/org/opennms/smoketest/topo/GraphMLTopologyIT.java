@@ -240,21 +240,26 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void verifyCanChangeIcon() throws IOException, InterruptedException {
+        // Select Meta Topology and select target Topology
         topologyUIPage.selectTopologyProvider(() -> LABEL);
-        waitFor(1);
-        topologyUIPage.findVertex("North Region").contextMenu().click("Navigate To", "Markets (North Region)");
-        String label = "North 1";
+        topologyUIPage.findVertex("North Region")
+                .contextMenu()
+                .click("Navigate To", "Markets (North Region)");
 
-        String oldIconName = topologyUIPage.findVertex(label).getIconName();
-        String newIconName = "microwave_backhaul_1";
-        if(newIconName.equals(oldIconName)){
-            // make sure we actually change the icon
-            newIconName = "IP_service";
+        final String vertexName = "North 1";
+        final String currentIconName = topologyUIPage.findVertex(vertexName).getIconName();
+        final String newIconName = "microwave_backhaul_1";
+
+        // Ensure icon is not yet changed
+        if (newIconName.equals(currentIconName)) {
+            throw new IllegalStateException("Cannot run test, as preconditions are not met");
         }
-        topologyUIPage.findVertex(label).changeIcon(newIconName);
-        waitFor(4);
-        topologyUIPage.refreshNow();
-        assertEquals(newIconName, topologyUIPage.findVertex(label).getIconName());
+
+        // Change icon
+        topologyUIPage.findVertex(vertexName).changeIcon(newIconName);
+
+        // Verify icon has changed
+        Assert.assertEquals(newIconName, topologyUIPage.findVertex(vertexName).getIconName());
     }
 
         /**
