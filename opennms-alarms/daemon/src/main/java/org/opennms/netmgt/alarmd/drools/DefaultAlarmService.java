@@ -172,6 +172,10 @@ public class DefaultAlarmService implements AlarmService {
         this.alarmDao = alarmDao;
     }
 
+    public void setAcknowledgmentDao(AcknowledgmentDao acknowledgmentDao) {
+        this.acknowledgmentDao = acknowledgmentDao;
+    }
+
     public void setAlarmEntityNotifier(AlarmEntityNotifier alarmEntityNotifier) {
         this.alarmEntityNotifier = alarmEntityNotifier;
     }

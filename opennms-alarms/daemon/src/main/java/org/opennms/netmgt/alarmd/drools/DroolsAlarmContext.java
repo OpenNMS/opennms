@@ -237,6 +237,10 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         this.alarmService = alarmService;
     }
 
+    public void setAcknowledgmentDao(AcknowledgmentDao acknowledgmentDao) {
+        this.acknowledgmentDao = acknowledgmentDao;
+    }
+
     public void setAlarmTicketerService(AlarmTicketerService alarmTicketerService) {
         this.alarmTicketerService = alarmTicketerService;
     }
