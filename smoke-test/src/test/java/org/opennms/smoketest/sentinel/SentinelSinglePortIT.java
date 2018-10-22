@@ -113,8 +113,8 @@ public class SentinelSinglePortIT {
             // Send flow packet to minion
             sendNetflowPacket(minionSinglePortAddress, "/flows/netflow5.dat"); // 2 records
             sendNetflowPacket(minionSinglePortAddress, "/flows/netflow9.dat"); // 7 records
-            sendNetflowPacket(minionSinglePortAddress, "/flows/ipfix.dat"); // 6 records
-            sendNetflowPacket(minionSinglePortAddress, "/flows/sflow.dat"); // 1 record
+            sendNetflowPacket(minionSinglePortAddress, "/flows/ipfix.dat"); // 2 records
+            sendNetflowPacket(minionSinglePortAddress, "/flows/sflow.dat"); // 5 record
 
             // Ensure that the template has been created
             verify(() -> {
@@ -131,11 +131,10 @@ public class SentinelSinglePortIT {
     }
 
     private void waitForSentinelStartup(InetSocketAddress sentinelSshAddress) throws Exception {
-        new KarafShell(sentinelSshAddress).verifyLog(shellOutput -> shellOutput.contains("Route: Sink.Server.Telemetry-SFlow started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-Netflow-5"));
-        new KarafShell(sentinelSshAddress).verifyLog(shellOutput -> shellOutput.contains("Route: Sink.Server.Telemetry-SFlow started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-Netflow-9"));
-        new KarafShell(sentinelSshAddress).verifyLog(shellOutput -> shellOutput.contains("Route: Sink.Server.Telemetry-SFlow started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-IPFIX"));
+        new KarafShell(sentinelSshAddress).verifyLog(shellOutput -> shellOutput.contains("Route: Sink.Server.Telemetry-Netflow-5 started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-Netflow-5"));
+        new KarafShell(sentinelSshAddress).verifyLog(shellOutput -> shellOutput.contains("Route: Sink.Server.Telemetry-Netflow-9 started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-Netflow-9"));
+        new KarafShell(sentinelSshAddress).verifyLog(shellOutput -> shellOutput.contains("Route: Sink.Server.Telemetry-IPFIX started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-IPFIX"));
         new KarafShell(sentinelSshAddress).verifyLog(shellOutput -> shellOutput.contains("Route: Sink.Server.Telemetry-SFlow started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-SFlow"));
-
     }
 }
 

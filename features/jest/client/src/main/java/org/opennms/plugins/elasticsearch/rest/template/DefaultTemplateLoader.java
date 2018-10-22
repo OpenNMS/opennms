@@ -48,12 +48,13 @@ public class DefaultTemplateLoader implements TemplateLoader {
         for (int i = serverVersion.getMajor(); i >= 0; i--) {
             final String versionSuffix = i == 0 ? "" : String.format(".es%d", i);
             final String resourceWithSuffix = String.format("%s%s.json", resource, versionSuffix);
+            LOG.debug("Attempting to find template with resource name: {} (requested: {})", resourceWithSuffix, resource);
             final String template = getResource(resourceWithSuffix);
             if (template != null) {
-                LOG.info("Using template with resource name: {}", resource);
+                LOG.info("Using template with resource name: {} (requested: {})", resourceWithSuffix, resource);
                 return template;
             }
-             LOG.debug("No template found with resource name: {}", resource);
+            LOG.debug("No template found with resource name: {} (requested: {})", resourceWithSuffix, resource);
         }
         throw new NullPointerException(String.format("No template found for server version %s and resource %s.",
                 serverVersion, resource));

@@ -131,8 +131,8 @@ public abstract class AbstractFlowIT {
             // Send flow packet to minion
             sendNetflowPacket(minionNetflow5ListenerAddress, "/flows/netflow5.dat"); // 2 records
             sendNetflowPacket(minionNetflow9ListenerAddress, "/flows/netflow9.dat"); // 7 records
-            sendNetflowPacket(minionIpfixListenerAddress, "/flows/ipfix.dat"); // 6 records
-            sendNetflowPacket(minionSflowListenerAddress, "/flows/sflow.dat"); // 1 record
+            sendNetflowPacket(minionIpfixListenerAddress, "/flows/ipfix.dat"); // 2 records
+            sendNetflowPacket(minionSflowListenerAddress, "/flows/sflow.dat"); // 5 record
 
             // Ensure that the template has been created
             verify(() -> {

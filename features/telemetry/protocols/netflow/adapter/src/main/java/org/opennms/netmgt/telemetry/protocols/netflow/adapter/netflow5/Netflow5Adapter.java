@@ -63,7 +63,7 @@ public class Netflow5Adapter extends AbstractFlowAdapter<NetflowPacket> {
             return null;
         }
 
-        // Validates the parsed packeet and drops it when not valid
+        // Validates the parsed packet and drops it when not valid
         if (!flowPacket.isValid()) {
             LOG.warn("Received packet is not valid. Dropping flow packet.");
             return null;

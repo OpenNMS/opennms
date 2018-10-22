@@ -114,10 +114,10 @@ public class SinglePortIT {
         factory.setHttpClientConfig(new HttpClientConfig.Builder(elasticRestUrl).multiThreaded(true).build());
         try (final JestClient client = factory.getObject()) {
             // Send packets
-            sendNetflowPacket(opennmsSinglePortAddress, "/flows/netflow5.dat");
-            sendNetflowPacket(opennmsSinglePortAddress, "/flows/netflow9.dat");
-            sendNetflowPacket(opennmsSinglePortAddress, "/flows/ipfix.dat");
-            sendNetflowPacket(opennmsSinglePortAddress, "/flows/sflow.dat");
+            sendNetflowPacket(opennmsSinglePortAddress, "/flows/netflow5.dat"); // 2 records
+            sendNetflowPacket(opennmsSinglePortAddress, "/flows/netflow9.dat"); // 7 records
+            sendNetflowPacket(opennmsSinglePortAddress, "/flows/ipfix.dat"); // 2 records
+            sendNetflowPacket(opennmsSinglePortAddress, "/flows/sflow.dat"); // 5 record
 
             // Ensure that the template has been created
             verify(() -> {

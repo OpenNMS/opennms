@@ -105,12 +105,18 @@ public class UdpListener implements Listener {
                 .handler(new ChannelInitializer<DatagramChannel>() {
                     @Override
                     protected void initChannel(DatagramChannel ch) throws Exception {
+                        // TODO MVR make this a bit nicer
+                        // TODO fooker make this a bit nicer
                         if (parsers.size() == 1) {
                             final UdpParser parser = parsers.iterator().next();
                             ch.pipeline().addLast(new SimpleChannelInboundHandler<DatagramPacket>() {
                                 @Override
                                 protected void channelRead0(final ChannelHandlerContext ctx, final DatagramPacket msg) throws Exception {
-                                    parser.parse(msg.content().nioBuffer(), msg.sender(), msg.recipient())
+                                    // TODO MVR copy() vs retain()
+                                    // TODO fooker copy() vs retain()
+                                    parser.parse(msg.content().copy().nioBuffer(), msg.sender(), msg.recipient())
+                                            // TODO MVR this is the same code as below, really duplicating here?
+                                            // TODO fooker this is the same code as below, really duplicating here?
                                             .handle((result, ex) -> {
                                                 if (ex != null) {
                                                     ctx.fireExceptionCaught(ex);
@@ -123,10 +129,14 @@ public class UdpListener implements Listener {
                             ch.pipeline().addLast(new SimpleChannelInboundHandler<DatagramPacket>() {
                                 @Override
                                 protected void channelRead0(final ChannelHandlerContext ctx, final DatagramPacket msg) throws Exception {
-                                    final ByteBuffer buffer = msg.content().nioBuffer();
+                                    // TODO MVR copy() vs retain()
+                                    // TODO fooker copy() vs retain()
+                                    final ByteBuffer buffer = msg.content().copy().nioBuffer();
                                     for (final UdpParser parser : parsers) {
                                         if (BufferUtils.peek(buffer, ((Dispatchable) parser)::handles)) {
                                             parser.parse(buffer, msg.sender(), msg.recipient())
+                                                    // TODO MVR this is the same code as above, really duplicating here?
+                                                    // TODO fooker this is the same code as above, really duplicating here?
                                                     .handle((result, ex) -> {
                                                         if (ex != null) {
                                                             ctx.fireExceptionCaught(ex);
