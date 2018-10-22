@@ -63,7 +63,7 @@ rule "SituationHasBeenAcknowledged"
     // There is an ACKNOWLEDGE ack in working memory.
     $situationAck : OnmsAcknowledgment( refId == $situation.id, ackAction == AckAction.ACKNOWLEDGE)
     // There are NO alarm ACKs after the Situation ACK.
-    $relatedAlarmAcks : LinkedList( size == 0 ) from collect (OnmsAcknowledgment($relatedAlarmIds contains refId, ackAction == AckAction.ACKNOWLEDGE, ackTime > $situationAck.getAckTime() ) )
+    $relatedAlarmAcks : LinkedList( size == 0 ) from collect (OnmsAcknowledgment($relatedAlarmIds contains refId, ackTime > $situationAck.getAckTime() ) )
     // There is at least one related alarm that is not acknowledged.
     $relatedAlarms : LinkedList( size > 0 ) from collect( OnmsAlarm($relatedAlarmIds contains id, isAcknowledged() == false ) )
   then
@@ -88,7 +88,7 @@ rule "SituationHasBeenUnAcknowledged"
   then
     Date acknowledgeTime = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
     for (int i=0; i < $relatedAlarms.size(); i++) {
-    	alarmService.unacknowledgeAlarm((OnmsAlarm)$relatedAlarms.get(i), $situationAck.getAckTime());
+        alarmService.unacknowledgeAlarm((OnmsAlarm)$relatedAlarms.get(i), acknowledgeTime);
     }
 end
 
