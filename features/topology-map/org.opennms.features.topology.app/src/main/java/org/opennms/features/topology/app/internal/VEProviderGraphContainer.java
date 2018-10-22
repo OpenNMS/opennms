@@ -245,10 +245,19 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     @Override
     public void redoLayout() {
         PerformanceOptimizedHelper.TimeLogger timer = new PerformanceOptimizedHelper.TimeLogger();
+        long graphHashOld = m_graph.hashCode();
         getGraph();
-        if(m_layoutAlgorithm != null) {
-            m_layoutAlgorithm.updateLayout(m_graph);
-            fireGraphChanged();
+        long graphHashNew = m_graph.hashCode();
+        if(PerformanceOptimizedHelper.isPerformanceOptimized()){
+            if(m_layoutAlgorithm != null && graphHashOld != graphHashNew) {
+                m_layoutAlgorithm.updateLayout(m_graph);
+                fireGraphChanged();
+            }
+        } else {
+            if(m_layoutAlgorithm != null) {
+                m_layoutAlgorithm.updateLayout(m_graph);
+                fireGraphChanged();
+            }
         }
         timer.logTimeStop();
     }
@@ -402,8 +411,11 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
 	public void fireGraphChanged() {
-		for(ChangeListener listener : m_listeners) {
-			listener.graphChanged(this); // TODO: patrick slow: node table, appliction table, bussinesserviceTable
+		PerformanceOptimizedHelper.TimeLogger timer;
+        for(ChangeListener listener : m_listeners) {
+		    timer = new PerformanceOptimizedHelper.TimeLogger(listener.getClass().getName() + ": "+listener.toString());
+			listener.graphChanged(this);
+			timer.logTimeStop();
  		}
 	}
 
@@ -460,21 +472,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
                 callbackLogger.logTimeStop();
             }
         }
-        if(PerformanceOptimizedHelper.isPerformanceOptimized()) {
-            // we don't need to call the expensive redoLayout() method if we are called from the init method since
-            // redoLayout will be triggered later in that method. This is a dirty hack here of course and needs to be
-            // done properly. This is just for demonstration purposes
-            boolean isCalledFromInit = Arrays
-                    .stream(Thread.currentThread().getStackTrace())
-                    .anyMatch(element -> "init".equals(element.getMethodName())
-                            && TopologyUI.class.getName().equals(element.getClassName()));
-            if(!isCalledFromInit){
-                redoLayout();
-            }
-
-        } else {
-            redoLayout();
-        }
+        redoLayout();
         timeLogger.logTimeStop();
     }
 

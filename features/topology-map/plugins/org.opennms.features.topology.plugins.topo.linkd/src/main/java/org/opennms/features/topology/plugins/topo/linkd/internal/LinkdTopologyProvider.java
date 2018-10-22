@@ -432,30 +432,41 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
 
     private void getCdpLinks() {
+        PerformanceOptimizedHelper.TimeLogger timer = new PerformanceOptimizedHelper.TimeLogger();
+        PerformanceOptimizedHelper.TimeLogger timerPart = new PerformanceOptimizedHelper.TimeLogger("CdpElementDao.findAll()");
         List<CdpElement> cdpElements = m_cdpElementDao.findAll();
+        timerPart.logTimeStop();
+        timerPart = new PerformanceOptimizedHelper.TimeLogger("CdpLinkDao.findAll()");
         List<CdpLink> allLinks = m_cdpLinkDao.findAll();
+        timerPart.logTimeStop();
         List<Pair<CdpLink, CdpLink>> matchedCdpLinks = matchCdpLinks(cdpElements, allLinks);
-
+        timerPart = new PerformanceOptimizedHelper.TimeLogger("iterate CdpLinkPairs");
         for(Pair<CdpLink, CdpLink> pair : matchedCdpLinks) {
-            CdpLink sourceLink = pair.getLeft();
-            CdpLink targetLink = pair.getRight();
-            LinkdVertex source = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
-            source.getProtocolSupported().add(ProtocolSupported.CDP);
-            LinkdVertex target = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
-            target.getProtocolSupported().add(ProtocolSupported.CDP);
-            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNode().getId(), sourceLink.getCdpCacheIfIndex());
-            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNode().getId(), targetLink.getCdpCacheIfIndex());
-            connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
+            connectCdpLinkPair(pair);
+        }
+        timerPart.logTimeStop();
+        timer.logTimeStop();
+    }
+
+    private void connectCdpLinkPair(Pair<CdpLink, CdpLink> pair){
+        CdpLink sourceLink = pair.getLeft();
+        CdpLink targetLink = pair.getRight();
+        LinkdVertex source = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
+        source.getProtocolSupported().add(ProtocolSupported.CDP);
+        LinkdVertex target = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
+        target.getProtocolSupported().add(ProtocolSupported.CDP);
+        OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNode().getId(), sourceLink.getCdpCacheIfIndex());
+        OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNode().getId(), targetLink.getCdpCacheIfIndex());
+        connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
                 source, target,
                 sourceSnmpInterface, targetSnmpInterface,
                 targetLink.getCdpCacheAddress(),
                 sourceLink.getCdpCacheAddress(),
                 ProtocolSupported.CDP);
-        }
     }
 
     List<Pair<CdpLink, CdpLink>> matchCdpLinks(final List<CdpElement> cdpElements, final List<CdpLink> allLinks) {
-
+        PerformanceOptimizedHelper.TimeLogger timer = new PerformanceOptimizedHelper.TimeLogger();
         // 1. create lookup maps:
         Map<Integer, CdpElement> cdpelementmap = new HashMap<Integer, CdpElement>();
         for (CdpElement cdpelement: cdpElements) {
@@ -504,6 +515,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             parsed.add(targetLink.getId());
             results.add(Pair.of(sourceLink, targetLink));
         }
+        timer.logTimeStop();
         return results;
     }
 
@@ -860,7 +872,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         Map<InetAddress, OnmsIpInterface>  ipToOnmsIpMap = new HashMap<InetAddress, OnmsIpInterface>();
         Set<InetAddress> duplicated = new HashSet<InetAddress>();
         try {
-            for (OnmsIpInterface ip: m_ipInterfaceDao.findAll()) {
+            for (OnmsIpInterface ip: m_ipInterfaceDao.findAll()) { // TODO: patrick
                 if (ip.getIsSnmpPrimary().equals(PrimaryType.PRIMARY)) {
                     m_nodeToOnmsIpPrimaryMap.put(ip.getNode().getId(), ip);
                 } else {

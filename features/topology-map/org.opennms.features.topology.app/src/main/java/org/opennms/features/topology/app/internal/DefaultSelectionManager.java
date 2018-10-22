@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.opennms.core.utils.PerformanceOptimizedHelper;
 import org.opennms.features.topology.api.DefaultSelectionContext;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.SelectionContext;
@@ -137,13 +138,17 @@ public class DefaultSelectionManager implements SelectionManager {
 
 	@Override
 	public void selectionChanged(SelectionContext selectionContext) {
+
 		for(SelectionListener listener : m_listeners) {
 			LoggerFactory.getLogger(this.getClass()).debug("Invoking selectionChanged() on: {}, {}", listener.getClass().getName(), listener);
 			listener.selectionChanged(selectionContext);
 		}
+		PerformanceOptimizedHelper.TimeLogger timer;
 		for(SelectionListener listener : m_addedListeners) {
 			LoggerFactory.getLogger(this.getClass()).debug("Invoking selectionChanged() on: {}, {}", listener.getClass().getName(), listener);
+			timer = new PerformanceOptimizedHelper.TimeLogger(listener.getClass().getName());
 			listener.selectionChanged(selectionContext);
+			timer.logTimeStop();
 		}
 	}
 }

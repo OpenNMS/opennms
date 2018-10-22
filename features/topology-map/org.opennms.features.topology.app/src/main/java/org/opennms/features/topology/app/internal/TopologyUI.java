@@ -234,12 +234,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                 }
             }
             // we redo the layout before we save the history
-            if(isPerformanceOptimized()){
-                // we do not need to redo the layout here since this method can be called from init() and from
-                // handleRequest(). The init method redoes the layout anyway.
-            } else {
-                m_graphContainer.redoLayout();
-            }
+            m_graphContainer.redoLayout();
             m_topologyComponent.getState().setPhysicalWidth(0);
             m_topologyComponent.getState().setPhysicalHeight(0);
             m_topologyComponent.markAsDirtyRecursive();

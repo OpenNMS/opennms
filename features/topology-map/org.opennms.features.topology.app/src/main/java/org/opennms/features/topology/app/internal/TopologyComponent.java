@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.opennms.core.utils.PerformanceOptimizedHelper;
 import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
@@ -130,7 +131,9 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
         @Override
         public void vertexClicked(String vertexId, MouseEventDetails eventDetails, String platform) {
+            PerformanceOptimizedHelper.TimeLogger timer = new PerformanceOptimizedHelper.TimeLogger();
             selectVertices(eventDetails.isShiftKey(), eventDetails.isCtrlKey(), vertexId);
+            timer.logTimeStop();
         }
 
         @Override

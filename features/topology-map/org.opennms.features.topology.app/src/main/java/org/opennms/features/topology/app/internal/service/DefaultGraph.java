@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -162,5 +163,23 @@ public class DefaultGraph implements Graph {
             }
         }
         LOG.debug("Created a graph with {} vertices and {} edges", m_displayVertices.size(), m_displayEdges.size());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DefaultGraph that = (DefaultGraph) o;
+        return Objects.equals(m_displayVertices, that.m_displayVertices) &&
+                Objects.equals(m_displayEdges, that.m_displayEdges) &&
+                Objects.equals(m_layout, that.m_layout) &&
+                Objects.equals(edgeStatus, that.edgeStatus) &&
+                Objects.equals(vertexStatus, that.vertexStatus);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(m_displayVertices, m_displayEdges, m_layout, edgeStatus, vertexStatus);
     }
 }

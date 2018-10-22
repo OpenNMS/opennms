@@ -427,7 +427,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
     Supplier<List<OnmsNode>> onmsNodes = Suppliers.memoizeWithExpiration(
-            ()-> find("from OnmsNode order by label"), 5, TimeUnit.MINUTES);
+            ()-> find("from OnmsNode order by label"), 15, TimeUnit.MINUTES);
 
     /**
      * <p>findAllProvisionedNodes</p>

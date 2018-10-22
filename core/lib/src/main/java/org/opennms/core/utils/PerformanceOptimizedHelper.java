@@ -59,7 +59,7 @@ public class PerformanceOptimizedHelper {
             StackTraceElement[] stack = Thread.currentThread().getStackTrace();
             String message = String.format("TimeLogger %s: call to %s took %s ms. Stack: %s::%s::%s",
                     name,
-                    stack[3].getMethodName(),
+                    print(stack[3]),
                     System.currentTimeMillis() - start,
                     print(stack[6]),
                     print(stack[5]),
