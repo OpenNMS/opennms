@@ -81,6 +81,8 @@ rule "SituationHasBeenUnAcknowledged"
     $situationAck : OnmsAcknowledgment( refId == $situation.id, ackAction == AckAction.UNACKNOWLEDGE)
     // There are NO alarm ACKs after the Situation ACK
     $relatedAlarmAcks : LinkedList( size == 0 ) from collect (OnmsAcknowledgment($relatedAlarmIds contains refId, ackAction == AckAction.ACKNOWLEDGE, ackTime > $situationAck.getAckTime() ) )
+    // There is NO NAK on any of the Related Alarms BEFORE the Situation NAK - it would have triggered the Situation NAK and should not be propagated.
+    $triggeringNaks : LinkedList( size == 0 ) from collect (OnmsAcknowledgment($relatedAlarmIds contains refId, ackAction == AckAction.UNACKNOWLEDGE, ackTime < $situationAck.getAckTime() ) )
     // The list of Alarms to Un-Acknowledge
     $relatedAlarms : LinkedList( size > 0 ) from collect (OnmsAlarm($relatedAlarmIds contains id, isAcknowledged() == true) )
   then

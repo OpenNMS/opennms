@@ -462,7 +462,7 @@ public class AlarmdBlackboxIT {
         // t=5, alarm and situation should be unacked
         assertThat(results.getSituation(5), not(acknowledged()));
         // t=6, but other alarm should still be ACK'd
-        // FIXME - Sub-requirement of Requirement #4 - assertThat(results.getAlarms(6), not(everyItem(not(acknowledged()))));
+        assertThat(results.getAlarms(6), not(everyItem(not(acknowledged()))));
         // t=∞
         assertThat(results.getAlarmsAtLastKnownTime(), hasSize(0));
     }
