@@ -376,6 +376,7 @@ include::text/elasticsearch/features/alarm-event-forwarder.adoc[]
 include::text/elasticsearch/features/alarm-event-forwarder-mapping.adoc[]
 include::text/elasticsearch/features/alarm-event-forwarder-mapping-table.adoc[]
 include::text/elasticsearch/features/flows.adoc[]
+include::text/elasticsearch/features/situation-feedback.adoc[]
 
 [[ga-flow-support]]
 == Flow Support
@@ -386,3 +387,7 @@ include::text/flows/classification-engine.adoc[]
 [[ga-kafka-producer]]
 == Kafka Producer
 include::text/kafka-producer/kafka-producer.adoc[]
+
+[[ga-alarm-correlation]]
+== Alarm Correlation
+include::text/alarm-correlation/situation-feedback.adoc[]

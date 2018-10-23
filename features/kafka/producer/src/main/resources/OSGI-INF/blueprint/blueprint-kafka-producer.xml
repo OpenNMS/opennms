@@ -24,6 +24,7 @@
       <cm:property name="alarmFilter" value=""/>
       <cm:property name="nodeIdToCriteriaMaxCacheSize" value="10000"/>
       <cm:property name="suppressIncrementalAlarms" value="true"/>
+      <cm:property name="kafkaSendQueueCapacity" value="1000"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -62,6 +63,7 @@
     <property name="eventFilter" value="${eventFilter}"/>
     <property name="alarmFilter" value="${alarmFilter}"/>
     <property name="suppressIncrementalAlarms" value="${suppressIncrementalAlarms}"/>
+    <property name="kafkaSendQueueCapacity" value="${kafkaSendQueueCapacity}"/>
   </bean>
 
   <service ref="kafkaProducer" interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener">

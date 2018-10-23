@@ -36,6 +36,7 @@ import java.util.NoSuchElementException;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.InetAddressUtils;
@@ -73,6 +74,7 @@ import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.PartialUEIFilter;
 import org.opennms.web.alarm.filter.ServiceFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
+import org.opennms.web.alarm.filter.SituationFilter;
 import org.opennms.web.filter.Filter;
 
 /**
@@ -98,6 +100,9 @@ public abstract class AlarmUtil extends Object {
         criteria.createAlias("distPoller", "distPoller", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("lastEvent", "lastEvent", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
+        criteria.createAlias("relatedAlarms", "relatedAlarms", OnmsCriteria.LEFT_JOIN);
+
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
         alarmCriteria.visit(new AlarmCriteriaVisitor<RuntimeException>() {
 
@@ -154,6 +159,9 @@ public abstract class AlarmUtil extends Object {
                     case ACKUSER:
                         criteria.addOrder(Order.asc("alarmAckUser"));
                         break;
+                    case SITUATION:
+                        criteria.addOrder(Order.asc("relatedAlarms.id"));
+                        break;
                     case REVERSE_COUNT:
                         criteria.addOrder(Order.asc("counter"));
                         break;
@@ -183,6 +191,9 @@ public abstract class AlarmUtil extends Object {
                         break;
                     case REVERSE_ACKUSER:
                         criteria.addOrder(Order.desc("alarmAckUser"));
+                        break;
+                    case REVERSE_SITUATION:
+                        criteria.addOrder(Order.desc("relatedAlarms.id"));
                         break;
                     default:
                         break;
@@ -273,6 +284,8 @@ public abstract class AlarmUtil extends Object {
             filter = new NodeLocationFilter(value);
         } else if (type.equals(NegativeNodeLocationFilter.TYPE)) {
             filter = new NegativeNodeLocationFilter(value);
+        } else if (type.equals(SituationFilter.TYPE)) {
+            filter = new SituationFilter(Boolean.valueOf(value));
         }
 
         return filter;
