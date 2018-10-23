@@ -42,11 +42,11 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.xml.event.Event;
 import org.osgi.framework.BundleContext;
 
-public class AlarmPersisterExtensionMgr extends InterfaceMapper<org.opennms.integration.api.v1.alarms.AlarmPersisterExtension,AlarmPersisterExtension> {
+public class AlarmPersisterExtensionManager extends InterfaceMapper<org.opennms.integration.api.v1.alarms.AlarmPersisterExtension,AlarmPersisterExtension> {
 
     private final SessionUtils sessionUtils;
 
-    public AlarmPersisterExtensionMgr(BundleContext bundleContext, SessionUtils sessionUtils) {
+    public AlarmPersisterExtensionManager(BundleContext bundleContext, SessionUtils sessionUtils) {
         super(AlarmPersisterExtension.class, bundleContext);
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
     }

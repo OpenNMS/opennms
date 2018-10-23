@@ -35,9 +35,9 @@ import org.opennms.integration.api.v1.health.Context;
 import org.opennms.integration.api.v1.health.Status;
 import org.osgi.framework.BundleContext;
 
-public class HealthCheckMgr extends InterfaceMapper<HealthCheck, org.opennms.core.health.api.HealthCheck> {
+public class HealthCheckManager extends InterfaceMapper<HealthCheck, org.opennms.core.health.api.HealthCheck> {
 
-    public HealthCheckMgr(BundleContext bundleContext) {
+    public HealthCheckManager(BundleContext bundleContext) {
         super(org.opennms.core.health.api.HealthCheck.class, bundleContext);
     }
 

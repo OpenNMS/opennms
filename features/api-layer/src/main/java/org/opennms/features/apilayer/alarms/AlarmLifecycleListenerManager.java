@@ -37,9 +37,9 @@ import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.osgi.framework.BundleContext;
 
-public class AlarmLifecycleListenerMgr extends InterfaceMapper<org.opennms.integration.api.v1.alarms.AlarmLifecycleListener,AlarmLifecycleListener> {
+public class AlarmLifecycleListenerManager extends InterfaceMapper<org.opennms.integration.api.v1.alarms.AlarmLifecycleListener,AlarmLifecycleListener> {
 
-    public AlarmLifecycleListenerMgr(BundleContext bundleContext) {
+    public AlarmLifecycleListenerManager(BundleContext bundleContext) {
         super(AlarmLifecycleListener.class, bundleContext);
     }
 

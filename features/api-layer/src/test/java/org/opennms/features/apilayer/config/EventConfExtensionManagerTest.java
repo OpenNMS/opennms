@@ -45,12 +45,12 @@ import org.opennms.integration.api.v1.model.Severity;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.xml.eventconf.Events;
 
-public class EventConfExtensionMgrTest {
+public class EventConfExtensionManagerTest {
 
     @Test
     public void canPrioritizeEvents() {
         EventConfDao eventConfDao = mock(EventConfDao.class);
-        EventConfExtensionMgr eventConfExtensionMgr = new EventConfExtensionMgr(eventConfDao);
+        EventConfExtensionManager eventConfExtensionMgr = new EventConfExtensionManager(eventConfDao);
 
         // No events yet
         Events events = eventConfExtensionMgr.getObject();

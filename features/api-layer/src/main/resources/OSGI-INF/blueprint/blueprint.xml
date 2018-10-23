@@ -38,14 +38,14 @@
   <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" availability="mandatory"/>
   <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
 
-  <bean id="eventConfExtensionMgr" class="org.opennms.features.apilayer.config.EventConfExtensionMgr">
+  <bean id="eventConfExtensionManager" class="org.opennms.features.apilayer.config.EventConfExtensionManager">
     <argument ref="eventConfDao"/>
   </bean>
   <reference-list interface="org.opennms.integration.api.v1.config.events.EventConfExtension" availability="optional">
-    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="eventConfExtensionMgr" />
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="eventConfExtensionManager" />
   </reference-list>
 
-  <service ref="eventConfExtensionMgr" interface="org.opennms.core.config.api.ConfigurationProvider" >
+  <service ref="eventConfExtensionManager" interface="org.opennms.core.config.api.ConfigurationProvider" >
     <service-properties>
       <entry key="registration.export" value="true"/>
     </service-properties>
@@ -60,42 +60,42 @@
   <!-- Syslog -->
   <reference id="syslogdConfig" interface="org.opennms.netmgt.config.SyslogdConfig" availability="mandatory"/>
 
-  <bean id="syslogMatchExtensionMgr" class="org.opennms.features.apilayer.config.SyslogMatchExtensionMgr">
+  <bean id="syslogMatchExtensionManager" class="org.opennms.features.apilayer.config.SyslogMatchExtensionManager">
     <argument ref="syslogdConfig"/>
   </bean>
   <reference-list interface="org.opennms.integration.api.v1.config.syslog.SyslogMatchExtension" availability="optional">
-    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="syslogMatchExtensionMgr" />
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="syslogMatchExtensionManager" />
   </reference-list>
 
-  <service ref="syslogMatchExtensionMgr" interface="org.opennms.core.config.api.ConfigurationProvider" >
+  <service ref="syslogMatchExtensionManager" interface="org.opennms.core.config.api.ConfigurationProvider" >
     <service-properties>
       <entry key="registration.export" value="true"/>
     </service-properties>
   </service>
 
   <!-- Alarm Persister Extension -->
-  <bean id="alarmPersisterExtensionMgr" class="org.opennms.features.apilayer.alarms.AlarmPersisterExtensionMgr">
+  <bean id="alarmPersisterExtensionManager" class="org.opennms.features.apilayer.alarms.AlarmPersisterExtensionManager">
     <argument ref="blueprintBundleContext"/>
     <argument ref="sessionUtils"/>
   </bean>
   <reference-list interface="org.opennms.integration.api.v1.alarms.AlarmPersisterExtension" availability="optional">
-    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="alarmPersisterExtensionMgr" />
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="alarmPersisterExtensionManager" />
   </reference-list>
 
   <!-- Alarm Lifecycle Listener Extension -->
-  <bean id="alarmLifecycleListenerMgr" class="org.opennms.features.apilayer.alarms.AlarmLifecycleListenerMgr">
+  <bean id="alarmLifecycleListenerManager" class="org.opennms.features.apilayer.alarms.AlarmLifecycleListenerManager">
     <argument ref="blueprintBundleContext"/>
   </bean>
   <reference-list interface="org.opennms.integration.api.v1.alarms.AlarmLifecycleListener" availability="optional">
-    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="alarmLifecycleListenerMgr" />
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="alarmLifecycleListenerManager" />
   </reference-list>
 
   <!-- Health Checks -->
-  <bean id="healthCheckMgr" class="org.opennms.features.apilayer.health.HealthCheckMgr">
+  <bean id="healthCheckManager" class="org.opennms.features.apilayer.health.HealthCheckManager">
     <argument ref="blueprintBundleContext"/>
   </bean>
   <reference-list interface="org.opennms.integration.api.v1.health.HealthCheck" availability="optional">
-    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="healthCheckMgr" />
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="healthCheckManager" />
   </reference-list>
 
 </blueprint>

@@ -45,8 +45,8 @@ import org.slf4j.LoggerFactory;
  * @param <E> extension interface type
  * @param <C> configuration bean type
  */
-public abstract class ConfigExtensionMgr<E,C> implements ConfigurationProvider {
-    private static final Logger LOG = LoggerFactory.getLogger(EventConfExtensionMgr.class);
+public abstract class ConfigExtensionManager<E,C> implements ConfigurationProvider {
+    private static final Logger LOG = LoggerFactory.getLogger(EventConfExtensionManager.class);
 
     private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
     private final Set<E> extensions = new LinkedHashSet<>();
@@ -55,7 +55,7 @@ public abstract class ConfigExtensionMgr<E,C> implements ConfigurationProvider {
     private volatile C configObject;
     private volatile long lastUpdate = System.currentTimeMillis();
 
-    public ConfigExtensionMgr(Class<C> clazz, C initialObject) {
+    public ConfigExtensionManager(Class<C> clazz, C initialObject) {
         this.clazz = Objects.requireNonNull(clazz);
         this.configObject = Objects.requireNonNull(initialObject);
     }

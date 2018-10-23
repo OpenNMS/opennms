@@ -46,15 +46,15 @@ import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SyslogMatchExtensionMgr extends ConfigExtensionMgr<SyslogMatchExtension, SyslogdConfigurationGroup> {
-    private static final Logger LOG = LoggerFactory.getLogger(SyslogMatchExtensionMgr.class);
+public class SyslogMatchExtensionManager extends ConfigExtensionManager<SyslogMatchExtension, SyslogdConfigurationGroup> {
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogMatchExtensionManager.class);
 
     private final SyslogdConfig syslogdConfig;
 
-    public SyslogMatchExtensionMgr(SyslogdConfig syslogdConfig) {
+    public SyslogMatchExtensionManager(SyslogdConfig syslogdConfig) {
         super(SyslogdConfigurationGroup.class, new SyslogdConfigurationGroup());
         this.syslogdConfig = Objects.requireNonNull(syslogdConfig);
-        LOG.debug("SyslogMatchExtensionMgr initialized.");
+        LOG.debug("SyslogMatchExtensionManager initialized.");
     }
 
     @Override
@@ -62,7 +62,7 @@ public class SyslogMatchExtensionMgr extends ConfigExtensionMgr<SyslogMatchExten
         final List<UeiMatch> orderedUeiMatches = syslogMatchExtensions.stream()
                 .flatMap(ext -> ext.getSyslogMatches().stream())
                 .sorted(Comparator.comparing(SyslogMatch::getPriority))
-                .map(SyslogMatchExtensionMgr::toUeiMatch)
+                .map(SyslogMatchExtensionManager::toUeiMatch)
                 .collect(Collectors.toList());
         // Re-build the events
         SyslogdConfigurationGroup group = new SyslogdConfigurationGroup();

@@ -52,15 +52,15 @@ import org.opennms.netmgt.xml.eventconf.Varbind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EventConfExtensionMgr extends ConfigExtensionMgr<EventConfExtension, Events> {
-    private static final Logger LOG = LoggerFactory.getLogger(EventConfExtensionMgr.class);
+public class EventConfExtensionManager extends ConfigExtensionManager<EventConfExtension, Events> {
+    private static final Logger LOG = LoggerFactory.getLogger(EventConfExtensionManager.class);
 
     private final EventConfDao eventConfDao;
 
-    public EventConfExtensionMgr(EventConfDao eventConfDao) {
+    public EventConfExtensionManager(EventConfDao eventConfDao) {
         super(Events.class, new Events());
         this.eventConfDao = Objects.requireNonNull(eventConfDao);
-        LOG.debug("EventConfExtensionMgr initialized.");
+        LOG.debug("EventConfExtensionManager initialized.");
     }
 
     @Override
@@ -68,7 +68,7 @@ public class EventConfExtensionMgr extends ConfigExtensionMgr<EventConfExtension
         final List<Event> orderedEvents = extensions.stream()
                 .flatMap(ext -> ext.getEventDefinitions().stream())
                 .sorted(Comparator.comparing(EventDefinition::getPriority))
-                .map(EventConfExtensionMgr::toEvent)
+                .map(EventConfExtensionManager::toEvent)
                 .collect(Collectors.toList());
         // Re-build the events
         final Events events = new Events();
@@ -92,7 +92,7 @@ public class EventConfExtensionMgr extends ConfigExtensionMgr<EventConfExtension
         event.setLogmsg(toLogMsg(def.getLogMessage()));
         event.setAlarmData(toAlarmData(def.getAlarmData()));
         final List<Parameter> parms = def.getParameters().stream()
-                .map(EventConfExtensionMgr::toParameter)
+                .map(EventConfExtensionManager::toParameter)
                 .collect(Collectors.toList());
         event.setParameters(parms);
         return event;
@@ -131,10 +131,10 @@ public class EventConfExtensionMgr extends ConfigExtensionMgr<EventConfExtension
         }
         final Mask mask = new Mask();
         mask.setMaskelements(m.getMaskElements().stream()
-                .map(EventConfExtensionMgr::toMaskElement)
+                .map(EventConfExtensionManager::toMaskElement)
                 .collect(Collectors.toList()));
         mask.setVarbinds(m.getVarbinds().stream()
-                .map(EventConfExtensionMgr::toVarbind)
+                .map(EventConfExtensionManager::toVarbind)
                 .collect(Collectors.toList()));
         return mask;
     }
@@ -166,7 +166,7 @@ public class EventConfExtensionMgr extends ConfigExtensionMgr<EventConfExtension
         }
         alarmData.setAutoClean(alarm.isAutoClean());
         final List<UpdateField> updateFields = alarm.getUpdateFields().stream()
-                .map(EventConfExtensionMgr::toUpdateField)
+                .map(EventConfExtensionManager::toUpdateField)
                 .collect(Collectors.toList());
         alarmData.setUpdateFields(updateFields);
         alarmData.setManagedObject(toManagedObject(alarm.getManagedObject()));
