@@ -45,7 +45,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog;
-import org.opennms.netmgt.telemetry.adapters.collection.AbstractScriptPersistingAdapter;
+import org.opennms.netmgt.telemetry.adapters.collection.AbstractPersistingAdapter;
 import org.opennms.netmgt.telemetry.adapters.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.adapters.collection.ScriptedCollectionSetBuilder;
 import org.opennms.netmgt.telemetry.adapters.nxos.proto.TelemetryBis;
@@ -61,7 +61,7 @@ import com.google.common.collect.Iterables;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.InvalidProtocolBufferException;
 
-public class NxosGpbAdapter extends AbstractScriptPersistingAdapter {
+public class NxosGpbAdapter extends AbstractPersistingAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(NxosGpbAdapter.class);
 
@@ -130,7 +130,7 @@ public class NxosGpbAdapter extends AbstractScriptPersistingAdapter {
             return Stream.empty();
         }
 
-        final ScriptedCollectionSetBuilder builder = scriptedCollectionSetBuilders.get();
+        final ScriptedCollectionSetBuilder builder = getCollectionBuilder();
         if (builder == null) {
             LOG.error("Error compiling script '{}'. See logs for details.", this.getScript());
             return Stream.empty();
