@@ -72,10 +72,10 @@ public class SentinelSinglePortIT {
                     .sentinel();
 
             builder.withMinionEnvironment()
-                .addFile("/sentinel/org.opennms.features.telemetry.listeners-udp-50003-single-port.cfg", "etc/org.opennms.features.telemetry.listeners-udp-single-port.cfg");
+                .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50003-single-port.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-single-port.cfg");
 
             builder.withSentinelEnvironment()
-                .addFile("/sentinel/features-jms", "deploy/features-jms"); // We re-use the features-jms.xml file here, as it should work as well
+                .addFile(getClass().getResource("/sentinel/features-jms.xml"), "deploy/features.xml"); // We re-use the features-jms.xml file here, as it should work as well
 
             OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
 
