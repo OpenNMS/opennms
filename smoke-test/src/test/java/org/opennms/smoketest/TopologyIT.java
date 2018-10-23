@@ -39,7 +39,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -51,14 +50,17 @@ import org.opennms.features.topology.link.TopologyProvider;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 
@@ -194,24 +196,30 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
 
         public String getIconName() {
-            String iconName = getElement().findElement(By.xpath("//*[@id='TopologyComponent']//*[@class='vertex-label' and text()='"
-                    +getLabel()+"']/../*[@class='icon-container']/*[@class='upIcon']")).getAttribute("href");
-            iconName = iconName.substring(1, iconName.length()); // remove the leading '#'
+            final String IconXpathExpression = "//*[@id='TopologyComponent']//*[@class='vertex-label' and text()='" +getLabel()+"']/../*[@class='icon-container']/*[@class='upIcon']";
+            String iconName = testCase.findElementByXpath(IconXpathExpression).getAttribute("href");
+            iconName = iconName.substring(1); // remove the leading '#'
             return iconName;
         }
 
         public void select() {
-            testCase.waitUntil(null, null, new Callable<Boolean>() {
-                @Override public Boolean call() throws Exception {
-                    getElement().findElement(By.xpath("//*[@class='svgIconOverlay']")).click();
-                    return true;
-                }
-            });
+            try {
+                testCase.setImplicitWait(5, TimeUnit.SECONDS);
+                final String iconOverlayXpath = ".//*[@class='svgIconOverlay']";
+                getElement().findElement(By.xpath(iconOverlayXpath)).click();
+
+                // Wait until vertex is actually selected before continuing
+                new WebDriverWait(testCase.m_driver, 30).until((Predicate<WebDriver>) input -> {
+                    final WebElement element = getElement().findElement(By.xpath(iconOverlayXpath + "/.."));
+                    return element.getAttribute("class").contains("selected");
+                });
+            } finally {
+                testCase.setImplicitWait();
+            }
         }
 
         private WebElement getElement() {
-            return testCase.findElementByXpath("//*[@id='TopologyComponent']"
-                    + "//*[@class='vertex-label' and text()='" + label + "']/..");
+            return testCase.findElementByXpath("//*[@id='TopologyComponent']//*[@class='vertex-label' and text()='" + label + "']/..");
         }
 
         @Override
@@ -231,13 +239,27 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             }
         }
 
-        public void changeIcon(String iconName){
-            this.select();
-            this.contextMenu().click("Change Icon");
-            testCase.waitFor(1);
-            testCase.findElementByXpath("//*[name()='title' and text()='"+iconName+"']/../*[name()='rect']").click();
-            testCase.waitFor(1);
-            testCase.findElementById("iconSelectionDialog.button.ok").click();
+        public void changeIcon(String iconName) {
+            Objects.requireNonNull(iconName);
+
+            final String oldIconName = getIconName();
+            if (!oldIconName.equals(iconName)) {
+                this.contextMenu().click("Change Icon");
+                final String iconXpath = "//*[name()='title' and text()='" + iconName + "']/../*[name()='rect']";
+                try {
+                    testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                    testCase.findElementByXpath("//*[contains(text(), 'Change Icon')]");
+                    testCase.findElementByXpath(iconXpath).click();
+                    new WebDriverWait(testCase.m_driver, 10).until((Predicate<WebDriver>) input -> {
+                        final WebElement elementByXpath = testCase.findElementByXpath(iconXpath);
+                        return elementByXpath.getAttribute("class").contains("selected");
+                    });
+                    testCase.findElementById("iconSelectionDialog.button.ok").click();
+                    waitForTransition();
+                } finally {
+                    testCase.setImplicitWait();
+                }
+            }
         }
     }
 
