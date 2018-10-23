@@ -28,12 +28,13 @@
 
 package org.opennms.smoketest.sentinel;
 
-import static org.opennms.smoketest.flow.FlowStackIT.TEMPLATE_NAME;
-import static org.opennms.smoketest.flow.FlowStackIT.sendNetflowPacket;
-import static org.opennms.smoketest.flow.FlowStackIT.verify;
-
+import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,22 +42,23 @@ import org.junit.Test;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.smoketest.flow.FlowStackIT;
+import org.opennms.smoketest.flow.FlowPacket;
+import org.opennms.smoketest.flow.FlowPacketDefinition;
+import org.opennms.smoketest.flow.FlowTestBuilder;
+import org.opennms.smoketest.flow.FlowTester;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.test.system.api.NewTestEnvironment;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
 
-import io.searchbox.client.JestClient;
-import io.searchbox.client.JestClientFactory;
-import io.searchbox.client.JestResult;
-import io.searchbox.client.config.HttpClientConfig;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
+
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
-import io.searchbox.indices.template.GetTemplate;
 
-// TODO MVR slightly rework this
-// TODO MVR maybe reconsolidate with eisting tests
-public class SentinelSinglePortIT {
+public class SinglePortFlowsIT {
+
     @Rule
     public TestEnvironment testEnvironment = getTestEnvironment();
 
@@ -96,45 +98,43 @@ public class SentinelSinglePortIT {
         final InetSocketAddress elasticRestAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.ELASTICSEARCH_6, 9200, "tcp");
         final InetSocketAddress sentinelSshAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301);
         final InetSocketAddress minionSinglePortAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, FlowStackIT.SFLOW_LISTENER_UDP_PORT, "udp");
-        final String elasticRestUrl = String.format("http://%s:%d", elasticRestAddress.getHostString(), elasticRestAddress.getPort());
 
         waitForSentinelStartup(sentinelSshAddress);
 
-        // Build the Elastic Rest Client
-        final JestClientFactory factory = new JestClientFactory();
-        factory.setHttpClientConfig(new HttpClientConfig.Builder(elasticRestUrl).multiThreaded(true).build());
-        try (final JestClient client = factory.getObject()) {
-            // Verify that at this point no flows are persisted
-            verify(() -> {
-                final SearchResult response = client.execute(new Search.Builder("").addIndex("netflow-*").build());
-                return response.isSucceeded() && response.getTotal() == 0L;
-            });
+        // For each existing FlowPacket, create a definition to point to "minionSinglePortAddress"
+        final List<FlowPacketDefinition> collect = Arrays.stream(FlowPacket.values())
+                .map(p -> new FlowPacketDefinition(p, minionSinglePortAddress))
+                .collect(Collectors.toList());
 
-            // Send flow packet to minion
-            sendNetflowPacket(minionSinglePortAddress, "/flows/netflow5.dat"); // 2 records
-            sendNetflowPacket(minionSinglePortAddress, "/flows/netflow9.dat"); // 7 records
-            sendNetflowPacket(minionSinglePortAddress, "/flows/ipfix.dat"); // 2 records
-            sendNetflowPacket(minionSinglePortAddress, "/flows/sflow.dat"); // 5 record
-
-            // Ensure that the template has been created
-            verify(() -> {
-                final JestResult result = client.execute(new GetTemplate.Builder(TEMPLATE_NAME).build());
-                return result.isSucceeded() && result.getJsonObject().get(TEMPLATE_NAME) != null;
-            });
-
-            // Verify directly at elastic that the flows have been created
-            verify(() -> {
-                final SearchResult response = client.execute(new Search.Builder("").addIndex("netflow-*").build());
-                return response.isSucceeded() && response.getTotal() == 16L;
-            });
-        }
+        // Now verify Flow creation
+        final FlowTester tester = new FlowTestBuilder()
+                .withFlowPackets(collect)
+                .verifyBeforeSendingFlows((flowTester) -> {
+                    try {
+                        final SearchResult response = flowTester.getJestClient().execute(new Search.Builder("").addIndex("netflow-*").build());
+                        Assert.assertEquals(Boolean.TRUE, response.isSucceeded());
+                        Assert.assertEquals(0L, response.getTotal().longValue());
+                    } catch (IOException e) {
+                        Throwables.propagate(e);
+                    }
+                })
+                .build(elasticRestAddress);
+        tester.verifyFlows();
     }
 
-    private void waitForSentinelStartup(InetSocketAddress sentinelSshAddress) throws Exception {
-        new KarafShell(sentinelSshAddress).verifyLog(shellOutput -> shellOutput.contains("Route: Sink.Server.Telemetry-Netflow-5 started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-Netflow-5"));
-        new KarafShell(sentinelSshAddress).verifyLog(shellOutput -> shellOutput.contains("Route: Sink.Server.Telemetry-Netflow-9 started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-Netflow-9"));
-        new KarafShell(sentinelSshAddress).verifyLog(shellOutput -> shellOutput.contains("Route: Sink.Server.Telemetry-IPFIX started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-IPFIX"));
-        new KarafShell(sentinelSshAddress).verifyLog(shellOutput -> shellOutput.contains("Route: Sink.Server.Telemetry-SFlow started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-SFlow"));
+    // Wait for sentinel to start all queues
+    private void waitForSentinelStartup(InetSocketAddress sentinelSshAddress) {
+        final String QUEUE_FORMAT = "Route: Sink.Server.Telemetry-%s started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-%s";
+        final List<String> queues = Lists.newArrayList("Netflow-5", "Netflow-9", "IPFIX", "SFlow");
+        new KarafShell(sentinelSshAddress).verifyLog(shellOutput -> {
+            for (String eachQueue : queues) {
+                final String logEntry = String.format(QUEUE_FORMAT, eachQueue, eachQueue);
+                if (!shellOutput.contains(logEntry)) {
+                    return false;
+                }
+            }
+            return true;
+        });
     }
 }
 
