@@ -43,22 +43,6 @@
                 <exclude>WEB-INF/applicationContext-svclayer.xml</exclude>
               </excludes>
             </overlay>
-            <overlay>
-              <groupId>org.opennms.features</groupId>
-              <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
-              <excludes>
-                <exclude>includes/header.jsp</exclude>
-                <exclude>includes/footer.jsp</exclude>
-              </excludes>
-            </overlay>
-            <overlay>
-              <groupId>org.opennms.features.ncs</groupId>
-              <artifactId>org.opennms.features.ncs.ncs-alarm-gui</artifactId>
-              <excludes>
-                <exclude>META-INF/MANIFEST.MF</exclude>
-                <exclude>WEB-INF/web.xml</exclude>
-              </excludes>
-            </overlay>
           </overlays>
         </configuration>
       </plugin>
@@ -201,19 +185,6 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>org.opennms.features.ncs.ncs-alarm-gui</artifactId>
-      <type>war</type>
-      <version>${project.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
-      <type>war</type>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.container</groupId>
