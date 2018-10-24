@@ -26,29 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.alarmd.driver;
+package org.opennms.netmgt.alarmd.drools;
 
-import java.util.Date;
-import java.util.Objects;
+import org.kie.api.runtime.rule.FactHandle;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 
-public class AcknowledgeAlarmAction implements Action {
-    private final String ackUser;
-    private final Date ackTime;
-    private final String reductionKey;
+public class AlarmAcknowledgementAndFact {
+    private OnmsAcknowledgment acknowledgement;
+    private FactHandle fact;
 
-    public AcknowledgeAlarmAction(String ackUser, Date ackTime, String reductionKey) {
-        this.ackUser = Objects.requireNonNull(ackUser);
-        this.ackTime = Objects.requireNonNull(ackTime);
-        this.reductionKey = Objects.requireNonNull(reductionKey);
+    public AlarmAcknowledgementAndFact(OnmsAcknowledgment acknowledgement, FactHandle fact) {
+        this.acknowledgement = acknowledgement;
+        this.fact = fact;
     }
 
-    @Override
-    public Date getTime() {
-        return ackTime;
+    public OnmsAcknowledgment getAcknowledgement() {
+        return acknowledgement;
     }
 
-    @Override
-    public void visit(ActionVisitor visitor) {
-        visitor.acknowledgeAlarm(ackUser, ackTime, (a) -> Objects.equals(reductionKey, a.getReductionKey()));
+    public void setAcknowledgement(OnmsAcknowledgment acknowledgement) {
+        this.acknowledgement = acknowledgement;
+    }
+
+    public FactHandle getFact() {
+        return fact;
+    }
+
+    public void setFact(FactHandle fact) {
+        this.fact = fact;
     }
 }
