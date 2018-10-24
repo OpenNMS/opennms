@@ -1,0 +1,46 @@
+
+==== NetFlow v9
+
+See <<ga-flow-support, Flow Support>> for details on flow support in _{opennms-product-name}_.
+
+
+[[telemetryd-netflow9-parser-udp]]
+===== Netflow v9 UDP Parser
+
+The Netflow v9 UDP Parser accepts packets received by a <<telemetryd-listener-udp, UDP Listener>> and must forward them to a <<telemetryd-netflow9-adapter, Netflow v9 Adapter>>.
+
+The Netflow v9 UDP Parser supports protocol detection.
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser`
+|===
+
+====== Parameters
+
+.Parameters for the Netflow v9 UDP Parser
+[options="header, autowidth"]
+|===
+| Parameter         | Description                                                                | Required | Default value
+| `templateTimeout` | Templates must be re-declared in the given duration or the will be dropped | required | 30 minutes
+|===
+
+
+[[telemetryd-netflow9-adapter]]
+===== Netflow v9 Adapter
+
+The Netflow v9 Adapter is used to handle _Netflow v9_ payloads received and parsed by by the <<telemetryd-netflow9-parser-udp, Netflow v9 UDP Parser>>.
+Flows are decoded from the messages into the canonical flow format and are published to the _flow repository_
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9Adapter`
+|===
+
+====== Parameters
+
+This adapter does not currently have any configurable parameters.

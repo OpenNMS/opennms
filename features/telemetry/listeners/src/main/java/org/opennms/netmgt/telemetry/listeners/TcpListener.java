@@ -57,7 +57,7 @@ public class TcpListener implements Listener {
     private final TcpParser parser;
 
     private String host = null;
-    private int port = 4739;
+    private int port = 50000;
 
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
@@ -95,7 +95,9 @@ public class TcpListener implements Listener {
                                     @Override
                                     protected void channelRead0(final ChannelHandlerContext ctx,
                                                                 final ByteBuf msg) throws Exception {
-                                        session.parse(msg.nioBuffer())
+                                        // TODO MVR copy() vs retain()
+                                        // TODO fooker copy() vs retain()
+                                        session.parse(msg.copy().nioBuffer())
                                                 .handle((result, ex) -> {
                                                     if (ex != null) {
                                                         ctx.fireExceptionCaught(ex);

@@ -1,0 +1,23 @@
+
+[[telemetryd-listener-tcp]]
+==== TCP Listener
+
+The _TCP Listener_ accepts incoming TCP connections and forwards the TCP Stream to a single _Parser_.
+
+===== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.listeners.TcpListener`
+| Supported on Minion | `Yes`
+|===
+
+===== Parameters
+
+.Listener specific parameters for the UdpListener
+[options="header, autowidth"]
+|===
+| Parameter        | Description                                                       | Required | Default value
+| `host`           | IP address on which to bind the TCP port                          | optional | `0.0.0.0`
+| `port`           | TCP port number on which to listen                                | optional | `50000`
+|===

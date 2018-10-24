@@ -1,0 +1,102 @@
+
+==== Cisco NX-OS Telemetry
+
+The _Cisco NX-OS Telemetry_ allows to push operational statistics asynchronously to _{opennms-product-name}_.
+_{opennms-product-name}_ sends a request to stream periodic updates once to the device.
+Data is generated as Google protocol buffers (gpb) structured messages over _UDP_.
+Detailed information about _NX-OS_ can be found in link:https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/7-x/programmability/guide/b_Cisco_Nexus_9000_Series_NX-OS_Programmability_Guide_7x/b_Cisco_Nexus_9000_Series_NX-OS_Programmability_Guide_7x_chapter_011000.html[NXOS Documentation].
+
+To enable support for NX-OS Telemetry, edit `${OPENNMS_HOME}/etc/telemetryd-configuration.xml` set `enabled=true` for `NXOS` protocol.
+
+.Enable NX-OS protocol in telemetryd-configuration.xml
+[source, xml]
+----
+<listener name="NXOS-UDP-50001" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="false">
+    <parameter key="port" value="50001"/>
+
+    <parser name="NXOS-GPB" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" queue="NXOS" />
+</listener>
+
+<queue name="NXOS">
+    <adapter name="NXOS-GPB" class-name="org.opennms.netmgt.telemetry.protocols.nxos.adapter.NxosGpbAdapter" enabled="false">
+        <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/cisco-nxos-telemetry-interface.groovy"/>
+
+        <package name="NXOS-Default">
+            <rrd step="300">
+                <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                <rra>RRA:AVERAGE:0.5:288:366</rra>
+                <rra>RRA:MAX:0.5:288:366</rra>
+                <rra>RRA:MIN:0.5:288:366</rra>
+            </rrd>
+        </package>
+    </adapter>
+</queue>
+----
+
+Apply the changes without restarting by sending a `reloadDaemonConfig` event in the CLI or the WebUI:
+
+.Send a reloadDaemonConfig event through CLI
+[source]
+----
+${OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
+----
+
+By default, this will open a UDP socket bound to `0.0.0.0:50001` to which _NXOS_ messages can be forwarded.
+
+===== Configure NX-OS Listener on a Minion
+
+To enable and configure an _UDP Listener_ for NX-OS on Minion, connect to the _Karaf Console_ and set the following properties:
+
+[source]
+----
+$ ssh -p 8201 admin@localhost
+...
+admin@minion()> config:edit org.opennms.features.telemetry.listeners-udp-50000
+admin@minion()> config:property-set name NXOS
+admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener
+admin@minion()> config:property-set parameters.port 50001
+admin@minion()> config:property-set parser.0.name NXOS
+admin@minion()> config:property-set parser.0.class-name org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser
+admin@minion()> config:update
+----
+
+NOTE: The protocol must also be enabled on _{opennms-product-name}_ for the messages to be processed.
+
+
+===== Cisco NX-OS Adapter
+
+The NX-OS adapter is used to handle _Cisco NX-OS Telemetry_ payloads.
+Messages are decoded using the published protobuf (proto3) specifications and forwarded to a JSR-223 compatible script (i.e. Beanshell or Groovy) for further processing.
+Using the script extension you can extract the desired metrics from the NX-OS messages and persist the results as time series data.
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.nxos.adapter.NxosGpbAdapter`
+|===
+
+====== Parameters
+
+.Adapter specific parameters for the NxosGpbAdapter
+[options="header, autowidth"]
+|===
+| Parameter        | Description                                                       | Required | Default value
+| `script`         | Full path to the script used to handle the NXOS messages           | required | (none)
+|===
+
+====== Scripting
+
+The script will be invoked for every NX-OS message that is received and succesfully decoded.
+
+The following globals will be passed to the script:
+
+.Globals passed to the script
+[options="header, autowidth"]
+|===
+| Parameter  | Description                                                    | Type
+| `agent`    | The agent (node) against which the metrics will be associated  | `org.opennms.netmgt.collection.api.CollectionAgent`
+| `builder`  | Builder in which the resources and metrics should be added     | `org.opennms.netmgt.collection.support.builder.CollectionSetBuilder`
+| `msg`      | Decoded NX-OS message from which the metrics should be extracted | `org.opennms.netmgt.telemetry.adapters.nxos.proto.TelemetryBis`
+|===
