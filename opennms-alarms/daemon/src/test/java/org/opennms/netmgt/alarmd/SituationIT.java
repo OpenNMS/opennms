@@ -166,8 +166,8 @@ public class SituationIT {
         alarm3.setUei("linkDown");
         // need to save alarms as related alarms are always fetched from db
         m_alarmDao.save(alarm3);
-        retrieved.addRelatedAlarm(linkDownAlarmOnR1);
-        //assertThat(retrieved.getRelatedAlarms().size(), is(3));
+        retrieved.addRelatedAlarm(alarm3);
+        assertThat(retrieved.getRelatedAlarms().size(), is(3));
 
         m_alarmDao.saveOrUpdate(retrieved);
 
