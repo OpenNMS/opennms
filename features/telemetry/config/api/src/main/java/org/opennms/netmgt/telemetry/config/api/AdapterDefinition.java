@@ -31,10 +31,8 @@ package org.opennms.netmgt.telemetry.config.api;
 import java.util.List;
 
 /**
- * Telemetry adapter configuration.
+ * Telemetry adapter definition.
  */
-// TODO MVR verify javadoc
-// TODO fooker verify javadoc
 public interface AdapterDefinition extends TelemetryBeanDefinition {
 
     /**

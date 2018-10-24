@@ -6,7 +6,6 @@ The telemetry daemon (telemetryd) provides an extensible framework that can be u
 The framework can be used to implement support for a variety of applications which use different protocols to transfer metrics.
 Using _telemetryd_, operators can define listeners supporting different protocols to receive the telemetry data and adapters transferring the received data into generic formats like flows or performance data.
 
-// TODO fooker: new picture
 .Generic component overview of components in telemetryd
 image::telemetryd/telemetryd-overview.png[]
 
@@ -49,6 +48,5 @@ _Queues_ are used to transfer data between _Parsers_ and _Adapters_ and are repr
 _Listeners_ and its _Parsers_ may run on either _{opennms-product-name}_ or _Minion_, whereas adapters run on _{opennms-product-name}_ or _Sentinel_.
 If a _Listener_ its _Parsers_ is running on _Minion_, the received messages will be automatically dispatched to the associated _Adapters_ running in _{opennms-product-name}_ or _Sentinel_ via a _Queue_.
 
-// TODO fooker: new picture
 .Running _Listener_ on a _Minion_ forwarding packets using the messaging system
 image::telemetryd/telemetryd-minion.png[]
