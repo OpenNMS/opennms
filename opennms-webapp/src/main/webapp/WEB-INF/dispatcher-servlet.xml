@@ -230,6 +230,11 @@
         <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
 
+    <bean name="/situation/summary-box.htm" class="org.opennms.web.controller.situation.SituationBoxController">
+        <property name="successView" value="situation/summary-box"/>
+        <property name="alarmRepository" ref="alarmRepository"/>
+    </bean>
+
     <bean name="/bsm/summary-box.htm" class="org.opennms.web.controller.bsm.BusinessServicesBoxController">
         <property name="successView" value="bsm/summary-box"/>
         <property name="businessServiceManager" ref="businessServiceManager"/>

@@ -32,5 +32,5 @@ Building OpenNMS
 For details on building OpenNMS, please see the wiki page: [Building OpenNMS][].
 
 [OpenNMS]:           http://www.opennms.org/
-[Building OpenNMS]:  https://www.opennms.org/wiki/Installation:Source
+[Building OpenNMS]:  https://wiki.opennms.org/wiki/Installation:Source
 [Installing OpenNMS]:  http://docs.opennms.org/opennms/branches/develop/guide-install/guide-install.html

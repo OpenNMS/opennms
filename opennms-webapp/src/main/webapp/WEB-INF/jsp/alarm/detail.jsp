@@ -32,7 +32,7 @@
 <%@page language="java"
         contentType="text/html"
         session="true"
-        import="java.util.List,
+        import="java.util.*,
         org.opennms.core.resource.Vault,
         org.opennms.core.utils.InetAddressUtils,
         org.opennms.core.utils.WebSecurityUtils,
@@ -44,6 +44,7 @@
         org.opennms.netmgt.model.OnmsSeverity,
         org.opennms.netmgt.model.TroubleTicketState,
         org.opennms.web.api.Authentication,
+        org.opennms.web.api.Util,
         org.apache.commons.configuration.Configuration,
         org.apache.commons.configuration.ConfigurationException,
         org.apache.commons.configuration.PropertiesConfiguration"
@@ -118,12 +119,14 @@
     <jsp:param name="headTitle" value="Detail" />
     <jsp:param name="headTitle" value="Alarms" />
     <jsp:param name="breadcrumb" value="<a href='alarm/index.htm'>Alarms</a>" />
-    <jsp:param name="breadcrumb" value='<%="Alarm " + alarm.getId()%>' />
+    <jsp:param name="breadcrumb" value='<%= (alarm.isSituation() ? "Situation " : "Alarm ") + alarm.getId()%>' />
 </jsp:include>
 
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">Alarm <%=alarm.getId()%></h3>
+    <h3 class="panel-title">
+        <%= (alarm.isSituation() ? "Situation " : "Alarm ") + alarm.getId()%>
+    </h3>
   </div>
 
 <table class="table table-condensed severity">
@@ -247,6 +250,137 @@
     <%=WebSecurityUtils.sanitizeString(alarm.getDescription(), true)%>
   </div>
 </div>
+
+<% if (alarm.isPartOfSituation()) { %>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Parent Situation(s)</h3>
+    </div>
+    <table class="table table-condensed severity">
+        <thead>
+            <tr>
+                <th width="2%">ID</th>
+                <th width="6%">Severity</th>
+                <th width="20%">Node</th>
+                <th width="4%">Count</th>
+                <th width="14%">Last</th>
+                <th width="54%">Log Msg</th>
+            </tr>
+        </thead>
+        <%
+            final TreeSet<OnmsAlarm> sortedSet = new TreeSet<OnmsAlarm>(new Comparator<OnmsAlarm>() {
+                public int compare(final OnmsAlarm o1, final OnmsAlarm o2) {
+                    return Integer.compare(o1.getId(), o2.getId());
+                }
+            });
+
+            sortedSet.addAll(alarm.getRelatedSituations());
+            pageContext.setAttribute("sortedSet", sortedSet);
+        %>
+        <c:forEach var="relatedVar" items="${alarm.relatedSituations}">
+            <tr class="severity-${relatedVar.severityLabel.toLowerCase()}">
+                <td class="divider" valign="middle">
+                    <a style="vertical-align:middle" href="<%= Util.calculateUrlBase(request, "alarm/detail.htm?id=") %>${relatedVar.id}">${relatedVar.id}</a>
+                </td>
+                <td class="divider bright" valign="middle">
+                    <nobr>
+                    <strong>${relatedVar.severityLabel}</strong>
+                    </nobr>
+                </td>
+                <td class="divider" valign="middle">
+                    <a href="element/node.jsp?node=${relatedVar.nodeId}">${relatedVar.nodeLabel}</a>
+                </td>
+                <td class="divider" valign="middle">
+                    ${relatedVar.counter}
+                </td>
+                <td class="divider" valign="middle">
+                    <c:if test="${relatedVar.lastEvent != null }">
+                        <span title="Event ${relatedVar.lastEvent.id}">
+                            <a href="event/detail.htm?id=${relatedVar.lastEvent.id}">
+                                <onms:datetime date="${alarm.lastEventTime}" />
+                            </a>
+                        </span>
+                    </c:if>
+                </td>
+                <td class="divider" valign="middle">
+                    ${relatedVar.logMsg}
+                </td>
+            </tr>
+        </c:forEach>
+    </table>
+</div>
+<% } %>
+
+<% if (alarm.isSituation()) { %>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Related Alarm(s)</h3>
+    </div>
+    <table class="table table-condensed severity">
+        <thead>
+            <tr>
+                <th width="2%">ID</th>
+                <th width="4%">Situation</th>
+                <th width="6%">Severity</th>
+                <th width="20%">Node</th>
+                <th width="4%">Count</th>
+                <th width="14%">Last</th>
+                <th width="50%">Log Msg</th>
+            </tr>
+        </thead>
+        <%
+            final TreeSet<OnmsAlarm> sortedSet = new TreeSet<OnmsAlarm>(new Comparator<OnmsAlarm>() {
+                public int compare(final OnmsAlarm o1, final OnmsAlarm o2) {
+                    return Integer.compare(o1.getId(), o2.getId());
+                }
+            });
+
+            sortedSet.addAll(alarm.getRelatedAlarms());
+            pageContext.setAttribute("sortedSet", sortedSet);
+        %>
+        <c:forEach var="relatedVar" items="${sortedSet}">
+            <tr class="severity-${relatedVar.severityLabel.toLowerCase()}">
+                <td class="divider" valign="middle">
+                    <a style="vertical-align:middle" href="<%= Util.calculateUrlBase(request, "alarm/detail.htm?id=") %>${relatedVar.id}">${relatedVar.id}</a>
+                </td>
+                <td>
+                    <c:choose>
+                    <c:when test="${relatedVar.situation}">
+                    <i class="fa fa-check-square-o">
+                        </c:when>
+                        <c:otherwise>
+                        <i class="fa fa-square-o">
+                            </c:otherwise>
+                            </c:choose>
+                </td>
+                <td class="divider bright" valign="middle">
+                    <nobr>
+                        <strong>${relatedVar.severityLabel}</strong>
+                    </nobr>
+                </td>
+                <td class="divider" valign="middle">
+                    <a href="element/node.jsp?node=${relatedVar.nodeId}">${relatedVar.nodeLabel}</a>
+                </td>
+                <td class="divider" valign="middle">
+                        ${relatedVar.counter}
+                </td>
+                <td class="divider" valign="middle">
+                    <c:if test="${relatedVar.lastEvent != null }">
+                        <span title="Event ${relatedVar.lastEvent.id}">
+                            <a href="event/detail.htm?id=${relatedVar.lastEvent.id}">
+                                <onms:datetime date="${alarm.lastEventTime}" />
+                            </a>
+                        </span>
+                    </c:if>
+                </td>
+                <td class="divider" valign="middle">
+                        ${relatedVar.logMsg}
+                </td>
+            </tr>
+        </c:forEach>
+    </table>
+</div>
+<% } %>
 
 <% if (acks != null && acks.size() > 0) {%>
 <div class="panel panel-default severity">

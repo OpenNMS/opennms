@@ -28,11 +28,11 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -51,6 +51,7 @@ import org.opennms.netmgt.model.OnmsMemo;
 import org.opennms.netmgt.model.OnmsReductionKeyMemo;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
+import org.opennms.netmgt.model.alarm.SituationSummary;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,7 +94,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
     @Transactional
     public void acknowledgeAlarms(String user, Date timestamp, int[] alarmIds) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
-        criteria.add(Restrictions.in("id", Arrays.asList(ArrayUtils.toObject(alarmIds))));
+        criteria.add(Restrictions.in("id", findRelatedAlarms(alarmIds)));
         acknowledgeMatchingAlarms(user, timestamp, criteria);
     }
 
@@ -228,7 +229,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
     @Override
     public void acknowledgeAlarms(int[] alarmIds, String user, Date timestamp) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
-        criteria.add(Restrictions.in("id", Arrays.asList(ArrayUtils.toObject(alarmIds))));
+        criteria.add(Restrictions.in("id", findRelatedAlarms(alarmIds)));
         acknowledgeMatchingAlarms(user, timestamp, criteria);
     }
 
@@ -241,6 +242,25 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
         criteria.add(Restrictions.in("id", Arrays.asList(ArrayUtils.toObject(alarmIds))));
         unacknowledgeMatchingAlarms(criteria, user);
+    }
+
+    private Set<Integer> findRelatedAlarms(int[] alarmIds) {
+        final Set<Integer> allAlarmIds = new HashSet<>();
+        Set<Integer> toBeChecked = Sets.newHashSet(ArrayUtils.toObject(alarmIds));
+
+        do {
+            allAlarmIds.addAll(toBeChecked);
+
+            final Set<Integer> relatedAlarms = toBeChecked.stream()
+                    .map(i -> getAlarm(i))
+                    .filter(o -> o.isSituation())
+                    .flatMap(o -> o.getRelatedAlarmIds().stream())
+                    .collect(Collectors.toSet());
+
+            toBeChecked = relatedAlarms;
+        } while (!toBeChecked.isEmpty());
+
+        return allAlarmIds;
     }
 
     /**
@@ -337,4 +357,9 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
         return m_alarmDao.getNodeAlarmSummaries();
     }
 
+    @Override
+    @Transactional
+    public List<SituationSummary> getCurrentSituationSummaries() {
+        return m_alarmDao.getSituationSummaries();
+    }
 }
