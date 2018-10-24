@@ -254,7 +254,6 @@ public abstract class AbstractPersistingAdapter implements Adapter {
      * existing builder
      */
     protected ScriptedCollectionSetBuilder getCollectionBuilder() {
-
         ScriptedCollectionSetBuilder builder = scriptedCollectionSetBuilders.get();
         // Reload script if reload() happened or earlier invocation of script didn't compile
         if ((builder != null && scriptUpdateMap.get(builder)) || !scriptCompiled.get()) {
@@ -312,11 +311,11 @@ public abstract class AbstractPersistingAdapter implements Adapter {
             public void reload() {
                 try {
                     checkScript(bundleContext, script);
-                    LOG.debug(" Updated script compiled");
+                    LOG.debug("Updated script compiled");
                     // Set all the values in Map to true to trigger reload of script in all threads
                     scriptUpdateMap.replaceAll((builder, Boolean) -> true);
                 } catch (Exception e) {
-                    LOG.error("Updated script failed to build , using existing script'{}'.", script, e);
+                    LOG.error("Updated script failed to build, using existing script'{}'.", script, e);
                 }
             }
 
