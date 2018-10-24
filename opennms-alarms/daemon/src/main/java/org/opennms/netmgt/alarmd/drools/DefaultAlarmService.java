@@ -126,7 +126,7 @@ public class DefaultAlarmService implements AlarmService {
             LOG.warn("Alarm disappeared: {}. Skipping ack.", alarm);
             return;
         }
-        OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, DEFAULT_USER, now);
+        OnmsAcknowledgment ack = new OnmsAcknowledgment(alarmInTrans, DEFAULT_USER, now);
         ack.setAckAction(AckAction.ACKNOWLEDGE);
         acknowledgmentDao.processAck(ack);
     }
@@ -140,7 +140,7 @@ public class DefaultAlarmService implements AlarmService {
             LOG.warn("Alarm disappeared: {}. Skipping un-ack.", alarm);
             return;
         }
-        OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, DEFAULT_USER, now);
+        OnmsAcknowledgment ack = new OnmsAcknowledgment(alarmInTrans, DEFAULT_USER, now);
         ack.setAckAction(AckAction.UNACKNOWLEDGE);
         acknowledgmentDao.processAck(ack);
     }
@@ -181,11 +181,11 @@ public class DefaultAlarmService implements AlarmService {
     }
 
     public void debug(String message, Object... objects) {
-        LOG.warn(message, objects);
+        LOG.debug(message, objects);
     }
 
     public void info(String message, Object... objects) {
-        LOG.warn(message, objects);
+        LOG.info(message, objects);
     }
 
     public void warn(String message, Object... objects) {
