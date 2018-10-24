@@ -100,7 +100,6 @@
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-base/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-browsers/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-linkd/${project.version}/xml/features</repository>
-            <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-ncs/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-sfree/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-vmware/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-application/${project.version}/xml/features</repository>
@@ -312,7 +311,6 @@
             <feature>opennms-topology-runtime-base</feature>
             <feature>opennms-topology-runtime-browsers</feature>
             <feature>opennms-topology-runtime-linkd</feature>
-            <feature>opennms-topology-runtime-ncs</feature>
             <feature>opennms-topology-runtime-sfree</feature>
             <feature>opennms-topology-runtime-vmware</feature>
             <feature>opennms-topology-runtime-application</feature>
@@ -564,13 +562,6 @@
     <dependency>
       <groupId>org.opennms.osgi.features.topology</groupId>
       <artifactId>opennms-topology-runtime-linkd</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>opennms-topology-runtime-ncs</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

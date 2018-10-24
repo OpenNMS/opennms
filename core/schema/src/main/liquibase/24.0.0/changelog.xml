@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <changeSet author="mvrueden" id="24.0.0-remove-ncs-table-subcomponents">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="subcomponents"/>
+    </preConditions>
+    <dropTable tableName="subcomponents" />
+  </changeSet>
+  <changeSet author="mvrueden" id="24.0.0-remove-ncs-table-ncs_attributes">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="ncs_attributes"/>
+    </preConditions>
+    <dropTable tableName="ncs_attributes" />
+  </changeSet>
+  <changeSet author="mvrueden" id="24.0.0-remove-ncs-table-ncscomponent">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="ncscomponent"/>
+    </preConditions>
+    <dropTable tableName="ncscomponent" />
+  </changeSet>
+
+</databaseChangeLog>
+
