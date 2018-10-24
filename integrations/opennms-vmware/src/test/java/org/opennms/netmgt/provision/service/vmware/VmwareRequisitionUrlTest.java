@@ -72,6 +72,10 @@ public class VmwareRequisitionUrlTest {
              {
                "vmware://[2001:db8:0:8d3:0:8a2e:70:7344]?virtualMachineServices=VM-SERVICE1,VM-SERVICE2",
                "requisition://vmware?host=[2001:db8:0:8d3:0:8a2e:70:7344]&virtualMachineServices=VM-SERVICE1,VM-SERVICE2"
+             },
+             {
+                "vmware://vcenter.mydomain.org?importHostPoweredOff=true&timeout=3050&cimTimeout=3100",
+                "requisition://vmware?host=vcenter.mydomain.org&importHostPoweredOff=true&timeout=3050&cimTimeout=3100"
              }
        });
     }

@@ -75,8 +75,5 @@ public class ForwardParser implements UdpParser {
         // Dispatch and retain a reference to the packet
         // in the case that we are sharing the underlying byte array
         return dispatcher.send(msg);
-
-        // TODO fooker
-        // Pass exception if dispatching fails
     }
 }
