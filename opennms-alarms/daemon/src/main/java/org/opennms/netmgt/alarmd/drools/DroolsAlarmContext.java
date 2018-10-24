@@ -38,9 +38,13 @@ import java.util.stream.Collectors;
 import org.hibernate.Hibernate;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.alarmd.Alarmd;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
+import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.model.AckAction;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,9 +69,14 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     private AlarmService alarmService;
 
     @Autowired
+    private AcknowledgmentDao acknowledgmentDao;
+
+    @Autowired
     private AlarmTicketerService alarmTicketerService;
 
     private final Map<Integer, AlarmAndFact> alarmsById = new HashMap<>();
+
+    private final Map<Integer, AlarmAcknowledgementAndFact> acknowledgementsByAlarmId = new HashMap<>();
 
     public DroolsAlarmContext() {
         super(Paths.get(ConfigFileConstants.getHome(), "etc", "alarmd", "drools-rules.d").toFile(), Alarmd.NAME, "DroolsAlarmContext");
@@ -154,6 +163,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             final FactHandle fact = kieSession.insert(alarm);
             alarmAndFact.setFact(fact);
         }
+        handleAlarmAcknowledgements(alarm);
     }
 
     @Override
@@ -170,16 +180,65 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         }
     }
 
+    private void handleAlarmAcknowledgements(OnmsAlarm alarm) {
+        final AlarmAcknowledgementAndFact acknowledgmentFact = acknowledgementsByAlarmId.get(alarm.getId());
+        final KieSession kieSession = getKieSession();
+        if (acknowledgmentFact == null) {
+            OnmsAcknowledgment ack = getLatestAcknowledgement(alarm);
+            LOG.debug("Inserting first alarm acknowledgement into session: {}", ack);
+            final FactHandle fact = kieSession.insert(ack);
+            acknowledgementsByAlarmId.put(alarm.getId(), new AlarmAcknowledgementAndFact(ack, fact));
+        } else {
+            FactHandle fact = acknowledgmentFact.getFact();
+            OnmsAcknowledgment ack = getLatestAcknowledgement(alarm);
+            LOG.trace("Inserting acknowledgment into session: {}", ack);
+            kieSession.update(fact, ack);
+            acknowledgementsByAlarmId.put(alarm.getId(), new AlarmAcknowledgementAndFact(ack, fact));
+        }
+    }
+
+    private OnmsAcknowledgment getLatestAcknowledgement(OnmsAlarm alarm) {
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsAcknowledgment.class)
+                .eq("refId", alarm.getId())
+                .limit(1)
+                .orderBy("ackTime").desc()
+                .orderBy("id").desc();
+        List<OnmsAcknowledgment> acks = acknowledgmentDao.findMatching(builder.toCriteria());
+        if (acks.isEmpty()) {
+            // For the purpose of making rule writing easier, we fake an
+            // Un-Acknowledgment for Alarms that have never been Acknowledged.
+            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, DefaultAlarmService.DEFAULT_USER, alarm.getFirstEventTime());
+            ack.setAckAction(AckAction.UNACKNOWLEDGE);
+            ack.setId(0);
+            return ack;
+        } else {
+            return acks.get(0);
+        }
+    }
+
     private void handleDeletedAlarmNoLock(int alarmId) {
         final AlarmAndFact alarmAndFact = alarmsById.remove(alarmId);
         if (alarmAndFact != null) {
             LOG.debug("Deleting alarm from session: {}", alarmAndFact.getAlarm());
             getKieSession().delete(alarmAndFact.getFact());
         }
+        deleteAlarmAcknowledgement(alarmId);
+    }
+
+    private void deleteAlarmAcknowledgement(int alarmId) {
+        final AlarmAcknowledgementAndFact acknowledgmentFact = acknowledgementsByAlarmId.remove(alarmId);
+        if (acknowledgmentFact != null) {
+            LOG.debug("Deleting ack from session: {}", acknowledgmentFact.getAcknowledgement());
+            getKieSession().delete(acknowledgmentFact.getFact());
+        }
     }
 
     public void setAlarmService(AlarmService alarmService) {
         this.alarmService = alarmService;
+    }
+
+    public void setAcknowledgmentDao(AcknowledgmentDao acknowledgmentDao) {
+        this.acknowledgmentDao = acknowledgmentDao;
     }
 
     public void setAlarmTicketerService(AlarmTicketerService alarmTicketerService) {

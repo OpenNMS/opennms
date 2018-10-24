@@ -59,24 +59,12 @@ div.v-table-header-wrap {
 }
 
 .edge.selected,
-.edge.ncs.selected {
-	stroke: #00ffff;
-}
-
-.edge.ncs {
-	stroke: #4D6C80;
-}
-
-.edge.ncs.direct {
-	stroke: #FFD700;
-}
 
 .edge .status.indeterminate {
     stroke: #999000;
 }
 
 .edge.up,
-.edge.ncs.up,
 .edge.normal {
     stroke: #336600;
 }
@@ -94,7 +82,6 @@ div.v-table-header-wrap {
 }
 
 .edge.down,
-.edge.ncs.down,
 .edge.critical {
     stroke:#CC0000;
 }

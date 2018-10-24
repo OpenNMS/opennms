@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,13 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.ncs;
+package org.opennms.netmgt.alarmd.drools;
 
-public class AbstractNCSComponentVisitor implements NCSComponentVisitor {
+import org.kie.api.runtime.rule.FactHandle;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 
-    @Override
-    public void visitComponent(NCSComponent component) {}
-    @Override
-    public void completeComponent(NCSComponent component) {}
+public class AlarmAcknowledgementAndFact {
+    private OnmsAcknowledgment acknowledgement;
+    private FactHandle fact;
 
+    public AlarmAcknowledgementAndFact(OnmsAcknowledgment acknowledgement, FactHandle fact) {
+        this.acknowledgement = acknowledgement;
+        this.fact = fact;
+    }
+
+    public OnmsAcknowledgment getAcknowledgement() {
+        return acknowledgement;
+    }
+
+    public void setAcknowledgement(OnmsAcknowledgment acknowledgement) {
+        this.acknowledgement = acknowledgement;
+    }
+
+    public FactHandle getFact() {
+        return fact;
+    }
+
+    public void setFact(FactHandle fact) {
+        this.fact = fact;
+    }
 }

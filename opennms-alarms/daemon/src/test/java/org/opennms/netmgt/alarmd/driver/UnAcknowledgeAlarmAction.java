@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,18 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/**
- * 
- */
-package org.opennms.features.topology.plugins.ncs;
+package org.opennms.netmgt.alarmd.driver;
 
-import org.opennms.features.topology.api.GraphContainer;
+import java.util.Date;
+import java.util.Objects;
 
+public class UnAcknowledgeAlarmAction implements Action {
+    private final String ackUser;
+    private final Date ackTime;
+    private final String reductionKey;
 
-/**
- * This listener responds to events from to {@link TopologyComponent} that
- * indicate that the user has selected a vertex or edge in the graph.
- */
-public interface SelectionListener{
-    public void onSelectionUpdate(GraphContainer graphContainer);
+    public UnAcknowledgeAlarmAction(String ackUser, Date ackTime, String reductionKey) {
+        this.ackUser = Objects.requireNonNull(ackUser);
+        this.ackTime = Objects.requireNonNull(ackTime);
+        this.reductionKey = Objects.requireNonNull(reductionKey);
+    }
+
+    @Override
+    public Date getTime() {
+        return ackTime;
+    }
+
+    @Override
+    public void visit(ActionVisitor visitor) {
+        visitor.unacknowledgeAlarm(ackUser, ackTime, (a) -> Objects.equals(reductionKey, a.getReductionKey()));
+    }
 }

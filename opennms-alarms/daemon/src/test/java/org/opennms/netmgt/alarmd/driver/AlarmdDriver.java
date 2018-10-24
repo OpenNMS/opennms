@@ -48,10 +48,13 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.alarmd.AlarmPersisterImpl;
 import org.opennms.netmgt.alarmd.Alarmd;
 import org.opennms.netmgt.alarmd.drools.DroolsAlarmContext;
+import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.model.AckAction;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
@@ -93,6 +96,9 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
 
     @Autowired
     private AlarmDao m_alarmDao;
+
+    @Autowired
+    private AcknowledgmentDao m_acknowledgementDao;
 
     @Autowired
     private MockEventIpcManager m_eventMgr;
@@ -249,10 +255,24 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
                     .filter(filter::apply)
                     .collect(Collectors.toList());
             alarms.forEach(a -> {
-                a.setAlarmAckUser(ackUser);
-                a.setAlarmAckTime(ackTime);
-                m_alarmDao.save(a);
-                m_droolsAlarmContext.handleNewOrUpdatedAlarm(a);
+                OnmsAcknowledgment ack = new OnmsAcknowledgment(a, ackUser, ackTime);
+                ack.setAckAction(AckAction.ACKNOWLEDGE);
+                m_acknowledgementDao.processAck(ack);
+            });
+            return null;
+        });
+    }
+
+    @Override
+    public void unacknowledgeAlarm(String ackUser, Date ackTime, Function<OnmsAlarm, Boolean> filter) {
+        m_transactionTemplate.execute((t) -> {
+            final List<OnmsAlarm> alarms = m_alarmDao.findAll().stream()
+                    .filter(filter::apply)
+                    .collect(Collectors.toList());
+            alarms.forEach(a -> {
+                OnmsAcknowledgment ack = new OnmsAcknowledgment(a, ackUser, ackTime);
+                ack.setAckAction(AckAction.UNACKNOWLEDGE);
+                m_acknowledgementDao.processAck(ack);
             });
             return null;
         });
@@ -267,4 +287,5 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
     public ScenarioResults getResults() {
         return results;
     }
+
 }
