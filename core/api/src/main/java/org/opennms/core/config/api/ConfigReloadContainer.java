@@ -55,7 +55,7 @@ public class ConfigReloadContainer<V> implements ReloadingContainer<V>, Registra
 
     private static final long DEFAULT_RELOAD_CHECK_INTERVAL_MS = 5000;
 
-    private static final ServiceRegistry s_registry = DefaultServiceRegistry.INSTANCE;
+    private static final ServiceRegistry REGISTRY = DefaultServiceRegistry.INSTANCE;
 
     public static class Builder<V> {
         private final Class<V> clazz;
@@ -147,7 +147,7 @@ public class ConfigReloadContainer<V> implements ReloadingContainer<V>, Registra
             providers.add(new ConfigurationProviderState<V>(p));
         });
         merger = builder.merger;
-        s_registry.addListener(ConfigurationProvider.class, this, true);
+        REGISTRY.addListener(ConfigurationProvider.class, this, true);
     }
 
     @Override
@@ -214,30 +214,18 @@ public class ConfigReloadContainer<V> implements ReloadingContainer<V>, Registra
             return;
         }
 
-        boolean shouldReload = forceReload;
-        for (ConfigurationProviderState provider : providers) {
-            if (provider.shouldReload()) {
-                shouldReload = true;
-                // We know at least one provider updated, continue checking them all
-            }
+        if (forceReload || providers.stream().anyMatch(ConfigurationProviderState::shouldReload)) {
+            reload();
         }
-
-        if (!shouldReload) {
-            return;
-        }
-
-        // Update
-        reload();
     }
 
     @Override
     public void providerRegistered(Registration registration, ConfigurationProvider provider) {
-        if (clazz.equals(registration.getProvider(ConfigurationProvider.class).getType())) {
-            if (providers.add(new ConfigurationProviderState<>(provider))) {
-                LOG.debug("Registered configuration provider {} for {}.", provider, clazz.getCanonicalName());
-                // Force a check on the next get
-                forceReload = true;
-            }
+        if (clazz.equals(registration.getProvider(ConfigurationProvider.class).getType())
+            && providers.add(new ConfigurationProviderState<>(provider))) {
+            LOG.debug("Registered configuration provider {} for {}.", provider, clazz.getCanonicalName());
+            // Force a check on the next get
+            forceReload = true;
         }
     }
 
