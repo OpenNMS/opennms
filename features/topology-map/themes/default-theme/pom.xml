@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
-    <artifactId>org.opennms.features.topology.themes</artifactId>
-    <groupId>org.opennms.features.topology</groupId>
-    <version>24.0.0-SNAPSHOT</version>
-  </parent>
-
+        <artifactId>org.opennms.features.topology.themes</artifactId>
+        <groupId>org.opennms.features.topology</groupId>
+        <version>24.0.0-SNAPSHOT</version>
+    </parent>
     <groupId>org.opennms.features.topology.themes</groupId>
     <artifactId>org.opennms.features.topology.themes.default-theme</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS :: Features :: Topology :: Default  Theme</name>
+    <name>OpenNMS :: Features :: Topology :: Default Theme</name>
     <properties>
         <bundle.symbolicname>org.opennms.features.topology.themes.default-theme</bundle.symbolicname>
     </properties>
@@ -21,10 +18,9 @@
         <resources>
             <resource>
                 <directory>src/main/filtered</directory>
-		<filtering>true</filtering>
+                <filtering>true</filtering>
             </resource>
         </resources>
-        
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -56,13 +52,115 @@
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Fragment-Host>com.vaadin.themes;bundle-version=${vaadinVersion}</Fragment-Host>
                         <Include-Resource>
-                          {maven-resources},
-                          {maven-dependencies}
+                            {maven-resources},
+                            {maven-dependencies}
                         </Include-Resource>
                     </instructions>
                 </configuration>
             </plugin>
+            <!--<plugin>-->
+                <!--<artifactId>maven-dependency-plugin</artifactId>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<phase>generate-sources</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>unpack</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+                <!--<configuration>-->
+                    <!--<outputDirectory>${project.build.outputDirectory}/VAADIN/themes/opennms</outputDirectory>-->
+                    <!--<artifactItems>-->
+                        <!--<artifactItem>-->
+                            <!--<groupId>org.opennms.core</groupId>-->
+                            <!--<artifactId>org.opennms.core.web-assets</artifactId>-->
+                            <!--<classifier>dist</classifier>-->
+                            <!--<overWrite>true</overWrite>-->
+                            <!--<excludes>WEB-INF/**</excludes>-->
+                        <!--</artifactItem>-->
+                    <!--</artifactItems>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+            <plugin>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-maven-plugin</artifactId>
+                <version>${vaadin.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>update-theme</goal>
+                            <goal>compile-theme</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Clean up also any pre-compiled themes -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>src/main/filtered/VAADIN/themes</directory>
+                            <includes>
+                                <include>**/styles.css</include>
+                                <include>**/styles.scss.cache</include>
+                            </includes>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-
+    <dependencies>
+        <!-- Additional Addons shared with Topology Applications -->
+        <dependency>
+            <groupId>org.vaadin.addons</groupId>
+            <artifactId>contextmenu</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.vaadin.addon</groupId>
+            <artifactId>confirmdialog</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-themes</artifactId>
+            <version>${vaadinVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-server</artifactId>
+            <version>${vaadinVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-shared</artifactId>
+            <version>${vaadinVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+    <repositories>
+        <repository>
+            <id>vaadin-addons</id>
+            <url>http://maven.opennms.org/content/repositories/vaadin-addons/</url>
+        </repository>
+        <repository>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
+            <id>opennms-repo</id>
+            <name>OpenNMS Repository</name>
+            <url>http://maven.opennms.org/content/groups/opennms.org-release/</url>
+        </repository>
+        <repository>
+            <snapshots><enabled>true</enabled></snapshots>
+            <releases><enabled>false</enabled></releases>
+            <id>opennms-snapshots</id>
+            <name>OpenNMS Snapshot Maven Repository</name>
+            <url>http://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
+        </repository>
+    </repositories>
 </project>

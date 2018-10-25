@@ -1,0 +1,10 @@
+//@import "./vaadin-theme.css?v=${buildNumber}";
+// TODO MVR copy this dynamically over
+// TODO MVR get v=${buildnumber} to work
+// TODO MVR technically the contextmenu addons.scss and confirmdialog addons.scss should be part of themes/default instead of topology default theme
+@import "./vaadin-theme.css";
+@import "addons.scss";
+@import "topology.scss";
+
+@include addons;
+@include topology;
