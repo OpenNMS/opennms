@@ -1,170 +1,81 @@
-[[releasenotes-22]]
-== What's New in OpenNMS Horizon 22
+[[releasenotes-23]]
+== What's New in OpenNMS Horizon 23
 
 === System Requirements
 
-* *Java 8*: OpenNMS Horizon 22 requires Java 8 as the runtime environment.
-  To run Horizon 22, we recommend the most recent version of Oracle JDK 8 for your platform.
-* *PostgreSQL 9 or higher*: Horizon 22 requires Any supported version PostgreSQL 9 or higher.
+* *Java 8*: OpenNMS Horizon 23 requires Java 8 as the runtime environment.
+  To run Horizon 23, we recommend the most recent version of Oracle JDK 8 for your platform.
+* *PostgreSQL 9 or higher*: Horizon 23 requires Any supported version PostgreSQL 9 or higher.
   As of this writing, PostgreSQL 9.3 is the earliest version under active support, but OpenNMS is known to work with at least PostgreSQL 9.1 and up.
-
-=== Important Upgrade Notes
-
-* All collectors using the `JMXSecureCollector`, `MX4JCollector` or `JBossCollector` must be migrated to use the `Jsr160Collector` instead.
-* All monitors using the `JBossMonitor` or `JMXSecureMonitor` must be migrated to use the `Jsr160Monitor` instead.
-* All detectors using the `JBossDetector` or `MX4JDetector` must be migrated to use the `Jsr160Detector` instead.
-* The configuration of the _Elasticsearch ReST plugin_ has changed. Please refer to <<releasenotes-22-opennms-es-rest-properties>>.
-* The index creation of the _Elasticsearch ReST plugin_ has changed and is now configurable. Please refer to <<releasenotes-22-opennms-es-rest-index-properties>>.
-* The _Elasticsearch ReST plugin_ no longer supports ElasticSearch version 2.4. A version >= 5.x must be used.
-* All JavaScript code in OpenNMS has been unified under a single build system. While we did quite a bit of testing of the resulting changes, it's possible something was missed. If you run into any JS-related issues in the UI please link:https://issues.opennms.org/[create an issue].
-* The default database access implementation is now using _HikariCP_, rather than _C3P0_. This will probably not affect you (other than give better performance) but could affect unusual workloads.
-* Backshift is now the default rendering engine for graphs.
-
-[[releasenotes-22-opennms-es-rest]]
-==== Configuration of the _Elasticsearch ReST plugin_
-
-The configuration of the _Elasticsearch ReST plugin_ has been changed.
-Some properties have new defaults and have been renamed.
-It is now also possible to define index settings and provide a index strategy to have more control over the index creation.
-
-[[releasenotes-22-opennms-es-rest-properties]]
-===== Changed Properties with new defaults
-
-Some properties of the plugin have changed.
-The following table shows the old (no longer supported) and the new property name, as well as the new default, which is used if the configuration is not updated manually.
-Please update the configuration file `etc/org.opennms.plugin.elasticsearch.rest.forwarder.cfg` accordingly.
-For more details on how to configure the plugin to use elasticsearch refer to link:../guide-admin/index.html#ga-elasticsearch-integration-configuration[Configure Elasticsearch].
-
-[options="header, autowidth"]
-|===
-| Old parameter | New parameter | Default Value
-
-| `elasticsearchUrl`
-| `elasticUrl`
-| `http://localhost:9200`
-
-| `esusername`
-| `globalElasticUser`
-| `-`
-
-| `espassword`
-| `globalElasticPassword`
-| `-`
-
-| `timeout`
-| `connTimeout`
-| `5000`
-
-| `socketTimeout`
-| `readTimeout`
-| `30000`
-
-|===
-
-Besides that the following default values have been changed:
-
-[options="header, autowidth"]
-|===
-| Parameter | Old default | New default
-
-| `batchSize`
-| `1`
-| `200`
-
-| `batchInterval`
-| `0`
-| `500`
-
-|`connTimeout`
-| `3000`
-| `5000`
-
-| `readTimeout`
-| `3000`
-| `30000`
-
-|===
-
-[[releasenotes-22-opennms-es-rest-index-properties]]
-===== Index Properties
-
-It is now possible to define index-related properties, e.g. the number of shards and replicas.
-It is also possible to define a property  `elasticIndexStrategy` to determine if a `hourly`, `daily`, `monthly` or `yearly` index should be created.
-It defaults to `monthly`.
-
-For more details please refer to link:../guide-admin/index.html#ga-elasticsearch-integration-configuration[Configure Elasticsearch].
 
 === Breaking Changes
 
-* `JMXSecureCollector`, `MX4JCollector` and `JBossCollector` have been removed. Please use the `Jsr160Collector` instead.
-* `JBossMonitor` and `JMXSecureMonitor` have been removed. Use the `Jsr160Monitor` instead.
-* `JBossDetector` and `MX4JDetector` have been removed. Use the `Jsr160Detector` instead.
-* The configuration of the _Elasticsearch ReST plugin_ has changed. Please refer to <<releasenotes-22-opennms-es-rest-properties>>.
-* The index creation of the _Elasticsearch ReST plugin_ has changed and is now configurable. Please refer to <<releasenotes-22-opennms-es-rest-index-properties>>.
-* The _Elasticsearch ReST plugin_ no longer supports ElasticSearch version 2.4. A version >= 5.x must be used.
-* By default the data collection gathered data twice from SNMP agents supporting the MIB-II with 32bit and 64bit counter on network interfaces.
-  The default 32bit interface counters are now disabled by default and only 64bit counters are collected.
+==== Vacuumd Alarm Handling
 
-IMPORTANT: If you have legacy SNMP agents which only support 32bit interface counters, the data collection for this interfaces will stop after you upgraded to 22.0.0.
-  To get them enabled, you have to create a data collection package and add the `mib2-interfaces` data collection group manually for this devices with the example below.
+In previous OpenNMS releases, a large portion of the alarm workflow was handled by Vacuumd automations, triggers, and actions.
+As part of the work to implement alarm correlation, this logic has been moved to Drools, running inside Alarmd.
 
-.Example to collect 32bit MIB-2 Interface counter from nodes in a category configured in collectd-configuration.xml
-[source, xml]
-----
-<package name="Legacy-MIB2-Interfaces" remote="false">
-    <filter>categoryName == 'Legacy-MIB2-Interfaces'</filter>
-    <include-range begin="1.1.1.1" end="254.254.254.254"/>
-    <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+If you made any changes to `vacuumd-configuration.xml` related to alarms, it is strongly recommended you port them to the new Alarmd Drools context.
+The Drools rules are in the `$OPENNMS_HOME/etc/alarmd/drools-rules.d/` directory.
 
-    <service name="SNMP" interval="300000" user-defined="false" status="on">
-        <parameter key="collection" value="legacy-32bit-mib2"/>
-        <parameter key="thresholding-enabled" value="true"/>
-    </service>
-</package>
-----
-
-.Load the Legacy MIB-2 Interfaces metrics configured in the datacollection-config.xml
-[source, xml]
-----
-<snmp-collection name="legacy-32bit-mib2" snmpStorageFlag="select">
-    <rrd step="300">
-        <rra>RRA:AVERAGE:0.5:1:2016</rra>
-        <rra>RRA:AVERAGE:0.5:12:1488</rra>
-        <rra>RRA:AVERAGE:0.5:288:366</rra>
-        <rra>RRA:MAX:0.5:288:366</rra>
-        <rra>RRA:MIN:0.5:288:366</rra>
-    </rrd>
-    <include-collection dataCollectionGroup="Legacy_MIB2-Interfaces"/>
-    <include-collection dataCollectionGroup="REF_MIB2-Interfaces"/>
-</snmp-collection>
-----
+Also, we no longer generate `alarmCreated`, `alarmEscalated`, `alarmCleared`, `alarmUncleared`, `alarmUpdatedWithReducedEvent`, and `alarmDeleted` events.
+Instead, it is recommended that you add Drools rules to react to alarm changes.
+For more complicated integrations, we also have a new API -- `AlarmLifecycleListener` -- for reacting to alarm changes.
 
 === New Features
 
-==== Telemetryd (Drift)
+==== OpenNMS Correlation Engine ("Sextant") Proof of Concept
 
-The focus of OpenNMS Horizon 22 is the introduction of support for consuming and indexing flow data in a new subsystem called _Telemetryd_ (code name: Drift).
+Horizon 23 introduces the groundwork for supporting correlation of alarms into meta-alarms called "situations" using an external engine called the link:https://github.com/OpenNMS/oce[OpenNMS Correlation Engine].
+Situations are OpenNMS alarms that contain one or more triggering alarms, which allows them to be browsed, acknowledged, and unacknowledged just like any other alarm.
+A high-level overview of the goal and implementation of correlation can be seen link:https://wiki.opennms.org/wiki/DevProjects/Sextant[on the Sextant wiki page].
 
-Telemetryd supports receiving real-time telemetry data in a variety of formats, including JTI (Junos Telemetry Interface), Netflow 5 and 9, IPFIX, SFlow, and Cisco NX-OS.
-Data is then stored in Elasticsearch for display using the OpenNMS Grafana-based companion application, link:https://docs.opennms.org/helm/releases/latest/helm/latest/welcome/introduction.html[Helm].
+Please note that implementing OCE is an advanced topic and there is still work to do before it is ready for general use.
+While the OpenNMS core supports situations, the logic of creating them is part of the OCE, which is designed to run in a separate Karaf container.
+Full support for OCE and correlation is due to be released in Horizon 24.
 
-Accessing flow data from Helm requires Helm 2.0 or higher.
+==== Alarmd Improvements
 
-==== SNMP Session Tracking
+In addition to the Alarmd Drools updates mentioned previously, there have been some other enhancements made to Alarmd.
 
-To aid in debugging problematic SNMP hosts, an SNMP session tracker/logger has been added.
+Traditionally, OpenNMS has created and resolved alarms in pairs, with one alarm representing the triggering event (or events), and then a second alarm representing the resolution.
+Horizon 23 changes this default behavior to use a single alarm to track the problem state, incrementing the alarm count when it occurs while in a problem state, or when moving from resolved _back_ into a problem state.
+Additionally, you can configure OpenNMS to create a new alarm if a problem happens again.
 
-By default it will print a summary of the top 10 oldest threads every 60 seconds to the SNMP debug log.
+These behaviors are controlled by the introduction of 2 new settings in the `opennms.properties` file:
 
-It can be enabled by adding `org.opennms.core.snmp.trackSessions=true` in `opennms.properties` (or a file in `opennms.properties.d`).
+`org.opennms.alarmd.legacyAlarmState`::
+    This setting reverts to the old (pre-23) behavior of creating separate alarms for a problem and its resolution.
+`org.opennms.alarmd.newIfClearedAlarmExists`::
+    This setting forces Alarmd to create a new alarm if a problem reoccurs, rather than incrementing an existing alarm.
+    (Note: this is ignored if `legacyAlarmState` is set to `true`.)
 
-To change how often the summary is printed, set `org.opennms.core.snmp.trackSummaryDelay=number-of-seconds`.
+These improvements are covered in a link:https://www.youtube.com/watch?v=5jpHVb1Od-g[lunch and learn video] we published recently, if you would like to learn more.
 
-To change how many sessions are posted to the debug log, set `org.opennms.core.snmp.trackSummaryLimit=number-of-sessions`.
+==== Kafka Data Collection Sync
 
-=== New/Updated Device Support (Data Collection and/or Traps)
+In addition to publishing events, alarms, and node inventory to Kafka, we can now link:https://issues.opennms.org/browse/NMS-10215[publish collected time-series data to the Kafka bus] as well.
 
-* AsyncOS Mail
-* Cisco Virtual CallManager
-* Dell (OpenManage cooling devices, temperature probe, and power usage)
-* Net-SNMP disk I/O and load
+==== Sentinel
+
+In addition to the Minion, we have added a new container-based subsystem called "Sentinel."
+The Sentinel is a standalone container that can be configured to run a subset of OpenNMS daemons as a standalone tool, to aid in horizontal scaling and/or high availability.
+
+This initial release of Sentinel is designed to run our Karaf/Camel/SQS-based messaging bus, syslog listener, Netflow receiver, and Newts and Elasticsearch persistence.
+
+=== Other Improvements
+
+* A number of monitors now support using placeholders in parameter values to allow runtime substitution of IP address, node ID, and so on. (See: https://issues.opennms.org/browse/NMS-10200[NMS-10200])
+* A new WSMan monitor has been added which can use WQL filters against an endpoint to detect arbitrary services.
+* The web UI now fully supports configuring date formats and user time zone in `opennms.properties` which was partially introduced in Horizon 22.
+* Daemon reloading can now be done from the Karaf shell.  Also, Syslogd and Trapd can now respond to daemon reload events.
+* The RadixTreeSyslogParser now handles link:https://issues.opennms.org/browse/NMS-10273[Cisco Syslog Message formats].
+* RPC to Minions is now fully supported when using Kafka rather than JMS.
+* A bunch of tools for checking the health of OpenNMS, Minions, and Sentinel containers have been added to the Karaf command-line.  (Run `health:check --help` for more details.)
+* Many other improvements were made to the flow support introduced in Horizon 22.
+* Support for HTTP proxies has been added to a number of places where OpenNMS makes outgoing HTTP connections. (link:https://issues.opennms.org/browse/NMS-10312[NMS-10312], link:https://issues.opennms.org/browse/NMS-10313[NMS-10313])
+* A number of VMware improvements have been made including configurable timeouts and hanlding of unacknowledged vSphere alarms.
+* Many subsystems have been improved as part of the refactoring to make them capable of running in the Sentinel container.
+* The OSGi Plugin Manager has been updated to version 1.1.0.
+* A policy (`ScriptPolicy`) has been added to Provisiond that allows you to run arbitrary Groovy scripts before persistence.  An example policy can be found in `$OPENNMS_HOME/etc/examples/script-policies/`.
+
