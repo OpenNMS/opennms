@@ -35,6 +35,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -328,7 +329,69 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         situation = m_alarmDao.findByReductionKey("Situation1");
         assertEquals(3, situation.getRelatedAlarms().size());
     }
-    
+
+
+    @Test
+    @Transactional
+    public void testPreventingCyclicGraphForSituations() throws SQLException {
+
+        final MockNode node = m_mockNetwork.getNode(1);
+
+        //there should be no alarms in the alarms table
+        assertEmptyAlarmTable();
+
+        //there should be no alarms in the alarm_situations table
+        assertEmptyAlarmSituationTable();
+
+        //create 2 alarms to roll up into situation
+        sendNodeDownEvent("Alarm1", node);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        assertEquals(1, m_alarmDao.findAll().size());
+
+        sendNodeDownEvent("Alarm2", node);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        assertEquals(2, m_alarmDao.findAll().size());
+
+        //create situation rolling up the first 2 alarms
+        List<String> reductionKeys = new ArrayList<>(Arrays.asList("Alarm1", "Alarm2"));
+        sendSituationEvent("Situation1", node, reductionKeys);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        OnmsAlarm situation1 = m_alarmDao.findByReductionKey("Situation1");
+        assertEquals(2, situation1.getRelatedAlarms().size());
+
+        // create Situation2 that includes 2 alarms and the previous situation.
+        reductionKeys = new ArrayList<>(Arrays.asList("Alarm1", "Alarm2", "Situation1"));
+        sendSituationEvent("Situation2", node, reductionKeys);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        OnmsAlarm situation2 = m_alarmDao.findByReductionKey("Situation2");
+        assertEquals(3, situation2.getRelatedAlarms().size());
+
+        // create Situation3 that includes 2 alarms and the previous two situation.
+        reductionKeys = new ArrayList<>(Arrays.asList("Alarm1", "Alarm2", "Situation1", "Situation2"));
+        sendSituationEvent("Situation3", node, reductionKeys);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        OnmsAlarm situation3 = m_alarmDao.findByReductionKey("Situation3");
+        assertEquals(4, situation3.getRelatedAlarms().size());
+
+        // create Situation4 that includes 2 alarms and the previous situation 1,2 but not 3.
+        reductionKeys = new ArrayList<>(Arrays.asList("Alarm1", "Alarm2", "Situation1", "Situation2"));
+        sendSituationEvent("Situation4", node, reductionKeys);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        OnmsAlarm situation4 = m_alarmDao.findByReductionKey("Situation4");
+        assertEquals(4, situation4.getRelatedAlarms().size());
+        
+        // Create loop ( make situation4 as related alarm for situation1 )
+        List<String> situation3ReductionKey = new ArrayList<>(Arrays.asList("Situation4"));
+        sendSituationEvent("Situation1", node, situation3ReductionKey);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        situation1 = m_alarmDao.findByReductionKey("Situation1");
+        // Verify that Situation3 can't be related to Situation1
+        assertEquals(2, situation1.getRelatedAlarms().size());
+        assertFalse(situation1.getRelatedAlarms().contains(situation4));
+
+    }
+
+
     @Test
     @Transactional
     public void testNullEvent() throws Exception {
