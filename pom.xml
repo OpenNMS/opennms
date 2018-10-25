@@ -1389,13 +1389,11 @@
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
-    <vaadinVersion>7.2.7</vaadinVersion>
-    <vaadinSharedEpsVersion>1.0.2</vaadinSharedEpsVersion>
+    <vaadinVersion>7.7.15</vaadinVersion>
     <!-- Requiring a more recent plugin version which passes the classpath via ENV -->
     <vaadin.plugin.version>8.1.0</vaadin.plugin.version>
-    <vaadinAddonContextMenuVersion>4.2.1</vaadinAddonContextMenuVersion>
-    <vaadinAddonRefresherVersion>1.2.3.7</vaadinAddonRefresherVersion>
-    <vaadinAddonConfirmDialogVersion>2.0.4</vaadinAddonConfirmDialogVersion>
+    <vaadinAddonContextMenuVersion>4.5</vaadinAddonContextMenuVersion>
+    <vaadinAddonConfirmDialogVersion>2.1.3</vaadinAddonConfirmDialogVersion>
     <skipPdfGeneration>true</skipPdfGeneration>
     <skipSignJar>true</skipSignJar>
 
@@ -3359,11 +3357,6 @@
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-shared-deps</artifactId>
-        <version>${vaadinSharedEpsVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.vaadin</groupId>
 	    <artifactId>vaadin-client-compiled</artifactId>
 	    <version>${vaadinVersion}</version>
       </dependency>
@@ -3381,11 +3374,6 @@
         <groupId>org.vaadin.addons</groupId>
         <artifactId>contextmenu</artifactId>
         <version>${vaadinAddonContextMenuVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.vaadin.addons</groupId>
-        <artifactId>refresher</artifactId>
-        <version>${vaadinAddonRefresherVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.vaadin.addon</groupId>

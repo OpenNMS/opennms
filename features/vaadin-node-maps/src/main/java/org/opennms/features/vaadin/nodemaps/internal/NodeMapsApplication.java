@@ -50,11 +50,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
-import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
+import com.vaadin.event.UIEvents;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.ui.AbsoluteLayout;
@@ -273,7 +273,7 @@ public class NodeMapsApplication extends UI {
 
         createMapPanel(searchString, maxClusterRadius);
         createRootLayout();
-        addRefresher();
+        setupAutoRefresher();
 
         // Notify the user if no tileserver url or options are set
         if (!configuration.isValid()) {
@@ -351,11 +351,9 @@ public class NodeMapsApplication extends UI {
         }
     }
 
-    private void addRefresher() {
-        final Refresher refresher = new Refresher();
-        refresher.setRefreshInterval(REFRESH_INTERVAL);
-        refresher.addListener((theRefresher) -> m_nodeMapComponent.refresh());
-        addExtension(refresher);
+    public void setupAutoRefresher(){
+        setPollInterval(REFRESH_INTERVAL); // Pull every n seconds for view updates
+        addPollListener((UIEvents.PollListener) event -> m_nodeMapComponent.refresh());
     }
 
     public void refresh() {

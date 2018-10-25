@@ -19,7 +19,6 @@
     <inherits name="com.google.gwt.json.JSON" /> 
     <inherits name="com.google.gwt.http.HTTP" />   
     <inherits name="com.vaadin.DefaultWidgetSet" />
-    <inherits name="com.github.wolfie.refresher.RefresherWidgetset" />
     <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
 
     <collapse-all-properties/>

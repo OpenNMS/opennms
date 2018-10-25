@@ -3,7 +3,7 @@
 <module>
     <!-- At build time the other topology widgets get injected here -->
     <inherits name="com.vaadin.DefaultWidgetSet"/>
-    <inherits name="com.github.wolfie.refresher.RefresherWidgetset"/>
+    
     <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset"/>
 
     <inherits name="com.google.gwt.xml.XML"/>

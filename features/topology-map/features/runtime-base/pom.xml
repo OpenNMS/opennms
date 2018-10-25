@@ -113,6 +113,11 @@
 
     <dependency>
       <groupId>org.opennms.features.vaadin-components</groupId>
+      <artifactId>core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.vaadin-components</groupId>
       <artifactId>graph</artifactId>
       <version>${project.version}</version>
     </dependency>
