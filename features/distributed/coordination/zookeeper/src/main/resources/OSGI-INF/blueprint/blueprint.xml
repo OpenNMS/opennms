@@ -9,10 +9,16 @@
             <cm:property name="namespace" value="coordination"/>
         </cm:default-properties>
     </cm:property-placeholder>
-    <service interface="org.opennms.features.distributed.coordination.api.DomainManagerFactory">
-        <bean class="org.opennms.features.distributed.coordination.zookeeper.ZookeeperDomainManagerFactory">
-            <argument value="${connectString}" />
-            <argument value="${namespace}" />
-        </bean>
-    </service>
+
+    <bean id="zkDomainManagerFactory" class="org.opennms.features.distributed.coordination.zookeeper.ZookeeperDomainManagerFactory">
+        <argument value="${connectString}" />
+        <argument value="${namespace}" />
+    </bean>
+    <service ref="zkDomainManagerFactory" interface="org.opennms.features.distributed.coordination.api.DomainManagerFactory" />
+
+    <bean id="oiZkDomainManagerFactory" class="org.opennms.features.distributed.coordination.common.OICompatibleDomainManagerFactory">
+        <argument ref="zkDomainManagerFactory"/>
+    </bean>
+    <service ref="oiZkDomainManagerFactory" interface="org.opennms.integration.api.v1.coordination.DomainManagerFactory" />
+
 </blueprint>

@@ -50,6 +50,7 @@ import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeLabel;
 import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.dao.api.SessionFactoryWrapper;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.StatisticsService;
 import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.filter.api.FilterDao;
@@ -83,6 +84,7 @@ public class DaoServiceTester {
 
     private final TestRegistry testRegistry = new TestRegistry()
             .withIgnoredClass(
+                    SessionUtils.class,
                     SessionFactoryWrapper.class,
                     TransactionOperations.class,
                     PlatformTransactionManager.class,

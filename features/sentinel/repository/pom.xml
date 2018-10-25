@@ -437,5 +437,12 @@
             <name>Coova Repository</name>
             <url>http://maven.opennms.org/content/repositories/coova/</url>
         </repository>
+        <repository>
+            <id>sonatype.org-snapshot</id>
+            <name>Sonatype OSS Snapshots Repository</name>
+            <url>http://maven.opennms.org/content/groups/sonatype.org-snapshot/</url>
+            <releases><enabled>false</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
     </repositories>
 </project>
