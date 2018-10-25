@@ -53,7 +53,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -1214,11 +1213,15 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      */
     public void setRelatedAlarms(Set<OnmsAlarm> alarms) {
         m_associatedAlarms.clear();
-        alarms.stream().forEach(relatedAlarm -> m_associatedAlarms.add(new AlarmAssociation(this, relatedAlarm)));
+        alarms.forEach(relatedAlarm -> m_associatedAlarms.add(new AlarmAssociation(this, relatedAlarm)));
     }
 
     public void addRelatedAlarm(OnmsAlarm alarm) {
         m_associatedAlarms.add(new AlarmAssociation(this, alarm));
+    }
+
+    public void removeRelatedAlarm(OnmsAlarm alarm) {
+        m_associatedAlarms.removeIf(associatedAlarm -> associatedAlarm.getRelatedAlarm().getId().equals(alarm.getId()));
     }
 
 

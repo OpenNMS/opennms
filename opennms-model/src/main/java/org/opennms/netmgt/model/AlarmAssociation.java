@@ -45,6 +45,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
+/**
+ * <p> Entity to store situations and their associated (related) alarms with other details like mappedTime </p>
+ */
 @Entity
 @Table(name = "alarm_situations", uniqueConstraints={@UniqueConstraint(columnNames={"situation_id", "related_alarm_id"})})
 public class AlarmAssociation implements Serializable {

@@ -219,7 +219,7 @@ public class SituationIT {
         assertThat(retrieved.getRelatedAlarms().size(), is(2));
         List<AlarmAssociation> associatedAlarms = alarmAssociationDao.findAll();
         assertThat(associatedAlarms.size(), is(2));
-        AlarmAssociation alarmAssociation = associatedAlarms.stream().findFirst().get();
+        AlarmAssociation alarmAssociation = associatedAlarms.get(0);
         assertThat(alarmAssociation.getMappedTime().getTime(), is(greaterThanOrEqualTo(startTime)));
         // delete the situation
         m_alarmDao.delete(retrieved);
