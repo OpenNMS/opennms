@@ -66,13 +66,12 @@ import org.opennms.plugins.elasticsearch.rest.bulk.BulkException;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
 import org.opennms.plugins.elasticsearch.rest.bulk.FailedItem;
+import org.opennms.plugins.elasticsearch.rest.executors.LimitedRetriesRequestExecutor;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 import org.opennms.plugins.elasticsearch.rest.template.TemplateInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.cache.CacheLoader;
@@ -86,7 +85,6 @@ import io.searchbox.core.UpdateByQuery;
 import io.searchbox.core.UpdateByQueryResult;
 
 /**
- * TODO: Review log levels.
  * TODO: Handle different prefixes i.e. many OpenNMS systems using the same ES
  */
 public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
@@ -103,6 +101,7 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
     private boolean usePseudoClock = false;
 
     private final QueryProvider queryProvider = new QueryProvider();
+    private LimitedRetriesRequestExecutor limitedRetriesRequestExecutor;
 
     private final List<AlarmDocumentDTO> alarmDocumentsToIndex = new LinkedList<>();
 
@@ -116,8 +115,7 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
     private final DocumentMapper documentMapper;
 
     private final Cache<Integer, Optional<NodeDocumentDTO>> nodeInfoCache;
-    private final Histogram batchSizeHistogram;
-    private final Timer batchTimer;
+    private final AlarmsToESMetrics alarmsToESMetrics;
 
     public AlarmsToES(MetricRegistry metrics, JestClient client, TemplateInitializer templateInitializer) {
         this(metrics, client, templateInitializer, new CacheConfig("nodes-for-alarms-in-es"));
@@ -126,7 +124,7 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
     public AlarmsToES(MetricRegistry metrics, JestClient client, TemplateInitializer templateInitializer, CacheConfig nodeCacheConfig) {
         this.client = Objects.requireNonNull(client);
         this.templateInitializer = Objects.requireNonNull(templateInitializer);
-        this.nodeInfoCache = new CacheBuilder<>()
+        nodeInfoCache = new CacheBuilder<>()
                 .withConfig(nodeCacheConfig)
                 .withCacheLoader(new CacheLoader<Integer, Optional<NodeDocumentDTO>>() {
                     @Override
@@ -134,11 +132,7 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
                         return Optional.empty();
                     }
                 }).build();
-
-        batchSizeHistogram = metrics.histogram("batch-size");
-        batchTimer = metrics.timer("batch-timer");
-        metrics.register("task-queue-size", (Gauge<Integer>) taskQueue::size);
-
+        alarmsToESMetrics = new AlarmsToESMetrics(metrics, taskQueue);
         documentMapper = new DocumentMapper(nodeInfoCache, this::getCurrentTimeMillis);
     }
 
@@ -157,7 +151,9 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
                     LOG.error("Flush failed.", e);
                 }
             }
-        }, 500, 500);
+        }, 500, 500); // TODO: Make period configurable
+        // TODO: Make timeout configurable
+        limitedRetriesRequestExecutor = new LimitedRetriesRequestExecutor(5000,  bulkRetryCount);
     }
 
     public void destroy() {
@@ -167,7 +163,7 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
     }
 
     private Collection<String> getIndicesForDeleteAt(long time) {
-        // TODO: improve this!
+        // TODO: Add proper logic
         return Collections.singletonList(indexStrategy.getIndex(alarmIndexPrefix, Instant.ofEpochMilli(time)));
     }
 
@@ -180,17 +176,23 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
                 task.visit(new TaskVisitor() {
                     @Override
                     public void indexAlarms(List<AlarmDocumentDTO> docs) {
-                        LOG.error("Performing index task on {}", docs.stream().map(AlarmDocumentDTO::getId).collect(Collectors.toList()));
-                        try {
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("Indexing documents for alarms with ids: {}", docs.stream().map(AlarmDocumentDTO::getId).collect(Collectors.toList()));
+                        }
+                        try (final Timer.Context ctx = alarmsToESMetrics.getBulkIndexTimer().time()) {
                             bulkInsert(docs);
+                            LOG.debug("Successfully indexed {} documents.", docs.size());
+                            alarmsToESMetrics.getBulkIndexSizeHistogram().update(docs.size());
                         } catch (PersistenceException|IOException e) {
-                            LOG.error("Persisting one or more documents failed.", e);
+                            LOG.error("Indexing {} documents failed. These documents will be lost.", docs.size(), e);
+                            alarmsToESMetrics.getTasksFailedCounter().inc();
                         }
                     }
 
                     @Override
                     public void deleteAlarm(int alarmId, long time) {
-                        LOG.error("Performing delete task on alarm with id {} at {}", alarmId, time);
+                        LOG.debug("Marking document related to alarm with id: {} deleted with time: {}", alarmId, time);
+                        // TODO: Should only be applied to documents created before the given time and not yet marked
                         final String query = queryProvider.markAlarmAsDeleted(alarmId, time);
                         final Collection<String> indices = getIndicesForDeleteAt(time);
                         final UpdateByQuery updateByQuery = new UpdateByQuery.Builder(query)
@@ -199,27 +201,26 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
                                 .addType(AlarmDocumentDTO.TYPE)
                                 .build();
 
-                        try {
-                            UpdateByQueryResult result = client.execute(updateByQuery);
-
+                        try (final Timer.Context ctx = alarmsToESMetrics.getDeleteTimer().time()) {
+                            final UpdateByQueryResult result = limitedRetriesRequestExecutor.execute(client, updateByQuery);
                             if (!result.isSucceeded()) {
-                                LOG.error("Update by query failed with: {}", result.getErrorMessage());
+                                LOG.error("Delete for alarm with id: {} failed with: {}", alarmId, result.getErrorMessage());
                             } else if (result.getUpdatedCount() < 1) {
                                 LOG.warn("Did not find any documents for alarm with id: {} to delete in indices: {}.",
                                         alarmId, indices);
                             } else {
-                                LOG.warn("Delete successful!");
+                                LOG.debug("Successfully marked documents for alarm with id: {} as deleted.", alarmId);
                             }
                         } catch (IOException e) {
-                            // TODO: Retries?
-                            LOG.error("Marking alarm with id: {} as deleted for time: {} failed.", alarmId, time, e);
+                            LOG.error("Delete for alarm with id: {} failed.", alarmId, e);
+                            alarmsToESMetrics.getTasksFailedCounter().inc();
                         }
                     }
 
                     @Override
                     public void deleteAlarmsWithoutIdsIn(Set<Integer> alarmIdsToKeep, long time) {
-                        LOG.error("Performing bulk delete task for alarms without ids in: {}, at time: {}", alarmIdsToKeep, time);
-                        // TODO: Should only be applied to documents created before the given time
+                        LOG.debug("Marking documents without ids in: {} as deleted for time: {}", alarmIdsToKeep, time);
+                        // TODO: Should only be applied to documents created before the given time and not yet marked
                         final String query = queryProvider.markOtherAlarmsAsDeleted(alarmIdsToKeep, time);
                         final UpdateByQuery updateByQuery = new UpdateByQuery.Builder(query)
                                 .addIndices(getIndicesForDeleteAt(time))
@@ -227,25 +228,25 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
                                 .addType(AlarmDocumentDTO.TYPE)
                                 .build();
 
-                        try {
-                            UpdateByQueryResult result = client.execute(updateByQuery);
+                        try (final Timer.Context ctx = alarmsToESMetrics.getBulkDeleteTimer().time()) {
+                            final UpdateByQueryResult result = limitedRetriesRequestExecutor.execute(client, updateByQuery);
                             if (!result.isSucceeded()) {
-                                LOG.error("Update by query failed with: {}", result.getErrorMessage());
+                                LOG.error("Bulk delete failed with: {}", result.getErrorMessage());
                             } else {
-                                LOG.error("Marked {} documents as deleted.", result.getUpdatedCount());
+                                LOG.debug("Marked {} documents as deleted.", result.getUpdatedCount());
                             }
                         } catch (IOException e) {
-                            // TODO: Retries? - use the LimitedRetriesRequestExecutor
-                            LOG.error("Marking alarms without ids in: {} as deleted for time: {} failed.", alarmIdsToKeep, time, e);
+                            LOG.error("Bulk delete failed.", e);
+                            alarmsToESMetrics.getTasksFailedCounter().inc();
                         }
                     }
                 });
-                LOG.warn("Task complete.");
             } catch (InterruptedException e) {
                 LOG.info("Interrupted. Stopping.");
                 return;
             } catch (Exception e) {
-                LOG.error("Persisting one or more documents failed.", e);
+                LOG.error("Handling of task failed.", e);
+                alarmsToESMetrics.getTasksFailedCounter().inc();
             }
         }
     }
@@ -258,8 +259,8 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
                 final Index.Builder indexBuilder = new Index.Builder(alarmDocument)
                         .index(index)
                         .type(AlarmDocumentDTO.TYPE);
-                if (LOG.isWarnEnabled()) {
-                    LOG.warn("Adding index action on index: {} with type: {} and payload: {}",
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("Adding index action on index: {} with type: {} and payload: {}",
                             index, AlarmDocumentDTO.TYPE, gson.toJson(alarmDocument));
                 }
                 bulkBuilder.addAction(indexBuilder.build());
@@ -287,7 +288,7 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
     // TODO: Remove synchronized safely?
     @Override
     public synchronized void handleAlarmSnapshot(List<OnmsAlarm> alarms) {
-        LOG.error("Got snapshot with: {}", alarms);
+        LOG.debug("Got snapshot with {} alarms.", alarms.size());
         flushDocumentsToIndexToTaskQueue();
         // Index/update documents as necessary
         final List<AlarmDocumentDTO> alarmDocuments = alarms.stream()
@@ -307,7 +308,8 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
 
     @Override
     public synchronized void handleNewOrUpdatedAlarm(OnmsAlarm alarm) {
-        LOG.error("Got new or updated with: {}", alarm);
+        LOG.debug("Got new or updated alarm callback for alarm with id: {} and reduction key: {}",
+                alarm.getId(), alarm.getReductionKey());
         final AlarmDocumentDTO alarmDocument = getDocumentIfNeedsIndexing(alarm);
         if (alarmDocument != null) {
             alarmDocumentsToIndex.add(alarmDocument);
@@ -319,7 +321,8 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
 
     @Override
     public synchronized void handleDeletedAlarm(int alarmId, String reductionKey) {
-        LOG.error("Got delete for: {}", alarmId);
+        LOG.debug("Got delete callback for alarm with id: {} and reduction key: {}",
+                alarmId, reductionKey);
         flushDocumentsToIndexToTaskQueue();
         taskQueue.add(new DeleteAlarmTask(alarmId, getCurrentTimeMillis()));
         alarmDocumentsById.remove(alarmId);
