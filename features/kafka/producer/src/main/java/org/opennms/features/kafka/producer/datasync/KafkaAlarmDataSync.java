@@ -207,7 +207,7 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
                                 + results.getReductionKeysUpdated().size());
                 LOG.debug("Reduction keys added to ktable: {}", results.getReductionKeysAdded());
                 LOG.debug("Reduction keys deleted from the ktable: {}", results.getReductionKeysDeleted());
-                LOG.debug("Reduction keys updated in the ktable: {}", results.getReductionKeysAdded());
+                LOG.debug("Reduction keys updated in the ktable: {}", results.getReductionKeysUpdated());
             }
         } catch (Exception e) {
             LOG.error("An error occurred while performing alarm synchronization with the ktable. Will try again after {} ms.",
