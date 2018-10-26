@@ -1173,6 +1173,12 @@
       <bundle>mvn:org.opennms.features.situation-feedback.rest/org.opennms.features.situation-feedback.rest.impl/${project.version}</bundle>
     </feature>
 
+    <feature name="alarms-in-es" description="OpenNMS :: Features :: Alarms in Elasticsearch" version="${project.version}">
+      <feature>opennms-jest</feature>
+      <bundle dependency="true">wrap:mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
+      <bundle>mvn:org.opennms.features/org.opennms.features.alarms-in-es/${project.version}</bundle>
+    </feature>
+
     <feature name="kafka-streams" description="Kafka Streams" version="${kafkaStreamsVersion}">
       <!-- Wrap the kafka-streams bundle instead of using the servicemix implementation since the later doesn't include the required imports for rocksdb -->
       <bundle dependency="true">wrap:mvn:org.apache.kafka/kafka-streams/${kafkaStreamsVersion}$Bundle-Version=${kafkaStreamsVersion}&amp;Export-Package=*;-noimport:=true:version="${kafkaStreamsVersion}"</bundle>

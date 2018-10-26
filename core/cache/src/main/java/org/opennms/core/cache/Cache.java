@@ -84,6 +84,14 @@ public class Cache<K, V> {
         }
     }
 
+    public V getIfCached(K key)  {
+        Objects.requireNonNull(key);
+        if (!config.isEnabled()) {
+            return null;
+        }
+        return delegate.getIfPresent(key);
+    }
+
     public void invalidateAll() {
         if (delegate != null) {
             delegate.invalidateAll();
@@ -95,4 +103,12 @@ public class Cache<K, V> {
             delegate.refresh(key);
         }
     }
+
+    public void put(K key, V value) {
+        Objects.requireNonNull(key);
+        if (delegate != null) {
+            delegate.put(key, value);
+        }
+    }
+
 }

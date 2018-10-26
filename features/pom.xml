@@ -173,5 +173,6 @@
     <module>ifttt</module>
 
     <module>jest</module>
+    <module>alarms-in-es</module>
   </modules>
 </project>
