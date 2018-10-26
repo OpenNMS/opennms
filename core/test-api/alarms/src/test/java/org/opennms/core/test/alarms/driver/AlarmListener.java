@@ -26,29 +26,43 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.alarmd.driver;
+package org.opennms.core.test.alarms.driver;
 
-import java.util.Date;
-import java.util.Objects;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
-public class AcknowledgeAlarmAction implements Action {
-    private final String ackUser;
-    private final Date ackTime;
-    private final String reductionKey;
+import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
+import org.opennms.netmgt.model.OnmsAlarm;
 
-    public AcknowledgeAlarmAction(String ackUser, Date ackTime, String reductionKey) {
-        this.ackUser = Objects.requireNonNull(ackUser);
-        this.ackTime = Objects.requireNonNull(ackTime);
-        this.reductionKey = Objects.requireNonNull(reductionKey);
+public class AlarmListener implements AlarmLifecycleListener {
+
+    private static AlarmListener instance = new AlarmListener();
+
+    private final Set<Integer> allObservedAlarmIds = new LinkedHashSet<>();
+
+    private AlarmListener() {}
+
+    public static AlarmListener getInstance() {
+        return instance;
     }
 
     @Override
-    public Date getTime() {
-        return ackTime;
+    public synchronized void handleAlarmSnapshot(List<OnmsAlarm> alarms) {
+        alarms.forEach(a -> allObservedAlarmIds.add(a.getId()));
     }
 
     @Override
-    public void visit(ActionVisitor visitor) {
-        visitor.acknowledgeAlarm(ackUser, ackTime, (a) -> Objects.equals(reductionKey, a.getReductionKey()));
+    public synchronized void handleNewOrUpdatedAlarm(OnmsAlarm alarm) {
+        allObservedAlarmIds.add(alarm.getId());
+    }
+
+    @Override
+    public synchronized void handleDeletedAlarm(int alarmId, String reductionKey) {
+        allObservedAlarmIds.add(alarmId);
+    }
+
+    public synchronized Integer getNumUniqueObserveredAlarmIds() {
+        return allObservedAlarmIds.size();
     }
 }

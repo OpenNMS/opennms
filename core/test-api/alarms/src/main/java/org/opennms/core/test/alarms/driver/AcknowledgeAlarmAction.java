@@ -26,20 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.alarmd.driver;
+package org.opennms.core.test.alarms.driver;
 
-import java.util.function.Function;
-
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.xml.event.Event;
 import java.util.Date;
+import java.util.Objects;
 
-public interface ActionVisitor {
+public class AcknowledgeAlarmAction implements Action {
+    private final String ackUser;
+    private final Date ackTime;
+    private final String reductionKey;
 
-    void sendEvent(Event e);
 
-    void acknowledgeAlarm(String ackUser, Date ackTime, Function<OnmsAlarm, Boolean> filter);
+    public AcknowledgeAlarmAction(String ackUser, Date ackTime, String reductionKey) {
+        this.ackUser = Objects.requireNonNull(ackUser);
+        this.ackTime = Objects.requireNonNull(ackTime);
+        this.reductionKey = Objects.requireNonNull(reductionKey);
+    }
 
-    void unacknowledgeAlarm(String ackUser, Date ackTime, Function<OnmsAlarm, Boolean> filter);
+    @Override
+    public Date getTime() {
+        return ackTime;
+    }
 
+    @Override
+    public void visit(ActionVisitor visitor) {
+        visitor.acknowledgeAlarm(ackUser, ackTime, (a) -> Objects.equals(reductionKey, a.getReductionKey()));
+    }
 }
