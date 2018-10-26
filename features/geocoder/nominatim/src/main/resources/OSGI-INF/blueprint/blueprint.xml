@@ -13,12 +13,14 @@
 			<!-- We don't want to set these by default, we want to fail if we don't find a valid email address. -->
 			<cm:property name="emailAddress" value="" />
 			<cm:property name="referer" value="" />
+			<cm:property name="useSystemProxy" value="true" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
 	<bean id="nominatimGeocoderService" class="org.opennms.features.geocoder.nominatim.NominatimGeocoderService" init-method="onInit">
     	<property name="emailAddress" value="${emailAddress}" />
         <property name="referer" value="${referer}" />
+		<property name="useSystemProxy" value="${useSystemProxy}" />
 	</bean>
 
     <service interface="org.opennms.features.geocoder.GeocoderService"  ref="nominatimGeocoderService" ranking="100" />

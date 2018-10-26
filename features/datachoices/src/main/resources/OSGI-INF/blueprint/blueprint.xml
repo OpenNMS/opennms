@@ -16,6 +16,7 @@
                  so we resort to using HTTP. -->
             <cm:property name="url" value="http://stats.opennms.org/datachoices/"/>
             <cm:property name="interval" value="86400000"/> <!-- 24 hours -->
+            <cm:property name="useSystemProxy" value="false"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
