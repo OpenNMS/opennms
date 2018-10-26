@@ -58,62 +58,63 @@ public class DocumentMapper {
     }
 
     public AlarmDocumentDTO toDocument(OnmsAlarm alarm) {
-        final AlarmDocumentDTO document = new AlarmDocumentDTO();
-        document.setId(alarm.getId());
-        document.setReductionKey(alarm.getReductionKey());
-        document.setFirstEventTime(alarm.getFirstEventTime().getTime());
-        document.setLastEventTime(alarm.getLastEventTime().getTime());
-        document.setUpdateTime(currentTime.get());
-        document.setType(alarm.getAlarmType());
-        document.setLogMessage(alarm.getLogMsg());
-        document.setDescription(alarm.getDescription());
-        document.setOperatorInstructions(alarm.getOperInstruct());
-        document.setSeverityId(alarm.getSeverityId());
-        document.setSeverityLabel(alarm.getSeverityLabel());
-        document.setArchived(alarm.isArchived());
-        document.setManagedObjectType(alarm.getManagedObjectType());
-        document.setManagedObjectInstance(alarm.getManagedObjectInstance());
+        final AlarmDocumentDTO doc = new AlarmDocumentDTO();
+        doc.setId(alarm.getId());
+        doc.setReductionKey(alarm.getReductionKey());
+        doc.setFirstEventTime(alarm.getFirstEventTime().getTime());
+        doc.setLastEventTime(alarm.getLastEventTime().getTime());
+        doc.setUpdateTime(currentTime.get());
+        doc.setType(alarm.getAlarmType());
+        doc.setLogMessage(alarm.getLogMsg());
+        doc.setDescription(alarm.getDescription());
+        doc.setOperatorInstructions(alarm.getOperInstruct());
+        doc.setSeverityId(alarm.getSeverityId());
+        doc.setSeverityLabel(alarm.getSeverityLabel());
+        doc.setArchived(alarm.isArchived());
+        doc.setManagedObjectType(alarm.getManagedObjectType());
+        doc.setManagedObjectInstance(alarm.getManagedObjectInstance());
+        doc.setLastEvent(toEvent(alarm.getLastEvent()));
 
         // Build and set the node document - cache these
         if (alarm.getNodeId() != null) {
             final Optional<NodeDocumentDTO> cachedNodeDoc = nodeInfoCache.getIfCached(alarm.getNodeId());
             if (cachedNodeDoc != null && cachedNodeDoc.isPresent()) {
-                document.setNode(cachedNodeDoc.get());
+                doc.setNode(cachedNodeDoc.get());
             } else {
                 // We build the document here, rather than doing it in the call to the cache loader
                 // since we have complete access to the node in this context, and don't want to overload the
                 // cache key
                 final NodeDocumentDTO nodeDoc = toNode(alarm.getNode());
                 nodeInfoCache.put(alarm.getNodeId(), Optional.of(nodeDoc));
-                document.setNode(nodeDoc);
+                doc.setNode(nodeDoc);
             }
         }
 
         // Memos
-        document.setStickyMemo(toMemo(alarm.getStickyMemo()));
-        document.setJournalMemo(toMemo(alarm.getReductionKeyMemo()));
+        doc.setStickyMemo(toMemo(alarm.getStickyMemo()));
+        doc.setJournalMemo(toMemo(alarm.getReductionKeyMemo()));
 
         // TODO: Set more fields
 
         // Ack
-        document.setAckUser(alarm.getAckUser());
+        doc.setAckUser(alarm.getAckUser());
         if (alarm.getAckTime() != null) {
-            document.setAckTime(alarm.getAckTime().getTime());
+            doc.setAckTime(alarm.getAckTime().getTime());
         }
 
         // Related alarms
-        document.setSituation(alarm.isSituation());
+        doc.setSituation(alarm.isSituation());
         List<Integer> relatedAlarmIds = new LinkedList<>();
         List<String> relatedAlarmReductionKeys = new LinkedList<>();
         for (OnmsAlarm relatedAlarm : alarm.getRelatedAlarms()) {
             relatedAlarmIds.add(relatedAlarm.getId());
             relatedAlarmReductionKeys.add(relatedAlarm.getReductionKey());
-            document.addRelatedAlarm(toRelatedAlarm(relatedAlarm));
+            doc.addRelatedAlarm(toRelatedAlarm(relatedAlarm));
         }
-        document.setRelatedAlarmIds(relatedAlarmIds);
-        document.setRelatedAlarmReductionKeys(relatedAlarmReductionKeys);
+        doc.setRelatedAlarmIds(relatedAlarmIds);
+        doc.setRelatedAlarmReductionKeys(relatedAlarmReductionKeys);
 
-        return document;
+        return doc;
     }
 
     private MemoDocumentDTO toMemo(OnmsMemo memo) {
