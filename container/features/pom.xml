@@ -360,6 +360,7 @@
 	    <feature>opennms-api-layer</feature>
 
 	    <feature>karaf-extender</feature>
+	    <feature>alarms-in-es</feature>
           </features>
         </configuration>
       </plugin>
