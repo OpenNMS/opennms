@@ -46,6 +46,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -75,6 +76,7 @@ import org.slf4j.LoggerFactory;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.cache.CacheLoader;
+import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.Gson;
 
@@ -99,6 +101,18 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
     private int batchSize = 200;
     private final String alarmIndexPrefix = "opennms-alarms";
     private boolean usePseudoClock = false;
+
+    /**
+     * Duration of time in milliseconds at which the alarms should be reindexed,
+     * provided that they are still present, and have not been indexed whithin this past
+     * duration.
+     *
+     * This allows the documents to reflect the actual state, even if no "intersesting"
+     * fields have changed.
+     *
+     * TODO: Make configurable
+     **/
+    private long alarmReindexDurationMs = TimeUnit.HOURS.toMillis(1);
 
     private final QueryProvider queryProvider = new QueryProvider();
     private LimitedRetriesRequestExecutor limitedRetriesRequestExecutor;
@@ -296,7 +310,10 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (alarmDocuments.size() > 0) {
-            taskQueue.add(new IndexAlarmsTask(alarmDocuments));
+            // Break the list up into small batches limited by the configured batch size
+            for (List<AlarmDocumentDTO> partition : Lists.partition(alarmDocuments, batchSize)) {
+                taskQueue.add(new IndexAlarmsTask(partition));
+            }
         }
 
         // Bulk delete alarms that are not yet marked as deleted in ES, and are not present in the given list
@@ -338,13 +355,12 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
     private AlarmDocumentDTO getDocumentIfNeedsIndexing(OnmsAlarm alarm) {
         final AlarmDocumentDTO existingAlarmDocument = alarmDocumentsById.get(alarm.getId());
 
-        // These conditions could be combined in a single mega-conditiational
+        // These conditions could be combined in a single mega-conditional
         // but I find it easier to follow if kept separated
         boolean needsIndexing = false;
         if (existingAlarmDocument == null) {
             needsIndexing = true;
-        } else if (getCurrentTimeMillis() - existingAlarmDocument.getUpdateTime() >= 5*60*1000) {
-            // TODO: Move to constant
+        } else if (getCurrentTimeMillis() - existingAlarmDocument.getUpdateTime() >= alarmReindexDurationMs) {
             needsIndexing = true;
         } else if (!Objects.equals(existingAlarmDocument.getReductionKey(), alarm.getReductionKey())
                 || !Objects.equals(existingAlarmDocument.getAckTime(), alarm.getAckTime() != null ? alarm.getAckTime().getTime() : null)
