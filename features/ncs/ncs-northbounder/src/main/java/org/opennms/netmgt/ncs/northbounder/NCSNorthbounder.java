@@ -175,6 +175,9 @@ public class NCSNorthbounder extends AbstractNorthbounder {
                 .setRetries(retryCount)
                 .useBrowserCompatibleCookies()
                 .dontReuseConnections();
+        if(m_config.getUseSystemProxy()){
+            clientWrapper.useSystemProxySettings();
+        }
 
         if ("https".equals(uri.getScheme())) {
             try {

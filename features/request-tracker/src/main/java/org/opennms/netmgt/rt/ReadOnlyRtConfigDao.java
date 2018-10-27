@@ -146,8 +146,13 @@ public class ReadOnlyRtConfigDao implements RtConfigDao {
 	public int getRetry() {
 	    return getProperties().getInt(getPrefix() + ".retry", 0);
 	}
-	
-    @Override
+
+	@Override
+	public boolean getUseSystemProxy() {
+		return getProperties().getBoolean(getPrefix() + ".useSystemProxy", false);
+	}
+
+	@Override
 	public void save() throws IOException {
 	    LOG.warn("ReadOnlyRtConfigDao cannot save.");
 	}

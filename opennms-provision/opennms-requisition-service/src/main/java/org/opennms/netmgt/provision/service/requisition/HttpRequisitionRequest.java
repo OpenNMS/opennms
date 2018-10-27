@@ -54,6 +54,9 @@ public class HttpRequisitionRequest implements RequisitionRequest {
     @XmlAttribute(name = "strict-ssl")
     private Boolean strictSsl;
 
+    @XmlAttribute(name = "use-system-proxy")
+    private Boolean useSystemProxy = Boolean.FALSE;
+
     public HttpRequisitionRequest() { }
 
     public HttpRequisitionRequest(Map<String, String> parameters) {
@@ -66,6 +69,7 @@ public class HttpRequisitionRequest implements RequisitionRequest {
         if (parameters.containsKey("strict-ssl")) {
             strictSsl = Boolean.parseBoolean(parameters.get("strict-ssl"));
         }
+        useSystemProxy = Boolean.valueOf(parameters.get("use-system-proxy"));
     }
 
     public String getUrl() {
@@ -100,6 +104,14 @@ public class HttpRequisitionRequest implements RequisitionRequest {
         this.strictSsl = strictSsl;
     }
 
+    public Boolean getUseSystemProxy() {
+        return useSystemProxy;
+    }
+
+    public void setUseSystemProxy(Boolean useSystemProxy) {
+        this.useSystemProxy = useSystemProxy;
+    }
+
     @Override
     public boolean equals(final Object other) {
         if (!(other instanceof HttpRequisitionRequest)) {
@@ -107,12 +119,13 @@ public class HttpRequisitionRequest implements RequisitionRequest {
         }
         HttpRequisitionRequest castOther = (HttpRequisitionRequest) other;
         return Objects.equals(url, castOther.url) && Objects.equals(username, castOther.username)
-                && Objects.equals(password, castOther.password) && Objects.equals(strictSsl, castOther.strictSsl);
+                && Objects.equals(password, castOther.password) && Objects.equals(strictSsl, castOther.strictSsl)
+                && Objects.equals(useSystemProxy, castOther.useSystemProxy);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(url, username, password, strictSsl);
+        return Objects.hash(url, username, password, strictSsl, useSystemProxy);
     }
 
 }
