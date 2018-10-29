@@ -41,16 +41,12 @@ import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.smoketest.telemetry.FlowTestBuilder;
 import org.opennms.smoketest.telemetry.FlowTester;
 import org.opennms.smoketest.telemetry.Packets;
+import org.opennms.smoketest.telemetry.Ports;
 import org.opennms.test.system.api.NewTestEnvironment;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
 
 public class FlowStackIT {
-
-    public static int NETFLOW5_LISTENER_UDP_PORT = 50000;
-    public static int NETFLOW9_LISTENER_UDP_PORT = 50001;
-    public static int IPFIX_LISTENER_UDP_PORT = 50002;
-    public static int SFLOW_LISTENER_UDP_PORT = 50003;
 
     @Rule
     public TestEnvironment testEnvironment = getTestEnvironment();
@@ -84,10 +80,10 @@ public class FlowStackIT {
     @Test
     public void verifyFlowStack() throws Exception {
         // Determine endpoints
-        final InetSocketAddress opennmsNetflow5AdapterAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, NETFLOW5_LISTENER_UDP_PORT, "udp");
-        final InetSocketAddress opennmsNetflow9AdapterAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, NETFLOW9_LISTENER_UDP_PORT, "udp");
-        final InetSocketAddress opennmsIpfixAdapterAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, IPFIX_LISTENER_UDP_PORT, "udp");
-        final InetSocketAddress opennmsSflowAdapterAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, SFLOW_LISTENER_UDP_PORT, "udp");
+        final InetSocketAddress opennmsNetflow5AdapterAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, Ports.NETFLOW5_PORT, "udp");
+        final InetSocketAddress opennmsNetflow9AdapterAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, Ports.NETFLOW9_PORT, "udp");
+        final InetSocketAddress opennmsIpfixAdapterAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, Ports.IPFIX_PORT, "udp");
+        final InetSocketAddress opennmsSflowAdapterAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, Ports.SFLOW_PORT, "udp");
         final InetSocketAddress elasticRestAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.ELASTICSEARCH_5, 9200, "tcp");
         final InetSocketAddress opennmsWebAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8980);
 

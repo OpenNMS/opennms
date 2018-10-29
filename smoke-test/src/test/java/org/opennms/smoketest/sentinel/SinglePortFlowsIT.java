@@ -41,10 +41,10 @@ import org.junit.Test;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.smoketest.telemetry.FlowPacket;
-import org.opennms.smoketest.flow.FlowStackIT;
 import org.opennms.smoketest.telemetry.FlowTestBuilder;
 import org.opennms.smoketest.telemetry.FlowTester;
 import org.opennms.smoketest.telemetry.Packets;
+import org.opennms.smoketest.telemetry.Ports;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.test.system.api.NewTestEnvironment;
 import org.opennms.test.system.api.TestEnvironment;
@@ -96,7 +96,7 @@ public class SinglePortFlowsIT {
         // Determine endpoints
         final InetSocketAddress elasticRestAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.ELASTICSEARCH_6, 9200, "tcp");
         final InetSocketAddress sentinelSshAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301);
-        final InetSocketAddress minionSinglePortAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, FlowStackIT.SFLOW_LISTENER_UDP_PORT, "udp");
+        final InetSocketAddress minionSinglePortAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, Ports.SFLOW_PORT, "udp");
 
         waitForSentinelStartup(sentinelSshAddress);
 
