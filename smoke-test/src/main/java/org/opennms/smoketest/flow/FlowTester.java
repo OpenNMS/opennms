@@ -75,14 +75,12 @@ public class FlowTester {
     private final List<Consumer<FlowTester>> runAfter = new ArrayList<>();
 
     private final InetSocketAddress elasticRestAddress;
-    private final InetSocketAddress opennmsWebAddress;
     private final int totalFlowCount;
 
     private JestClient client;
 
     public FlowTester(InetSocketAddress elasticAddress, InetSocketAddress opennmsWebAddress, List<FlowPacketDefinition> packets) {
         this.elasticRestAddress = Objects.requireNonNull(elasticAddress);
-        this.opennmsWebAddress = opennmsWebAddress;
         this.packets = Objects.requireNonNull(packets);
         this.totalFlowCount = packets.stream().mapToInt(p -> p.getFlowCount()).sum();
 
@@ -91,13 +89,17 @@ public class FlowTester {
         }
 
         if (opennmsWebAddress != null) {
+            final RestClient restclient = new RestClient(opennmsWebAddress);
+
             // No flows should be present
-            runBefore.add(flowTester -> assertEquals(Long.valueOf(0L), new RestClient(opennmsWebAddress).getFlowCount(0L, System.currentTimeMillis())));
+            runBefore.add(flowTester -> assertEquals(Long.valueOf(0L), restclient.getFlowCount(0L, System.currentTimeMillis())));
 
 
             // Verify the flow count via the REST API
-            with().pollInterval(15, SECONDS).await().atMost(1, MINUTES)
-                    .until(() -> new RestClient(opennmsWebAddress).getFlowCount(0L, System.currentTimeMillis()), equalTo((long) totalFlowCount));
+            runAfter.add(flowTester -> {
+                with().pollInterval(15, SECONDS).await().atMost(1, MINUTES)
+                    .until(() -> restclient.getFlowCount(0L, System.currentTimeMillis()), equalTo((long) totalFlowCount));
+            });
         }
 
 
@@ -122,6 +124,7 @@ public class FlowTester {
         factory.setHttpClientConfig(new HttpClientConfig.Builder(elasticRestUrl).multiThreaded(true).build());
 
         try {
+            LOG.info("Verifying flows. Expecting to persist {} flows", totalFlowCount);
             client = factory.getObject();
             runBefore.forEach(rb -> rb.accept(this));
 
