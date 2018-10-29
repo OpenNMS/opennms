@@ -32,6 +32,7 @@ package org.opennms.core.ipc.common.kafka;
 import java.util.Properties;
 
 import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.KafkaAdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.HealthCheck;
@@ -61,7 +62,7 @@ public class KafkaHealthCheck implements HealthCheck {
         Properties kafkaConfig = kafkaConfigProvider.getProperties();
         int timeout = Math.toIntExact(context.getTimeout());
         kafkaConfig.put("request.timeout.ms", timeout);
-        try (AdminClient client = Utils.runWithNullContextClassLoader(() -> AdminClient.create(kafkaConfig))) {
+        try (AdminClient client = Utils.runWithGivenClassLoader(() -> AdminClient.create(kafkaConfig), KafkaAdminClient.class.getClassLoader())) {
             ListTopicsResult listTopicsResult = client.listTopics();
             listTopicsResult.names().get();
             return new Response(Status.Success);

@@ -49,11 +49,22 @@ rule "setSituationSeverityToMaxAlarmSeverity"
   when
     $situation : OnmsAlarm( isSituation() == true, $relatedAlarmIds : relatedAlarmIds )
     $relatedAlarms : LinkedList() from collect( OnmsAlarm($relatedAlarmIds contains id) )
-    $maxSeverity : OnmsSeverity() from accumulate( OnmsAlarm( $severity : severity ) from $relatedAlarms, maxSeverity( $severity ) )
+    $maxSeverity : OnmsSeverity( isLessThanOrEqual(OnmsSeverity.NORMAL) ) from accumulate( OnmsAlarm( $severity : severity ) from $relatedAlarms, maxSeverity( $severity ) )
     OnmsAlarm( this == $situation, severity != $maxSeverity )
   then
     Date now = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
     alarmService.setSeverity($situation, $maxSeverity, now);
+end
+
+rule "escalateSituationSeverity"
+  when
+    $situation : OnmsAlarm( isSituation() == true, $relatedAlarmIds : relatedAlarmIds )
+    $relatedAlarms : LinkedList() from collect( OnmsAlarm($relatedAlarmIds contains id) )
+    $maxSeverity : OnmsSeverity( isGreaterThan(OnmsSeverity.NORMAL) ) from accumulate( OnmsAlarm( $severity : severity ) from $relatedAlarms, maxSeverity( $severity ) )
+    OnmsAlarm( this == $situation, severity <= $maxSeverity )
+  then
+    Date now = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
+    alarmService.setSeverity($situation, OnmsSeverity.escalate($maxSeverity), now);
 end
 
 rule "SituationHasBeenAcknowledged"

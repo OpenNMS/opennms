@@ -11,7 +11,7 @@ After that install the packages with _apt_ and the _Cassandra_ service is added 
 
 NOTE: This description was built on _Debian 8.3_ and _Ubuntu 16.04 LTS_.
 
-NOTE: Cassandra 3.x requires Java 8+. See <<gi-install-oracle-java-debian,installing Java on Debian>> for instructions.
+NOTE: Cassandra 3.x requires Java 8+.
 
 .Add the DataStax repository
 [source, bash]

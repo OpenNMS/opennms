@@ -95,7 +95,7 @@ content here ...
 
 ----
 
-[[gd-docs-links]]
+[[doc-guidelines-links]]
 === Links
 
 When you need to link to other parts of the manual you use the target id.
