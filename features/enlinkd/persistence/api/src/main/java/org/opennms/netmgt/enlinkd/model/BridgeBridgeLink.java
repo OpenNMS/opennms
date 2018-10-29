@@ -46,7 +46,6 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Filter;
 import org.opennms.netmgt.model.FilterManager;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.topologies.service.api.Topology;
 
 @Entity
 @Table(name="bridgeBridgeLink")
@@ -55,7 +54,7 @@ import org.opennms.netmgt.topologies.service.api.Topology;
 "exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))"
 + " and "
 + "exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = designatednodeId and cg.groupId in (:userGroups))")
-public class BridgeBridgeLink implements Serializable, Topology{
+public class BridgeBridgeLink implements Serializable {
 
     /**
      * 
@@ -246,9 +245,4 @@ public class BridgeBridgeLink implements Serializable, Topology{
            setBridgeBridgeLinkLastPollTime(element.getBridgeBridgeLinkLastPollTime()); 
     }
 
-    @Override
-    public String printTopology() {
-        return toString();
-    }
-	
 }

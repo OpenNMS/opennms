@@ -13,6 +13,5 @@
   <modules>
     <module>common</module>
     <module>collectors</module>
-    <module>updaters</module>
   </modules>
 </project>

@@ -57,7 +57,6 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.topologies.service.api.TopologyDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,9 +127,6 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
 
     @Autowired
     protected BridgeTopologyService m_bridgeTopologyService;
-
-    @Autowired
-    protected TopologyDao m_topologyDao;
 
     @Override
     public void afterPropertiesSet() throws Exception {

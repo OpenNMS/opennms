@@ -30,8 +30,6 @@ package org.opennms.netmgt.enlinkd.service.api;
 
 import java.util.Set;
 
-import org.opennms.netmgt.topologies.service.api.Topology;
-
 public class BridgePortWithMacs implements Topology {
 
     public static BridgePortWithMacs create(BridgePort port, Set<String> macs) throws BridgeTopologyException {

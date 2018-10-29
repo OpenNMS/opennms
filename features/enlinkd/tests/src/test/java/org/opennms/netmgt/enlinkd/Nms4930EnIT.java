@@ -404,7 +404,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
                 assertNotNull(maclink.getBridgePort());
                 assertNotNull(maclink.getNode());
                 assertNotNull(maclink.getMacAddress());
-                System.err.println(maclink.printTopology());
+                System.err.println(maclink.toString());
         }
 
         
@@ -583,7 +583,7 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
       assertEquals(56,m_bridgeMacLinkDao.countAll()); 
 
       for (BridgeMacLink maclink: m_bridgeMacLinkDao.findAll()) {
-              System.err.println(maclink.printTopology());
+              System.err.println(maclink.toString());
               assertNotNull(maclink.getBridgePortIfIndex());
               assertNotNull(maclink.getBridgePort());
               assertNotNull(maclink.getNode());

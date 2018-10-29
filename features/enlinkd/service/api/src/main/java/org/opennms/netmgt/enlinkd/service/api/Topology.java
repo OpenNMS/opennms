@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.topologies.service.api;
+package org.opennms.netmgt.enlinkd.service.api;
 
 public interface Topology {
 

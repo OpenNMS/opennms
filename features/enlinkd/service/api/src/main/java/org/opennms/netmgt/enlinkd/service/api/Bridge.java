@@ -34,7 +34,6 @@ import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
-import org.opennms.netmgt.topologies.service.api.Topology;
 
 public class Bridge implements Topology {
 

@@ -48,13 +48,12 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.netmgt.model.FilterManager;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.topologies.service.api.Topology;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 @Entity
 @Table(name="ospfLink")
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
-public class OspfLink implements Serializable, Topology {
+public class OspfLink implements Serializable {
 	/**
 	 * 
 	 */
@@ -228,10 +227,5 @@ public class OspfLink implements Serializable, Topology {
 		
 		setOspfLinkLastPollTime(link.getOspfLinkCreateTime());
 	}
-
-    @Override
-    public String printTopology() {
-        return toString();
-    }
 
 }

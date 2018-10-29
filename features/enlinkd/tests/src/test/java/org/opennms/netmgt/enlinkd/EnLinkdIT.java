@@ -492,11 +492,11 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertEquals(8, m_bridgeMacLinkDao.countAll());
         
         for (BridgeMacLink maclink: m_bridgeMacLinkDao.findAll()) {
-            System.err.println(maclink.printTopology());
+            System.err.println(maclink.toString());
         }
 
         for (BridgeBridgeLink bblink: m_bridgeBridgeLinkDao.findAll()) {
-            System.err.println(bblink.printTopology());
+            System.err.println(bblink.toString());
         }
 
         assertNotNull(m_bridgeTopologyService);

@@ -50,12 +50,11 @@ import org.hibernate.annotations.Type;
 import org.opennms.netmgt.enlinkd.model.IsIsElement.IsisAdminState;
 import org.opennms.netmgt.model.FilterManager;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.topologies.service.api.Topology;
 
 @Entity
 @Table(name="isisLink")
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
-public class IsIsLink implements Serializable, Topology {
+public class IsIsLink implements Serializable {
 
 	/**
 	 * 
@@ -347,11 +346,4 @@ public class IsIsLink implements Serializable, Topology {
 
             return strb.toString();
         }
-
-    @Override
-    public String printTopology() {
-        return toString();
-    }
-
-
 }

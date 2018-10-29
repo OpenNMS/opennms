@@ -35,8 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.topologies.service.api.Topology;
-
 public class BroadcastDomain implements Topology {
     
     public static int maxlevel = 30;

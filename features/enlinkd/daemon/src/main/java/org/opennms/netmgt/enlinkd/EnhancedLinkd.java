@@ -49,8 +49,7 @@ import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
-import org.opennms.netmgt.topologies.service.api.TopologyDao;
+//import org.opennms.netmgt.topologies.service.api.TopologyDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,19 +65,6 @@ import org.springframework.util.Assert;
  */
 public class EnhancedLinkd extends AbstractServiceDaemon {
     
-    public static DiscoveryCdpTopology createAndRegister(EnhancedLinkd linkd) throws OnmsTopologyException {
-        DiscoveryCdpTopology discoveryCdpTopology = new DiscoveryCdpTopology(
-                                                                             linkd.getEventForwarder(),
-                                                                             linkd.getTopologyDao(),
-                                                                             linkd.getCdpTopologyService(),
-                                                                             linkd.getQueryManager(),
-                                                                             linkd.getBridgeTopologyInterval(),
-                                                                             linkd.getInitialSleepTime()
-                                                                                     + linkd.getBridgeTopologyInterval());
-        linkd.getTopologyDao().register(discoveryCdpTopology);
-        return discoveryCdpTopology;
-    }
-
     private final static Logger LOG = LoggerFactory.getLogger(EnhancedLinkd.class);
     /**
      * The log4j category used to log messages.
@@ -102,7 +88,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     private LldpTopologyService m_lldpTopologyService;
     private OspfTopologyService m_ospfTopologyService;
 
-    private TopologyDao m_topologyDao;
     /**
      * Linkd Configuration Initialization
      */
@@ -122,7 +107,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
 
-    private DiscoveryCdpTopology m_discoveryCdpTopology;
     private DiscoveryBridgeDomains m_discoveryBridgeDomains;
 
     /**
@@ -161,10 +145,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             scheduleDiscoveryBridgeDomain();
         }
 
-        if (m_linkdConfig.useCdpDiscovery()) {
-            scheduleDiscoveryCdpTopology();
-        }
-
     }
 
     private void createScheduler() {
@@ -178,18 +158,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             LOG.error("init: Failed to create EnhancedLinkd scheduler", e);
             throw e;
         }
-    }
-    public void scheduleDiscoveryCdpTopology() {
-         try {
-            m_discoveryCdpTopology = createAndRegister(this);
-        } catch (OnmsTopologyException e) {
-            LOG.error("OnmsTopologyException: cannote schedule: {} {} {}", e.getMessage(),e.getId(),e.getProtocol());
-            return;
-        }
-         LOG.debug("scheduleDiscoveryCdpTopology: Scheduling {}",
-                   m_discoveryCdpTopology.getInfo());
-         m_discoveryCdpTopology.setScheduler(m_scheduler);
-         m_discoveryCdpTopology.schedule();
     }
 
     public void scheduleDiscoveryBridgeDomain() {
@@ -386,21 +354,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             m_discoveryBridgeDomains.runDiscovery();
         }
     }
-
-    public void runDiscoveryCdpTopology() {
-        if (m_discoveryCdpTopology != null) {
-            m_discoveryCdpTopology.runDiscovery();
-        }
-    }
     
     public DiscoveryBridgeDomains getDiscoveryBridgeDomains() {
         return m_discoveryBridgeDomains;
     }
     
-    public DiscoveryCdpTopology getDiscoveryCdpTopology() {
-        return m_discoveryCdpTopology;
-    }
-
     void wakeUpNodeCollection(int nodeid) {
 
         if (!m_nodes.containsKey(nodeid)) {
@@ -429,7 +387,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         m_lldpTopologyService.delete(nodeid);
         m_ospfTopologyService.delete(nodeid);
         m_ipNetToMediaTopologyService.delete(nodeid);
-        //FIXME update with a delete topologyService
 
     }
 
@@ -597,14 +554,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
     public void setOspfTopologyService(OspfTopologyService ospfTopologyService) {
         m_ospfTopologyService = ospfTopologyService;
-    }
-
-    public TopologyDao getTopologyDao() {
-        return m_topologyDao;
-    }
-
-    public void setTopologyDao(TopologyDao topologyDao) {
-        this.m_topologyDao = topologyDao;
     }
     
     public IpNetToMediaTopologyService getIpNetToMediaTopologyService() {

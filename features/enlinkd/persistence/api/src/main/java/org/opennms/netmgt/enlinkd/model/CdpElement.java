@@ -50,13 +50,12 @@ import org.hibernate.annotations.Type;
 import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
 import org.opennms.netmgt.model.FilterManager;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.topologies.service.api.Topology;
 
 
 @Entity
 @Table(name="cdpElement")
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
-public final class CdpElement implements Serializable, Topology {
+public final class CdpElement implements Serializable {
 
 	/**
 	 * 
@@ -256,10 +255,5 @@ public final class CdpElement implements Serializable, Topology {
 		setCdpGlobalDeviceId(element.getCdpGlobalDeviceId());
 		setCdpNodeLastPollTime(element.getCdpNodeCreateTime());
 	}
-
-    @Override
-    public String printTopology() {
-        return toString();
-    }
 
 }

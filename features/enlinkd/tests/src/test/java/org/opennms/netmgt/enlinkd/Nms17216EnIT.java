@@ -82,9 +82,6 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH5_LLDP_CHASSISID;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH5_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH5_SNMP_RESOURCE;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
@@ -99,18 +96,9 @@ import org.opennms.netmgt.enlinkd.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
-import org.opennms.netmgt.topologies.service.api.OnmsTopology;
-import org.opennms.netmgt.topologies.service.api.Topology.ProtocolSupported;
-import org.opennms.netmgt.topologies.service.impl.TopologyLogger;
 
 public class Nms17216EnIT extends EnLinkdBuilderITCase {
         
-    public static TopologyLogger createAndSubscribe(String protocol, EnhancedLinkd linkd) {
-        TopologyLogger tl = new TopologyLogger(protocol);
-        linkd.getTopologyDao().subscribe(tl);
-        return tl;
-    }
-
 	Nms17216NetworkBuilder builder = new Nms17216NetworkBuilder();    
     /*
      * These are the links among the following nodes discovered using 
@@ -760,24 +748,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         
         assertTrue(m_linkd.runSingleSnmpCollection(switch2.getId()));
         assertEquals(11, m_cdpLinkDao.countAll());
-        
-        assertEquals(1, m_topologyDao.getSupportedProtocols().size());
-        assertEquals(ProtocolSupported.CDP.name(), m_topologyDao.getSupportedProtocols().iterator().next());
-
-        DiscoveryCdpTopology cdptopology = m_linkd.getDiscoveryCdpTopology();
-        assertNotNull(cdptopology);
-        OnmsTopology topology = cdptopology.getTopology();
-        assertEquals(2, topology.getVertices().size());
-        assertEquals(4, topology.getEdges().size());
-        
-        Set<String> protocols= new HashSet<>();
-        protocols.add(ProtocolSupported.CDP.name());
-        TopologyLogger tl = createAndSubscribe(
-                  ProtocolSupported.CDP.name(),m_linkd);
-        assertEquals(protocols+":Consumer:Logger", tl.getId());
                 
-        m_linkd.runDiscoveryCdpTopology();
-        
     }
 
 }
