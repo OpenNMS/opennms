@@ -75,12 +75,6 @@
       <classifier>xsds</classifier>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>org.opennms.features.ncs.ncs-model</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.availability</artifactId>
       <version>${project.version}</version>

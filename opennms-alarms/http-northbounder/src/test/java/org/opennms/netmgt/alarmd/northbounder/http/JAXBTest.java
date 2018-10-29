@@ -167,13 +167,6 @@ public class JAXBTest {
 
         // unmarshall the generated XML
 
-        //		URL xsd = getClass().getResource("/ncs-model.xsd");
-        //		
-        //		assertNotNull(xsd);
-        //		
-        //		SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-        //		Schema schema = schemaFactory.newSchema(xsd);
-
         Unmarshaller unmarshaller = context.createUnmarshaller();
         //		unmarshaller.setSchema(schema);
         Source source = new StreamSource(new ByteArrayInputStream(utf8));

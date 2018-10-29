@@ -52,6 +52,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -201,6 +202,8 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     private OnmsReductionKeyMemo m_reductionKeyMemo;
 
     private Set<OnmsAlarm> m_relatedAlarms = new HashSet<>();
+
+    private Set<OnmsAlarm> m_relatedSituations = new HashSet<>();
 
     /**
      * default constructor
@@ -1213,6 +1216,32 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     @XmlTransient
     public boolean isSituation() {
         return ! m_relatedAlarms.isEmpty();
+    }
+
+    @XmlTransient
+    @ElementCollection
+    @JoinTable(name = "alarm_situations", joinColumns = @JoinColumn(name = "related_alarm_id"), inverseJoinColumns = @JoinColumn(name = "situation_id"))
+    @Column(name="alarm_id", nullable=false)
+    public Set<OnmsAlarm> getRelatedSituations() {
+        return m_relatedSituations;
+    }
+
+    @Transient
+    @XmlTransient
+    public Set<Integer> getRelatedSituationIds() {
+        return getRelatedSituations().stream()
+                .map(OnmsAlarm::getId)
+                .collect(Collectors.toSet());
+    }
+
+    @Transient
+    @XmlTransient
+    public boolean isPartOfSituation() {
+        return !m_relatedSituations.isEmpty();
+    }
+
+    public void setRelatedSituations(Set<OnmsAlarm> alarms) {
+        m_relatedSituations = alarms;
     }
 
     @Transient

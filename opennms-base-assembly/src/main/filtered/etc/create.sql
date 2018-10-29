@@ -2283,44 +2283,6 @@ create table hwEntityAlias (
 create unique index hwentityalias_unique_idx on hwentityalias(hwentityid, index);
 
 --##################################################################
---# NCS component tables
---##################################################################
-
-CREATE TABLE ncscomponent (
-    id integer NOT NULL,
-    version integer,
-    name character varying(255),
-    type character varying(255),
-    foreignsource character varying(255),
-    foreignid character varying(255),
-    depsrequired character varying(12),
-    nodeforeignsource character varying(64),
-    nodeforeignid character varying(64),
-    upeventuei character varying(255),
-    downeventuei character varying(255)
-);
-
-ALTER TABLE ncscomponent ADD CONSTRAINT ncscomponent_type_foreignsource_foreignid_key UNIQUE (type, foreignsource, foreignid);
-
-
-CREATE TABLE ncs_attributes (
-    ncscomponent_id integer NOT NULL,
-    key character varying(255) NOT NULL,
-    value character varying(255) NOT NULL
-);
-
-ALTER TABLE ncs_attributes ADD CONSTRAINT ncs_attributes_pkey PRIMARY KEY (ncscomponent_id, key);
-
-
-CREATE TABLE subcomponents (
-    component_id integer NOT NULL,
-    subcomponent_id integer NOT NULL
-);
-
-ALTER TABLE subcomponents ADD CONSTRAINT subcomponents_pkey PRIMARY KEY (component_id, subcomponent_id);
-ALTER TABLE subcomponents ADD CONSTRAINT subcomponents_component_id_subcomponent_id_key UNIQUE (component_id, subcomponent_id);
-
---##################################################################
 --# Business Service Monitor (BSM) tables
 --##################################################################
 
@@ -2477,6 +2439,190 @@ CREATE VIEW node_outage_status AS
         WHERE outages.ifregainedservice IS NULL
         GROUP BY events.nodeid) tmp
  RIGHT JOIN node ON tmp.nodeid = node.nodeid;
+
+--##################################################################
+--# 24.0.0-node-categories-nms-10418
+--##################################################################
+
+CREATE VIEW node_categories AS (
+    SELECT
+        n.*,
+        COALESCE(s_cat.categoryname, 'no category') AS categoryname
+    FROM
+        node n
+    LEFT JOIN
+        category_node cn
+    ON
+        n.nodeid = cn.nodeid
+    LEFT JOIN
+        categories s_cat
+    ON
+        cn.categoryid = s_cat.categoryid
+);
+
+CREATE VIEW node_alarms AS (
+    SELECT
+        n.nodeid,
+        n.nodecreatetime,
+        n.nodeparentid,
+        n.nodetype,
+        n.nodesysoid,
+        n.nodesysname,
+        n.nodesysdescription,
+        n.nodesyslocation,
+        n.nodesyscontact,
+        n.nodelabel,
+        n.nodelabelsource,
+        n.nodenetbiosname,
+        n.nodedomainname,
+        n.operatingsystem,
+        n.lastcapsdpoll,
+        n.foreignsource,
+        n.foreignid,
+        n.location,
+        a.alarmid,
+        a.eventuei,
+        a.ipaddr,
+        a.reductionkey,
+        a.alarmtype,
+        a.counter,
+        a.severity,
+        a.lasteventid,
+        a.firsteventtime,
+        a.lasteventtime,
+        a.firstautomationtime,
+        a.lastautomationtime,
+        a.description,
+        a.logmsg,
+        a.operinstruct,
+        a.tticketid,
+        a.tticketstate,
+        a.suppresseduntil,
+        a.suppresseduser,
+        a.suppressedtime,
+        a.alarmackuser,
+        a.alarmacktime,
+        a.managedobjectinstance,
+        a.managedobjecttype,
+        a.applicationdn,
+        a.ossprimarykey,
+        a.x733alarmtype,
+        a.qosalarmstate,
+        a.clearkey,
+        a.ifindex,
+        a.stickymemo,
+        a.systemid,
+        (a.alarmacktime NOTNULL) AS acknowledged,
+        COALESCE(s_cat.categoryname, 'no category') AS categoryname,
+        s_cat.categorydescription,
+        s.servicename,
+        nas.max_alarm_severity,
+        nas.max_alarm_severity_unack,
+        nas.alarm_count_unack,
+        nas.alarm_count
+    FROM
+        node n
+    JOIN
+        alarms a
+    ON
+        n.nodeid = a.nodeid
+    JOIN
+        node_alarm_status nas
+    ON
+        a.nodeid = nas.nodeid
+    LEFT JOIN
+        service s
+    ON
+        a.serviceid = s.serviceid
+    LEFT JOIN
+        category_node cat
+    ON
+        n.nodeid = cat.nodeid
+    LEFT JOIN
+        categories s_cat
+    ON
+        cat.categoryid = s_cat.categoryid
+);
+
+CREATE VIEW node_outages AS (
+    SELECT
+        outages.outageid,
+        outages.svclosteventid,
+        outages.svcregainedeventid,
+        outages.iflostservice,
+        outages.ifregainedservice,
+        outages.ifserviceid,
+        e.eventuei AS svclosteventuei,
+        e.eventsource,
+        e.alarmid,
+        e.eventseverity,
+        (ifregainedservice NOTNULL) AS resolved,
+        s.servicename,
+        i.serviceid,
+        ipif.ipaddr,
+        COALESCE(outages.ifregainedservice - outages.iflostservice, now() - outages.iflostservice) AS duration,
+        nos.max_outage_severity,
+        nc.*
+    FROM
+        outages
+    JOIN
+        events e
+    ON
+        outages.svclosteventid = e.eventid
+    JOIN
+        ifservices i
+    ON
+        outages.ifserviceid = i.id
+    JOIN
+        service s
+    ON
+        i.serviceid = s.serviceid
+    JOIN
+        ipinterface ipif
+    ON
+        i.ipinterfaceid = ipif.id
+    JOIN
+        node_categories nc
+    ON
+        nc.nodeid = e.nodeid
+    JOIN
+        node_outage_status nos
+    ON
+        nc.nodeid = nos.nodeid
+);
+
+CREATE VIEW node_ip_services AS (
+    SELECT
+        n.*,
+        ip_if.id AS ip_if_id,
+        ip_if.ipaddr,
+        ip_if.iphostname,
+        ip_if.ismanaged,
+        ip_if.ipstatus,
+        ip_if.iplastcapsdpoll,
+        ip_if.issnmpprimary,
+        ip_if.snmpinterfaceid,
+        ip_if.netmask,
+        svc.serviceid,
+        svc.servicename,
+        if_svc.id AS if_svc_id,
+        if_svc.ifindex AS if_svc_ifindex,
+        if_svc.status AS if_svc_status
+    FROM
+        node_categories n
+    LEFT JOIN
+        ipinterface ip_if
+    ON
+        ip_if.nodeid = n.nodeid
+    LEFT JOIN
+        ifservices if_svc
+    ON
+        ip_if.id = if_svc.ipinterfaceid
+    LEFT JOIN
+        service svc
+    ON
+        if_svc.serviceid = svc.serviceid
+);
 
 --##################################################################
 --# Classification tables

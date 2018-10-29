@@ -43,6 +43,7 @@ import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Logmsg;
+import org.opennms.netmgt.xml.event.ManagedObject;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Tticket;
@@ -729,7 +730,14 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
                     }
                     alarmData.setUpdateField(updateFields);
                 }
-                
+
+                final org.opennms.netmgt.xml.eventconf.ManagedObject econfMo = econfAlarmData.getManagedObject();
+                if (econfMo != null) {
+                    final ManagedObject mo = new ManagedObject();
+                    mo.setType(econfMo.getType());
+                    alarmData.setManagedObject(mo);
+                }
+
                 e.setAlarmData(alarmData);
             }
 

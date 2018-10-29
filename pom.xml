@@ -779,10 +779,6 @@
             <exclude>**/SnmpUtilsTest*</exclude>
             <!-- Drools rules -->
             <exclude>org/opennms/netmgt/correlation/drools/Println*</exclude>
-            <exclude>org/opennms/netmgt/correlation/ncs/Println*</exclude>
-            <exclude>org/opennms/netmgt/correlation/ncs/Rule*</exclude>
-            <exclude>org/opennms/netmgt/correlation/ncs/SendComponentImpactedEvent*</exclude>
-            <exclude>org/opennms/netmgt/correlation/ncs/SendComponentResolvedEvent*</exclude>
           </excludes>
         </configuration>
       </plugin>
@@ -1357,6 +1353,8 @@
     <protobuf3Version>3.5.1</protobuf3Version>
     <postgresqlVersion>9.4.1211</postgresqlVersion>
     <powermockVersion>1.6.4</powermockVersion>
+    <!-- TODO: Update to release artifact before tagging 24.0.0 -->
+    <opennmsApiVersion>1.0.0-alpha1-SNAPSHOT</opennmsApiVersion>
     <osgiVersion>6.0.0</osgiVersion>
     <osgiCompendiumVersion>5.0.0</osgiCompendiumVersion>
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
@@ -1933,37 +1931,6 @@
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.mib-compiler</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.ncs</groupId>
-        <artifactId>org.opennms.features.ncs.ncs-alarm-gui</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.ncs</groupId>
-        <artifactId>org.opennms.features.ncs.ncs-drools</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.ncs</groupId>
-        <artifactId>org.opennms.features.ncs.ncs-model</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.ncs</groupId>
-        <artifactId>org.opennms.features.ncs.ncs-northbounder</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.ncs</groupId>
-        <artifactId>org.opennms.features.ncs.ncs-persistence</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.ncs</groupId>
-        <artifactId>org.opennms.features.ncs.ncs-test</artifactId>
-        <version>${project.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>

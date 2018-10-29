@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,7 +38,9 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
+import org.opennms.core.config.api.ConfigReloadContainer;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.xml.eventconf.Event;
@@ -50,12 +52,15 @@ import org.opennms.netmgt.xml.eventconf.Events.EventCallback;
 import org.opennms.netmgt.xml.eventconf.Events.EventCriteria;
 import org.opennms.netmgt.xml.eventconf.Field;
 import org.opennms.netmgt.xml.eventconf.Partition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
 
 public class DefaultEventConfDao implements EventConfDao, InitializingBean {
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultEventConfDao.class);
 	private static final String DEFAULT_PROGRAMMATIC_STORE_RELATIVE_PATH = "events/programmatic.events.xml";
 
     /**
@@ -75,6 +80,8 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
      * See the reloadConfig() for details.
      */
     private Map<String, Long> m_lastModifiedEventFiles = new LinkedHashMap<String, Long>();
+
+	private ConfigReloadContainer<Events> m_extContainer;
 
 	public String getProgrammaticStoreRelativeUrl() {
 		return m_programmaticStoreRelativePath;
@@ -105,7 +112,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 				return accum;
 			}
 		});
-		
+
 		return events.isEmpty() ? null : events;
 	}
 
@@ -119,7 +126,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 				return ueis;
 			}
 		});
-		
+
 	}
 
 	@Override
@@ -146,9 +153,9 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	public void saveCurrent() {
 		m_events.save(m_configResource);
 	}
-	
-	
-	
+
+
+
 	public List<Event> getAllEvents() {
 		return m_events.forEachEvent(new ArrayList<Event>(), new EventCallback<List<Event>>() {
 
@@ -163,7 +170,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	@Override
 	public List<Event> getEventsByLabel() {
 		SortedSet<Event> events = m_events.forEachEvent(new TreeSet<Event>(new EventLabelComparator()), new EventCallback<SortedSet<Event>>() {
-		
+
 			@Override
 			public SortedSet<Event> process(SortedSet<Event> accum, Event event) {
 				accum.add(event);
@@ -200,7 +207,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		programmaticEvents.removeEvent(event);
 		if (programmaticEvents.getEvents().size() <= 0) {
 			m_events.removeLoadedEventFile(m_programmaticStoreRelativePath);
-		} 
+		}
 
 		m_events.initialize(m_partition, new EventOrdering());
 
@@ -238,10 +245,11 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	public void setConfigResource(Resource configResource) throws IOException {
 		m_configResource = configResource;
 	}
-	
+
 	@Override
 	public void afterPropertiesSet() throws DataAccessException {
 		loadConfig();
+        initExtensions();
 	}
 
 	private static class EnterpriseIdPartition implements Partition {
@@ -266,13 +274,25 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		public String group(org.opennms.netmgt.xml.event.Event matchingEvent) {
 			return m_field.get(matchingEvent);
 		}
-		
+
 	}
 
     private synchronized void reloadConfig() throws DataAccessException {
         try {
             // Load the root event file
             Events events = JaxbUtils.unmarshal(Events.class, m_configResource);
+            // Insert events exposed via the service registry
+            Events extEvents = m_extContainer.getObject();
+            if (extEvents != null) {
+                // Events exposed via the registry currently take priority over the events defined
+                // in the configuration files. This behavior may change with HZN-1419.
+                events.getEvents().addAll(0, extEvents.getEvents());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Events with the following UEIs are contributed by one or more extensions: {}", extEvents.getEvents().stream()
+                        .map(Event::getUei)
+                        .collect(Collectors.joining(",")));
+                }
+            }
 
             // Hash the list of event files for efficient lookup
             Set<String> eventFiles = new HashSet<>();
@@ -296,7 +316,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
             m_events = events;
         } catch (Exception e) {
-            throw new DataRetrievalFailureException("Unabled to load " + m_configResource, e);
+            throw new DataRetrievalFailureException("Unable to load " + m_configResource, e);
         }
     }
 
@@ -313,5 +333,20 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 			throw new DataRetrievalFailureException("Unabled to load " + m_configResource, e);
 		}
 	}
+
+    private void initExtensions() {
+        m_extContainer = new ConfigReloadContainer.Builder<>(Events.class)
+                .withMerger((source, target) -> {
+                    if (target == null) {
+                        target = new Events();
+                    }
+                    if (source == null) {
+                        source = new Events();
+                    }
+                    target.getEvents().addAll(source.getEvents());
+                    return target;
+                })
+                .build();
+    }
 }
 
