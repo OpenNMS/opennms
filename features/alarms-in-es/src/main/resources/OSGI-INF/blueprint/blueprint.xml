@@ -12,7 +12,7 @@
 ">
 
     <!-- Configuration properties -->
-    <cm:property-placeholder id="elasticFlowRepositoryProperties" persistent-id="org.opennms.features.alarm-in-es" update-strategy="reload">
+    <cm:property-placeholder id="alarmInElasticProperties" persistent-id="org.opennms.features.alarm-in-es" update-strategy="reload">
         <cm:default-properties>
             <!-- Elastic Connection Settings -->
             <cm:property name="elasticUrl" value="http://localhost:9200" />
