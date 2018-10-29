@@ -42,11 +42,13 @@ IMPORTANT: To improve the layout, the property names have been shortened to thei
 .Additional available parameters for the Mattermost notification strategy
 [options="header, autowidth"]
 |===
-| Parameter   | Description                                                                     | Required | Default value   | Example
-| `channel`   | Specify a channel or private group other than the one targeted by the webhook   | optional | Webhook default | `NetOps`
-| `username`  | The username to associate with the notification posts                           | optional | None            | `OpenNMS_Bot`
-| `iconEmoji` | An emoji sequence to use as the icon for the notification posts                 | optional | No icon         | `:metal:`
-| `iconURL`   | The URL of an image to use as the icon for the notification posts               | optional | No icon         | `https://example.org/assets/icon.png`
+| Parameter        | Description                                                                     | Required | Default value   | Example
+| `channel`        | Specify a channel or private group other than the one targeted by the webhook   | optional | Webhook default | `NetOps`
+| `username`       | The username to associate with the notification posts                           | optional | None            | `OpenNMS_Bot`
+| `iconEmoji`      | An emoji sequence to use as the icon for the notification posts                 | optional | No icon         | `:metal:`
+| `iconURL`        | The URL of an image to use as the icon for the notification posts               | optional | No icon         | `https://example.org/assets/icon.png`
+| `useSystemProxy` | Should the system wide proxy settings be used? The system proxy
+                     settings can be configured in link:#ga-opennms-system-properties[opennms.conf]  | optional |`true`           | `true`
 |===
 
 IMPORTANT: Some of the optional configuration parameters are incompatible with some versions of Mattermost.
