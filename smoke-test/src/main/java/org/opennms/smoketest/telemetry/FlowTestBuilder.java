@@ -70,8 +70,8 @@ public class FlowTestBuilder {
         return withFlowPacket(Packets.Ipfix, sendToAddress);
     }
 
-    public FlowTestBuilder withSflowPacket(InetSocketAddress sendToAddress) {
-        return withFlowPacket(Packets.Netflow5, sendToAddress);
+    public FlowTestBuilder withSFlowPacket(InetSocketAddress sendToAddress) {
+        return withFlowPacket(Packets.SFlow, sendToAddress);
     }
 
     public FlowTestBuilder verifyBeforeSendingFlows(Consumer<FlowTester> before) {

@@ -107,7 +107,7 @@ public abstract class AbstractFlowIT {
                 .withNetflow5Packet(minionNetflow5ListenerAddress)
                 .withNetflow9Packet(minionNetflow9ListenerAddress)
                 .withIpfixPacket(minionIpfixListenerAddress)
-                .withSflowPacket(minionSflowListenerAddress)
+                .withSFlowPacket(minionSflowListenerAddress)
                 .build(elasticRestAddress);
 
         flowTester.verifyFlows();
