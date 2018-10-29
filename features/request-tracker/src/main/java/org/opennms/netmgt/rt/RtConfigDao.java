@@ -46,6 +46,7 @@ public interface RtConfigDao {
     public String getBaseURL();
     public int getTimeout();
     public int getRetry();
+    boolean getUseSystemProxy();
 
     public void save() throws IOException;
 }

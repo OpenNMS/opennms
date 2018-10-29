@@ -40,6 +40,7 @@ public class SlackNotificationStrategy extends AbstractSlackCompatibleNotificati
     private static final String SLACK_ICONURL_PROPERTY = "org.opennms.netmgt.notifd.slack.iconURL";
     private static final String SLACK_ICONEMOJI_PROPERTY = "org.opennms.netmgt.notifd.slack.iconEmoji";
     private static final String SLACK_CHANNEL_PROPERTY = "org.opennms.netmgt.notifd.slack.channel";
+    private static final String SLACK_USE_SYSTEM_PROXY = "org.opennms.netmgt.notifd.slack.useSystemProxy";
 
     @Override
     protected String decorateMessageSubject(String subject) {
@@ -69,6 +70,11 @@ public class SlackNotificationStrategy extends AbstractSlackCompatibleNotificati
     
     protected String getChannelPropertyName() {
     	return SLACK_CHANNEL_PROPERTY;
+    }
+
+    @Override
+    protected String getUseSystemProxyPropertyName() {
+        return SLACK_USE_SYSTEM_PROXY;
     }
 
 	protected String decorateMessageBody(String body) {
