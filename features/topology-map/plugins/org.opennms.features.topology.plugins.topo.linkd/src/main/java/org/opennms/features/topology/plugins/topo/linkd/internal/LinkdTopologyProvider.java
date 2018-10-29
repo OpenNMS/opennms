@@ -72,12 +72,12 @@ import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
+import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.model.FilterManager;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.topologies.service.api.Topology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionOperations;
@@ -322,13 +322,13 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             String sourceLldpChassisId = nodelldpelementidMap.get(sourceLink.getNode().getId()).getLldpChassisId();
             if (sourceLldpChassisId.equals(sourceLink.getLldpRemChassisId())) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("getLldpLinks: self link not adding source: {}",sourceLink.printTopology());
+                    LOG.debug("getLldpLinks: self link not adding source: {}",sourceLink.toString());
                 }
                 parsed.add(sourceLink.getId());
                 continue;
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getLldpLinks: source: {}",sourceLink.printTopology());
+                LOG.debug("getLldpLinks: source: {}",sourceLink.toString());
             }
 
             CompositeKey key = new CompositeKey(
@@ -346,7 +346,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             }
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getLldpLinks: lldp: {} target: {}", sourceLink.getLldpRemChassisId(), targetLink.printTopology());
+                LOG.debug("getLldpLinks: lldp: {} target: {}", sourceLink.getLldpRemChassisId(), targetLink.toString());
             }
 
             parsed.add(sourceLink.getId());
@@ -396,7 +396,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             }
             parsed.add(sourceLink.getId());
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getOspfLinks: source: {}", sourceLink.printTopology());
+                LOG.debug("getOspfLinks: source: {}", sourceLink.toString());
             }
             OspfLink targetLink = targetLinks.get(new CompositeKey(sourceLink.getOspfRemIpAddr() , sourceLink.getOspfIpAddr()));
             if(targetLink == null) {
@@ -408,7 +408,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                     continue;
             }
 
-            LOG.debug("getOspfLinks: target: {}", targetLink.printTopology());
+            LOG.debug("getOspfLinks: target: {}", targetLink.toString());
             parsed.add(targetLink.getId());
            results.add(Pair.of(sourceLink, targetLink));
         }
@@ -465,7 +465,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 continue;
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getCdpLinks: source: {} ", sourceLink.printTopology());
+                LOG.debug("getCdpLinks: source: {} ", sourceLink.toString());
             }
             CdpElement sourceCdpElement = cdpelementmap.get(sourceLink.getNode().getId());
 
@@ -484,7 +484,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             }
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getCdpLinks: cdp: {}, target: {} ", sourceLink.getCdpCacheDevicePort(), targetLink.printTopology());
+                LOG.debug("getCdpLinks: cdp: {}, target: {} ", sourceLink.getCdpCacheDevicePort(), targetLink.toString());
             }
 
             parsed.add(sourceLink.getId());
@@ -544,7 +544,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 continue;
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getIsIsLinks: source: {}", sourceLink.printTopology());
+                LOG.debug("getIsIsLinks: source: {}", sourceLink.toString());
             }
             IsIsElement sourceElement = elementmap.get(sourceLink.getNode().getId());
             IsIsLink targetLink = targetLinkMap.get(new CompositeKey(sourceLink.getIsisISAdjIndex(),
@@ -559,7 +559,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 continue;
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getIsIsLinks: target: {}", targetLink.printTopology());
+                LOG.debug("getIsIsLinks: target: {}", targetLink.toString());
             }
             results.add(Pair.of(sourceLink, targetLink));
             parsed.add(sourceLink.getId());

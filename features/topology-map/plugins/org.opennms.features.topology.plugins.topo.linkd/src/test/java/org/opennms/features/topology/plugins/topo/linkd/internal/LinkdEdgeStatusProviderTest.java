@@ -59,7 +59,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
-import org.opennms.netmgt.topologies.service.api.Topology;
+import org.opennms.netmgt.enlinkd.service.api.Topology;
 
 import com.codahale.metrics.MetricRegistry;
 
