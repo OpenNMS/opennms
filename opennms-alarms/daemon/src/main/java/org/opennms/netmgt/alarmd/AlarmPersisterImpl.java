@@ -335,7 +335,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         alarm.setLastEvent(e);
         alarm.setLogMsg(e.getEventLogMsg());
         alarm.setMouseOverText(e.getEventMouseOverText());
-        alarm.setNode(e.getNode()); 
+        alarm.setNode(e.getNode());
         alarm.setOperInstruct(e.getEventOperInstruct());
         alarm.setReductionKey(event.getAlarmData().getReductionKey());
         alarm.setServiceType(e.getServiceType());
@@ -349,7 +349,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
         e.setAlarm(alarm);
         return alarm;
     }
-
 
     private boolean formingCyclicGraph(OnmsAlarm situation, OnmsAlarm relatedAlarm) {
 
