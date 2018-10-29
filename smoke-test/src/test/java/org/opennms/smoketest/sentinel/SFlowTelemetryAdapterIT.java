@@ -33,7 +33,7 @@ import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.util.function.Function;
 
-import org.opennms.smoketest.flow.Packet;
+import org.opennms.smoketest.telemetry.Packet;
 import org.opennms.smoketest.utils.TargetRoot;
 import org.opennms.test.system.api.NewTestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;

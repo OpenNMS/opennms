@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.smoketest.flow;
+package org.opennms.smoketest.telemetry;
 
 import java.io.IOException;
 import java.io.InputStream;

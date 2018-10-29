@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.smoketest.flow;
+package org.opennms.smoketest.telemetry;
 
 import static com.jayway.awaitility.Awaitility.with;
 import static java.util.concurrent.TimeUnit.MINUTES;
