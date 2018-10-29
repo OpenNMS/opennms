@@ -47,12 +47,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.topologies</groupId>
-      <artifactId>org.opennms.features.topologies.service.api</artifactId>
-      <version>${project.version}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>xalan</groupId>
       <artifactId>xalan</artifactId>
     </dependency>

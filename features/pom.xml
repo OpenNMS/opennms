@@ -14,9 +14,6 @@
     <!-- Enlinkd -->
     <module>enlinkd</module>
 
-    <!-- Topologies -->
-    <module>topologies</module>
-
     <!-- ActiveMQ broker -->
     <module>activemq</module>
 
