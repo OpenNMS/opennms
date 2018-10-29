@@ -34,20 +34,18 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertNotNull;
-
+import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
+
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -77,17 +75,16 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.smoketest.flow.Packet;
+import org.opennms.smoketest.flow.Packets;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
 import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
+import org.opennms.test.system.api.TestEnvironment;
+import org.opennms.test.system.api.TestEnvironmentBuilder;
 import org.opennms.test.system.api.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.io.Resources;
-
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
 
 /**
  * Verifies that Telemetry listeners can receive proto buffers and generate rrd
@@ -186,12 +183,8 @@ public class JtiTelemetryIT {
     }
 
     public static void sendJtiTelemetryMessage(InetSocketAddress udpAddress) throws IOException {
-       
-        byte[] jtiOutBytes = Resources.toByteArray(Resources.getResource("telemetry/jti-proto.raw"));
-        DatagramPacket packet = new DatagramPacket(jtiOutBytes, jtiOutBytes.length, udpAddress);
-
-        try (DatagramSocket socket = new DatagramSocket()) {
-            socket.send(packet);
+        try {
+            new Packet(Packets.JTI.getResource(), udpAddress).send();
         } catch (IOException e) {
             LOG.error("Exception while sending jti packets", e);
         }

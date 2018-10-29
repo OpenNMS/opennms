@@ -54,7 +54,7 @@ import io.searchbox.core.SearchResult;
 import io.searchbox.indices.template.GetTemplate;
 
 /**
- * Simple helper which sends a defined set of {@link FlowPacketDefinition}s to OpenNMS or Minion and afterwards verifies
+ * Simple helper which sends a defined set of {@link FlowPacket}s to OpenNMS or Minion and afterwards verifies
  * the data at the elastic endpoints.
  *
  * Optionally it can also run verifications before sending flows or check the results at the OpenNMS ReST endpoint as well.
@@ -69,7 +69,7 @@ public class FlowTester {
 
 
     /** The packets to send */
-    private final List<FlowPacketDefinition> packets;
+    private final List<FlowPacket> packets;
 
     private final List<Consumer<FlowTester>> runBefore = new ArrayList<>();
     private final List<Consumer<FlowTester>> runAfter = new ArrayList<>();
@@ -79,7 +79,7 @@ public class FlowTester {
 
     private JestClient client;
 
-    public FlowTester(InetSocketAddress elasticAddress, InetSocketAddress opennmsWebAddress, List<FlowPacketDefinition> packets) {
+    public FlowTester(InetSocketAddress elasticAddress, InetSocketAddress opennmsWebAddress, List<FlowPacket> packets) {
         this.elasticRestAddress = Objects.requireNonNull(elasticAddress);
         this.packets = Objects.requireNonNull(packets);
         this.totalFlowCount = packets.stream().mapToInt(p -> p.getFlowCount()).sum();
@@ -129,7 +129,7 @@ public class FlowTester {
             runBefore.forEach(rb -> rb.accept(this));
 
             // Send packets for each defined packet
-            for (FlowPacketDefinition packetDefinition : packets) {
+            for (FlowPacket packetDefinition : packets) {
                 packetDefinition.send();
             }
 

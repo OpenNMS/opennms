@@ -30,7 +30,6 @@ package org.opennms.smoketest.sentinel;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,11 +40,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
-import org.opennms.smoketest.flow.FlowStackIT;
 import org.opennms.smoketest.flow.FlowPacket;
-import org.opennms.smoketest.flow.FlowPacketDefinition;
+import org.opennms.smoketest.flow.FlowStackIT;
 import org.opennms.smoketest.flow.FlowTestBuilder;
 import org.opennms.smoketest.flow.FlowTester;
+import org.opennms.smoketest.flow.Packets;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.test.system.api.NewTestEnvironment;
 import org.opennms.test.system.api.TestEnvironment;
@@ -102,8 +101,8 @@ public class SinglePortFlowsIT {
         waitForSentinelStartup(sentinelSshAddress);
 
         // For each existing FlowPacket, create a definition to point to "minionSinglePortAddress"
-        final List<FlowPacketDefinition> collect = Arrays.stream(FlowPacket.values())
-                .map(p -> new FlowPacketDefinition(p, minionSinglePortAddress))
+        final List<FlowPacket> collect = Packets.getFlowPackets().stream()
+                .map(p -> new FlowPacket(p.getResource(), p.getFlowCount(), minionSinglePortAddress))
                 .collect(Collectors.toList());
 
         // Now verify Flow creation

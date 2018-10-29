@@ -28,22 +28,22 @@
 
 package org.opennms.smoketest.flow;
 
-import java.net.InetSocketAddress;
+import java.util.List;
 
-public class FlowPacket extends Packet {
+import com.google.common.collect.Lists;
 
-    private final int flowCount;
+public interface Packets {
+    // Flow Packets
+    FlowPacket Netflow5 = new FlowPacket("/flows/netflow5.dat", 2);
+    FlowPacket Netflow9 = new FlowPacket("/flows/netflow9.dat", 7);
+    FlowPacket Ipfix = new FlowPacket("/flows/ipfix.dat", 2);
+    FlowPacket SFlow = new FlowPacket("/flows/sflow.dat", 5);
 
-    public FlowPacket(String resource, int flowCount, InetSocketAddress destinationAddress) {
-        super(resource, destinationAddress);
-        this.flowCount = flowCount;
-    }
+    // Other Packets
+    Packet NXOS = new Packet("/telemetry/cisco-nxos-proto.raw");
+    Packet JTI = new Packet("/telemetry/jti-proto.raw");
 
-    public FlowPacket(String resource, int flowCount) {
-        this(resource, flowCount, null);
-    }
-
-    public int getFlowCount() {
-        return flowCount;
+    static List<FlowPacket> getFlowPackets() {
+        return Lists.newArrayList(Netflow5, Netflow9, Ipfix, SFlow);
     }
 }

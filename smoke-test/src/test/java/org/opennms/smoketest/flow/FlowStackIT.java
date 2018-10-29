@@ -89,10 +89,10 @@ public class FlowStackIT {
         final InetSocketAddress opennmsWebAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8980);
 
         final FlowTester flowTester = new FlowTestBuilder()
-                .withFlowPacket(FlowPacket.Netflow5, opennmsNetflow5AdapterAddress)
-                .withFlowPacket(FlowPacket.Netflow9, opennmsNetflow9AdapterAddress)
-                .withFlowPacket(FlowPacket.Ipfix, opennmsIpfixAdapterAddress)
-                .withFlowPacket(FlowPacket.Sflow, opennmsSflowAdapterAddress)
+                .withFlowPacket(Packets.Netflow5, opennmsNetflow5AdapterAddress)
+                .withFlowPacket(Packets.Netflow9, opennmsNetflow9AdapterAddress)
+                .withFlowPacket(Packets.Ipfix, opennmsIpfixAdapterAddress)
+                .withFlowPacket(Packets.SFlow, opennmsSflowAdapterAddress)
                 .verifyOpennmsRestEndpoint(opennmsWebAddress)
                 .build(elasticRestAddress);
 

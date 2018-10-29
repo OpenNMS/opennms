@@ -37,41 +37,45 @@ import java.util.Objects;
 
 import com.google.common.io.ByteStreams;
 
-public class FlowPacketDefinition {
-    private final InetSocketAddress sendToAddress;
-    private final int flowCount;
+public class Packet {
+
     private final String resource;
+    private InetSocketAddress destinationAddress;
 
-    public FlowPacketDefinition(FlowPacket flowPacket, InetSocketAddress sendToAddress) {
-        this(flowPacket.getResource(), flowPacket.getFlowCount(), sendToAddress);
+    public Packet(String resource) {
+        this(resource, null);
     }
 
-    public FlowPacketDefinition(String resource, int flowCount, InetSocketAddress sendToAddress) {
+    public Packet(String resource, InetSocketAddress destinationAddress) {
         this.resource = Objects.requireNonNull(resource);
-        this.flowCount = flowCount;
-        this.sendToAddress = Objects.requireNonNull(sendToAddress);
+        this.destinationAddress = destinationAddress;
     }
 
-    public int getFlowCount() {
-        return flowCount;
+    public void setDestinationAddress(InetSocketAddress destinationAddress) {
+        this.destinationAddress = destinationAddress;
     }
 
+    public InetSocketAddress getDestinationAddress() {
+        return destinationAddress;
+    }
+
+    public String getResource() {
+        return resource;
+    }
+
+    // Sends a packet to the defined destination address
     public void send() throws IOException {
-        sendNetflowPacket(this.sendToAddress, resource);
-    }
-
-    private static byte[] getNetflowPacketContent(final String filename) throws IOException {
-        try (final InputStream is = FlowPacketDefinition.class.getResourceAsStream(filename)) {
-            return ByteStreams.toByteArray(is);
-        }
-    }
-
-    // Sends a netflow Packet to the given destination address
-    private static void sendNetflowPacket(final InetSocketAddress destinationAddress, final String filename) throws IOException {
-        final byte[] bytes = getNetflowPacketContent(filename);
+        Objects.requireNonNull(destinationAddress, "DestinationAddress was not initialized properly");
+        final byte[] bytes = getPacketContent(resource);
         try (DatagramSocket serverSocket = new DatagramSocket(0)) { // opens any free port
             final DatagramPacket sendPacket = new DatagramPacket(bytes, bytes.length, destinationAddress.getAddress(), destinationAddress.getPort());
             serverSocket.send(sendPacket);
+        }
+    }
+
+    private static byte[] getPacketContent(final String filename) throws IOException {
+        try (final InputStream is = Packet.class.getResourceAsStream(filename)) {
+            return ByteStreams.toByteArray(is);
         }
     }
 }

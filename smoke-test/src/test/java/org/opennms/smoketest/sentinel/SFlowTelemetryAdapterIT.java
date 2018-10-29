@@ -33,7 +33,7 @@ import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.util.function.Function;
 
-import org.opennms.smoketest.flow.FlowPacketDefinition;
+import org.opennms.smoketest.flow.Packet;
 import org.opennms.smoketest.utils.TargetRoot;
 import org.opennms.test.system.api.NewTestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
@@ -62,7 +62,7 @@ public class SFlowTelemetryAdapterIT extends AbstractAdapterIT {
     @Override
     protected void sendTelemetryMessage() throws IOException {
         final InetSocketAddress minionListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, 50003, "udp");
-        new FlowPacketDefinition("/flows/sflow2.dat", Integer.MIN_VALUE /* UNDEFINED */, minionListenerAddress).send();
+        new Packet("/flows/sflow2.dat", minionListenerAddress).send();
     }
 
     @Override

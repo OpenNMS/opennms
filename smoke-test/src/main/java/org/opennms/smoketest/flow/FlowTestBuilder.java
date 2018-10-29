@@ -36,17 +36,18 @@ import java.util.function.Consumer;
 
 public class FlowTestBuilder {
 
-    private final List<FlowPacketDefinition> packets = new ArrayList<>();
+    private final List<FlowPacket> packets = new ArrayList<>();
     private final List<Consumer<FlowTester>> runBefore = new ArrayList<>();
     private final List<Consumer<FlowTester>> runAfter = new ArrayList<>();
     private InetSocketAddress opennmsWebAddress;
 
     public FlowTestBuilder withFlowPacket(FlowPacket packet, InetSocketAddress sendToAddress) {
-        this.packets.add(new FlowPacketDefinition(packet, sendToAddress));
+        final FlowPacket packetWithDestination = new FlowPacket(packet.getResource(), packet.getFlowCount(), sendToAddress);
+        this.packets.add(packetWithDestination);
         return this;
     }
 
-    public FlowTestBuilder withFlowPackets(List<FlowPacketDefinition> packets) {
+    public FlowTestBuilder withFlowPackets(List<FlowPacket> packets) {
         this.packets.clear();
         this.packets.addAll(packets);
         return this;
@@ -58,19 +59,19 @@ public class FlowTestBuilder {
     }
 
     public FlowTestBuilder withNetflow5Packet(InetSocketAddress sendToAddress) {
-        return withFlowPacket(FlowPacket.Netflow5, sendToAddress);
+        return withFlowPacket(Packets.Netflow5, sendToAddress);
     }
 
     public FlowTestBuilder withNetflow9Packet(InetSocketAddress sendToAddress) {
-        return withFlowPacket(FlowPacket.Netflow9, sendToAddress);
+        return withFlowPacket(Packets.Netflow9, sendToAddress);
     }
 
     public FlowTestBuilder withIpfixPacket(InetSocketAddress sendToAddress) {
-        return withFlowPacket(FlowPacket.Ipfix, sendToAddress);
+        return withFlowPacket(Packets.Ipfix, sendToAddress);
     }
 
     public FlowTestBuilder withSflowPacket(InetSocketAddress sendToAddress) {
-        return withFlowPacket(FlowPacket.Netflow5, sendToAddress);
+        return withFlowPacket(Packets.Netflow5, sendToAddress);
     }
 
     public FlowTestBuilder verifyBeforeSendingFlows(Consumer<FlowTester> before) {

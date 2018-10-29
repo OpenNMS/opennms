@@ -29,7 +29,6 @@
 package org.opennms.smoketest.flow;
 
 import java.net.InetSocketAddress;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -87,8 +86,8 @@ public class SinglePortFlowsIT {
         final InetSocketAddress opennmsWebAddress = testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 8980);
         final InetSocketAddress elasticRestAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.ELASTICSEARCH_5, 9200, "tcp");
 
-        final List<FlowPacketDefinition> collect = Arrays.stream(FlowPacket.values())
-                .map(p -> new FlowPacketDefinition(p, opennmsSinglePortAddress))
+        final List<FlowPacket> collect = Packets.getFlowPackets().stream()
+                .map(p -> new FlowPacket(p.getResource(), p.getFlowCount(), opennmsSinglePortAddress))
                 .collect(Collectors.toList());
         final FlowTester tester = new FlowTestBuilder()
                 .withFlowPackets(collect)
