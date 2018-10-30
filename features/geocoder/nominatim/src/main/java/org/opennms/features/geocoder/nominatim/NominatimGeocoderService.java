@@ -55,12 +55,16 @@ public class NominatimGeocoderService implements GeocoderService {
     private String m_emailAddress;
     private String m_referer;
 
+    private boolean m_useSystemProxy = true; // true == legacy behaviour
+
     private Logger m_log = LoggerFactory.getLogger(getClass());
 
     public NominatimGeocoderService() {
         m_clientWrapper = HttpClientWrapper.create()
-                .dontReuseConnections()
-                .useSystemProxySettings();
+                .dontReuseConnections();
+        if(m_useSystemProxy) {
+            m_clientWrapper.useSystemProxySettings();
+        }
     }
 
     public void onInit() {
@@ -134,5 +138,9 @@ public class NominatimGeocoderService implements GeocoderService {
 
     public void setReferer(final String referer) {
         m_referer = referer;
+    }
+
+    public void setUseSystemProxy(boolean useSystemProxy){
+        m_useSystemProxy = useSystemProxy;
     }
 }

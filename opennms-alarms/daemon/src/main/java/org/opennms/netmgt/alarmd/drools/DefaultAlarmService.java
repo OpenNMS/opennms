@@ -148,7 +148,7 @@ public class DefaultAlarmService implements AlarmService {
     @Override
     @Transactional
     public void setSeverity(OnmsAlarm alarm, OnmsSeverity severity, Date now) {
-        LOG.info("Updating severity on alarm with id: {}", alarm.getId());
+        LOG.info("Updating severity {} on alarm with id: {}", severity, alarm.getId());
         final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
         if (alarmInTrans == null) {
             LOG.warn("Alarm disappeared: {}. Skipping severity update.", alarm);

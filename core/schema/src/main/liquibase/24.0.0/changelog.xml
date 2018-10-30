@@ -239,5 +239,36 @@
       );
     </sql>
   </changeSet>
+
+  <changeSet author="cgorantla" id="24.0.0-drop-alarm-situations-table">
+    <preConditions onFail="MARK_RAN">
+      <not><columnExists tableName="alarm_situations" columnName="id" /></not>
+    </preConditions>
+    <dropTable tableName="alarm_situations" />
+  </changeSet>
+
+  <changeSet author="cgorantla" id="24.0.0-add-mapped-time-to-alarm-situations">
+    <createTable tableName="alarm_situations">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="situation_id" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="related_alarm_id" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="mapped_time" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+    <addForeignKeyConstraint constraintName="fk_alarm_situations_situation_id" onDelete="CASCADE"
+                             baseTableName="alarm_situations" baseColumnNames="situation_id"
+                             referencedTableName="alarms" referencedColumnNames="alarmid"/>
+    <addForeignKeyConstraint constraintName="fk_alarm_situations_alarm_id" onDelete="CASCADE"
+                             baseTableName="alarm_situations" baseColumnNames="related_alarm_id"
+                             referencedTableName="alarms" referencedColumnNames="alarmid"/>
+  </changeSet>
+
 </databaseChangeLog>
 

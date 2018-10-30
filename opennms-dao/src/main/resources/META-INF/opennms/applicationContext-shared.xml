@@ -173,6 +173,12 @@
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.AlarmDao" ref="alarmDao" />
 
+
+    <bean id="alarmAssociationDao" class="org.opennms.netmgt.dao.hibernate.AlarmAssociationDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.AlarmAssociationDao" ref="alarmAssociationDao" />
+
     <bean id="alarmRepository" class="org.opennms.netmgt.dao.hibernate.AlarmRepositoryHibernate"/>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.AlarmRepository" ref="alarmRepository" />
 

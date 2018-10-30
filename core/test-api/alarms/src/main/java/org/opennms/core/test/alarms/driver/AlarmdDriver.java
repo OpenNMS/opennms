@@ -207,7 +207,7 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
                 results.addAlarms(now, m_transactionTemplate.execute((t) -> {
                             final List<OnmsAlarm> alarms = m_alarmDao.findAll();
                     alarms.forEach(a -> {
-                        Hibernate.initialize(a.getRelatedAlarms());
+                       Hibernate.initialize(a.getAssociatedAlarms());
 
                     });
                             return alarms;
@@ -238,7 +238,7 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
             results.addAlarms(now, m_transactionTemplate.execute((t) -> {
                 final List<OnmsAlarm> alarms = m_alarmDao.findAll();
                 alarms.forEach(a -> {
-                    Hibernate.initialize(a.getRelatedAlarms());
+                    Hibernate.initialize(a.getAssociatedAlarms());
                 });
                 return alarms;
             }));

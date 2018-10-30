@@ -306,7 +306,7 @@ public class AlarmdBlackboxIT {
         // t=3, two problem alarms + 1 situation
         assertThat(results.getAlarms(3), hasSize(3)); // the situation is also an alarm, so it is counted here
         assertThat(results.getSituations(3), hasSize(1));
-        assertThat(results.getSituation(3), hasSeverity(OnmsSeverity.MAJOR));
+        assertThat(results.getSituation(3), hasSeverity(OnmsSeverity.CRITICAL)); // the situation should be escalated in severity
         // t=4, everything should be cleared
         assertThat(results.getProblemAlarm(4), hasSeverity(OnmsSeverity.CLEARED));
         assertThat(results.getSituation(4), hasSeverity(OnmsSeverity.CLEARED));
