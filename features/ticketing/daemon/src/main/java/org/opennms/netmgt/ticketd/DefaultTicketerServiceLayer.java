@@ -28,11 +28,15 @@
 
 package org.opennms.netmgt.ticketd;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.opennms.api.integration.ticketing.Plugin;
 import org.opennms.api.integration.ticketing.PluginException;
+import org.opennms.api.integration.ticketing.RelatedAlarmSummary;
 import org.opennms.api.integration.ticketing.Ticket;
 import org.opennms.api.integration.ticketing.Ticket.State;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -47,6 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * OpenNMS Trouble Ticket API implementation.
@@ -173,6 +178,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
      */
     /** {@inheritDoc} */
     @Override
+    @Transactional
     public void createTicketForAlarm(int alarmId, Map<String,String> attributes) {
 
         OnmsAlarm alarm = m_alarmDao.get(alarmId);
@@ -190,6 +196,11 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
         }
 
         Ticket ticket = createTicketFromAlarm(alarm, attributes);
+        if (alarm.isSituation()) {
+            ticket.setSituation(true);
+            Set<OnmsAlarm> relatedAlarms = alarm.getRelatedAlarms();
+            populateRelatedAlarmsForTicket(ticket, relatedAlarms);
+        }
 
         try {
             m_ticketerPlugin.saveOrUpdate(ticket);
@@ -203,6 +214,20 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 
         m_alarmDao.saveOrUpdate(alarm);
 
+    }
+
+    private void populateRelatedAlarmsForTicket(Ticket ticket, Set<OnmsAlarm> relatedAlarms) {
+        List<RelatedAlarmSummary> relatedAlarmSummaryList = new ArrayList<>();
+        relatedAlarms.forEach(relatedAlarm -> {
+            RelatedAlarmSummary relatedAlarmSummary = new RelatedAlarmSummary();
+            relatedAlarmSummary.setAlarmId(relatedAlarm.getId());
+            relatedAlarmSummary.setIpAddress(relatedAlarm.getIpAddr());
+            relatedAlarmSummary.setNodeId(relatedAlarm.getNodeId());
+            relatedAlarmSummary.setSummary(relatedAlarm.getDescription());
+            relatedAlarmSummary.setDetails(relatedAlarm.getLogMsg());
+            relatedAlarmSummaryList.add(relatedAlarmSummary);
+        });
+        ticket.setRelatedAlarms(relatedAlarmSummaryList);
     }
 
     /**
