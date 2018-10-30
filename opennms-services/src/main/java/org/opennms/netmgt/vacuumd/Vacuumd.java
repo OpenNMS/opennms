@@ -380,7 +380,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
             });
         }
 
-        //Depreciating this one...
+        // Deprecated way of reloading
         if (EventConstants.RELOAD_VACUUMD_CONFIG_UEI.equals(event.getUei())) {
             handleReloadConifgEvent();
         }
