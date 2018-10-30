@@ -67,8 +67,6 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
 	 * The collection does not occur until the
      * <code>run</code> method is invoked.
      * 
-	 * @param EnhancedLinkd linkd
-	 * @param LinkableNode node
 	 */
     public NodeDiscoveryCdp(final EventForwarder eventForwarder,
             final CdpTopologyService cdpTopologyService,

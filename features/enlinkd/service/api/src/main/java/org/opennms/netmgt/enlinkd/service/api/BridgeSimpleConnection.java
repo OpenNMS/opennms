@@ -494,7 +494,8 @@ public class BridgeSimpleConnection implements Topology {
         return sp;
         
     }
-    
+
+    @Override
     public String printTopology() {
         StringBuffer strbfr = new StringBuffer();
         strbfr.append("simple connection: [");

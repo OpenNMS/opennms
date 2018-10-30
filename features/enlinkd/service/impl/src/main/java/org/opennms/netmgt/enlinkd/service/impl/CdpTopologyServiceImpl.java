@@ -29,7 +29,6 @@
 package org.opennms.netmgt.enlinkd.service.impl;
 
 import java.util.Date;
-import java.util.List;
 
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
@@ -135,17 +134,6 @@ public class CdpTopologyServiceImpl implements CdpTopologyService {
             }
 
         }.execute();
-    }
-
-
-    @Override
-    public List<CdpElement> findAllCdpElements() {
-        return m_cdpElementDao.findAll();
-    }
-
-    @Override
-    public List<CdpLink> findAllCdpLinks() {
-        return m_cdpLinkDao.findAll();
     }
 
     public CdpLinkDao getCdpLinkDao() {

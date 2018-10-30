@@ -30,6 +30,7 @@ package org.opennms.netmgt.enlinkd.service.api;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -84,11 +85,11 @@ public class Bridge implements Topology {
         return bridge;
     }
 
-    final Integer m_nodeId;
-    Integer m_rootPort;
-    boolean m_isRootBridge;
-    Set<String> m_identifiers = new HashSet<String>();
-    String m_designated;
+    private final Integer m_nodeId;
+    private Integer m_rootPort;
+    private boolean m_isRootBridge;
+    private Set<String> m_identifiers = new HashSet<String>();
+    private String m_designated;
 
     private Bridge(Integer id) {
         super();
@@ -124,30 +125,19 @@ public class Bridge implements Topology {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((m_nodeId == null) ? 0 : m_nodeId.hashCode());
-        return result;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Bridge bridge = (Bridge) o;
+        return Objects.equals(m_nodeId, bridge.m_nodeId);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Bridge other = (Bridge) obj;
-        if (m_nodeId == null) {
-            if (other.m_nodeId != null)
-                return false;
-        } else if (!m_nodeId.equals(other.m_nodeId))
-            return false;
-        return true;
+    public int hashCode() {
+        return Objects.hash(m_nodeId);
     }
-    
+
+    @Override
     public String printTopology() {
     	StringBuffer strbfr = new StringBuffer();
         strbfr.append("bridge: nodeid[");

@@ -30,7 +30,6 @@ package org.opennms.netmgt.enlinkd.service.api;
 
 
 import java.util.Date;
-import java.util.List;
 
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
@@ -41,9 +40,4 @@ public interface CdpTopologyService {
     void reconcile(int nodeId, Date now);
     void store(int nodeId, CdpElement cdp);
     void store(int nodeId, CdpLink link);
-
-    List<CdpElement> findAllCdpElements();
-    
-    List<CdpLink> findAllCdpLinks();
-
 }

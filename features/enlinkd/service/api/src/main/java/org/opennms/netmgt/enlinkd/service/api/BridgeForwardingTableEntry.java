@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
@@ -200,44 +201,20 @@ public class BridgeForwardingTableEntry implements Topology {
         });
         return bftentries;
     }
-    
+
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result
-                + ((m_bridgePort == null) ? 0 : m_bridgePort.hashCode());
-        result = prime * result
-                + ((m_macAddress == null) ? 0 : m_macAddress.hashCode());
-        result = prime * result + ((m_node == null) ? 0 : m_node.hashCode());
-        return result;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BridgeForwardingTableEntry that = (BridgeForwardingTableEntry) o;
+        return Objects.equals(m_node, that.m_node) &&
+                Objects.equals(m_bridgePort, that.m_bridgePort) &&
+                Objects.equals(m_macAddress, that.m_macAddress);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        BridgeForwardingTableEntry other = (BridgeForwardingTableEntry) obj;
-        if (m_bridgePort == null) {
-            if (other.m_bridgePort != null)
-                return false;
-        } else if (!m_bridgePort.equals(other.m_bridgePort))
-            return false;
-        if (m_macAddress == null) {
-            if (other.m_macAddress != null)
-                return false;
-        } else if (!m_macAddress.equals(other.m_macAddress))
-            return false;
-        if (m_node == null) {
-            if (other.m_node != null)
-                return false;
-        } else if (!m_node.equals(other.m_node))
-            return false;
-        return true;
+    public int hashCode() {
+        return Objects.hash(m_node, m_bridgePort, m_macAddress);
     }
 
     public Integer getNodeId() {
