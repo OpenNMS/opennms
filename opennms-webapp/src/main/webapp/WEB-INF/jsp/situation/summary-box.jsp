@@ -53,7 +53,7 @@
 <c:url var="headingLink" value="alarm/list.htm"/>
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title"><a href="${headingLink}">Situations with Pending Problems</a></h3>
+    <h3 class="panel-title"><a href="${headingLink}">Pending Situations</a></h3>
   </div>
   <c:choose>
     <c:when test="${empty summaries}">
