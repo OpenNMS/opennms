@@ -198,6 +198,17 @@
           </div> <!-- panel-body -->
       </div> <!-- panel -->
 
+      <div class="panel panel-default">
+          <div class="panel-heading">
+              <h3 class="panel-title">Daemon Management</h3>
+          </div>
+          <div class="panel-body">
+              <ul class="list-unstyled">
+                  <li><a href="admin/daemons/index.jsp">Manage Daemons</a></li>
+              </ul>
+          </div> <!-- panel-body -->
+      </div> <!-- panel -->
+
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Service Monitoring</h3>

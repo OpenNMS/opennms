@@ -1,0 +1,70 @@
+<style>
+    toggle.disabled {
+        cursor: not-allowed;
+        pointer-events: none;
+        box-shadow: none;
+        opacity: 0.65;
+    }
+</style>
+<div class="panel panel-default">
+    <div class="panel-body">
+        <span class="lead navbar-left">List of Daemons</span>
+        <div class="navbar-form navbar-right">
+            <button type="button" ng-click="refreshDaemonList()" class="btn btn-primary"><span
+                    class="glyphicon glyphicon-refresh"></span> Refresh
+            </button>
+        </div>
+        <div ng-show="daemons.length == 0">No daemons available.</div>
+        <table ng-show="daemons.length > 0" class="table table-hover table-bordered table-striped">
+            <thead>
+            <tr>
+                <th class="col-md-5 text-nowrap">Name</th>
+                <th class="col-md-1 text-nowrap">Status</th>
+                <th class="col-md-1 text-nowrap">Reload</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="d in daemons">
+                <td>{{d.name}}</td>
+                <td>
+                    <label ng-class="{'label label-primary' : d.enabled, 'label label-default' : !d.enabled}">
+                        {{d.enabled ? "running" : "not running"}}
+                    </label>
+                </td>
+
+                <td>
+                    <div ng-if="!d.reloadable">Daemon not reloadable</div>
+
+                    <div ng-if="d.reloadable">
+                        <button ng-disabled="d.isReloading" type="button" ng-click="reloadPressed(d)"
+                                class="btn btn-sm">
+                            <span
+                                    class="glyphicon glyphicon-repeat">
+                            </span>
+                            Reload
+                        </button>
+                        <span ng-show="d.showReloadState">
+                            <span style="margin-left: 4pt; margin-right: 4pt" ng-class="d.reloadIconClass"></span>
+                            {{d.reloadNote}}
+                        </span>
+
+                        <span class="pull-right">
+                            <button
+                                    class="btn btn-sm"
+                                    mwl-confirm
+                                    title="Curl script"
+                                    message="<pre> curl --request POST -u USERNAME:PASSWORD -url {{serverUrl}}/opennms/rest/daemons/reload/{{d.name}}/</pre>"
+                                    placement="left"
+                                    hide-confirm-button="true"
+                                    cancel-text="close">
+                                <i class="glyphicon glyphicon-console"></i>
+                            </button>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <a href="/" role="button" class="btn btn-info" role="button">Back</a>
+    </div>
+</div>
