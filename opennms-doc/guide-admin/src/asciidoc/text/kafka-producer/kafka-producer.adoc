@@ -92,6 +92,8 @@ The _Kafka Producer_ exposes the following options to help fine tune its behavio
                                                    Set this to an empty string to disable forwarding events.
 | `alarmTopic`            | `alarms`             | Name of the topic used for alarms.
                                                    Set this to an empty string to disable forwarding alarms.
+| `alarmFeedbackTopic`    | `alarmFeedback`      | Name of the topic used for alarm feedback.
+                                                   Set this to an empty string to disable forwarding alarm feedback.                                                   
 | `nodeTopic`             | `nodes`              | Name of the topic used for nodes.
                                                    Set this to an empty string to disable forwarding nodes.
 | `metricTopic`           | `metrics`            | Name of the topic used for metrics.
