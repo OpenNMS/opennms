@@ -69,7 +69,7 @@
                         </configuration>
                         <goals>
                             <goal>resources</goal>
-                            <goal>update-widgetset</goal>
+                            <!--<goal>update-widgetset</goal>-->
                             <goal>compile</goal>
                         </goals>
                     </execution>

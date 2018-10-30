@@ -37,9 +37,9 @@ import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.features.timeformat.api.TimeformatService;
 import org.opennms.vaadin.user.UserTimeZoneExtractor;
 
-import com.vaadin.data.Property;
+import com.vaadin.v7.data.Property;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.Table;
+import com.vaadin.v7.ui.Table;
 
 public class TimeColumnGenerator  implements Table.ColumnGenerator {
 

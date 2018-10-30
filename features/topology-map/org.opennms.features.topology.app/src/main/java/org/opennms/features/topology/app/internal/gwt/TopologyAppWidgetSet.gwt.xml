@@ -18,7 +18,7 @@
     <!-- Inherit DefaultWidgetSet -->
     <inherits name="com.google.gwt.json.JSON" /> 
     <inherits name="com.google.gwt.http.HTTP" />   
-    <inherits name="com.vaadin.DefaultWidgetSet" />
+    <inherits name="com.vaadin.v7.Vaadin7WidgetSet" />
     <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
 
     <collapse-all-properties/>

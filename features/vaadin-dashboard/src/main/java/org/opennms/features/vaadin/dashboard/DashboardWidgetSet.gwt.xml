@@ -6,8 +6,8 @@
         goal "vaadin:update-widgetset".
     -->
 
-    <!-- Inherit DefaultWidgetSet -->
-    <inherits name="com.vaadin.DefaultWidgetSet"/>
+    <inherits name="com.vaadin.DefaultWidgetSet" />
+    <inherits name="com.vaadin.v7.Vaadin7WidgetSet"/>
 
     <!--
      Uncomment the following to compile the widgetset for one browser only.
@@ -44,15 +44,6 @@
     -->
     <set-configuration-property name="devModeRedirectEnabled" value="true"/>
 
-    
-
-    
-
-    
-
-    
-
-    
 
     <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
 

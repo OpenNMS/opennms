@@ -38,8 +38,8 @@ import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.plugins.ncs.NCSEdgeProvider.NCSVertex;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItem;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.BeanItem;
 
 public class NCSPathEdgeProvider implements EdgeProvider {
 

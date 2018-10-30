@@ -1307,7 +1307,7 @@
     <gsonVersion>2.8.0</gsonVersion>
     <guavaVersion>18.0</guavaVersion>
     <guavaOldVersion>17.0</guavaOldVersion>
-    <gwtVersion>2.6.1</gwtVersion>
+    <gwtVersion>2.8.2</gwtVersion>
     <gwtPluginVersion>2.6.1</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
     <hawtioVersion>1.4.68</hawtioVersion>
@@ -1389,11 +1389,11 @@
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
-    <vaadinVersion>7.7.15</vaadinVersion>
+    <vaadinVersion>8.0.7</vaadinVersion>
     <!-- Requiring a more recent plugin version which passes the classpath via ENV -->
-    <vaadin.plugin.version>8.1.0</vaadin.plugin.version>
+    <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
     <vaadinAddonContextMenuVersion>4.5</vaadinAddonContextMenuVersion>
-    <vaadinAddonConfirmDialogVersion>2.1.3</vaadinAddonConfirmDialogVersion>
+    <vaadinAddonConfirmDialogVersion>3.2.0</vaadinAddonConfirmDialogVersion>
     <skipPdfGeneration>true</skipPdfGeneration>
     <skipSignJar>true</skipSignJar>
 
@@ -3341,34 +3341,53 @@
       <!-- Vaadin -->
       <dependency>
         <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-server</artifactId>
+        <artifactId>vaadin-compatibility-server</artifactId>
 	    <version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-compatibility-shared</artifactId>
+        <version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+	    <artifactId>vaadin-compatibility-client-compiled</artifactId>
+	    <version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+	    <artifactId>vaadin-compatibility-client</artifactId>
+	    <version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+	    <artifactId>vaadin-compatibility-themes</artifactId>
+	    <version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-server</artifactId>
+        <version>${vaadinVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
         <artifactId>vaadin-shared</artifactId>
         <version>${vaadinVersion}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>com.vaadin.external.google</groupId>
-            <artifactId>guava</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
-	    <artifactId>vaadin-client-compiled</artifactId>
-	    <version>${vaadinVersion}</version>
+        <artifactId>vaadin-client-compiled</artifactId>
+        <version>${vaadinVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
-	    <artifactId>vaadin-client</artifactId>
-	    <version>${vaadinVersion}</version>
+        <artifactId>vaadin-client</artifactId>
+        <version>${vaadinVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
-	    <artifactId>vaadin-themes</artifactId>
-	    <version>${vaadinVersion}</version>
+        <artifactId>vaadin-themes</artifactId>
+        <version>${vaadinVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.vaadin.addons</groupId>

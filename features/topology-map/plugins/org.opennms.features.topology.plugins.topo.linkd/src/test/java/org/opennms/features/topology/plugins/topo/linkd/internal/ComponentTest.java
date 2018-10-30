@@ -30,7 +30,7 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.util.Collection;
 
-import com.vaadin.data.util.BeanItem;
+import com.vaadin.v7.data.util.BeanItem;
 
 import org.junit.Assert;
 import org.junit.Test;

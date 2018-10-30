@@ -62,6 +62,8 @@ public class JobManager {
             try {
                 final Object result = taskToRun.execute();
 
+                // TODO MVR refactor all UI.getCurrent() calls, as they are not working anymore in Vaadin 8.
+                // TODO MVR See https://vaadin.com/forum/thread/15304760 for more details
                 UI.getCurrent().access(new Runnable() {
                     @Override
                     public void run() {

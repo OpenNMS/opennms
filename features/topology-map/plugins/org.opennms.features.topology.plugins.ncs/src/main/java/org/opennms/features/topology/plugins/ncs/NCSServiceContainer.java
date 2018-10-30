@@ -40,8 +40,8 @@ import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.util.BeanItem;
 
 public class NCSServiceContainer extends HierarchicalBeanContainer<Long, NCSServiceItem> {
     private static final Logger LOG = LoggerFactory.getLogger(NCSServiceContainer.class);

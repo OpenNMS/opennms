@@ -28,14 +28,25 @@
 
 package org.opennms.features.vaadin.dashboard.ui.wallboard;
 
-import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.opennms.features.vaadin.dashboard.config.DashletSelector;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletSelectorAccess;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
-import java.util.*;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.ProgressIndicator;
+import com.vaadin.v7.ui.VerticalLayout;
 
 public class WallboardBody extends VerticalLayout {
     private final CssLayout contentLayout;

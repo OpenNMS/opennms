@@ -270,6 +270,12 @@
 		    <artifactId>gwt-test-utils</artifactId>
 		    <version>0.47</version>
 		    <scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
         <dependency>
             <groupId>com.google.gwt</groupId>

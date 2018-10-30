@@ -34,11 +34,11 @@ import java.util.List;
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.WidgetContext;
 
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.v7.data.Property.ValueChangeEvent;
+import com.vaadin.v7.data.Property.ValueChangeListener;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.ListSelect;
+import com.vaadin.v7.ui.ListSelect;
 import com.vaadin.ui.Notification;
 
 public class SimpleViewContribution implements IViewContribution {

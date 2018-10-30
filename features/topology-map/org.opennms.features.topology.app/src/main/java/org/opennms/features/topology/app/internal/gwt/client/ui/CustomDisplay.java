@@ -28,12 +28,12 @@
 
 package org.opennms.features.topology.app.internal.gwt.client.ui;
 
+import java.util.Collection;
+
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.SuggestOracle;
-
-import java.util.Collection;
 
 public class CustomDisplay extends SuggestBox.SuggestionDisplay{
 
@@ -75,7 +75,8 @@ public class CustomDisplay extends SuggestBox.SuggestionDisplay{
         }
     }
 
-    private boolean isSuggestionListShowing() {
+    @Override
+    public boolean isSuggestionListShowing() {
         return m_suggestionPopup.isShowing();
     }
 

@@ -31,7 +31,7 @@ package org.opennms.features.vaadin.dashboard.dashlets;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.VerticalLayout;
 import org.opennms.features.vaadin.dashboard.model.*;
 
 /**

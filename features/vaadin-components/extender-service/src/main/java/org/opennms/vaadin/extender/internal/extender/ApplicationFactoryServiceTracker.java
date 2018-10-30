@@ -1,5 +1,18 @@
 package org.opennms.vaadin.extender.internal.extender;
 
+import static org.opennms.vaadin.extender.internal.extender.PaxVaadinBundleTracker.findWidgetset;
+
+import java.io.IOException;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.opennms.vaadin.extender.ApplicationFactory;
 import org.opennms.vaadin.extender.Constants;
 import org.opennms.vaadin.extender.internal.servlet.VaadinOSGiServlet;
@@ -9,17 +22,6 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 public class ApplicationFactoryServiceTracker extends ServiceTracker {
     
@@ -45,6 +47,14 @@ public class ApplicationFactoryServiceTracker extends ServiceTracker {
         if(props.get(Constants.ALIAS) == null) {
             logger.warn("You have not set the alias property for ApplicationFactory: " + factory);
         }
+
+        // TODO MVR verify that this actually works
+        final String widgetset = findWidgetset(reference.getBundle());
+        if (widgetset != null) {
+            logger.debug("Widgetset found: {}", widgetset);
+            props.put("widgetset", widgetset);
+        }
+        logger.debug("Found factory for ui class {}, with the following headers {} and service properties {}.", factory.getUIClass(), factory.getAdditionalHeaders(), props);
         m_serviceRegistration.put(factory, context.registerService(Servlet.class.getName(), servlet, props));
         
         return factory;

@@ -34,7 +34,7 @@ import org.opennms.features.topology.api.WidgetContext;
 
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.Label;
 
 public class BottomSimpleViewContribution implements IViewContribution {
 

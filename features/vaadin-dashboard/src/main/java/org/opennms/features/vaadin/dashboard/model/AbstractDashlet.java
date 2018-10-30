@@ -29,7 +29,7 @@
 package org.opennms.features.vaadin.dashboard.model;
 
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.Label;
 
 public class AbstractDashlet implements Dashlet {
     private String m_name;

@@ -35,10 +35,10 @@ import java.util.Set;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
 
-import com.vaadin.data.Property;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.ui.Tree;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.event.ItemClickEvent;
+import com.vaadin.v7.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.v7.ui.Tree;
 
 @SuppressWarnings({"serial", "unchecked"})
 public abstract class SelectionTree extends Tree {
@@ -72,27 +72,13 @@ public abstract class SelectionTree extends Tree {
     
     public SelectionTree(FilterableHierarchicalContainer container) {
         super(null, container);
-        
-        this.addValueChangeListener(new ValueChangeListener() {
-            
-            @Override
-            public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-                
-                //if(m_itemClicked) {
-                    Set<Object> selectedIds = (Set<Object>) event.getProperty().getValue();
-                    
-                    Collection<Object> allIds = (Collection<Object>) getContainerDataSource().getItemIds();
-                    
-                    Set<Object> itemsToSelect = getSelectedItemIds(selectedIds);
-                    
-                    Set<Object> itemsToDeselected = getItemsToDeselect(allIds, itemsToSelect);
-                    
-                    deselectContainerItems(itemsToDeselected);
-                    
-                    selectContainerItemAndChildren(itemsToSelect);
-                //} 
-                
-            }
+        this.addValueChangeListener((ValueChangeListener) event -> {
+                final Set<Object> selectedIds = (Set<Object>) event.getProperty().getValue();
+                final Collection<Object> allIds = (Collection<Object>) getContainerDataSource().getItemIds();
+                final Set<Object> itemsToSelect = getSelectedItemIds(selectedIds);
+                final Set<Object> itemsToDeselected = getItemsToDeselect(allIds, itemsToSelect);
+                deselectContainerItems(itemsToDeselected);
+                selectContainerItemAndChildren(itemsToSelect);
         });
 
         /**

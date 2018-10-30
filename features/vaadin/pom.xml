@@ -11,63 +11,102 @@
   <name>OpenNMS :: Features :: Vaadin + Dependencies</name>
   <description>The Vaadin web application framework including some addons and osgi related packages.</description>
   <packaging>pom</packaging>
+  <properties>
+    <!-- TODO MVR this is not really required anymore is it? -->
+    <vaadinExternalGwtVersion>2.7.0.vaadin7</vaadinExternalGwtVersion>
+    <vaadinGentryrefVersion>1.2.0.vaadin1</vaadinGentryrefVersion>
+    <vaadinJsoupVersion>1.11.2</vaadinJsoupVersion>
+  </properties>
   <build>
     <plugins>
       <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>features-maven-plugin</artifactId>
-        <configuration>
-          <features>
-            <feature>http-whiteboard</feature>
-          </features>
-          <bundles>
-            <!-- Manually define non bundles to be included -->
-            <bundle>wrap:mvn:com.vaadin.external.gwt/gwt-elemental/2.7.0.vaadin7</bundle>
-            <bundle>wrap:mvn:com.vaadin.external.gwt/gwt-user/2.7.0.vaadin7/$Export-Package=com.google.*</bundle>
-            <bundle>wrap:mvn:org.vaadin.addons/contextmenu/${vaadinAddonContextMenuVersion}</bundle>
-            <bundle>wrap:mvn:org.vaadin.addon/confirmdialog/${vaadinAddonConfirmDialogVersion}</bundle>
-          </bundles>
-        </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/resources</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-artifacts</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${project.build.outputDirectory}/features.xml</file>
+                  <type>xml</type>
+                  <classifier>features</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
   <dependencies>
     <dependency>
       <groupId>com.vaadin</groupId>
-      <artifactId>vaadin-server</artifactId>
+      <artifactId>vaadin-compatibility-server</artifactId>
     </dependency>
     <dependency>
       <groupId>com.vaadin</groupId>
-      <artifactId>vaadin-client-compiled</artifactId>
+      <artifactId>vaadin-compatibility-client-compiled</artifactId>
     </dependency>
     <dependency>
       <groupId>com.vaadin</groupId>
-      <artifactId>vaadin-client</artifactId>
+      <artifactId>vaadin-compatibility-client</artifactId>
     </dependency>
     <dependency>
       <groupId>com.vaadin</groupId>
-      <artifactId>vaadin-themes</artifactId>
+      <artifactId>vaadin-compatibility-themes</artifactId>
     </dependency>
     <dependency>
       <groupId>com.vaadin</groupId>
-      <artifactId>vaadin-shared</artifactId>
+      <artifactId>vaadin-compatibility-shared</artifactId>
     </dependency>
     <dependency>
       <groupId>com.vaadin.external.gwt</groupId>
       <artifactId>gwt-elemental</artifactId>
-      <version>2.7.0.vaadin7</version>
+      <version>${vaadinExternalGwtVersion}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.vaadin.external.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>2.7.0.vaadin7</version>
+      <version>${vaadinExternalGwtVersion}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.vaadin.external</groupId>
+      <artifactId>gentyref</artifactId>
+      <version>${vaadinGentryrefVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.8.3</version> <!-- Vaadin uses a different jsoup version than globally defined -->
+      <version>${vaadinJsoupVersion}</version> <!-- Vaadin uses a different jsoup version than globally defined -->
     </dependency>
     <dependency>
       <groupId>org.opennms.features.vaadin-components</groupId>

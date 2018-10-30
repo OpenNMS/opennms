@@ -39,15 +39,15 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Throwables;
 import com.google.common.io.ByteStreams;
-import com.vaadin.data.Validator;
+import com.vaadin.v7.data.Validator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
@@ -130,6 +130,8 @@ public abstract class UIHelper {
 		showNotification("Validation Error", errorMessage != null ? errorMessage : "An unknown error occurred.", Type.ERROR_MESSAGE);
 	}
 
+	// TODO MVR refactor all UI.getCurrent() calls, as they are not working anymore in Vaadin 8.
+	// TODO MVR See https://vaadin.com/forum/thread/15304760 for more details
 	public static <T> T getCurrent(Class<T> clazz) {
 		return (T) UI.getCurrent();
 	}

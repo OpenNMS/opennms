@@ -50,8 +50,8 @@ import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItem;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.BeanItem;
 
 public class NCSEdgeProvider implements EdgeProvider {
 

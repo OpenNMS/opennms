@@ -3,6 +3,7 @@
 <module>
 	<inherits name="com.google.gwt.resources.Resources" />
     <inherits name="com.vaadin.DefaultWidgetSet" />
+    <inherits name="com.vaadin.v7.Vaadin7WidgetSet" />
     <inherits name="org.discotools.gwt.leaflet.Core" />
     <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
 
