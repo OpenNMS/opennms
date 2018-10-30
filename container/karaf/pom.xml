@@ -238,4 +238,13 @@
         -->
     </dependencies>
 
+    <repositories>
+        <repository>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
+            <id>central</id>
+            <name>Maven Central</name>
+            <url>http://maven.opennms.org/content/repositories/central/</url>
+        </repository>
+    </repositories>
 </project>

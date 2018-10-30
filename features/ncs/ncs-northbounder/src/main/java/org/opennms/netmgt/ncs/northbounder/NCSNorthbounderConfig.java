@@ -115,10 +115,12 @@ public class NCSNorthbounderConfig implements Serializable, Comparable<NCSNorthb
     @XmlAttribute(name="fragment", required=false)
     private String m_fragment;
 
+    @XmlAttribute(name="use-system-proxy")
+    private boolean m_useSystemProxy;
+
     @XmlElement(name="uei")
     private List<String> m_acceptableUeis;
 
-    
     @Override
     public int compareTo(NCSNorthbounderConfig o) {
         int c = 0;
@@ -253,6 +255,14 @@ public class NCSNorthbounderConfig implements Serializable, Comparable<NCSNorthb
 
     public void setAcceptableUeis(List<String> acceptableUeis) {
         m_acceptableUeis = acceptableUeis;
+    }
+
+    public void setUseSystemProxy(boolean useSystemProxy){
+        m_useSystemProxy = useSystemProxy;
+    }
+
+    public boolean getUseSystemProxy(){
+        return m_useSystemProxy;
     }
 
     public URI getURI() {
