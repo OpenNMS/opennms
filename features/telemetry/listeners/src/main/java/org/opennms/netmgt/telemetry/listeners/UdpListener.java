@@ -54,6 +54,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.util.ReferenceCountUtil;
 import io.netty.util.internal.SocketUtils;
 
 public class UdpListener implements Listener {
@@ -112,12 +113,12 @@ public class UdpListener implements Listener {
                             ch.pipeline().addLast(new SimpleChannelInboundHandler<DatagramPacket>() {
                                 @Override
                                 protected void channelRead0(final ChannelHandlerContext ctx, final DatagramPacket msg) throws Exception {
-                                    // TODO MVR copy() vs retain()
-                                    // TODO fooker copy() vs retain()
-                                    parser.parse(msg.content().copy().nioBuffer(), msg.sender(), msg.recipient())
+                                    parser.parse(ReferenceCountUtil.retain(msg.content()).nioBuffer(),
+                                            msg.sender(), msg.recipient())
                                             // TODO MVR this is the same code as below, really duplicating here?
                                             // TODO fooker this is the same code as below, really duplicating here?
                                             .handle((result, ex) -> {
+                                                ReferenceCountUtil.release(msg.content());
                                                 if (ex != null) {
                                                     ctx.fireExceptionCaught(ex);
                                                 }
@@ -129,15 +130,14 @@ public class UdpListener implements Listener {
                             ch.pipeline().addLast(new SimpleChannelInboundHandler<DatagramPacket>() {
                                 @Override
                                 protected void channelRead0(final ChannelHandlerContext ctx, final DatagramPacket msg) throws Exception {
-                                    // TODO MVR copy() vs retain()
-                                    // TODO fooker copy() vs retain()
-                                    final ByteBuffer buffer = msg.content().copy().nioBuffer();
                                     for (final UdpParser parser : parsers) {
-                                        if (BufferUtils.peek(buffer, ((Dispatchable) parser)::handles)) {
-                                            parser.parse(buffer, msg.sender(), msg.recipient())
+                                        if (BufferUtils.peek(msg.content().nioBuffer(), ((Dispatchable) parser)::handles)) {
+                                            parser.parse(ReferenceCountUtil.retain(msg.content()).nioBuffer(),
+                                                    msg.sender(), msg.recipient())
                                                     // TODO MVR this is the same code as above, really duplicating here?
                                                     // TODO fooker this is the same code as above, really duplicating here?
                                                     .handle((result, ex) -> {
+                                                        ReferenceCountUtil.release(msg.content());
                                                         if (ex != null) {
                                                             ctx.fireExceptionCaught(ex);
                                                         }

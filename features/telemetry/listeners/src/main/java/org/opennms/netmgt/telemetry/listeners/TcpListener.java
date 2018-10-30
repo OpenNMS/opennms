@@ -47,6 +47,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.util.ReferenceCountUtil;
 import io.netty.util.internal.SocketUtils;
 
 public class TcpListener implements Listener {
@@ -95,10 +96,9 @@ public class TcpListener implements Listener {
                                     @Override
                                     protected void channelRead0(final ChannelHandlerContext ctx,
                                                                 final ByteBuf msg) throws Exception {
-                                        // TODO MVR copy() vs retain()
-                                        // TODO fooker copy() vs retain()
-                                        session.parse(msg.copy().nioBuffer())
+                                        session.parse(ReferenceCountUtil.retain(msg).nioBuffer())
                                                 .handle((result, ex) -> {
+                                                    ReferenceCountUtil.release(msg);
                                                     if (ex != null) {
                                                         ctx.fireExceptionCaught(ex);
                                                     }
