@@ -47,13 +47,13 @@ import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog;
-import org.opennms.netmgt.telemetry.adapters.collection.AbstractScriptPersistingAdapter;
+import org.opennms.netmgt.telemetry.adapters.collection.AbstractPersistingAdapter;
 import org.opennms.netmgt.telemetry.adapters.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.adapters.collection.ScriptedCollectionSetBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SFlowTelemetryAdapter extends AbstractScriptPersistingAdapter {
+public class SFlowTelemetryAdapter extends AbstractPersistingAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(SFlowTelemetryAdapter.class);
 
@@ -94,7 +94,7 @@ public class SFlowTelemetryAdapter extends AbstractScriptPersistingAdapter {
             LOG.warn("Unable to find node and interface for agent address: {}", address);
             return Stream.empty();
         }
-        final ScriptedCollectionSetBuilder builder = scriptedCollectionSetBuilders.get();
+        final ScriptedCollectionSetBuilder builder = getCollectionBuilder();
         if (builder == null) {
             LOG.error("Error compiling script '{}'. See logs for details.", this.getScript());
             return Stream.empty();

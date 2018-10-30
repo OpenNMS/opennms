@@ -41,7 +41,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog;
-import org.opennms.netmgt.telemetry.adapters.collection.AbstractScriptPersistingAdapter;
+import org.opennms.netmgt.telemetry.adapters.collection.AbstractPersistingAdapter;
 import org.opennms.netmgt.telemetry.adapters.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.adapters.collection.ScriptedCollectionSetBuilder;
 import org.opennms.netmgt.telemetry.adapters.jti.proto.CpuMemoryUtilizationOuterClass;
@@ -72,7 +72,7 @@ import javax.script.ScriptException;
  *
  * @author jwhite
  */
-public class JtiGpbAdapter extends AbstractScriptPersistingAdapter {
+public class JtiGpbAdapter extends AbstractPersistingAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(JtiGpbAdapter.class);
 
     private static final ExtensionRegistry s_registry = ExtensionRegistry.newInstance();
@@ -140,7 +140,7 @@ public class JtiGpbAdapter extends AbstractScriptPersistingAdapter {
             return Stream.empty();
         }
 
-        final ScriptedCollectionSetBuilder builder = scriptedCollectionSetBuilders.get();
+        final ScriptedCollectionSetBuilder builder = getCollectionBuilder();
         if (builder == null) {
             LOG.error("Error compiling script '{}'. See logs for details.", this.getScript());
             return Stream.empty();
