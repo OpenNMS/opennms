@@ -178,7 +178,7 @@ public class Executor {
         public void run() {
             DaemonTools.handleReloadEvent(m_event, "Scriptd", (event) -> doConfigReload(event));
 
-            // Deprecating this one...
+            // Deprecated way of reloading
             if ("uei.opennms.org/internal/reloadScriptConfig".equals(m_event.getUei())) {
                 try {
                     doConfigReload(m_event);

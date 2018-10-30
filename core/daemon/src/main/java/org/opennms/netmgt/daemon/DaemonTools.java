@@ -71,22 +71,29 @@ public class DaemonTools {
     }
 
     /**
-     * Handles the ReloadEvent of Daemons, to have a standardized way they are done.
+     * Handles the ReloadEvent of a daemon, to have a standardized way they are done.
      *
-     * @param e                          the Reload Event with the uei {@link EventConstants#RELOAD_DAEMON_CONFIG_UEI}
+     * In order to trigger a reload the following conditions must be fulfilled:
+     *  - The event's uei must match {@link EventConstants#RELOAD_DAEMON_CONFIG_UEI}
+     *  - The event must contain a parameter {@link EventConstants#PARM_DAEMON_NAME} which matches the provided <code>daemonName</code>
+     *
+     * Afterwards an event with uei {@link EventConstants#RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI} or {@link EventConstants#RELOAD_DAEMON_CONFIG_FAILED_UEI}
+     * (depending on success or failure of the reload) is send.
+     *
+     *
+     * @param event                      the Reload Event with a uei {@link EventConstants#RELOAD_DAEMON_CONFIG_UEI}.
      * @param daemonName                 the Name of the daemon that should be updated, needed for the Name-check with the event-parameter
      * @param targetFile                 the Name and path of the configfile, that will be reloaded
      * @param handleConfigurationChanged An Action that handles the Configuration change (Can throw Exceptions)
      * @param exceptionHandler           A Consumer that handles possible Exceptions from the given handleConfigurationChanged-Action (Can not throw Exceptions)
      */
-    public static void handleReloadEvent(Event e, String daemonName, String targetFile, Action<Event> handleConfigurationChanged, Consumer<Exception> exceptionHandler) {
-
-        if (!EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(e.getUei())) {
+    public static void handleReloadEvent(Event event, String daemonName, String targetFile, Action<Event> handleConfigurationChanged, Consumer<Exception> exceptionHandler) {
+        if (!EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
             LOG.warn("The event does not have the correct uei: {}. Ignoring.", EventConstants.RELOAD_DAEMON_CONFIG_UEI);
             return;
         }
 
-        final Parm daemonNameParm = e.getParm(EventConstants.PARM_DAEMON_NAME);
+        final Parm daemonNameParm = event.getParm(EventConstants.PARM_DAEMON_NAME);
         if (daemonNameParm == null || daemonNameParm.getValue() == null) {
             LOG.warn("The {} parameter has no value. Ignoring.", EventConstants.PARM_DAEMON_NAME);
             return;
@@ -97,7 +104,7 @@ public class DaemonTools {
 
             EventBuilder ebldr = null;
             try {
-                handleConfigurationChanged.accept(e);
+                handleConfigurationChanged.accept(event);
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, daemonName);
                 LOG.info("Reload successful.");
             } catch (Exception t) {
