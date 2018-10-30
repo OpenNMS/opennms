@@ -130,10 +130,12 @@ public abstract class UIHelper {
 		showNotification("Validation Error", errorMessage != null ? errorMessage : "An unknown error occurred.", Type.ERROR_MESSAGE);
 	}
 
-	// TODO MVR refactor all UI.getCurrent() calls, as they are not working anymore in Vaadin 8.
-	// TODO MVR See https://vaadin.com/forum/thread/15304760 for more details
-	public static <T> T getCurrent(Class<T> clazz) {
-		return (T) UI.getCurrent();
+	public static <T extends UI> T getCurrent(Class<T> clazz) {
+		final T ui = (T) UI.getCurrent();
+		if (ui == null || !ui.isAttached()) {
+			throw new IllegalStateException("UI is either null or not attached. Ensure it is invoked from within a VaadinRequest");
+		}
+		return ui;
 	}
 
 	public static void showNotification(String message) {
