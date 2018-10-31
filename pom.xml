@@ -952,6 +952,8 @@
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
           <rerunFailingTestsCount>1</rerunFailingTestsCount>
+          <groups>${opennms.test.groups}</groups>
+          <excludedGroups>${opennms.test.excludedGroups}</excludedGroups>
           <includes>
             <include>**/*Test.java</include>
           </includes>
@@ -981,6 +983,8 @@
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
           <rerunFailingTestsCount>1</rerunFailingTestsCount>
+          <groups>${opennms.test.groups}</groups>
+          <excludedGroups>${opennms.test.excludedGroups}</excludedGroups>
           <skipITs>${skipITs}</skipITs>
         </configuration>
         <executions>
@@ -1149,6 +1153,8 @@
     <argLineMemory>-Xmx1g</argLineMemory>
     <argLine>${argLineMemory} -Djava.security.egd=/dev/./urandom -Djava.endorsed.dirs=${basedir}/target/endorsed -Dpoller.logfile=/tmp/remote-poller.log</argLine>
     <skipITs>true</skipITs>
+    <opennms.test.groups></opennms.test.groups>
+    <opennms.test.excludedGroups>org.opennms.core.test.junit.FlappingTests</opennms.test.excludedGroups>
 
     <!--
       This is on by default now that root is not required for pinging.
@@ -1825,6 +1831,12 @@
         <artifactId>org.opennms.core.build.keystore</artifactId>
         <version>${project.version}</version>
         <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.junit</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
@@ -3792,7 +3804,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.12</version>
+        <version>4.12</version> <!-- if you change this, be sure to update core/test-api/junit/pom.xml as well! -->
         <scope>test</scope>
       </dependency>
       <dependency>
