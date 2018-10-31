@@ -5,7 +5,7 @@
         <feature>http-whiteboard</feature>
         <bundle>wrap:mvn:com.vaadin.external.gwt/gwt-elemental/${vaadinExternalGwtVersion}</bundle>
         <bundle>wrap:mvn:com.vaadin.external.gwt/gwt-user/${vaadinExternalGwtVersion}/$Export-Package=com.google.*</bundle>
-        <bundle>wrap:mvn:org.vaadin.addons/contextmenu/${vaadinAddonContextMenuVersion}</bundle>
+        <bundle>mvn:com.vaadin/vaadin-context-menu/${vaadinAddonContextMenuVersion}</bundle>
         <bundle>wrap:mvn:org.vaadin.addon/confirmdialog/${vaadinAddonConfirmDialogVersion}</bundle>
         <bundle>wrap:mvn:com.vaadin/vaadin-compatibility-server/${vaadinVersion}</bundle>
         <bundle>wrap:mvn:com.vaadin/vaadin-compatibility-client-compiled/${vaadinVersion}</bundle>

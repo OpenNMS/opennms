@@ -115,9 +115,8 @@
     <dependencies>
         <!-- Additional Addons shared with Topology Applications -->
         <dependency>
-            <groupId>org.vaadin.addons</groupId>
-            <artifactId>contextmenu</artifactId>
-            <scope>provided</scope>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-context-menu</artifactId>
         </dependency>
         <dependency>
             <groupId>org.vaadin.addon</groupId>

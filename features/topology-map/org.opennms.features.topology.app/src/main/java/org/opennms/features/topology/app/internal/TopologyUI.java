@@ -748,7 +748,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         m_mapLayout.setSizeFull();
 
         m_menuBar = new TopologyMenuBar();
-        m_contextMenu = new TopologyContextMenu();
+        m_contextMenu = new TopologyContextMenu(getUI());
         updateMenu();
         if(m_widgetManager.widgetCount() != 0) {
             updateWidgetView(m_widgetManager);

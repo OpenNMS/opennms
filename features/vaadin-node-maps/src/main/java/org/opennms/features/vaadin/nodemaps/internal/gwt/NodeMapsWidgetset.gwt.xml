@@ -5,7 +5,7 @@
     <inherits name="com.vaadin.DefaultWidgetSet" />
     <inherits name="com.vaadin.v7.Vaadin7WidgetSet" />
     <inherits name="org.discotools.gwt.leaflet.Core" />
-    <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
+    <inherits name="com.vaadin.contextmenu.WidgetSet" />
 
     <!-- 
           Compiler error: The Cross-Site-Iframe linker does not support <script> tags in the gwt.xml files, 

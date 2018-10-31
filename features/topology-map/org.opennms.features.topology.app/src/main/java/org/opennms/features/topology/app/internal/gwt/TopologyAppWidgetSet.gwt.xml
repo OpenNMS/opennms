@@ -19,7 +19,7 @@
     <inherits name="com.google.gwt.json.JSON" /> 
     <inherits name="com.google.gwt.http.HTTP" />   
     <inherits name="com.vaadin.v7.Vaadin7WidgetSet" />
-    <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
+    <inherits name="com.vaadin.contextmenu.WidgetSet" />
 
     <collapse-all-properties/>
 </module>

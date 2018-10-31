@@ -1392,7 +1392,7 @@
     <vaadinVersion>8.0.7</vaadinVersion>
     <!-- Requiring a more recent plugin version which passes the classpath via ENV -->
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
-    <vaadinAddonContextMenuVersion>4.5</vaadinAddonContextMenuVersion>
+    <vaadinAddonContextMenuVersion>2.0.0</vaadinAddonContextMenuVersion>
     <vaadinAddonConfirmDialogVersion>3.2.0</vaadinAddonConfirmDialogVersion>
     <skipPdfGeneration>true</skipPdfGeneration>
     <skipSignJar>true</skipSignJar>
@@ -3390,8 +3390,8 @@
         <version>${vaadinVersion}</version>
       </dependency>
       <dependency>
-        <groupId>org.vaadin.addons</groupId>
-        <artifactId>contextmenu</artifactId>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-context-menu</artifactId>
         <version>${vaadinAddonContextMenuVersion}</version>
       </dependency>
       <dependency>
