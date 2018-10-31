@@ -99,8 +99,8 @@ groovy.compiler.output.path=target/classes
       <version>1.2.13</version>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.junit</artifactId>
       <version>3.8.2</version>
       <scope>test</scope>
     </dependency>

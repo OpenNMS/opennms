@@ -44,7 +44,6 @@ import java.util.List;
 
 
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.util.ilr.Collector;
 import org.opennms.util.ilr.Collector.SortColumn;
@@ -268,18 +267,6 @@ public class CollectorTest {
         assertEquals("1d",Collector.formatDuration(3600*1000*24));
         assertEquals("1d0h0m0.001s",Collector.formatDuration(3600*1000*24+1));
     }
-    @Ignore
-    @Test
-    public void testPrintReport() throws IOException{
-        Collector c = new Collector();
-        c.readLogMessagesFromFile("target/test-classes/TestLogFile.log");
-        StringWriter out = new StringWriter ();
-        c.printReport(new PrintWriter(out,true));
-        String expectedOutput = fromFile("target/test-classes/TestLogFile.out");
-        String actualOutput = out.toString();
-        assertEquals(expectedOutput,actualOutput);
-    }
-
     @Test
     public void testSortByAverageCollectionTime() {
 
