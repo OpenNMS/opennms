@@ -151,9 +151,7 @@ for (OnmsMonitoringLocation location : locationDao.findAll()) {
 RequisitionAccessService reqAccessService = context.getBean(RequisitionAccessService.class);
 Map<String,String> foreignsources = new TreeMap<String,String>();
 for (Requisition requisition : reqAccessService.getRequisitions()) {
-  if (! "Minions".equals(requisition.getForeignSource)) {
-    foreignsources.put(requisition.getForeignSource(), requisition.getForeignSource());
-  }
+  foreignsources.put(requisition.getForeignSource(), requisition.getForeignSource());
 }
 
 %>
