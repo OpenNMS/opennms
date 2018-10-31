@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -113,10 +113,18 @@
 
 <div class="row">
   <div class="col-md-4">
-    <form role="form" class="form-inline" action="admin/sched-outages/editoutage.jsp" method="post" >
+    <form role="form" class="form-inline" action="admin/sched-outages/editoutage.jsp" method="post" id="newOutageForm">
       <input type="hidden" name="addNew" value="true" />
-      <input type="text" class="form-control" value="New Name" size="40" name="newName" />
+      <input type="text" class="form-control" placeholder="Outage Name" size="40" name="newName" id="newName" />
       <input type="submit" class="btn btn-default" name="newOutage" value="Add new outage" />
+      <script>
+      $("#newOutageForm").submit(function(event) {
+        if ( $("#newName").val().length == 0 ) {
+          alert("Enter a name for the new outage");
+          $("#newName").focus();
+          event.preventDefault();
+        }
+      });
     </form>
   </div> <!-- column -->
 </div> <!-- row -->
