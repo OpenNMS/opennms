@@ -66,6 +66,7 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
@@ -472,6 +473,11 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     public void setSuppressIncrementalAlarms(boolean suppressIncrementalAlarms) {
         this.suppressIncrementalAlarms = suppressIncrementalAlarms;
+    }
+
+    @VisibleForTesting
+    KafkaAlarmDataSync getDataSync() {
+        return dataSync;
     }
 
     public void setKafkaSendQueueCapacity(int kafkaSendQueueCapacity) {
