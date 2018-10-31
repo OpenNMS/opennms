@@ -86,6 +86,7 @@
 	<include file="22.0.0/changelog-insert-rules.xml"/>
 	<include file="22.0.1/changelog.xml"/>
 	<include file="23.0.0/changelog.xml"/>
+	<include file="24.0.0/changelog.xml"/>
 
 	<include file="stored-procedures/getManagePercentAvailIntfWindow.xml" />
 	<include file="stored-procedures/getManagePercentAvailNodeWindow.xml" />

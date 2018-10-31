@@ -10,9 +10,10 @@
   <packaging>pom</packaging>
   <name>OpenNMS :: Features</name>
   <modules>
-
     <!-- ActiveMQ broker -->
     <module>activemq</module>
+
+    <module>api-layer</module>
 
     <!-- AMQP Event Gateway and Alarm Northbounder -->
     <module>amqp</module>
@@ -128,7 +129,6 @@
     <module>geolocation</module>
     <module>instrumentationLogReader</module>
     <module>name-cutter</module>
-    <module>ncs</module>
     <module>springframework-security</module>
     <module>status</module>
     <module>system-report</module>

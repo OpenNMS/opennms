@@ -12,7 +12,6 @@ opennms-contrib
 opennms-db
 opennms-doc
 opennms-jmx-config-generator
-opennms-ncs
 opennms-plugin-collector-juniper-tca
 opennms-plugin-provisioning-dns
 opennms-plugin-provisioning-rancid

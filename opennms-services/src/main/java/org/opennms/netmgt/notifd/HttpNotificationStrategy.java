@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.notifd;
 
+import static org.opennms.core.web.HttpClientWrapperConfigHelper.PARAMETER_KEYS.useSystemProxy;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -84,9 +86,10 @@ public class HttpNotificationStrategy implements NotificationStrategy {
 
         final HttpClientWrapper clientWrapper = HttpClientWrapper.create()
                 .setConnectionTimeout(3000)
-                .setSocketTimeout(3000)
-                .useSystemProxySettings();
-
+                .setSocketTimeout(3000);
+        if(getUseSystemProxy()) {
+             clientWrapper.useSystemProxySettings();
+        }
         HttpUriRequest method = null;
         final List<NameValuePair> posts = getPostArguments();
 
@@ -120,6 +123,10 @@ public class HttpNotificationStrategy implements NotificationStrategy {
         doSql(contents);
 
         return statusCode;
+    }
+
+    void setArguments(List<Argument> arguments){
+        m_arguments = arguments;
     }
 
     private void doSql(String contents) {
@@ -230,21 +237,30 @@ public class HttpNotificationStrategy implements NotificationStrategy {
         return getSwitchValue("sql");
     }
 
-    private String getUrl() {
-        String url = getSwitchValue("url");
-        if ( url == null )
-            url = getUrlAsPrefix();
-        return url;
+    boolean getUseSystemProxy(){
+        return Boolean.parseBoolean(extractValue(useSystemProxy.name()));
     }
 
-    private String getUrlAsPrefix() {
-        String url = null; 
-        for (Argument arg: getArgsByPrefix("url")) {
-            LOG.debug("Found url switch: {} with value: {}", arg.getSwitch(), arg.getValue());
-            url = arg.getValue();
-        }
-        return url;
+    String getUrl() {
+        return extractValue("url");
     }
+
+    private String extractValue(String name) {
+        String value = getSwitchValue(name);
+        if ( value == null )
+            value = getValueAsPrefix(name);
+        return value;
+    }
+
+    private String getValueAsPrefix(String argPrefix) {
+        String value = null;
+        for (Argument arg: getArgsByPrefix(argPrefix)) {
+            LOG.debug("Found {} switch: {} with value: {}", argPrefix, arg.getSwitch(), arg.getValue());
+            value = arg.getValue();
+        }
+        return value;
+    }
+
     /**
      * Helper method to look into the Argument list and return the associated value.
      * If the value is an empty String, this method returns null.

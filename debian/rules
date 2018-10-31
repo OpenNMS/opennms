@@ -142,18 +142,7 @@ install: build
 	install -d -m 755 debian/opennms-plugin-ticketer-{jira,otrs,rt}/usr/share/java/opennms
 	install -d -m 755 debian/opennms-plugin-ticketer-{jira,otrs,rt}/etc/opennms
 	install -d -m 755 debian/opennms-plugin-ticketer-{jira,otrs,rt}/var/lib/opennms/etc-pristine
-	
-	# Setup NCS
-	install -d -m 755 debian/opennms-ncs/usr/share/java/opennms
-	install -d -m 755 debian/opennms-ncs/etc/opennms/drools-engine.d
-	install -d -m 755 debian/opennms-ncs/etc/opennms/events
-	install -d -m 755 debian/opennms-ncs/var/lib/opennms/etc-pristine/drools-engine.d
-	install -d -m 755 debian/opennms-ncs/var/lib/opennms/etc-pristine/events
-	install -d -m 755 debian/opennms-ncs/var/lib/opennms/xsds
-	install -d -m 755 debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/alarm
-	install -d -m 755 debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/lib
-	install -d -m 755 debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/META-INF/opennms
-	
+
 	# CIFS
 	mv debian/temp/lib/org.opennms.protocols.cifs-*.jar                                        debian/opennms-plugin-protocol-cifs/usr/share/java/opennms/
 	
@@ -212,18 +201,6 @@ install: build
 	mv debian/temp/lib/opennms-integration-rt*.jar                                             debian/opennms-plugin-ticketer-rt/usr/share/java/opennms/
 	mv debian/temp/etc/rt.properties                                                           debian/opennms-plugin-ticketer-rt/etc/opennms/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/rt.properties                        debian/opennms-plugin-ticketer-rt/var/lib/opennms/etc-pristine/
-	
-	# NCS
-	mv debian/temp/lib/org.opennms.features.ncs.ncs-*.jar                                      debian/opennms-ncs/usr/share/java/opennms/
-	mv debian/temp/etc/drools-engine.d/ncs                                                     debian/opennms-ncs/etc/opennms/drools-engine.d/
-	mv debian/temp/etc/ncs-northbounder-configuration.xml                                      debian/opennms-ncs/etc/opennms/
-	mv debian/temp/share/xsds/ncs-*.xsd                                                        debian/opennms-ncs/var/lib/opennms/xsds/
-	mv debian/temp/jetty-webapps/opennms/WEB-INF/lib/org.opennms.features.ncs.ncs-*.jar        debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/lib/
-	mv debian/temp/jetty-webapps/opennms/WEB-INF/ncs*.xml                                      debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/
-	mv debian/temp/jetty-webapps/opennms/WEB-INF/jsp/alarm/ncs-*                               debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/alarm/
-	mv debian/temp/jetty-webapps/opennms/WEB-INF/jsp/ncs                                       debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/
-	mv debian/opennms-common/var/lib/opennms/etc-pristine/drools-engine.d/ncs                  debian/opennms-ncs/var/lib/opennms/etc-pristine/drools-engine.d/
-	mv debian/opennms-common/var/lib/opennms/etc-pristine/ncs-northbounder-configuration.xml   debian/opennms-ncs/var/lib/opennms/etc-pristine/
 	
 	##
 	## opennms-jmx-config-generator

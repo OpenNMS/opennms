@@ -40,4 +40,6 @@ public interface ActionVisitor {
 
     void acknowledgeAlarm(String ackUser, Date ackTime, Function<OnmsAlarm, Boolean> filter);
 
+    void unacknowledgeAlarm(String ackUser, Date ackTime, Function<OnmsAlarm, Boolean> filter);
+
 }

@@ -292,7 +292,11 @@ public class AlarmPersisterImpl implements AlarmPersister {
         if (relatedAlarms != null && !relatedAlarms.isEmpty()) {
             // alarm.relatedAlarms becomes the union of any existing alarms and any in the event.
             for (OnmsAlarm related : relatedAlarms) {
-                alarm.addRelatedAlarm(related);
+                if (!formingCyclicGraph(alarm, related)) {
+                    alarm.addRelatedAlarm(related);
+                } else {
+                    LOG.warn("Alarm with id '{}' , reductionKey '{}' is not added as related alarm for id '{}' as it is forming cyclic graph ", related.getId(), related.getReductionKey(), alarm.getId());
+                }
             }
         }
 
@@ -331,7 +335,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         alarm.setLastEvent(e);
         alarm.setLogMsg(e.getEventLogMsg());
         alarm.setMouseOverText(e.getEventMouseOverText());
-        alarm.setNode(e.getNode()); 
+        alarm.setNode(e.getNode());
         alarm.setOperInstruct(e.getEventOperInstruct());
         alarm.setReductionKey(event.getAlarmData().getReductionKey());
         alarm.setServiceType(e.getServiceType());
@@ -344,6 +348,12 @@ public class AlarmPersisterImpl implements AlarmPersister {
         }
         e.setAlarm(alarm);
         return alarm;
+    }
+
+    private boolean formingCyclicGraph(OnmsAlarm situation, OnmsAlarm relatedAlarm) {
+
+        return situation.getReductionKey().equals(relatedAlarm.getReductionKey()) ||
+                relatedAlarm.getRelatedAlarms().stream().anyMatch(ra -> formingCyclicGraph(situation, ra));
     }
     
     private Set<OnmsAlarm> getRelatedAlarms(List<Parm> list) {

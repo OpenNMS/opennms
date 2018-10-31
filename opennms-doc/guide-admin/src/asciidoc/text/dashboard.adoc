@@ -35,7 +35,7 @@ The _Surveillance View_ has multiple functions.
 * Allows to limit the number of information in the _Dashboard_ by selecting rows, columns and cells.
 
 You can select columns, rows, single cells and of course all entries in a _Surveillance View_.
-Please refer to the <<user-guide-surveillance-view, Surveillance View Section>> for details on how to configure _Surveillance Views_.
+Please refer to the <<ga-surveillance-view, Surveillance View Section>> for details on how to configure _Surveillance Views_.
 
 .The _Surveillance View_ forms the basis for the _Dashboard_ page.
 image::dashboard/02_dashboard-surveillance-view.png[]
@@ -106,7 +106,7 @@ It allows to navigate sequentially through resource graphs provided by nodes fil
 
 The _Surveillance View_ component allows to model multiple views for different monitoring contexts.
 It gives the possibility to create special view as example for network operators or server operators.
-The _Dashboard_ shows only *_one_* configured <<user-guide-surveillance-view, _Surveillance View_>>.
+The _Dashboard_ shows only *_one_* configured <<ga-surveillance-view, _Surveillance View_>>.
 To give different users the possibility using their _Surveillance View_ fitting there requirements it is possible to map a logged in user to a given _Surveillance View_ used in the _Dashboard_.
 
 The selected nodes from the _Surveillance View_ are also aware of link:http://www.opennms.org/wiki/User_Restriction_Filters[_User Restriction Filter_].

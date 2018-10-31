@@ -36,7 +36,6 @@ public class AcknowledgeAlarmAction implements Action {
     private final Date ackTime;
     private final String reductionKey;
 
-
     public AcknowledgeAlarmAction(String ackUser, Date ackTime, String reductionKey) {
         this.ackUser = Objects.requireNonNull(ackUser);
         this.ackTime = Objects.requireNonNull(ackTime);
