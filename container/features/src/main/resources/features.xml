@@ -1190,7 +1190,6 @@
       <bundle>mvn:org.opennms.features.kafka/org.opennms.features.kafka.producer/${project.version}</bundle>
     </feature>
 
-    <!-- TODO fooker rework feature -->
     <feature name="opennms-telemetry-collection" description="OpenNMS :: Telemetry :: Collection" version="${project.version}">
       <feature>guava</feature>
       <feature>camel-netty4</feature>
@@ -1208,7 +1207,6 @@
       <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.collection/${project.version}</bundle>
     </feature>
 
-    <!-- TODO fooker rework feature -->
     <feature name="opennms-telemetry-daemon" description="OpenNMS :: Telemetry :: Daemon" version="${project.version}">
       <feature>camel-netty4</feature>
       <!-- Needed to bootstrap opennms-core-ipc-sink-api Spring context -->
@@ -1231,14 +1229,12 @@
       <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/${project.version}</bundle>
     </feature>
 
-    <!-- TODO fooker rework feature -->
     <feature name="opennms-telemetry-jti" description="OpenNMS :: Telemetry :: JTI" version="${project.version}">
       <feature>opennms-telemetry-collection</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.protocols.jti/org.opennms.features.telemetry.protocols.jti.adapter/${project.version}</bundle>
     </feature>
 
-    <!-- TODO fooker rework feature -->
     <feature name="opennms-telemetry-nxos" description="OpenNMS :: Telemetry :: NX-OS" version="${project.version}">
       <feature>opennms-telemetry-collection</feature>
       <!-- Use a newer version of Google Protobuf -->
@@ -1281,7 +1277,6 @@
         <bundle>mvn:org.opennms.container/spring-extender/${project.version}</bundle>
     </feature>
 
-    <!-- TODO fooker rework feature -->
     <feature name="opennms-flows" description="OpenNMS :: Features :: Flows :: Feature Definition" version="${project.version}">
         <details>Feature definition to start all required bundles related to *flow-support.</details>
         <feature>opennms-health</feature>

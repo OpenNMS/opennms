@@ -41,8 +41,6 @@ import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
 
 import com.google.common.collect.Lists;
 
-// TODO MVR: Verify queue definitions here
-// TODO fooker: Verify queue definitions here
 public class MapBasedAdapterDef implements AdapterDefinition {
     private final String name;
     private final String className;
