@@ -56,8 +56,8 @@
       <version>21.1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.junit</artifactId>
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>

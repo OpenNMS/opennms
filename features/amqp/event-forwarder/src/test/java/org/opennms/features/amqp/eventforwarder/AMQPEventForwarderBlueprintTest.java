@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,9 +34,10 @@ import java.util.Properties;
 
 import org.apache.camel.BeanInject;
 import org.apache.camel.util.KeyValueHolder;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.opennms.core.test.camel.CamelBlueprintTest;
+import org.opennms.core.test.junit.FlappingTests;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
@@ -46,12 +47,9 @@ import org.opennms.netmgt.xml.event.Event;
 /**
  * Simple test that verifies the Blueprint syntax.
  *
- * NOTE: These tests do not run reliably and tend to fail fairly
- * often so they are disabled by default.
- *
  * @author jwhite
  */
-@Ignore
+@Category(FlappingTests.class)
 public class AMQPEventForwarderBlueprintTest extends CamelBlueprintTest {
 
     @BeanInject

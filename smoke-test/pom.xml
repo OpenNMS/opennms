@@ -16,6 +16,8 @@
     <nodeVersion>v6.10.2</nodeVersion>
     <npmVersion>3.10.10</npmVersion>
     <test.fork.count>1</test.fork.count>
+    <opennms.test.groups></opennms.test.groups>
+    <opennms.test.excludedGroups>org.opennms.core.test.junit.FlappingTests</opennms.test.excludedGroups>
   </properties>
   <build>
     <testResources>
@@ -139,6 +141,8 @@
           -->
           <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
           <forkCount>${test.fork.count}</forkCount>
+          <groups>${opennms.test.groups}</groups>
+          <excludedGroups>${opennms.test.excludedGroups}</excludedGroups>
         </configuration>
         <executions>
           <execution>
@@ -247,8 +251,8 @@
   </dependencyManagement>
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.junit</artifactId>
       <version>4.12</version>
     </dependency>
     <dependency>
@@ -277,6 +281,11 @@
                 <artifactId>*</artifactId>
             </exclusion>
         </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.junit</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
