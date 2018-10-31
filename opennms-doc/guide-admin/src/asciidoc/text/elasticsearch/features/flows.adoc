@@ -34,9 +34,6 @@ The following table describes a subset of the fields in the flow document:
 |`netflow.first_switched`
 | Timestamp in milliseconds at which the first packet of the flow was transferred.
 
-|`netflow.last_switched`
-| Timestamp in milliseconds at which the last packet of the flow was transferred.
-
 |`netflow.input_snmp`
 | SNMP interface index on which packets related to this flow were received.
 
