@@ -26,24 +26,43 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.alarmd.driver;
+package org.opennms.core.test.alarms.driver;
 
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.model.OnmsAlarm;
 
-public class State {
-    private final long time;
-    private final OnmsAlarm alarm;
+public class AlarmListener implements AlarmLifecycleListener {
 
-    public State(long time, OnmsAlarm alarm) {
-        this.time = time;
-        this.alarm = alarm;
+    private static AlarmListener instance = new AlarmListener();
+
+    private final Set<Integer> allObservedAlarmIds = new LinkedHashSet<>();
+
+    private AlarmListener() {}
+
+    public static AlarmListener getInstance() {
+        return instance;
     }
 
-    public long getTime() {
-        return time;
+    @Override
+    public synchronized void handleAlarmSnapshot(List<OnmsAlarm> alarms) {
+        alarms.forEach(a -> allObservedAlarmIds.add(a.getId()));
     }
 
-    public OnmsAlarm getAlarm() {
-        return alarm;
+    @Override
+    public synchronized void handleNewOrUpdatedAlarm(OnmsAlarm alarm) {
+        allObservedAlarmIds.add(alarm.getId());
+    }
+
+    @Override
+    public synchronized void handleDeletedAlarm(int alarmId, String reductionKey) {
+        allObservedAlarmIds.add(alarmId);
+    }
+
+    public synchronized Integer getNumUniqueObserveredAlarmIds() {
+        return allObservedAlarmIds.size();
     }
 }

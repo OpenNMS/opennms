@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.alarmd.driver;
+package org.opennms.core.test.alarms.driver;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,10 +51,14 @@ public class ScenarioResults {
     }
 
     public List<OnmsAlarm> getAlarmsAtLastKnownTime() {
-        final Long lastTime = alarmsByTime.keySet().stream()
+        final Long lastTime = getLastKnownTime();
+        return alarmsByTime.get(lastTime);
+    }
+
+    public Long getLastKnownTime() {
+        return alarmsByTime.keySet().stream()
                 .max(Comparator.comparingLong(l -> l ))
                 .orElseThrow(() -> new IllegalArgumentException("No times are known."));
-        return alarmsByTime.get(lastTime);
     }
 
     public List<OnmsAlarm> getSituations(long time) {

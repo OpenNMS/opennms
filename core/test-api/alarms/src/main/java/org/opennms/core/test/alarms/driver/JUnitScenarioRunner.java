@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.alarmd.driver;
+package org.opennms.core.test.alarms.driver;
 
 import java.util.Objects;
 
@@ -54,6 +54,7 @@ public class JUnitScenarioRunner extends OpenNMSJUnit4ClassRunner implements Tes
     @Override
     public void afterTestMethod(TestContext testContext)  {
         results = ((ScenarioHandler)testContext.getTestInstance()).getResults();
+        scenario.awaitUntilComplete();
     }
 
     @Override

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.alarmd;
+package org.opennms.netmgt.alarmd.itests;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -36,17 +36,17 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Every.everyItem;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
-import static org.opennms.netmgt.alarmd.driver.AlarmMatchers.acknowledged;
-import static org.opennms.netmgt.alarmd.driver.AlarmMatchers.hasSeverity;
+import static org.opennms.core.test.alarms.AlarmMatchers.acknowledged;
+import static org.opennms.core.test.alarms.AlarmMatchers.hasSeverity;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
-import org.opennms.netmgt.alarmd.driver.JUnitScenarioDriver;
-import org.opennms.netmgt.alarmd.driver.Scenario;
-import org.opennms.netmgt.alarmd.driver.ScenarioResults;
-import org.opennms.netmgt.alarmd.driver.State;
+import org.opennms.core.test.alarms.driver.JUnitScenarioDriver;
+import org.opennms.core.test.alarms.driver.Scenario;
+import org.opennms.core.test.alarms.driver.ScenarioResults;
+import org.opennms.core.test.alarms.driver.State;
 import org.opennms.netmgt.model.OnmsSeverity;
 
 /**
@@ -75,7 +75,7 @@ public class AlarmdBlackboxIT {
                 .withNodeDownEvent(1, 1)
                 .withNodeUpEvent(2, 1)
                 .build();
-        ScenarioResults results = play(scenario);
+        ScenarioResults results = scenario.play();
 
         // Verify the set of alarms at various points in time
 
@@ -134,7 +134,7 @@ public class AlarmdBlackboxIT {
                 .withNodeUpEvent(4, 1)
                 .withNodeDownEvent(5, 1)
                 .build();
-        ScenarioResults results = play(scenario);
+        ScenarioResults results = scenario.play();
 
         // Verify the set of alarms at various points in time
 
@@ -185,7 +185,7 @@ public class AlarmdBlackboxIT {
                 .withAcknowledgmentForNodeDownAlarm(2, 1)
                 .withNodeUpEvent(3, 1)
                 .build();
-        ScenarioResults results = play(scenario);
+        ScenarioResults results = scenario.play();
 
         // Verify the set of alarms at various points in time
 
@@ -240,7 +240,7 @@ public class AlarmdBlackboxIT {
                 .withNodeDownEvent(1, 1)
                 .withAcknowledgmentForNodeDownAlarm(2, 1)
                 .build();
-        ScenarioResults results = play(scenario);
+        ScenarioResults results = scenario.play();
 
         // Verify the set of alarms at various points in time
 
@@ -292,7 +292,7 @@ public class AlarmdBlackboxIT {
                 .withNodeUpEvent(4, 1)
                 .withNodeUpEvent(4, 2)
                 .build();
-        ScenarioResults results = play(scenario);
+        ScenarioResults results = scenario.play();
 
         // Verify the set of alarms at various points in time
 
@@ -329,7 +329,7 @@ public class AlarmdBlackboxIT {
                 // Now ACK the situation
                 .withAcknowledgmentForSituation(4, "situation#1")
                 .build();
-        ScenarioResults results = play(scenario);
+        ScenarioResults results = scenario.play();
 
         // Verify the set of alarms at various points in time
 
@@ -367,7 +367,7 @@ public class AlarmdBlackboxIT {
                 .withAcknowledgmentForSituation(4, "situation#1")
                 .withUnAcknowledgmentForSituation(5, "situation#1")
                 .build();
-        ScenarioResults results = play(scenario);
+        ScenarioResults results = scenario.play();
 
         // Verify the set of alarms at various points in time
 
@@ -404,7 +404,7 @@ public class AlarmdBlackboxIT {
                 .withAcknowledgmentForNodeDownAlarm(4, 1)
                 .withAcknowledgmentForNodeDownAlarm(4, 2)
                 .build();
-        ScenarioResults results = play(scenario);
+        ScenarioResults results = scenario.play();
 
         // Verify the set of alarms at various points in time
 
@@ -442,7 +442,7 @@ public class AlarmdBlackboxIT {
                 // now un-acknowledge one of the alarms
                 .withUnAcknowledgmentForNodeDownAlarm(5, 1)
                 .build();
-        ScenarioResults results = play(scenario);
+        ScenarioResults results = scenario.play();
 
         // Verify the set of alarms at various points in time
 
@@ -465,11 +465,6 @@ public class AlarmdBlackboxIT {
         assertThat(results.getAlarms(6), not(everyItem(not(acknowledged()))));
         // t=∞
         assertThat(results.getAlarmsAtLastKnownTime(), hasSize(0));
-    }
-
-    private ScenarioResults play(Scenario scenario) {
-        JUnitScenarioDriver driver = new JUnitScenarioDriver();
-        return driver.run(scenario);
     }
 
 }

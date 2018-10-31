@@ -26,17 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.alarmd.driver;
+package org.opennms.core.test.alarms.driver;
 
 import java.util.Date;
 import java.util.Objects;
 
-public class UnAcknowledgeAlarmAction implements Action {
+public class AcknowledgeAlarmAction implements Action {
     private final String ackUser;
     private final Date ackTime;
     private final String reductionKey;
 
-    public UnAcknowledgeAlarmAction(String ackUser, Date ackTime, String reductionKey) {
+    public AcknowledgeAlarmAction(String ackUser, Date ackTime, String reductionKey) {
         this.ackUser = Objects.requireNonNull(ackUser);
         this.ackTime = Objects.requireNonNull(ackTime);
         this.reductionKey = Objects.requireNonNull(reductionKey);
@@ -49,6 +49,6 @@ public class UnAcknowledgeAlarmAction implements Action {
 
     @Override
     public void visit(ActionVisitor visitor) {
-        visitor.unacknowledgeAlarm(ackUser, ackTime, (a) -> Objects.equals(reductionKey, a.getReductionKey()));
+        visitor.acknowledgeAlarm(ackUser, ackTime, (a) -> Objects.equals(reductionKey, a.getReductionKey()));
     }
 }
