@@ -206,7 +206,7 @@ public class AlarmToESIT {
         // t=3, two problem alarms + 1 situation
         assertThat(scenarioResults.getAlarms(3), hasSize(3)); // the situation is also an alarm, so it is counted here
         assertThat(scenarioResults.getSituations(3), hasSize(1));
-        assertThat(scenarioResults.getSituation(3), hasSeverity(OnmsSeverity.MAJOR));
+        assertThat(scenarioResults.getSituation(3), hasSeverity(OnmsSeverity.CRITICAL)); // situations have max(severity) + 1
 
         assertThat(alarmsFromES.getAlarmsAt(3), hasSize(3));
         assertThat(alarmsFromES.getSituationsAt(3), hasSize(1));
