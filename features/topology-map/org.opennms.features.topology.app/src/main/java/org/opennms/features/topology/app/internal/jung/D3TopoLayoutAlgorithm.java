@@ -68,7 +68,7 @@ public class D3TopoLayoutAlgorithm extends AbstractLayoutAlgorithm {
         layout.setSize(size);
 
         while(!layout.done()) {
-            layout.step();
+                layout.step();
         }
 
         // Store the new positions in the layout

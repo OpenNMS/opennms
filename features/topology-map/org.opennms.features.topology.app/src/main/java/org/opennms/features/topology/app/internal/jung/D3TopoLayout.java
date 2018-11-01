@@ -214,6 +214,10 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
     @Override
     public void step() {
 
+        if(getGraph().getEdges().isEmpty()){
+            m_alpha = 0; // => makes done() == true. We don't need to iterate over nothing
+        }
+
         double currentForce;
 
         //guass-seidel relaxation for links
@@ -341,13 +345,9 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
         private int m_charge = DEFAULT_CHARGE;
         private Point2D m_previous = null;
 
-        protected void offset(double x, double y)
-        {
-            String before = this.toString();
+        protected void offset(double x, double y) {
             this.x += x;
             this.y += y;
-            String after = this.toString();
-            print(before, after);
         }
         
         protected void offsetPrevious(double x, double y) {
@@ -365,23 +365,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
             m_previous = new Point2D.Double(x, y);
         }
 
-        @Override
-        public void setLocation(double x, double y) {
-            String before = this.toString();
-            super.setLocation(x, y);
-            String after = this.toString();
-            print(before, after);
-        }
-
         private void print(String before, String after) {
-        }
-
-        @Override
-        public void setLocation(Point2D p) {
-            String before = this.toString();
-            super.setLocation(p);
-            String after = this.toString();
-            print(before, after);
         }
 
         protected double norm()
