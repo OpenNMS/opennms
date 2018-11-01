@@ -17,6 +17,7 @@
     <module>db</module>
     <module>dns</module>
     <module>http</module>
+    <module>junit</module>
     <module>kafka</module>
     <module>karaf</module>
     <module>lib</module>

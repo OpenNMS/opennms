@@ -140,8 +140,8 @@
         <!-- 17.0 is the same version used by camel-elasticsearch -->
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.junit</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
