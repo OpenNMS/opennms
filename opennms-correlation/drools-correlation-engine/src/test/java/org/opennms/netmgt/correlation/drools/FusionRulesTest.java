@@ -38,16 +38,19 @@ public class FusionRulesTest extends CorrelationRulesTestCase {
 
     @Test
     public void testDroolsFusion() throws Exception {
-        
+
         anticipate(createNodeUpEvent(1));
-        
+        anticipate(new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "droolsFusion").getEvent());
+        EventBuilder eb = new EventBuilder("uei.opennms.org/triggerTestForFusion", "droolsTest");
         DroolsCorrelationEngine engine = findEngineByName("droolsFusion");
-        
+        // This will create an exception and the engine should reload.
+        engine.correlate(eb.getEvent());
+        Thread.sleep(5000); // Wait time for the engine to reload.
+        // The engine should run other rules after reload.
         engine.correlate(createNodeLostServiceEvent(1, "SSH"));
         Thread.sleep(4000); // Give time to execute the time-based rules.
         m_anticipatedMemorySize = 5;
         engine.getKieSessionObjects().forEach(System.err::println);
-        
         verify(engine);
     }
 

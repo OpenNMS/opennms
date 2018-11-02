@@ -122,7 +122,11 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     public synchronized void correlate(final Event e) {
         LOG.debug("Begin correlation for Event {} uei: {}", e.getDbid(), e.getUei());
         m_kieSession.insert(e);
-        if (!m_isStreaming) m_kieSession.fireAllRules();
+        try {
+            if (!m_isStreaming) m_kieSession.fireAllRules();
+        } catch (Exception e1) {
+            LOG.error("Exception while firing rules ", e1);
+        }
         m_eventsMeter.mark();
         LOG.debug("End correlation for Event {} uei: {}", e.getDbid(), e.getUei());
     }
@@ -133,7 +137,11 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         LOG.info("Begin correlation for Timer {}", timerId);
         TimerExpired expiration  = new TimerExpired(timerId);
         m_kieSession.insert(expiration);
-        if (!m_isStreaming) m_kieSession.fireAllRules();
+        try {
+            if (!m_isStreaming) m_kieSession.fireAllRules();
+        } catch (Exception e) {
+            LOG.error("Exception while firing rules ", e);
+        }
         LOG.debug("Begin correlation for Timer {}", timerId);
     }
 
@@ -214,7 +222,12 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         if (m_isStreaming) {
             new Thread(() -> {
                 Logging.putPrefix(getClass().getSimpleName() + '-' + getName());
-                m_kieSession.fireUntilHalt();
+                try {
+                    m_kieSession.fireUntilHalt();
+                } catch (Exception e) {
+                    LOG.error("Exception while running rules, reloading engine ", e);
+                    reloadConfig();
+                }
             }, "FireTask").start();
         }
     }

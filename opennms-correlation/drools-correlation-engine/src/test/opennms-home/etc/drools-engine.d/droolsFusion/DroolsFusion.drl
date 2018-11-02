@@ -7,7 +7,9 @@ import org.opennms.netmgt.xml.event.Value;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.drools.core.spi.KnowledgeHelper;
+import org.drools.core.spi.KnowledgeHelper
+import java.util.List
+import java.util.ArrayList;
 
 global DroolsCorrelationEngine engine;
 
@@ -32,6 +34,22 @@ then
         insert(new Thing());
         insert(new Thing());
         engine.sendEvent(eventBuilder.getEvent());
+end
+
+
+rule "this-rule-should-throw-exception"
+       salience 400
+when    $e : Event(uei matches "uei.opennms.org/triggerTestForFusion")
+
+then
+         System.err.println("running exception rule, this will throw exception");
+         EventBuilder eventBuilder = new EventBuilder("uei.opennms.org/triggerTestForFusion", "Component Correlator");
+         // Code to generate ConcurrentModification Exception. see NMS-10363
+         List<Event> eventList = new ArrayList<>();
+         eventList.add(eventBuilder.getEvent());
+         for(Event event : eventList) {
+           eventList.remove(event);
+         }
 end
 
 rule "test-two-things-in-a-hmmm-wtf"
