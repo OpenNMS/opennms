@@ -92,7 +92,6 @@ import com.google.common.util.concurrent.RateLimiter;
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-client.xml"
 })
 @JUnitConfigurationEnvironment
-@org.junit.experimental.categories.Category(org.opennms.core.test.junit.FlappingTests.class)
 public class HeartbeatSinkPerfIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
