@@ -28,25 +28,47 @@
 
 package org.opennms.netmgt.newts.support;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
+import org.opennms.newts.cassandra.search.EscapableResourceIdSplitter;
 import org.opennms.newts.cassandra.search.ResourceMetadata;
 
 import com.codahale.metrics.MetricRegistry;
 
-public class GuavaSearchableResourceMetadataCacheTest {
+import redis.clients.jedis.Jedis;
+
+/**
+ * Requires a Redis server.
+ *
+ * @author jwhite
+ */
+@Ignore
+public class RedisResourceMetadataCacheIT {
+
+    private static final String REDIS_HOSTNAME = "localhost";
+
+    private static final int REDIS_PORT = 6379;
 
     private MetricRegistry m_registry = new MetricRegistry();
+
+    @Before
+    public void setUp() {
+        // Delete all keys
+        try (Jedis jedis = new Jedis(REDIS_HOSTNAME, REDIS_PORT)) {
+            jedis.flushAll();
+        }
+    }
 
     @Test
     public void canGetEntriesWithPrefix() {
         Context ctx = Context.DEFAULT_CONTEXT;
-        GuavaSearchableResourceMetadataCache cache = new GuavaSearchableResourceMetadataCache(2048, m_registry);
+
+        RedisResourceMetadataCache cache = new RedisResourceMetadataCache(REDIS_HOSTNAME, REDIS_PORT, 8, m_registry, new EscapableResourceIdSplitter());
 
         assertTrue(cache.getResourceIdsWithPrefix(ctx, "a").isEmpty());
 
@@ -61,26 +83,28 @@ public class GuavaSearchableResourceMetadataCacheTest {
     }
 
     @Test
-    @Ignore
-    public void getResourceIdsWithPrefixPerftTest() {
-        long numResourceIdsToCache = 200000;
-        long numSearches = 1000;
-
+    public void canUpdateEntry() {
         Context ctx = Context.DEFAULT_CONTEXT;
-        GuavaSearchableResourceMetadataCache cache = new GuavaSearchableResourceMetadataCache(numResourceIdsToCache, m_registry);
 
+        RedisResourceMetadataCache cache = new RedisResourceMetadataCache(REDIS_HOSTNAME, REDIS_PORT, 8, m_registry, new EscapableResourceIdSplitter());
+
+        // Insert
+        Resource resource = new Resource("a:b:c");
         ResourceMetadata resourceMetadata = new ResourceMetadata();
-        for (long k = 0; k < numResourceIdsToCache; k++) {
-            Resource resource = new Resource(String.format("snmp:%d:eth0-x:ifHcInOctets", k));
-            cache.merge(ctx, resource, resourceMetadata);
-        }
+        resourceMetadata.putAttribute("a1", "1");
+        cache.merge(ctx, resource, resourceMetadata);
 
-        long start = System.currentTimeMillis();
-        String prefix = "snmp:" + (numResourceIdsToCache-1);
-        for (long k = 0; k < numSearches; k++) {
-            assertEquals(1, cache.getResourceIdsWithPrefix(ctx, prefix).size());
-        }
-        long elapsed = System.currentTimeMillis() - start;
-        System.err.println("elapsed: " + elapsed);
+        // Verify
+        assertTrue("attribute a1 must be set", cache.get(ctx, resource).get().containsAttribute("a1", "1"));
+
+        // Update
+        resourceMetadata = new ResourceMetadata();
+        resourceMetadata.putAttribute("a2", "2");
+        cache.merge(ctx, resource, resourceMetadata);
+
+        // Verify
+        assertTrue("attribute a1 must be set", cache.get(ctx, resource).get().containsAttribute("a1", "1"));
+        assertTrue("attribute a2 must be set", cache.get(ctx, resource).get().containsAttribute("a2", "2"));
+
     }
 }
