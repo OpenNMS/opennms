@@ -26,17 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.dao.hibernate;
 
 import java.util.List;
 
+import org.opennms.netmgt.dao.api.TopologyInfoDao;
 import org.opennms.netmgt.model.CdpLinkInfo;
 import org.opennms.netmgt.model.VertexInfo;
+import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-public interface CdpTopologyInfoCache {
+public class TopologyInfoDaoHibernate extends HibernateDaoSupport implements TopologyInfoDao {
 
-    List<VertexInfo> getVertices();
+    @Override
+    public List<VertexInfo> getVertexInfos() {
+        return (List<VertexInfo>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.model.VertexInfo(n.id, n.type, n.sysObjectId, n.label, n.location) from org.opennms.netmgt.model.OnmsNode n");
+    }
 
-    List<CdpLinkInfo> getCdpLinkInfos();
-
+    @Override
+    public List<CdpLinkInfo> getCdpLinkInfo() {
+        return (List<CdpLinkInfo>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.model.CdpLinkInfo(l.id, l.node.id, l.cdpCacheIfIndex, " +
+                        "l.cdpInterfaceName, l.cdpCacheAddress, l.cdpCacheDeviceId, l.cdpCacheDevicePort) from org.opennms.netmgt.model.CdpLink l");
+    }
 }

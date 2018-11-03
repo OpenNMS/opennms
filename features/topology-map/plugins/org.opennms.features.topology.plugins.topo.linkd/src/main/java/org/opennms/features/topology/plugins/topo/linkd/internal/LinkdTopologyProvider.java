@@ -51,7 +51,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.dao.api.CdpElementDao;
 import org.opennms.netmgt.dao.api.CdpLinkDao;
-import org.opennms.netmgt.dao.api.CdpTopologyInfoCache;
+import org.opennms.netmgt.dao.api.TopologyInfoCache;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.IpNetToMediaDao;
 import org.opennms.netmgt.dao.api.IsIsElementDao;
@@ -120,7 +120,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private TransactionOperations m_transactionOperations;
     private NodeDao m_nodeDao;
-    private CdpTopologyInfoCache m_cdpTopologyInfoCache;
+    private TopologyInfoCache m_topologyInfoCache;
     private SnmpInterfaceDao m_snmpInterfaceDao;
     private IpInterfaceDao m_ipInterfaceDao;
     private TopologyDao m_topologyDao;
@@ -217,7 +217,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
     
     private void loadVertices() {
-        for (VertexInfo vertex : m_cdpTopologyInfoCache.getVertices()) {
+        for (VertexInfo vertex : m_topologyInfoCache.getVertices()) {
             OnmsIpInterface primary = m_nodeToOnmsIpPrimaryMap.get(vertex.getId());
             addVertices(LinkdVertex.create(vertex,primary));
         }
@@ -432,7 +432,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private void getCdpLinks() {
         List<CdpElement> cdpElements = m_cdpElementDao.findAll();
-        List<CdpLinkInfo> allLinks = m_cdpTopologyInfoCache.getCdpLinkInfos();
+        List<CdpLinkInfo> allLinks = m_topologyInfoCache.getCdpLinkInfos();
         List<Pair<CdpLinkInfo, CdpLinkInfo>> matchedCdpLinks = matchCdpLinks(cdpElements, allLinks);
         for (Pair<CdpLinkInfo, CdpLinkInfo> pair : matchedCdpLinks) {
             connectCdpLinkPair(pair);
@@ -747,12 +747,12 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         m_nodeDao = nodeDao;
     }
 
-    public CdpTopologyInfoCache getCdpTopologyInfoCache() {
-        return m_cdpTopologyInfoCache;
+    public TopologyInfoCache getCdpTopologyInfoCache() {
+        return m_topologyInfoCache;
     }
 
-    public void setCdpTopologyInfoCache(CdpTopologyInfoCache cdpTopologyInfoCache) {
-        m_cdpTopologyInfoCache = cdpTopologyInfoCache;
+    public void setCdpTopologyInfoCache(TopologyInfoCache topologyInfoCache) {
+        m_topologyInfoCache = topologyInfoCache;
     }
 
     public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {

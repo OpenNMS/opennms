@@ -327,13 +327,13 @@
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.CdpTopologyInfoDao" ref="cdpTopologyInfoDao" />
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.CdpTopologyInfoDao" ref="topologyInfoDao" />
 
-  <bean id="cdpTopologyInfoCache" class="org.opennms.netmgt.dao.hibernate.CdpTopologyInfoCacheImpl">
+  <bean id="cdpTopologyInfoCache" class="org.opennms.netmgt.dao.hibernate.TopologyInfoCacheImpl">
     <property name="cdpTopologyInfoDao" ref="cdpTopologyInfoDao" />
   </bean>
 
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.CdpTopologyInfoCache" ref="cdpTopologyInfoCache" />
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyInfoCache" ref="topologyInfoCache" />
 
   <task:scheduled-tasks scheduler="topologyRefresherScheduler">
     <task:scheduled ref="cdpTopologyInfoCache" method="refresh" fixed-delay="300000"/>

@@ -40,6 +40,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.CdpTopologyInfoDao;
+import org.opennms.netmgt.dao.api.TopologyInfoDao;
 import org.opennms.netmgt.model.CdpLinkInfo;
 import org.opennms.netmgt.model.VertexInfo;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -60,9 +61,9 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class CdpTopologyInfoDaoHibernateIT {
+public class TopologyInfoDaoHibernateIT {
     @Autowired
-    private CdpTopologyInfoDao cdpTopologyInfoDao;
+    private TopologyInfoDao topologyInfoDao;
 
     @Autowired
     private DatabasePopulator populator;
@@ -80,7 +81,7 @@ public class CdpTopologyInfoDaoHibernateIT {
     @Test
     @Transactional
     public void testGetAllVertices() {
-        List<VertexInfo> vertices = this.cdpTopologyInfoDao.getVertexInfos();
+        List<VertexInfo> vertices = this.topologyInfoDao.getVertexInfos();
         Assert.assertNotNull(vertices);
         Assert.assertFalse(vertices.isEmpty());
         VertexInfo vertex = vertices.get(0);
@@ -93,7 +94,7 @@ public class CdpTopologyInfoDaoHibernateIT {
     @Test
     @Transactional
     public void testGetAllCdpLinkInfos() {
-        List<CdpLinkInfo> cdpLinks = this.cdpTopologyInfoDao.getCdpLinkInfo();
+        List<CdpLinkInfo> cdpLinks = this.topologyInfoDao.getCdpLinkInfo();
         Assert.assertNotNull(cdpLinks);
         Assert.assertFalse(cdpLinks.isEmpty());
         CdpLinkInfo info = cdpLinks.get(0);

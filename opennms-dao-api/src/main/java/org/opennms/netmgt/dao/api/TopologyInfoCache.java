@@ -33,7 +33,10 @@ import java.util.List;
 import org.opennms.netmgt.model.CdpLinkInfo;
 import org.opennms.netmgt.model.VertexInfo;
 
-public interface CdpTopologyInfoDao {
-    List<VertexInfo> getVertexInfos();
-    List<CdpLinkInfo> getCdpLinkInfo();
+public interface TopologyInfoCache {
+
+    List<VertexInfo> getVertices();
+
+    List<CdpLinkInfo> getCdpLinkInfos();
+
 }

@@ -31,32 +31,32 @@ package org.opennms.netmgt.dao.hibernate;
 import java.util.Collections;
 import java.util.List;
 
-import org.opennms.netmgt.dao.api.CdpTopologyInfoDao;
-import org.opennms.netmgt.dao.api.CdpTopologyInfoCache;
+import org.opennms.netmgt.dao.api.TopologyInfoDao;
+import org.opennms.netmgt.dao.api.TopologyInfoCache;
 import org.opennms.netmgt.model.CdpLinkInfo;
 import org.opennms.netmgt.model.VertexInfo;
 
-public class CdpTopologyInfoCacheImpl implements CdpTopologyInfoCache {
+public class TopologyInfoCacheImpl implements TopologyInfoCache {
 
     private List<VertexInfo> vertices;
     private List<CdpLinkInfo> cdpLinks;
 
-    private CdpTopologyInfoDao cdpTopologyInfoDao;
+    private TopologyInfoDao topologyInfoDao;
 
     public void refresh(){
-        this.vertices = Collections.unmodifiableList(cdpTopologyInfoDao.getVertexInfos());
-        this.cdpLinks = Collections.unmodifiableList(cdpTopologyInfoDao.getCdpLinkInfo());
+        this.vertices = Collections.unmodifiableList(topologyInfoDao.getVertexInfos());
+        this.cdpLinks = Collections.unmodifiableList(topologyInfoDao.getCdpLinkInfo());
     }
 
     public List<VertexInfo> getVertices(){
         return vertices;
     }
 
-    public void setCdpTopologyInfoDao(CdpTopologyInfoDao cdpTopologyInfoDao){
-        this.cdpTopologyInfoDao = cdpTopologyInfoDao;
-    }
-
     public List<CdpLinkInfo> getCdpLinkInfos(){
         return cdpLinks;
+    }
+
+    public void setTopologyInfoDao(TopologyInfoDao topologyInfoDao){
+        this.topologyInfoDao = topologyInfoDao;
     }
 }
