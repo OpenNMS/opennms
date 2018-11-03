@@ -323,20 +323,20 @@
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.NodeDao" ref="nodeDao" />
 
-  <bean id="cdpTopologyInfoDao" class="org.opennms.netmgt.dao.hibernate.CdpTopologyInfoDaoHibernate">
+  <bean id="topologyInfoDao" class="org.opennms.netmgt.dao.hibernate.TopologyInfoDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.CdpTopologyInfoDao" ref="topologyInfoDao" />
 
-  <bean id="cdpTopologyInfoCache" class="org.opennms.netmgt.dao.hibernate.TopologyInfoCacheImpl">
-    <property name="cdpTopologyInfoDao" ref="cdpTopologyInfoDao" />
+  <bean id="topologyInfoCache" class="org.opennms.netmgt.dao.hibernate.TopologyInfoCacheImpl">
+    <property name="topologyInfoDao" ref="topologyInfoDao" />
   </bean>
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyInfoCache" ref="topologyInfoCache" />
 
   <task:scheduled-tasks scheduler="topologyRefresherScheduler">
-    <task:scheduled ref="cdpTopologyInfoCache" method="refresh" fixed-delay="300000"/>
+    <task:scheduled ref="topologyInfoCache" method="refresh" fixed-delay="300000"/>
   </task:scheduled-tasks>
 
   <task:scheduler id="topologyRefresherScheduler" pool-size="1"/>
