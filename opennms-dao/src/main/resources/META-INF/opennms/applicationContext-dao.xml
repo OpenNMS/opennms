@@ -327,7 +327,7 @@
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.CdpTopologyInfoDao" ref="topologyInfoDao" />
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyInfoDao" ref="topologyInfoDao" />
 
   <bean id="topologyInfoCache" class="org.opennms.netmgt.dao.hibernate.TopologyInfoCacheImpl">
     <property name="topologyInfoDao" ref="topologyInfoDao" />
