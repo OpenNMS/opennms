@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
+import java.util.Objects;
 import java.util.Set;
 
 public class BridgePortWithMacs implements Topology {
@@ -59,30 +60,18 @@ public class BridgePortWithMacs implements Topology {
     public Set<String> getMacs() {
         return m_macs;
     }
-    
+
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((m_port == null) ? 0 : m_port.hashCode());
-        return result;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BridgePortWithMacs that = (BridgePortWithMacs) o;
+        return Objects.equals(m_port, that.m_port);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        BridgePortWithMacs other = (BridgePortWithMacs) obj;
-        if (m_port == null) {
-            if (other.m_port != null)
-                return false;
-        } else if (!m_port.equals(other.m_port))
-            return false;
-        return true;
+    public int hashCode() {
+        return Objects.hash(m_port);
     }
 
     @Override

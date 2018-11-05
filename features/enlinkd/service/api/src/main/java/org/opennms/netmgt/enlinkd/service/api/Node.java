@@ -31,17 +31,10 @@ package org.opennms.netmgt.enlinkd.service.api;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
+import java.util.Objects;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-/**
- * <p>
- * LinkableNode class.
- * </p>
- * 
- * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
- * @version $Id: $
- */
 public class Node {
 
     private final int m_nodeId;
@@ -60,18 +53,6 @@ public class Node {
         return m_location;
     }
 
-    /**
-     * <p>
-     * Constructor for LinkableSnmpNode.
-     * </p>
-     * 
-     * @param nodeId
-     *            a int.
-     * @param snmprimaryaddr
-     *            a {@link java.net.InetAddress} object.
-     * @param sysoid
-     *            a {@link java.lang.String} object.
-     */
     public Node(final int nodeId, final String label,
             final InetAddress snmpPrimaryAddr, final String sysoid, final String sysname, final String location) {
         m_nodeId = nodeId;
@@ -82,94 +63,44 @@ public class Node {
         m_location = location;
     }
 
-    /**
-     * <p>
-     * toString
-     * </p>
-     * 
-     * @return a {@link java.lang.String} object.
-     */
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("nodeId", m_nodeId).append("snmpPrimaryAddr",
-                                                                           str(m_snmpprimaryaddr)).append("sysOid",
-                                                                                                          m_sysoid).toString();
+        return new ToStringBuilder(this)
+                .append("nodeId", m_nodeId)
+                .append("snmpPrimaryAddr", str(m_snmpprimaryaddr))
+                .append("sysOid", m_sysoid).toString();
     }
 
-    /**
-     * <p>
-     * getNodeId
-     * </p>
-     * 
-     * @return a int.
-     */
     public int getNodeId() {
         return m_nodeId;
     }
 
-    /**
-     * <p>
-     * getSnmpPrimaryIpAddr
-     * </p>
-     * 
-     * @return a {@link java.lang.String} object.
-     */
     public InetAddress getSnmpPrimaryIpAddr() {
         return m_snmpprimaryaddr;
     }
 
-    /**
-     * <p>
-     * getSysoid
-     * </p>
-     * 
-     * @return a {@link java.lang.String} object.
-     */
     public String getSysoid() {
         return m_sysoid;
     }
 
-    /**
-     * <p>
-     * getSysname
-     * </p>
-     * 
-     * @return a {@link java.lang.String} object.
-     */
     public String getSysname() {
         return m_sysname;
     }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + m_nodeId;
-		result = prime
-				* result
-				+ ((m_snmpprimaryaddr == null) ? 0 : m_snmpprimaryaddr
-						.hashCode());
-		return result;
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Node node = (Node) o;
+        return Objects.equals(m_nodeId, node.m_nodeId) &&
+                Objects.equals(m_snmpprimaryaddr, node.m_snmpprimaryaddr);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Node other = (Node) obj;
-		if (m_nodeId != other.m_nodeId)
-			return false;
-		if (m_snmpprimaryaddr == null) {
-			if (other.m_snmpprimaryaddr != null)
-				return false;
-		} else if (!m_snmpprimaryaddr.equals(other.m_snmpprimaryaddr))
-			return false;
-		return true;
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_nodeId, m_snmpprimaryaddr);
+    }
 
     public String getLabel() {
         return m_label;

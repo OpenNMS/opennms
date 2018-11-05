@@ -28,10 +28,13 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 import org.slf4j.Logger;
@@ -235,19 +238,13 @@ public class BridgeForwardingTable implements Topology {
     }
 
     public String printTopology() {
-    	StringBuffer strbfr = new StringBuffer();
-        strbfr.append(m_bridge.printTopology());
-        strbfr.append("\n");
-        boolean rn = false;
-        for (BridgeForwardingTableEntry bftentry: m_entries) {
-            if (rn) {
-                strbfr.append("\n");
-            } else {
-                rn = true;
-            }
-            strbfr.append(bftentry.printTopology());
-        }
-        return strbfr.toString();
+        final List<Topology> topologies = new ArrayList<>();
+        topologies.add(m_bridge);
+        topologies.addAll(m_entries);
+        final String topology = topologies.stream()
+                .map(Topology::printTopology)
+                .collect(Collectors.joining("\n"));
+        return topology;
     }
 
 }

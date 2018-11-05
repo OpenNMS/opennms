@@ -32,34 +32,10 @@ import java.util.List;
 
 import org.opennms.netmgt.model.OnmsNode;
 
-/**
- * <p>
- * QueryManager interface.
- * </p>
- *
- * @author antonio
- * @version $Id: $
- */
 public interface NodeTopologyService {
 
-    /**
-     * <p>
-     * getSnmpNodeList
-     * </p>
-     *
-     * @return a {@link java.util.List} object.
-     */
     List<Node> findAllSnmpNode();
 
-    /**
-     * <p>
-     * getSnmpNode
-     * </p>
-     *
-     * @param nodeid
-     *            a int.
-     * @return a {@link org.opennms.netmgt.enlinkd.LinkableNode} object.
-     */
     Node getSnmpNode(int nodeid);
     
     List<OnmsNode> findAll();

@@ -30,13 +30,5 @@ package org.opennms.netmgt.enlinkd.service.api;
 
 public interface Topology {
 
-    public enum ProtocolSupported {
-        LLDP,
-        OSPF,
-        ISIS,
-        BRIDGE,
-        CDP
-    }
-
     String printTopology();
 }

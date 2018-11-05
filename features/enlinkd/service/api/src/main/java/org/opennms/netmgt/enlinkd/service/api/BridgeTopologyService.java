@@ -75,7 +75,5 @@ public interface BridgeTopologyService {
     Map<Integer, Set<BridgeForwardingTableEntry>> getUpdateBftMap();
     
     Set<BridgeForwardingTableEntry> useBridgeTopologyUpdateBFT(int nodeid);
-        
- 
     
 }
