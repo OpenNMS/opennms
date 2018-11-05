@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-@org.springframework.test.annotation.IfProfileValue(name="runFlappers" value="true")
+@org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
 public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
     private static final Logger LOG = LoggerFactory.getLogger(BSMAdminIT.class);
