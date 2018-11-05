@@ -341,6 +341,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-test-dependencies</artifactId>
+      <version>${project.version}</version>
       <type>pom</type>
       <scope>test</scope>
     </dependency>
