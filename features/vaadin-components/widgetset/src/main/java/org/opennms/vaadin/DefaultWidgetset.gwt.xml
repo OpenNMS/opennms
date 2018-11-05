@@ -4,6 +4,6 @@
     <inherits name="com.vaadin.v7.Vaadin7WidgetSet" />
     <inherits name="com.vaadin.DefaultWidgetSet" />
     <inherits name="com.vaadin.contextmenu.WidgetSet" />
-    <!-- TODO MVR decide if we need this, it was defined by SurveillanceviewsWidgetSet.gwt.xml -->
+
     <set-configuration-property name="devModeRedirectEnabled" value="true"/>
 </module>

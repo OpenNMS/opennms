@@ -3,8 +3,8 @@
     <feature name="vaadin" version="${project.version}" description="OpenNMS :: Features :: Vaadin + Dependencies">
         <details>The Vaadin web application framework including some addons and osgi related packages.</details>
         <feature>http-whiteboard</feature>
-        <bundle>wrap:mvn:com.vaadin.external.gwt/gwt-elemental/${vaadinExternalGwtVersion}</bundle>
-        <bundle>wrap:mvn:com.vaadin.external.gwt/gwt-user/${vaadinExternalGwtVersion}/$Export-Package=com.google.*</bundle>
+        <bundle>wrap:mvn:com.google.gwt/gwt-elemental/${gwtVersion}</bundle>
+        <bundle>wrap:mvn:com.google.gwt/gwt-user/${gwtVersion}/$Export-Package=com.google.*</bundle>
         <bundle>mvn:com.vaadin/vaadin-context-menu/${vaadinAddonContextMenuVersion}</bundle>
         <bundle>wrap:mvn:org.vaadin.addon/confirmdialog/${vaadinAddonConfirmDialogVersion}</bundle>
         <bundle>wrap:mvn:com.vaadin/vaadin-compatibility-server/${vaadinVersion}</bundle>

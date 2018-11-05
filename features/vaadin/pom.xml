@@ -12,8 +12,6 @@
   <description>The Vaadin web application framework including some addons and osgi related packages.</description>
   <packaging>pom</packaging>
   <properties>
-    <!-- TODO MVR this is not really required anymore is it? -->
-    <vaadinExternalGwtVersion>2.7.0.vaadin7</vaadinExternalGwtVersion>
     <vaadinGentryrefVersion>1.2.0.vaadin1</vaadinGentryrefVersion>
     <vaadinJsoupVersion>1.11.2</vaadinJsoupVersion>
   </properties>
@@ -87,15 +85,15 @@
       <artifactId>vaadin-compatibility-shared</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.vaadin.external.gwt</groupId>
+      <groupId>com.google.gwt</groupId>
       <artifactId>gwt-elemental</artifactId>
-      <version>${vaadinExternalGwtVersion}</version>
+      <version>${gwtVersion}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.vaadin.external.gwt</groupId>
+      <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>${vaadinExternalGwtVersion}</version>
+      <version>${gwtVersion}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
