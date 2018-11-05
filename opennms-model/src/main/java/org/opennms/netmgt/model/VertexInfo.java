@@ -32,6 +32,7 @@ import java.util.Objects;
 
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
+/** Simplified OnmsNode. We use it as a view on OnmsNode that has less attributes and no lazy loading */
 public class VertexInfo {
 
     private Integer id;
@@ -52,6 +53,9 @@ public class VertexInfo {
         this(id, type, sysObjectId, label, location.getLocationName());
     }
 
+    public static VertexInfo toVertexInfo(OnmsNode node){
+        return new VertexInfo(node.getId(), node.getType(), node.getSysObjectId(), node.getLabel(), node.getLocation().getLocationName());
+    }
 
     public Integer getId() {
         return id;
