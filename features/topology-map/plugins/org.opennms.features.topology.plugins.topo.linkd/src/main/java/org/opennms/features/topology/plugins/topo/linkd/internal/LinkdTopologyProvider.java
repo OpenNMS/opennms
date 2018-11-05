@@ -747,11 +747,11 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         m_nodeDao = nodeDao;
     }
 
-    public TopologyInfoCache getCdpTopologyInfoCache() {
+    public TopologyInfoCache getTopologyInfoCache() {
         return m_topologyInfoCache;
     }
 
-    public void setCdpTopologyInfoCache(TopologyInfoCache topologyInfoCache) {
+    public void setTopologyInfoCache(TopologyInfoCache topologyInfoCache) {
         m_topologyInfoCache = topologyInfoCache;
     }
 
