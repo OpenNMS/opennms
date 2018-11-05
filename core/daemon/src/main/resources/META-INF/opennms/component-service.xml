@@ -2,14 +2,17 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
     ">
+    <context:annotation-config />
 
     <!-- Daemon Service, will inject beans via autowire -->
     <!-- It is defined here, because it requires DAOs and those are not loaded by the applicationContext-daemon.xml -->
-    <bean id="daemonService" class="org.opennms.netmgt.daemon.DefaultDaemonConfigService" />
-    <onmsgi:service ref="daemonService" interface="org.opennms.netmgt.daemon.DaemonConfigService" />
+    <bean id="daemonService" class="org.opennms.netmgt.daemon.DefaultDaemonService" />
+    <onmsgi:service ref="daemonService" interface="org.opennms.netmgt.daemon.DaemonService" />
 
 </beans>

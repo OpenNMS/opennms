@@ -33,60 +33,49 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "daemon")
+@XmlRootElement(name = "daemonreloadstate")
 @XmlAccessorType(XmlAccessType.NONE)
-public class DaemonDTO {
+public class DaemonReloadInfo {
+    @XmlAttribute(name = "ReloadRequestEventTime")
+    private Long reloadRequestEventTime;
 
-    @XmlAttribute(name = "name")
-    private String name;
-    @XmlAttribute(name = "internal")
-    private boolean internal;
-    @XmlAttribute(name = "enabled")
-    private boolean enabled;
-    @XmlAttribute(name = "reloadable")
-    private boolean reloadable;
+    @XmlAttribute(name = "ReloadResultEventTime")
+    private Long reloadResultEventTime;
 
-    public DaemonDTO() {
+    @XmlAttribute(name = "reloadState")
+    private DaemonReloadState reloadeState;
+
+    public DaemonReloadInfo() {
     }
 
-    public DaemonDTO(String name, boolean internal, boolean enabled, boolean reloadable) {
-        this.name = name;
-        this.internal = internal;
-        this.enabled = enabled;
-        this.reloadable = reloadable;
+    public DaemonReloadInfo(Long requestEventTime, Long resultEventTime, DaemonReloadState reloadeState) {
+        this.reloadRequestEventTime = requestEventTime;
+        this.reloadResultEventTime = resultEventTime;
+        this.reloadeState = reloadeState;
     }
 
-    public String getName() {
-        return name;
+    public Long getReloadRequestEventTime() {
+        return reloadRequestEventTime;
     }
 
-    public boolean isInternal() {
-        return internal;
+    public Long getReloadResultEventTime() {
+        return reloadResultEventTime;
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public boolean isReloadable() {
-        return reloadable;
+    public DaemonReloadState getReloadState() {
+        return reloadeState;
     }
 
 
-    public void setName(String name) {
-        this.name = name;
+    public void setReloadRequestEventTime(Long reloadRequestEventTime) {
+        this.reloadRequestEventTime = reloadRequestEventTime;
     }
 
-    public void setInternal(boolean internal) {
-        this.internal = internal;
+    public void setReloadResultEventTime(Long reloadResultEventTime) {
+        this.reloadResultEventTime = reloadResultEventTime;
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public void setReloadState(DaemonReloadState reloadeState) {
+        this.reloadeState = reloadeState;
     }
-
-    public void setReloadable(boolean reloadable) {
-        this.reloadable = reloadable;
-    }
-
 }

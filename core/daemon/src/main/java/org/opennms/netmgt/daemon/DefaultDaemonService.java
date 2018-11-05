@@ -28,21 +28,19 @@
 
 package org.opennms.netmgt.daemon;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
+import org.opennms.core.config.api.ConfigurationResourceException;
+import org.opennms.core.config.impl.JaxbResourceConfiguration;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
-import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.ServiceConfiguration;
 import org.opennms.netmgt.dao.api.EventDao;
@@ -51,8 +49,11 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
-public class DefaultDaemonConfigService implements DaemonConfigService {
+import com.google.common.collect.Sets;
+
+public class DefaultDaemonService implements DaemonService {
 
     @Autowired
     private EventForwarder eventForwarder;
@@ -60,61 +61,63 @@ public class DefaultDaemonConfigService implements DaemonConfigService {
     @Autowired
     private EventDao eventDao;
 
-    private List<DaemonDTO> daemonList = new ArrayList<>();
-    private long maxConfigUpdateTime = 5000;
+    @Autowired
+    @Qualifier("service-configuration.xml")
+    private JaxbResourceConfiguration<ServiceConfiguration> serviceConfiguration;
 
-    private Set<String> ignoreList;
+    private final List<DaemonInfo> daemonList = new ArrayList<>();
 
-    public DefaultDaemonConfigService() throws IOException {
-        this.ignoreList = new HashSet<>(Arrays.asList("Manager".toLowerCase(), "TestLoadLibraries".toLowerCase()));
+    private final Set<String> ignoreList = Sets.newHashSet("Manager", "TestLoadLibraries");
 
-        final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SERVICE_CONF_FILE_NAME);
-        final ServiceConfiguration config = JaxbUtils.unmarshal(ServiceConfiguration.class, cfgFile);
-
-        for (Service s : config.getServices()) {
-            String name = s.getName().split("=")[1].toLowerCase(); //OpenNMS:Name=Manager => Manager => manager
-            this.daemonList.add(new DaemonDTO(name, ignoreList.contains(name), s.isEnabled(), s.isReloadable() && s.isEnabled()));
+    @PostConstruct
+    public void init() throws ConfigurationResourceException {
+        final ServiceConfiguration config = serviceConfiguration.get();
+        for (Service service : config.getServices()) {
+            final String name = service.getName().split("=")[1]; // OpenNMS:Name=Manager => Manager
+            this.daemonList.add(new DaemonInfo(name, ignoreList.contains(name), service.isEnabled(), service.isReloadable() /* Internal daemons are not reloadable by default */));
         }
     }
 
     @Override
-    public DaemonDTO[] getDaemons() {
-        DaemonDTO[] rtArray = new DaemonDTO[daemonList.size()];
-        daemonList.toArray(rtArray);
-        return rtArray;
+    public List<DaemonInfo> getDaemons() {
+        return new ArrayList(daemonList);
     }
 
     @Override
-    public boolean reloadDaemon(String daemonName) {
-        Optional<DaemonDTO> daemon = this.daemonList.stream()
-                .filter(x -> x.getName().equalsIgnoreCase(daemonName))
+    public void reload(String daemonName) throws DaemonReloadException {
+        Optional<DaemonInfo> daemonOptional = this.daemonList.stream()
+                .filter(daemon -> daemon.getName().equalsIgnoreCase(daemonName))
                 .findFirst();
 
-        if (!daemon.isPresent()) {
+        if (!daemonOptional.isPresent()) {
             throw new NoSuchElementException();
         }
-
-        if (daemon.get().isReloadable()) {
+        final DaemonInfo dameonInfo = daemonOptional.get();
+        if (!dameonInfo.isEnabled()) {
+            throw new DaemonReloadException("Daemon with name " + daemonName + " is not enabled and therefore cannot be reloaded");
+        }
+        if (!dameonInfo.isReloadable()) {
+            throw new DaemonReloadException("Daemon with name " + daemonName + " is not reloadable");
+        }
+        if (dameonInfo.isReloadable()) {
             EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "Daemon Config Service");
             eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, daemonName.toLowerCase());
             this.eventForwarder.sendNow(eventBuilder.getEvent());
-
-            return true;
         }
-        return false;
     }
 
     @Override
-    public DaemonReloadStateDTO getDaemonReloadState(String daemonName) {
-        Optional<DaemonDTO> daemon = this.daemonList.stream()
-                .filter(x -> x.getName().equalsIgnoreCase(daemonName))
+    public DaemonReloadInfo getCurrentReloadState(String daemonName) {
+        final Optional<DaemonInfo> daemonOptional = this.daemonList.stream()
+                .filter(daemon -> daemon.getName().equalsIgnoreCase(daemonName))
                 .findFirst();
 
-        if (!daemon.isPresent()) {
+        if (!daemonOptional.isPresent()) {
             throw new NoSuchElementException();
         }
 
-        List<OnmsEvent> lastReloadEventList = this.eventDao.findMatching(
+        // Retrieve the last (youngest) reload event of the given daemon
+        final List<OnmsEvent> lastReloadEventList = this.eventDao.findMatching(
                 new CriteriaBuilder(OnmsEvent.class)
                         .alias("eventParameters", "eventParameters")
                         .and(
@@ -128,13 +131,14 @@ public class DefaultDaemonConfigService implements DaemonConfigService {
                         .toCriteria()
         );
 
+        // If no such event exists, the ReloadState is Unknown
         if (lastReloadEventList.isEmpty()) {
-            return new DaemonReloadStateDTO(null, null, DaemonReloadState.Unknown);
+            return new DaemonReloadInfo(null, null, DaemonReloadState.Unknown);
         }
 
+        // If there is a last event time, check for a SUCCESS or FAILED event
         long lastReloadEventTime = lastReloadEventList.get(0).getEventTime().getTime();
-
-        List<OnmsEvent> lastReloadResultEventList = this.eventDao.findMatching(
+        final List<OnmsEvent> lastReloadResultEventList = this.eventDao.findMatching(
                 new CriteriaBuilder(OnmsEvent.class)
                         .alias("eventParameters", "params")
                         .and(
@@ -144,24 +148,25 @@ public class DefaultDaemonConfigService implements DaemonConfigService {
                                 ),
                                 Restrictions.ilike("params.value", daemonName),
                                 Restrictions.eq("params.name", "daemonName"),
-                                Restrictions.gt("eventTime", new Date(lastReloadEventTime)),
-                                Restrictions.lt("eventTime", new Date(lastReloadEventTime + maxConfigUpdateTime))
+                                Restrictions.gt("eventTime", new Date(lastReloadEventTime))
                         )
                         .orderBy("eventTime")
-                        .limit(10)
+                        .desc()
+                        .limit(1)
                         .toCriteria()
         );
 
-        if (lastReloadResultEventList.isEmpty())
-            return new DaemonReloadStateDTO(lastReloadEventTime, null, DaemonReloadState.Reloading);
+        // Not any events have been received yet, so daemon is still reloading
+        if (lastReloadResultEventList.isEmpty()) {
+            return new DaemonReloadInfo(lastReloadEventTime, null, DaemonReloadState.Reloading);
+        }
 
-        OnmsEvent lastReloadResultEvent = lastReloadResultEventList.get(0);
-
-
+        // An event has been received, now decide if Success or Failed
+        final OnmsEvent lastReloadResultEvent = lastReloadResultEventList.get(0);
         if (lastReloadResultEvent.getEventUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI)) {
-            return new DaemonReloadStateDTO(lastReloadEventTime, lastReloadResultEvent.getEventTime().getTime(), DaemonReloadState.Success);
+            return new DaemonReloadInfo(lastReloadEventTime, lastReloadResultEvent.getEventTime().getTime(), DaemonReloadState.Success);
         } else {
-            return new DaemonReloadStateDTO(lastReloadEventTime, lastReloadResultEvent.getEventTime().getTime(), DaemonReloadState.Failed);
+            return new DaemonReloadInfo(lastReloadEventTime, lastReloadResultEvent.getEventTime().getTime(), DaemonReloadState.Failed);
         }
     }
 }

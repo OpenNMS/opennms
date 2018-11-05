@@ -28,6 +28,8 @@
 
 package org.opennms.web.rest.v1;
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -38,9 +40,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.opennms.netmgt.daemon.DaemonConfigService;
-import org.opennms.netmgt.daemon.DaemonDTO;
-import org.opennms.netmgt.daemon.DaemonReloadStateDTO;
+import org.opennms.netmgt.daemon.DaemonInfo;
+import org.opennms.netmgt.daemon.DaemonReloadException;
+import org.opennms.netmgt.daemon.DaemonReloadInfo;
+import org.opennms.netmgt.daemon.DaemonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -49,28 +52,29 @@ import org.springframework.stereotype.Component;
 public class DaemonRestService {
 
     @Autowired
-    private DaemonConfigService configService;
+    private DaemonService configService;
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public DaemonDTO[] getDaemons(@Context final UriInfo uriInfo) {
+    public List<DaemonInfo> getDaemons(@Context final UriInfo uriInfo) {
         return this.configService.getDaemons();
     }
 
     @POST
     @Path("/reload/{daemonName}")
     public Response reloadDaemonByName(@PathParam("daemonName") String daemonName) {
-        if(this.configService.reloadDaemon(daemonName)){
+        try {
+            this.configService.reload(daemonName);
             return Response.noContent().build();
+        } catch (DaemonReloadException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).type(MediaType.TEXT_PLAIN).build();
         }
-        // TODO zottel correct status code or use another one ?!
-        return Response.status(428).build();
     }
 
     @GET
-    @Path("/checkReloadState/{daemonName}")
+    @Path("/reload/{daemonName}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public DaemonReloadStateDTO getDaemonReloadState(@PathParam("daemonName") String daemonName) {
-        return this.configService.getDaemonReloadState(daemonName);
+    public DaemonReloadInfo getDaemonReloadState(@PathParam("daemonName") String daemonName) {
+        return this.configService.getCurrentReloadState(daemonName);
     }
 }

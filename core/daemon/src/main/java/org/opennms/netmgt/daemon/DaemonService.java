@@ -28,19 +28,32 @@
 
 package org.opennms.netmgt.daemon;
 
-public interface DaemonConfigService {
-    DaemonDTO[] getDaemons();
+import java.util.List;
+
+/**
+ * A service to receive all existing Daemons as well as reload them.
+ *
+ * @author sgrund
+ */
+public interface DaemonService {
+    List<DaemonInfo> getDaemons();
 
     /**
+     * Reload the daemon with the given name.
      *
-     * @param daemonName
+     * In order to reload the daemon it must listen
+     * to {@link org.opennms.netmgt.events.api.EventConstants#RELOAD_DAEMON_CONFIG_UEI} events.
+     *
+     * @param daemonName Case insensitive name of the daemon.
      * @throws {@link java.util.NoSuchElementException} if a daemon for <code>daemonName</code> does not exist
      */
-    boolean reloadDaemon(String daemonName);
+    void reload(String daemonName) throws DaemonReloadException;
+
     /**
+     * Returns the {@link DaemonReloadInfo} of the provided daemon.
      *
-     * @param daemonName
+     * @param daemonName Case insensitive name of the daemon.
      * @throws {@link java.util.NoSuchElementException} if a daemon for <code>daemonName</code> does not exist
      */
-    DaemonReloadStateDTO getDaemonReloadState(String daemonName);
+    DaemonReloadInfo getCurrentReloadState(String daemonName);
 }
