@@ -47,7 +47,7 @@ import org.opennms.netmgt.xml.event.Event;
  *
  * @author jwhite
  */
-@org.springframework.test.annotation.IfProfileValue(name="runFlappers" value="true")
+@org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
 public class AMQPEventForwarderBlueprintTest extends CamelBlueprintTest {
 
     @BeanInject

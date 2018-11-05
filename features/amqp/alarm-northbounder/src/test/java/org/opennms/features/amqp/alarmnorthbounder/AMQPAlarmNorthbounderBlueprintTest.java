@@ -44,7 +44,7 @@ import com.google.common.collect.Lists;
  *
  * @author jwhite
  */
-@org.springframework.test.annotation.IfProfileValue(name="runFlappers" value="true")
+@org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
 public class AMQPAlarmNorthbounderBlueprintTest extends CamelBlueprintTest {
 
     @BeanInject
