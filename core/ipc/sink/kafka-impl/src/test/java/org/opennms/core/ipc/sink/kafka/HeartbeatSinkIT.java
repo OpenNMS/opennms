@@ -132,7 +132,7 @@ public class HeartbeatSinkIT {
     }
 
     @Test(timeout=60000)
-    @org.springframework.test.annotation.IfProfileValue(name="runFlappers" value="true")
+    @org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
     public void canConsumeMessagesInParallel() throws Exception {
         final int NUM_CONSUMER_THREADS = 7;
 

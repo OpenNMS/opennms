@@ -71,7 +71,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-server-camel.xml"
 })
 @JUnitConfigurationEnvironment
-@org.springframework.test.annotation.IfProfileValue(name="runFlappers" value="true")
+@org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
 public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
