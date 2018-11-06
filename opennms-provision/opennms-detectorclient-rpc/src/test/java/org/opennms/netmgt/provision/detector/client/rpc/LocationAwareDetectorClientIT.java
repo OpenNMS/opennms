@@ -41,12 +41,10 @@ import org.apache.camel.util.KeyValueHolder;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
-import org.opennms.core.test.junit.FlappingTests;
 import org.opennms.minion.core.api.MinionIdentity;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
@@ -68,7 +66,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-rpc-detect.xml"
 })
 @JUnitConfigurationEnvironment  
-@Category(FlappingTests.class)
+@org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
 public class LocationAwareDetectorClientIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
