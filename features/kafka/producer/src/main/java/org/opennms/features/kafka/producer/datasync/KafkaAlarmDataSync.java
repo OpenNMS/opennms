@@ -60,6 +60,7 @@ import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
+import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.features.kafka.producer.AlarmEqualityChecker;
 import org.opennms.features.kafka.producer.OpennmsKafkaProducer;
 import org.opennms.features.kafka.producer.ProtobufMapper;
@@ -121,15 +122,11 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
                 Materialized.as(ALARM_STORE_NAME));
 
         final Topology topology = builder.build();
-        final ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-        try {
-            // Use the class-loader for the KStream class, since the kafka-client bundle
-            // does not import the required classes from the kafka-streams bundle
-            Thread.currentThread().setContextClassLoader(KStream.class.getClassLoader());
-            streams = new KafkaStreams(topology, streamProperties);
-        } finally {
-            Thread.currentThread().setContextClassLoader(currentClassLoader);
-        }
+
+        // Use the class-loader for the KStream class, since the kafka-client bundle
+        // does not import the required classes from the kafka-streams bundle
+        streams = Utils.runWithGivenClassLoader(() -> new KafkaStreams(topology, streamProperties), KStream.class.getClassLoader());
+
         streams.setUncaughtExceptionHandler((t, e) -> LOG.error(
                 String.format("Stream error on thread: %s", t.getName()), e));
 

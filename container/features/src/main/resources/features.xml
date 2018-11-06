@@ -1187,6 +1187,7 @@
       <feature version="${kafkaStreamsVersion}">kafka-streams</feature>
       <feature>opennms-collection-api</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobuf3Version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.kafka/org.opennms.features.kafka.producer/${project.version}</bundle>
     </feature>
 

@@ -52,6 +52,7 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.joda.time.Duration;
+import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
@@ -134,16 +135,8 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         // Overwrite the serializers, since we rely on these
         producerConfig.put("key.serializer", StringSerializer.class.getCanonicalName());
         producerConfig.put("value.serializer", ByteArraySerializer.class.getCanonicalName());
-
-        final ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-        try {
-            // Class-loader hack for accessing the org.apache.kafka.common.serialization.*
-            Thread.currentThread().setContextClassLoader(null);
-            producer = new KafkaProducer<>(producerConfig);
-        } finally {
-            Thread.currentThread().setContextClassLoader(currentClassLoader);
-        }
-
+        // Class-loader hack for accessing the kafka classes when initializing producer.
+        producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(producerConfig), KafkaProducer.class.getClassLoader());
         // Start processing records that have been queued for sending
         if(kafkaSendQueueCapacity <= 0) {
             kafkaSendQueueCapacity = 1000;
