@@ -48,11 +48,16 @@ public class ApplicationFactoryServiceTracker extends ServiceTracker {
             logger.warn("You have not set the alias property for ApplicationFactory: " + factory);
         }
 
-        // TODO MVR verify that this actually works
-        final String widgetset = findWidgetset(reference.getBundle());
-        if (widgetset != null) {
-            logger.debug("Widgetset found: {}", widgetset);
-            props.put("widgetset", widgetset);
+        // Auto-detect widgetset if not set manually
+        if (props.get("init.widgetset") != null) {
+            logger.debug("Widgetset configured to be used: {}", props.get("init.widgetset"));
+        } else {
+            // No widget set defined, try to auto-detect it
+            final String widgetset = findWidgetset(reference.getBundle());
+            if (widgetset != null) {
+                logger.debug("Widgetset found: {}", widgetset);
+                props.put("init.widgetset", widgetset);
+            }
         }
         logger.debug("Found factory for ui class {}, with the following headers {} and service properties {}.", factory.getUIClass(), factory.getAdditionalHeaders(), props);
         m_serviceRegistration.put(factory, context.registerService(Servlet.class.getName(), servlet, props));
