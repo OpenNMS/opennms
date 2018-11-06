@@ -33,9 +33,7 @@ import java.util.Properties;
 
 import org.apache.camel.BeanInject;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.opennms.core.test.camel.CamelBlueprintTest;
-import org.opennms.core.test.junit.FlappingTests;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.model.OnmsAlarm;
 
@@ -46,7 +44,7 @@ import com.google.common.collect.Lists;
  *
  * @author jwhite
  */
-@Category(FlappingTests.class)
+@org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
 public class AMQPAlarmNorthbounderBlueprintTest extends CamelBlueprintTest {
 
     @BeanInject
