@@ -44,7 +44,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
@@ -55,7 +54,6 @@ import org.opennms.core.ipc.sink.kafka.HeartbeatSinkPerfIT.HeartbeatGenerator;
 import org.opennms.core.ipc.sink.kafka.heartbeat.Heartbeat;
 import org.opennms.core.ipc.sink.kafka.heartbeat.HeartbeatModule;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.junit.FlappingTests;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -134,7 +132,7 @@ public class HeartbeatSinkIT {
     }
 
     @Test(timeout=60000)
-    @Category(FlappingTests.class)
+    @org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
     public void canConsumeMessagesInParallel() throws Exception {
         final int NUM_CONSUMER_THREADS = 7;
 

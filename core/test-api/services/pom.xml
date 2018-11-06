@@ -47,11 +47,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core.test-api</groupId>
-      <artifactId>org.opennms.core.test-api.junit</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.notifications</groupId>
       <artifactId>org.opennms.features.notifications.api</artifactId>
       <scope>compile</scope>

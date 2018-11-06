@@ -36,9 +36,7 @@ import java.util.Properties;
 import org.apache.camel.BeanInject;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.opennms.core.test.camel.CamelBlueprintTest;
-import org.opennms.core.test.junit.FlappingTests;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
@@ -53,7 +51,7 @@ import com.google.common.collect.Lists;
  *
  * @author jwhite
  */
-@Category(FlappingTests.class)
+@org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
 public class AMQPEventReceiverBlueprintTest extends CamelBlueprintTest {
 
     @BeanInject
