@@ -12,7 +12,7 @@
   <description>The Vaadin web application framework including some addons and osgi related packages.</description>
   <packaging>pom</packaging>
   <properties>
-    <vaadinGentryrefVersion>1.2.0.vaadin1</vaadinGentryrefVersion>
+    <vaadinGentyrefVersion>1.2.0.vaadin1</vaadinGentyrefVersion>
     <vaadinJsoupVersion>1.11.2</vaadinJsoupVersion>
   </properties>
   <build>
@@ -99,7 +99,7 @@
     <dependency>
       <groupId>com.vaadin.external</groupId>
       <artifactId>gentyref</artifactId>
-      <version>${vaadinGentryrefVersion}</version>
+      <version>${vaadinGentyrefVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.jsoup</groupId>

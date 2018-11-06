@@ -17,7 +17,7 @@
         <bundle>mvn:com.vaadin/vaadin-client/${vaadinVersion}</bundle>
         <bundle>mvn:com.vaadin/vaadin-themes/${vaadinVersion}</bundle>
         <bundle>mvn:com.vaadin/vaadin-shared/${vaadinVersion}</bundle>
-        <bundle>mvn:com.vaadin.external/gentyref/${vaadinGentryrefVersion}</bundle>
+        <bundle>mvn:com.vaadin.external/gentyref/${vaadinGentyrefVersion}</bundle>
         <bundle>mvn:org.jsoup/jsoup/${vaadinJsoupVersion}</bundle>
         <bundle>mvn:org.opennms.features.vaadin-components/extender-service/${project.version}</bundle>
         <bundle>mvn:com.google.guava/guava/${guavaVersion}</bundle>
