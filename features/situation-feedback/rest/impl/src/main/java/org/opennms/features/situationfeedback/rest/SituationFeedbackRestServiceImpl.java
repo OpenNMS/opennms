@@ -107,7 +107,7 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
         }
         Set<OnmsAlarm> previousRelatedAlarms = situation.getRelatedAlarms();
         Log.debug("removing alarm {} from situation {}.", alarm, situation);
-        situation.getRelatedAlarms().remove(alarm);
+        situation.removeRelatedAlarm(alarm);
         alarmDao.saveOrUpdate(situation);
         Log.debug("removed alarm {} from situation {}.", alarm, situation);
         // Update AlarmEntityNotifier
@@ -122,7 +122,7 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
         }
         Set<OnmsAlarm> previousRelatedAlarms = situation.getRelatedAlarms();
         Log.debug("adding alarm {} to situation {}.", alarm, situation);
-        situation.getRelatedAlarms().add(alarm);
+        situation.addRelatedAlarm(alarm);
         alarmDao.saveOrUpdate(situation);
         Log.debug("added alarm {} to situation {}.", alarm, situation);
         // Update AlarmChangeNotifier

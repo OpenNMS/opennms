@@ -20,3 +20,13 @@ In order to configure the Google Map API the following properties in `etc/org.op
 | `timeout`      | `Integer`    | `500`               | The connection timeout in milliseconds the Geocoder tries to resolve a single geolocation.
 |===
 
+An alternative is to use the NominatimGeocoderService (https://developer.mapquest.com/documentation/open/nominatim-search/).
+
+[options="header, autowidth"]
+|===
+| Property          | Type         | Default             | Description
+| `emailAddress`    | `String`     | _empty string_      |
+| `referer`         | `String`     | _empty string_      |
+| `useSystemProxy`  | `Boolean`    | false               | Should the system wide proxy settings be used? The system proxy settings can
+                                                           be configured in link:#ga-opennms-system-properties[opennms.conf]
+|===

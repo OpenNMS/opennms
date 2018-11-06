@@ -369,6 +369,34 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         } catch (Exception e) {
         }
     }
+    
+    @Test
+    public void testSameAlarmIsNotSynced() {
+        kafkaProducer.setSuppressIncrementalAlarms(false);
+
+        // Send an alarm
+        final OnmsAlarm alarm = nodeDownAlarmWithRelatedAlarm();
+        alarmDao.save(alarm);
+        kafkaProducer.handleNewOrUpdatedAlarm(alarm);
+
+        // Fire up the consumer
+        kafkaConsumer = startConsumer();
+
+        await().atMost(1, TimeUnit.MINUTES)
+                .ignoreExceptions()
+                .pollDelay(5, TimeUnit.SECONDS)
+                .until(() -> kafkaProducer.getDataSync().isReady());
+        
+        // Force an alarm sync
+        kafkaProducer.handleAlarmSnapshot(Collections.singletonList(alarm));
+
+        // Only the alarm explicitly sent should be consumed, there should not have been any alarms sync'd        
+        try {            
+            await().atMost(10, TimeUnit.SECONDS).until(() -> kafkaConsumer.getAlarms().size() > 1);
+            fail("Same alarm was sync'd!");
+        } catch (Exception e) {
+        }
+    }
 
     private KafkaMessageConsumerRunner startConsumer() {
         executor = Executors.newSingleThreadExecutor();

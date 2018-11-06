@@ -36,7 +36,7 @@ import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.opennms.netmgt.alarmd.driver.AlarmMatchers.hasSeverity;
+import static org.opennms.netmgt.alarmd.AlarmMatchers.hasSeverity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,6 +52,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.support.AlarmEntityNotifierImpl;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -79,6 +80,8 @@ public class DroolsAlarmContextIT {
 
     private DroolsAlarmContext dac;
     private AlarmDao alarmDao;
+    private AcknowledgmentDao acknowledgmentDao;
+
     private MockTicketer ticketer = new MockTicketer();
 
     @Before
@@ -91,10 +94,13 @@ public class DroolsAlarmContextIT {
         DefaultAlarmService alarmService = new DefaultAlarmService();
         alarmDao = mock(AlarmDao.class);
         alarmService.setAlarmDao(alarmDao);
+        acknowledgmentDao = mock(AcknowledgmentDao.class);
+        alarmService.setAcknowledgmentDao(acknowledgmentDao);
 
         AlarmEntityNotifierImpl alarmEntityNotifier = mock(AlarmEntityNotifierImpl.class);
         alarmService.setAlarmEntityNotifier(alarmEntityNotifier);
         dac.setAlarmService(alarmService);
+        dac.setAcknowledgmentDao(acknowledgmentDao);
 
         dac.start();
     }

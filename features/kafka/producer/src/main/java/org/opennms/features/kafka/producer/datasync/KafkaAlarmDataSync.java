@@ -227,11 +227,12 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
             commonReductionKeys.forEach(rkey -> {
                 final OnmsAlarm dbAlarm = alarmsInDbByReductionKey.get(rkey);
                 final OpennmsModelProtos.Alarm.Builder mappedDbAlarm = protobufMapper.toAlarm(dbAlarm);
-                final OpennmsModelProtos.Alarm.Builder alarmFromKtable =
+                final OpennmsModelProtos.Alarm alarmFromKtable = alarmsInKtableByReductionKey.get(rkey);
+                final OpennmsModelProtos.Alarm.Builder alarmBuilderFromKtable =
                         alarmsInKtableByReductionKey.get(rkey).toBuilder();
 
                 if ((suppressIncrementalAlarms && !alarmEqualityChecker.equalsExcludingOnBoth(mappedDbAlarm,
-                        alarmFromKtable)) || (!suppressIncrementalAlarms && !Objects.equals(mappedDbAlarm,
+                        alarmBuilderFromKtable)) || (!suppressIncrementalAlarms && !Objects.equals(mappedDbAlarm.build(),
                         alarmFromKtable))) {
                     kafkaProducer.handleNewOrUpdatedAlarm(dbAlarm);
                     reductionKeysUpdated.add(rkey);
@@ -253,7 +254,7 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
                             + results.getReductionKeysUpdated().size());
             LOG.debug("Reduction keys added to ktable: {}", results.getReductionKeysAdded());
             LOG.debug("Reduction keys deleted from the ktable: {}", results.getReductionKeysDeleted());
-            LOG.debug("Reduction keys updated in the ktable: {}", results.getReductionKeysAdded());
+            LOG.debug("Reduction keys updated in the ktable: {}", results.getReductionKeysUpdated());
         }
 
         return results;

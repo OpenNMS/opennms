@@ -1659,7 +1659,5 @@
 
   <event-file>events/Xerox.events.xml</event-file>
 
-  <event-file>events/ncs-component.events.xml</event-file>
-
   <event-file>events/default.events.xml</event-file>
 </events>

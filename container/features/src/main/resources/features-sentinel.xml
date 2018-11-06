@@ -123,6 +123,7 @@
     <feature name="sentinel-coordination-common"
              description="OpenNMS :: Features :: Distributed :: Coordination :: Common" version="${project.version}">
         <feature version="${project.version}">sentinel-coordination-api</feature>
+        <feature version="${opennmsApiVersion}" dependency="true">opennms-integration-api</feature>
         <bundle>mvn:org.opennms.features.distributed/coordination-common/${project.version}</bundle>
     </feature>
 
