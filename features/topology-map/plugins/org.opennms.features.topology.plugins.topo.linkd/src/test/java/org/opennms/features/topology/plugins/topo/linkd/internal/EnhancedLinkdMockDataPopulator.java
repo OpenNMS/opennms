@@ -457,6 +457,7 @@ public class EnhancedLinkdMockDataPopulator {
         EasyMock.reset(m_lldpLinkDao);
         EasyMock.reset(m_ospfLinkDao);
         EasyMock.reset(m_nodeDao);
+        EasyMock.reset(m_topologyInfoCache);
         EasyMock.reset(m_snmpInterfaceDao);
         EasyMock.reset(m_ipInterfaceDao);
         EasyMock.reset(m_ipNetToMediaDao);

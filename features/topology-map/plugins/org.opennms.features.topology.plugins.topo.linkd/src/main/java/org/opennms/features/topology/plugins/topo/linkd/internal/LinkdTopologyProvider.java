@@ -128,7 +128,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private LldpLinkDao m_lldpLinkDao;
     private LldpElementDao m_lldpElementDao;
-    private CdpLinkDao m_cdpLinkDao;
     private CdpElementDao m_cdpElementDao;
     private OspfLinkDao m_ospfLinkDao;
     private IsIsLinkDao m_isisLinkDao;
@@ -829,14 +828,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     
     public void setIpNetToMediaDao(IpNetToMediaDao ipNetToMediaDao) {
         m_ipNetToMediaDao = ipNetToMediaDao;
-    }
-
-    public CdpLinkDao getCdpLinkDao() {
-        return m_cdpLinkDao;
-    }
-
-    public void setCdpLinkDao(CdpLinkDao cdpLinkDao) {
-        m_cdpLinkDao = cdpLinkDao;
     }
 
     public CdpElementDao getCdpElementDao() {
