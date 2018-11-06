@@ -28,29 +28,34 @@
 
 package org.opennms.netmgt.model;
 
+import java.net.InetAddress;
+import java.util.Objects;
+
 /**
- * This is NOT a Hibernate/JPA entity but rather a lightweight model without less attributes than CdpLink and no lazy
+ * This is NOT a Hibernate/JPA entity but rather a lightweight model without less attributes than OspfLink and no lazy
  * loading. We use it to retrieve link information from the database fast.
  */
-public class CdpLinkTopologyEntity {
-
+public class OspfLinkTopologyEntity {
     private final Integer id;
     private final Integer nodeId;
-    private final Integer cdpCacheIfIndex;
-    private final String cdpInterfaceName;
-    private final String cdpCacheAddress;
-    private final String cdpCacheDeviceId;
-    private final String cdpCacheDevicePort;
+    private final InetAddress ospfIpAddr;
+    private final InetAddress ospfRemIpAddr;
+    private final Integer ospfIfIndex;
 
-    public CdpLinkTopologyEntity(Integer id, Integer nodeId, Integer cdpCacheIfIndex, String cdpInterfaceName, String cdpCacheAddress,
-                                 String cdpCacheDeviceId, String cdpCacheDevicePort){
+    public OspfLinkTopologyEntity(Integer id, Integer nodeId, InetAddress ospfIpAddr, InetAddress ospfRemIpAddr, Integer ospfIfIndex) {
         this.id = id;
         this.nodeId = nodeId;
-        this.cdpCacheIfIndex = cdpCacheIfIndex;
-        this.cdpInterfaceName = cdpInterfaceName;
-        this.cdpCacheAddress = cdpCacheAddress;
-        this.cdpCacheDeviceId = cdpCacheDeviceId;
-        this.cdpCacheDevicePort = cdpCacheDevicePort;
+        this.ospfIpAddr = ospfIpAddr;
+        this.ospfRemIpAddr = ospfRemIpAddr;
+        this.ospfIfIndex = ospfIfIndex;
+    }
+
+    public OspfLinkTopologyEntity(OspfLink link) {
+        this(link.getId()
+                , link.getNode().getId()
+                , link.getOspfIpAddr()
+                , link.getOspfRemIpAddr()
+                , link.getOspfIfIndex());
     }
 
     public Integer getId() {
@@ -68,36 +73,26 @@ public class CdpLinkTopologyEntity {
         return null;
     }
 
-    public Integer getCdpCacheIfIndex() {
-        return cdpCacheIfIndex;
+    public InetAddress getOspfIpAddr() {
+        return ospfIpAddr;
     }
 
-    public String getCdpInterfaceName() {
-        return cdpInterfaceName;
+    public InetAddress getOspfRemIpAddr() {
+        return ospfRemIpAddr;
     }
 
-    public String getCdpCacheAddress() {
-        return cdpCacheAddress;
-    }
-
-    public String getCdpCacheDevicePort() {
-        return cdpCacheDevicePort;
-    }
-
-    public String getCdpCacheDeviceId() {
-        return cdpCacheDeviceId;
+    public Integer getOspfIfIndex() {
+        return ospfIfIndex;
     }
 
     @Override
     public String toString() {
-        return "CdpLinkTopologyEntity{" +
+        return "OspfLinkTopologyEntity{" +
                 "id=" + id +
                 ", nodeId=" + nodeId +
-                ", cdpCacheIfIndex=" + cdpCacheIfIndex +
-                ", cdpInterfaceName='" + cdpInterfaceName + '\'' +
-                ", cdpCacheAddress='" + cdpCacheAddress + '\'' +
-                ", cdpCacheDeviceId='" + cdpCacheDeviceId + '\'' +
-                ", cdpCacheDevicePort='" + cdpCacheDevicePort + '\'' +
+                ", ospfIpAddr=" + ospfIpAddr +
+                ", ospfRemIpAddr=" + ospfRemIpAddr +
+                ", ospfIfIndex=" + ospfIfIndex +
                 '}';
     }
 }

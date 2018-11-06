@@ -31,7 +31,10 @@ package org.opennms.netmgt.dao.api;
 import java.util.List;
 
 import org.opennms.netmgt.model.CdpLinkTopologyEntity;
+import org.opennms.netmgt.model.IsIsLinkTopologyEntity;
+import org.opennms.netmgt.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.model.NodeTopologyEntity;
+import org.opennms.netmgt.model.OspfLinkTopologyEntity;
 
 /**
  * Caches TopologyEmtities. This is a cache wrapper around @{@link TopologyEntityDao}. See there for an explanation of
@@ -43,6 +46,12 @@ public interface TopologyEntityCache {
     List<NodeTopologyEntity> getNodeTopolgyEntities();
 
     List<CdpLinkTopologyEntity> getCdpLinkTopologyEntities();
+
+    List<OspfLinkTopologyEntity> getOspfLinkTopologyEntities();
+
+    List<IsIsLinkTopologyEntity> getIsIsLinkTopologyEntities();
+
+    List<LldpLinkTopologyEntity> getLldpLinkTopologyEntities();
 
     void refresh();
 
