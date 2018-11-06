@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.easymock.EasyMock;
 import org.junit.Assert;
@@ -70,11 +71,24 @@ import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
+import org.opennms.netmgt.dao.api.TopologyEntityCache;
+import org.opennms.netmgt.model.CdpElement;
+import org.opennms.netmgt.model.CdpLink;
+import org.opennms.netmgt.model.IpNetToMedia;
+import org.opennms.netmgt.model.IsIsElement;
+import org.opennms.netmgt.model.IsIsLink;
+import org.opennms.netmgt.model.LldpElement;
+import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.model.NodeTopologyEntity;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.OspfLink;
+import org.opennms.netmgt.model.OspfLinkTopologyEntity;
+import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class EnhancedLinkdMockDataPopulator {
@@ -154,7 +168,7 @@ public class EnhancedLinkdMockDataPopulator {
 
         m_nodes = new ArrayList<OnmsNode>();
         m_lldpnodes = new ArrayList<LldpElement>();
-        
+
         final NetworkBuilder builder = new NetworkBuilder();
 
         builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType(OnmsNode.NodeType.ACTIVE).setSysObjectId("1.3.6.1.4.1.5813.1.25");
@@ -418,6 +432,9 @@ public class EnhancedLinkdMockDataPopulator {
         EasyMock.expect(m_ospfLinkDao.findAll()).andReturn(getOspfLinks()).anyTimes();
         EasyMock.expect(m_topologyEntityCache.getNodeTopolgyEntities()).andReturn(getVertices()).anyTimes();
         EasyMock.expect(m_topologyEntityCache.getCdpLinkTopologyEntities()).andReturn(new ArrayList<>()).anyTimes();
+        EasyMock.expect(m_topologyEntityCache.getOspfLinkTopologyEntities()).andReturn(convertToOspf(getOspfLinks())).anyTimes();
+        EasyMock.expect(m_topologyEntityCache.getLldpLinkTopologyEntities()).andReturn(convertToLldp(getLinks())).anyTimes();
+        EasyMock.expect(m_topologyEntityCache.getIsIsLinkTopologyEntities()).andReturn(new ArrayList<>()).anyTimes();
         EasyMock.expect(m_nodeDao.getAllLabelsById());
         EasyMock.expectLastCall().andReturn(getNodeLabelsById()).anyTimes();
         
@@ -439,6 +456,14 @@ public class EnhancedLinkdMockDataPopulator {
         EasyMock.replay(m_snmpInterfaceDao);
         EasyMock.replay(m_ipInterfaceDao);
         EasyMock.replay(m_ipNetToMediaDao);
+    }
+
+    private List<OspfLinkTopologyEntity> convertToOspf(List<OspfLink> links) {
+        return links.stream().map(link -> new OspfLinkTopologyEntity(link)).collect(Collectors.toList());
+    }
+
+    private List<LldpLinkTopologyEntity> convertToLldp(List<LldpLink> links) {
+        return links.stream().map(link -> new LldpLinkTopologyEntity(link)).collect(Collectors.toList());
     }
 
     public void tearDown() {
