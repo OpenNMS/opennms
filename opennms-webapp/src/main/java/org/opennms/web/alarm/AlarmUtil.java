@@ -100,7 +100,7 @@ public abstract class AlarmUtil extends Object {
         criteria.createAlias("distPoller", "distPoller", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("lastEvent", "lastEvent", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
-        criteria.createAlias("relatedAlarms", "relatedAlarms", OnmsCriteria.LEFT_JOIN);
+        criteria.createAlias("associatedAlarms", "associatedAlarms", OnmsCriteria.LEFT_JOIN);
 
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
@@ -160,7 +160,7 @@ public abstract class AlarmUtil extends Object {
                         criteria.addOrder(Order.asc("alarmAckUser"));
                         break;
                     case SITUATION:
-                        criteria.addOrder(Order.asc("relatedAlarms.id"));
+                        criteria.addOrder(Order.asc("associatedAlarms.id"));
                         break;
                     case REVERSE_COUNT:
                         criteria.addOrder(Order.asc("counter"));
@@ -193,7 +193,7 @@ public abstract class AlarmUtil extends Object {
                         criteria.addOrder(Order.desc("alarmAckUser"));
                         break;
                     case REVERSE_SITUATION:
-                        criteria.addOrder(Order.desc("relatedAlarms.id"));
+                        criteria.addOrder(Order.desc("associatedAlarms.id"));
                         break;
                     default:
                         break;

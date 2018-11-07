@@ -1111,8 +1111,10 @@ CREATE INDEX alarm_attributes_idx ON alarm_attributes(alarmID);
 CREATE UNIQUE INDEX alarm_attributes_aan_idx ON alarm_attributes(alarmID, attributeName);
 
 CREATE TABLE alarm_situations (
+    id              INTEGER, CONSTRAINT pk_id PRIMARY KEY (id),
     situation_id    INTEGER NOT NULL,
     related_alarm_id  INTEGER NOT NULL,
+    mapped_time timestamp with time zone,
     
     CONSTRAINT fk_alarm_situations_alarm_id FOREIGN KEY (related_alarm_id) REFERENCES alarms (alarmid) ON DELETE CASCADE,
     CONSTRAINT fk_alarm_situations_situation_id FOREIGN KEY (situation_id) REFERENCES alarms (alarmid) ON DELETE CASCADE

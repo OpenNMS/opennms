@@ -36,7 +36,7 @@ import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.opennms.netmgt.alarmd.driver.AlarmMatchers.hasSeverity;
+import static org.opennms.netmgt.alarmd.AlarmMatchers.hasSeverity;
 
 import java.util.ArrayList;
 import java.util.Date;

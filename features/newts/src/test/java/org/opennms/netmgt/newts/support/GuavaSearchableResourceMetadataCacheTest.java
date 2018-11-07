@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,11 +31,11 @@ package org.opennms.netmgt.newts.support;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.cassandra.search.ResourceMetadata;
+import org.springframework.test.annotation.IfProfileValue;
 
 import com.codahale.metrics.MetricRegistry;
 
@@ -61,7 +61,7 @@ public class GuavaSearchableResourceMetadataCacheTest {
     }
 
     @Test
-    @Ignore
+    @IfProfileValue(name="runBenchmarkTests", value="true")
     public void getResourceIdsWithPrefixPerftTest() {
         long numResourceIdsToCache = 200000;
         long numSearches = 1000;
