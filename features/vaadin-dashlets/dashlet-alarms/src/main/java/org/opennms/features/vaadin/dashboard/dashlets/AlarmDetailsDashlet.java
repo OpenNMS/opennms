@@ -28,6 +28,7 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
+import java.time.ZoneId;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -68,7 +69,6 @@ import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import com.vaadin.v7.shared.ui.label.ContentMode;
-import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.Table;
 import com.vaadin.v7.ui.VerticalLayout;
@@ -169,7 +169,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
 
                     setBoosted(false);
 
-                    addComponents(m_verticalLayout, alarms);
+                    addComponents(UserTimeZoneExtractor.extractUserTimeZoneIdOrNull(ui), m_verticalLayout, alarms);
 
                     setBoosted(checkBoosted(alarms));
                 }
@@ -326,10 +326,11 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
     /**
      * Adds the alarms components to a {@link AbstractOrderedLayout}
      *
+     * @param userTimeZone  the user's time zone id. May be null.
      * @param component the component to add alarms to
      * @param alarms    the alarms list
      */
-    private void addComponents(AbstractOrderedLayout component, List<OnmsAlarm> alarms) {
+    private void addComponents(ZoneId userTimeZone, AbstractOrderedLayout component, List<OnmsAlarm> alarms) {
         if (alarms.size() == 0) {
             Label label = new Label("No alarms found!");
             label.addStyleName("alert-details-noalarms-font");
@@ -361,7 +362,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getSeverity().getLabel() + "</nobr></td>");
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + (onmsNode != null ? onmsNode.getLabel() : "-") + "</nobr></td>");
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getCounter() + "</nobr></td>");
-                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + m_timeformatService.format(onmsAlarm.getLastEventTime(), UserTimeZoneExtractor.extractUserTimeZoneIdOrNull()) + "</nobr></td>");
+                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + m_timeformatService.format(onmsAlarm.getLastEventTime(), userTimeZone) + "</nobr></td>");
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'>" + onmsAlarm.getLogMsg().replaceAll("\\<.*?>", "") + "</td>");
                 sb.append("</td></tr>");
             }
@@ -371,84 +372,5 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
             label.setContentMode(ContentMode.HTML);
             component.addComponent(label);
         }
-    }
-
-    /**
-     * Returns the component for visualising the alarms data.
-     *
-     * @param onmsAlarm an {@link OnmsAlarm} instance
-     * @param onmsNode  an {@link OnmsNode} instance
-     * @return component for this alarm
-     */
-    @Deprecated
-    public Component createAlarmComponent(OnmsAlarm onmsAlarm, OnmsNode onmsNode) {
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
-        horizontalLayout.setSizeFull();
-        horizontalLayout.addStyleName("alert-details");
-        horizontalLayout.addStyleName("alert-details-font");
-        horizontalLayout.addStyleName(onmsAlarm.getSeverity().name().toLowerCase());
-
-        VerticalLayout verticalLayout1 = new VerticalLayout();
-        VerticalLayout verticalLayout2 = new VerticalLayout();
-
-        horizontalLayout.addComponent(verticalLayout1);
-        horizontalLayout.addComponent(verticalLayout2);
-
-        Label lastEvent = new Label();
-        lastEvent.setSizeUndefined();
-        lastEvent.addStyleName("alert-details-font");
-        lastEvent.setCaption("Last event");
-        lastEvent.setValue(m_timeformatService.format(onmsAlarm.getLastEventTime(), UserTimeZoneExtractor.extractUserTimeZoneIdOrNull()));
-
-        Label firstEvent = new Label();
-        firstEvent.setSizeUndefined();
-        firstEvent.addStyleName("alert-details-font");
-        firstEvent.setCaption("First event");
-        firstEvent.setValue(m_timeformatService.format(onmsAlarm.getFirstEventTime(), UserTimeZoneExtractor.extractUserTimeZoneIdOrNull()));
-
-        verticalLayout1.addComponent(firstEvent);
-        verticalLayout1.addComponent(lastEvent);
-
-        Label nodeId = new Label();
-        nodeId.setSizeUndefined();
-        nodeId.addStyleName("alert-details-font");
-        nodeId.setCaption("Node Id");
-
-        if (onmsNode != null) {
-            nodeId.setValue(onmsNode.getNodeId());
-        } else {
-            nodeId.setValue("-");
-        }
-
-        Label nodeLabel = new Label();
-        nodeLabel.setSizeUndefined();
-        nodeLabel.addStyleName("alert-details-font");
-        nodeLabel.setCaption("Node Label");
-
-        if (onmsNode != null) {
-            nodeLabel.setValue(onmsNode.getLabel());
-        } else {
-            nodeLabel.setValue("-");
-        }
-
-        Label logMessage = new Label();
-        logMessage.addStyleName("alert-details-font");
-        logMessage.setSizeFull();
-        logMessage.setCaption("Log message");
-        logMessage.setValue(onmsAlarm.getLogMsg().replaceAll("<[^>]*>", ""));
-
-        HorizontalLayout horizontalLayout2 = new HorizontalLayout();
-        horizontalLayout2.setSizeFull();
-        horizontalLayout2.setSpacing(true);
-        horizontalLayout2.addComponent(nodeId);
-        horizontalLayout2.addComponent(nodeLabel);
-
-        verticalLayout2.addComponent(horizontalLayout2);
-        verticalLayout2.addComponent(logMessage);
-
-        horizontalLayout.setExpandRatio(verticalLayout1, 1.0f);
-        horizontalLayout.setExpandRatio(verticalLayout2, 4.0f);
-
-        return horizontalLayout;
     }
 }

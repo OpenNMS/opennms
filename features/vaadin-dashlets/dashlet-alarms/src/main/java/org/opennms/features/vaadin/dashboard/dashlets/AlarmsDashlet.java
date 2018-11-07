@@ -328,7 +328,7 @@ public class AlarmsDashlet extends AbstractDashlet {
      * @param onmsNode  an {@link OnmsNode} instance
      * @return component for this alarm
      */
-    public Component createAlarmComponent(OnmsAlarm onmsAlarm, OnmsNode onmsNode) {
+    private Component createAlarmComponent(OnmsAlarm onmsAlarm, OnmsNode onmsNode) {
 
         Calendar calendar = Calendar.getInstance();
 

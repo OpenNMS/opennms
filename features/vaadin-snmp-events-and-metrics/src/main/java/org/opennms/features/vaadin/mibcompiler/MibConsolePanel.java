@@ -106,7 +106,7 @@ public class MibConsolePanel extends Panel implements Logger {
      * @param message the message
      */
     private void logMsg(String level, String message) {
-        String msg = timeformatService.format(Instant.now(), UserTimeZoneExtractor.extractUserTimeZoneIdOrNull()) + level + message;
+        String msg = timeformatService.format(Instant.now(), UserTimeZoneExtractor.extractUserTimeZoneIdOrNull(getUI())) + level + message;
         Label error = new Label(msg, ContentMode.HTML);
         logContent.addComponent(error);
         scrollIntoView();

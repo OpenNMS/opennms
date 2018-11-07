@@ -77,9 +77,7 @@ public class KscDashlet extends AbstractDashlet {
     private DashletComponent m_wallboardComponent;
     private DashletComponent m_dashboardComponent;
     private static final int DEFAULT_GRAPH_WIDTH_PX = 400;
-
     private final TimeformatService m_timeformatService;
-    private final ZoneId m_userTimezoneId;
 
     /**
      * Constructor for instantiating new objects.
@@ -97,7 +95,6 @@ public class KscDashlet extends AbstractDashlet {
         m_resourceDao = resourceDao;
         m_transactionOperations = transactionOperations;
         m_timeformatService = timeformatService;
-        m_userTimezoneId = UserTimeZoneExtractor.extractUserTimeZoneIdOrNull();
     }
 
     @Override
@@ -120,6 +117,7 @@ public class KscDashlet extends AbstractDashlet {
                     /**
                      * initializing the parameters
                      */
+                    final ZoneId userTimeZoneId = UserTimeZoneExtractor.extractUserTimeZoneIdOrNull(ui);
                     int columns = 0;
                     int rows = 0;
 
@@ -214,10 +212,10 @@ public class KscDashlet extends AbstractDashlet {
                                 }
 
                                 labelTitle.addStyleName("text");
-                                Label labelFrom = new Label("From: " + m_timeformatService.format(beginTime.getTime(), m_userTimezoneId));
+                                Label labelFrom = new Label("From: " + m_timeformatService.format(beginTime.getTime(), userTimeZoneId));
                                 labelFrom.addStyleName("text");
 
-                                Label labelTo = new Label("To: " + m_timeformatService.format(endTime.getTime(), m_userTimezoneId));
+                                Label labelTo = new Label("To: " + m_timeformatService.format(endTime.getTime(), userTimeZoneId));
                                 labelTo.addStyleName("text");
 
                                 Label labelNodeLabel = new Label(data.get("nodeLabel"));
@@ -283,6 +281,7 @@ public class KscDashlet extends AbstractDashlet {
                 public void refresh() {
                     m_verticalLayout.removeAllComponents();
 
+                    final ZoneId userTimeZoneId = UserTimeZoneExtractor.extractUserTimeZoneIdOrNull(ui);
                     String kscReportName = getDashletSpec().getParameters().get("kscReport");
 
                     if (kscReportName == null || "".equals(kscReportName)) {
@@ -349,10 +348,10 @@ public class KscDashlet extends AbstractDashlet {
 
                         labelTitle.addStyleName("text");
 
-                        Label labelFrom = new Label("From: " + m_timeformatService.format(beginTime.getTime(), m_userTimezoneId));
+                        Label labelFrom = new Label("From: " + m_timeformatService.format(beginTime.getTime(), userTimeZoneId));
                         labelFrom.addStyleName("text");
 
-                        Label labelTo = new Label("To: " + m_timeformatService.format(endTime.getTime(), m_userTimezoneId));
+                        Label labelTo = new Label("To: " + m_timeformatService.format(endTime.getTime(), userTimeZoneId));
                         labelTo.addStyleName("text");
 
                         Label labelNodeLabel = new Label(data.get("nodeLabel"));
