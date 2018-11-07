@@ -30,6 +30,7 @@ package org.opennms.features.vaadin.dashboard.dashlets;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.UI;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.VerticalLayout;
 import org.opennms.features.vaadin.dashboard.model.*;
@@ -52,7 +53,7 @@ public class UndefinedDashlet extends AbstractDashlet {
     }
 
     @Override
-    public DashletComponent getWallboardComponent() {
+    public DashletComponent getWallboardComponent(final UI ui) {
         DashletComponent dashletComponent = new AbstractDashletComponent() {
             @Override
             public void refresh() {
@@ -72,7 +73,7 @@ public class UndefinedDashlet extends AbstractDashlet {
     }
 
     @Override
-    public DashletComponent getDashboardComponent() {
-        return getWallboardComponent();
+    public DashletComponent getDashboardComponent(final UI ui) {
+        return getWallboardComponent(ui);
     }
 }

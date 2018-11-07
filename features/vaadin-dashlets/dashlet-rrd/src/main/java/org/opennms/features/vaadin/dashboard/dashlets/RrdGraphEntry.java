@@ -34,7 +34,6 @@ import java.util.GregorianCalendar;
 import org.opennms.features.vaadin.components.graph.GraphContainer;
 import org.opennms.netmgt.dao.api.NodeDao;
 
-import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Panel;
@@ -153,7 +152,7 @@ public class RrdGraphEntry extends Panel {
         /**
          * inject the preview style
          */
-        Page.getCurrent().getStyles().add(".preview { width:175px; }");
+        getUI().getPage().getStyles().add(".preview { width:175px; }");
 
         /**
          * initial update

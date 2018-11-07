@@ -28,16 +28,11 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
-import com.google.common.collect.Lists;
-import com.vaadin.server.Page;
-import com.vaadin.v7.shared.ui.label.ContentMode;
-import com.vaadin.ui.AbstractOrderedLayout;
-import com.vaadin.ui.Component;
-import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.Label;
-import com.vaadin.v7.ui.Table;
-import com.vaadin.ui.UI;
-import com.vaadin.v7.ui.VerticalLayout;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
 import org.opennms.core.criteria.restrictions.InRestriction;
@@ -68,10 +63,15 @@ import org.opennms.osgi.VaadinApplicationContextImpl;
 import org.opennms.vaadin.user.UserTimeZoneExtractor;
 import org.springframework.transaction.support.TransactionOperations;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Lists;
+import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.UI;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * This class represents a Alert Dashlet with some details.
@@ -130,7 +130,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
     }
 
     @Override
-    public DashletComponent getWallboardComponent() {
+    public DashletComponent getWallboardComponent(final UI ui) {
 
         if (m_wallboardComponent == null) {
             m_wallboardComponent = new AbstractDashletComponent() {
@@ -149,16 +149,16 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                  * Injects CSS styles on current page for this dashlet
                  */
                 private void injectWallboardStyles() {
-                    Page.getCurrent().getStyles().add(".alert-details.cleared { background: #AAAAAA; border-left: 14px solid #858585; }");
-                    Page.getCurrent().getStyles().add(".alert-details.normal { background: #AAAAAA; border-left: 14px solid #336600; }");
-                    Page.getCurrent().getStyles().add(".alert-details.indeterminate { background: #AAAAAA; border-left: 14px solid #999; }");
-                    Page.getCurrent().getStyles().add(".alert-details.warning { background: #AAAAAA; border-left: 14px solid #FFCC00; }");
-                    Page.getCurrent().getStyles().add(".alert-details.minor { background: #AAAAAA; border-left: 14px solid #FF9900; }");
-                    Page.getCurrent().getStyles().add(".alert-details.major { background: #AAAAAA; border-left: 14px solid #FF3300; }");
-                    Page.getCurrent().getStyles().add(".alert-details.critical { background: #AAAAAA; border-left: 14px solid #CC0000; }");
-                    Page.getCurrent().getStyles().add(".alert-details-font {color: #000000; font-size: 17px; line-height: normal; }");
-                    Page.getCurrent().getStyles().add(".alert-details-noalarms-font { font-size: 17px; line-height: normal; }");
-                    Page.getCurrent().getStyles().add(".alert-details { padding: 5px 5px; margin: 1px; }");
+                    ui.getPage().getStyles().add(".alert-details.cleared { background: #AAAAAA; border-left: 14px solid #858585; }");
+                    ui.getPage().getStyles().add(".alert-details.normal { background: #AAAAAA; border-left: 14px solid #336600; }");
+                    ui.getPage().getStyles().add(".alert-details.indeterminate { background: #AAAAAA; border-left: 14px solid #999; }");
+                    ui.getPage().getStyles().add(".alert-details.warning { background: #AAAAAA; border-left: 14px solid #FFCC00; }");
+                    ui.getPage().getStyles().add(".alert-details.minor { background: #AAAAAA; border-left: 14px solid #FF9900; }");
+                    ui.getPage().getStyles().add(".alert-details.major { background: #AAAAAA; border-left: 14px solid #FF3300; }");
+                    ui.getPage().getStyles().add(".alert-details.critical { background: #AAAAAA; border-left: 14px solid #CC0000; }");
+                    ui.getPage().getStyles().add(".alert-details-font {color: #000000; font-size: 17px; line-height: normal; }");
+                    ui.getPage().getStyles().add(".alert-details-noalarms-font { font-size: 17px; line-height: normal; }");
+                    ui.getPage().getStyles().add(".alert-details { padding: 5px 5px; margin: 1px; }");
                 }
 
                 @Override
@@ -184,7 +184,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
     }
 
     @Override
-    public DashletComponent getDashboardComponent() {
+    public DashletComponent getDashboardComponent(final UI ui) {
         if (m_dashboardComponent == null) {
             m_dashboardComponent = new AbstractDashletComponent() {
 

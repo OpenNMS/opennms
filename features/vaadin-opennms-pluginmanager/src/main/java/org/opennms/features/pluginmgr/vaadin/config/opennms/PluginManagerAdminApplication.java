@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.ExternalResource;
-import com.vaadin.server.Page;
 import com.vaadin.server.Page.Styles;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServletRequest;
@@ -160,7 +159,7 @@ public class PluginManagerAdminApplication extends UI {
 		
 		// dynamically inject style for non write borders - avoids changing themes css
 		// Get the stylesheet of the page
-		Styles styles = Page.getCurrent().getStyles();
+		Styles styles = getUI().getPage().getStyles();
         // inject the new font size as a style. We need .v-app to override Vaadin's default styles here
 		styles.add(".v-app .v-textfield-readonly {border: 1px solid #b6b6b6!important;"
 		+ " border-top-color: #9d9d9d!important;"

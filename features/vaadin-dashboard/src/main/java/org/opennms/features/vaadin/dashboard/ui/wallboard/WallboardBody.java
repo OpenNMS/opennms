@@ -146,7 +146,7 @@ public class WallboardBody extends VerticalLayout {
     public Dashlet getDashletInstance(DashletSpec dashletSpec) {
         DashletSelector dashletSelector = ((DashletSelectorAccess) getUI()).getDashletSelector();
         Dashlet dashlet = dashletSelector.getDashletFactoryForName(dashletSpec.getDashletName()).newDashletInstance(dashletSpec);
-        dashlet.getWallboardComponent().getComponent().setCaption(null);
+        dashlet.getWallboardComponent(getUI()).getComponent().setCaption(null);
         return dashlet;
     }
 
@@ -192,11 +192,11 @@ public class WallboardBody extends VerticalLayout {
 
             if (!priorityMap.containsKey(index)) {
                 Dashlet dashlet = getDashletInstance(dashletSpecs.get(index));
-                dashlet.getWallboardComponent().getComponent().addStyleName("wallboard");
+                dashlet.getWallboardComponent(getUI()).getComponent().addStyleName("wallboard");
 
                 dashlets.put(index, dashlet);
 
-                dashlets.get(index).getWallboardComponent().refresh();
+                dashlets.get(index).getWallboardComponent(getUI()).refresh();
 
                 if (dashlets.get(index).isBoosted()) {
                     priorityMap.put(index, Math.max(0, dashletSpecs.get(index).getPriority() - dashletSpecs.get(index).getBoostPriority()));
@@ -212,7 +212,7 @@ public class WallboardBody extends VerticalLayout {
 
             if (priorityMap.get(index) <= 0) {
 
-                dashlets.get(index).getWallboardComponent().refresh();
+                dashlets.get(index).getWallboardComponent(getUI()).refresh();
 
                 if (dashlets.get(index).isBoosted()) {
                     priorityMap.put(index, Math.max(0, dashletSpecs.get(index).getPriority() - dashletSpecs.get(index).getBoostPriority()));
@@ -267,7 +267,7 @@ public class WallboardBody extends VerticalLayout {
 
                     panel.setCaption(caption);
 
-                    Component component = dashlets.get(next).getWallboardComponent().getComponent();
+                    Component component = dashlets.get(next).getWallboardComponent(getUI()).getComponent();
 
                     VerticalLayout verticalLayout = new VerticalLayout(component);
                     verticalLayout.setSizeFull();

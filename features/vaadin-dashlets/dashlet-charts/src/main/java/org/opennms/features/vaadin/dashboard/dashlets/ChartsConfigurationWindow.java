@@ -39,7 +39,6 @@ import org.opennms.web.charts.ChartUtils;
 
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.ExternalResource;
-import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
@@ -154,7 +153,7 @@ public class ChartsConfigurationWindow extends DashletConfigurationWindow {
 
         formLayout.addComponent(m_chartSelect);
 
-        Page.getCurrent().getStyles().add(".preview { width:225px; }");
+        getUI().getPage().getStyles().add(".preview { width:225px; }");
 
         m_chartSelect.addValueChangeListener(new Property.ValueChangeListener() {
             @Override

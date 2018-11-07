@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.vaadin.server.Page;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.v7.data.Property;
@@ -90,7 +89,7 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
         setSpacing(true);
         setMargin(true);
 
-        Page.getCurrent().getStyles().add(".criteriaBackground { background:#dddddd; }");
+        getUI().getPage().getStyles().add(".criteriaBackground { background:#dddddd; }");
 
         addStyleName("criteriaBackground");
 

@@ -44,6 +44,7 @@ import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.UI;
 import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.VerticalLayout;
@@ -79,7 +80,7 @@ public class RrdDashlet extends AbstractDashlet {
     }
 
     @Override
-    public DashletComponent getDashboardComponent() {
+    public DashletComponent getDashboardComponent(final UI ui) {
         if (m_dashboardComponent == null) {
             m_dashboardComponent = new AbstractDashletComponent() {
                 private VerticalLayout m_verticalLayout = new VerticalLayout();
@@ -148,9 +149,9 @@ public class RrdDashlet extends AbstractDashlet {
 
                     int i = 0;
 
-                    Page.getCurrent().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; width: 100% }");
-                    Page.getCurrent().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
-                    Page.getCurrent().getStyles().add(".margin { margin:5px; }");
+                    ui.getPage().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; width: 100% }");
+                    ui.getPage().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
+                    ui.getPage().getStyles().add(".margin { margin:5px; }");
 
                     Accordion accordion = new Accordion();
                     accordion.setSizeFull();
@@ -184,7 +185,7 @@ public class RrdDashlet extends AbstractDashlet {
 
 
     @Override
-    public DashletComponent getWallboardComponent() {
+    public DashletComponent getWallboardComponent(final UI ui) {
         if (m_wallboardComponent == null) {
             m_wallboardComponent = new AbstractDashletComponent() {
                 private GridLayout m_gridLayout = new GridLayout();
@@ -261,9 +262,9 @@ public class RrdDashlet extends AbstractDashlet {
 
                     int i = 0;
 
-                    Page.getCurrent().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; width: 100%; }");
-                    Page.getCurrent().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
-                    Page.getCurrent().getStyles().add(".margin { margin:5px; }");
+                    ui.getPage().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; width: 100%; }");
+                    ui.getPage().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
+                    ui.getPage().getStyles().add(".margin { margin:5px; }");
 
                     /**
                      * adding the components

@@ -40,7 +40,6 @@ import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
-import org.opennms.vaadin.user.UserTimeZoneExtractor;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
@@ -50,17 +49,18 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourceTypeUtils;
+import org.opennms.vaadin.user.UserTimeZoneExtractor;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
-import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.UI;
+import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.VerticalLayout;
@@ -101,7 +101,7 @@ public class KscDashlet extends AbstractDashlet {
     }
 
     @Override
-    public DashletComponent getWallboardComponent() {
+    public DashletComponent getWallboardComponent(final UI ui) {
         if (m_wallboardComponent == null) {
             m_wallboardComponent = new AbstractDashletComponent() {
                 private GridLayout m_gridLayout = new GridLayout();
@@ -173,9 +173,9 @@ public class KscDashlet extends AbstractDashlet {
                      * adding the components
                      */
 
-                    Page.getCurrent().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
-                    Page.getCurrent().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
-                    Page.getCurrent().getStyles().add(".margin { margin:5px; }");
+                    ui.getPage().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
+                    ui.getPage().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
+                    ui.getPage().getStyles().add(".margin { margin:5px; }");
 
                     for (int y = 0; y < m_gridLayout.getRows(); y++) {
                         for (int x = 0; x < m_gridLayout.getColumns(); x++) {
@@ -269,7 +269,7 @@ public class KscDashlet extends AbstractDashlet {
     }
 
     @Override
-    public DashletComponent getDashboardComponent() {
+    public DashletComponent getDashboardComponent(final UI ui) {
         if (m_dashboardComponent == null) {
             m_dashboardComponent = new AbstractDashletComponent() {
                 private VerticalLayout m_verticalLayout = new VerticalLayout();
@@ -309,9 +309,9 @@ public class KscDashlet extends AbstractDashlet {
 
                     Report kscReport = kscPerformanceReportFactory.getReportByIndex(kscReportId);
 
-                    Page.getCurrent().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
-                    Page.getCurrent().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
-                    Page.getCurrent().getStyles().add(".margin { margin:5px; }");
+                    ui.getPage().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
+                    ui.getPage().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
+                    ui.getPage().getStyles().add(".margin { margin:5px; }");
 
                     Accordion accordion = new Accordion();
                     accordion.setSizeFull();
