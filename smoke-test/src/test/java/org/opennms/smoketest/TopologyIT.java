@@ -305,8 +305,19 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             if (menuPath != null && menuPath.length > 0) {
                 try {
                     testCase.setImplicitWait(1, TimeUnit.SECONDS);
-                    for (String eachPath : menuPath) {
-                        testCase.findElementByXpath("//*[@class='v-context-menu-container']//*[@class='v-context-menu']//*[text()='" + eachPath + "']").click();
+                    for (int i = 0; i < menuPath.length; i++) {
+                        final String eachPath = menuPath[i];
+                        final WebElement menuElement = testCase.findElementByXpath("//*[@class='v-menubar-popup']//*[@class='v-menubar-submenu']//*[text()='" + eachPath + "']");
+
+                        // If sub-menu selection, navigate to each element in the
+                        // menu, until the last one
+                        if (i < menuPath.length - 1) {
+                            Actions actions = new Actions(testCase.m_driver);
+                            actions.moveToElement(menuElement);
+                            actions.build().perform();
+                        } else { // last element
+                            menuElement.click();
+                        }
                     }
                     waitForTransition();
                 } finally {
