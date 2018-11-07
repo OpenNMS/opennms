@@ -560,4 +560,55 @@ public class AlarmDocumentDTO {
         this.relatedAlarmReductionKeys = relatedAlarmReductionKeys;
     }
 
+    @Override
+    public String toString() {
+        return "AlarmDocumentDTO{" +
+                "firstEventTime=" + firstEventTime +
+                ", lastEventTime=" + lastEventTime +
+                ", updateTime=" + updateTime +
+                ", deletedTime=" + deletedTime +
+                ", version=" + version +
+                ", id=" + id +
+                ", reductionKey='" + reductionKey + '\'' +
+                ", node=" + node +
+                ", ipAddress='" + ipAddress + '\'' +
+                ", ifIndex=" + ifIndex +
+                ", serviceName='" + serviceName + '\'' +
+                ", type=" + type +
+                ", counter=" + counter +
+                ", severityId=" + severityId +
+                ", severityLabel='" + severityLabel + '\'' +
+                ", firstAutomationTime=" + firstAutomationTime +
+                ", lastAutomationTime=" + lastAutomationTime +
+                ", description='" + description + '\'' +
+                ", logMessage='" + logMessage + '\'' +
+                ", operatorInstructions='" + operatorInstructions + '\'' +
+                ", ticketId='" + ticketId + '\'' +
+                ", ticketStateId=" + ticketStateId +
+                ", ticketStateName='" + ticketStateName + '\'' +
+                ", mouseOverText='" + mouseOverText + '\'' +
+                ", suppressedUntil=" + suppressedUntil +
+                ", suppressedUser='" + suppressedUser + '\'' +
+                ", ackTime=" + ackTime +
+                ", ackUser='" + ackUser + '\'' +
+                ", clearKey='" + clearKey + '\'' +
+                ", lastEvent=" + lastEvent +
+                ", managedObjectInstance='" + managedObjectInstance + '\'' +
+                ", managedObjectType='" + managedObjectType + '\'' +
+                ", applicationDN='" + applicationDN + '\'' +
+                ", ossPrimaryKey='" + ossPrimaryKey + '\'' +
+                ", x733AlarmType='" + x733AlarmType + '\'' +
+                ", qosAlarmState='" + qosAlarmState + '\'' +
+                ", x733ProbableCause=" + x733ProbableCause +
+                ", attributes=" + attributes +
+                ", stickyMemo=" + stickyMemo +
+                ", journalMemo=" + journalMemo +
+                ", relatedAlarmIds=" + relatedAlarmIds +
+                ", relatedAlarmReductionKeys=" + relatedAlarmReductionKeys +
+                ", relatedAlarms=" + relatedAlarms +
+                ", situation=" + situation +
+                ", archived=" + archived +
+                ", archivedTime=" + archivedTime +
+                '}';
+    }
 }

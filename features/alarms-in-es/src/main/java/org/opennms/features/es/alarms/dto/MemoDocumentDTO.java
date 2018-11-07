@@ -65,4 +65,13 @@ public class MemoDocumentDTO {
     public void setUpdateTime(Long updateTime) {
         this.updateTime = updateTime;
     }
+
+    @Override
+    public String toString() {
+        return "MemoDocumentDTO{" +
+                "body='" + body + '\'' +
+                ", author='" + author + '\'' +
+                ", updateTime=" + updateTime +
+                '}';
+    }
 }

@@ -135,4 +135,19 @@ public class RelatedAlarmDocumentDTO {
     public void setManagedObjectType(String managedObjectType) {
         this.managedObjectType = managedObjectType;
     }
+
+    @Override
+    public String toString() {
+        return "RelatedAlarmDocumentDTO{" +
+                "id=" + id +
+                ", reductionKey='" + reductionKey + '\'' +
+                ", firstEventTime=" + firstEventTime +
+                ", lastEventTime=" + lastEventTime +
+                ", lastEvent=" + lastEvent +
+                ", severityId=" + severityId +
+                ", severityLabel='" + severityLabel + '\'' +
+                ", managedObjectInstance='" + managedObjectInstance + '\'' +
+                ", managedObjectType='" + managedObjectType + '\'' +
+                '}';
+    }
 }

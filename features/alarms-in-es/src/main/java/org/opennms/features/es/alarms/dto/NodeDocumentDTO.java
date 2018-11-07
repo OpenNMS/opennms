@@ -88,4 +88,15 @@ public class NodeDocumentDTO {
     public void setCategories(List<String> categories) {
         this.categories = categories;
     }
+
+    @Override
+    public String toString() {
+        return "NodeDocumentDTO{" +
+                "id=" + id +
+                ", label='" + label + '\'' +
+                ", foreignSource='" + foreignSource + '\'' +
+                ", foreignId='" + foreignId + '\'' +
+                ", categories=" + categories +
+                '}';
+    }
 }
