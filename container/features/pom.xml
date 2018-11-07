@@ -45,7 +45,6 @@
 
             <!-- Pax JDBC -->
             <value>org.ops4j.pax.jdbc-1.0.1</value>
-
           </importRepositoryExclusions>
           <repositories>
 
@@ -68,6 +67,9 @@
 
             <!-- OpenNMS features bundle -->
             <repository>file:${project.build.outputDirectory}/features.xml</repository>
+
+            <!-- OpenNMS Karaf extensions -->
+            <repository>file:${project.build.outputDirectory}/karaf-extensions.xml</repository>
 
             <!-- OpenNMS OSGI Core feature bundle -->
             <repository>mvn:org.opennms.osgi/opennms-osgi-core-rest/${project.version}/xml/features</repository>
@@ -142,7 +144,6 @@
 
             <!-- Jest Feature -->
             <repository>mvn:org.opennms.features.jest/opennms-jest/${project.version}/xml/features</repository>
-
           </repositories>
 
           <!--
@@ -353,6 +354,8 @@
 
 	    <!-- Integration API -->
 	    <feature>opennms-api-layer</feature>
+
+	    <feature>karaf-extender</feature>
           </features>
         </configuration>
       </plugin>

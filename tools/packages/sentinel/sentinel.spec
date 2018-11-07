@@ -119,6 +119,7 @@ mv "%{buildroot}%{sentinelinstprefix}/etc/sentinel.conf" "%{buildroot}%{_sysconf
 find %{buildroot}%{sentinelinstprefix} ! -type d | \
     grep -v %{sentinelinstprefix}/bin | \
     grep -v %{sentinelrepoprefix} | \
+    grep -v %{sentinelinstprefix}/etc/featuresBoot.d | \
     sed -e "s|^%{buildroot}|%attr(644,sentinel,sentinel) |" | \
     sort > %{_tmppath}/files.sentinel
 find %{buildroot}%{sentinelinstprefix}/bin ! -type d | \
@@ -137,6 +138,7 @@ rm -rf %{buildroot}
 %defattr(664 sentinel sentinel 775)
 %attr(755,sentinel,sentinel) %{_initrddir}/sentinel
 %attr(644,sentinel,sentinel) %config(noreplace) %{_sysconfdir}/sysconfig/sentinel
+%attr(644,sentinel,sentinel) %{sentinelinstprefix}/etc/featuresBoot.d/.readme
 
 %pre
 ROOT_INST="${RPM_INSTALL_PREFIX0}"
