@@ -134,12 +134,12 @@ public class MenuBuilderTest {
 
         final List<com.vaadin.contextmenu.MenuItem> contextMenuItems = contextMenu.getItems();
         assertEquals(1, contextMenuItems.size());
-        assertEquals("Layout", contextMenuItems.get(0).getDescription());
+        assertEquals("Layout", contextMenuItems.get(0).getText());
 
         final List<com.vaadin.contextmenu.MenuItem> subMenuItems = contextMenuItems.get(0).getChildren();
         assertEquals(1, subMenuItems.size());
         final com.vaadin.contextmenu.MenuItem submenuItem = subMenuItems.get(0);
-        assertEquals("Test", submenuItem.getDescription());
+        assertEquals("Test", submenuItem.getText());
     }
 
     private static TestOperationContext createTestOperationContext() {
