@@ -98,7 +98,11 @@ public class TopologyContextMenu extends ContextMenu {
 				this.addItem(
 					eachItem.getText(),
 					eachItem.getIcon(),
-					(Command) selectedItem -> eachItem.getCommand().menuSelected(eachItem)), eachItem);
+					(Command) selectedItem -> {
+						if (eachItem.getCommand() != null) {
+							eachItem.getCommand().menuSelected(eachItem);
+						}
+					}), eachItem);
 		}
 	}
 
@@ -117,7 +121,11 @@ public class TopologyContextMenu extends ContextMenu {
 						contextMenuItem.addItem(
 								eachChild.getText(),
 								eachChild.getIcon(),
-								(Command) selectedItem -> eachChild.getCommand().menuSelected(eachChild)), eachChild);
+								(Command) selectedItem -> {
+									if (eachChild.getCommand() != null) {
+										eachChild.getCommand().menuSelected(eachChild);
+									}
+								}), eachChild);
 			}
 		}
 	}
