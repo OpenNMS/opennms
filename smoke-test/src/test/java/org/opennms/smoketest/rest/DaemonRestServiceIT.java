@@ -146,30 +146,30 @@ public class DaemonRestServiceIT extends OpenNMSSeleniumTestCase {
 
         // Reload a non Valid DaemonName
         reload("WrongDaemonName", 404);
-        check("WrongDaemonName", 404, null);
+        checkOnce("WrongDaemonName", 404, null);
 
 
         // Reload of a non reloadable and internal Daemon
         // Verify reload state is unknown, as the daemon is not reloadable
         reload("manager", 400);
-        check("manager", 200, DaemonReloadState.Unknown);
+        checkOnce("manager", 200, DaemonReloadState.Unknown);
 
         // Reload a reloadable but not enabled Daemon
         reload("snmppoller", 400);
-        check("snmppoller", 200, DaemonReloadState.Reloading);
+        check5Times("snmppoller", 200, DaemonReloadState.Reloading);
 
         // Reload of a non reloadable, not enabled Daemon
         reload("correlator", 400);
-        check("correlator", 200, DaemonReloadState.Unknown);
+        checkOnce("correlator", 200, DaemonReloadState.Unknown);
 
         // Reload of a non reloadable but enabled Daemon
         reload("ticketer", 400);
-        check("ticketer", 200, DaemonReloadState.Unknown);
+        checkOnce("ticketer", 200, DaemonReloadState.Unknown);
 
         // Reload a reloadable and enabled Daemon
         // Verify reloading workeds
         reload("eventd", 204);
-        check("eventd", 200, DaemonReloadState.Success);
+        check5Times("eventd", 200, DaemonReloadState.Success);
 
         //Verify Reloading and Failure State with the reloadable+enabled Daemon
         verifyReloadingState(eventDao);
@@ -182,21 +182,24 @@ public class DaemonRestServiceIT extends OpenNMSSeleniumTestCase {
 
     }
 
-    private void check(String daemonName, int checkHTTPStatusCode, DaemonReloadState state) {
+    private void checkOnce(String daemonName, int checkHTTPStatusCode, DaemonReloadState state) {
         if (state != null) {
-            await().atMost(5, TimeUnit.SECONDS)
-                    .pollDelay(1, TimeUnit.SECONDS)
-                    .until(() -> given().get("/reload/" + daemonName + "/").then()
-                            .assertThat().statusCode(checkHTTPStatusCode)
-                            .assertThat()
-                            .body("reloadState", equalTo(state.toString())));
+            given().get("/reload/" + daemonName + "/").then()
+                    .assertThat().statusCode(checkHTTPStatusCode)
+                    .assertThat()
+                    .body("reloadState", equalTo(state.toString()));
         } else {
-            await().atMost(5, TimeUnit.SECONDS)
-                    .pollDelay(1, TimeUnit.SECONDS)
-                    .until(() -> given().get("/reload/" + daemonName + "/").then()
-                            .assertThat().statusCode(checkHTTPStatusCode)
-                    );
+            given().get("/reload/" + daemonName + "/").then()
+                    .assertThat().statusCode(checkHTTPStatusCode);
         }
+    }
+
+
+    private void check5Times(String daemonName, int checkHTTPStatusCode, DaemonReloadState state) {
+        await().atMost(5, TimeUnit.SECONDS)
+                .pollDelay(1, TimeUnit.SECONDS)
+                .until(() -> checkOnce(daemonName, checkHTTPStatusCode, state));
+
     }
 
     private void verifyReloadingState(EventDao eventDao) {
@@ -213,7 +216,7 @@ public class DaemonRestServiceIT extends OpenNMSSeleniumTestCase {
 
         if (successfulEventsAfterReload.size() == 1) {
             eventDao.delete(successfulEventsAfterReload.get(0));
-            check("eventd", 200, DaemonReloadState.Reloading);
+            checkOnce("eventd", 200, DaemonReloadState.Reloading);
         }
     }
 
@@ -257,7 +260,7 @@ public class DaemonRestServiceIT extends OpenNMSSeleniumTestCase {
         eventDao.save(onmsEvent);
         eventDao.flush();
 
-        check("eventd",200, DaemonReloadState.Failed);
+        checkOnce("eventd", 200, DaemonReloadState.Failed);
 
         // Remove Failed Event
         eventDao.delete(onmsEvent);
