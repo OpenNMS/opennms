@@ -58,7 +58,7 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
         return cdpLinks;
     }
 
-    public void setTopologyentityDao(TopologyEntityDao topologyEntityDao){
+    public void setTopologyEntityDao(TopologyEntityDao topologyEntityDao){
         this.topologyEntityDao = topologyEntityDao;
     }
 }
