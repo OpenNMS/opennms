@@ -29,7 +29,6 @@
 package org.opennms.vaadin.user;
 
 import java.time.ZoneId;
-import java.util.Optional;
 
 import org.opennms.core.time.CentralizedDateTimeFormat;
 
