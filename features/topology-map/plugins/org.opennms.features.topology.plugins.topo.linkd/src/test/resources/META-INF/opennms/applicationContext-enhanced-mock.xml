@@ -39,8 +39,8 @@
         <constructor-arg value="org.opennms.netmgt.dao.api.NodeDao"/>
     </bean>
 
-    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="topologyInfoCache">
-        <constructor-arg value="org.opennms.netmgt.dao.api.TopologyInfoCache"/>
+    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="topologyEntityCache">
+        <constructor-arg value="org.opennms.netmgt.dao.api.TopologyEntityCache"/>
     </bean>
 
     <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="snmpInterfaceDao">
@@ -78,7 +78,7 @@
         <property name="lldpElementDao" ref="lldpElementDao" />
         <property name="ospfLinkDao" ref="ospfLinkDao" />
         <property name="nodeDao" ref="nodeDao" />
-        <property name="topologyInfoCache" ref="topologyInfoCache" />
+        <property name="topologyEntityCache" ref="topologyEntityCache" />
         <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
         <property name="ipInterfaceDao" ref="ipInterfaceDao" />
         <property name="ipNetToMediaDao" ref="ipNetToMediaDao" />

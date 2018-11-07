@@ -28,25 +28,37 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.util.Collections;
 import java.util.List;
 
-import org.opennms.netmgt.dao.api.TopologyInfoDao;
+import org.opennms.netmgt.dao.api.TopologyEntityDao;
+import org.opennms.netmgt.dao.api.TopologyEntityCache;
+import org.opennms.netmgt.dao.api.TopologyEntityCache;
+import org.opennms.netmgt.dao.api.TopologyEntityDao;
 import org.opennms.netmgt.model.CdpLinkInfo;
 import org.opennms.netmgt.model.VertexInfo;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-public class TopologyInfoDaoHibernate extends HibernateDaoSupport implements TopologyInfoDao {
+public class TopologyEntityCacheImpl implements TopologyEntityCache {
 
-    @Override
-    public List<VertexInfo> getVertexInfos() {
-        return (List<VertexInfo>)getHibernateTemplate().find(
-                "select new org.opennms.netmgt.model.VertexInfo(n.id, n.type, n.sysObjectId, n.label, n.location) from org.opennms.netmgt.model.OnmsNode n");
+    private List<VertexInfo> vertices;
+    private List<CdpLinkInfo> cdpLinks;
+
+    private TopologyEntityDao topologyEntityDao;
+
+    public void refresh(){
+        this.vertices = Collections.unmodifiableList(topologyEntityDao.getVertexInfos());
+        this.cdpLinks = Collections.unmodifiableList(topologyEntityDao.getCdpLinkInfo());
     }
 
-    @Override
-    public List<CdpLinkInfo> getCdpLinkInfo() {
-        return (List<CdpLinkInfo>)getHibernateTemplate().find(
-                "select new org.opennms.netmgt.model.CdpLinkInfo(l.id, l.node.id, l.cdpCacheIfIndex, " +
-                        "l.cdpInterfaceName, l.cdpCacheAddress, l.cdpCacheDeviceId, l.cdpCacheDevicePort) from org.opennms.netmgt.model.CdpLink l");
+    public List<VertexInfo> getVertices(){
+        return vertices;
+    }
+
+    public List<CdpLinkInfo> getCdpLinkInfos(){
+        return cdpLinks;
+    }
+
+    public void setTopologyentityDao(TopologyEntityDao topologyEntityDao){
+        this.topologyEntityDao = topologyEntityDao;
     }
 }

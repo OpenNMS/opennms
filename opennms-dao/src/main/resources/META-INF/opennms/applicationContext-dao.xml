@@ -323,20 +323,20 @@
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.NodeDao" ref="nodeDao" />
 
-  <bean id="topologyInfoDao" class="org.opennms.netmgt.dao.hibernate.TopologyInfoDaoHibernate">
+  <bean id="topologyEntityDao" class="org.opennms.netmgt.dao.hibernate.TopologyEntityDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyInfoDao" ref="topologyInfoDao" />
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyEntityDao" ref="topologyEntityDao" />
 
-  <bean id="topologyInfoCache" class="org.opennms.netmgt.dao.hibernate.TopologyInfoCacheImpl">
-    <property name="topologyInfoDao" ref="topologyInfoDao" />
+  <bean id="topologyEntityCache" class="org.opennms.netmgt.dao.hibernate.TopologyEntityCacheImpl">
+    <property name="topologyEntityDao" ref="topologyEntityDao" />
   </bean>
 
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyInfoCache" ref="topologyInfoCache" />
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyEntityCache" ref="topologyEntityCache" />
 
   <task:scheduled-tasks scheduler="topologyRefresherScheduler">
-    <task:scheduled ref="topologyInfoCache" method="refresh" fixed-delay="300000"/>
+    <task:scheduled ref="topologyEntityCache" method="refresh" fixed-delay="300000"/>
   </task:scheduled-tasks>
 
   <task:scheduler id="topologyRefresherScheduler" pool-size="1"/>

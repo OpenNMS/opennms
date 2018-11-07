@@ -51,7 +51,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.dao.api.CdpElementDao;
 import org.opennms.netmgt.dao.api.CdpLinkDao;
-import org.opennms.netmgt.dao.api.TopologyInfoCache;
+import org.opennms.netmgt.dao.api.TopologyEntityCache;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.IpNetToMediaDao;
 import org.opennms.netmgt.dao.api.IsIsElementDao;
@@ -120,7 +120,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private TransactionOperations m_transactionOperations;
     private NodeDao m_nodeDao;
-    private TopologyInfoCache m_topologyInfoCache;
+    private TopologyEntityCache m_topologyEntityCache;
     private SnmpInterfaceDao m_snmpInterfaceDao;
     private IpInterfaceDao m_ipInterfaceDao;
     private TopologyDao m_topologyDao;
@@ -216,7 +216,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
     
     private void loadVertices() {
-        for (VertexInfo vertex : m_topologyInfoCache.getVertices()) {
+        for (VertexInfo vertex : m_topologyEntityCache.getVertices()) {
             OnmsIpInterface primary = m_nodeToOnmsIpPrimaryMap.get(vertex.getId());
             addVertices(LinkdVertex.create(vertex,primary));
         }
@@ -431,7 +431,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private void getCdpLinks() {
         List<CdpElement> cdpElements = m_cdpElementDao.findAll();
-        List<CdpLinkInfo> allLinks = m_topologyInfoCache.getCdpLinkInfos();
+        List<CdpLinkInfo> allLinks = m_topologyEntityCache.getCdpLinkInfos();
         List<Pair<CdpLinkInfo, CdpLinkInfo>> matchedCdpLinks = matchCdpLinks(cdpElements, allLinks);
         for (Pair<CdpLinkInfo, CdpLinkInfo> pair : matchedCdpLinks) {
             connectCdpLinkPair(pair);
@@ -746,12 +746,12 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         m_nodeDao = nodeDao;
     }
 
-    public TopologyInfoCache getTopologyInfoCache() {
-        return m_topologyInfoCache;
+    public TopologyEntityCache getTopologyEntityCache() {
+        return m_topologyEntityCache;
     }
 
-    public void setTopologyInfoCache(TopologyInfoCache topologyInfoCache) {
-        m_topologyInfoCache = topologyInfoCache;
+    public void setTopologyEntityCache(TopologyEntityCache topologyEntityCache) {
+        m_topologyEntityCache = topologyEntityCache;
     }
 
     public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {

@@ -28,35 +28,25 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.util.Collections;
 import java.util.List;
 
-import org.opennms.netmgt.dao.api.TopologyInfoDao;
-import org.opennms.netmgt.dao.api.TopologyInfoCache;
+import org.opennms.netmgt.dao.api.TopologyEntityDao;
 import org.opennms.netmgt.model.CdpLinkInfo;
 import org.opennms.netmgt.model.VertexInfo;
+import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-public class TopologyInfoCacheImpl implements TopologyInfoCache {
+public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements TopologyEntityDao {
 
-    private List<VertexInfo> vertices;
-    private List<CdpLinkInfo> cdpLinks;
-
-    private TopologyInfoDao topologyInfoDao;
-
-    public void refresh(){
-        this.vertices = Collections.unmodifiableList(topologyInfoDao.getVertexInfos());
-        this.cdpLinks = Collections.unmodifiableList(topologyInfoDao.getCdpLinkInfo());
+    @Override
+    public List<VertexInfo> getVertexInfos() {
+        return (List<VertexInfo>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.model.VertexInfo(n.id, n.type, n.sysObjectId, n.label, n.location) from org.opennms.netmgt.model.OnmsNode n");
     }
 
-    public List<VertexInfo> getVertices(){
-        return vertices;
-    }
-
-    public List<CdpLinkInfo> getCdpLinkInfos(){
-        return cdpLinks;
-    }
-
-    public void setTopologyInfoDao(TopologyInfoDao topologyInfoDao){
-        this.topologyInfoDao = topologyInfoDao;
+    @Override
+    public List<CdpLinkInfo> getCdpLinkInfo() {
+        return (List<CdpLinkInfo>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.model.CdpLinkInfo(l.id, l.node.id, l.cdpCacheIfIndex, " +
+                        "l.cdpInterfaceName, l.cdpCacheAddress, l.cdpCacheDeviceId, l.cdpCacheDevicePort) from org.opennms.netmgt.model.CdpLink l");
     }
 }
