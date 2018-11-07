@@ -5,7 +5,6 @@ import org.opennms.vaadin.extender.ApplicationFactory;
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.UIProvider;
-import com.vaadin.server.WidgetsetInfo;
 import com.vaadin.ui.UI;
 
 public class OSGiUIProvider extends UIProvider {
@@ -24,10 +23,5 @@ public class OSGiUIProvider extends UIProvider {
     @Override
     public UI createInstance(final UICreateEvent e) {
         return m_uiFactory.createUI();
-    }
-
-    @Override // TODO MVR remove me
-    public WidgetsetInfo getWidgetsetInfo(UICreateEvent event) {
-        return super.getWidgetsetInfo(event);
     }
 }
