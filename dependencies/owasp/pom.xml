@@ -21,8 +21,8 @@
       <version>${owaspEncoderVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>org.opennms.core.test-api</groupId>
-          <artifactId>org.opennms.core.test-api.junit</artifactId>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

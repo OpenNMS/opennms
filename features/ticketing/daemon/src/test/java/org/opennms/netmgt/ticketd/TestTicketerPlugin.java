@@ -26,8 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.test.junit;
+package org.opennms.netmgt.ticketd;
 
-public interface FlappingTests {
+import org.opennms.api.integration.ticketing.Plugin;
+import org.opennms.api.integration.ticketing.PluginException;
+import org.opennms.api.integration.ticketing.Ticket;
 
+public class TestTicketerPlugin implements Plugin {
+
+    private Ticket m_ticket;
+
+    @Override
+    public Ticket get(String ticketId) throws PluginException {
+        if (ticketId.equals("testId")) {
+            return m_ticket;
+        }
+        Ticket ticket = new Ticket();
+        ticket.setId(ticketId);
+        return ticket;
+    }
+
+    @Override
+    public void saveOrUpdate(Ticket ticket) throws PluginException {
+        m_ticket = ticket;
+        m_ticket.setId("testId");
+    }
 }
