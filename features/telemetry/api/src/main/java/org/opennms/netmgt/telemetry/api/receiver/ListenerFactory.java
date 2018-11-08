@@ -31,7 +31,11 @@ package org.opennms.netmgt.telemetry.api.receiver;
 import org.opennms.netmgt.telemetry.api.TelemetryBeanFactory;
 import org.opennms.netmgt.telemetry.config.api.ListenerDefinition;
 
-// TODO MVR document
+/**
+ * Factory to create beans of type {@link Listener} defined by a {@link ListenerDefinition}
+ *
+ * @author mvrueden
+ */
 public interface ListenerFactory extends TelemetryBeanFactory<Listener, ListenerDefinition> {
 
 }

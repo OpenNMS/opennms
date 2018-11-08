@@ -28,11 +28,17 @@
 
 package org.opennms.netmgt.telemetry.config.api;
 
+/**
+ * {@link TelemetryBeanDefinition} to define parsers.
+ * Besides the common attributes, a parser must define the queue name it dispatches to.
+ *
+ *  @author mvrueden
+ */
 public interface ParserDefinition extends TelemetryBeanDefinition {
     /**
      * The name of the queue the parser "writes" to.
      *
-     * @return The name of the queue the parser "writes" to.
+     * @return The name of the queue the parser "writes" to. Must not be null.
      */
     String getQueueName();
 }

@@ -31,7 +31,11 @@ package org.opennms.netmgt.telemetry.api.receiver;
 import org.opennms.netmgt.telemetry.api.TelemetryBeanFactory;
 import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
 
-// TODO MVR document
+/**
+ * Factory to create {@link Parser} from a {@link ParserDefinition}
+ *
+ * @author mvrueden
+ */
 public interface ParserFactory extends TelemetryBeanFactory<Parser, ParserDefinition> {
 
 }

@@ -40,14 +40,13 @@ import com.google.common.collect.Lists;
 
 /**
  * Parses properties for multiple Adapter configurations.
- * Each adapter configuration must start with <code>adapters.n.</code> key.
+ * Each adapter definition must start with <code>adapters.n.</code> key.
  * Where n is either a number (e.g. 1,2,3, etc.) or a character (e.g. a,b,c, etc.).
  *
  * The parser also supports the legacy configuration, where no <code>adapters.n.</code> prefix was needed.
  *
  * @author mvrueden
  */
-// TODO MVR verify javadoc
 public class AdapterConfigurationParser {
 
     /**

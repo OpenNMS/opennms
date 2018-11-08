@@ -31,6 +31,11 @@ package org.opennms.netmgt.telemetry.api.adapter;
 import org.opennms.netmgt.telemetry.api.TelemetryBeanFactory;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 
+/**
+ * Factory to create {@link Adapter} from a {@link AdapterDefinition}
+ *
+ * @author mvrueden
+ */
 public interface AdapterFactory extends TelemetryBeanFactory<Adapter, AdapterDefinition> {
 
 }

@@ -30,8 +30,20 @@ package org.opennms.netmgt.telemetry.config.api;
 
 import java.util.List;
 
+/**
+ * {@link TelemetryBeanDefinition} to define listeners.
+ * Besides the common attributes, a listener may define one or more parsers.
+ *
+ *  @author mvrueden
+ */
 public interface ListenerDefinition extends TelemetryBeanDefinition {
-
+    /**
+     * The {@link ParserDefinition} to create.
+     * Should not be null or empty.
+     * If empty, the listener will not be created.
+     *
+     * @return The list of parsers to create. Should neither be null or empty. However if empty, the listener will not be created
+     */
     List<? extends ParserDefinition> getParsers();
 
 }
