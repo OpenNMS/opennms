@@ -41,6 +41,7 @@ public class FusionRulesTest extends CorrelationRulesTestCase {
 
         anticipate(createNodeUpEvent(1));
         anticipate(new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "droolsFusion").getEvent());
+        anticipate(new EventBuilder(EventConstants.DROOLS_ENGINE_ENCOUNTERED_EXCEPTION, "droolsFusion").getEvent());
         EventBuilder eb = new EventBuilder("uei.opennms.org/triggerTestForFusion", "droolsTest");
         DroolsCorrelationEngine engine = findEngineByName("droolsFusion");
         // This will create an exception and the engine should reload.

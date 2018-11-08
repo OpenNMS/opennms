@@ -536,6 +536,12 @@ public abstract class EventConstants {
     public static final String RELOAD_VACUUMD_CONFIG_UEI = "uei.opennms.org/internal/reloadVacuumdConfig";
 
     /**
+     * Reload Drools Correlation Engine.
+     */
+    public static final String DROOLS_ENGINE_ENCOUNTERED_EXCEPTION = "uei.opennms.org/internal/droolsEngineException";
+
+
+    /**
      * Reload Daemon configuration UEI.
      */
     public static final String RELOAD_DAEMON_CONFIG_UEI = "uei.opennms.org/internal/reloadDaemonConfig";
