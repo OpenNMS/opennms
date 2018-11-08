@@ -41,14 +41,14 @@ import org.opennms.features.vaadin.dashboard.model.Wallboard;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.validator.AbstractStringValidator;
 import com.vaadin.v7.event.FieldEvents;
 import com.vaadin.v7.ui.AbstractTextField;
-import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.TextField;
-import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * This class represents a component for editing {@link Wallboard} configurations.

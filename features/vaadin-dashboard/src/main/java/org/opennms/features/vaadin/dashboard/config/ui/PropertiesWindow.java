@@ -64,7 +64,6 @@ public class PropertiesWindow extends DashletConfigurationWindow {
          */
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setMargin(true);
-        //verticalLayout.addStyleName("debug");
         verticalLayout.setSizeFull();
         verticalLayout.setHeight(100, Unit.PERCENTAGE);
 
@@ -99,7 +98,7 @@ public class PropertiesWindow extends DashletConfigurationWindow {
         final Map<String, String> requiredParameters = dashletFactory.getRequiredParameters();
 
         for (Map.Entry<String, String> entry : requiredParameters.entrySet()) {
-            table.addItem(new Object[]{entry.getKey(), dashletSpec.getParameters().get(entry.getKey())}, entry.getKey());
+            table.addItem(new Object[]{entry.getKey(), dashletSpec.getParameters().containsKey(entry.getKey()) ? dashletSpec.getParameters().get(entry.getKey()) : ""}, entry.getKey());
         }
 
         table.setColumnWidth("Key", 100);

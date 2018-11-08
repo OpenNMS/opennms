@@ -89,7 +89,12 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
         setSpacing(true);
         setMargin(true);
 
-        getUI().getPage().getStyles().add(".criteriaBackground { background:#dddddd; }");
+        addAttachListener(new AttachListener() {
+            @Override
+            public void attach(AttachEvent attachEvent) {
+                getUI().getPage().getStyles().add(".criteriaBackground { background:#dddddd; }");
+            }
+        });
 
         addStyleName("criteriaBackground");
 

@@ -43,9 +43,9 @@ import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.ProgressIndicator;
-import com.vaadin.v7.ui.VerticalLayout;
 
 public class WallboardBody extends VerticalLayout {
     private final CssLayout contentLayout;
