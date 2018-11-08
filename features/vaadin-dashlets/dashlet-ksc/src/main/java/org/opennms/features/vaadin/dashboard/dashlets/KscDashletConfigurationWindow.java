@@ -40,9 +40,9 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.ui.NativeSelect;
-import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * This class is used to display a custom configuration window for the Ksc dashlet.
