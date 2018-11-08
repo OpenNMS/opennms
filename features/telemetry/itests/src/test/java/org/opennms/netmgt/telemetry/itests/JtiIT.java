@@ -39,13 +39,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystem;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.WatchService;
-import java.nio.file.attribute.FileTime;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
