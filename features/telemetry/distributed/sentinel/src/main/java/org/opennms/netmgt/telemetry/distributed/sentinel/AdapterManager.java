@@ -42,7 +42,7 @@ import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.config.api.QueueDefinition;
 import org.opennms.netmgt.telemetry.daemon.TelemetryMessageConsumer;
-import org.opennms.netmgt.telemetry.distributed.common.AdapterConfigurationParser;
+import org.opennms.netmgt.telemetry.distributed.common.AdapterDefinitionParser;
 import org.opennms.netmgt.telemetry.distributed.common.MapBasedAdapterDef;
 import org.opennms.netmgt.telemetry.distributed.common.MapBasedQueueDef;
 import org.opennms.netmgt.telemetry.distributed.common.PropertyTree;
@@ -94,7 +94,7 @@ public class AdapterManager implements ManagedServiceFactory {
         // Build the queue and adapter definitions
         final PropertyTree propertyTree = PropertyTree.from(properties);
         final QueueDefinition queueDefinition = new MapBasedQueueDef(propertyTree);
-        final List<AdapterDefinition> adapterDefinitions = new AdapterConfigurationParser().parse(propertyTree);
+        final List<AdapterDefinition> adapterDefinitions = new AdapterDefinitionParser().parse(propertyTree);
 
         // Register health checks
         healthChecksById.putIfAbsent(pid, new ArrayList<>());

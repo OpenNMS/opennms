@@ -47,7 +47,7 @@ import com.google.common.collect.Lists;
  *
  * @author mvrueden
  */
-public class AdapterConfigurationParser {
+public class AdapterDefinitionParser {
 
     /**
      * Groups properties for the same adapter together and wraps the properties behind a {@link AdapterDefinition}.
