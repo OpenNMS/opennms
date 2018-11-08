@@ -28,12 +28,17 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
+import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
+import org.opennms.features.vaadin.dashboard.model.Dashlet;
+import org.opennms.features.vaadin.dashboard.model.DashletComponent;
+import org.opennms.features.vaadin.dashboard.model.DashletSpec;
+
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
-import com.vaadin.v7.ui.VerticalLayout;
-import org.opennms.features.vaadin.dashboard.model.*;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * This class implements a {@link Dashlet} for displaying the node map application.
