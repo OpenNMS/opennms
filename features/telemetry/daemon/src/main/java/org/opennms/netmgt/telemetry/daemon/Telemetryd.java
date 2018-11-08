@@ -132,6 +132,10 @@ public class Telemetryd implements SpringServiceDaemon {
                 LOG.debug("Skipping disabled listener: {}", listenerConfig.getName());
                 continue;
             }
+            if (listenerConfig.getParsers().isEmpty()) {
+                LOG.debug("Skipping listener with no parsers: {}", listenerConfig.getName());
+                continue;
+            }
             final Listener listener = telemetryRegistry.getListener(listenerConfig);
             listeners.add(listener);
         }
