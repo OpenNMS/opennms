@@ -29,7 +29,6 @@
 package org.opennms.netmgt.alarmd.drools;
 
 import java.util.Date;
-import java.util.Set;
 
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
