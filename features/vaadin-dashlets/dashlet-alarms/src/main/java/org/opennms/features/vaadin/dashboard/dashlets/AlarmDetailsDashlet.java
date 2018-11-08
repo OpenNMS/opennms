@@ -68,10 +68,10 @@ import com.google.common.collect.Lists;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.Table;
-import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * This class represents a Alert Dashlet with some details.

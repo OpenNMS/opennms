@@ -43,9 +43,9 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.ui.NativeSelect;
-import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * This class represents the configuration window for alarm dashlets.
