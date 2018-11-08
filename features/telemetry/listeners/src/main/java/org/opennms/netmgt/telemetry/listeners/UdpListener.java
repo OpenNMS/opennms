@@ -29,7 +29,6 @@
 package org.opennms.netmgt.telemetry.listeners;
 
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Objects;
 
@@ -103,63 +102,7 @@ public class UdpListener implements Listener {
                 .option(ChannelOption.SO_REUSEADDR, true)
                 .option(ChannelOption.SO_RCVBUF, Integer.MAX_VALUE)
                 .option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(this.maxPacketSize))
-                .handler(new ChannelInitializer<DatagramChannel>() {
-                    @Override
-                    protected void initChannel(DatagramChannel ch) throws Exception {
-                        // TODO MVR make this a bit nicer
-                        // TODO fooker make this a bit nicer
-                        if (parsers.size() == 1) {
-                            final UdpParser parser = parsers.iterator().next();
-                            ch.pipeline().addLast(new SimpleChannelInboundHandler<DatagramPacket>() {
-                                @Override
-                                protected void channelRead0(final ChannelHandlerContext ctx, final DatagramPacket msg) throws Exception {
-                                    parser.parse(ReferenceCountUtil.retain(msg.content()).nioBuffer(),
-                                            msg.sender(), msg.recipient())
-                                            // TODO MVR this is the same code as below, really duplicating here?
-                                            // TODO fooker this is the same code as below, really duplicating here?
-                                            .handle((result, ex) -> {
-                                                ReferenceCountUtil.release(msg.content());
-                                                if (ex != null) {
-                                                    ctx.fireExceptionCaught(ex);
-                                                }
-                                                return result;
-                                            });
-                                }
-                            });
-                        } else {
-                            ch.pipeline().addLast(new SimpleChannelInboundHandler<DatagramPacket>() {
-                                @Override
-                                protected void channelRead0(final ChannelHandlerContext ctx, final DatagramPacket msg) throws Exception {
-                                    for (final UdpParser parser : parsers) {
-                                        if (BufferUtils.peek(msg.content().nioBuffer(), ((Dispatchable) parser)::handles)) {
-                                            parser.parse(ReferenceCountUtil.retain(msg.content()).nioBuffer(),
-                                                    msg.sender(), msg.recipient())
-                                                    // TODO MVR this is the same code as above, really duplicating here?
-                                                    // TODO fooker this is the same code as above, really duplicating here?
-                                                    .handle((result, ex) -> {
-                                                        ReferenceCountUtil.release(msg.content());
-                                                        if (ex != null) {
-                                                            ctx.fireExceptionCaught(ex);
-                                                        }
-                                                        return result;
-                                                    });
-                                            break;
-                                        }
-                                    }
-                                    LOG.warn("Unhandled packet from {}", msg.sender());
-                                }
-                            });
-                        }
-
-                        ch.pipeline().addLast(new ChannelInboundHandlerAdapter() {
-                            @Override
-                            public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
-                                LOG.warn("Invalid packet: {}", cause.getMessage());
-                                LOG.debug("", cause);
-                            }
-                        });
-                    }
-                })
+                .handler(new DefaultChannelInitializer())
                 .bind(address)
                 .sync();
     }
@@ -202,4 +145,66 @@ public class UdpListener implements Listener {
     public String getName() {
         return name;
     }
+
+
+    private class DefaultChannelInitializer extends ChannelInitializer<DatagramChannel> {
+
+        @Override
+        protected void initChannel(DatagramChannel ch) throws Exception {
+
+            if (parsers.size() == 1) {
+                final UdpParser parser = parsers.get(0);
+                // If only one parser is defined, we can directly use the handler
+                ch.pipeline().addLast(new SingleDatagramPacketParserHandler(parser));
+            } else {
+                // Otherwise dispatch
+                ch.pipeline().addLast(new SimpleChannelInboundHandler<DatagramPacket>() {
+                    @Override
+                    protected void channelRead0(final ChannelHandlerContext ctx, final DatagramPacket msg) throws Exception {
+                        for (final UdpParser parser : parsers) {
+                            if (BufferUtils.peek(msg.content().nioBuffer(), ((Dispatchable) parser)::handles)) {
+                                new SingleDatagramPacketParserHandler(parser).channelRead0(ctx, msg);
+                                break;
+                            }
+                        }
+                        LOG.warn("Unhandled packet from {}", msg.sender());
+                    }
+                });
+            }
+
+            // Add error handling
+            ch.pipeline().addLast(new ChannelInboundHandlerAdapter() {
+                @Override
+                public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
+                    LOG.warn("Invalid packet: {}", cause.getMessage());
+                    LOG.debug("", cause);
+                }
+            });
+        }
+    }
+
+    // Invokes parse of the provided parsers and also adds some error handling
+    private static class SingleDatagramPacketParserHandler extends SimpleChannelInboundHandler<DatagramPacket> {
+
+        final UdpParser parser;
+
+        private SingleDatagramPacketParserHandler(UdpParser parser) {
+            this.parser = parser;
+        }
+
+        @Override
+        protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
+            parser.parse(
+                    ReferenceCountUtil.retain(msg.content()).nioBuffer(),
+                    msg.sender(), msg.recipient()
+                ).handle((result, ex) -> {
+                    ReferenceCountUtil.release(msg.content());
+                    if (ex != null) {
+                        ctx.fireExceptionCaught(ex);
+                    }
+                    return result;
+                });
+        }
+    }
+
 }
