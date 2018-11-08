@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.itests;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertTrue;
 
@@ -37,9 +38,17 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.WatchService;
+import java.nio.file.attribute.FileTime;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -109,11 +118,14 @@ public class JtiIT {
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
+    public File scriptFile;
+
     private File rrdBaseDir;
 
     @Before
     public void setUp() throws IOException {
         rrdBaseDir = tempFolder.newFolder("rrd");
+        scriptFile  = tempFolder.newFile("script-file.groovy");
 
         NetworkBuilder nb = new NetworkBuilder();
         nb.addNode("R1")
@@ -151,6 +163,48 @@ public class JtiIT {
                 .resolve(Paths.get("1", "ge_0_0_3", "ifOutOctets.jrb")).toFile().canRead(), equalTo(true));
     }
 
+    @Test
+    public void testScriptFileReload() throws Exception {
+        final int port = 50001;
+
+        // Use our custom configuration
+        updateDaoWithConfig(getConfig(port));
+
+        // Start the daemon
+        telemetryd.start();
+
+        String content = new String(Files.readAllBytes(scriptFile.toPath()), StandardCharsets.UTF_8);
+        Assert.assertThat(content, containsString("ifOutOctets"));
+
+        // Send a JTI payload via a UDP socket
+        final byte[] jtiMsgBytes = Resources.toByteArray(Resources.getResource("jti_15.1F4_ifd_ae_40000.raw"));
+        InetAddress address = InetAddressUtils.getLocalHostAddress();
+        DatagramPacket packet = new DatagramPacket(jtiMsgBytes, jtiMsgBytes.length, address, port);
+        DatagramSocket socket = new DatagramSocket();
+        socket.send(packet);
+
+        // Wait until the JRB archive is created
+        await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
+                .resolve(Paths.get("1", "ge_0_0_3", "ifOutOctets.jrb")).toFile().canRead(), equalTo(true));
+
+        // now change script file
+        content = content.replaceAll("ifOutOctets", "FooBar");
+        Files.write(scriptFile.toPath(), content.getBytes(StandardCharsets.UTF_8));
+        //Files.setLastModifiedTime(newFile.toPath(), FileTime.fromMillis(System.currentTimeMillis()));
+
+        await().pollDelay(1, TimeUnit.SECONDS).atMost(30, TimeUnit.SECONDS).until(() -> {
+            final InetAddress newAddress = InetAddressUtils.getLocalHostAddress();
+            final DatagramPacket newPacket = new DatagramPacket(jtiMsgBytes, jtiMsgBytes.length, newAddress, port);
+            final DatagramSocket newSocket = new DatagramSocket();
+            newSocket.send(newPacket);
+
+            return rrdBaseDir.toPath()
+                    .resolve(Paths.get("1", "ge_0_0_3", "FooBar.jrb"))
+                    .toFile()
+                    .canRead();
+        }, equalTo(true));
+    }
+
     private void updateDaoWithConfig(TelemetrydConfig config) throws IOException {
         final File tempFile = tempFolder.newFile();
         JaxbUtils.marshal(config, tempFile);
@@ -158,7 +212,7 @@ public class JtiIT {
         telemetrydConfigDao.afterPropertiesSet();
     }
 
-    private TelemetrydConfig getConfig(int port) {
+    private TelemetrydConfig getConfig(int port) throws IOException {
         TelemetrydConfig telemetrydConfig = new TelemetrydConfig();
 
         QueueConfig jtiQueue = new QueueConfig();
@@ -178,16 +232,23 @@ public class JtiIT {
         jtiParser.setQueue(jtiQueue);
         jtiListener.getParsers().add(jtiParser);
 
-        File script = Paths.get(System.getProperty("opennms.home"),
-                "etc", "telemetryd-adapters", "junos-telemetry-interface.groovy").toFile();
-        assertTrue("Can't read: " + script.getAbsolutePath(), script.canRead());
+        Files.copy(
+                Paths.get(System.getProperty("opennms.home"),
+                        "etc",
+                        "telemetryd-adapters",
+                        "junos-telemetry-interface.groovy"),
+                scriptFile.toPath(),
+                StandardCopyOption.REPLACE_EXISTING
+        );
+
+        assertTrue("Can't read: " + scriptFile.getAbsolutePath(), scriptFile.canRead());
 
         AdapterConfig jtiGbpAdapter = new AdapterConfig();
         jtiGbpAdapter.setEnabled(true);
         jtiGbpAdapter.setName("JTI-GBP");
         jtiGbpAdapter.setClassName(JtiGpbAdapter.class.getCanonicalName());
+        jtiGbpAdapter.getParameters().add(new Parameter("script", scriptFile.getAbsolutePath()));
         jtiQueue.getAdapters().add(jtiGbpAdapter);
-        jtiGbpAdapter.getParameters().add(new Parameter("script", script.getAbsolutePath()));
 
         PackageConfig jtiDefaultPkg = new PackageConfig();
         jtiDefaultPkg.setName("JTI-Default");

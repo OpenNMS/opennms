@@ -29,7 +29,9 @@
 package org.opennms.api.integration.ticketing;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -71,7 +73,9 @@ public class Ticket {
     private String m_user;
     private String m_modificationTimestamp;
     private Map<String, String> m_attributes;
-    
+    private boolean m_isSituation = false;
+    private List<RelatedAlarmSummary> m_relatedAlarms = new ArrayList<>();
+
     /**
      * <p>getAttributes</p>
      *
@@ -290,11 +294,45 @@ public class Ticket {
         this.m_ipAddress = ipAddress;
     }
 
+    /**
+     *
+     * @return boolean depending on whether alarm is situation or not. default is false.
+     */
+    public boolean isSituation() {
+        return m_isSituation;
+    }
+
+    /**
+     *  Set as true if this alarm is a situation.
+     *
+     * @param situation  whether or not this alarm is a situation.
+     */
+    public void setSituation(boolean situation) {
+        m_isSituation = situation;
+    }
+
+    /**
+     *
+     * @return a {@link List} of {@link RelatedAlarmSummary} containing related alarm details
+     */
+    public List<RelatedAlarmSummary> getRelatedAlarms() {
+        return m_relatedAlarms;
+    }
+
+    /**
+     * Set related alarms for the current alarm associated with ticket.
+     *
+     * @param relatedAlarms a {@link List} of {@link RelatedAlarmSummary}
+     */
+    public void setRelatedAlarms(List<RelatedAlarmSummary> relatedAlarms) {
+        m_relatedAlarms = relatedAlarms;
+    }
+
     @Override
     public String toString() {
         return String.format("Ticket[id=%s, alarmId=%d, nodeId=%d, ipAddress=%s, state=%s, "
-                + "summary=%s, details=%s, user=%s, modificationTimestamp=%s, attributes=%s]",
+                + "summary=%s, details=%s, user=%s, modificationTimestamp=%s, attributes=%s relatedAlarms=%s]",
                 m_id, m_alarmId, m_nodeId, m_ipAddress, m_state, m_summary, m_details, m_user,
-                m_modificationTimestamp, m_attributes);
+                m_modificationTimestamp, m_attributes, m_relatedAlarms);
     }
 }

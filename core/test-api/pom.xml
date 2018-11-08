@@ -12,6 +12,7 @@
   <packaging>pom</packaging>
   <modules>
     <module>activemq</module>
+    <module>alarms</module>
     <module>camel</module>
     <module>collection</module>
     <module>db</module>

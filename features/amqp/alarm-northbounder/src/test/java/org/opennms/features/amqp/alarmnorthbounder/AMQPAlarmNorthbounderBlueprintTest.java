@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.camel.BeanInject;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
@@ -43,12 +42,9 @@ import com.google.common.collect.Lists;
 /**
  * Simple test that verifies the Blueprint syntax.
  *
- * NOTE: These tests do not run reliably and tend to fail fairly
- * often so they are disabled by default.
- *
  * @author jwhite
  */
-@Ignore
+@org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
 public class AMQPAlarmNorthbounderBlueprintTest extends CamelBlueprintTest {
 
     @BeanInject
