@@ -19,5 +19,6 @@
     <module>itests</module>
     <module>listeners</module>
     <module>protocols</module>
+    <module>registry</module>
   </modules>
 </project>

@@ -89,8 +89,8 @@
 
         <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.jaxb/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.registry/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.daemon/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.registry/${project.version}</bundle>
 
         <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.sentinel/${project.version}</bundle>
