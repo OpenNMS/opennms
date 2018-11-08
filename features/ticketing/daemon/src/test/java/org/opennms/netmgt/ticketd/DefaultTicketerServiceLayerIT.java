@@ -61,6 +61,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
@@ -151,6 +152,7 @@ public class DefaultTicketerServiceLayerIT implements InitializingBean {
     }
 
     @Test
+    @Transactional
     public void testTicketsForSituations() throws PluginException {
 
         OnmsNode testNode = new OnmsNode();
