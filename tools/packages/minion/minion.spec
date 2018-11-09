@@ -12,14 +12,14 @@
 %{!?minionrepoprefix:%define minionrepoprefix /opt/minion/repositories}
 
 # Description
-%{!?_name:%define _name "opennms"}
-%{!?_descr:%define _descr "OpenNMS"}
+%{!?_name:%define _name opennms}
+%{!?_descr:%define _descr OpenNMS}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
 %{!?_java:%define _java jre-1.8.0}
 
-%{!?extrainfo:%define extrainfo }
-%{!?extrainfo2:%define extrainfo2 }
+%{!?extrainfo:%define extrainfo %{nil}}
+%{!?extrainfo2:%define extrainfo2 %{nil}}
 %{!?skip_compile:%define skip_compile 0}
 %{!?enable_snapshots:%define enable_snapshots 1}
 
@@ -47,6 +47,9 @@ BuildArch:     noarch
 Source:        %{_name}-source-%{version}-%{releasenumber}.tar.gz
 URL:           http://www.opennms.org/wiki/Minion
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
+
+BuildRequires:	%{_java}
+BuildRequires:	libxslt
 
 Requires(pre): %{name}-features-default = %{version}-%{release}
 Requires:      %{name}-features-default = %{version}-%{release}
