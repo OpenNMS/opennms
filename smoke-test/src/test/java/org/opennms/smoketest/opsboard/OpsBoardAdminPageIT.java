@@ -149,8 +149,9 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumTestCase {
 
         public OpsBoardPreviewPage open() {
             findElement(By.id("opsboard.action.preview")).click();
-            waitUntil(driver -> driver.findElements(By.tagName("iframe")).size() == 3);
-            getDriver().switchTo().frame(2); // first 2 frames are either empty or javascript
+
+            waitUntil(driver -> driver.findElements(By.tagName("iframe")).size() == 2);
+            getDriver().switchTo().frame(1);
             return this;
         }
 
