@@ -86,6 +86,8 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
                     break;
                 } catch (InterruptedException e) {
                     LOG.warn("Interrupted while sending message to topic {}.", topic, e);
+                    Thread.currentThread().interrupt();
+                    break;
                 } catch (ExecutionException e) {
                     LOG.warn("Timeout occured while sending message to topic {}, it will be attempted again.", topic);
                 }
