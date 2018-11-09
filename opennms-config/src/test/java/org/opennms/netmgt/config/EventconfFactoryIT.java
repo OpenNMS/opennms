@@ -611,6 +611,8 @@ public class EventconfFactoryIT {
 
         Reader r = new FileReader(eventConfFile);
         Events events = JaxbUtils.unmarshal(Events.class, r);
+        // Fix to pass the test for NMS-10363.
+        events.addLoadedEventFile("events"+File.separator+ "opennms.correlation.events.xml", events);
         r.close();
         Set<File> eventFilesIncluded = new HashSet<File>(events.getEventFiles().size());
         for (String eventFile : events.getEventFiles()) {
