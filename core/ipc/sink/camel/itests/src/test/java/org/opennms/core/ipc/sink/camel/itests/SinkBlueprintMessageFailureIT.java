@@ -70,6 +70,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-client.xml"
 })
 @JUnitConfigurationEnvironment
+@org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
 public class SinkBlueprintMessageFailureIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
