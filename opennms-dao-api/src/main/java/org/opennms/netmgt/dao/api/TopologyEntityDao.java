@@ -35,5 +35,5 @@ import org.opennms.netmgt.model.VertexInfo;
 
 public interface TopologyEntityDao {
     List<VertexInfo> getVertexInfos();
-    List<CdpLinkInfo> getCdpLinkInfo();
+    List<CdpLinkInfo> getCdpLinkInfos();
 }

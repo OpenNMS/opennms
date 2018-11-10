@@ -28,12 +28,13 @@
 
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 /** Simplified OnmsNode. We use it as a view on OnmsNode that has less attributes and no lazy loading */
-public class VertexInfo {
+public class VertexInfo implements Serializable {
 
     private Integer id;
     private OnmsNode.NodeType type;

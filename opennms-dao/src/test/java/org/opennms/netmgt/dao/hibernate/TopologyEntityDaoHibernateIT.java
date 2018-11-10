@@ -93,7 +93,7 @@ public class TopologyEntityDaoHibernateIT {
     @Test
     @Transactional
     public void testGetAllCdpLinkInfos() {
-        List<CdpLinkInfo> cdpLinks = this.topologyEntityDao.getCdpLinkInfo();
+        List<CdpLinkInfo> cdpLinks = this.topologyEntityDao.getCdpLinkInfos();
         Assert.assertNotNull(cdpLinks);
         Assert.assertFalse(cdpLinks.isEmpty());
         CdpLinkInfo info = cdpLinks.get(0);
