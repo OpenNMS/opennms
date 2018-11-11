@@ -33,8 +33,6 @@ import java.util.List;
 
 import org.opennms.netmgt.dao.api.TopologyEntityDao;
 import org.opennms.netmgt.dao.api.TopologyEntityCache;
-import org.opennms.netmgt.dao.api.TopologyEntityCache;
-import org.opennms.netmgt.dao.api.TopologyEntityDao;
 import org.opennms.netmgt.model.CdpLinkInfo;
 import org.opennms.netmgt.model.VertexInfo;
 
@@ -47,7 +45,7 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
 
     public void refresh(){
         this.vertices = Collections.unmodifiableList(topologyEntityDao.getVertexInfos());
-        this.cdpLinks = Collections.unmodifiableList(topologyEntityDao.getCdpLinkInfo());
+        this.cdpLinks = Collections.unmodifiableList(topologyEntityDao.getCdpLinkInfos());
     }
 
     public List<VertexInfo> getVertices(){
