@@ -18,6 +18,5 @@
     <module>nxos</module>
     <module>sflow</module>
     <module>netflow</module>
-    <module>registry</module>
   </modules>
 </project>
