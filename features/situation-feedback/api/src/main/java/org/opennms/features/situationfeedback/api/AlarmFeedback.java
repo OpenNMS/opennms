@@ -65,15 +65,14 @@ public class AlarmFeedback {
 
     private final long timestamp;
 
-    private AlarmFeedback(String situationKey, String situationFingerprint, String alarmKey,
-                          FeedbackType feedbackType, String reason, String user, long timestamp) {
-        this.situationKey = situationKey;
-        this.situationFingerprint = situationFingerprint;
-        this.alarmKey = alarmKey;
-        this.feedbackType = feedbackType;
-        this.reason = reason;
-        this.user = user;
-        this.timestamp = timestamp;
+    private AlarmFeedback(Builder builder) {
+        this.situationKey = builder.situationKey;
+        this.situationFingerprint = builder.situationFingerprint;
+        this.alarmKey = builder.alarmKey;
+        this.feedbackType = builder.feedbackType;
+        this.reason = builder.reason;
+        this.user = builder.user;
+        this.timestamp = builder.timestamp;
     }
 
     public static class Builder {
@@ -125,8 +124,11 @@ public class AlarmFeedback {
         }
 
         public AlarmFeedback build() {
-            return new AlarmFeedback(Objects.requireNonNull(situationKey), situationFingerprint,
-                    Objects.requireNonNull(alarmKey), Objects.requireNonNull(feedbackType), reason, user, timestamp);
+            Objects.requireNonNull(situationKey, "The situation key cannot be null");
+            Objects.requireNonNull(alarmKey, "The alarm key cannot be null");
+            Objects.requireNonNull(feedbackType, "The feedback type cannot be null");
+
+            return new AlarmFeedback(this);            
         }
     }
     
