@@ -37,6 +37,16 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.persistence.api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.service.api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>xalan</groupId>
       <artifactId>xalan</artifactId>
     </dependency>

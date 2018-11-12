@@ -456,6 +456,18 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.persistence.api</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.service.api</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-api</artifactId>
       <scope>${onmsLibScope}</scope>
