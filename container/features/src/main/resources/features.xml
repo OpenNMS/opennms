@@ -1160,10 +1160,14 @@
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-situation-feedback-api" description="OpenNMS :: Features :: Situation-Feedback :: API" version="${project.version}">
+        <bundle>mvn:org.opennms.features.situation-feedback/org.opennms.features.situation-feedback.api/${project.version}</bundle>
+    </feature>
+    
     <feature name="opennms-situation-feedback" description="OpenNMS :: Features :: Situation-Feedback" version="${project.version}">
       <feature>opennms-osgi-core-rest</feature>
       <feature>opennms-jest</feature>
-      <bundle>mvn:org.opennms.features.situation-feedback/org.opennms.features.situation-feedback.api/${project.version}</bundle>
+      <feature>opennms-situation-feedback-api</feature>
       <bundle>mvn:org.opennms.features.situation-feedback/org.opennms.features.situation-feedback.elastic/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.situation-feedback.rest/org.opennms.features.situation-feedback.rest.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.situation-feedback.rest/org.opennms.features.situation-feedback.rest.impl/${project.version}</bundle>
@@ -1188,6 +1192,7 @@
       <feature version="${guavaVersion}">guava</feature>
       <feature version="${kafkaStreamsVersion}">kafka-streams</feature>
       <feature>opennms-collection-api</feature>
+      <feature>opennms-situation-feedback-api</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobuf3Version}</bundle>
       <bundle>mvn:org.opennms.features.kafka/org.opennms.features.kafka.producer/${project.version}</bundle>
     </feature>
