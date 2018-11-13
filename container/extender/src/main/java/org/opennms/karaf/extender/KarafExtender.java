@@ -119,7 +119,7 @@ public class KarafExtender {
         // Filter the list of features
         filterFeatures(featuresBoot);
 
-        if (repositories.size() >= 1) {
+        if (!repositories.isEmpty()) {
             // Build a comma separated list of our Maven repositories
             final StringBuilder mavenReposSb = new StringBuilder();
             for (Repository repository : repositories) {
@@ -177,7 +177,7 @@ public class KarafExtender {
                 .map(Feature::toInstallString)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        if (featuresToInstall.size() >= 1) {
+        if (!featuresToInstall.isEmpty()) {
             // Because of the fix for the following issue, we need to call the
             // feature installation in another thread since this method is invoked
             // during a feature installation itself and feature installations are
@@ -204,7 +204,7 @@ public class KarafExtender {
         final List<Feature> featuresWithKarDependencies = featuresBoot.stream()
                 .filter(f -> f.getKarDependency() != null)
                 .collect(Collectors.toList());
-        if (featuresWithKarDependencies.size() >= 1) {
+        if (!featuresWithKarDependencies.isEmpty()) {
             final KarDependencyHandler karDependencyHandler = new KarDependencyHandler(featuresWithKarDependencies,
                     m_karService, m_featuresService);
             m_karDependencyInstallThread = new Thread(karDependencyHandler);

@@ -89,6 +89,7 @@ public class KarDependencyHandler implements Runnable {
                 Thread.sleep(KAR_LIST_SLEEP_MS);
             } catch (InterruptedException e) {
                 LOG.info("Interrupted. Stopping thread.");
+                return;
             }
         }
         LOG.info("All .kar dependencies are ready now.");
@@ -110,7 +111,7 @@ public class KarDependencyHandler implements Runnable {
             missingFeatureUris.addAll(getFeaturesUrisForKar(karDependency));
         }
         missingFeatureUris.removeAll(availableFeatureUris);
-        if (missingFeatureUris.size() < 1) {
+        if (missingFeatureUris.isEmpty()) {
             LOG.debug("No missing feature repositories.");
         } else {
             LOG.info("Installing feature repositories: {}", missingFeatureUris);
