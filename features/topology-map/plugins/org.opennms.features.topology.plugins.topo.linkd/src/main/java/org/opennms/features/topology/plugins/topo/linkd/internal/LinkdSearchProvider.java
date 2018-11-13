@@ -69,6 +69,9 @@ public class LinkdSearchProvider implements SearchProvider {
             if(searchQuery.matches(vertex.getLabel())) {
                 searchResults.add(new SearchResult(vertex, false, false));
             }
+            if(searchResults.size() > 50) {
+                break; // make sure we don't display too many results => its slows the display down and makes it unusuable
+            }
         }
 
         LOG.debug("SearchProvider->query: found {} search results.", searchResults.size());
