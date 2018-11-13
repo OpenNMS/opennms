@@ -28,6 +28,7 @@
 
 package org.opennms.smoketest;
 
+import static com.jayway.awaitility.Awaitility.await;
 import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
@@ -78,12 +79,6 @@ public class DaemonConfigPageIT extends OpenNMSSeleniumTestCase {
                 .assertThat().statusCode(200)
                 .assertThat().contentType(ContentType.HTML);
 
-        // List Elements
-        m_driver.get(baseURI + "opennms/admin/daemons/index.jsp");
-        sleep(2000);
-        final List<WebElement> listRows = m_driver.findElements(By.xpath("//table/tbody/tr"));
-        Assert.assertThat(listRows, hasSize(30));
-
         DaemonReloadPage page = new DaemonReloadPage().open();
         Assert.assertThat(page.getDaemonRows(), hasSize(30));
 
@@ -104,19 +99,7 @@ public class DaemonConfigPageIT extends OpenNMSSeleniumTestCase {
         Assert.assertThat(ticketer.isReloadable(), is(false));
 
 
-        eventd.reload(500, 2000);
-
-//        DaemonData d = page.getDaemon("eventd");
-//
-//
-//        Assert.assertEquals(d, new DaemonData("eventd", true, true));
-//
-//
-//        new DaemonData("eventd", true, true).assertTableRow(listRows.get(0));
-//
-//        new DaemonData("rtcd", true, false).assertTableRow(listRows.get(11));
-//        new DaemonData("asteriskgateway", false, false).assertTableRow(listRows.get(28));
-
+        eventd.reload(5);
     }
 
     private class Daemon {
@@ -144,7 +127,7 @@ public class DaemonConfigPageIT extends OpenNMSSeleniumTestCase {
             return !reloadCell.getText().equals("Daemon not reloadable");
         }
 
-        public void reload(int timeTillReloadingIsShown, int maxTimeTillReloadingShouldShowResult) {
+        public void reload(int maxResultTimeInSeconds) {
             if (!this.isReloadable()) {
                 throw new IllegalStateException("This daemon is not reloadable");
             }
@@ -152,43 +135,25 @@ public class DaemonConfigPageIT extends OpenNMSSeleniumTestCase {
             List<WebElement> buttons = reloadCell.findElements(By.xpath(".//button"));
             Assert.assertThat(buttons, hasSize(2));
             buttons.get(0).click();
-            sleep(timeTillReloadingIsShown);
+
+            //Give the Gui Time to react
+            sleep(500);
+
             reloadCell = getElement().findElements(By.xpath("./td[3]")).get(0);
             Assert.assertThat(reloadCell.getText(), containsString("Reloading..."));
-            sleep(maxTimeTillReloadingShouldShowResult);
-            reloadCell = getElement().findElements(By.xpath("./td[3]")).get(0);
-            Assert.assertThat(reloadCell.getText(), containsString("Success"));
+
+            await().atMost(maxResultTimeInSeconds, TimeUnit.SECONDS)
+                    .pollDelay(1, TimeUnit.SECONDS)
+                    .until(() -> {
+                        WebElement successReloadCell = getElement().findElements(By.xpath("./td[3]")).get(0);
+                        Assert.assertThat(successReloadCell.getText(), containsString("Success"));
+                    });
+
         }
 
         private WebElement getElement() {
             return this.page.getRowForDaemonName(this.daemonName);
         }
-
-        /**
-         public void assertTableRow(WebElement tableRow) {
-
-
-         // Assert That the Right Status is shown, with the right Label
-         WebElement label = tableRow.findElements(By.xpath("./td[2]/label")).get(0);
-         if (this.isEnabled()) {
-         Assert.assertThat(label.getAttribute("class"), containsString("label-primary"));
-         Assert.assertThat(label.getText(), is("running"));
-         }else{
-         Assert.assertThat(label.getAttribute("class"), containsString("label-default"));
-         Assert.assertThat(label.getText(), is("not running"));
-         }
-
-         // Assert That Buttons are show or not
-         WebElement reloadCell = tableRow.findElements(By.xpath("./td[3]")).get(0);
-         if(this.isReloadable() && this.isEnabled()){
-         List<WebElement> buttons = reloadCell.findElements(By.xpath(".//button"));
-         Assert.assertThat(buttons, hasSize(2));
-         }else{
-         Assert.assertThat(reloadCell.getText(), is("Daemon not reloadable"));
-         }
-
-         }
-         **/
 
         //public DaemonData toData() {
 
@@ -218,31 +183,6 @@ public class DaemonConfigPageIT extends OpenNMSSeleniumTestCase {
                 }
             }
             throw new NoSuchElementException("There is no Table Row for a Daemon by the name of: " + name);
-        }
-    }
-
-
-    private class DaemonData {
-        private final String daemonName;
-        private final boolean enabled;
-        private final boolean reloadable;
-
-        public DaemonData(String name, boolean enabled, boolean reloadable) {
-            this.daemonName = name;
-            this.enabled = enabled;
-            this.reloadable = reloadable;
-        }
-
-        public String getDaemonName() {
-            return daemonName;
-        }
-
-        public boolean isEnabled() {
-            return enabled;
-        }
-
-        public boolean isReloadable() {
-            return reloadable;
         }
     }
 }
