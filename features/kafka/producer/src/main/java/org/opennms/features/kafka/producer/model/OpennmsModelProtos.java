@@ -7237,41 +7237,41 @@ public final class OpennmsModelProtos {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>string situationKey = 1;</code>
+     * <code>string situation_key = 1;</code>
      */
     java.lang.String getSituationKey();
     /**
-     * <code>string situationKey = 1;</code>
+     * <code>string situation_key = 1;</code>
      */
     com.google.protobuf.ByteString
         getSituationKeyBytes();
 
     /**
-     * <code>string situationFingerprint = 2;</code>
+     * <code>string situation_fingerprint = 2;</code>
      */
     java.lang.String getSituationFingerprint();
     /**
-     * <code>string situationFingerprint = 2;</code>
+     * <code>string situation_fingerprint = 2;</code>
      */
     com.google.protobuf.ByteString
         getSituationFingerprintBytes();
 
     /**
-     * <code>string alarmKey = 3;</code>
+     * <code>string alarm_key = 3;</code>
      */
     java.lang.String getAlarmKey();
     /**
-     * <code>string alarmKey = 3;</code>
+     * <code>string alarm_key = 3;</code>
      */
     com.google.protobuf.ByteString
         getAlarmKeyBytes();
 
     /**
-     * <code>.AlarmFeedback.FeedbackType feedbackType = 4;</code>
+     * <code>.AlarmFeedback.FeedbackType feedback_type = 4;</code>
      */
     int getFeedbackTypeValue();
     /**
-     * <code>.AlarmFeedback.FeedbackType feedbackType = 4;</code>
+     * <code>.AlarmFeedback.FeedbackType feedback_type = 4;</code>
      */
     org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType getFeedbackType();
 
@@ -7534,10 +7534,10 @@ public final class OpennmsModelProtos {
       // @@protoc_insertion_point(enum_scope:AlarmFeedback.FeedbackType)
     }
 
-    public static final int SITUATIONKEY_FIELD_NUMBER = 1;
+    public static final int SITUATION_KEY_FIELD_NUMBER = 1;
     private volatile java.lang.Object situationKey_;
     /**
-     * <code>string situationKey = 1;</code>
+     * <code>string situation_key = 1;</code>
      */
     public java.lang.String getSituationKey() {
       java.lang.Object ref = situationKey_;
@@ -7552,7 +7552,7 @@ public final class OpennmsModelProtos {
       }
     }
     /**
-     * <code>string situationKey = 1;</code>
+     * <code>string situation_key = 1;</code>
      */
     public com.google.protobuf.ByteString
         getSituationKeyBytes() {
@@ -7568,10 +7568,10 @@ public final class OpennmsModelProtos {
       }
     }
 
-    public static final int SITUATIONFINGERPRINT_FIELD_NUMBER = 2;
+    public static final int SITUATION_FINGERPRINT_FIELD_NUMBER = 2;
     private volatile java.lang.Object situationFingerprint_;
     /**
-     * <code>string situationFingerprint = 2;</code>
+     * <code>string situation_fingerprint = 2;</code>
      */
     public java.lang.String getSituationFingerprint() {
       java.lang.Object ref = situationFingerprint_;
@@ -7586,7 +7586,7 @@ public final class OpennmsModelProtos {
       }
     }
     /**
-     * <code>string situationFingerprint = 2;</code>
+     * <code>string situation_fingerprint = 2;</code>
      */
     public com.google.protobuf.ByteString
         getSituationFingerprintBytes() {
@@ -7602,10 +7602,10 @@ public final class OpennmsModelProtos {
       }
     }
 
-    public static final int ALARMKEY_FIELD_NUMBER = 3;
+    public static final int ALARM_KEY_FIELD_NUMBER = 3;
     private volatile java.lang.Object alarmKey_;
     /**
-     * <code>string alarmKey = 3;</code>
+     * <code>string alarm_key = 3;</code>
      */
     public java.lang.String getAlarmKey() {
       java.lang.Object ref = alarmKey_;
@@ -7620,7 +7620,7 @@ public final class OpennmsModelProtos {
       }
     }
     /**
-     * <code>string alarmKey = 3;</code>
+     * <code>string alarm_key = 3;</code>
      */
     public com.google.protobuf.ByteString
         getAlarmKeyBytes() {
@@ -7636,16 +7636,16 @@ public final class OpennmsModelProtos {
       }
     }
 
-    public static final int FEEDBACKTYPE_FIELD_NUMBER = 4;
+    public static final int FEEDBACK_TYPE_FIELD_NUMBER = 4;
     private int feedbackType_;
     /**
-     * <code>.AlarmFeedback.FeedbackType feedbackType = 4;</code>
+     * <code>.AlarmFeedback.FeedbackType feedback_type = 4;</code>
      */
     public int getFeedbackTypeValue() {
       return feedbackType_;
     }
     /**
-     * <code>.AlarmFeedback.FeedbackType feedbackType = 4;</code>
+     * <code>.AlarmFeedback.FeedbackType feedback_type = 4;</code>
      */
     public org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType getFeedbackType() {
       org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType result = org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType.valueOf(feedbackType_);
@@ -7833,13 +7833,13 @@ public final class OpennmsModelProtos {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + SITUATIONKEY_FIELD_NUMBER;
+      hash = (37 * hash) + SITUATION_KEY_FIELD_NUMBER;
       hash = (53 * hash) + getSituationKey().hashCode();
-      hash = (37 * hash) + SITUATIONFINGERPRINT_FIELD_NUMBER;
+      hash = (37 * hash) + SITUATION_FINGERPRINT_FIELD_NUMBER;
       hash = (53 * hash) + getSituationFingerprint().hashCode();
-      hash = (37 * hash) + ALARMKEY_FIELD_NUMBER;
+      hash = (37 * hash) + ALARM_KEY_FIELD_NUMBER;
       hash = (53 * hash) + getAlarmKey().hashCode();
-      hash = (37 * hash) + FEEDBACKTYPE_FIELD_NUMBER;
+      hash = (37 * hash) + FEEDBACK_TYPE_FIELD_NUMBER;
       hash = (53 * hash) + feedbackType_;
       hash = (37 * hash) + REASON_FIELD_NUMBER;
       hash = (53 * hash) + getReason().hashCode();
@@ -8116,7 +8116,7 @@ public final class OpennmsModelProtos {
 
       private java.lang.Object situationKey_ = "";
       /**
-       * <code>string situationKey = 1;</code>
+       * <code>string situation_key = 1;</code>
        */
       public java.lang.String getSituationKey() {
         java.lang.Object ref = situationKey_;
@@ -8131,7 +8131,7 @@ public final class OpennmsModelProtos {
         }
       }
       /**
-       * <code>string situationKey = 1;</code>
+       * <code>string situation_key = 1;</code>
        */
       public com.google.protobuf.ByteString
           getSituationKeyBytes() {
@@ -8147,7 +8147,7 @@ public final class OpennmsModelProtos {
         }
       }
       /**
-       * <code>string situationKey = 1;</code>
+       * <code>string situation_key = 1;</code>
        */
       public Builder setSituationKey(
           java.lang.String value) {
@@ -8160,7 +8160,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>string situationKey = 1;</code>
+       * <code>string situation_key = 1;</code>
        */
       public Builder clearSituationKey() {
         
@@ -8169,7 +8169,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>string situationKey = 1;</code>
+       * <code>string situation_key = 1;</code>
        */
       public Builder setSituationKeyBytes(
           com.google.protobuf.ByteString value) {
@@ -8185,7 +8185,7 @@ public final class OpennmsModelProtos {
 
       private java.lang.Object situationFingerprint_ = "";
       /**
-       * <code>string situationFingerprint = 2;</code>
+       * <code>string situation_fingerprint = 2;</code>
        */
       public java.lang.String getSituationFingerprint() {
         java.lang.Object ref = situationFingerprint_;
@@ -8200,7 +8200,7 @@ public final class OpennmsModelProtos {
         }
       }
       /**
-       * <code>string situationFingerprint = 2;</code>
+       * <code>string situation_fingerprint = 2;</code>
        */
       public com.google.protobuf.ByteString
           getSituationFingerprintBytes() {
@@ -8216,7 +8216,7 @@ public final class OpennmsModelProtos {
         }
       }
       /**
-       * <code>string situationFingerprint = 2;</code>
+       * <code>string situation_fingerprint = 2;</code>
        */
       public Builder setSituationFingerprint(
           java.lang.String value) {
@@ -8229,7 +8229,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>string situationFingerprint = 2;</code>
+       * <code>string situation_fingerprint = 2;</code>
        */
       public Builder clearSituationFingerprint() {
         
@@ -8238,7 +8238,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>string situationFingerprint = 2;</code>
+       * <code>string situation_fingerprint = 2;</code>
        */
       public Builder setSituationFingerprintBytes(
           com.google.protobuf.ByteString value) {
@@ -8254,7 +8254,7 @@ public final class OpennmsModelProtos {
 
       private java.lang.Object alarmKey_ = "";
       /**
-       * <code>string alarmKey = 3;</code>
+       * <code>string alarm_key = 3;</code>
        */
       public java.lang.String getAlarmKey() {
         java.lang.Object ref = alarmKey_;
@@ -8269,7 +8269,7 @@ public final class OpennmsModelProtos {
         }
       }
       /**
-       * <code>string alarmKey = 3;</code>
+       * <code>string alarm_key = 3;</code>
        */
       public com.google.protobuf.ByteString
           getAlarmKeyBytes() {
@@ -8285,7 +8285,7 @@ public final class OpennmsModelProtos {
         }
       }
       /**
-       * <code>string alarmKey = 3;</code>
+       * <code>string alarm_key = 3;</code>
        */
       public Builder setAlarmKey(
           java.lang.String value) {
@@ -8298,7 +8298,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>string alarmKey = 3;</code>
+       * <code>string alarm_key = 3;</code>
        */
       public Builder clearAlarmKey() {
         
@@ -8307,7 +8307,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>string alarmKey = 3;</code>
+       * <code>string alarm_key = 3;</code>
        */
       public Builder setAlarmKeyBytes(
           com.google.protobuf.ByteString value) {
@@ -8323,13 +8323,13 @@ public final class OpennmsModelProtos {
 
       private int feedbackType_ = 0;
       /**
-       * <code>.AlarmFeedback.FeedbackType feedbackType = 4;</code>
+       * <code>.AlarmFeedback.FeedbackType feedback_type = 4;</code>
        */
       public int getFeedbackTypeValue() {
         return feedbackType_;
       }
       /**
-       * <code>.AlarmFeedback.FeedbackType feedbackType = 4;</code>
+       * <code>.AlarmFeedback.FeedbackType feedback_type = 4;</code>
        */
       public Builder setFeedbackTypeValue(int value) {
         feedbackType_ = value;
@@ -8337,14 +8337,14 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.AlarmFeedback.FeedbackType feedbackType = 4;</code>
+       * <code>.AlarmFeedback.FeedbackType feedback_type = 4;</code>
        */
       public org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType getFeedbackType() {
         org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType result = org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType.valueOf(feedbackType_);
         return result == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType.UNRECOGNIZED : result;
       }
       /**
-       * <code>.AlarmFeedback.FeedbackType feedbackType = 4;</code>
+       * <code>.AlarmFeedback.FeedbackType feedback_type = 4;</code>
        */
       public Builder setFeedbackType(org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType value) {
         if (value == null) {
@@ -8356,7 +8356,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.AlarmFeedback.FeedbackType feedbackType = 4;</code>
+       * <code>.AlarmFeedback.FeedbackType feedback_type = 4;</code>
        */
       public Builder clearFeedbackType() {
         
@@ -16073,44 +16073,44 @@ public final class OpennmsModelProtos {
       "\030\024 \001(\t\022\033\n\023managed_object_type\030\025 \001(\t\022\034\n\014r" +
       "elatedAlarm\030\026 \003(\0132\006.Alarm\"D\n\004Type\022\026\n\022PRO" +
       "BLEM_WITH_CLEAR\020\000\022\t\n\005CLEAR\020\001\022\031\n\025PROBLEM_" +
-      "WITHOUT_CLEAR\020\002\"\213\002\n\rAlarmFeedback\022\024\n\014sit" +
-      "uationKey\030\001 \001(\t\022\034\n\024situationFingerprint\030" +
-      "\002 \001(\t\022\020\n\010alarmKey\030\003 \001(\t\0221\n\014feedbackType\030" +
-      "\004 \001(\0162\033.AlarmFeedback.FeedbackType\022\016\n\006re" +
-      "ason\030\005 \001(\t\022\014\n\004user\030\006 \001(\t\022\021\n\ttimestamp\030\007 " +
-      "\001(\004\"P\n\014FeedbackType\022\022\n\016FALSE_POSITIVE\020\000\022" +
-      "\022\n\016FALSE_NEGATIVE\020\001\022\013\n\007CORRECT\020\002\022\013\n\007UNKN" +
-      "OWN\020\003\"\275\001\n\013IpInterface\022\n\n\002id\030\001 \001(\004\022\022\n\nip_" +
-      "address\030\002 \001(\t\022\020\n\010if_index\030\003 \001(\r\022.\n\014prima" +
-      "ry_type\030\004 \001(\0162\030.IpInterface.PrimaryType\022" +
-      "\017\n\007service\030\005 \003(\t\";\n\013PrimaryType\022\013\n\007PRIMA" +
-      "RY\020\000\022\r\n\tSECONDARY\020\001\022\020\n\014NOT_ELIGIBLE\020\002\"\317\001" +
-      "\n\rSnmpInterface\022\n\n\002id\030\001 \001(\004\022\020\n\010if_index\030" +
-      "\002 \001(\r\022\020\n\010if_descr\030\003 \001(\t\022\017\n\007if_type\030\004 \001(\r" +
-      "\022\017\n\007if_name\030\005 \001(\t\022\020\n\010if_speed\030\006 \001(\004\022\027\n\017i" +
-      "f_phys_address\030\007 \001(\t\022\027\n\017if_admin_status\030" +
-      "\010 \001(\r\022\026\n\016if_oper_status\030\t \001(\r\022\020\n\010if_alia" +
-      "s\030\n \001(\t\"%\n\007HwAlias\022\r\n\005index\030\001 \001(\r\022\013\n\003oid" +
-      "\030\002 \001(\t\"\210\002\n\010HwEntity\022\032\n\022ent_physical_inde" +
-      "x\030\001 \001(\r\022\021\n\tentity_id\030\002 \001(\r\022\032\n\022ent_physic" +
-      "al_class\030\003 \001(\t\022\032\n\022ent_physical_descr\030\004 \001" +
-      "(\t\022\033\n\023ent_physical_is_fru\030\005 \001(\010\022\031\n\021ent_p" +
-      "hysical_name\030\006 \001(\t\022 \n\030ent_physical_vendo" +
-      "r_type\030\007 \001(\t\022\036\n\014ent_hw_alias\030\010 \003(\0132\010.HwA" +
-      "lias\022\033\n\010children\030\t \003(\0132\t.HwEntity\"\270\002\n\004No" +
-      "de\022\n\n\002id\030\001 \001(\004\022\026\n\016foreign_source\030\002 \001(\t\022\022" +
-      "\n\nforeign_id\030\003 \001(\t\022\020\n\010location\030\004 \001(\t\022\020\n\010" +
-      "category\030\005 \003(\t\022\r\n\005label\030\006 \001(\t\022\023\n\013create_" +
-      "time\030\007 \001(\004\022\023\n\013sys_contact\030\010 \001(\t\022\027\n\017sys_d" +
-      "escription\030\t \001(\t\022\025\n\rsys_object_id\030\n \001(\t\022" +
-      "\"\n\014ip_interface\030\013 \003(\0132\014.IpInterface\022&\n\016s" +
-      "nmp_interface\030\014 \003(\0132\016.SnmpInterface\022\037\n\014h" +
-      "w_inventory\030\r \001(\0132\t.HwEntity*g\n\010Severity" +
-      "\022\021\n\rINDETERMINATE\020\000\022\013\n\007CLEARED\020\001\022\n\n\006NORM" +
-      "AL\020\002\022\013\n\007WARNING\020\003\022\t\n\005MINOR\020\004\022\t\n\005MAJOR\020\005\022" +
-      "\014\n\010CRITICAL\020\006B?\n)org.opennms.features.ka" +
-      "fka.producer.modelB\022OpennmsModelProtosb\006" +
-      "proto3"
+      "WITHOUT_CLEAR\020\002\"\217\002\n\rAlarmFeedback\022\025\n\rsit" +
+      "uation_key\030\001 \001(\t\022\035\n\025situation_fingerprin" +
+      "t\030\002 \001(\t\022\021\n\talarm_key\030\003 \001(\t\0222\n\rfeedback_t" +
+      "ype\030\004 \001(\0162\033.AlarmFeedback.FeedbackType\022\016" +
+      "\n\006reason\030\005 \001(\t\022\014\n\004user\030\006 \001(\t\022\021\n\ttimestam" +
+      "p\030\007 \001(\004\"P\n\014FeedbackType\022\022\n\016FALSE_POSITIV" +
+      "E\020\000\022\022\n\016FALSE_NEGATIVE\020\001\022\013\n\007CORRECT\020\002\022\013\n\007" +
+      "UNKNOWN\020\003\"\275\001\n\013IpInterface\022\n\n\002id\030\001 \001(\004\022\022\n" +
+      "\nip_address\030\002 \001(\t\022\020\n\010if_index\030\003 \001(\r\022.\n\014p" +
+      "rimary_type\030\004 \001(\0162\030.IpInterface.PrimaryT" +
+      "ype\022\017\n\007service\030\005 \003(\t\";\n\013PrimaryType\022\013\n\007P" +
+      "RIMARY\020\000\022\r\n\tSECONDARY\020\001\022\020\n\014NOT_ELIGIBLE\020" +
+      "\002\"\317\001\n\rSnmpInterface\022\n\n\002id\030\001 \001(\004\022\020\n\010if_in" +
+      "dex\030\002 \001(\r\022\020\n\010if_descr\030\003 \001(\t\022\017\n\007if_type\030\004" +
+      " \001(\r\022\017\n\007if_name\030\005 \001(\t\022\020\n\010if_speed\030\006 \001(\004\022" +
+      "\027\n\017if_phys_address\030\007 \001(\t\022\027\n\017if_admin_sta" +
+      "tus\030\010 \001(\r\022\026\n\016if_oper_status\030\t \001(\r\022\020\n\010if_" +
+      "alias\030\n \001(\t\"%\n\007HwAlias\022\r\n\005index\030\001 \001(\r\022\013\n" +
+      "\003oid\030\002 \001(\t\"\210\002\n\010HwEntity\022\032\n\022ent_physical_" +
+      "index\030\001 \001(\r\022\021\n\tentity_id\030\002 \001(\r\022\032\n\022ent_ph" +
+      "ysical_class\030\003 \001(\t\022\032\n\022ent_physical_descr" +
+      "\030\004 \001(\t\022\033\n\023ent_physical_is_fru\030\005 \001(\010\022\031\n\021e" +
+      "nt_physical_name\030\006 \001(\t\022 \n\030ent_physical_v" +
+      "endor_type\030\007 \001(\t\022\036\n\014ent_hw_alias\030\010 \003(\0132\010" +
+      ".HwAlias\022\033\n\010children\030\t \003(\0132\t.HwEntity\"\270\002" +
+      "\n\004Node\022\n\n\002id\030\001 \001(\004\022\026\n\016foreign_source\030\002 \001" +
+      "(\t\022\022\n\nforeign_id\030\003 \001(\t\022\020\n\010location\030\004 \001(\t" +
+      "\022\020\n\010category\030\005 \003(\t\022\r\n\005label\030\006 \001(\t\022\023\n\013cre" +
+      "ate_time\030\007 \001(\004\022\023\n\013sys_contact\030\010 \001(\t\022\027\n\017s" +
+      "ys_description\030\t \001(\t\022\025\n\rsys_object_id\030\n " +
+      "\001(\t\022\"\n\014ip_interface\030\013 \003(\0132\014.IpInterface\022" +
+      "&\n\016snmp_interface\030\014 \003(\0132\016.SnmpInterface\022" +
+      "\037\n\014hw_inventory\030\r \001(\0132\t.HwEntity*g\n\010Seve" +
+      "rity\022\021\n\rINDETERMINATE\020\000\022\013\n\007CLEARED\020\001\022\n\n\006" +
+      "NORMAL\020\002\022\013\n\007WARNING\020\003\022\t\n\005MINOR\020\004\022\t\n\005MAJO" +
+      "R\020\005\022\014\n\010CRITICAL\020\006B?\n)org.opennms.feature" +
+      "s.kafka.producer.modelB\022OpennmsModelProt" +
+      "osb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
