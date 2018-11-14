@@ -8,10 +8,12 @@
     <reference id="configurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/>
     <reference id="mavenResolver" interface="org.ops4j.pax.url.mvn.MavenResolver"/>
     <reference id="featuresService" interface="org.apache.karaf.features.FeaturesService"/>
+    <reference id="karService" interface="org.apache.karaf.kar.KarService"/>
 
-    <bean id="controller" class="org.opennms.karaf.extender.KarafExtender" init-method="init">
+    <bean id="controller" class="org.opennms.karaf.extender.KarafExtender" init-method="init" destroy-method="destroy">
         <property name="configurationAdmin" ref="configurationAdmin" />
         <property name="mavenResolver" ref="mavenResolver" />
         <property name="featuresService" ref="featuresService" />
+        <property name="karService" ref="karService" />
     </bean>
 </blueprint>
