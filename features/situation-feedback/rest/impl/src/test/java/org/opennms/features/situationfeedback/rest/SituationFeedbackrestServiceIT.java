@@ -149,8 +149,12 @@ public class SituationFeedbackrestServiceIT {
         // Our listener should have received the feedback
         assertThat(alarmFeedback, equalTo(feedback));
 
+        // Note: the below check is not really useful as of HZN-1435
+        // This could potentially be improved by verifying the feedback is sent out and a new situation Event is
+        // received after the OCE has processed it (when that feature is complete)
         OnmsAlarm restrieved = alarmDao.findByReductionKey(situation.getReductionKey());
-        assertThat(restrieved.getRelatedAlarms().size(), is(1));
+        // Since alarm feedback is not processed locally in the ReST API we expect the situation to remain unchanged
+        assertThat(restrieved.getRelatedAlarms().size(), is(2));
         assertThat(restrieved.getRelatedAlarms().stream().findFirst(), is(Optional.of(linkDownAlarmOnR2)));
     }
     

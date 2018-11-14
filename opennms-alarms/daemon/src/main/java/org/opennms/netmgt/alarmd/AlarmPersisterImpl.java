@@ -288,19 +288,26 @@ public class AlarmPersisterImpl implements AlarmPersister {
             }
         }
 
-        Set<OnmsAlarm> relatedAlarms = getRelatedAlarms(event.getParmCollection());
-        if (relatedAlarms != null && !relatedAlarms.isEmpty()) {
-            // alarm.relatedAlarms becomes the union of any existing alarms and any in the event.
-            for (OnmsAlarm related : relatedAlarms) {
-                if (!formingCyclicGraph(alarm, related)) {
-                    alarm.addRelatedAlarm(related);
-                } else {
-                    LOG.warn("Alarm with id '{}' , reductionKey '{}' is not added as related alarm for id '{}' as it is forming cyclic graph ", related.getId(), related.getReductionKey(), alarm.getId());
-                }
-            }
-        }
+        updateRelatedAlarms(alarm, event);
 
         persistedEvent.setAlarm(alarm);
+    }
+    
+    private void updateRelatedAlarms(OnmsAlarm alarm, Event event) {
+        // Clear the existing related alarms that may be known for this alarm so that we treat the event as an
+        // authoritative source of the related alarms rather than using the union of the previously known related alarms
+        // and the event's related alarms
+        alarm.setRelatedAlarms(Collections.emptySet());
+
+        // Rebuild the related alarm list from this event
+        getRelatedAlarms(event.getParmCollection()).forEach(relatedAlarm -> {
+            if (!formingCyclicGraph(alarm, relatedAlarm)) {
+                alarm.addRelatedAlarm(relatedAlarm);
+            } else {
+                LOG.warn("Alarm with id '{}' , reductionKey '{}' is not added as related alarm for id '{}' as it is " +
+                        "forming cyclic graph ", relatedAlarm.getId(), relatedAlarm.getReductionKey(), alarm.getId());
+            }
+        });
     }
 
     private void resetAlarmSeverity(OnmsEvent persistedEvent, OnmsAlarm alarm) {
