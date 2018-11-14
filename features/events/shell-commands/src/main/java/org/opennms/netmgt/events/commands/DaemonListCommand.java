@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,33 +28,39 @@
 
 package org.opennms.netmgt.events.commands;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.karaf.shell.api.action.Action;
-import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
-import org.apache.karaf.shell.api.action.Completion;
+import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.daemon.DaemonInfo;
+import org.opennms.netmgt.daemon.DaemonService;
 
-@Command(scope = "reload", name = "daemon", description = "Reload a specific daemon")
+@Command(scope = "daemon", name = "list", description = "List all daemons")
 @Service
-public class ReloadDaemonCommand implements Action {
+public class DaemonListCommand implements Action {
 
     @Reference
-    public EventForwarder eventForwarder;
+    private DaemonService daemonService;
 
-    @Argument(index = 0, name = "daemonName", description = "deamon to reload", required = true, multiValued = false)
-    @Completion(DaemonNameCompleter.class)
-    String daemonName;
+    @Option(name="-a", description = "Show all daemons. By default only enabled AND reloadable daemons are shown")
+    private boolean showAll = false;
 
     @Override
     public Object execute() throws Exception {
-
-        EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "reload-daemon-command");
-        eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
-        eventForwarder.sendNow(eventBuilder.getEvent());
+        final List<DaemonInfo> daemons = daemonService.getDaemons()
+                .stream()
+                .filter(d -> !d.isInternal() && (showAll || d.isReloadable() && d.isEnabled()))
+                .sorted(Comparator.comparing(DaemonInfo::getName))
+                        .collect(Collectors.toList());
+        final int maxDaemonName = daemons.stream().mapToInt(d -> d.getName().length()).max().getAsInt();
+        final String format = String.format("%%-%ds     %%-%ds     %%s", maxDaemonName, "Enabled".length());
+        System.out.println(String.format(format, "Name", "Enabled", "Reloadable"));
+        daemons.forEach(d -> System.out.println(String.format(format, d.getName(), d.isEnabled(), d.isReloadable())));
         return null;
     }
 }

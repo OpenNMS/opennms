@@ -64,7 +64,7 @@ public class DaemonRestService {
     @Path("/reload/{daemonName}")
     public Response reloadDaemonByName(@PathParam("daemonName") String daemonName) {
         try {
-            configService.reload(daemonName);
+            configService.triggerReload(daemonName);
             return Response.noContent().build();
         } catch (DaemonReloadException ex) {
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).type(MediaType.TEXT_PLAIN).build();
