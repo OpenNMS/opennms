@@ -140,7 +140,7 @@ public class DaemonRestServiceIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void verifyDaemonReload() {
-        final InetSocketAddress pgsql = this.getPostgresService();
+        final InetSocketAddress pgsql = getPostgresService();
         final HibernateDaoFactory daoFactory = new HibernateDaoFactory(pgsql);
         final EventDao eventDao = daoFactory.getDao(EventDaoHibernate.class);
 

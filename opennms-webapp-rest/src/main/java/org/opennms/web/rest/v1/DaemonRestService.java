@@ -57,14 +57,14 @@ public class DaemonRestService {
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
     public List<DaemonInfo> getDaemons(@Context final UriInfo uriInfo) {
-        return this.configService.getDaemons();
+        return configService.getDaemons();
     }
 
     @POST
     @Path("/reload/{daemonName}")
     public Response reloadDaemonByName(@PathParam("daemonName") String daemonName) {
         try {
-            this.configService.reload(daemonName);
+            configService.reload(daemonName);
             return Response.noContent().build();
         } catch (DaemonReloadException ex) {
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).type(MediaType.TEXT_PLAIN).build();
@@ -75,6 +75,6 @@ public class DaemonRestService {
     @Path("/reload/{daemonName}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
     public DaemonReloadInfo getDaemonReloadState(@PathParam("daemonName") String daemonName) {
-        return this.configService.getCurrentReloadState(daemonName);
+        return configService.getCurrentReloadState(daemonName);
     }
 }
