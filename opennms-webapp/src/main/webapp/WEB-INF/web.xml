@@ -47,6 +47,7 @@
 
         classpath*:/META-INF/opennms/component-measurement.xml
         classpath*:/META-INF/opennms/component-service.xml
+        classpath*:/META-INF/opennms/component-daemon.xml
         classpath*:/META-INF/opennms/component-reporting.xml
         classpath*:/META-INF/opennms/component-timeformat.xml
 
