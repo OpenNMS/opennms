@@ -1,3 +1,14 @@
+opennms (23.0.1-1) stable; urgency=low
+
+  * New stable release.  It contains a number of bug fixes and enhancements,
+    including additional HTTP proxy support, reliability updates, UI performance
+    improvements, and a number of Kafka-related fixes.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/23.0.1/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 15 Nov 2018 11:21:45 -0500
+
 opennms (23.0.0-1) stable; urgency=medium
 
   * New stable release.  It contains a number of bug fixes and enhancements,
