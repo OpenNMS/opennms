@@ -143,12 +143,17 @@ public class DefaultSelectionManager implements SelectionManager {
 		// If not, add the missing vertex to focus
 		if (!selectionContext.getSelectedVertexRefs().isEmpty()) {
 			final Collection<Vertex> currentlyVisibleVertices = getGraphContainer().getGraph().getDisplayVertices();
+			boolean fireGraphChanged = false;
 			for (VertexRef eachSelectedVertex : getSelectedVertexRefs()) {
 				if (!currentlyVisibleVertices.contains(eachSelectedVertex)) {
 					final VertexHopGraphProvider.DefaultVertexHopCriteria focusCriteria = new VertexHopGraphProvider.DefaultVertexHopCriteria(eachSelectedVertex);
+					fireGraphChanged = true;
 					getGraphContainer().addCriteria(focusCriteria);
-					getGraphContainer().fireGraphChanged();
 				}
+			}
+			// Only fire event if we actually changed the container (by adding criteria)
+			if (fireGraphChanged) {
+				getGraphContainer().fireGraphChanged();
 			}
 		}
 
