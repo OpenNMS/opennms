@@ -34,7 +34,7 @@ import java.util.Objects;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 /** Simplified OnmsNode. We use it as a view on OnmsNode that has less attributes and no lazy loading */
-public class VertexInfo implements Serializable {
+public class NodeTopologyEntity implements Serializable {
 
     private Integer id;
     private OnmsNode.NodeType type;
@@ -42,7 +42,7 @@ public class VertexInfo implements Serializable {
     private String label;
     private String location;
 
-    public VertexInfo(Integer nodeid, OnmsNode.NodeType nodetype, String nodesysoid, String nodelabel, String location){
+    public NodeTopologyEntity(Integer nodeid, OnmsNode.NodeType nodetype, String nodesysoid, String nodelabel, String location){
         this.id = nodeid;
         this.type = nodetype;
         this.sysObjectId = nodesysoid;
@@ -50,12 +50,12 @@ public class VertexInfo implements Serializable {
         this.location = location;
     }
 
-    public VertexInfo(Integer id, OnmsNode.NodeType type, String sysObjectId, String label, OnmsMonitoringLocation location){
+    public NodeTopologyEntity(Integer id, OnmsNode.NodeType type, String sysObjectId, String label, OnmsMonitoringLocation location){
         this(id, type, sysObjectId, label, location.getLocationName());
     }
 
-    public static VertexInfo toVertexInfo(OnmsNode node){
-        return new VertexInfo(node.getId(), node.getType(), node.getSysObjectId(), node.getLabel(), node.getLocation().getLocationName());
+    public static NodeTopologyEntity toVertexInfo(OnmsNode node){
+        return new NodeTopologyEntity(node.getId(), node.getType(), node.getSysObjectId(), node.getLabel(), node.getLocation().getLocationName());
     }
 
     public Integer getId() {
@@ -85,7 +85,7 @@ public class VertexInfo implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        VertexInfo that = (VertexInfo) o;
+        NodeTopologyEntity that = (NodeTopologyEntity) o;
         return Objects.equals(id, that.id) &&
                 type == that.type &&
                 Objects.equals(sysObjectId, that.sysObjectId) &&

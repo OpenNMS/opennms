@@ -73,7 +73,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OspfLink;
-import org.opennms.netmgt.model.VertexInfo;
+import org.opennms.netmgt.model.NodeTopologyEntity;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -682,10 +682,10 @@ public class EnhancedLinkdMockDataPopulator {
         return m_nodes;
     }
 
-    public List<VertexInfo> getVertices() {
-        List<VertexInfo> vertices = new ArrayList();
+    public List<NodeTopologyEntity> getVertices() {
+        List<NodeTopologyEntity> vertices = new ArrayList();
         for(OnmsNode node : m_nodes){
-            vertices.add(VertexInfo.toVertexInfo(node));
+            vertices.add(NodeTopologyEntity.toVertexInfo(node));
         }
         return vertices;
     }

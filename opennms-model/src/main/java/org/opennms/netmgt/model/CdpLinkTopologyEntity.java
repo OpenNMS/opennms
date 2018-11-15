@@ -30,7 +30,7 @@ package org.opennms.netmgt.model;
 
 import java.util.Objects;
 
-public class CdpLinkInfo {
+public class CdpLinkTopologyEntity {
 
     private final Integer id;
     private final Integer nodeId;
@@ -40,8 +40,8 @@ public class CdpLinkInfo {
     private final String cdpCacheDeviceId;
     private final String cdpCacheDevicePort;
 
-    public CdpLinkInfo(Integer id, Integer nodeId, Integer cdpCacheIfIndex, String cdpInterfaceName, String cdpCacheAddress,
-                       String cdpCacheDeviceId, String cdpCacheDevicePort){
+    public CdpLinkTopologyEntity(Integer id, Integer nodeId, Integer cdpCacheIfIndex, String cdpInterfaceName, String cdpCacheAddress,
+                                 String cdpCacheDeviceId, String cdpCacheDevicePort){
         this.id = id;
         this.nodeId = nodeId;
         this.cdpCacheIfIndex = cdpCacheIfIndex;
@@ -90,7 +90,7 @@ public class CdpLinkInfo {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CdpLinkInfo that = (CdpLinkInfo) o;
+        CdpLinkTopologyEntity that = (CdpLinkTopologyEntity) o;
         return Objects.equals(id, that.id) &&
                 Objects.equals(nodeId, that.nodeId) &&
                 Objects.equals(cdpCacheIfIndex, that.cdpCacheIfIndex) &&

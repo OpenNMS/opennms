@@ -35,7 +35,7 @@ import java.util.Set;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider.ProtocolSupported;
-import org.opennms.netmgt.model.VertexInfo;
+import org.opennms.netmgt.model.NodeTopologyEntity;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -73,7 +73,7 @@ public class LinkdVertex extends SimpleLeafVertex {
         return vertex;
     }
 
-    public static LinkdVertex create(VertexInfo node, OnmsIpInterface primary) {
+    public static LinkdVertex create(NodeTopologyEntity node, OnmsIpInterface primary) {
         LinkdVertex vertex = new LinkdVertex(node.getId().toString());
         vertex.setNodeID(node.getId());
         vertex.setLabel(node.getLabel());

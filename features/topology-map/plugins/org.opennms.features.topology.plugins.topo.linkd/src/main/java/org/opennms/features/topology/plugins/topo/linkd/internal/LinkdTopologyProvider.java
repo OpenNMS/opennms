@@ -50,7 +50,6 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.dao.api.CdpElementDao;
-import org.opennms.netmgt.dao.api.CdpLinkDao;
 import org.opennms.netmgt.dao.api.TopologyEntityCache;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.IpNetToMediaDao;
@@ -63,7 +62,7 @@ import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.CdpElement;
-import org.opennms.netmgt.model.CdpLinkInfo;
+import org.opennms.netmgt.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.model.FilterManager;
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.IsIsElement;
@@ -75,7 +74,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.model.VertexInfo;
+import org.opennms.netmgt.model.NodeTopologyEntity;
 import org.opennms.netmgt.model.topology.BridgePort;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
@@ -216,7 +215,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
     
     private void loadVertices() {
-        for (VertexInfo vertex : m_topologyEntityCache.getVertices()) {
+        for (NodeTopologyEntity vertex : m_topologyEntityCache.getVertices()) {
             OnmsIpInterface primary = m_nodeToOnmsIpPrimaryMap.get(vertex.getId());
             addVertices(LinkdVertex.create(vertex,primary));
         }
@@ -431,16 +430,16 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private void getCdpLinks() {
         List<CdpElement> cdpElements = m_cdpElementDao.findAll();
-        List<CdpLinkInfo> allLinks = m_topologyEntityCache.getCdpLinkInfos();
-        List<Pair<CdpLinkInfo, CdpLinkInfo>> matchedCdpLinks = matchCdpLinks(cdpElements, allLinks);
-        for (Pair<CdpLinkInfo, CdpLinkInfo> pair : matchedCdpLinks) {
+        List<CdpLinkTopologyEntity> allLinks = m_topologyEntityCache.getCdpLinkInfos();
+        List<Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> matchedCdpLinks = matchCdpLinks(cdpElements, allLinks);
+        for (Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity> pair : matchedCdpLinks) {
             connectCdpLinkPair(pair);
         }
     }
 
-    private void connectCdpLinkPair(Pair<CdpLinkInfo, CdpLinkInfo> pair){
-        CdpLinkInfo sourceLink = pair.getLeft();
-        CdpLinkInfo targetLink = pair.getRight();
+    private void connectCdpLinkPair(Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity> pair){
+        CdpLinkTopologyEntity sourceLink = pair.getLeft();
+        CdpLinkTopologyEntity targetLink = pair.getRight();
         LinkdVertex source = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNodeIdAsString());
         source.getProtocolSupported().add(ProtocolSupported.CDP);
         LinkdVertex target = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNodeIdAsString());
@@ -455,15 +454,15 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 ProtocolSupported.CDP);
     }
 
-    List<Pair<CdpLinkInfo, CdpLinkInfo>> matchCdpLinks(final List<CdpElement> cdpElements, final List<CdpLinkInfo> allLinks) {
+    List<Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> matchCdpLinks(final List<CdpElement> cdpElements, final List<CdpLinkTopologyEntity> allLinks) {
 
         // 1. create lookup maps:
         Map<Integer, CdpElement> cdpelementmap = new HashMap<Integer, CdpElement>();
         for (CdpElement cdpelement: cdpElements) {
             cdpelementmap.put(cdpelement.getNode().getId(), cdpelement);
         }
-        Map<CompositeKey, CdpLinkInfo> targetLinkMap = new HashMap<>();
-        for (CdpLinkInfo targetLink : allLinks) {
+        Map<CompositeKey, CdpLinkTopologyEntity> targetLinkMap = new HashMap<>();
+        for (CdpLinkTopologyEntity targetLink : allLinks) {
             CompositeKey key = new CompositeKey(targetLink.getCdpCacheDevicePort(),
                     targetLink.getCdpInterfaceName(),
                     cdpelementmap.get(targetLink.getNodeId()).getCdpGlobalDeviceId(),
@@ -473,8 +472,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         Set<Integer> parsed = new HashSet<Integer>();
 
         // 2. iterate
-        List<Pair<CdpLinkInfo, CdpLinkInfo>> results = new ArrayList<>();
-        for (CdpLinkInfo sourceLink : allLinks) {
+        List<Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> results = new ArrayList<>();
+        for (CdpLinkTopologyEntity sourceLink : allLinks) {
             if (parsed.contains(sourceLink.getId())) {
                 continue;
             }
@@ -483,7 +482,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             }
             CdpElement sourceCdpElement = cdpelementmap.get(sourceLink.getNodeId());
 
-            CdpLinkInfo targetLink = targetLinkMap.get(new CompositeKey(sourceLink.getCdpInterfaceName(),
+            CdpLinkTopologyEntity targetLink = targetLinkMap.get(new CompositeKey(sourceLink.getCdpInterfaceName(),
                     sourceLink.getCdpCacheDevicePort(),
                     sourceLink.getCdpCacheDeviceId(),
                     sourceCdpElement.getCdpGlobalDeviceId()));

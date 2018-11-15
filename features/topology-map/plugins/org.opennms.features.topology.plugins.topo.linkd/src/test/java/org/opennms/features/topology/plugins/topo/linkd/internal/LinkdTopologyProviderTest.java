@@ -32,8 +32,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -41,8 +39,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
@@ -51,7 +47,7 @@ import org.mockito.Mockito;
 import org.opennms.core.test.MockLogger;
 import org.opennms.core.utils.LldpUtils;
 import org.opennms.netmgt.model.CdpElement;
-import org.opennms.netmgt.model.CdpLinkInfo;
+import org.opennms.netmgt.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.LldpElement;
@@ -130,16 +126,16 @@ public class LinkdTopologyProviderTest {
                 createCdpElement(nodes.get(5), "match2.3")
         );
 
-        List<CdpLinkInfo> allLinks = Arrays.asList(
-                createCdpLinkInfo(0, nodes.get(0), "nomatch1", "nomatch2", "nomatch3"),
-                createCdpLinkInfo(1, nodes.get(1), "match1.3", "match1.1", "match1.2"),
-                createCdpLinkInfo(2, nodes.get(2), "nomatch4", "nomatch5", "nomatch6"),
-                createCdpLinkInfo(3, nodes.get(3), "match1.4", "match1.2", "match1.1"),
-                createCdpLinkInfo(4, nodes.get(4), "match2.3", "match2.1", "match2.2"),
-                createCdpLinkInfo(5, nodes.get(5), "match2.4", "match2.2", "match2.1")
+        List<CdpLinkTopologyEntity> allLinks = Arrays.asList(
+                createCdpLinkTopologyEntity(0, nodes.get(0), "nomatch1", "nomatch2", "nomatch3"),
+                createCdpLinkTopologyEntity(1, nodes.get(1), "match1.3", "match1.1", "match1.2"),
+                createCdpLinkTopologyEntity(2, nodes.get(2), "nomatch4", "nomatch5", "nomatch6"),
+                createCdpLinkTopologyEntity(3, nodes.get(3), "match1.4", "match1.2", "match1.1"),
+                createCdpLinkTopologyEntity(4, nodes.get(4), "match2.3", "match2.1", "match2.2"),
+                createCdpLinkTopologyEntity(5, nodes.get(5), "match2.4", "match2.2", "match2.1")
         );
 
-        List<Pair<CdpLinkInfo, CdpLinkInfo>> matchedLinks = provider.matchCdpLinks(elements, allLinks);
+        List<Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> matchedLinks = provider.matchCdpLinks(elements, allLinks);
 
         assertMatching(allLinks, matchedLinks);
 
@@ -312,9 +308,9 @@ public class LinkdTopologyProviderTest {
         return cdpElement;
     }
 
-    private CdpLinkInfo createCdpLinkInfo(int id, OnmsNode node, String cdpCacheDeviceId, String cdpInterfaceName,
-                                          String cdpCacheDevicePort) {
-        CdpLinkInfo link = new CdpLinkInfo(id, node.getId(), 123, cdpInterfaceName,
+    private CdpLinkTopologyEntity createCdpLinkTopologyEntity(int id, OnmsNode node, String cdpCacheDeviceId, String cdpInterfaceName,
+                                                              String cdpCacheDevicePort) {
+        CdpLinkTopologyEntity link = new CdpLinkTopologyEntity(id, node.getId(), 123, cdpInterfaceName,
                 "cdpCacheAddress", cdpCacheDeviceId, cdpCacheDevicePort);
         return link;
     }

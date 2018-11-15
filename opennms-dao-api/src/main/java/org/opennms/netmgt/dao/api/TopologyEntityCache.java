@@ -30,13 +30,13 @@ package org.opennms.netmgt.dao.api;
 
 import java.util.List;
 
-import org.opennms.netmgt.model.CdpLinkInfo;
-import org.opennms.netmgt.model.VertexInfo;
+import org.opennms.netmgt.model.CdpLinkTopologyEntity;
+import org.opennms.netmgt.model.NodeTopologyEntity;
 
 public interface TopologyEntityCache {
 
-    List<VertexInfo> getVertices();
+    List<NodeTopologyEntity> getVertices();
 
-    List<CdpLinkInfo> getCdpLinkInfos();
+    List<CdpLinkTopologyEntity> getCdpLinkInfos();
 
 }
