@@ -80,7 +80,7 @@ public class NoContentAvailableWindow extends Window {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 List<Criteria> defaultCriteriaList = graphContainer.getTopologyServiceClient().getDefaults().getCriteria();
-                if (defaultCriteriaList != null) {
+                if (defaultCriteriaList != null && !defaultCriteriaList.isEmpty()) {
                     defaultCriteriaList.forEach(eachCriteria -> graphContainer.addCriteria(eachCriteria));
                     graphContainer.redoLayout();
                     noDefaultsAvailable.setVisible(false);
