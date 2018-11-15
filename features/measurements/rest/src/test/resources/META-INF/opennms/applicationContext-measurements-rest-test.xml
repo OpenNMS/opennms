@@ -14,6 +14,8 @@
   <context:annotation-config />
   <tx:annotation-driven />
 
+  <import resource="classpath:/META-INF/opennms/component-daemon.xml" />
+
   <bean id="measurementsRestService" class="org.opennms.web.rest.v1.MeasurementsRestService"/>
   <bean name="timeformatService" class="org.opennms.features.timeformat.impl.DefaultTimeformatService" />
 
