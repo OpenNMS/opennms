@@ -174,6 +174,23 @@ This reduces the complexity of the UI code and will make it easier for developer
 * Fix startup on systems without any IPv6 support.
 * Reverse lookups in provisioning now handle IPs without a corresponding A record.
 
+[releasenotes-changelog-Meridian-2017.1.13]
+
+==== Release Meridian-2017.1.13
+
+Release 2017.1.13 is a minor update to OpenNMS Meridian 2017.1.12.
+It contains a documentation fix and an enhancement to Drools engine stability.
+
+The codename for 2017.1.13 is _Cadiz meridian_.
+
+===== Bug
+
+* Typo in BSFMonitor Documentation (Issue http://issues.opennms.org/browse/NMS-10428[NMS-10428])
+
+===== Enhancement
+
+* Detect and Attempt to Restart Failed Drools Engines (Issue http://issues.opennms.org/browse/NMS-10363[NMS-10363])
+
 [releasenotes-changelog-Meridian-2017.1.12]
 
 ==== Release Meridian-2017.1.12
