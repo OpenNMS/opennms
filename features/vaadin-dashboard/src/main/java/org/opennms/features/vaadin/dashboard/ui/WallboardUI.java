@@ -86,12 +86,13 @@ public class WallboardUI extends UI implements DashletSelectorAccess {
         VerticalLayout rootLayout = new VerticalLayout();
         rootLayout.setSizeFull();
         rootLayout.setSpacing(true);
+        rootLayout.setMargin(false);
         HeaderLayout headerLayout = new HeaderLayout();
         rootLayout.addComponent(headerLayout);
 
         VerticalLayout portalWrapper = new VerticalLayout();
         portalWrapper.setSizeFull();
-        portalWrapper.setMargin(true);
+        portalWrapper.setMargin(false);
 
         rootLayout.addComponent(portalWrapper);
         rootLayout.setExpandRatio(portalWrapper, 1);
