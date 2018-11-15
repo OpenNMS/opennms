@@ -97,4 +97,8 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
         }
         return 300;
     }
+
+    public void setTopologyEntityDao(TopologyEntityDao topologyEntityDao){
+        this.topologyEntityDao = topologyEntityDao;
+    }
 }
