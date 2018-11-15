@@ -107,110 +107,6 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
 
     }
 
-    public void stepOld() {
-
-        double currentForce;
-
-        //guass-seidel relaxation for links
-        for (E e : getGraph().getEdges()) {
-            Pair<V> endPoints = getGraph().getEndpoints(e);
-            VertexData srcVertexData = getVertexData(endPoints.getFirst());
-            VertexData targetVertexData = getVertexData(endPoints.getSecond());
-
-            double xDelta = targetVertexData.getX() - srcVertexData.getX();
-            double yDelta = targetVertexData.getY() - srcVertexData.getY();
-            double l = xDelta * xDelta + yDelta * yDelta;
-            if (l != 0) {
-                EdgeData edgeData = getEdgeData(e);
-                double lSqrt = Math.sqrt(l);
-                double distance = m_alpha * edgeData.getStrength() * (lSqrt - edgeData.getDistance()) / lSqrt;
-
-                xDelta *= distance;
-                yDelta *= distance;
-
-                currentForce = (double)srcVertexData.getWeight() / (double)(targetVertexData.getWeight() + srcVertexData.getWeight());
-                targetVertexData.offset(-(xDelta * currentForce), -(yDelta * currentForce));
-
-                currentForce = 1 - currentForce;
-                srcVertexData.offset(xDelta * currentForce, yDelta * currentForce);
-
-            }
-
-        }
-
-        //Apply gravity forces
-        currentForce = m_alpha * getGravity();
-        if(currentForce != 0){
-            double centerX = getSize().getWidth() / 2;
-            double centerY = getSize().getHeight() / 2;
-
-            for (V v : getGraph().getVertices()) {
-                VertexData vData = getVertexData(v);
-                vData.offset((centerX - vData.getX()) * currentForce, (centerY - vData.getY()) * currentForce);
-            }
-            
-        }
-
-        //Compute quad tree center of mass and apply charge force
-        if(getDefaultCharge() != 0){
-            
-            DblBoundingBox bounds = new DblBoundingBox(0,0,getSize().getWidth(), getSize().getHeight());
-            QuadTree<VertexData> quadTree = new QuadTree<VertexData>(bounds);
-            for(V v : getGraph().getVertices()) {
-                VertexData vData = getVertexData(v);
-                quadTree.insert(vData, vData.getCharge(), vData);
-            }
-
-            for(V v: getGraph().getVertices()) {
-                final VertexData vData = getVertexData(v);
-                quadTree.visit(new Visitor<VertexData>() {
-
-                    @Override
-                    public boolean visitNode(Node<VertexData> n) {
-                        
-                        if (n.isLeaf() && vData == n.getValue()) return true;
-                        
-                        double dx = n.getX() - vData.getX();
-                        double dy = n.getY() - vData.getY();
-                        double dw = n.getWidth();
-                        double dSquared = dx*dx + dy*dy;
-
-                        if (dw*dw/m_thetaSquared < dSquared) {
-                            double force = n.getCharge() / dSquared;
-                            vData.offset(- (dx*force), - (dy*force));
-                            return true;
-                        }
-                        
-                        if (n.isLeaf()) {
-                            if (dSquared == 0) {
-                                vData.offset(1, 1);
-                            } else {
-                                double force = n.getCharge() / dSquared;
-                                vData.offset(- (dx*force), - (dy*force));
-                            }
-                            return true;
-                        }
-                        
-                        return false;
-                        
-                    }
-                    
-                });
-            }
-        }
-        
-        
-        for(V v : getGraph().getVertices()) {
-            VertexData vData = getVertexData(v);
-            Point2D location = transform(v);
-            location.setLocation(vData.getX(), vData.getY());
-        }
-        
-        m_alpha *= 0.998235;
-
-
-    }
-
     @Override
     public void step() {
 
@@ -233,13 +129,11 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
                 EdgeData edgeData = getEdgeData(e);
                 double lSqrt = Math.sqrt(l);
                 double distance = m_alpha * edgeData.getStrength() * (lSqrt - edgeData.getDistance()) / lSqrt;
-                //double distance = edgeData.getStrength() * (lSqrt - edgeData.getDistance()) / lSqrt;
 
                 xDelta *= distance;
                 yDelta *= distance;
 
                 currentForce = (double)srcVertexData.getWeight() / (double)(targetVertexData.getWeight() + srcVertexData.getWeight());
-                //currentForce = 0.5;
                 targetVertexData.offset(-(xDelta * currentForce), -(yDelta * currentForce));
 
                 currentForce = 1 - currentForce;
@@ -277,11 +171,9 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
                         double k = m_alpha * vData2.getCharge() / d;
                         double px = dx*k;
                         double py = dy*k;
-                        
-                        //vData1.offsetPrevious(px, py);
+
                         vData1.offset(px, py);
                     } else {
-                        //vData1.offsetPrevious(0.5-Math.random(), 0.5-Math.random());
                         vData1.offset(0.5-Math.random(), 0.5-Math.random());
                     }
                     
