@@ -134,7 +134,7 @@ public class PingOperation extends AbstractOperation {
         // Only enable if we actually have something to ping
         // Be aware that originally the ip address was also resolved via InetAddressUtils.getInetAddress(ipAddress)
         // but in cases were the ipAddress is not reachable, the response thread would block and causing
-        // the ui to build the menubar very slowly. Therefore this was changed. See TODO MVR
+        // the ui to build the menubar very slowly. Therefore this was changed. See NMS-10452
         return !Strings.isNullOrEmpty(vertexItem.getIpAddress());
     }
 
