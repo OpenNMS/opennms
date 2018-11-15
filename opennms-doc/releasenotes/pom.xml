@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms.doc</groupId>
         <artifactId>parent</artifactId>
-        <version>2018.1.3-SNAPSHOT</version>
+        <version>2018.1.4-SNAPSHOT</version>
     </parent>
     <artifactId>releasenotes</artifactId>
     <packaging>pom</packaging>
@@ -26,6 +26,7 @@
                 <artifactId>asciidoctor-maven-plugin</artifactId>
                 <configuration>
                     <sourceDocumentName>index.adoc</sourceDocumentName>
+                    <sourceDocumentName>all-releases.adoc</sourceDocumentName>
                 </configuration>
             </plugin>
         </plugins>

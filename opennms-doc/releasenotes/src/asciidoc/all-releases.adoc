@@ -1,0 +1,36 @@
+// Global settings
+:ascii-ids:
+:encoding: UTF-8
+:lang: en
+:icons: font
+:toc: left
+:toclevels: 3
+:numbered!:
+
+= {opennms-product-name} Release Notes
+:author: Copyright (c) 2016-2018 The OpenNMS Group, Inc.
+:revnumber: {opennms-product-name} v{opennms-version}
+:revdate: {last-update-label} {docdatetime}
+:version-label!:
+
+== {opennms-product-name} Development Team
+[options="header"]
+|===
+| Tarus Balog <tarus@opennms.org>
+| David Hustace <david@opennms.org>
+| Benjamin Reed <ranger@opennms.org>
+|===
+
+:numbered:
+// Global header
+include::common/copyright.adoc[]
+
+include::common/legalnotice.adoc[]
+include::common/preface.adoc[]
+
+:numbered!:
+include::releasenotes/whatsnew-2018.adoc[]
+include::releasenotes/whatsnew-2017.adoc[]
+include::releasenotes/whatsnew-2016.adoc[]
+include::releasenotes/whatsnew-2015.adoc[]
+
