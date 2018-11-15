@@ -78,13 +78,15 @@ public class WallboardBody extends VerticalLayout {
             addComponent(debugLabel);
         }
         addComponent(contentLayout);
-        setExpandRatio(contentLayout, 1.0f);
 
         progressIndicator = new ProgressIndicator();
         progressIndicator.setWidth("100%");
         progressIndicator.setPollingInterval(250);
-        progressIndicator.setVisible(false);
+        progressIndicator.setVisible(true);
         addComponent(progressIndicator);
+
+        setExpandRatio(contentLayout, 0.95f);
+        setExpandRatio(progressIndicator, 0.05f);
 
         timer = new Timer();
         timer.schedule(new TimerTask() {
