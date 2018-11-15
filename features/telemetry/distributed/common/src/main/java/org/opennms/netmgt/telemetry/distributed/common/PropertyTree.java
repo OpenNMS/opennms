@@ -43,18 +43,29 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
 
-// TODO fooker verify if this is used or if should be reverted to MapUtils instead. If this is kept, add javadoc and more error handling
+/**
+ * A tree representation for dot-separated properties.
+ * The tree consists of nodes, where each node can have a value.
+ * Each node can have an arbitrary number of child nodes which are addressed by the node name.
+ */
 public class PropertyTree {
 
+    /**
+     * The node of the {@link PropertyTree}.
+     */
     public static class Node {
         private final Optional<String> value;
         private final Map<String, Node> children;
 
-        public Node(final Optional<String> value) {
+        private Node(final Optional<String> value) {
             this.value = Objects.requireNonNull(value);
             this.children = Maps.newHashMap();
         }
 
+        /**
+         * Returns the value of this node.
+         * @return the value or {@link Optional#empty()} if the node has no value associated
+         */
         public Optional<String> getValue() {
             return this.value;
         }
@@ -74,14 +85,12 @@ public class PropertyTree {
         this.root = root;
     }
 
-    private PropertyTree(Optional<String> value) {
-        this(new Node(value));
-    }
-
-    private PropertyTree() {
-        this(Optional.empty());
-    }
-
+    /**
+     * Finds the node at the given path.
+     *
+     * @param path the path of the node to return split into its elements
+     * @return the {@link Node} if there is a node on the given path or an {@link Optional#empty()} value if one of the nodes in the path does not exist
+     */
     public Optional<Node> find(final Iterable<String> path) {
         Node node = this.root;
         for (final String p : path) {
@@ -94,34 +103,71 @@ public class PropertyTree {
         return Optional.of(node);
     }
 
+    /**
+     * @see PropertyTree#find(Iterable)
+     */
     public Optional<Node> find(final String... path) {
         return this.find(Arrays.asList(path));
     }
 
+    /**
+     * Get the value at the given path. The node is required to exist.
+     *
+     * @param path the path of the node to return split into its elements
+     * @return the value of the node at the given path
+     * @throws NoSuchElementException if there is no such node or the node has no value
+     */
     public String getRequiredString(final String... path) {
         return this.find(path)
                 .flatMap(Node::getValue)
                 .orElseThrow(() -> new NoSuchElementException(String.format("%s must be set.", path)));
     }
 
+    /**
+     * Get the value at the given path parsed as an {@link Integer}.
+     *
+     * @param path the path of the node to return split into its elements
+     * @return the {@link Integer} value of the node at the given path or {@link Optional#empty()} if one of the nodes in the path does not exist
+     */
     public Optional<Integer> getOptionalInteger(final String... path) {
         return this.find(path)
                 .flatMap(Node::getValue)
                 .map(Integer::parseInt);
     }
 
+    /**
+     * Get the values of all children nodes at the given path. The values are mapped by the children node names.
+     *
+     * @param path the path of the node to return split into its elements
+     * @return the {@link Map} from the children node names to its values. If one of the nodes in the path does not exist this will return an empty {@link Map}
+     */
     public Map<String, String> getMap(final String... path) {
         return this.find(path)
                 .map(node -> Maps.transformValues(node.children, c -> c.getValue().get()))
                 .orElseGet(Collections::emptyMap);
     }
 
+    /**
+     * Get the children nodes at the given path represented as sub-trees. The sub-trees are mapped by the children node names.
+     * The resulting {@link Map} will contain an entry for each children of the addressed node. The name of the children will be used as key.
+     * The value will be new {@link PropertyTree} instance in which the children node is used as root node.
+     *
+     * @param path the path of the node to return split into its elements
+     * @return the {@link Map} from the children node names to its representations as sub-trees. If one of the nodes in the path does not exist this will return an empty {@link Map}
+     */
     public Map<String, PropertyTree> getSubTrees(final String... path) {
         return this.find(path)
                 .map(node -> Maps.transformValues(node.children, PropertyTree::new))
                 .orElseGet(Collections::emptyMap);
     }
 
+    /**
+     * Create a new {@link PropertyTree} from the given {@link Map}.
+     * The keys of the map are handled as full-qualified dot-separated paths.
+     *
+     * @param map the path / value mapping used to create the property tree
+     * @return a new {@link PropertyTree} instance
+     */
     public static PropertyTree from(final Map<String, String> map) {
         final Node root = new Node(Optional.empty());
 
@@ -137,9 +183,16 @@ public class PropertyTree {
         return new PropertyTree(root);
     }
 
+    /**
+     * Create a new {@link PropertyTree} from the given {@link Dictionary}.
+     * The keys of the properties are handled as full-qualified dot-separated paths.
+     *
+     * @param properties the path / value mapping used to create the property tree
+     * @return a new {@link PropertyTree} instance
+     */
     public static PropertyTree from(final Dictionary<String, ?> properties) {
         return from(Maps.toMap(Iterators.forEnumeration(properties.keys()),
-                key -> (String)properties.get(key)));
+                key -> (String) properties.get(key)));
     }
 
     private static Node ensure(Node node, final Iterable<String> path) {
