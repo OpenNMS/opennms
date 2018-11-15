@@ -35,8 +35,8 @@ import org.opennms.netmgt.model.NodeTopologyEntity;
 
 public interface TopologyEntityCache {
 
-    List<NodeTopologyEntity> getVertices();
+    List<NodeTopologyEntity> getNodeTopolgyEntities();
 
-    List<CdpLinkTopologyEntity> getCdpLinkInfos();
+    List<CdpLinkTopologyEntity> getCdpLinkTopologyEntities();
 
 }

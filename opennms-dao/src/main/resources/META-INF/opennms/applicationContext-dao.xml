@@ -335,12 +335,6 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyEntityCache" ref="topologyEntityCache" />
 
-  <task:scheduled-tasks scheduler="topologyRefresherScheduler">
-    <task:scheduled ref="topologyEntityCache" method="refresh" fixed-delay="300000"/>
-  </task:scheduled-tasks>
-
-  <task:scheduler id="topologyRefresherScheduler" pool-size="1"/>
-
   <bean id="nodeLabel" class="org.opennms.netmgt.dao.hibernate.NodeLabelDaoImpl"/>
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.NodeLabel" ref="nodeLabel" />

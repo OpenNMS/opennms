@@ -424,8 +424,8 @@ public class EnhancedLinkdMockDataPopulator {
         EasyMock.expect(m_lldpElementDao.findAll()).andReturn(getLldpElements()).anyTimes();
         EasyMock.expect(m_lldpLinkDao.findAll()).andReturn(getLinks()).anyTimes();
         EasyMock.expect(m_ospfLinkDao.findAll()).andReturn(getOspfLinks()).anyTimes();
-        EasyMock.expect(m_topologyEntityCache.getVertices()).andReturn(getVertices()).anyTimes();
-        EasyMock.expect(m_topologyEntityCache.getCdpLinkInfos()).andReturn(new ArrayList<>()).anyTimes();
+        EasyMock.expect(m_topologyEntityCache.getNodeTopolgyEntities()).andReturn(getVertices()).anyTimes();
+        EasyMock.expect(m_topologyEntityCache.getCdpLinkTopologyEntities()).andReturn(new ArrayList<>()).anyTimes();
         EasyMock.expect(m_nodeDao.getAllLabelsById());
         EasyMock.expectLastCall().andReturn(getNodeLabelsById()).anyTimes();
         

@@ -28,35 +28,73 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import org.opennms.netmgt.dao.api.TopologyEntityDao;
 import org.opennms.netmgt.dao.api.TopologyEntityCache;
+import org.opennms.netmgt.dao.api.TopologyEntityDao;
 import org.opennms.netmgt.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.model.NodeTopologyEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 public class TopologyEntityCacheImpl implements TopologyEntityCache {
 
-    private List<NodeTopologyEntity> vertices;
-    private List<CdpLinkTopologyEntity> cdpLinks;
+
+    private final static Logger LOG = LoggerFactory.getLogger(TopologyEntityCacheImpl.class);
+    private final static String KEY = "KEY";
+    private final static String SYSTEM_PROPERTY_CACHE_DURATION = "org.opennms.ui.topology-entity-cache-duration";
 
     private TopologyEntityDao topologyEntityDao;
 
-    public void refresh(){
-        this.vertices = Collections.unmodifiableList(topologyEntityDao.getNodeTopologyEntities());
-        this.cdpLinks = Collections.unmodifiableList(topologyEntityDao.getCdpTopologyEntities());
+    LoadingCache<String, List<NodeTopologyEntity>> nodeTopologyEntities = createCache(
+            new CacheLoader<String, List<NodeTopologyEntity>>() {
+                @Override
+                public List<NodeTopologyEntity> load(String key) {
+                    return topologyEntityDao.getNodeTopologyEntities();
+                }
+            }
+    );
+
+    LoadingCache<String, List<CdpLinkTopologyEntity>> cdpLinkTopologyEntities = createCache(
+            new CacheLoader<String, List<CdpLinkTopologyEntity>>() {
+                @Override
+                public List<CdpLinkTopologyEntity> load(String key) {
+                    return topologyEntityDao.getCdpLinkTopologyEntities();
+                }
+            }
+    );
+
+    private <Key, Value> LoadingCache<Key, Value> createCache(CacheLoader<Key, Value> loader) {
+        return CacheBuilder
+                .newBuilder()
+                .expireAfterWrite(getCacheDuration(), TimeUnit.SECONDS)
+                .build(loader);
     }
 
-    public List<NodeTopologyEntity> getVertices(){
-        return vertices;
+
+    public List<NodeTopologyEntity> getNodeTopolgyEntities() {
+        return this.nodeTopologyEntities.getUnchecked(KEY);
     }
 
-    public List<CdpLinkTopologyEntity> getCdpLinkInfos(){
-        return cdpLinks;
+    public List<CdpLinkTopologyEntity> getCdpLinkTopologyEntities() {
+        return this.cdpLinkTopologyEntities.getUnchecked(KEY);
     }
 
-    public void setTopologyEntityDao(TopologyEntityDao topologyEntityDao){
-        this.topologyEntityDao = topologyEntityDao;
+    private int getCacheDuration(){
+        String duration = System.getProperty(SYSTEM_PROPERTY_CACHE_DURATION, "300");
+        try {
+            return Integer.parseInt(duration);
+        } catch(NumberFormatException e) {
+            String message = String.format("cannot parse system property: %s with value=%s, using default instead."
+                    , SYSTEM_PROPERTY_CACHE_DURATION
+                    , duration);
+            LOG.warn(message, e);
+        }
+        return 300;
     }
 }

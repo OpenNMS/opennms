@@ -35,5 +35,5 @@ import org.opennms.netmgt.model.NodeTopologyEntity;
 
 public interface TopologyEntityDao {
     List<NodeTopologyEntity> getNodeTopologyEntities();
-    List<CdpLinkTopologyEntity> getCdpTopologyEntities();
+    List<CdpLinkTopologyEntity> getCdpLinkTopologyEntities();
 }

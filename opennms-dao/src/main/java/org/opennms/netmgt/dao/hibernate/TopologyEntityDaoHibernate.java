@@ -44,7 +44,7 @@ public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements T
     }
 
     @Override
-    public List<CdpLinkTopologyEntity> getCdpTopologyEntities() {
+    public List<CdpLinkTopologyEntity> getCdpLinkTopologyEntities() {
         return (List<CdpLinkTopologyEntity>)getHibernateTemplate().find(
                 "select new org.opennms.netmgt.model.CdpLinkTopologyEntity(l.id, l.node.id, l.cdpCacheIfIndex, " +
                         "l.cdpInterfaceName, l.cdpCacheAddress, l.cdpCacheDeviceId, l.cdpCacheDevicePort) from org.opennms.netmgt.model.CdpLink l");

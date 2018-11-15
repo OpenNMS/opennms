@@ -215,7 +215,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
     
     private void loadVertices() {
-        for (NodeTopologyEntity vertex : m_topologyEntityCache.getVertices()) {
+        for (NodeTopologyEntity vertex : m_topologyEntityCache.getNodeTopolgyEntities()) {
             OnmsIpInterface primary = m_nodeToOnmsIpPrimaryMap.get(vertex.getId());
             addVertices(LinkdVertex.create(vertex,primary));
         }
@@ -430,7 +430,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private void getCdpLinks() {
         List<CdpElement> cdpElements = m_cdpElementDao.findAll();
-        List<CdpLinkTopologyEntity> allLinks = m_topologyEntityCache.getCdpLinkInfos();
+        List<CdpLinkTopologyEntity> allLinks = m_topologyEntityCache.getCdpLinkTopologyEntities();
         List<Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> matchedCdpLinks = matchCdpLinks(cdpElements, allLinks);
         for (Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity> pair : matchedCdpLinks) {
             connectCdpLinkPair(pair);
