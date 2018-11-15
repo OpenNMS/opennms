@@ -50,7 +50,6 @@ import com.google.common.net.InetAddresses;
 public class EifParser {
 
     private static final Logger LOG = LoggerFactory.getLogger(EifParser.class);
-    private static final int eifStartOffset = 37;
 
     enum EifSeverity {
         FATAL, CRITICAL, MINOR, WARNING, OK, INFO, HARMLESS, UNKNOWN;
@@ -87,7 +86,20 @@ public class EifParser {
             // Extract a single event from the package
             int eventStart = eifBuff.indexOf("<START>>");
             int eventEnd = eifBuff.indexOf(";END");
-            String eifEvent = eifBuff.substring(eventStart + eifStartOffset,eventEnd);
+            /*
+             Both known versions of the EIF protocol have a 2-byte identifier beginning at offset 30.
+             If the same value exists at offset 34, the event begins 36 bytes after '<START>>'.
+             Otherwise, it's 37 bytes.
+             The precise meaning / purpose of this identifier is not public.
+            */
+            String eifVersionBytes1 = eifBuff.substring(eventStart+30,eventStart+32);
+            String eifVersionBytes2 = eifBuff.substring(eventStart+34,eventStart+36);
+            String eifEvent;
+            if (eifVersionBytes1.equals(eifVersionBytes2)){
+                eifEvent = eifBuff.substring(eventStart + 36,eventEnd);
+            } else {
+                eifEvent = eifBuff.substring(eventStart + 37,eventEnd);
+            }
             eifBuff.delete(0,eventEnd+4);
 
             // Parse the EIF slots into OpenNMS parms, and try to look up the source's nodeId

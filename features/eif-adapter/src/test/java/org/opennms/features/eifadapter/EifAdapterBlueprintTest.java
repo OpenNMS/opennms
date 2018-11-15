@@ -139,4 +139,32 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
                     matches("^Situation \\d{2}"));
         }
     }
+
+   @Test
+    public void testCanParseEifWith36ByteOffset() throws Exception {
+        // Register an event listener
+        final List<Event> receivedEvents = Lists.newArrayList();
+        eventIpcManager.addEventListener(new EventListener() {
+            @Override
+            public String getName() {
+                return "test";
+            }
+
+            @Override
+            public void onEvent(Event e) {
+                receivedEvents.add(e);
+            }
+        });
+        FileInputStream eifPacketCapture = new FileInputStream(new File("src/test/resources/eif_36_byte_offset_test.dat"));
+        Socket clientSocket = new Socket(InetAddrUtils.getLocalHostAddress(), 1828);
+        DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+        outToServer.write( IOUtils.toByteArray(eifPacketCapture) );
+        outToServer.flush();
+        clientSocket.close();
+
+        await().atMost(15, SECONDS).until(() -> receivedEvents.size() == 1);
+        for (Event event : receivedEvents) {
+            assertTrue("UEI must match regex.", event.getUei().matches("^uei.opennms.org/vendor/IBM/EIF/EIF_TEST_EVENT_TYPE_G$"));
+        }
+    }
 }
