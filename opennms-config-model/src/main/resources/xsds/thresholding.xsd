@@ -445,7 +445,21 @@
         </documentation>
       </annotation>
     </attribute>
-    
+
+    <attribute name="sustainedUEI" type="string" use="optional" default="uei.opennms.org/threshold/thresholdSustained">
+      <annotation>
+        <documentation>
+          The UEI of the event to send for a triggered threshold each time a threshold value is collected that crosses the threshold until the threshold is rearmed.
+        </documentation>
+      </annotation>
+    </attribute>
+
+    <attribute type="boolean" name="send-sustained-events" use="optional" default="false">
+      <annotation>
+        <documentation>Indicates that the system should send threshold sustained events each time a triggering value is collected.</documentation>
+      </annotation>
+    </attribute>
+
     <attribute name="filterOperator" use="optional" default="or">
       <annotation>
         <documentation>
@@ -460,7 +474,6 @@
         </restriction>
       </simpleType>
     </attribute>
-    
   </complexType>
 
   <element name="resource-filter">

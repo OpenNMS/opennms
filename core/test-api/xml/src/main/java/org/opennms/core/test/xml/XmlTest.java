@@ -273,7 +273,7 @@ abstract public class XmlTest<T> {
     public static void assertXmlEquals(final String expectedXml, final String actualXml) {
         final List<Difference> differences = XmlTest.getDifferencesSimple(expectedXml, actualXml);
         if (differences.size() > 0) {
-            LOG.debug("XML:\n\n{}\n\n...does not match XML:\n\n{}", expectedXml, actualXml);
+            LOG.error("XML:\n\n{}\n\n...does not match XML:\n\n{}", expectedXml, actualXml);
         }
         assertEquals("number of XMLUnit differences between the expected xml and the actual xml should be 0", 0, differences.size());
     }
@@ -281,7 +281,7 @@ abstract public class XmlTest<T> {
     protected void _assertXmlEquals(final String expectedXml, final String actualXml) {
         final List<Difference> differences = getDifferences(expectedXml, actualXml);
         if (differences.size() > 0) {
-            LOG.debug("XML:\n\n{}\n\n...does not match XML:\n\n{}", expectedXml, actualXml);
+            LOG.error("XML:\n\n{}\n\n...does not match XML:\n\n{}", expectedXml, actualXml);
         }
         assertEquals("number of XMLUnit differences between the expected xml and the actual xml should be 0", 0, differences.size());
     }

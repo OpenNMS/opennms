@@ -242,6 +242,11 @@ public abstract class EventConstants {
     public static final String LOW_THRESHOLD_REARM_EVENT_UEI = "uei.opennms.org/threshold/lowThresholdRearmed";
 
     /**
+     * The low threshold sustained event UEI.
+     */
+    public static final String LOW_THRESHOLD_SUSTAINED_EVENT_UEI = "uei.opennms.org/threshold/lowThresholdSustained";
+
+    /**
      * The relative change event UEI.
      */
     public static final String RELATIVE_CHANGE_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/relativeChangeExceeded";

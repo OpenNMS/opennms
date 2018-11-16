@@ -43,11 +43,38 @@ public class ThresholdingConfigTest extends XmlTestNoCastor<ThresholdingConfig> 
 
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
+        ThresholdingConfig config = new ThresholdingConfig();
+
+        Group group = new Group();
+        group.setName("HTTP");
+        group.setRrdRepository("/");
+        config.addGroup(group);
+
+        Threshold threshold = new Threshold();
+        threshold.setDsName("coffee");
+        threshold.setDsType("node");
+        threshold.setType(ThresholdType.LOW);
+        threshold.setValue(1.0d);
+        threshold.setRearm(3.0d);
+        threshold.setTrigger(1);
+        threshold.setSendSustainedEvents(true);
+        threshold.setSustainedUEI("sustained");
+        group.addThreshold(threshold);
+
         return Arrays.asList(new Object[][] {
-            {
-                new ThresholdingConfig(),
-                "<thresholding-config/>"
-            }
+                {
+                    new ThresholdingConfig(),
+                    "<thresholding-config/>"
+                },
+                {
+                    config,
+                    "<thresholding-config>\n" +
+                    "   <group name=\"HTTP\" rrdRepository=\"/\">\n" +
+                    "      <threshold type=\"low\" ds-type=\"node\" value=\"1.0\" rearm=\"3.0\" trigger=\"1\" " +
+                            "ds-name=\"coffee\" sustainedUEI=\"sustained\" send-sustained-events=\"true\"/>\n" +
+                    "   </group>\n" +
+                    "</thresholding-config>"
+                }
         });
     }
 }
