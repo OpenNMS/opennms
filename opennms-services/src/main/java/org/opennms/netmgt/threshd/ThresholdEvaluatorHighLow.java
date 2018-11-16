@@ -149,6 +149,9 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
                         setArmed(false);
                         return Status.TRIGGERED;
                     }
+                } else if (m_thresholdConfig.isSendSustainedEvents()) {
+                    // The threshold remains exceeded and sustained events are enabled
+                    return Status.SUSTAINED;
                 }
             } else if (isRearmExceeded(dsValue)) {
                 if (!isArmed()) {
@@ -236,8 +239,21 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
                     return createBasicEvent(uei, date, dsValue, resource);
                 } else {
                     throw new IllegalArgumentException("Threshold type " + getThresholdConfig().getType() + " is not supported");
-                } 
-                
+                }
+
+            case SUSTAINED:
+                uei=getThresholdConfig().getSustainedUEI().orElse(null);
+                if(uei==null || "".equals(uei)) {
+                    if (ThresholdType.LOW.equals(getThresholdConfig().getType())) {
+                        uei=EventConstants.LOW_THRESHOLD_SUSTAINED_EVENT_UEI;
+                    } else if (ThresholdType.HIGH.equals(getThresholdConfig().getType())) {
+                        uei=EventConstants.HIGH_THRESHOLD_SUSTAINED_EVENT_UEI;
+                    } else {
+                        throw new IllegalArgumentException("Threshold type " + getThresholdConfig().getType() + " is not supported");
+                    }
+                }
+                return createBasicEvent(uei, date, dsValue, resource);
+
             case NO_CHANGE:
                 return null;
 

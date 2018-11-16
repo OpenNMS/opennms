@@ -252,15 +252,15 @@ public abstract class Basethresholddef implements Serializable {
         m_rearmedUEI = ConfigUtils.normalizeString(rearmedUEI);
     }
 
-    public String getSustainedUEI() {
-        return m_sustainedUEI;
+    public Optional<String> getSustainedUEI() {
+        return Optional.ofNullable(m_sustainedUEI);
     }
 
     public void setSustainedUEI(String sustainedUEI) {
-        m_sustainedUEI = sustainedUEI;
+        m_sustainedUEI = ConfigUtils.normalizeString(sustainedUEI);
     }
 
-    public Boolean getSendSustainedEvents() {
+    public boolean isSendSustainedEvents() {
         return m_sendSustainedEvents == null ? DEFAULT_SEND_SUSTAINED_EVENTS : m_sendSustainedEvents;
     }
 

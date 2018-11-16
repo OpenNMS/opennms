@@ -46,7 +46,8 @@ public interface ThresholdEvaluatorState {
     public enum Status {
         NO_CHANGE,
         TRIGGERED,
-        RE_ARMED
+        RE_ARMED,
+        SUSTAINED
     }
 
     /**

@@ -209,7 +209,15 @@ public abstract class BaseThresholdDefConfigWrapper {
     public Optional<String> getRearmedUEI() {
         return m_baseDef.getRearmedUEI();
     }
-    
+
+    public Optional<String> getSustainedUEI() {
+        return m_baseDef.getSustainedUEI();
+    }
+
+    public boolean isSendSustainedEvents() {
+        return m_baseDef.isSendSustainedEvents();
+    }
+
     /**
      * <p>getBasethresholddef</p>
      *
@@ -234,6 +242,8 @@ public abstract class BaseThresholdDefConfigWrapper {
                     && Objects.equals(this.getDsLabel(), that.getDsLabel())
                     && Objects.equals(this.getTriggeredUEI(), that.getTriggeredUEI())
                     && Objects.equals(this.getRearmedUEI(), that.getRearmedUEI())
+                    && Objects.equals(this.getSustainedUEI(), that.getSustainedUEI())
+                    && Objects.equals(this.isSendSustainedEvents(), that.isSendSustainedEvents())
                     && Objects.equals(this.getValue(), that.getValue())
                     && Objects.equals(this.getRearm(), that.getRearm())
                     && Objects.equals(this.getTrigger(), that.getTrigger())

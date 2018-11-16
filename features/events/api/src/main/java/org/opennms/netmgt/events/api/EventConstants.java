@@ -237,6 +237,11 @@ public abstract class EventConstants {
     public static final String HIGH_THRESHOLD_REARM_EVENT_UEI = "uei.opennms.org/threshold/highThresholdRearmed";
 
     /**
+     * The high threshold sustained event UEI.
+     */
+    public static final String HIGH_THRESHOLD_SUSTAINED_EVENT_UEI = "uei.opennms.org/threshold/highThresholdSustained";
+
+    /**
      * The low threshold rearm event UEI.
      */
     public static final String LOW_THRESHOLD_REARM_EVENT_UEI = "uei.opennms.org/threshold/lowThresholdRearmed";
