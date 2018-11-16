@@ -45,7 +45,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
-import org.springframework.core.style.ToStringCreator;
+import com.google.common.base.MoreObjects;
 
 /**
  * <p> Entity to store situations and their associated (related) alarms with other details like mappedTime </p>
@@ -122,10 +122,10 @@ public class AlarmAssociation implements Serializable {
 
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-                .append("situation", getSituationAlarm().getId())
-                .append("alarm", getRelatedAlarm().getId())
-                .append("time", getMappedTime())
+        return MoreObjects.toStringHelper(this)
+                .add("situation", getSituationAlarm().getId())
+                .add("alarm", getRelatedAlarm().getId())
+                .add("time", getMappedTime())
                 .toString();
     }
 

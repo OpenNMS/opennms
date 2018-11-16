@@ -1206,14 +1206,14 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         m_associatedAlarms = alarms;
     }
 
-    /**
-     * <p>setDetails</p>
-     *
-     * @param alarms a {@link java.util.Set} object.
-     */
     public void setRelatedAlarms(Set<OnmsAlarm> alarms) {
         m_associatedAlarms.clear();
         alarms.forEach(relatedAlarm -> m_associatedAlarms.add(new AlarmAssociation(this, relatedAlarm)));
+    }
+
+    public void setRelatedAlarms(Set<OnmsAlarm> alarms, Date associationEventTime) {
+        m_associatedAlarms.clear();
+        alarms.forEach(relatedAlarm -> m_associatedAlarms.add(new AlarmAssociation(this, relatedAlarm, associationEventTime)));
     }
 
     public void addRelatedAlarm(OnmsAlarm alarm) {

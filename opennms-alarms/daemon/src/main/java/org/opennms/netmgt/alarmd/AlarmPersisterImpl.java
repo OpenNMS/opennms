@@ -322,7 +322,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private OnmsAlarm createNewAlarm(OnmsEvent e, Event event) {
         OnmsAlarm alarm = new OnmsAlarm();
         // Situations are denoted by the existance of related-reductionKeys
-        alarm.setRelatedAlarms(getRelatedAlarms(event.getParmCollection()));
+        alarm.setRelatedAlarms(getRelatedAlarms(event.getParmCollection()), event.getTime());
         alarm.setAlarmType(event.getAlarmData().getAlarmType());
         alarm.setClearKey(event.getAlarmData().getClearKey());
         alarm.setCounter(1);

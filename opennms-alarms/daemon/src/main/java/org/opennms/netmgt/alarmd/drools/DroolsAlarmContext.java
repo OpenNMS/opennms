@@ -188,11 +188,8 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         if (!situation.isSituation()) {
             return;
         }
-        Map<Integer, AlarmAssociationAndFact> associationFacts = alarmAssociationById.get(situation.getId());
-        if (associationFacts == null) {
-            associationFacts = new HashMap<>();
-            alarmAssociationById.put(situation.getId(), associationFacts);
-        }
+        alarmAssociationById.putIfAbsent(situation.getId(), new HashMap<>());
+        final Map<Integer, AlarmAssociationAndFact> associationFacts = alarmAssociationById.get(situation.getId());
         for (AlarmAssociation association : situation.getAssociatedAlarms()) {
             Integer alarmId = association.getRelatedAlarm().getId();
             AlarmAssociationAndFact assocationFact = associationFacts.get(alarmId);
@@ -207,6 +204,17 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                 associationFacts.put(alarmId, new AlarmAssociationAndFact(association, fact)); 
             }
         }
+        // Remove Fact for any Alarms no longer in the Situation
+        associationFacts.values().stream()
+            .map(fact -> fact.getAlarmAssociation().getRelatedAlarm().getId())
+                .filter(alarmId -> !situation.getRelatedAlarmIds().contains(alarmId))
+            .forEach(alarmId -> {
+                final AlarmAssociationAndFact associationAndFact = associationFacts.remove(alarmId);
+                if (associationAndFact != null) {
+                    LOG.debug("Deleting AlarmAssociationAndFact from session: {}", associationAndFact.getAlarmAssociation());
+                    getKieSession().delete(associationAndFact.getFact());
+                }
+            });
     }
 
     private void handleAlarmAcknowledgements(OnmsAlarm alarm) {
@@ -270,7 +278,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         for (Integer association : associationFacts.keySet()) {
             AlarmAssociationAndFact assocationFact = associationFacts.get(association);
             if (assocationFact != null) {
-                LOG.debug("Deleting ack from session: {}", assocationFact.getAlarmAssociation());
+                LOG.debug("Deleting association from session: {}", assocationFact.getAlarmAssociation());
                 getKieSession().delete(assocationFact.getFact());
             }
         }
