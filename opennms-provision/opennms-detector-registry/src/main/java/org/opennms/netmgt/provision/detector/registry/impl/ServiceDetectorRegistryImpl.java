@@ -137,6 +137,11 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
     }
 
     @Override
+    public String getDetectorClassNameFromServiceName(String serviceName) {
+        return m_classNameByServiceName.get(serviceName);
+    }
+
+    @Override
     public Set<String> getClassNames() {
         return Collections.unmodifiableSet(m_factoriesByClassName.keySet());
     }
