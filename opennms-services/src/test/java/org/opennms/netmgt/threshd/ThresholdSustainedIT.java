@@ -95,23 +95,35 @@ public class ThresholdSustainedIT {
     }
 
     @Test
-    public void canGenerateThresholdSustainedEvents() {
-        Event e = generateCollectionSetAndVisitWithThresholder(1);
+    public void canGenerateThresholdSustainedEventsForHighThreshold() {
+        Event e = generateCollectionSetAndVisitWithThresholder("coffee-high", 6);
+        assertThat(e.getUei(), equalTo(EventConstants.HIGH_THRESHOLD_EVENT_UEI));
+
+        e = generateCollectionSetAndVisitWithThresholder("coffee-high", 6);
+        assertThat(e.getUei(), equalTo(EventConstants.HIGH_THRESHOLD_SUSTAINED_EVENT_UEI));
+
+        e = generateCollectionSetAndVisitWithThresholder("coffee-high", 3);
+        assertThat(e.getUei(), equalTo(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI));
+    }
+
+    @Test
+    public void canGenerateThresholdSustainedEventsForLowThreshold() {
+        Event e = generateCollectionSetAndVisitWithThresholder("coffee-low" , 1);
         assertThat(e.getUei(), equalTo(EventConstants.LOW_THRESHOLD_EVENT_UEI));
 
-        e = generateCollectionSetAndVisitWithThresholder(1);
+        e = generateCollectionSetAndVisitWithThresholder("coffee-low", 1);
         assertThat(e.getUei(), equalTo(EventConstants.LOW_THRESHOLD_SUSTAINED_EVENT_UEI));
 
-        e = generateCollectionSetAndVisitWithThresholder(3);
+        e = generateCollectionSetAndVisitWithThresholder("coffee-low", 3);
         assertThat(e.getUei(), equalTo(EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI));
     }
 
-    private Event generateCollectionSetAndVisitWithThresholder(int value) {
+    private Event generateCollectionSetAndVisitWithThresholder(String attribute, int value) {
         eventAnticipator.reset();
         NodeLevelResource nodeLevelResource = new NodeLevelResource(agent.getNodeId());
         CollectionSet collectionSet = new CollectionSetBuilder(agent)
                 .withTimestamp(new Date(timestamp))
-                .withNumericAttribute(nodeLevelResource, "beverages", "coffee", value, AttributeType.GAUGE)
+                .withNumericAttribute(nodeLevelResource, "beverages", attribute, value, AttributeType.GAUGE)
                 .build();
         timestamp += TimeUnit.MINUTES.toMillis(5);
         collectionSet.visit(thresholdingVisitor);

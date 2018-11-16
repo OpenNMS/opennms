@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <thresholding-config>
     <group name="http" rrdRepository = "${install.share.dir}/rrd/snmp/">
-        <threshold send-sustained-events="true" type="low" ds-name="coffee"  ds-type="node" value="1" rearm="2" trigger="1"/>
+        <threshold send-sustained-events="true" type="low" ds-name="coffee-low"  ds-type="node" value="1" rearm="2" trigger="1"/>
+        <threshold send-sustained-events="true" type="high" ds-name="coffee-high"  ds-type="node" value="5" rearm="3" trigger="1"/>
     </group>
 </thresholding-config>
