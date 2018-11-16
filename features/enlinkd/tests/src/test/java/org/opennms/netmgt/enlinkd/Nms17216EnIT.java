@@ -82,6 +82,9 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH5_LLDP_CHASSISID;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH5_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH5_SNMP_RESOURCE;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
@@ -94,11 +97,20 @@ import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
+import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
+import org.opennms.netmgt.topologies.service.api.OnmsTopology;
+import org.opennms.netmgt.topologies.service.impl.OnmsTopologyLogger;
 
 public class Nms17216EnIT extends EnLinkdBuilderITCase {
         
+    public static OnmsTopologyLogger createAndSubscribe(String protocol, EnhancedLinkd linkd) {
+        OnmsTopologyLogger tl = new OnmsTopologyLogger(protocol);
+        linkd.getOnmsTopologyDao().subscribe(tl);
+        return tl;
+    }
+
 	Nms17216NetworkBuilder builder = new Nms17216NetworkBuilder();    
     /*
      * These are the links among the following nodes discovered using 
@@ -748,7 +760,28 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         
         assertTrue(m_linkd.runSingleSnmpCollection(switch2.getId()));
         assertEquals(11, m_cdpLinkDao.countAll());
+        
+        // Now we support by default configuration: CDP, ISIS, LLDP and OSPF
+        assertEquals(4, m_topologyDao.getSupportedProtocols().size());
+        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.CDP.name()));
+        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.ISIS.name()));
+        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.LLDP.name()));
+        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.OSPF.name()));
+
+        CdpOnmsTopologyUpdater cdptopology = m_linkd.getCdpTopologyUpdater();
+        assertNotNull(cdptopology);
+        OnmsTopology topology = cdptopology.getTopology();
+        assertEquals(2, topology.getVertices().size());
+        assertEquals(4, topology.getEdges().size());
+        
+        Set<String> protocols= new HashSet<>();
+        protocols.add(ProtocolSupported.CDP.name());
+        OnmsTopologyLogger tl = createAndSubscribe(
+                  ProtocolSupported.CDP.name(),m_linkd);
+        assertEquals(protocols+":Consumer:Logger", tl.getId());
                 
+        m_linkd.runTopologyUpdater(ProtocolSupported.CDP);
+        
     }
 
 }

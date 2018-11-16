@@ -28,20 +28,32 @@
 
 package org.opennms.netmgt.enlinkd.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
+import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 public class OspfTopologyServiceImpl implements OspfTopologyService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OspfTopologyServiceImpl.class);
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
@@ -151,6 +163,54 @@ public class OspfTopologyServiceImpl implements OspfTopologyService {
 
     public void setOspfElementDao(OspfElementDao ospfElementDao) {
         m_ospfElementDao = ospfElementDao;
+    }
+
+    @Override
+    public List<OspfElement> findAllOspfElements() {
+        return m_ospfElementDao.findAll();
+    }
+
+    @Override
+    public List<OspfLink> findAllOspfLinks() {
+        return m_ospfLinkDao.findAll();
+    }
+
+    @Override
+    public List<Pair<OspfLink, OspfLink>> matchOspfLinks() {
+        List<OspfLink> allLinks = m_ospfLinkDao.findAll();
+        List<Pair<OspfLink, OspfLink>> results = new ArrayList<>();
+        Set<Integer> parsed = new HashSet<Integer>();
+
+        // build mapping:
+        Map<CompositeKey, OspfLink> targetLinks = new HashMap<>();
+        for(OspfLink targetLink : allLinks){
+            targetLinks.put(new CompositeKey(targetLink.getOspfIpAddr(), targetLink.getOspfRemIpAddr()) , targetLink);
+        }
+
+        for(OspfLink sourceLink : allLinks) {
+            if (parsed.contains(sourceLink.getId())) {
+                continue;
+            }
+            parsed.add(sourceLink.getId());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getOspfLinks: source: {}", sourceLink);
+            }
+            OspfLink targetLink = targetLinks.get(new CompositeKey(sourceLink.getOspfRemIpAddr() , sourceLink.getOspfIpAddr()));
+            if(targetLink == null) {
+                LOG.debug("getOspfLinks: cannot find target for source: '{}'", sourceLink.getId());
+                continue;
+            }
+
+            if (sourceLink.getId().equals(targetLink.getId()) || parsed.contains(targetLink.getId())) {
+                    continue;
+            }
+
+            LOG.debug("getOspfLinks: target: {}", targetLink);
+            parsed.add(targetLink.getId());
+           results.add(Pair.of(sourceLink, targetLink));
+        }
+        return results;
+
     }
 
 }

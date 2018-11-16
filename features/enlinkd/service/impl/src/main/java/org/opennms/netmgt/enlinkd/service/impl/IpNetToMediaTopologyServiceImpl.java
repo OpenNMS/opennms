@@ -28,13 +28,18 @@
 
 package org.opennms.netmgt.enlinkd.service.impl;
 
+import java.net.InetAddress;
 import java.util.Date;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
 import org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +49,8 @@ public class IpNetToMediaTopologyServiceImpl implements
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
+
+    private final static Logger LOG = LoggerFactory.getLogger(IpNetToMediaTopologyServiceImpl.class);
 
     private IpNetToMediaDao m_ipNetToMediaDao;
 
@@ -115,6 +122,20 @@ public class IpNetToMediaTopologyServiceImpl implements
         m_ipNetToMediaDao = ipNetToMediaDao;
     }
 
-
+    @Override
+    public Map<InetAddress, String> getIpMacMap() {
+        return m_ipNetToMediaDao.
+                findAll().
+                stream().
+                collect(
+                    Collectors.toMap(
+                    IpNetToMedia::getNetAddress, IpNetToMedia::getPhysAddress,
+                    (oldValue, newValue) -> {
+                        LOG.warn("ip found with duplicated mac {} {}", oldValue,newValue);
+                        return oldValue+":"+newValue;
+                    }
+                    )
+                );        
+    }
 
 }

@@ -28,20 +28,33 @@
 
 package org.opennms.netmgt.enlinkd.service.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 public class CdpTopologyServiceImpl implements CdpTopologyService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CdpTopologyServiceImpl.class);
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
@@ -134,6 +147,72 @@ public class CdpTopologyServiceImpl implements CdpTopologyService {
             }
 
         }.execute();
+    }
+
+    public List<Pair<CdpLink, CdpLink>> matchCdpLinks() {
+
+        final Collection<CdpElement> cdpElements = m_cdpElementDao.findAll();
+        final List<CdpLink> allLinks = m_cdpLinkDao.findAll();
+        // 1. create lookup maps:
+        Map<Integer, CdpElement> cdpelementmap = new HashMap<Integer, CdpElement>();
+        for (CdpElement cdpelement: cdpElements) {
+            cdpelementmap.put(cdpelement.getNode().getId(), cdpelement);
+        }
+        Map<CompositeKey, CdpLink> targetLinkMap = new HashMap<>();
+        for (CdpLink targetLink : allLinks) {
+            CompositeKey key = new CompositeKey(targetLink.getCdpCacheDevicePort(),
+                    targetLink.getCdpInterfaceName(),
+                    cdpelementmap.get(targetLink.getNode().getId()).getCdpGlobalDeviceId(),
+                    targetLink.getCdpCacheDeviceId());
+            targetLinkMap.put(key, targetLink);
+        }
+        Set<Integer> parsed = new HashSet<Integer>();
+
+        // 2. iterate
+        List<Pair<CdpLink, CdpLink>> results = new ArrayList<>();
+        for (CdpLink sourceLink : allLinks) {
+            if (parsed.contains(sourceLink.getId())) {
+                continue;
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getCdpLinks: source: {} ", sourceLink);
+            }
+            CdpElement sourceCdpElement = cdpelementmap.get(sourceLink.getNode().getId());
+
+            CdpLink targetLink = targetLinkMap.get(new CompositeKey(sourceLink.getCdpInterfaceName(),
+                    sourceLink.getCdpCacheDevicePort(),
+                    sourceLink.getCdpCacheDeviceId(),
+                    sourceCdpElement.getCdpGlobalDeviceId()));
+
+            if (targetLink == null) {
+                LOG.debug("getCdpLinks: cannot found target for source: '{}'", sourceLink.getId());
+                continue;
+            }
+
+            if (sourceLink.getId().equals(targetLink.getId()) || parsed.contains(targetLink.getId())) {
+                continue;
+            }
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getCdpLinks: cdp: {}, target: {} ", sourceLink.getCdpCacheDevicePort(), targetLink);
+            }
+
+            parsed.add(sourceLink.getId());
+            parsed.add(targetLink.getId());
+            results.add(Pair.of(sourceLink, targetLink));
+        }
+        return results;
+    }
+
+
+    @Override
+    public List<CdpElement> findAllCdpElements() {
+        return m_cdpElementDao.findAll();
+    }
+
+    @Override
+    public List<CdpLink> findAllCdpLinks() {
+        return m_cdpLinkDao.findAll();
     }
 
     public CdpLinkDao getCdpLinkDao() {

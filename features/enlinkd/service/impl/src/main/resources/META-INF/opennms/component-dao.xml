@@ -33,21 +33,25 @@
       <property name="cdpLinkDao" ref="cdpLinkDao" />
       <property name="cdpElementDao" ref="cdpElementDao" />
    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.service.api.CdpTopologyService" ref="cdpTopologyService" />
 
    <bean id="isisTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.IsisTopologyServiceImpl">
       <property name="isisLinkDao" ref="isisLinkDao" />
       <property name="isisElementDao" ref="isisElementDao" />
    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.service.api.IsisTopologyService" ref="isisTopologyService" />
 
    <bean id="lldpTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.LldpTopologyServiceImpl">
       <property name="lldpLinkDao" ref="lldpLinkDao" />
       <property name="lldpElementDao" ref="lldpElementDao" />
    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.service.api.LldpTopologyService" ref="lldpTopologyService" />
    
    <bean id="ospfTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.OspfTopologyServiceImpl">
       <property name="ospfLinkDao" ref="ospfLinkDao" />
       <property name="ospfElementDao" ref="ospfElementDao" />
    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.service.api.OspfTopologyService" ref="ospfTopologyService" />
    
     
 </beans>

@@ -26,38 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.linkd.internal;
+package org.opennms.netmgt.topologies.service.api;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+public interface OnmsTopologyRef {
 
-public final class CompositeKey {
-
-    private List<Object> keys;
-
-    public CompositeKey(Object...keys){
-        if(keys.length<1){
-            throw new IllegalArgumentException("Need at least one key but was supplied with none");
-        }
-        this.keys = Arrays.asList(keys);
-    }
-
-    @Override
-    public String toString() {
-        return this.keys.toString();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CompositeKey that = (CompositeKey) o;
-        return Objects.equals(keys, that.keys);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(keys);
-    }
+    String getId();    
+    
 }

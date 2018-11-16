@@ -46,10 +46,12 @@ import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
-//import org.opennms.netmgt.topologies.service.api.TopologyDao;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +67,62 @@ import org.springframework.util.Assert;
  */
 public class EnhancedLinkd extends AbstractServiceDaemon {
     
+    public static EnlinkdOnmsTopologyUpdater createAndRegister(EnhancedLinkd linkd, ProtocolSupported proto) throws OnmsTopologyException {
+        EnlinkdOnmsTopologyUpdater onmsTopologyUpdater = null;
+        switch (proto) {
+        case CDP:
+            onmsTopologyUpdater = new CdpOnmsTopologyUpdater(
+                                                             linkd.getEventForwarder(),
+                                                             linkd.getOnmsTopologyDao(),
+                                                             linkd.getCdpTopologyService(),
+                                                             linkd.getQueryManager(),
+                                                             linkd.getBridgeTopologyInterval(),
+                                                             linkd.getInitialSleepTime()
+                                                                     + linkd.getBridgeTopologyInterval());
+
+            break;
+        case BRIDGE:
+            return null;
+        case ISIS:
+            onmsTopologyUpdater = new IsisOnmsTopologyUpdater(
+                                                             linkd.getEventForwarder(),
+                                                             linkd.getOnmsTopologyDao(),
+                                                             linkd.getIsisTopologyService(),
+                                                             linkd.getQueryManager(),
+                                                             linkd.getBridgeTopologyInterval(),
+                                                             linkd.getInitialSleepTime()
+                                                                     + linkd.getBridgeTopologyInterval());
+
+            break;
+        case LLDP:
+            onmsTopologyUpdater = new LldpOnmsTopologyUpdater(
+                                                             linkd.getEventForwarder(),
+                                                             linkd.getOnmsTopologyDao(),
+                                                             linkd.getLldpTopologyService(),
+                                                             linkd.getQueryManager(),
+                                                             linkd.getBridgeTopologyInterval(),
+                                                             linkd.getInitialSleepTime()
+                                                                     + linkd.getBridgeTopologyInterval());
+            break;
+        case OSPF:
+            onmsTopologyUpdater = new OspfOnmsTopologyUpdater(
+                                                             linkd.getEventForwarder(),
+                                                             linkd.getOnmsTopologyDao(),
+                                                             linkd.getOspfTopologyService(),
+                                                             linkd.getQueryManager(),
+                                                             linkd.getBridgeTopologyInterval(),
+                                                             linkd.getInitialSleepTime()
+                                                                     + linkd.getBridgeTopologyInterval());
+
+            break;
+        default: 
+            return null;
+            
+        }
+        linkd.getOnmsTopologyDao().register(onmsTopologyUpdater);
+        return onmsTopologyUpdater;
+    }
+
     private final static Logger LOG = LoggerFactory.getLogger(EnhancedLinkd.class);
     /**
      * The log4j category used to log messages.
@@ -88,6 +146,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     private LldpTopologyService m_lldpTopologyService;
     private OspfTopologyService m_ospfTopologyService;
 
+    private OnmsTopologyDao m_onmsTopologyDao;
     /**
      * Linkd Configuration Initialization
      */
@@ -107,6 +166,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
 
+    private CdpOnmsTopologyUpdater m_cdpTopologyUpdater;
+    private LldpOnmsTopologyUpdater m_lldpTopologyUpdater;
+    private IsisOnmsTopologyUpdater m_isisTopologyUpdater;
+    private OspfOnmsTopologyUpdater m_ospfTopologyUpdater;
+    
     private DiscoveryBridgeDomains m_discoveryBridgeDomains;
 
     /**
@@ -145,6 +209,23 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             scheduleDiscoveryBridgeDomain();
         }
 
+        if (m_linkdConfig.useCdpDiscovery()) {
+            m_cdpTopologyUpdater = (CdpOnmsTopologyUpdater)scheduleOnmsTopologyUpdater(ProtocolSupported.CDP);
+        }
+
+        if (m_linkdConfig.useLldpDiscovery()) {
+            m_lldpTopologyUpdater = (LldpOnmsTopologyUpdater)scheduleOnmsTopologyUpdater(ProtocolSupported.LLDP);
+        }
+
+        if (m_linkdConfig.useIsisDiscovery()) {
+            m_isisTopologyUpdater = (IsisOnmsTopologyUpdater)scheduleOnmsTopologyUpdater(ProtocolSupported.ISIS);
+        }
+        
+        if (m_linkdConfig.useOspfDiscovery()) {
+            m_ospfTopologyUpdater = (OspfOnmsTopologyUpdater)scheduleOnmsTopologyUpdater(ProtocolSupported.OSPF);
+        }
+
+
     }
 
     private void createScheduler() {
@@ -152,12 +233,27 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         // Create a scheduler
         //
         try {
-            LOG.debug("init: Creating EnhancedLinkd scheduler");
+            LOG.info("init: Creating EnhancedLinkd scheduler");
             setScheduler(new LegacyScheduler("EnhancedLinkd", getLinkdConfig().getThreads()));
         } catch (RuntimeException e) {
             LOG.error("init: Failed to create EnhancedLinkd scheduler", e);
             throw e;
         }
+    }
+    
+    public EnlinkdOnmsTopologyUpdater scheduleOnmsTopologyUpdater(ProtocolSupported proto) {
+        EnlinkdOnmsTopologyUpdater onmsTopologyUpdater = null;
+         try {
+             onmsTopologyUpdater = createAndRegister(this,proto);
+        } catch (OnmsTopologyException e) {
+            LOG.error("OnmsTopologyException: cannote schedule: {} {} {}", e.getMessage(),e.getId(),e.getProtocol());
+            return null;
+        }
+         LOG.info("scheduleDiscoveryCdpTopology: Scheduling {}",
+                   onmsTopologyUpdater.getInfo());
+         onmsTopologyUpdater.setScheduler(m_scheduler);
+         onmsTopologyUpdater.schedule();
+         return onmsTopologyUpdater;
     }
 
     public void scheduleDiscoveryBridgeDomain() {
@@ -167,7 +263,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                                                getBridgeTopologyInterval(),
                                                getBridgeTopologyInterval()+getInitialSleepTime(),
                                                getDiscoveryBridgeThreads());
-            LOG.debug("scheduleDiscoveryBridgeDomain: Scheduling {}",
+            LOG.info("scheduleDiscoveryBridgeDomain: Scheduling {}",
                      m_discoveryBridgeDomains.getInfo());
             m_discoveryBridgeDomains.setScheduler(m_scheduler);
             m_discoveryBridgeDomains.schedule();
@@ -354,7 +450,44 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             m_discoveryBridgeDomains.runDiscovery();
         }
     }
-    
+
+    public void runTopologyUpdater(ProtocolSupported proto) {
+        switch (proto) {
+            case CDP:
+            if (m_cdpTopologyUpdater != null) {
+                m_cdpTopologyUpdater.runDiscovery();
+            }
+            break;
+      
+            case LLDP:
+            if (m_lldpTopologyUpdater != null) {
+                m_lldpTopologyUpdater.runDiscovery();
+            }
+            break;
+            
+            case ISIS:
+            if (m_isisTopologyUpdater != null) {
+                m_isisTopologyUpdater.runDiscovery();
+            }
+            break;
+            
+            case OSPF:
+            if (m_ospfTopologyUpdater != null) {
+                m_ospfTopologyUpdater.runDiscovery();
+            }
+            break;
+            
+            case BRIDGE:
+                break;
+            
+            default:
+                break;
+            
+        }
+    }
+
+
+
     public DiscoveryBridgeDomains getDiscoveryBridgeDomains() {
         return m_discoveryBridgeDomains;
     }
@@ -387,6 +520,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         m_lldpTopologyService.delete(nodeid);
         m_ospfTopologyService.delete(nodeid);
         m_ipNetToMediaTopologyService.delete(nodeid);
+        //FIXME update with a delete topologyService
 
     }
 
@@ -555,6 +689,14 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     public void setOspfTopologyService(OspfTopologyService ospfTopologyService) {
         m_ospfTopologyService = ospfTopologyService;
     }
+
+    public OnmsTopologyDao getOnmsTopologyDao() {
+        return m_onmsTopologyDao;
+    }
+
+    public void setOnmsTopologyDao(OnmsTopologyDao onmsTopologyDao) {
+        m_onmsTopologyDao = onmsTopologyDao;
+    }
     
     public IpNetToMediaTopologyService getIpNetToMediaTopologyService() {
         return m_ipNetToMediaTopologyService;
@@ -563,6 +705,32 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     public void setIpNetToMediaTopologyService(
             IpNetToMediaTopologyService ipNetToMediaTopologyService) {
         m_ipNetToMediaTopologyService = ipNetToMediaTopologyService;
+    }
+
+    public CdpOnmsTopologyUpdater getCdpTopologyUpdater() {
+        return m_cdpTopologyUpdater;
+    }
+
+    public void setCdpTopologyUpdater(CdpOnmsTopologyUpdater cdpTopologyUpdater) {
+        m_cdpTopologyUpdater = cdpTopologyUpdater;
+    }
+
+    public LldpOnmsTopologyUpdater getLldpTopologyUpdater() {
+        return m_lldpTopologyUpdater;
+    }
+
+    public void setLldpTopologyUpdater(
+            LldpOnmsTopologyUpdater lldpTopologyUpdater) {
+        m_lldpTopologyUpdater = lldpTopologyUpdater;
+    }
+
+    public IsisOnmsTopologyUpdater getIsisTopologyUpdater() {
+        return m_isisTopologyUpdater;
+    }
+
+    public void setIsisTopologyUpdater(
+            IsisOnmsTopologyUpdater isisTopologyUpdater) {
+        m_isisTopologyUpdater = isisTopologyUpdater;
     }
 
 

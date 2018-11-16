@@ -30,7 +30,9 @@ package org.opennms.netmgt.enlinkd.service.api;
 
 
 import java.util.Date;
+import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 
@@ -40,6 +42,11 @@ public interface LldpTopologyService {
     void reconcile(int nodeId, Date now);
     void store(int nodeId, LldpLink link);
     void store(int nodeId, LldpElement element);
+    
+    List<LldpElement> findAllLldpElements();
+    List<LldpLink> findAllLldpLinks();
+    
+    List<Pair<LldpLink, LldpLink>> matchLldpLinks();
 
     
 }

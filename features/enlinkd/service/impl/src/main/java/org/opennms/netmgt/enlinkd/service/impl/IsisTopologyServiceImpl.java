@@ -28,20 +28,32 @@
 
 package org.opennms.netmgt.enlinkd.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
+import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 public class IsisTopologyServiceImpl implements IsisTopologyService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(IsisTopologyServiceImpl.class);
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
@@ -151,6 +163,67 @@ public class IsisTopologyServiceImpl implements IsisTopologyService {
 
     public void setIsisElementDao(IsIsElementDao isisElementDao) {
         m_isisElementDao = isisElementDao;
+    }
+
+    @Override
+    public List<IsIsElement> findAllIsIsElements() {
+        return m_isisElementDao.findAll();
+    }
+
+    @Override
+    public List<IsIsLink> findAllIsIsLinks() {
+        return m_isisLinkDao.findAll();
+    }
+
+    @Override
+    public List<Pair<IsIsLink, IsIsLink>> matchIsIsLinks() {
+        List<IsIsElement> elements = m_isisElementDao.findAll();
+        List<IsIsLink> allLinks = m_isisLinkDao.findAll();
+        // 1.) create lookupMaps
+        Map<Integer, IsIsElement> elementmap = new HashMap<Integer, IsIsElement>();
+        for (IsIsElement element: elements) {
+            elementmap.put(element.getNode().getId(), element);
+        }
+
+        Map<CompositeKey, IsIsLink> targetLinkMap = new HashMap<>();
+        for (IsIsLink targetLink : allLinks) {
+            IsIsElement targetElement = elementmap.get(targetLink.getNode().getId());
+            targetLinkMap.put(new CompositeKey(targetLink.getIsisISAdjIndex(),
+                      targetElement.getIsisSysID(),
+                      targetLink.getIsisISAdjNeighSysID()), targetLink);
+        }
+
+        // 2. iterate
+        Set<Integer> parsed = new HashSet<Integer>();
+        List<Pair<IsIsLink, IsIsLink>> results = new ArrayList<>();
+
+        for (IsIsLink sourceLink : allLinks) {
+            if (parsed.contains(sourceLink.getId())) {
+                continue;
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getIsIsLinks: source: {}", sourceLink);
+            }
+            IsIsElement sourceElement = elementmap.get(sourceLink.getNode().getId());
+            IsIsLink targetLink = targetLinkMap.get(new CompositeKey(sourceLink.getIsisISAdjIndex(),
+                    sourceLink.getIsisISAdjNeighSysID(),
+                    sourceElement.getIsisSysID()));
+
+            if (targetLink == null) {
+                LOG.debug("getIsIsLinks: cannot found target for source: '{}'", sourceLink.getId());
+                continue;
+            }
+            if (sourceLink.getId().intValue() == targetLink.getId().intValue()|| parsed.contains(targetLink.getId())) {
+                continue;
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getIsIsLinks: target: {}", targetLink);
+            }
+            results.add(Pair.of(sourceLink, targetLink));
+            parsed.add(sourceLink.getId());
+            parsed.add(targetLink.getId());
+        }
+        return results;
     }
 
 }

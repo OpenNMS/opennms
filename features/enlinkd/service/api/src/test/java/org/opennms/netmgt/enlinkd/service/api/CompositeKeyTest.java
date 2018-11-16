@@ -26,12 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.linkd.internal;
+package org.opennms.netmgt.enlinkd.service.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
+import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
 
 public class CompositeKeyTest {
     @Test(expected = IllegalArgumentException.class)

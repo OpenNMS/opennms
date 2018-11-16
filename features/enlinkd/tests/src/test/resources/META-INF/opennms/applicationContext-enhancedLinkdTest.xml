@@ -64,7 +64,9 @@
     <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
-    
+  
+	<bean id="onmsTopologyDao" class="org.opennms.netmgt.topologies.service.impl.OnmsTopologyDaoInMemoryImpl"/>
+  
      <bean id="cdpLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.CdpLinkDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
@@ -164,6 +166,7 @@
       <property name="ipNetToMediaTopologyService"   ref="ipNetToMediaTopologyService" />
       <property name="lldpTopologyService"   ref="lldpTopologyService" />
       <property name="ospfTopologyService"   ref="ospfTopologyService" />
+      <property name="onmsTopologyDao"   ref="onmsTopologyDao" />
     </bean>
 
     <bean id="receiver" class="org.opennms.netmgt.enlinkd.EventProcessor">

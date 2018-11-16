@@ -28,20 +28,33 @@
 
 package org.opennms.netmgt.enlinkd.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
+import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 public class LldpTopologyServiceImpl implements LldpTopologyService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(LldpTopologyServiceImpl.class);
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
@@ -147,6 +160,86 @@ public class LldpTopologyServiceImpl implements LldpTopologyService {
 
     public void setLldpElementDao(LldpElementDao lldpElementDao) {
         m_lldpElementDao = lldpElementDao;
+    }
+
+    @Override
+    public List<LldpElement> findAllLldpElements() {
+        return m_lldpElementDao.findAll();
+    }
+
+    @Override
+    public List<LldpLink> findAllLldpLinks() {
+        return m_lldpLinkDao.findAll();
+    }
+
+    @Override
+    public List<Pair<LldpLink, LldpLink>> matchLldpLinks() {
+        
+//        List<Pair<LldpLink, LldpLink>> matchLldpLinks(Map<Integer, LldpElement> nodelldpelementidMap, List<LldpLink> allLinks) {
+            List<Pair<LldpLink, LldpLink>> results = new ArrayList<>();
+
+            Map<Integer, LldpElement> nodelldpelementidMap = m_lldpElementDao.findAll().
+                    stream().
+                    collect(Collectors.toMap(lldpelem -> lldpelem.getNode().getId(), lldpelem -> lldpelem));
+            
+            List<LldpLink> allLinks = m_lldpLinkDao.findAll();
+            // 1.) create mapping
+            Map<CompositeKey, LldpLink> targetLinkMap = new HashMap<>();
+            for(LldpLink targetLink : allLinks){
+
+                CompositeKey key = new CompositeKey(
+                        targetLink.getLldpRemChassisId(),
+                        nodelldpelementidMap.get(targetLink.getNode().getId()).getLldpChassisId(),
+                        targetLink.getLldpPortId(),
+                        targetLink.getLldpPortIdSubType(),
+                        targetLink.getLldpRemPortId(),
+                        targetLink.getLldpRemPortIdSubType());
+                targetLinkMap.put(key, targetLink);
+            }
+
+            // 2.) iterate
+            Set<Integer> parsed = new HashSet<Integer>();
+            for (LldpLink sourceLink : allLinks) {
+                if (parsed.contains(sourceLink.getId())) {
+                    continue;
+                }
+                String sourceLldpChassisId = nodelldpelementidMap.get(sourceLink.getNode().getId()).getLldpChassisId();
+                if (sourceLldpChassisId.equals(sourceLink.getLldpRemChassisId())) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("getLldpLinks: self link not adding source: {}",sourceLink);
+                    }
+                    parsed.add(sourceLink.getId());
+                    continue;
+                }
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("getLldpLinks: source: {}",sourceLink);
+                }
+
+                CompositeKey key = new CompositeKey(
+                        nodelldpelementidMap.get(sourceLink.getNode().getId()).getLldpChassisId(),
+                        sourceLink.getLldpRemChassisId(),
+                        sourceLink.getLldpRemPortId(),
+                        sourceLink.getLldpRemPortIdSubType(),
+                        sourceLink.getLldpPortId(),
+                        sourceLink.getLldpPortIdSubType());
+                LldpLink targetLink = targetLinkMap.get(key);
+
+                if (targetLink == null) {
+                    LOG.debug("getLldpLinks: cannot found target for source: '{}'", sourceLink.getId());
+                    continue;
+                }
+
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("getLldpLinks: lldp: {} target: {}", sourceLink.getLldpRemChassisId(), targetLink);
+                }
+
+                parsed.add(sourceLink.getId());
+                parsed.add(targetLink.getId());
+                results.add(Pair.of(sourceLink, targetLink));
+            }
+            return results;
+       // }
+
     }
 
 }

@@ -53,12 +53,12 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.enlinkd.model.LldpLink;
-import org.opennms.netmgt.enlinkd.model.OspfLink;
-import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
-import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
+import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.FilterManager;
+import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -86,12 +86,12 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @Test
     public void testDataCorrectness(){
-        LldpLinkDao lldpLinkDao = m_databasePopulator.getLldpLinkDao();
-        List<LldpLink> links = lldpLinkDao.findAll();
+        LldpTopologyService lldpLinkDao = m_databasePopulator.getLldpTopologyService();
+        List<LldpLink> links = lldpLinkDao.findAllLldpLinks();
         assertEquals(16, links.size());
 
-        OspfLinkDao ospfLinkDao = m_databasePopulator.getOspfLinkDao();
-        List<OspfLink> ospfLinks = ospfLinkDao.findAll();
+        OspfTopologyService ospfLinkDao = m_databasePopulator.getOspfTopologyService();
+        List<OspfLink> ospfLinks = ospfLinkDao.findAllOspfLinks();
         assertEquals(2, ospfLinks.size());
     }
 
@@ -393,7 +393,7 @@ public class EnhancedLinkdTopologyProviderTest {
         m_databasePopulator.tearDown();
         if(m_topologyProvider != null) {
             m_topologyProvider.resetContainer();
-            m_topologyProvider.setLldpLinkDao(m_databasePopulator.getLldpLinkDao());
+            m_topologyProvider.setLldpTopologyService(m_databasePopulator.getLldpTopologyService());
             m_topologyProvider.setNodeDao(m_databasePopulator.getNodeDao());
         }
     }
