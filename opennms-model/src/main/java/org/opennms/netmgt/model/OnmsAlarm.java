@@ -70,7 +70,7 @@ import org.hibernate.ObjectNotFoundException;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
-import org.springframework.core.style.ToStringCreator;
+import com.google.common.base.MoreObjects;
 
 /**
  * <p>OnmsAlarm class.</p>
@@ -816,12 +816,12 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      */
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-            .append("alarmid", getId())
-            .append("distPoller", getDistPoller())
-            .append("uei", getUei())
-            .append("severity", getSeverity())
-            .append("lastEventTime",getLastEventTime())
+        return MoreObjects.toStringHelper(this)
+            .add("alarmid", getId())
+            .add("distPoller", getDistPoller())
+            .add("uei", getUei())
+            .add("severity", getSeverity())
+            .add("lastEventTime",getLastEventTime())
             .toString();
     }
 
