@@ -27,7 +27,6 @@
     <module>runtime-graphml</module>
     <module>runtime-linkd</module>
     <module>runtime-vmware</module>
-    <module>runtime-sfree</module>
   </modules>
 
 </project>
