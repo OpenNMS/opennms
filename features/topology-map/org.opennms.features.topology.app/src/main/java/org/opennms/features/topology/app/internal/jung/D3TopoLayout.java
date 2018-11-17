@@ -110,7 +110,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
     @Override
     public void step() {
 
-        if(getGraph().getEdges().isEmpty()){
+        if(getGraph().getEdges().isEmpty() && getGraph().getVertices().isEmpty()){
             m_alpha = 0; // => makes done() == true. We don't need to iterate over nothing
         }
 
