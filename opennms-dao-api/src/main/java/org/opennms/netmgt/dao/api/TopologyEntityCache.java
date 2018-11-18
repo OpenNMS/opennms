@@ -39,4 +39,6 @@ public interface TopologyEntityCache {
 
     List<CdpLinkTopologyEntity> getCdpLinkTopologyEntities();
 
+    void refresh();
+
 }

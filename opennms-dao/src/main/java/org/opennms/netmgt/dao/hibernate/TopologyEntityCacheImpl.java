@@ -85,6 +85,12 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
         return this.cdpLinkTopologyEntities.getUnchecked(KEY);
     }
 
+    @Override
+    public void refresh(){
+        nodeTopologyEntities.refresh(KEY);
+        cdpLinkTopologyEntities.refresh(KEY);
+    }
+
     private int getCacheDuration(){
         String duration = System.getProperty(SYSTEM_PROPERTY_CACHE_DURATION, "300");
         try {
