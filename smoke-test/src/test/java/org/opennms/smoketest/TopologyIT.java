@@ -693,6 +693,64 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             return new NoFocusDefinedWindow(testCase);
         }
 
+        public BrowserTab getTab(String tab) {
+            return new BrowserTab(testCase, tab);
+        }
+    }
+
+    public interface Tabs {
+        String Alarms = "Alarms";
+        String Nodes = "Nodes";
+        String BusinessServices = "Business Services";
+        String Applications = "Applications";
+    }
+
+    public static class BrowserTab {
+        private final OpenNMSSeleniumTestCase testCase;
+        private final String tab;
+
+        private BrowserTab(OpenNMSSeleniumTestCase testCase, String tab) {
+            this.tab = Objects.requireNonNull(tab);
+            this.testCase = Objects.requireNonNull(testCase);
+        }
+
+        private WebElement getElement() {
+            String xpath = String.format("//*[@class='v-captiontext' and text() = '%s']", tab);
+            final WebElement tabElement = testCase.findElementByXpath(xpath);
+            if (!tabElement.isDisplayed()) {
+                throw new IllegalStateException("You are trying to access a non visible Browser Tab. Bailing");
+            }
+            return tabElement;
+        }
+
+        public void click() {
+            getElement().click();
+        }
+
+        public BrowserRow getRowByLabel(String label) {
+            return new BrowserRow(this, label);
+        }
+    }
+
+    public static class BrowserRow {
+
+        private final BrowserTab tab;
+        private final String label;
+
+        public BrowserRow(BrowserTab tab, String label) {
+            this.tab = Objects.requireNonNull(tab);
+            this.label = Objects.requireNonNull(label);
+        }
+
+        private WebElement getElement() {
+            String xpath = String.format("//table//td//*[text() = '%s']", label);
+            final WebElement labelElement = tab.testCase.findElementByXpath(xpath);
+            return labelElement;
+        }
+
+        public void click() {
+            getElement().click();
+        }
     }
 
     public static class NoFocusDefinedWindow {
