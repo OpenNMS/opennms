@@ -30,6 +30,7 @@ package org.opennms.netmgt.alarmd.drools;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -89,7 +90,7 @@ public class DefaultAlarmService implements AlarmService {
         Map<OnmsAlarm, Set<OnmsAlarm>> priorRelatedAlarms = new HashMap<>();
         if (alarmInTrans.isPartOfSituation()) {
             for (OnmsAlarm situation : alarmInTrans.getRelatedSituations()) {
-                priorRelatedAlarms.put(situation, situation.getRelatedAlarms());
+                priorRelatedAlarms.put(situation, new HashSet<OnmsAlarm>(situation.getRelatedAlarms()));
             }
         }
         alarmDao.delete(alarmInTrans);
