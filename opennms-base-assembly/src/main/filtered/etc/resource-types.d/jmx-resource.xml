@@ -17,35 +17,14 @@
       </storageStrategy>
     </resourceType>
 
-    <!-- Netflow 5 -->
-    <resourceType name="netflow5" label="Netflow 5" resourceLabel="${index}">
+    <!-- Netflow -->
+    <resourceType name="netflow" label="Flow Protocol" resourceLabel="${index}">
         <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
         <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
-            <parameter key="sibling-column-name" value="name" />
-        </storageStrategy>
-    </resourceType>
-
-    <!-- Netflow 9 -->
-    <resourceType name="netflow9" label="Netflow 9" resourceLabel="${index}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
-        <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
-            <parameter key="sibling-column-name" value="name" />
-        </storageStrategy>
-    </resourceType>
-
-    <!-- IPFix -->
-    <resourceType name="ipfix" label="IPFix" resourceLabel="${index}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
-        <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
-            <parameter key="sibling-column-name" value="name" />
-        </storageStrategy>
-    </resourceType>
-
-    <!-- SFlow -->
-    <resourceType name="sflow" label="SFlow" resourceLabel="${index}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
-        <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
-            <parameter key="sibling-column-name" value="name" />
+            <parameter key="sibling-column-name" value="domain"/>
+            <parameter key="replace-all" value="s/\s//"/>
+            <parameter key="replace-all" value="s/:.*//"/>
+            <parameter key="replace-all" value="s/.*\.//"/>
         </storageStrategy>
     </resourceType>
 </resource-types>
