@@ -91,7 +91,8 @@ import org.opennms.netmgt.model.events.NodeLabelChangedEventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.style.ToStringCreator;
+
+import com.google.common.base.MoreObjects;
 
 
 /**
@@ -968,25 +969,24 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      */
     @Override
     public String toString() {
-        ToStringCreator retval = new ToStringCreator(this);
-        retval.append("id", m_id);
-        retval.append("location", m_location == null ? null : m_location.getLocationName());
-        retval.append("foreignSource", m_foreignSource);
-        retval.append("foreignId", m_foreignId);
-        retval.append("labelSource", m_labelSource == null ? null : m_labelSource.toString());
-        retval.append("label", m_label);
-        retval.append("parent.id", getParent() == null ? null : getParent().getId());
-        retval.append("createTime", m_createTime);
-        retval.append("sysObjectId", m_sysObjectId);
-        retval.append("sysName", m_sysName);
-        retval.append("sysDescription", m_sysDescription);
-        retval.append("sysLocation", m_sysLocation);
-        retval.append("sysContact", m_sysContact);
-        retval.append("type", m_type == null ? null : m_type.toString());
-        retval.append("operatingSystem", m_operatingSystem);
-        retval.append("hasFlows", getHasFlows());
-
-        return retval.toString();
+        return MoreObjects.toStringHelper(this)
+        .add("id", m_id)
+        .add("location", m_location == null ? null : m_location.getLocationName())
+        .add("foreignSource", m_foreignSource)
+        .add("foreignId", m_foreignId)
+        .add("labelSource", m_labelSource == null ? null : m_labelSource.toString())
+        .add("label", m_label)
+        .add("parent.id", getParent() == null ? null : getParent().getId())
+        .add("createTime", m_createTime)
+        .add("sysObjectId", m_sysObjectId)
+        .add("sysName", m_sysName)
+        .add("sysDescription", m_sysDescription)
+        .add("sysLocation", m_sysLocation)
+        .add("sysContact", m_sysContact)
+        .add("type", m_type == null ? null : m_type.toString())
+        .add("operatingSystem", m_operatingSystem)
+        .add("hasFlows", getHasFlows())
+        .toString();
     }
 
     /** {@inheritDoc} */
