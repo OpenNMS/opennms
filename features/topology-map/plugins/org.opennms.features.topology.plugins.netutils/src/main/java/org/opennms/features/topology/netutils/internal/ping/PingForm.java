@@ -28,13 +28,10 @@
 
 package org.opennms.features.topology.netutils.internal.ping;
 
-import java.net.InetAddress;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-
-import org.opennms.core.utils.InetAddressUtils;
 
 import com.vaadin.data.Validator;
 import com.vaadin.data.fieldgroup.FieldGroup;
@@ -62,7 +59,7 @@ public class PingForm extends FormLayout {
     private final TextField timeoutField;
     private final FieldGroup binder;
 
-    public PingForm(List<String> locations, String defaultLocation, List<InetAddress> ipAddresses, InetAddress defaultIp) {
+    public PingForm(List<String> locations, String defaultLocation, List<String> ipAddresses, String defaultIp) {
         Objects.requireNonNull(locations);
         Objects.requireNonNull(defaultLocation);
         Objects.requireNonNull(ipAddresses);
@@ -72,17 +69,16 @@ public class PingForm extends FormLayout {
                 .withNumberRequests(4)
                 .withTimeout(1, TimeUnit.SECONDS)
                 .withPackageSize(64)
-                .withInetAddress(defaultIp)
+                .withIpAddress(defaultIp)
                 .withLocation(defaultLocation);
 
         // IP
         ipDropdown = new NativeSelect();
         ipDropdown.setCaption("IP Address");
-        for (InetAddress eachIp : ipAddresses) {
+        for (String eachIp : ipAddresses) {
             ipDropdown.addItem(eachIp);
         }
         ipDropdown.setNullSelectionAllowed(false);
-        ipDropdown.getItemIds().forEach(eachItemId -> ipDropdown.setItemCaption(eachItemId, InetAddressUtils.toIpAddrString((InetAddress) eachItemId)));
         ipDropdown.setWidth(FIELD_WIDTH, Unit.PIXELS);
 
 		// Packet Size
@@ -162,7 +158,7 @@ public class PingForm extends FormLayout {
 
         item = new BeanItem<>(pingRequest);
         binder = new FieldGroup(item);
-        binder.bind(ipDropdown, "inetAddress");
+        binder.bind(ipDropdown, "ipAddress");
         binder.bind(numberOfRequestsField, "numberRequests");
         binder.bind(timeoutField, "timeout");
         binder.bind(packetSizeDropdown, "packetSize");
