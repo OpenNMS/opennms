@@ -218,8 +218,7 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
             downtimeInWindow += (regainedAt - lostAt);
         }
 
-        // Bound the downtime by the length of the window
-        return Math.min(downtimeInWindow, windowLength);
+        return downtimeInWindow;
     }
 
     private int getNumServices(int nodeId, List<String> serviceNames) {
