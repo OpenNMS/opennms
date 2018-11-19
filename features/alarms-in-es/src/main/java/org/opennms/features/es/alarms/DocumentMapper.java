@@ -114,6 +114,17 @@ public class DocumentMapper {
         doc.setRelatedAlarmIds(relatedAlarmIds);
         doc.setRelatedAlarmReductionKeys(relatedAlarmReductionKeys);
 
+        // TODO: Set related alarm count
+
+        return doc;
+    }
+
+    public AlarmDocumentDTO createAlarmDocumentForDelete(int alarmId, String reductionKey) {
+        final AlarmDocumentDTO doc = new AlarmDocumentDTO();
+        doc.setId(alarmId);
+        doc.setReductionKey(reductionKey);
+        doc.setUpdateTime(currentTime.get());
+        doc.setDeletedTime(currentTime.get());
         return doc;
     }
 

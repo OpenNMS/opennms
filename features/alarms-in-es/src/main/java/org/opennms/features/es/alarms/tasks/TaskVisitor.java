@@ -36,7 +36,5 @@ import org.opennms.features.es.alarms.dto.AlarmDocumentDTO;
 public interface TaskVisitor {
     void indexAlarms(List<AlarmDocumentDTO> docs);
 
-    void deleteAlarm(int alarmId, long time);
-
     void deleteAlarmsWithoutIdsIn(Set<Integer> alarmIdsToKeep, long time);
 }

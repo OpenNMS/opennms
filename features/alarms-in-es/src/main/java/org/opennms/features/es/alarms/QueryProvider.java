@@ -95,6 +95,14 @@ public class QueryProvider {
                 .build());
     }
 
+    public String getActiveAlarmsAtTimeAndExclude(long time, Set<Integer> alarmIdsToKeep) {
+        return render("get_active_alarms_at_time_and_exclude.ftl", ImmutableMap.builder()
+                .put("time", time)
+                .put("alarmIds", alarmIdsToKeep)
+                .put("numMaxAlarms", NUM_MAX_ALARMS)
+                .build());
+    }
+
     public String markOtherAlarmsAsDeleted(Set<Integer> alarmIdsToKeep, long deletedTime) {
         return render("mark_other_alarms_as_deleted.ftl", ImmutableMap.builder()
                 .put("alarmIds", alarmIdsToKeep)
@@ -112,6 +120,7 @@ public class QueryProvider {
             throw new RuntimeException(e);
         }
     }
+
 
 
 }

@@ -42,10 +42,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TimerTask;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -57,7 +56,6 @@ import org.opennms.core.time.PseudoClock;
 import org.opennms.features.es.alarms.dto.AlarmDocumentDTO;
 import org.opennms.features.es.alarms.dto.NodeDocumentDTO;
 import org.opennms.features.es.alarms.tasks.BulkDeleteTask;
-import org.opennms.features.es.alarms.tasks.DeleteAlarmTask;
 import org.opennms.features.es.alarms.tasks.IndexAlarmsTask;
 import org.opennms.features.es.alarms.tasks.Task;
 import org.opennms.features.es.alarms.tasks.TaskVisitor;
@@ -83,8 +81,8 @@ import com.google.gson.Gson;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Bulk;
 import io.searchbox.core.Index;
-import io.searchbox.core.UpdateByQuery;
-import io.searchbox.core.UpdateByQueryResult;
+import io.searchbox.core.Search;
+import io.searchbox.core.SearchResult;
 
 /**
  * TODO: Handle different prefixes i.e. many OpenNMS systems using the same ES
@@ -107,7 +105,7 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
      * provided that they are still present, and have not been indexed whithin this past
      * duration.
      *
-     * This allows the documents to reflect the actual state, even if no "intersesting"
+     * This allows the documents to reflect the actual state, even if no "interesting"
      * fields have changed.
      *
      * TODO: Make configurable
@@ -120,7 +118,8 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
     private final List<AlarmDocumentDTO> alarmDocumentsToIndex = new LinkedList<>();
 
     private Map<Integer, AlarmDocumentDTO> alarmDocumentsById = new LinkedHashMap<>();
-    private final BlockingQueue<Task> taskQueue = new ArrayBlockingQueue<>(10000, true);
+    // TODO: Make limit configurable
+    private final LinkedBlockingDeque<Task> taskQueue = new LinkedBlockingDeque<>(10000);
     private final ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
             .setNameFormat("alarms-to-es")
             .build());
@@ -204,55 +203,42 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
                     }
 
                     @Override
-                    public void deleteAlarm(int alarmId, long time) {
-                        LOG.debug("Marking document related to alarm with id: {} deleted with time: {}", alarmId, time);
-                        // TODO: Should only be applied to documents created before the given time and not yet marked
-                        final String query = queryProvider.markAlarmAsDeleted(alarmId, time);
-                        final Collection<String> indices = getIndicesForDeleteAt(time);
-                        final UpdateByQuery updateByQuery = new UpdateByQuery.Builder(query)
-                                .addIndices(getIndicesForDeleteAt(time))
-                                .setParameter("conflicts", "proceed")
-                                .addType(AlarmDocumentDTO.TYPE)
-                                .build();
-
-                        try (final Timer.Context ctx = alarmsToESMetrics.getDeleteTimer().time()) {
-                            final UpdateByQueryResult result = limitedRetriesRequestExecutor.execute(client, updateByQuery);
-                            if (!result.isSucceeded()) {
-                                LOG.error("Delete for alarm with id: {} failed with: {}", alarmId, result.getErrorMessage());
-                            } else if (result.getUpdatedCount() < 1) {
-                                LOG.warn("Did not find any documents for alarm with id: {} to delete in indices: {}.",
-                                        alarmId, indices);
-                            } else {
-                                LOG.debug("Successfully marked documents for alarm with id: {} as deleted.", alarmId);
-                            }
-                        } catch (IOException e) {
-                            LOG.error("Delete for alarm with id: {} failed.", alarmId, e);
-                            alarmsToESMetrics.getTasksFailedCounter().inc();
-                        }
-                    }
-
-                    @Override
                     public void deleteAlarmsWithoutIdsIn(Set<Integer> alarmIdsToKeep, long time) {
                         LOG.debug("Marking documents without ids in: {} as deleted for time: {}", alarmIdsToKeep, time);
-                        // TODO: Should only be applied to documents created before the given time and not yet marked
-                        final String query = queryProvider.markOtherAlarmsAsDeleted(alarmIdsToKeep, time);
-                        final UpdateByQuery updateByQuery = new UpdateByQuery.Builder(query)
-                                .addIndices(getIndicesForDeleteAt(time))
-                                .setParameter("conflicts", "proceed")
-                                .addType(AlarmDocumentDTO.TYPE)
-                                .build();
-
                         try (final Timer.Context ctx = alarmsToESMetrics.getBulkDeleteTimer().time()) {
-                            final UpdateByQueryResult result = limitedRetriesRequestExecutor.execute(client, updateByQuery);
+                            // Find all of the alarms at time X, excluding ids in Y - handle deletes for each of those
+                            final String query = queryProvider.getActiveAlarmsAtTimeAndExclude(time, alarmIdsToKeep);
+                            final Search search = new Search.Builder(query)
+                                    .addIndex("opennms-alarms-*") // TODO: Be smarter about which indices to query
+                                    .addType(AlarmDocumentDTO.TYPE)
+                                    .build();
+
+                            final SearchResult result;
+                            try {
+                                result = client.execute(search);
+                            } catch (IOException e) {
+                                LOG.error("Bulk delete failed.", e);
+                                return;
+                            }
                             if (!result.isSucceeded()) {
                                 LOG.error("Bulk delete failed with: {}", result.getErrorMessage());
-                            } else {
-                                LOG.debug("Marked {} documents as deleted.", result.getUpdatedCount());
                             }
-                        } catch (IOException e) {
-                            LOG.error("Bulk delete failed.", e);
-                            alarmsToESMetrics.getTasksFailedCounter().inc();
+
+                            final List<SearchResult.Hit<AlarmDocumentDTO, Void>> hits = result.getHits(AlarmDocumentDTO.class);
+                            List<AlarmDocumentDTO> docs = hits.stream().map(h -> h.source).collect(Collectors.toList());
+
+                            if (!docs.isEmpty()) {
+                                List<AlarmDocumentDTO> deletes = docs.stream()
+                                        .map(d -> documentMapper.createAlarmDocumentForDelete(d.getId(), d.getReductionKey()))
+                                        .collect(Collectors.toList());
+
+                                // Break the list up into small batches limited by the configured batch size
+                                for (List<AlarmDocumentDTO> partition : Lists.partition(deletes, batchSize)) {
+                                    indexAlarms(partition);
+                                }
+                            }
                         }
+
                     }
                 });
             } catch (InterruptedException e) {
@@ -340,9 +326,11 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
     public synchronized void handleDeletedAlarm(int alarmId, String reductionKey) {
         LOG.debug("Got delete callback for alarm with id: {} and reduction key: {}",
                 alarmId, reductionKey);
-        flushDocumentsToIndexToTaskQueue();
-        taskQueue.add(new DeleteAlarmTask(alarmId, getCurrentTimeMillis()));
-        alarmDocumentsById.remove(alarmId);
+        final AlarmDocumentDTO alarmDocument = documentMapper.createAlarmDocumentForDelete(alarmId, reductionKey);
+        alarmDocumentsToIndex.add(alarmDocument);
+        if (alarmDocumentsToIndex.size() >= batchSize) {
+            flushDocumentsToIndexToTaskQueue();
+        }
     }
 
     private synchronized void flushDocumentsToIndexToTaskQueue() {
