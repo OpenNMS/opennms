@@ -44,6 +44,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xbill.DNS.Address;
 
 import com.google.common.net.InetAddresses;
 
@@ -92,10 +93,14 @@ public class EifParser {
              Otherwise, it's 37 bytes.
              The precise meaning / purpose of this identifier is not public.
             */
-            String eifVersionBytes1 = eifBuff.substring(eventStart+30,eventStart+32);
-            String eifVersionBytes2 = eifBuff.substring(eventStart+34,eventStart+36);
+            byte[] eifVersionBytes1 = eifBuff.substring(eventStart+30,eventStart+32).getBytes();
+            byte[] eifVersionBytes2 = eifBuff.substring(eventStart+34,eventStart+36).getBytes();
+            LOG.debug("eifVersion1Bytes[0]: {}",eifVersionBytes1[0]);
+            LOG.debug("eifVersion2Bytes[0]: {}",eifVersionBytes2[0]);
+            LOG.debug("eifVersion1Bytes[1]: {}",eifVersionBytes1[1]);
+            LOG.debug("eifVersion2Bytes[1]: {}",eifVersionBytes2[1]);
             String eifEvent;
-            if (eifVersionBytes1.equals(eifVersionBytes2)){
+            if (eifVersionBytes1[0] == eifVersionBytes2[0] && eifVersionBytes1[1] == eifVersionBytes2[1]){
                 eifEvent = eifBuff.substring(eventStart + 36,eventEnd);
             } else {
                 eifEvent = eifBuff.substring(eventStart + 37,eventEnd);
@@ -154,10 +159,13 @@ public class EifParser {
         String fqdn = "";
         if (!"".equals(eifSlotMap.get("fqhostname")) && eifSlotMap.get("fqhostname") != null) {
             fqdn = eifSlotMap.get("fqhostname");
+            LOG.debug("Using fqhostname for fqdn: {}",fqdn);
         } else if (!"".equals(eifSlotMap.get("hostname")) && eifSlotMap.get("hostname") != null) {
             String hostname = eifSlotMap.get("hostname");
+            LOG.debug("Trying hostname for fqdn: {}",hostname);
             try {
-                fqdn = InetAddress.getByName(hostname).getCanonicalHostName();
+                fqdn = Address.getHostName(InetAddress.getByName(hostname));
+                LOG.debug("Using hostname for fqdn: {}",fqdn);
             } catch (UnknownHostException uhe) {
                 LOG.error("UnknownHostException while resolving hostname {}",hostname);
             }
@@ -180,6 +188,7 @@ public class EifParser {
             List<OnmsNode> matchingNodes = new ArrayList<>();
             OnmsNode firstMatch;
             try {
+                LOG.debug("Searching for node by label {}",fqdn);
                 matchingNodes = nodeDao.findByLabel(fqdn);
             } catch (NullPointerException npe) {
                 LOG.debug("No node located for {}",fqdn);

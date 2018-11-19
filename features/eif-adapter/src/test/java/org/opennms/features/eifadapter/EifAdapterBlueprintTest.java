@@ -33,10 +33,9 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 import com.google.common.collect.Lists;
 
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
@@ -155,7 +154,11 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
                 receivedEvents.add(e);
             }
         });
-        FileInputStream eifPacketCapture = new FileInputStream(new File("src/test/resources/eif_36_byte_offset_test.dat"));
+        BufferedReader eifPacketCapture = new BufferedReader(
+                new InputStreamReader(
+                        new FileInputStream(new File("src/test/resources/eif_36_byte_offset_test.dat")), StandardCharsets.UTF_8
+                )
+        );
         Socket clientSocket = new Socket(InetAddrUtils.getLocalHostAddress(), 1828);
         DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
         outToServer.write( IOUtils.toByteArray(eifPacketCapture) );
