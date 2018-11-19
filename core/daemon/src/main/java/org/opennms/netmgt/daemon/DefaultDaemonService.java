@@ -36,8 +36,8 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.opennms.core.config.api.ConfigurationResource;
 import org.opennms.core.config.api.ConfigurationResourceException;
-import org.opennms.core.config.impl.JaxbResourceConfiguration;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.config.service.Service;
@@ -62,7 +62,7 @@ public class DefaultDaemonService implements DaemonService {
 
     @Autowired
     @Qualifier("service-configuration.xml")
-    private JaxbResourceConfiguration<ServiceConfiguration> serviceConfiguration;
+    private ConfigurationResource<ServiceConfiguration> serviceConfiguration;
 
     private final List<DaemonInfo> daemonList = new ArrayList<>();
 
