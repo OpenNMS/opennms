@@ -29,6 +29,10 @@
 package org.opennms.netmgt.alarmd.drools;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -81,13 +85,18 @@ public class DefaultAlarmService implements AlarmService {
             LOG.warn("Alarm disappeared: {}. Skipping delete.", alarm);
             return;
         }
-        // If alarm was in Situation, fire notifications for the Situation
+        // If alarm was in Situation, calculate notifications for the Situation
+        Map<OnmsAlarm, Set<OnmsAlarm>> priorRelatedAlarms = new HashMap<>();
         if (alarmInTrans.isPartOfSituation()) {
             for (OnmsAlarm situation : alarmInTrans.getRelatedSituations()) {
-                alarmEntityNotifier.didUpdateRelatedAlarms(situation, situation.getRelatedAlarms());
+                priorRelatedAlarms.put(situation, situation.getRelatedAlarms());
             }
         }
         alarmDao.delete(alarmInTrans);
+        // fire notifications after alarm has been deleted
+        for (Entry<OnmsAlarm, Set<OnmsAlarm>> entry : priorRelatedAlarms.entrySet()) {
+            alarmEntityNotifier.didUpdateRelatedAlarms(entry.getKey(), entry.getValue());
+        }
         alarmEntityNotifier.didDeleteAlarm(alarmInTrans);
     }
 
