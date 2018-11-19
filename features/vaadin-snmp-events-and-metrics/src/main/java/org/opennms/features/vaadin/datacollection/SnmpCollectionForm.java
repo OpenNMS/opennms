@@ -159,7 +159,6 @@ public class SnmpCollectionForm extends CustomComponent {
      */
     @Override
     public void setReadOnly(boolean readOnly) {
-        super.setReadOnly(readOnly);
         snmpCollectionEditor.setReadOnly(readOnly);
     }
 
@@ -168,7 +167,7 @@ public class SnmpCollectionForm extends CustomComponent {
      */
     @Override
     public boolean isReadOnly() {
-        return super.isReadOnly() && snmpCollectionEditor.isReadOnly();
+        return snmpCollectionEditor.isReadOnly();
     }
 
     /**

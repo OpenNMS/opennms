@@ -144,7 +144,6 @@ public class SystemDefForm extends CustomComponent {
      */
     @Override
     public void setReadOnly(boolean readOnly) {
-        super.setReadOnly(readOnly);
         systemDefEditor.setReadOnly(readOnly);
     }
 
@@ -153,7 +152,7 @@ public class SystemDefForm extends CustomComponent {
      */
     @Override
     public boolean isReadOnly() {
-        return super.isReadOnly() && systemDefEditor.isReadOnly();
+        return systemDefEditor.isReadOnly();
     }
 
     /**

@@ -152,7 +152,6 @@ public class GroupForm extends CustomComponent {
      */
     @Override
     public void setReadOnly(boolean readOnly) {
-        super.setReadOnly(readOnly);
         groupEditor.setReadOnly(readOnly);
     }
 
@@ -161,7 +160,7 @@ public class GroupForm extends CustomComponent {
      */
     @Override
     public boolean isReadOnly() {
-        return super.isReadOnly() && groupEditor.isReadOnly();
+        return groupEditor.isReadOnly();
     }
 
     /**

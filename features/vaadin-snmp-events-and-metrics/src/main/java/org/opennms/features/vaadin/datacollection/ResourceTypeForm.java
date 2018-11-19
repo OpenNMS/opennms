@@ -159,7 +159,6 @@ public class ResourceTypeForm extends CustomComponent {
      */
     @Override
     public void setReadOnly(boolean readOnly) {
-        super.setReadOnly(readOnly);
         resourceTypeEditor.setReadOnly(readOnly);
     }
 
@@ -168,7 +167,7 @@ public class ResourceTypeForm extends CustomComponent {
      */
     @Override
     public boolean isReadOnly() {
-        return super.isReadOnly() && resourceTypeEditor.isReadOnly();
+        return resourceTypeEditor.isReadOnly();
     }
 
     /**

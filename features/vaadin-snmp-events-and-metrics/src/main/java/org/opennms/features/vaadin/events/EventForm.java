@@ -307,7 +307,6 @@ public class EventForm extends CustomComponent {
      */
     @Override
     public void setReadOnly(boolean readOnly) {
-        super.setReadOnly(readOnly);
         eventEditor.setReadOnly(readOnly);
         hasAlarmData.setVisible(!readOnly);
     }
@@ -317,7 +316,7 @@ public class EventForm extends CustomComponent {
      */
     @Override
     public boolean isReadOnly() {
-        return super.isReadOnly() && eventEditor.isReadOnly();
+        return eventEditor.isReadOnly();
     }
 
 }
