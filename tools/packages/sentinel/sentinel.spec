@@ -99,6 +99,10 @@ if [ "%{enable_snapshots}" = 1 ]; then
 	EXTRA_ARGS="-s"
 fi
 
+if [ "%{skip_compile}" = 1 ]; then
+	EXTRA_ARGS="$EXTRA_ARGS -c"
+fi
+
 tools/packages/sentinel/create-sentinel-assembly.sh $EXTRA_ARGS
 
 # Extract the sentinel assembly
@@ -158,7 +162,9 @@ ROOT_INST="${RPM_INSTALL_PREFIX0}"
 # Clean out the data directory
 if [ -d "${ROOT_INST}/data" ]; then
     find "$ROOT_INST/data/"* -maxdepth 0 -name tmp -prune -o -print0 | xargs -0 rm -rf
-    find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
+    if [ -d "${ROOT_INST}/data/tmp"  ]; then
+        find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
+    fi
 fi
 
 # Remove the directory used as the local Maven repo cache

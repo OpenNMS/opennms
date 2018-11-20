@@ -24,6 +24,7 @@ SYSCONFDIR="@SYSCONFDIR@"
 RUNAS="@RUNAS@"
 STOP_RETRIES=10
 STOP_WAIT=5
+PING_REQUIRED=FALSE
 
 export NAME DESC PATH
 
@@ -38,22 +39,22 @@ if [ -f /etc/rc.d/init.d/functions ]; then
 fi
 
 if [ -z "$JAVA_HOME" ]; then
-	JAVA_HOME="$("${CONTAINER_HOME}/bin/find-java.sh" 1.8.0 1.8.9999)"
+	JAVA_HOME="$("$CONTAINER_HOME/bin/find-java.sh" 1.8.0 1.8.9999)"
 fi
 
-if [ -r "${SYSCONFDIR}/${NAME}" ]; then
+if [ -r "$SYSCONFDIR/$NAME" ]; then
 	# shellcheck disable=SC1090,SC1091
-	. "${SYSCONFDIR}/${NAME}"
+	. "$SYSCONFDIR/$NAME"
 fi
 
-if [ -r "${CONTAINER_HOME}/${NAME}.conf" ]; then
+if [ -r "$CONTAINER_HOME/$NAME.conf" ]; then
 	# shellcheck disable=SC1090,SC1091
-	. "${CONTAINER_HOME}/${NAME}.conf"
+	. "$CONTAINER_HOME/$NAME.conf"
 fi
 
-if [ -r "${CONTAINER_HOME}/etc/${NAME}.conf" ]; then
+if [ -r "$CONTAINER_HOME/etc/$NAME.conf" ]; then
 	# shellcheck disable=SC1090,SC1091
-	. "${CONTAINER_HOME}/etc/${NAME}.conf"
+	. "$CONTAINER_HOME/etc/$NAME.conf"
 fi
 
 # The user config can set JAVA_OPTS, but Karaf will not
@@ -62,14 +63,14 @@ fi
 # now, rather than letting Karaf init do it.
 
 # shellcheck disable=SC1090,SC1091
-. "${CONTAINER_HOME}/bin/inc"
+. "$CONTAINER_HOME/bin/inc"
 setupDefaults
 
 # always dump heap if we OOM
-DEFAULT_JAVA_OPTS="${DEFAULT_JAVA_OPTS} -XX:+HeapDumpOnOutOfMemoryError"
+DEFAULT_JAVA_OPTS="$DEFAULT_JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
 
 # combine user JAVA_OPTS with the defaults from Karaf
-JAVA_OPTS="${DEFAULT_JAVA_OPTS} ${JAVA_OPTS}"
+JAVA_OPTS="$DEFAULT_JAVA_OPTS $JAVA_OPTS"
 
 # export any default configurable variables from sysconf
 export RUNAS JAVA_MIN_MEM JAVA_MAX_MEM MAX_FD JAVA_HOME JAVA JAVA_DEBUG_OPTS JAVA_DEBUG_PORT JAVA_OPTS CLASSPATH KARAF_DEBUG LD_LIBRARY_PATH
@@ -78,15 +79,15 @@ export RUNAS JAVA_MIN_MEM JAVA_MAX_MEM MAX_FD JAVA_HOME JAVA JAVA_DEBUG_OPTS JAV
 export NAME DESC PATH CONTAINER_HOME SYSCONFDIR STOP_RETRIES STOP_WAIT
 
 run_as() {
-	if [ "$(id -n -u)" "!=" "${RUNAS}" ]; then
-		DAEMON="$(daemon --user="${RUNAS}" true >/dev/null 2>&1 && command -v daemon)"
-		RUNUSER="$(runuser -u "${RUNAS}" true 2>/dev/null && command -v runuser)"
-		if [ -n "${DAEMON}" ]; then
-			"$DAEMON" --user="${RUNAS}" "$@" >/dev/null 2>&1
-		elif [ -n "${RUNUSER}" ] && [ -x "${RUNUSER}" ]; then
-			"${RUNUSER}" -u "${RUNAS}" "$@"
+	if [ "$(id -n -u)" "!=" "$RUNAS" ]; then
+		DAEMON="$(daemon --user="$RUNAS" true >/dev/null 2>&1 && command -v daemon)"
+		RUNUSER="$(runuser -u "$RUNAS" true 2>/dev/null && command -v runuser)"
+		if [ -n "$DAEMON" ]; then
+			"$DAEMON" --user="$RUNAS" "$@" >/dev/null 2>&1
+		elif [ -n "$RUNUSER" ] && [ -x "$RUNUSER" ]; then
+			"$RUNUSER" -u "$RUNAS" "$@"
 		else
-			/usr/bin/sudo -u "${RUNAS}" "$@"
+			/usr/bin/sudo -u "$RUNAS" "$@"
 		fi
 	else
 		"$@"
@@ -95,16 +96,16 @@ run_as() {
 
 get_root_pid() {
 	ROOT_INSTANCE_PID=0
-	if [ -f "${CONTAINER_HOME}/instances/instance.properties" ];
+	if [ -f "$CONTAINER_HOME/instances/instance.properties" ];
 	then
-		ROOT_INSTANCE_PID=$(sed -n -e '/item.0.pid/ s/.*\= *//p' "${CONTAINER_HOME}/instances/instance.properties")
+		ROOT_INSTANCE_PID=$(sed -n -e '/item.0.pid/ s/.*\= *//p' "$CONTAINER_HOME/instances/instance.properties")
 	fi
 	echo "$ROOT_INSTANCE_PID"
 }
 
 is_running() {
   PID=$(get_root_pid)
-  if [ "${PID}" -ne "0" ] && ps p "$PID" > /dev/null; then
+  if [ "$PID" -ne "0" ] && ps p "$PID" > /dev/null; then
     return 0
   else
     return 1
@@ -112,7 +113,7 @@ is_running() {
 }
 
 stop_process() {
-	run_as "${CONTAINER_HOME}"/bin/stop >/dev/null
+	run_as "$CONTAINER_HOME"/bin/stop >/dev/null
 }
 
 kill_process() {
@@ -137,13 +138,21 @@ case "$COMMAND" in
 			exit 0
 		fi
 
-		# LSB 4 = insufficient privilege
-		"${CONTAINER_HOME}/bin/ensure-user-ping.sh" "${RUNAS}" || exit 4
-		if [ ! -d "${CONTAINER_HOME}/data/tmp" ]; then
-			install -d -m 755 "${CONTAINER_HOME}/data/tmp"
-			chown -R "${RUNAS}:${RUNAS}" "${CONTAINER_HOME}/data"
+		case "$PING_REQUIRED" in
+			[Tt][Rr][Uu][Ee])
+				# LSB 4 = insufficient privilege
+				"$CONTAINER_HOME/bin/ensure-user-ping.sh" "$RUNAS" || exit 4
+				;;
+			*)
+				QUIET=true "$CONTAINER_HOME/bin/ensure-user-ping.sh" "$RUNAS" || :
+				;;
+		esac
+
+		if [ ! -d "$CONTAINER_HOME/data/tmp" ]; then
+			install -d -m 755 "$CONTAINER_HOME/data/tmp"
+			chown -R "$RUNAS:$RUNAS" "$CONTAINER_HOME/data"
 		fi
-		run_as "${CONTAINER_HOME}"/bin/start
+		run_as "$CONTAINER_HOME"/bin/start
 		exit $?
 		;;
 
@@ -210,7 +219,7 @@ case "$COMMAND" in
 		;;
 
 	status)
-		run_as "${CONTAINER_HOME}"/bin/status >/dev/null
+		run_as "$CONTAINER_HOME"/bin/status >/dev/null
 		RETVAL="$?"
 		if [ $RETVAL -eq 0 ]; then
 			echo "$DESC is running."

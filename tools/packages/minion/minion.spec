@@ -133,6 +133,10 @@ if [ "%{enable_snapshots}" = 1 ]; then
 	EXTRA_ARGS="-s"
 fi
 
+if [ "%{skip_compile}" = 1 ]; then
+	EXTRA_ARGS="$EXTRA_ARGS -c"
+fi
+
 tools/packages/minion/create-minion-assembly.sh $EXTRA_ARGS
 
 # Extract the minion assembly
@@ -148,7 +152,11 @@ echo "id = 00000000-0000-0000-0000-000000ddba11" >> %{buildroot}%{minioninstpref
 
 # fix the init script for RedHat/CentOS layout
 mkdir -p "%{buildroot}%{_initrddir}"
-sed -e "s,^SYSCONFDIR[ \t]*=.*$,SYSCONFDIR=%{_sysconfdir}/sysconfig,g" -e "s,^MINION_HOME[ \t]*=.*$,MINION_HOME=%{minioninstprefix},g" "%{buildroot}%{minioninstprefix}/etc/minion.init" > "%{buildroot}%{_initrddir}"/minion
+sed -e "s,^SYSCONFDIR[ \t]*=.*$,SYSCONFDIR=%{_sysconfdir}/sysconfig,g" \
+	-e 's,^PING_REQUIRED=FALSE,PING_REQUIRED=TRUE,g' \
+	-e "s,^MINION_HOME[ \t]*=.*$,MINION_HOME=%{minioninstprefix},g" \
+	"%{buildroot}%{minioninstprefix}/etc/minion.init" \
+	> "%{buildroot}%{_initrddir}"/minion
 chmod 755 "%{buildroot}%{_initrddir}"/minion
 rm -f '%{buildroot}%{minioninstprefix}/etc/minion.init'
 
