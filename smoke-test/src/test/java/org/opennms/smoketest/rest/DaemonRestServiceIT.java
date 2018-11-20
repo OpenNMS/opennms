@@ -156,7 +156,7 @@ public class DaemonRestServiceIT extends OpenNMSSeleniumTestCase {
 
         // Reload a reloadable but not enabled Daemon
         reload("snmppoller", 400);
-        check5Times("snmppoller", 200, DaemonReloadState.Reloading);
+        check5Times("snmppoller", 200, DaemonReloadState.Unknown);
 
         // Reload of a non reloadable, not enabled Daemon
         reload("correlator", 400);
