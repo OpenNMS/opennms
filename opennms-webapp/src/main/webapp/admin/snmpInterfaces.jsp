@@ -74,18 +74,17 @@
         In order to change what interfaces are scheduled for collection, simply click
         the checkbox shown on the collect column, and the change will immediately update the database.
         </p>
+        <p>
 	    <strong>Node ID</strong>: <%=nodeId%><br/>
 	    <strong>Node Label</strong>: <%=nodeLabel%><br/>
+        </p>
+        <p>
+        <div id="onms-interfaces-config">
+          <div growl></div>
+          <onms-interfaces-config node="<%=nodeId%>"/>
+        </div>
+        </p>
       </div> <!-- card-body -->
-    </div> <!-- panel -->
-  </div> <!-- column -->
-</div> <!-- row -->
-
-<div class="row">
-  <div class="col-md-12">
-    <div class="card" id="onms-interfaces-config">
-      <div growl></div>
-      <onms-interfaces-config node="<%=nodeId%>"/>
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

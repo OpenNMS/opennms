@@ -72,15 +72,6 @@
   <jsp:param name="breadcrumb" value="Manage SNMP by Interface" />
 </jsp:include>
 
-<%
-  int midNodeIndex = 1;
-  
-  if (nodes.size() > 1)
-  {
-    midNodeIndex = nodes.size()/2;
-  }
-%>
-
 <div class="card">
   <div class="card-header">
     <span>Manage SNMP Data Collection per Interface</span>
@@ -107,32 +98,23 @@
       on the following page.
     </p>
 
-    <div class="row">
        <% if (nodes.size() > 0) { %>
-       <div class="col-md-6">
-              <table class="table table-sm table-bordered">
+              <table class="table table-sm table-responsive">
+                  <thead>
                 <tr class="text-center">
                   <th>Node ID</th>
                   <th>Node Label</th>
                 </tr>
-                <%=buildTableRows(nodes, 0, midNodeIndex)%>
+                  </thead>
+                  <tbody>
+                <%=buildTableRows(nodes, 0, nodes.size())%>
+                  </tbody>
               </table>
-       </div>
-              <% } /*end if*/ %>
-
-          <!--see if there is a second column to draw-->
-          <% if (midNodeIndex < nodes.size()) { %>
-        <div class="col-md-6">
-              <table class="table table-sm table-bordered">
-                <tr class="text-center">
-                  <th>Node ID</th>
-                  <th>Node Label</th>
-                </tr>
-                <%=buildTableRows(nodes, midNodeIndex, nodes.size())%>
-              </table>
-        </div>
-            <% } /*end if */ %>
-    </div> <!-- row -->
+      <% }else{ %>
+      <div class="alert alert-primary" role="alert">
+          There are no SNMP Nodes
+      </div>
+      <% } /*end if-else*/ %>
   </div> <!-- card-body -->
 </div> <!-- panel -->
 

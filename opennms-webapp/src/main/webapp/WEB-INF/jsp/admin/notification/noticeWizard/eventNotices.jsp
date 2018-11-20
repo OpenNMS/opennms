@@ -80,8 +80,6 @@
     
 </script>
 
-<h2>Event Notifications</h2>
-
 <form method="post" name="notices" action="admin/notification/noticeWizard/notificationWizard">
 <input type="hidden" name="userAction" value=""/>
 <input type="hidden" name="notice" value=""/>
@@ -89,15 +87,10 @@
 
 <div class="card">
   <div class="card-header">
-    <span>Add a notification to an event or edit an existing event notification</span>
+    <h4 class="pull-left">Event Notifications</h4>
+    <button class="pull-right btn btn-secondary" onclick="javascript:newNotice()"><i class="fa fa-plus"></i> Add New Event Notification</button>
   </div>
-  <table class="table table-sm">
-    <tr>
-      <td> <input type="button" class="btn btn-secondary" value="Add New Event Notification" onclick="javascript:newNotice()"/>
-    </tr>
-    <tr>
-      <td valign="top">
-        <h4>Event Notifications</h4>
+  <div class="card-body">
         <table class="table table-sm table-striped">
           <tr>
             <th colspan="3">
@@ -145,10 +138,8 @@
           </tr>
           </c:forEach>
         </table>
-      </td>
-    </tr>
-  </table>
-</div> <!-- panel -->
+  </div>
+</div> <!-- card -->
 
 </form>
 
