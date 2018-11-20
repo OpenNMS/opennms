@@ -33,6 +33,7 @@ import java.util.List;
 import org.kie.api.time.SessionClock;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.AckAction;
+import org.opennms.netmgt.model.AlarmAssociation;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
@@ -61,7 +62,7 @@ rule "escalateSituationSeverity"
     $situation : OnmsAlarm( isSituation() == true, $relatedAlarmIds : relatedAlarmIds )
     $relatedAlarms : LinkedList() from collect( OnmsAlarm($relatedAlarmIds contains id) )
     $maxSeverity : OnmsSeverity( isGreaterThan(OnmsSeverity.NORMAL) ) from accumulate( OnmsAlarm( $severity : severity ) from $relatedAlarms, maxSeverity( $severity ) )
-    OnmsAlarm( this == $situation, severity <= $maxSeverity )
+    OnmsAlarm( this == $situation, severity <= $maxSeverity, severity.isLessThan(OnmsSeverity.CRITICAL) )
   then
     Date now = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
     alarmService.setSeverity($situation, OnmsSeverity.escalate($maxSeverity), now);
@@ -75,12 +76,19 @@ rule "SituationHasBeenAcknowledged"
     $situationAck : OnmsAcknowledgment( refId == $situation.id, ackAction == AckAction.ACKNOWLEDGE)
     // There are NO alarm ACKs after the Situation ACK.
     $relatedAlarmAcks : LinkedList( size == 0 ) from collect (OnmsAcknowledgment($relatedAlarmIds contains refId, ackTime > $situationAck.getAckTime() ) )
-    // There is at least one related alarm that is not acknowledged.
+    // There is at least one related alarm that is not acknowledged and it was correlated before the Situation ACK.
     $relatedAlarms : LinkedList( size > 0 ) from collect( OnmsAlarm($relatedAlarmIds contains id, isAcknowledged() == false ) )
+    // There is a related alarm that is unacknowleged
+    $relatedAlarm : OnmsAlarm($relatedAlarmIds contains id, $unAkedAlarmId : id, isAcknowledged() == false )
+    // The UN-ACK time for that alarm is prior to the Situation ACK
+    $unAcknowledgment : OnmsAcknowledgment(refId == $unAkedAlarmId, ackAction == AckAction.UNACKNOWLEDGE, ackTime < $situationAck.getAckTime() )
+    // The association time of that alarm is before the ACK time on the situation
+    $unAkedRelatedAlarmAssociation : AlarmAssociation(situationAlarm == $situation, $unAcknowledgment.refId == relatedAlarm.getId(), mappedTime < $situationAck.getAckTime() )
   then
     Date acknowledgeTime = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
+    // Acknowledge all of the alarms in one go or we will trigger more rule evaluations
     for (int i=0; i < $relatedAlarms.size(); i++) {
-    	alarmService.acknowledgeAlarm((OnmsAlarm)$relatedAlarms.get(i), acknowledgeTime);
+       alarmService.acknowledgeAlarm((OnmsAlarm)$relatedAlarms.get(i), acknowledgeTime);
     }
 end
 
@@ -122,11 +130,28 @@ rule "newAlarmsUnAcknowledgesSituation"
   when
     // There is an Acknowledged Situation.
     $situation : OnmsAlarm( isSituation() == true, $relatedAlarmIds : relatedAlarmIds, isAcknowledged() == true )
-    // The Acknowledgment is in Working Memory.
-    $situationAck : OnmsAcknowledgment( refId == $situation.id, ackAction == AckAction.ACKNOWLEDGE)
+    // The Situation Acknowledgment is in Working Memory.
+    $situationAck : OnmsAcknowledgment( refId == $situation.id, ackAction == AckAction.ACKNOWLEDGE )
     // There is at least one un-Acknowledgment for one of the related alarms with a time after the Situation was acknowledged.
     $unAkedRelatedAlarms : LinkedList(size > 0) from collect (OnmsAcknowledgment($relatedAlarmIds contains refId, ackAction == AckAction.UNACKNOWLEDGE, ackTime > $situationAck.getAckTime() ) )
   then
     Date acknowledgeTime = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
    	alarmService.unacknowledgeAlarm($situation, acknowledgeTime);
 end
+
+rule "oldAlarmsUnAcknowledgesSituation"
+  when
+    // There is an Acknowledged Situation.
+    $situation : OnmsAlarm( isSituation() == true, $relatedAlarmIds : relatedAlarmIds, isAcknowledged() == true )
+    // The Situation Acknowledgment is in Working Memory.
+    $situationAck : OnmsAcknowledgment( refId == $situation.id, ackAction == AckAction.ACKNOWLEDGE )
+    // There is a related alarm that is unacknowleged
+    // The UN-ACK time for that alarm is prior to the Situation ACK
+    $unAcknowledgment : OnmsAcknowledgment($relatedAlarmIds contains refId, $unAkedAlarmId : refId, ackAction == AckAction.UNACKNOWLEDGE, ackTime < $situationAck.getAckTime() )
+    // The association time of that alarm is later than the ACK time on the situation
+	$unAkedRelatedAlarmAssociation : AlarmAssociation(situationAlarm == $situation, $unAcknowledgment.refId == relatedAlarm.getId(), mappedTime > $situationAck.getAckTime() )
+  then
+    Date acknowledgeTime = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
+   	alarmService.unacknowledgeAlarm($situation, acknowledgeTime);
+end
+

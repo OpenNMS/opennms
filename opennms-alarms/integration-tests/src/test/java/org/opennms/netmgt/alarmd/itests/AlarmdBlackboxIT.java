@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
-import org.opennms.core.test.alarms.driver.JUnitScenarioDriver;
 import org.opennms.core.test.alarms.driver.Scenario;
 import org.opennms.core.test.alarms.driver.ScenarioResults;
 import org.opennms.core.test.alarms.driver.State;
@@ -463,6 +462,53 @@ public class AlarmdBlackboxIT {
         assertThat(results.getSituation(5), not(acknowledged()));
         // t=6, but other alarm should still be ACK'd
         assertThat(results.getAlarms(6), not(everyItem(not(acknowledged()))));
+        // t=∞
+        assertThat(results.getAlarmsAtLastKnownTime(), hasSize(0));
+    }
+
+    @Test
+    public void oldAlarmsCanUnAckSituation() {
+        // If an older unacked alarm gets added to an acked situation, or an
+        // existing related alarm is unacknowledged,
+        // then the situation itself should be unacked (but all other related
+        // alarms which were acked should remain acked)
+        Scenario scenario = Scenario.builder().withLegacyAlarmBehavior()
+                // Create some node down alarms
+                .withNodeDownEvent(1, 1).withNodeDownEvent(2, 2).withNodeDownEvent(3, 3)
+                // Create a situation that contains the node down alarms
+                .withSituationForNodeDownAlarms(4, "situation#1", 2, 3)
+                // Now ACK the situation
+                .withAcknowledgmentForSituation(5, "situation#1")
+                // now add old un-acknowledged alarm to situation
+                .withSituationForNodeDownAlarms(6, "situation#1", 2, 3, 1).build();
+        // .withCorrelationAddsAlarm(6, "situation#1", 1).build();
+        ScenarioResults results = scenario.play();
+
+        // Verify the set of alarms at various points in time
+
+        // t=0, no alarms
+        assertThat(results.getAlarms(0), hasSize(0));
+        // t=1, a single problem alarm
+        assertThat(results.getAlarms(1), hasSize(1));
+        // t=2, two problem alarms
+        assertThat(results.getAlarms(2), hasSize(2));
+        // t=3, three problem alarms
+        assertThat(results.getAlarms(3), hasSize(3));
+        // t=4, two problem alarms + 1 situation + 1 other alarm, situation is not acknowledged
+        assertThat(results.getAlarms(4), hasSize(4)); // the situation is also
+                                                      // an alarm, so it is
+                                                      // counted here
+        assertThat(results.getSituation(4), not(acknowledged()));
+
+        // t=5, Situation and 2 Alarms should be Ack'd
+        assertThat(results.getSituation(5), acknowledged());
+        assertThat(results.getAcknowledgedAlarms(5), hasSize(3));
+        assertThat(results.getUnAcknowledgedAlarms(5), hasSize(1));
+        // t=6, alarm and situation should be unacked
+        assertThat(results.getSituation(6), not(acknowledged()));
+        assertThat(results.getAlarmAt(6, 1), not(acknowledged()));
+        // but other alarm should still be ACK'd
+        assertThat(results.getAcknowledgedAlarms(6), hasSize(2));
         // t=∞
         assertThat(results.getAlarmsAtLastKnownTime(), hasSize(0));
     }
