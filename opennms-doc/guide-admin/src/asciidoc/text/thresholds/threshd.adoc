@@ -1,0 +1,7 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+=== Threshold Service Daemon
+Threshd, the Threshold Service Daemon, has the very complex task of keep state of performance of your corporate Key Performance Indicators (KPIs).
+There are various threshold algorithms that can be employed to determine the state of a resource's performance that result in Alarms that are then managed with standard Alarm workflows.

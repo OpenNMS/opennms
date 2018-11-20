@@ -1,0 +1,17 @@
+
+:imagesdir: ../../images
+
+[[ga-threshold-notes]]
+=== Threshold Notes
+A new feature was introduced in Horizon 24.0.0 that allows users to enable generating subsequent events each time an active threshold is measured and is still meeting the triggering value.
+By default, this new event has one of the following UEI's:
+
+* uei.opennms.org/threshold/highThresholdSustained
+* uei.opennms.org/threshold/lowThresholdSustained
+
+This new event has all the same parameters as the triggering events:
+
+* uei.opennms.org/threshold/highThresholdExceeded
+* uei.opennms.org/threshold/lowThresholdExceeded
+
+Like the other default threshold UEIs, the sustained UEI can be changed to a custom UEI.

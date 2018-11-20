@@ -1,0 +1,36 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-threshd-configuration]]
+=== Configuring Thresholds
+
+Configuration of a threshold requires editing two main XML entities: <threshd-configuration/> and <thresholding-config/>.
+
+
+In Horizon 24.0.0, a two new attributes were added to the <threshd-configuration/> that directs the thresholders to continue to send events informing the current value of a triggered threshold.
+By default, these are not instantiated as Alarms.
+The two new new optional configuration attributes for this feature.
+* sustainedUEI
+* send-sustained-events
+
+The flag controlling this behavior, send-sustained-events, disabled by default.
+The threshold sustained UEI is optional and a default is provided along with an event configuration for this UEI: uei.opennms.org/threshold/thresholdSustained.
+
+.alarm-data Schema Definition (XSD)
+[source,XML]
+----
+<attribute name="sustainedUEI" type="string" use="optional" default="uei.opennms.org/threshold/thresholdSustained">
+  <annotation>
+    <documentation>
+      The UEI of the event to send for a triggered threshold each time a threshold value is collected that crosses the threshold until the threshold is rearmed.
+    </documentation>
+  </annotation>
+</attribute>
+
+<attribute type="boolean" name="send-sustained-events" use="optional" default="false">
+  <annotation>
+    <documentation>Indicates that the system should send threshold sustained events each time a triggering value is collected.</documentation>
+  </annotation>
+</attribute>
+----

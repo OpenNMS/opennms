@@ -163,6 +163,13 @@ include::text/performance-data-collection/collectors/wsman.adoc[]
 include::text/performance-data-collection/collectors/xml.adoc[]
 include::text/performance-data-collection/collectors/xmp.adoc[]
 
+[[ga-performance-mgmt-thresholds]]
+== Thresholds
+include::text/thresholds/introduction.adoc[]
+include::text/thresholds/threshd.adoc[]
+include::text/thresholds/configuring-thresholds.adoc[]
+include::text/thresholds/threshold-notes.adoc[]
+
 [[ga-performance-mgmt-shell]]
 === Shell Commands
 include::text/performance-data-collection/shell/introduction.adoc[]
