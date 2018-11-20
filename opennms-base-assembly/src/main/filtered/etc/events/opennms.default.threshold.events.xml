@@ -143,32 +143,12 @@
       <severity>Warning</severity>
    </event>
    <event>
-      <uei>uei.opennms.org/threshold/relativeChangeSustained</uei>
-      <event-label>OpenNMS-defined threshold event: relativeChangeSustained</event-label>
-      <descr>&lt;p>Relative change sustained for %service% datasource %parm[ds]% on interface %interface%, parms:
-            %parm[all]%&lt;/p></descr>
-      <logmsg dest="logndisplay">
-            Relative change sustained for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%
-        </logmsg>
-      <severity>Warning</severity>
-   </event>
-   <event>
       <uei>uei.opennms.org/threshold/absoluteChangeExceeded</uei>
       <event-label>OpenNMS-defined threshold event: absoluteChangeExceeded</event-label>
       <descr>&lt;p>Absolute change exceeded for %service% datasource %parm[ds]% on interface %interface%, parms:
             %parm[all]%&lt;/p></descr>
       <logmsg dest="logndisplay">
             Absolute change exceeded for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%
-        </logmsg>
-      <severity>Warning</severity>
-   </event>
-   <event>
-      <uei>uei.opennms.org/threshold/absoluteChangeSustained</uei>
-      <event-label>OpenNMS-defined threshold event: absoluteChangeSustained</event-label>
-      <descr>&lt;p>Absolute change sustained for %service% datasource %parm[ds]% on interface %interface%, parms:
-            %parm[all]%&lt;/p></descr>
-      <logmsg dest="logndisplay">
-            Absolute change sustained for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%
         </logmsg>
       <severity>Warning</severity>
    </event>
