@@ -81,8 +81,7 @@ public class IncludeCollectionField extends CustomField<List<IncludeCollection>>
         table.setEditable(!isReadOnly());
         table.setSelectable(true);
         table.setImmediate(true);
-        table.setHeight("125px");
-        table.setWidth("100%");
+        table.setSizeFull();
         final Button add = new Button("Add", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {

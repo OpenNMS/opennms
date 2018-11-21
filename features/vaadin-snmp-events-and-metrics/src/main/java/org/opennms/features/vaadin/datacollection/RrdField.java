@@ -90,8 +90,7 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
         table.setEditable(!isReadOnly());
         table.setSelectable(true);
         table.setImmediate(true);
-        table.setHeight("125px");
-        table.setWidth("100%");
+        table.setSizeFull();
         table.setTableFieldFactory(new DefaultFieldFactory() {
             @Override
             public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
