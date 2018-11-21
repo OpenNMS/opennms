@@ -230,8 +230,9 @@ public class DefaultTopologyService implements TopologyService {
     }
 
     public void invalidate(String namespace) {
-        // the topologyEntityCache is namespace agnostic:
-        topologyEntityCache.refresh();
+        if(namespace.startsWith("nodes")) {
+            topologyEntityCache.refresh();
+        }
 
         // Tt the moment the namespace of each topology must be unique overall meta topology providers, even if they
         // are encapsulated by the meta topology provider. It should be addressed by <metaId>:<namespace>.
