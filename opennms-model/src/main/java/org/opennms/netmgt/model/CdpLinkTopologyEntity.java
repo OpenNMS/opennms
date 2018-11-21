@@ -30,6 +30,10 @@ package org.opennms.netmgt.model;
 
 import java.util.Objects;
 
+/**
+ * This is NOT a Hibernate/JPA entity but rather a lightweight model without less attributes than CdpLink and no lazy
+ * loading. We use it to retrieve link information from the database fast.
+ */
 public class CdpLinkTopologyEntity {
 
     private final Integer id;
@@ -91,19 +95,13 @@ public class CdpLinkTopologyEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CdpLinkTopologyEntity that = (CdpLinkTopologyEntity) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(nodeId, that.nodeId) &&
-                Objects.equals(cdpCacheIfIndex, that.cdpCacheIfIndex) &&
-                Objects.equals(cdpInterfaceName, that.cdpInterfaceName) &&
-                Objects.equals(cdpCacheAddress, that.cdpCacheAddress) &&
-                Objects.equals(cdpCacheDeviceId, that.cdpCacheDeviceId) &&
-                Objects.equals(cdpCacheDevicePort, that.cdpCacheDevicePort);
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, nodeId, cdpCacheIfIndex, cdpInterfaceName, cdpCacheAddress, cdpCacheDeviceId, cdpCacheDevicePort);
+        return Objects.hash(id);
     }
 
     @Override

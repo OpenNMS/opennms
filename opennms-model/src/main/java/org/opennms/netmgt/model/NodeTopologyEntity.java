@@ -33,7 +33,10 @@ import java.util.Objects;
 
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
-/** Simplified OnmsNode. We use it as a view on OnmsNode that has less attributes and no lazy loading */
+/**
+ * This is NOT a Hibernate/JPA entity but rather a lightweight model without less attributes than OnmsNode and no lazy
+ * loading. We use it to retrieve node information from the database fast.
+ */
 public class NodeTopologyEntity implements Serializable {
 
     private Integer id;
@@ -86,17 +89,12 @@ public class NodeTopologyEntity implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NodeTopologyEntity that = (NodeTopologyEntity) o;
-        return Objects.equals(id, that.id) &&
-                type == that.type &&
-                Objects.equals(sysObjectId, that.sysObjectId) &&
-                Objects.equals(label, that.label) &&
-                Objects.equals(location, that.location);
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, type, sysObjectId, label, location);
+        return Objects.hash(id);
     }
 
     @Override
