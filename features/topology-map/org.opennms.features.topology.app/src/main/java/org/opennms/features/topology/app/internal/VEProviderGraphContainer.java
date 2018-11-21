@@ -253,6 +253,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     }
 
     private long hash(Graph graph){
+        // we create a hash for the attributes that will require a redo of the layout, the rest of the
+        // attributes can be ignored.
         return Objects.hash(graph.getDisplayVertices(), graph.getDisplayEdges(), graph.getLayout());
     }
 
