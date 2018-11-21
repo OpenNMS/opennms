@@ -731,6 +731,64 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             return new NoFocusDefinedWindow(testCase);
         }
 
+        public BrowserTab getTab(String tab) {
+            return new BrowserTab(testCase, tab);
+        }
+    }
+
+    public interface Tabs {
+        String Alarms = "Alarms";
+        String Nodes = "Nodes";
+        String BusinessServices = "Business Services";
+        String Applications = "Applications";
+    }
+
+    public static class BrowserTab {
+        private final OpenNMSSeleniumTestCase testCase;
+        private final String tab;
+
+        private BrowserTab(OpenNMSSeleniumTestCase testCase, String tab) {
+            this.tab = Objects.requireNonNull(tab);
+            this.testCase = Objects.requireNonNull(testCase);
+        }
+
+        private WebElement getElement() {
+            String xpath = String.format("//*[@class='v-captiontext' and text() = '%s']", tab);
+            final WebElement tabElement = testCase.findElementByXpath(xpath);
+            if (!tabElement.isDisplayed()) {
+                throw new IllegalStateException("You are trying to access a non visible Browser Tab. Bailing");
+            }
+            return tabElement;
+        }
+
+        public void click() {
+            getElement().click();
+        }
+
+        public BrowserRow getRowByLabel(String label) {
+            return new BrowserRow(this, label);
+        }
+    }
+
+    public static class BrowserRow {
+
+        private final BrowserTab tab;
+        private final String label;
+
+        public BrowserRow(BrowserTab tab, String label) {
+            this.tab = Objects.requireNonNull(tab);
+            this.label = Objects.requireNonNull(label);
+        }
+
+        private WebElement getElement() {
+            String xpath = String.format("//table//td//*[text() = '%s']", label);
+            final WebElement labelElement = tab.testCase.findElementByXpath(xpath);
+            return labelElement;
+        }
+
+        public void click() {
+            getElement().click();
+        }
     }
 
     public static class NoFocusDefinedWindow {
@@ -740,15 +798,31 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             this.testCase = Objects.requireNonNull(testCase);
         }
 
-        public boolean isVisible() {
+        private WebElement getElement() {
             try {
                 // Reduce the timeout so we don't wait around for too long if there are no vertices in focus
-                testCase.setImplicitWait(1, TimeUnit.SECONDS);
-                try {
-                    return testCase.findElementById("no-focus-defined-window").isDisplayed();
-                } catch (NoSuchElementException ex) {
-                    return false;
-                }
+                testCase.setImplicitWait(5, TimeUnit.SECONDS);
+                return testCase.findElementById("no-focus-defined-window");
+            } finally {
+                testCase.setImplicitWait();
+            }
+        }
+
+        public boolean isVisible() {
+            try {
+                return getElement().isDisplayed();
+            } catch (NoSuchElementException e) {
+                return false;
+            }
+        }
+
+        public boolean isNoVerticesFoundTextVisible() {
+            try {
+                testCase.setImplicitWait(5, TimeUnit.SECONDS);
+                getElement().findElement(By.xpath((".//*[contains(text(), 'No vertices found')]")));
+                return true;
+            } catch (NoSuchElementException e) {
+                return false;
             } finally {
                 testCase.setImplicitWait();
             }
@@ -971,6 +1045,14 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         Assert.assertThat(topologyUiPage.getFocusedVertices(), hasSize(1));
         Assert.assertThat(topologyUiPage.getVisibleVertices(), hasSize(1));
         Assert.assertThat(topologyUiPage.getNoFocusDefinedWindow().isVisible(), is(false));
+    }
+
+    // See NMS-10453
+    @Test
+    public void verifyNoVerticesFoundTextIsShown() {
+        topologyUiPage.defaultFocus();
+        Assert.assertEquals(Boolean.TRUE, topologyUiPage.getNoFocusDefinedWindow().isVisible());
+        Assert.assertEquals(Boolean.TRUE, topologyUiPage.getNoFocusDefinedWindow().isNoVerticesFoundTextVisible());
     }
 
     /**
