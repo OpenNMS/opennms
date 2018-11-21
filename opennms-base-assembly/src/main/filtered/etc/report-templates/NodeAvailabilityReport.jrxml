@@ -85,7 +85,7 @@ FROM
     active_nodes.nodelabel,
     active_nodes.nodesyslocation,
     active_nodes.nodesysdescription,
-    EXTRACT (epoch from ('$P!{DS_START_TIME_STRING}'::TIMESTAMP + '$P!{DS_TIME_RANGE}'::INTERVAL) - '$P!{DS_START_TIME_STRING}'::TIMESTAMP) AS avail_total,
+    EXTRACT (epoch from ('$P!{DS_START_TIME_STRING}'::TIMESTAMP WITH TIME ZONE + '$P!{DS_TIME_RANGE}'::INTERVAL) - '$P!{DS_START_TIME_STRING}'::TIMESTAMP WITH TIME ZONE) AS avail_total,
     CASE
       WHEN
         outage_scope.duration IS NULL
@@ -113,8 +113,8 @@ FROM
       (SELECT
         ipinterface.nodeid,
         outages.svclosteventid AS "svclosteventid",
-        least(('$P!{DS_START_TIME_STRING}'::TIMESTAMP + '$P!{DS_TIME_RANGE}'::INTERVAL), outages.ifregainedservice) AS ifregainedservice,
-        greatest('$P!{DS_START_TIME_STRING}'::TIMESTAMP,outages.iflostservice) AS iflostservice
+        least(('$P!{DS_START_TIME_STRING}'::TIMESTAMP WITH TIME ZONE + '$P!{DS_TIME_RANGE}'::INTERVAL), outages.ifregainedservice) AS ifregainedservice,
+        greatest('$P!{DS_START_TIME_STRING}'::TIMESTAMP WITH TIME ZONE,outages.iflostservice) AS iflostservice
        FROM
         outages
       JOIN
@@ -131,7 +131,8 @@ FROM
         ifservices.ipinterfaceid = ipinterface.id
       WHERE
          events.eventuei = 'uei.opennms.org/nodes/nodeDown'
-         AND (iflostservice, COALESCE(ifregainedservice,'$P!{DS_END_TIME_STRING}'::TIMESTAMP)) OVERLAPS ('$P!{DS_START_TIME_STRING}'::TIMESTAMP, '$P!{DS_START_TIME_STRING}'::TIMESTAMP + '$P!{DS_TIME_RANGE}'::INTERVAL))
+         AND greatest('$P!{DS_START_TIME_STRING}'::TIMESTAMP WITH TIME ZONE,outages.iflostservice) < least(('$P!{DS_START_TIME_STRING}'::TIMESTAMP WITH TIME ZONE + '$P!{DS_TIME_RANGE}'::INTERVAL), outages.ifregainedservice)
+         AND (iflostservice, COALESCE(ifregainedservice,'$P!{DS_END_TIME_STRING}'::TIMESTAMP WITH TIME ZONE)) OVERLAPS ('$P!{DS_START_TIME_STRING}'::TIMESTAMP WITH TIME ZONE, '$P!{DS_START_TIME_STRING}'::TIMESTAMP WITH TIME ZONE + '$P!{DS_TIME_RANGE}'::INTERVAL))
       AS
         raw_outages
     GROUP BY
@@ -280,8 +281,8 @@ ORDER BY
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-	'$P!{START_TIME_STRING}'::TIMESTAMP AS start,
-	'$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL AS end]]>
+	'$P!{START_TIME_STRING}'::TIMESTAMP WITH TIME ZONE AS start,
+	'$P!{START_TIME_STRING}'::TIMESTAMP WITH TIME ZONE + '$P!{TIME_RANGE}'::INTERVAL AS end]]>
 	</queryString>
 	<field name="start" class="java.sql.Timestamp"/>
 	<field name="end" class="java.sql.Timestamp"/>
