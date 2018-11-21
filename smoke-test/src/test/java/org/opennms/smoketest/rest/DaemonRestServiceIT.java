@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,6 +56,8 @@ import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
+
+import com.google.common.collect.Lists;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -208,16 +209,19 @@ public class DaemonRestServiceIT extends OpenNMSSeleniumTestCase {
         given().body("").post("/reload/eventd/").then()
                 .assertThat().statusCode(204);
 
-        List<String> al = new ArrayList<>();
-        al.add(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI);
-        List<OnmsEvent> successfulEventsAfterReload = eventDao.getEventsAfterDate(al, time);
+        final List<OnmsEvent> successfulEventsAfterReload = new ArrayList<>();
 
-        Assert.assertThat(successfulEventsAfterReload, hasSize(1));
+        await().atMost(5, TimeUnit.SECONDS)
+                .pollDelay(1, TimeUnit.SECONDS)
+                .until(() -> {
+                    successfulEventsAfterReload.clear();
+                    successfulEventsAfterReload.addAll(eventDao.getEventsAfterDate(
+                            Lists.newArrayList(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI), time));
+                    return successfulEventsAfterReload.size() == 1;
+                });
 
-        if (successfulEventsAfterReload.size() == 1) {
-            eventDao.delete(successfulEventsAfterReload.get(0));
-            checkOnce("eventd", 200, DaemonReloadState.Reloading);
-        }
+        eventDao.delete(successfulEventsAfterReload.get(0));
+        checkOnce("eventd", 200, DaemonReloadState.Reloading);
     }
 
     private void verifyFailureState(EventDao eventDao) {
