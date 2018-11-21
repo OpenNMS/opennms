@@ -92,17 +92,13 @@
                              intervals)%>
             </td>
           </tr>
-          <tr>
-            <td colspan="2">
-              <input type="reset" class="btn btn-secondary"/>
-            </td>
-          </tr>
         </table>
       </div> <!-- column -->
     </div> <!-- row -->
   </div> <!-- card-body -->
   <div class="card-footer">
-    <a HREF="javascript:document.groupIntervals.submit()">Next &#155;&#155;&#155;</a>
+      <input type="reset" class="btn btn-secondary"/>
+      <a class="btn btn-secondary" href="javascript:document.groupIntervals.submit()">Next Step <i class="fa fa-arrow-right"></i></a>
   </div> <!-- card-footer -->
 </div> <!-- panel -->
 
@@ -128,7 +124,7 @@
     
     public String buildIntervalSelect(Path path, String group, int index, String[] intervals)
     {
-        StringBuffer buffer = new StringBuffer("<select class=\"form-control\" NAME=\"" + group + "Interval\">");
+        StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" NAME=\"" + group + "Interval\">");
         
         String selectedOption = "0m";
         

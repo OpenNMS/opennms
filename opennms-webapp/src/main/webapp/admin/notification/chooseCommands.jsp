@@ -115,10 +115,10 @@
         <%=buildCommands(newPath, WebSecurityUtils.safeParseInt(request.getParameter("targetIndex")))%>
       </div>
     </div>
-    <input type="reset" class="btn btn-secondary"/>
   </div> <!-- card-body -->
   <div class="card-footer">
-    <a href="javascript:next()">Next &#155;&#155;&#155;</a>
+      <input type="reset" class="btn btn-secondary"/>
+      <a class="btn btn-secondary" href="javascript:next()">Next Step <i class="fa fa-arrow-right"></i></a>
   </div>
 </div> <!-- panel -->
 
@@ -165,7 +165,7 @@
     public String buildCommandSelect(Path path, int index, String name)
       throws ServletException
     {
-        StringBuffer buffer = new StringBuffer("<select class=\"form-control\" multiple size=\"3\" NAME=\"" + name + "Commands\">");
+        StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" multiple size=\"3\" NAME=\"" + name + "Commands\">");
         
         TreeMap<String, Command> commands = null;
         Collection<String> selectedOptions = null;
@@ -203,7 +203,7 @@
     public String buildAutoNotifySelect(String name, String currValue)
     {
           String values[] = {"off", "auto", "on"};
-          StringBuffer buffer = new StringBuffer("<select class=\"form-control\" size=\"3\" NAME=\"" + name  + "AutoNotify\">");
+          StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" size=\"3\" NAME=\"" + name  + "AutoNotify\">");
           String defaultOption = "on";
  
           if(currValue == null || currValue.equals("")) {
