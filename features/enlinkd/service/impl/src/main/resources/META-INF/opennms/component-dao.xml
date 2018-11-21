@@ -28,6 +28,7 @@
     <bean id="ipNetToMediaTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.IpNetToMediaTopologyServiceImpl">
         <property name="ipNetToMediaDao" ref="ipNetToMediaDao" />
     </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService" ref="ipNetToMediaTopologyService" />
         
    <bean id="cdpTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.CdpTopologyServiceImpl">
       <property name="cdpLinkDao" ref="cdpLinkDao" />
