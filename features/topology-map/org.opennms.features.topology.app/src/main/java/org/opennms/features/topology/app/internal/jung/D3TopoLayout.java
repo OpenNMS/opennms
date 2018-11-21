@@ -110,10 +110,6 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
     @Override
     public void step() {
 
-        if(getGraph().getEdges().isEmpty() && getGraph().getVertices().isEmpty()){
-            m_alpha = 0; // => makes done() == true. We don't need to iterate over nothing
-        }
-
         double currentForce;
 
         //guass-seidel relaxation for links
@@ -210,7 +206,10 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
 
     @Override
     public boolean done() {
-        return m_alpha < 0.005;
+        return
+                // if we have no objects in our graph to layout we are done:
+                (getGraph().getEdges().isEmpty() && getGraph().getVertices().isEmpty())
+             || m_alpha < 0.005;
     }
 
     private VertexData getVertexData(V v) {
