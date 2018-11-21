@@ -35,5 +35,3 @@ In above example, offHeapSize is configured to 1.2GB.
 That is 1288490188 bytes.
 For ex: 1.2MB is valid.
 1gb is not valid.
-
-When using _Kafka_ as sink strategy, each sink message will expire after 30sec by default, see issue: link:https://issues.opennms.org/browse/NMS-10395[NMS-10395]
