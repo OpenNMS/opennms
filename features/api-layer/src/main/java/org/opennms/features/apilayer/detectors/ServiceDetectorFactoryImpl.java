@@ -31,15 +31,17 @@ package org.opennms.features.apilayer.detectors;
 import java.net.InetAddress;
 import java.util.Map;
 
+import org.opennms.integration.api.v1.detectors.DetectRequest;
 import org.opennms.integration.api.v1.detectors.ServiceDetector;
 import org.opennms.integration.api.v1.detectors.ServiceDetectorFactory;
-import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.DetectResults;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 
 /**
  *  Maps {@link ServiceDetectorFactory} implementations to {@link org.opennms.netmgt.provision.ServiceDetectorFactory}
  */
-public class ServiceDetectorFactoryImpl implements org.opennms.netmgt.provision.ServiceDetectorFactory {
+public class ServiceDetectorFactoryImpl<T extends org.opennms.netmgt.provision.ServiceDetector> implements org.opennms.netmgt.provision.ServiceDetectorFactory<T> {
 
     private final ServiceDetectorFactory serviceDetectorFactory;
 
@@ -53,27 +55,31 @@ public class ServiceDetectorFactoryImpl implements org.opennms.netmgt.provision.
     }
 
     @Override
-    public org.opennms.netmgt.provision.ServiceDetector createDetector() {
+    @SuppressWarnings("unchecked")
+    public T createDetector(Map<String, String> properties) {
         ServiceDetector serviceDetector = serviceDetectorFactory.createDetector();
-        return new ServiceDetectorImpl(serviceDetector);
+        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(serviceDetector);
+        wrapper.setPropertyValues(properties);
+        return (T) new ServiceDetectorImpl(serviceDetector);
     }
 
     @Override
-    public void afterDetect(DetectRequest request, DetectResults results, Integer nodeId) {
-        // pass
+    public void afterDetect(org.opennms.netmgt.provision.DetectRequest request, DetectResults results, Integer nodeId) {
+        //pass
     }
 
     @Override
-    public DetectRequest buildRequest(String location, InetAddress address, Integer port, Map attributes) {
-        return new DetectRequest() {
+    public org.opennms.netmgt.provision.DetectRequest buildRequest(String location, InetAddress address, Integer port, Map attributes) {
+        DetectRequest detectRequest = serviceDetectorFactory.buildRequest(address, attributes);
+        return new org.opennms.netmgt.provision.DetectRequest() {
             @Override
             public InetAddress getAddress() {
-                return address;
+                return detectRequest.getAddress();
             }
 
             @Override
             public Map<String, String> getRuntimeAttributes() {
-                return attributes;
+                return detectRequest.getRuntimeAttributes();
             }
         };
     }

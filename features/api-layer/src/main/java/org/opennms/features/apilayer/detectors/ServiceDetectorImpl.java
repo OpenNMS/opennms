@@ -37,9 +37,9 @@ import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
 
 /**
- *   Maps {@link ServiceDetector} with {@link AsyncServiceDetector}
- *   All service detectors from integration-api are async in nature.
- *   All Setters are ignored here.
+ * Maps {@link ServiceDetector} with {@link AsyncServiceDetector}
+ * All service detectors from integration-api are async in nature.
+ * All Setters are ignored here.
  */
 public class ServiceDetectorImpl implements AsyncServiceDetector {
 
@@ -75,43 +75,67 @@ public class ServiceDetectorImpl implements AsyncServiceDetector {
         return detector.getServiceName();
     }
 
+    /**
+     * Not supported on {@link ServiceDetector}
+     * throws {@link UnsupportedOperationException}
+     */
     @Override
     public void setServiceName(String serviceName) {
-        //pass
-    }
-
-    @Override
-    public int getPort() {
-        return detector.getPort();
-    }
-
-    @Override
-    public void setPort(int port) {
-        // pass
-    }
-
-    @Override
-    public int getTimeout() {
-        return detector.getTimeout();
-    }
-
-    @Override
-    public void setTimeout(int timeout) {
-        //pass
+        throw new UnsupportedOperationException();
     }
 
     /**
-     *
-     * @return No matching api, return null
+     * Not supported on {@link ServiceDetector}
+     * throws {@link UnsupportedOperationException}
+     */
+    @Override
+    public int getPort() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Not supported on {@link ServiceDetector}
+     * throws {@link UnsupportedOperationException}
+     */
+    @Override
+    public void setPort(int port) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Not supported on {@link ServiceDetector}
+     * throws {@link UnsupportedOperationException}
+     */
+    @Override
+    public int getTimeout() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Not supported on {@link ServiceDetector}
+     * throws {@link UnsupportedOperationException}
+     */
+    @Override
+    public void setTimeout(int timeout) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Not supported on {@link ServiceDetector}
+     * throws {@link UnsupportedOperationException}
      */
     @Override
     public String getIpMatch() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
+    /**
+     * Not supported on {@link ServiceDetector}
+     * throws {@link UnsupportedOperationException}
+     */
     @Override
     public void setIpMatch(String ipMatch) {
-        // pass
+        throw new UnsupportedOperationException();
     }
 
     @Override

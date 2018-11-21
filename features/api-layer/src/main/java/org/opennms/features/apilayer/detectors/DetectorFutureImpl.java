@@ -83,10 +83,7 @@ public class DetectorFutureImpl implements DetectFuture {
         try {
             DetectResults detectResults = future.get();
             setServiceDetected(detectResults.isServiceDetected());
-        } catch (InterruptedException e) {
-            setServiceDetected(false);
-            setException(e);
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             setServiceDetected(false);
             setException(e);
         }
