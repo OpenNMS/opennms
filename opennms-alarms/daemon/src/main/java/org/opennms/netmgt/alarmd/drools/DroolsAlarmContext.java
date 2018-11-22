@@ -205,16 +205,17 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             }
         }
         // Remove Fact for any Alarms no longer in the Situation
-        associationFacts.values().stream()
-            .map(fact -> fact.getAlarmAssociation().getRelatedAlarm().getId())
-                .filter(alarmId -> !situation.getRelatedAlarmIds().contains(alarmId))
-            .forEach(alarmId -> {
-                final AlarmAssociationAndFact associationAndFact = associationFacts.remove(alarmId);
-                if (associationAndFact != null) {
-                    LOG.debug("Deleting AlarmAssociationAndFact from session: {}", associationAndFact.getAlarmAssociation());
-                    getKieSession().delete(associationAndFact.getFact());
-                }
-            });
+        Set<Integer> deletedAlarmIds = associationFacts.values().stream()
+                .map(fact -> fact.getAlarmAssociation().getRelatedAlarm().getId())
+                    .filter(alarmId -> !situation.getRelatedAlarmIds().contains(alarmId))
+                    .collect(Collectors.toSet());
+        deletedAlarmIds.stream().forEach(alarmId -> {
+            final AlarmAssociationAndFact associationAndFact = associationFacts.remove(alarmId);
+            if (associationAndFact != null) {
+                LOG.debug("Deleting AlarmAssociationAndFact from session: {}", associationAndFact.getAlarmAssociation());
+                getKieSession().delete(associationAndFact.getFact());
+            }
+        });
     }
 
     private void handleAlarmAcknowledgements(OnmsAlarm alarm) {
