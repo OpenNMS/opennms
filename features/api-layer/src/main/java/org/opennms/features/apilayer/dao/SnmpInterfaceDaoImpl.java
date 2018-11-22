@@ -34,14 +34,17 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.apilayer.utils.ModelMappers;
 import org.opennms.integration.api.v1.dao.SnmpInterfaceDao;
 import org.opennms.integration.api.v1.model.SnmpInterface;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 
 public class SnmpInterfaceDaoImpl implements SnmpInterfaceDao {
 
     private final org.opennms.netmgt.dao.api.SnmpInterfaceDao snmpInterfaceDao;
+    private final SessionUtils sessionUtils;
 
-    public SnmpInterfaceDaoImpl(org.opennms.netmgt.dao.api.SnmpInterfaceDao snmpInterfaceDao) {
+    public SnmpInterfaceDaoImpl(org.opennms.netmgt.dao.api.SnmpInterfaceDao snmpInterfaceDao, SessionUtils sessionUtils) {
         this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
+        this.sessionUtils = Objects.requireNonNull(sessionUtils);
     }
 
     @Override
@@ -54,7 +57,7 @@ public class SnmpInterfaceDaoImpl implements SnmpInterfaceDao {
     public SnmpInterface findByNodeIdAndDescrOrName(Integer nodeId, String descrOrName) {
         // Note that the SnmpInterfaceDaoHibernate#findByNodeIdAndDescription method actually
         // searches by either the ifName or the ifDescr
-        return ModelMappers.toSnmpInterface(snmpInterfaceDao.findByNodeIdAndDescription(nodeId, descrOrName));
+        return sessionUtils.withReadOnlyTransaction(() -> ModelMappers.toSnmpInterface(snmpInterfaceDao.findByNodeIdAndDescription(nodeId, descrOrName)));
     }
 
 }

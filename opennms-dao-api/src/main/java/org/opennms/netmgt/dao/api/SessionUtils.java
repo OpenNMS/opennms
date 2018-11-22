@@ -51,6 +51,15 @@ public interface SessionUtils {
     <V> V withTransaction(Supplier<V> supplier);
 
     /**
+     * Invoked the given supplier within the context of a read-only transaction.
+     *
+     * @param supplier supplier to invoke
+     * @param <V> type returned by the supplier
+     * @return value returned by the supplier
+     */
+    <V> V withReadOnlyTransaction(Supplier<V> supplier);
+
+    /**
      * Converts the flush mode for the current session factory to MANUAL
      * for the duration of the call to the given supplier.
      *
