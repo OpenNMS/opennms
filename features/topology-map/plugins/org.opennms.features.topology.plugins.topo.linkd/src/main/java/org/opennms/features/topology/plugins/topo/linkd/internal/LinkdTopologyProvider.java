@@ -124,7 +124,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private IpNetToMediaTopologyService m_ipNetToMediaTopologyService;
 
     private Map<Integer, OnmsIpInterface> m_nodeToOnmsIpPrimaryMap =new HashMap<>();
-    private Table<Integer, Integer,OnmsSnmpInterface> m_nodeToOnmsSnmpMap = HashBasedTable.create();
+    private Table<Integer, Integer,OnmsSnmpInterface> m_nodeToOnmsSnmpTable = HashBasedTable.create();
     private Map<String, Integer> m_macToNodeidMap = new HashMap<>();
     private Map<String, OnmsIpInterface> m_macToOnmsIpMap = new HashMap<>();
     private Map<String, OnmsSnmpInterface> m_macToOnmsSnmpMap = new HashMap<>();
@@ -162,8 +162,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     private OnmsSnmpInterface getSnmpInterface(Integer nodeid, Integer ifindex) {
-        if(m_nodeToOnmsSnmpMap.contains(nodeid,ifindex) ) {
-                return m_nodeToOnmsSnmpMap.get(nodeid,ifindex);
+        if(m_nodeToOnmsSnmpTable.contains(nodeid,ifindex) ) {
+                return m_nodeToOnmsSnmpTable.get(nodeid,ifindex);
         }
         OnmsSnmpInterface snmpiface = new OnmsSnmpInterface();
         OnmsNode node = new OnmsNode();
@@ -573,8 +573,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         vcontext = m_loadSnmpInterfacesTimer.time();
         try {
             for (OnmsSnmpInterface snmp: m_snmpInterfaceDao.findAll()) {
-                if (!m_nodeToOnmsSnmpMap.contains(snmp.getNode().getId(),snmp.getIfIndex())) {
-                    m_nodeToOnmsSnmpMap.put(snmp.getNode().getId(),snmp.getIfIndex(),snmp);
+                if (!m_nodeToOnmsSnmpTable.contains(snmp.getNode().getId(),snmp.getIfIndex())) {
+                    m_nodeToOnmsSnmpTable.put(snmp.getNode().getId(),snmp.getIfIndex(),snmp);
                 }
             }
             LOG.info("refresh: Snmp Interface loaded");
@@ -612,8 +612,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 } else {
                     LOG.debug("refresh: ipNetToMedia: {}:{}. Multiple OnmsIpInterface found.", mac,InetAddressUtils.str(ipAddr));
                 }
-                if (m_nodeToOnmsSnmpMap.containsRow(onmsip.getNodeId())) {
-                    for (OnmsSnmpInterface onmssnmp : m_nodeToOnmsSnmpMap.row(onmsip.getNodeId()).values() ) {
+                if (m_nodeToOnmsSnmpTable.containsRow(onmsip.getNodeId())) {
+                    for (OnmsSnmpInterface onmssnmp : m_nodeToOnmsSnmpTable.row(onmsip.getNodeId()).values() ) {
                         if (!m_macToOnmsSnmpMap.containsKey(mac)) {
                             m_macToOnmsSnmpMap.put(mac, onmssnmp);
                         } else if (m_macToOnmsSnmpMap.get(mac).getId().intValue() == onmssnmp.getId() ) {
@@ -659,7 +659,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         final Timer.Context context = m_loadFullTimer.time();
         try {
             resetContainer();
-            m_nodeToOnmsSnmpMap.clear();
+            m_nodeToOnmsSnmpTable.clear();
             m_nodeToOnmsIpPrimaryMap.clear();
             m_macToNodeidMap.clear();
             m_macToOnmsIpMap.clear();

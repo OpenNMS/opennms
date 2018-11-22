@@ -30,13 +30,17 @@ package org.opennms.netmgt.enlinkd.service.impl;
 
 import java.net.InetAddress;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
 import org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +57,7 @@ public class IpNetToMediaTopologyServiceImpl implements
     private final static Logger LOG = LoggerFactory.getLogger(IpNetToMediaTopologyServiceImpl.class);
 
     private IpNetToMediaDao m_ipNetToMediaDao;
+    private IpInterfaceDao m_ipInterfaceDao;    
 
     public IpNetToMediaTopologyServiceImpl() {
     }
@@ -91,9 +96,10 @@ public class IpNetToMediaTopologyServiceImpl implements
 
             @Override
             protected IpNetToMedia doUpdate(IpNetToMedia dbIpNetToMedia) {
-                final OnmsNode node = new OnmsNode();
-                node.setId(nodeId);
-                saveMe.setSourceNode(node);
+                final OnmsNode sourceNode = new OnmsNode();
+                sourceNode.setId(nodeId);
+                saveMe.setSourceNode(sourceNode);
+                putOnmsPropertyForIpNetToMedia(saveMe);
                 dbIpNetToMedia.merge(saveMe);
                 m_dao.update(dbIpNetToMedia);
                 m_dao.flush();
@@ -105,6 +111,7 @@ public class IpNetToMediaTopologyServiceImpl implements
                 final OnmsNode node = new OnmsNode();
                 node.setId(nodeId);
                 saveMe.setSourceNode(node);
+                putOnmsPropertyForIpNetToMedia(saveMe);
                 saveMe.setLastPollTime(saveMe.getCreateTime());
                 m_dao.saveOrUpdate(saveMe);
                 m_dao.flush();
@@ -112,6 +119,26 @@ public class IpNetToMediaTopologyServiceImpl implements
             }
 
         }.execute();
+    }
+    
+    
+    private void putOnmsPropertyForIpNetToMedia(final IpNetToMedia ipnetToMedia) {
+
+        List<OnmsIpInterface> onmsiplist = m_ipInterfaceDao.findByIpAddress(InetAddressUtils.str(ipnetToMedia.getNetAddress()));
+        if (onmsiplist.isEmpty() || onmsiplist.size() > 1) {
+            return;
+        }
+        OnmsIpInterface onmsip = onmsiplist.iterator().next();
+        ipnetToMedia.setNode(onmsip.getNode());
+        if (onmsip.getSnmpInterface() == null) {
+            return;
+        }
+        ipnetToMedia.setIfIndex(onmsip.getIfIndex());
+        if (onmsip.getSnmpInterface().getIfAlias() != null ) {
+                ipnetToMedia.setPort(onmsip.getSnmpInterface().getIfName()
+                                     +"("+onmsip.getSnmpInterface().getIfAlias()+")");
+            
+        }
     }
     
     public IpNetToMediaDao getIpNetToMediaDao() {
@@ -136,6 +163,14 @@ public class IpNetToMediaTopologyServiceImpl implements
                     }
                     )
                 );        
+    }
+
+    public IpInterfaceDao getIpInterfaceDao() {
+        return m_ipInterfaceDao;
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        m_ipInterfaceDao = ipInterfaceDao;
     }
 
 }
