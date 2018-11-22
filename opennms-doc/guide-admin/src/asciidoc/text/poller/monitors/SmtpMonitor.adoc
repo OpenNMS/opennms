@@ -30,7 +30,7 @@ The behaviour can be simulated with `telnet` or `netcat`:
 
 ===== Configuration and Usage
 
-.Monitor specific parameters for the Pop3Monitor
+.Monitor specific parameters for the SmtpMonitor
 [options="header, autowidth"]
 |===
 | Parameter            | Description                                                                                | Required | Default value
