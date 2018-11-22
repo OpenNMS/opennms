@@ -30,6 +30,7 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 /**
  * This is NOT a Hibernate/JPA entity but rather a lightweight model without less attributes than OnmsNode and no lazy
@@ -49,6 +50,10 @@ public class NodeTopologyEntity implements Serializable {
         this.sysObjectId = nodesysoid;
         this.label = nodelabel;
         this.location = location;
+    }
+
+    public NodeTopologyEntity(Integer id, OnmsNode.NodeType type, String sysObjectId, String label, OnmsMonitoringLocation location){
+        this(id, type, sysObjectId, label, location.getLocationName());
     }
 
     public static NodeTopologyEntity toVertexInfo(OnmsNode node){
