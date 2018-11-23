@@ -43,8 +43,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 public class TopologyEntityCacheImpl implements TopologyEntityCache {
-
-
+    
     private final static Logger LOG = LoggerFactory.getLogger(TopologyEntityCacheImpl.class);
     private final static String KEY = "KEY";
     private final static String SYSTEM_PROPERTY_CACHE_DURATION = "org.opennms.ui.topology-entity-cache-duration";
