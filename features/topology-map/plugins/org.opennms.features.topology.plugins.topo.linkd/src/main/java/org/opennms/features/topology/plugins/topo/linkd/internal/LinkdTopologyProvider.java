@@ -28,7 +28,6 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -62,9 +61,10 @@ import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
-import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
+import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
 import org.opennms.netmgt.model.FilterManager;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -123,11 +123,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private IsisTopologyService m_isisTopologyService;
     private IpNetToMediaTopologyService m_ipNetToMediaTopologyService;
 
+    Map<String,MacPort> m_macPorts;
+
     private Map<Integer, OnmsIpInterface> m_nodeToOnmsIpPrimaryMap =new HashMap<>();
     private Table<Integer, Integer,OnmsSnmpInterface> m_nodeToOnmsSnmpTable = HashBasedTable.create();
-    private Map<String, Integer> m_macToNodeidMap = new HashMap<>();
-    private Map<String, OnmsIpInterface> m_macToOnmsIpMap = new HashMap<>();
-    private Map<String, OnmsSnmpInterface> m_macToOnmsSnmpMap = new HashMap<>();
 
     private final Timer m_loadFullTimer;
     private final Timer m_loadIpInterfacesTimer;
@@ -242,6 +241,18 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             context.stop();
         }
 
+        context = m_loadIpNetToMediaTimer.time();
+        try { 
+            m_ipNetToMediaTopologyService.getMacPorts().stream().forEach( mp -> {
+               mp.getMacPortMap().keySet().stream().forEach( m -> m_macPorts.put(m, mp)); 
+            });            
+            LOG.info("loadEdges: IpNetToMedia loaded");
+        } catch (Exception e){
+            LOG.error("Loading ipNetToMedia failed: {}",e.getMessage(),e);
+        } finally {
+            context.stop();
+        }
+
         context = m_loadBridgeLinksTimer.time();
         try{
             getBridgeLinks();
@@ -334,8 +345,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         }
     }
 
+    
     private void getBridgeLinks() throws BridgeTopologyException {
-        
         for (BroadcastDomain domain: m_bridgeTopologyService.findAll()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getBridgeLinks:\n {}", domain.printTopology());
@@ -351,54 +362,97 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         }
     }
     
+    /*
+             vcontext = m_loadIpNetToMediaTimer.time();
+
+        // mac -> ip[]  ->  snmp[]    —> macToNodeMap
+        // mac -> ip    ->  snmp      —> macToNodeMap, macToIpMap, macToSnmpMap
+        // mac -> ip    ->  no snmp   —> macToNodeMap, macToIpMap
+        // mac -> ip[]  ->  no snmp   —> macToNodeMap
+        // mac -> ip[]  ->  snmp      —> macToSnmpMap
+        Map<InetAddress, String> iptoMacMap = m_ipNetToMediaTopologyService.getIpMacMap();
+        try {
+            for (InetAddress ipAddr: iptoMacMap.keySet()) {
+                OnmsIpInterface onmsip = ipToOnmsIpMap.get(ipAddr);
+                String mac = iptoMacMap.get(ipAddr);
+                if (onmsip == null) {
+                    LOG.debug("refresh: ipNetToMedia: {}:{}. No OnmsIpInterface found.", mac,InetAddressUtils.str(ipAddr));
+                    continue;
+                }
+                LOG.debug("refresh: ipNetToMedia: {}:{}. OnmsIpInterface found node:[{}].", mac,
+                          InetAddressUtils.str(ipAddr),onmsip.getNodeId());
+
+                if (!m_macToNodeidMap.containsKey(mac)) {
+                    m_macToNodeidMap.put(mac, onmsip.getNodeId());
+                }
+
+                if (!m_macToOnmsIpMap.containsKey(mac)) {
+                    m_macToOnmsIpMap.put(mac, onmsip);
+                } else {
+                    LOG.debug("refresh: ipNetToMedia: {}:{}. Multiple OnmsIpInterface found.", mac,InetAddressUtils.str(ipAddr));
+                }
+                if (m_nodeToOnmsSnmpTable.containsRow(onmsip.getNodeId())) {
+                    for (OnmsSnmpInterface onmssnmp : m_nodeToOnmsSnmpTable.row(onmsip.getNodeId()).values() ) {
+                        if (!m_macToOnmsSnmpMap.containsKey(mac)) {
+                            m_macToOnmsSnmpMap.put(mac, onmssnmp);
+                        } else if (m_macToOnmsSnmpMap.get(mac).getId().intValue() == onmssnmp.getId() ) {
+                            continue;
+                        } else {
+                            LOG.debug("refresh: ipNetToMedia: {}:{}. Multiple OnmsSnmpInterface found.", mac,InetAddressUtils.str(ipAddr));                                
+                        }
+                    }
+                } else {
+                    LOG.debug("refresh: ipNetToMedia: {}:{}. No OnmsSnmpInterface found.", mac,InetAddressUtils.str(ipAddr));
+                }
+            }
+            LOG.info("refresh: IpNetToMedia loaded");
+        } catch (Exception e){
+            LOG.error("Loading ipNetToMedia failed: {}",e.getMessage(),e);
+        } finally {
+            vcontext.stop();
+        }
+ 
+ 
+     */
     private void parseSegment(SharedSegment segment) throws BridgeTopologyException {
-        Map<BridgePort,LinkdVertex> portToVertexMap = new HashMap<BridgePort, LinkdVertex>();
+        Map<BridgePort,LinkdVertex> portToNodeVertexMap = new HashMap<BridgePort, LinkdVertex>();
         for (BridgePort bp : segment.getBridgePortsOnSegment()) {
             LinkdVertex vertex = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, bp.getNodeId().toString());
             vertex.getProtocolSupported().add(ProtocolSupported.BRIDGE);
-            portToVertexMap.put(bp,vertex);
+            portToNodeVertexMap.put(bp,vertex);
         }
         
-        Set<String> nomappedmacs = new HashSet<String>();
-        Map<String,LinkdVertex> macToVertexMap = new HashMap<String, LinkdVertex>();
+        Set<String> noMappedToIpMacs = new HashSet<String>();
+        Set<MacPort> noNodeMacPorts = new HashSet<MacPort>();
+        Map<MacPort,LinkdVertex> macPortToNodeVertexMap = new HashMap<MacPort, LinkdVertex>();
         for (String mac: segment.getMacsOnSegment()) {
-           OnmsSnmpInterface targetsnmpIface = m_macToOnmsSnmpMap.get(mac);
-           if (targetsnmpIface != null) {
-               LinkdVertex vertex = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, targetsnmpIface.getNode().getNodeId());
+           MacPort port = m_macPorts.get(mac);
+           if (port == null) {
+                noMappedToIpMacs.add(mac);
+                continue;
+           }
+           if (port.getNodeId() != null) {
+               LinkdVertex vertex = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, port.getNodeId().toString());
                vertex.getProtocolSupported().add(ProtocolSupported.BRIDGE);
-               macToVertexMap.put(mac,vertex);
+               macPortToNodeVertexMap.put(port,vertex);
                continue;
            }
-           OnmsIpInterface targetipIface = m_macToOnmsIpMap.get(mac);
-           if (targetipIface != null) {
-               LinkdVertex vertex = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, targetipIface.getNode().getNodeId());
-               vertex.getProtocolSupported().add(ProtocolSupported.BRIDGE);
-               macToVertexMap.put(mac,vertex);
-               continue;
-           }
-           if (m_macToNodeidMap.containsKey(mac)) {
-               Integer nodeid = m_macToNodeidMap.get(mac);
-               LinkdVertex vertex = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, nodeid.toString());
-               vertex.getProtocolSupported().add(ProtocolSupported.BRIDGE);
-               macToVertexMap.put(mac,vertex);
-               continue;
-           }
-           nomappedmacs.add(mac);
+           noNodeMacPorts.add(port);
         }
         
-        if (portToVertexMap.size() == 2 && 
+        if (portToNodeVertexMap.size() == 2 && 
             segment.getMacsOnSegment().size() == 0) {
             LinkdVertex source = null;
             LinkdVertex target = null;
             BridgePort sourcebp = null;
             BridgePort targetbp = null;
-            for (BridgePort bp: portToVertexMap.keySet()) {
+            for (BridgePort bp: portToNodeVertexMap.keySet()) {
                 if (bp.getNodeId() == segment.getDesignatedBridge()) {
-                    source = portToVertexMap.get(bp);
+                    source = portToNodeVertexMap.get(bp);
                     sourcebp = bp;
                     continue;
                 } 
-                target = portToVertexMap.get(bp);
+                target = portToNodeVertexMap.get(bp);
                 targetbp=bp;
             }
             OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourcebp.getNodeId(), sourcebp.getBridgePortIfIndex());
@@ -411,66 +465,67 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                             ProtocolSupported.BRIDGE);
             return;
         }
-        if (portToVertexMap.size() == 1 && 
-                macToVertexMap.size() == 1 && 
-                segment.getMacsOnSegment().size() == 1) {
-            LinkdVertex source = portToVertexMap.values().iterator().next();
-            LinkdVertex target = macToVertexMap.values().iterator().next();
-            BridgePort sourcebp = portToVertexMap.keySet().iterator().next();
-            String targetmac = macToVertexMap.keySet().iterator().next();
+        if (portToNodeVertexMap.size() == 1 && 
+                macPortToNodeVertexMap.size() == 1 ) {
+            LinkdVertex sourceVertex = portToNodeVertexMap.values().iterator().next();
+            LinkdVertex targetVertex = macPortToNodeVertexMap.values().iterator().next();
+            BridgePort sourceBridgePort = portToNodeVertexMap.keySet().iterator().next();
+            MacPort targetMacPort = macPortToNodeVertexMap.keySet().iterator().next();
             
-            OnmsSnmpInterface sourceinterface = getSnmpInterface(sourcebp.getNodeId(), sourcebp.getBridgePortIfIndex());
-            OnmsSnmpInterface targetinterface = m_macToOnmsSnmpMap.get(targetmac);
-            OnmsIpInterface targetipinterface = m_macToOnmsIpMap.get(targetmac);
-            StringBuffer targetAddr = new StringBuffer();
-            targetAddr.append(targetmac); 
-            if (targetipinterface != null) {
-                targetAddr.append(":");
-                targetAddr.append(InetAddressUtils.str(targetipinterface.getIpAddress()));
-            } else {
-                targetAddr.append("Multiple ip addresses");                
-            }
-            connectVertices(getEdgeId(sourcebp, targetmac), source, target,sourceinterface,targetinterface,
-                            "bp: "+sourcebp.getBridgePort(),
-                            targetAddr.toString(),
+            OnmsSnmpInterface sourceinterface = getSnmpInterface(sourceBridgePort.getNodeId(), sourceBridgePort.getBridgePortIfIndex());
+            OnmsSnmpInterface targetinterface = getSnmpInterface(targetMacPort.getNodeId(),targetMacPort.getMacPortIfIndex());
+            connectVertices(getEdgeId(sourceBridgePort, targetMacPort.getMacPortMap().keySet().toString()), sourceVertex, targetVertex,sourceinterface,targetinterface,
+                            "bp: "+sourceBridgePort.getBridgePort(),
+                            targetMacPort.toString(),
                             ProtocolSupported.BRIDGE);
             return;
         }
-        LinkdVertex topVertex = portToVertexMap.get(segment.getDesignatedPort());
+        
+        LinkdVertex topVertex = portToNodeVertexMap.get(segment.getDesignatedPort());
         AbstractVertex cloudVertex = addVertex(getEdgeId(segment), 0, 0);
-        if (nomappedmacs.size() > 0) {
-            cloudVertex.setLabel("Multiple Mac Addresses");
-        } else {
-            cloudVertex.setLabel("");            
-        }
+        cloudVertex.setLabel("Shared Segment");
         cloudVertex.setIconKey("cloud");
-        cloudVertex.setTooltipText("'Shared Segment' with designated up bridge: " + topVertex.getLabel() + " port: " + segment.getDesignatedPort().getBridgePort());
-        addVertices(cloudVertex);
+        cloudVertex.setTooltipText("'Shared Segment' designated port: " + segment.getDesignatedPort().printTopology());
         LOG.debug("parseSegment: adding cloud: id: '{}', {}", cloudVertex.getId(), segment.printTopology() );
-        for (BridgePort bp: portToVertexMap.keySet()) {
-            LinkdVertex bpportvertex = portToVertexMap.get(bp);
+
+        for (BridgePort bp: portToNodeVertexMap.keySet()) {
+            LinkdVertex bpportvertex = portToNodeVertexMap.get(bp);
             OnmsSnmpInterface targetinterface = getSnmpInterface(bp.getNodeId(), bp.getBridgePortIfIndex());
             connectVertices(getEdgeId(cloudVertex, bp), cloudVertex, bpportvertex, null, targetinterface, 
                             "shared segment: up bridge " + topVertex.getLabel() + " bp:" + segment.getDesignatedPort().getBridgePort(),
                             "bp: "+bp.getBridgePort(), ProtocolSupported.BRIDGE);
             
         }
-        for (String mac: macToVertexMap.keySet()) {
-            LinkdVertex target = macToVertexMap.get(mac);
-            OnmsSnmpInterface targetiface = m_macToOnmsSnmpMap.get(mac);
-            OnmsIpInterface targetipinterface = m_macToOnmsIpMap.get(mac);
-            StringBuffer targetAddr = new StringBuffer();
-            targetAddr.append(mac); 
-            if (targetipinterface != null) {
-                targetAddr.append(":");
-                targetAddr.append(InetAddressUtils.str(targetipinterface.getIpAddress()));
-            } else {
-                targetAddr.append("Multiple ip addresses");                
-            }
-            connectVertices(getEdgeId(cloudVertex, mac), cloudVertex,target, null, 
-                            targetiface,
+        for (MacPort targetMacPort: macPortToNodeVertexMap.keySet()) {
+            LinkdVertex target = macPortToNodeVertexMap.get(targetMacPort);
+            OnmsSnmpInterface targetinterface = getSnmpInterface(targetMacPort.getNodeId(),targetMacPort.getMacPortIfIndex());
+            connectVertices(getEdgeId(cloudVertex, targetMacPort.getMacPortMap().keySet().toString()), cloudVertex,target, null, 
+                            targetinterface,
                             "shared segment: up bridge " + topVertex.getLabel() + " bp:" + segment.getDesignatedPort().getBridgePort(),
-                            targetAddr.toString(), ProtocolSupported.BRIDGE);
+                            targetMacPort.printTopology(), ProtocolSupported.BRIDGE);
+        }
+        
+        for (MacPort targetMacPort: noNodeMacPorts) {
+            AbstractVertex macPortVertex = addVertex(targetMacPort.getMacPortMap().toString(), 0, 0);
+            macPortVertex.setLabel(targetMacPort.getIpMacInfo()+"....");
+            macPortVertex.setIconKey("generic");
+            macPortVertex.setTooltipText(targetMacPort.printTopology());
+            connectVertices(getEdgeId(cloudVertex, targetMacPort.getMacPortMap().keySet().toString()), cloudVertex,macPortVertex, null, 
+                            null,
+                            "shared segment: up bridge " + topVertex.getLabel() + " bp:" + segment.getDesignatedPort().getBridgePort(),
+                            targetMacPort.printTopology(), ProtocolSupported.BRIDGE);
+        }
+        
+        if (noMappedToIpMacs.size() > 0) {
+            AbstractVertex macPortVertex = addVertex(noMappedToIpMacs.toString(), 0, 0);
+            macPortVertex.setLabel(noMappedToIpMacs.iterator().next()+ "....");
+            macPortVertex.setIconKey("generic");
+            macPortVertex.setTooltipText("Shared Segment macs: " + noMappedToIpMacs.toString());
+            connectVertices(getEdgeId(cloudVertex, noMappedToIpMacs.toString()), cloudVertex,macPortVertex, null, 
+                            null,
+                            "shared segment: up bridge " + topVertex.getLabel() + " bp:" + segment.getDesignatedPort().getBridgePort(),
+                            noMappedToIpMacs.toString(), ProtocolSupported.BRIDGE);
+            
         }
     }
 
@@ -543,8 +598,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     
     private void doRefresh() {        
         Timer.Context vcontext = m_loadIpInterfacesTimer.time();
-        Map<InetAddress, OnmsIpInterface>  ipToOnmsIpMap = new HashMap<InetAddress, OnmsIpInterface>();
-        Set<InetAddress> duplicated = new HashSet<InetAddress>();
         try {
             for (OnmsIpInterface ip: m_ipInterfaceDao.findAll()) {
                 if (ip.getIsSnmpPrimary().equals(PrimaryType.PRIMARY)) {
@@ -553,15 +606,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                     m_nodeToOnmsIpPrimaryMap.putIfAbsent(ip.getNode().getId(), ip);
                 }
 
-                if (!ipToOnmsIpMap.containsKey(ip.getIpAddress())) {
-                    ipToOnmsIpMap.put(ip.getIpAddress(), ip);
-                } else {
-                    duplicated.add(ip.getIpAddress());
-                    LOG.debug("refresh: found duplicated ip {}", InetAddressUtils.str(ip.getIpAddress()));
-                }
-            }
-            for (InetAddress ipdup: duplicated) {
-                ipToOnmsIpMap.remove(ipdup);
             }
             LOG.info("refresh: Ip Interface loaded");
         } catch (Exception e){
@@ -584,54 +628,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             vcontext.stop();
         }
 
-        vcontext = m_loadIpNetToMediaTimer.time();
-
-        // mac -> ip[]  ->  snmp[]    —> macToNodeMap
-        // mac -> ip    ->  snmp      —> macToNodeMap, macToIpMap, macToSnmpMap
-        // mac -> ip    ->  no snmp   —> macToNodeMap, macToIpMap
-        // mac -> ip[]  ->  no snmp   —> macToNodeMap
-        // mac -> ip[]  ->  snmp      —> macToSnmpMap
-        Map<InetAddress, String> iptoMacMap = m_ipNetToMediaTopologyService.getIpMacMap();
-        try {
-            for (InetAddress ipAddr: iptoMacMap.keySet()) {
-                OnmsIpInterface onmsip = ipToOnmsIpMap.get(ipAddr);
-                String mac = iptoMacMap.get(ipAddr);
-                if (onmsip == null) {
-                    LOG.debug("refresh: ipNetToMedia: {}:{}. No OnmsIpInterface found.", mac,InetAddressUtils.str(ipAddr));
-                    continue;
-                }
-                LOG.debug("refresh: ipNetToMedia: {}:{}. OnmsIpInterface found node:[{}].", mac,
-                          InetAddressUtils.str(ipAddr),onmsip.getNodeId());
-
-                if (!m_macToNodeidMap.containsKey(mac)) {
-                    m_macToNodeidMap.put(mac, onmsip.getNodeId());
-                }
-
-                if (!m_macToOnmsIpMap.containsKey(mac)) {
-                    m_macToOnmsIpMap.put(mac, onmsip);
-                } else {
-                    LOG.debug("refresh: ipNetToMedia: {}:{}. Multiple OnmsIpInterface found.", mac,InetAddressUtils.str(ipAddr));
-                }
-                if (m_nodeToOnmsSnmpTable.containsRow(onmsip.getNodeId())) {
-                    for (OnmsSnmpInterface onmssnmp : m_nodeToOnmsSnmpTable.row(onmsip.getNodeId()).values() ) {
-                        if (!m_macToOnmsSnmpMap.containsKey(mac)) {
-                            m_macToOnmsSnmpMap.put(mac, onmssnmp);
-                        } else if (m_macToOnmsSnmpMap.get(mac).getId().intValue() == onmssnmp.getId() ) {
-                            continue;
-                        } else {
-                            LOG.debug("refresh: ipNetToMedia: {}:{}. Multiple OnmsSnmpInterface found.", mac,InetAddressUtils.str(ipAddr));                                
-                        }
-                    }
-                } else {
-                    LOG.debug("refresh: ipNetToMedia: {}:{}. No OnmsSnmpInterface found.", mac,InetAddressUtils.str(ipAddr));
-                }
-            }
-            LOG.info("refresh: IpNetToMedia loaded");
-        } catch (Exception e){
-            LOG.error("Loading ipNetToMedia failed: {}",e.getMessage(),e);
-        } finally {
-            vcontext.stop();
-        }
 
         vcontext = m_loadVerticesTimer.time();
         try {
@@ -661,9 +657,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             resetContainer();
             m_nodeToOnmsSnmpTable.clear();
             m_nodeToOnmsIpPrimaryMap.clear();
-            m_macToNodeidMap.clear();
-            m_macToOnmsIpMap.clear();
-            m_macToOnmsSnmpMap.clear();
             doRefresh();
         } finally {
             context.stop();
