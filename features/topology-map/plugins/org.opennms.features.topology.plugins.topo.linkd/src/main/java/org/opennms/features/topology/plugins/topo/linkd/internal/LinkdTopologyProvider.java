@@ -362,58 +362,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         }
     }
     
-    /*
-             vcontext = m_loadIpNetToMediaTimer.time();
-
-        // mac -> ip[]  ->  snmp[]    —> macToNodeMap
-        // mac -> ip    ->  snmp      —> macToNodeMap, macToIpMap, macToSnmpMap
-        // mac -> ip    ->  no snmp   —> macToNodeMap, macToIpMap
-        // mac -> ip[]  ->  no snmp   —> macToNodeMap
-        // mac -> ip[]  ->  snmp      —> macToSnmpMap
-        Map<InetAddress, String> iptoMacMap = m_ipNetToMediaTopologyService.getIpMacMap();
-        try {
-            for (InetAddress ipAddr: iptoMacMap.keySet()) {
-                OnmsIpInterface onmsip = ipToOnmsIpMap.get(ipAddr);
-                String mac = iptoMacMap.get(ipAddr);
-                if (onmsip == null) {
-                    LOG.debug("refresh: ipNetToMedia: {}:{}. No OnmsIpInterface found.", mac,InetAddressUtils.str(ipAddr));
-                    continue;
-                }
-                LOG.debug("refresh: ipNetToMedia: {}:{}. OnmsIpInterface found node:[{}].", mac,
-                          InetAddressUtils.str(ipAddr),onmsip.getNodeId());
-
-                if (!m_macToNodeidMap.containsKey(mac)) {
-                    m_macToNodeidMap.put(mac, onmsip.getNodeId());
-                }
-
-                if (!m_macToOnmsIpMap.containsKey(mac)) {
-                    m_macToOnmsIpMap.put(mac, onmsip);
-                } else {
-                    LOG.debug("refresh: ipNetToMedia: {}:{}. Multiple OnmsIpInterface found.", mac,InetAddressUtils.str(ipAddr));
-                }
-                if (m_nodeToOnmsSnmpTable.containsRow(onmsip.getNodeId())) {
-                    for (OnmsSnmpInterface onmssnmp : m_nodeToOnmsSnmpTable.row(onmsip.getNodeId()).values() ) {
-                        if (!m_macToOnmsSnmpMap.containsKey(mac)) {
-                            m_macToOnmsSnmpMap.put(mac, onmssnmp);
-                        } else if (m_macToOnmsSnmpMap.get(mac).getId().intValue() == onmssnmp.getId() ) {
-                            continue;
-                        } else {
-                            LOG.debug("refresh: ipNetToMedia: {}:{}. Multiple OnmsSnmpInterface found.", mac,InetAddressUtils.str(ipAddr));                                
-                        }
-                    }
-                } else {
-                    LOG.debug("refresh: ipNetToMedia: {}:{}. No OnmsSnmpInterface found.", mac,InetAddressUtils.str(ipAddr));
-                }
-            }
-            LOG.info("refresh: IpNetToMedia loaded");
-        } catch (Exception e){
-            LOG.error("Loading ipNetToMedia failed: {}",e.getMessage(),e);
-        } finally {
-            vcontext.stop();
-        }
- 
- 
-     */
     private void parseSegment(SharedSegment segment) throws BridgeTopologyException {
         Map<BridgePort,LinkdVertex> portToNodeVertexMap = new HashMap<BridgePort, LinkdVertex>();
         for (BridgePort bp : segment.getBridgePortsOnSegment()) {

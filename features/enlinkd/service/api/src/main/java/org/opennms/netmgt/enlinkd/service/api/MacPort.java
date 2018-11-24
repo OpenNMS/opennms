@@ -45,7 +45,7 @@ public class MacPort implements Topology {
         ips.add(media.getNetAddress());
         
         MacPort port = new MacPort();
-        port.setNodeId(media.getNode().getId());
+        port.setNodeId(media.getNodeId());
         port.setMacPortIfIndex(media.getIfIndex());
         port.setMacPortName(media.getPort());
         port.getMacPortMap().put(media.getPhysAddress(), ips);

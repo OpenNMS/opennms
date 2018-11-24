@@ -236,6 +236,13 @@ public class IpNetToMedia implements Serializable {
         m_sourceIfIndex = sourceIfIndex;
     }
 
+    @Transient
+    public Integer getNodeId() {
+        if (m_node != null) {
+            return m_node.getId();
+        }
+        return null;
+    }
     /**
      * <p>getNode</p>
      *

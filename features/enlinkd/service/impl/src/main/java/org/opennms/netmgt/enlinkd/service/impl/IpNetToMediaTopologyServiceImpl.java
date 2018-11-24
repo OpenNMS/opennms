@@ -130,12 +130,16 @@ public class IpNetToMediaTopologyServiceImpl implements
 
         List<OnmsIpInterface> onmsiplist = m_ipInterfaceDao.findByIpAddress(InetAddressUtils.str(ipnetToMedia.getNetAddress()));
         if (onmsiplist.isEmpty()) {
-            LOG.info("No OnmsIpInterface found for {}", ipnetToMedia);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("No OnmsIpInterface found for {}", ipnetToMedia);
+            }
             return;
         }
     
         if (onmsiplist.size() > 1) {
-            LOG.info("Found {} OnmsIpInterface for {}", onmsiplist.size(),ipnetToMedia);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Found {} OnmsIpInterface for {}", onmsiplist.size(),ipnetToMedia);
+            }
             return;
         }
 
@@ -145,11 +149,18 @@ public class IpNetToMediaTopologyServiceImpl implements
             return;
         }
         ipnetToMedia.setIfIndex(onmsip.getIfIndex());
-        if (onmsip.getSnmpInterface().getIfAlias() != null ) {
-                ipnetToMedia.setPort(onmsip.getSnmpInterface().getIfName()
+        ipnetToMedia.setPort(onmsip.getSnmpInterface().getIfName());
+        if (!"".equals(onmsip.getSnmpInterface().getIfAlias()) ) {
+                ipnetToMedia.setPort(ipnetToMedia.getPort()
                                      +"("+onmsip.getSnmpInterface().getIfAlias()+")");
             
+        } 
+        if ( onmsip.getSnmpInterface().getIfSpeed() > 0) {
+            ipnetToMedia.setPort(ipnetToMedia.getPort()
+                                 +"("+InetAddressUtils.getHumanReadableIfSpeed(onmsip.getSnmpInterface().getIfSpeed())+")");
+        
         }
+
     }
     
     public IpNetToMediaDao getIpNetToMediaDao() {
@@ -181,9 +192,14 @@ public class IpNetToMediaTopologyServiceImpl implements
                         }
                     }
                 });
-       List<MacPort> ports = macToMacPortMap.values().stream().collect(Collectors.toList(
+       List<MacPort> ports = nodeIfindexToMacPortTable.values().stream().collect(Collectors.toList(
                     ));
-       ports.addAll(nodeIfindexToMacPortTable.values());
+       ports.stream().forEach(mp -> {
+           mp.getMacPortMap().keySet().stream().filter(mac -> macToMacPortMap.containsKey(mac)).forEach(mac -> {
+                   mp.getMacPortMap().get(mac).addAll(macToMacPortMap.remove(mac).getMacPortMap().get(mac));
+           });
+       });
+       ports.addAll(macToMacPortMap.values());
        return ports;
     }
 
