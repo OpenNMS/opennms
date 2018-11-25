@@ -52,6 +52,9 @@ public class Service implements Serializable {
     @XmlAttribute(name = "enabled")
     private Boolean m_enabled;
 
+    @XmlAttribute(name = "reloadable")
+    private Boolean m_reloadable;
+
     @XmlElement(name = "name", required = true)
     private String m_name;
 
@@ -67,8 +70,7 @@ public class Service implements Serializable {
     public Service() {
     }
 
-    public Service(final String name, final String className,
-        final List<Attribute> attributes, final List<Invoke> invokes) {
+    public Service(final String name, final String className, final List<Attribute> attributes, final List<Invoke> invokes) {
         setName(name);
         setClassName(className);
         setAttributes(attributes);
@@ -82,6 +84,15 @@ public class Service implements Serializable {
 
     public void setEnabled(final Boolean enabled) {
         m_enabled = enabled;
+    }
+
+    @XmlTransient
+    public Boolean isReloadable() {
+        return m_reloadable == null? Boolean.FALSE : m_reloadable;
+    }
+
+    public void setReloadable(final Boolean reloadable) {
+        m_reloadable = reloadable;
     }
 
     @XmlTransient
@@ -141,7 +152,7 @@ public class Service implements Serializable {
     }
 
     public int hashCode() {
-        return Objects.hash(m_enabled, m_name, m_className, m_attributes, m_invokes);
+        return Objects.hash(m_enabled, m_reloadable, m_name, m_className, m_attributes, m_invokes);
     }
 
     @Override()
@@ -153,6 +164,7 @@ public class Service implements Serializable {
         if (obj instanceof Service) {
             final Service that = (Service) obj;
             return Objects.equals(this.m_enabled, that.m_enabled) &&
+                    Objects.equals(this.m_reloadable, that.m_reloadable) &&
                     Objects.equals(this.m_name, that.m_name) &&
                     Objects.equals(this.m_className, that.m_className) &&
                     Objects.equals(this.m_attributes, that.m_attributes) &&

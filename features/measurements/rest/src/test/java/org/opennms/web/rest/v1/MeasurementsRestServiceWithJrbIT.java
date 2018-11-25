@@ -67,6 +67,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-measurement.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-measurements-rest-test.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
