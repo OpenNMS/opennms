@@ -50,7 +50,7 @@ public class SnmpInterfaceDaoImpl implements SnmpInterfaceDao {
     @Override
     public Long getSnmpInterfaceCount() {
         final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsSnmpInterface.class);
-        return (long)snmpInterfaceDao.countMatching(criteriaBuilder.toCriteria());
+        return sessionUtils.withReadOnlyTransaction(() -> (long)snmpInterfaceDao.countMatching(criteriaBuilder.toCriteria()));
     }
 
     @Override

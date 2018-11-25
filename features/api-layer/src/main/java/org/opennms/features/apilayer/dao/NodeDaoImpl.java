@@ -54,41 +54,41 @@ public class NodeDaoImpl implements NodeDao {
 
     @Override
     public List<Node> getNodes() {
-        return sessionUtils.withTransaction(() ->
+        return sessionUtils.withReadOnlyTransaction(() ->
                 nodeDao.findAll().stream().map(ModelMappers::toNode).collect(Collectors.toList()));
     }
 
     @Override
     public Long getNodeCount() {
         final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsNode.class);
-        return (long)nodeDao.countMatching(criteriaBuilder.toCriteria());
+        return sessionUtils.withReadOnlyTransaction(() -> (long)nodeDao.countMatching(criteriaBuilder.toCriteria()));
     }
 
     @Override
     public List<Integer> getNodeIds() {
-        return Lists.newArrayList(nodeDao.getNodeIds());
+        return sessionUtils.withReadOnlyTransaction(() -> Lists.newArrayList(nodeDao.getNodeIds()));
     }
 
     @Override
     public Node getNodeByCriteria(String nodeCriteria) {
-        return ModelMappers.toNode(nodeDao.get(nodeCriteria));
+        return sessionUtils.withReadOnlyTransaction(() -> ModelMappers.toNode(nodeDao.get(nodeCriteria)));
     }
 
     @Override
     public Node getNodeById(Integer nodeId) {
-        return sessionUtils.withTransaction(() -> ModelMappers.toNode(nodeDao.get(nodeId)));
+        return sessionUtils.withReadOnlyTransaction(() -> ModelMappers.toNode(nodeDao.get(nodeId)));
     }
 
     @Override
     public Node getNodeByLabel(String nodeLabel) {
-        return sessionUtils.withTransaction(() -> ModelMappers.toNode(nodeDao.findByLabel(nodeLabel).stream()
+        return sessionUtils.withReadOnlyTransaction(() -> ModelMappers.toNode(nodeDao.findByLabel(nodeLabel).stream()
                 .min(Comparator.comparingInt(OnmsNode::getId))
                 .orElse(null)));
     }
 
     @Override
     public Node getNodeByForeignSourceAndForeignId(String foreignSource, String foreignId) {
-        return sessionUtils.withTransaction(() ->
+        return sessionUtils.withReadOnlyTransaction(() ->
                 ModelMappers.toNode(nodeDao.findByForeignId(foreignSource, foreignId)));
     }
 }
