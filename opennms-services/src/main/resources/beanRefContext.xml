@@ -68,15 +68,6 @@
      <constructor-arg ref="daoContext" />
     </bean>
     
-   <bean id="enhancedLinkdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
-     <constructor-arg>
-       <list>
-         <value>META-INF/opennms/applicationContext-enhancedLinkd.xml</value>
-       </list>
-     </constructor-arg>
-     <constructor-arg ref="daoContext" />
-   </bean>
-
    <bean id="tl1DaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>

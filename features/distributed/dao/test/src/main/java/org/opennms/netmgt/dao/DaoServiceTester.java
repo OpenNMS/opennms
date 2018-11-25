@@ -43,7 +43,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
 import org.opennms.netmgt.dao.api.AlarmRepository;
-import org.opennms.netmgt.dao.api.BridgeTopologyDao;
+import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.dao.api.IfLabel;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
@@ -52,7 +52,7 @@ import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.dao.api.SessionFactoryWrapper;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.StatisticsService;
-import org.opennms.netmgt.dao.api.TopologyDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.osgi.framework.Bundle;
@@ -91,7 +91,7 @@ public class DaoServiceTester {
                     AlarmEntityNotifier.class // we skip testing this for now
             )
             .withTest(OnmsDao.class, dao -> dao.countAll())
-            .withTest(BridgeTopologyDao .class, bean -> {
+            .withTest(BridgeTopologyService .class, bean -> {
                 bean.load();
             })
             .withTest(AlarmRepository.class, bean -> {
@@ -109,7 +109,7 @@ public class DaoServiceTester {
             .withTest(GenericPersistenceAccessor .class, bean -> {
                 bean.get(OnmsNode.class, 1);
             })
-            .withTest(TopologyDao .class, bean -> {
+            .withTest(NodeDao .class, bean -> {
                 bean.getDefaultFocusPoint();
             })
             .withTest(StatisticsService.class, bean -> {

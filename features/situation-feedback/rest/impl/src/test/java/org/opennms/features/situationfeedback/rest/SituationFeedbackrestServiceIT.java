@@ -27,11 +27,13 @@
  *******************************************************************************/
 package org.opennms.features.situationfeedback.rest;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +46,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.features.situationfeedback.api.AlarmFeedback.FeedbackType;
+import org.opennms.features.situationfeedback.api.AlarmFeedbackListener;
 import org.opennms.features.situationfeedback.api.FeedbackRepository;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
@@ -86,6 +89,8 @@ public class SituationFeedbackrestServiceIT {
     private OnmsAlarm linkDownAlarmOnR2;
 
     private OnmsAlarm situation;
+    
+    private Collection<AlarmFeedback> alarmFeedback;
 
     @Before
     public void setup() {
@@ -121,8 +126,14 @@ public class SituationFeedbackrestServiceIT {
     @Transactional
     public void testRemoveAlarmWithFeedback() {
         SituationFeedbackRestServiceImpl sut = new SituationFeedbackRestServiceImpl(alarmDao, alarmEntityNotifier, mockFeebackRepository, transactionTemplate);
-        AlarmFeedback falsePositive = new AlarmFeedback(situation.getReductionKey(), "fingerprint", linkDownAlarmOnR1.getReductionKey(),
-                                                        FeedbackType.FALSE_POSITIVE, "not related", "user", System.currentTimeMillis());
+        AlarmFeedback falsePositive = AlarmFeedback.newBuilder()
+                .withSituationKey(situation.getReductionKey())
+                .withSituationFingerprint("fingerprint")
+                .withAlarmKey(linkDownAlarmOnR1.getReductionKey())
+                .withFeedbackType(FeedbackType.FALSE_POSITIVE)
+                .withReason("not related")
+                .withUser("user")
+                .build();
         List<AlarmFeedback> feedback = Collections.singletonList(falsePositive);
 
         OnmsAlarm prior = alarmDao.findByReductionKey(situation.getReductionKey());
@@ -130,11 +141,28 @@ public class SituationFeedbackrestServiceIT {
 
         int situationId = prior.getId();
 
+        // Manually bind our test implementation
+        sut.onBind(new AlarmFeedbackListenerImpl(), null);
+
         sut.setFeedback(situationId, feedback);
 
+        // Our listener should have received the feedback
+        assertThat(alarmFeedback, equalTo(feedback));
+
+        // Note: the below check is not really useful as of HZN-1435
+        // This could potentially be improved by verifying the feedback is sent out and a new situation Event is
+        // received after the OCE has processed it (when that feature is complete)
         OnmsAlarm restrieved = alarmDao.findByReductionKey(situation.getReductionKey());
-        assertThat(restrieved.getRelatedAlarms().size(), is(1));
+        // Since alarm feedback is not processed locally in the ReST API we expect the situation to remain unchanged
+        assertThat(restrieved.getRelatedAlarms().size(), is(2));
         assertThat(restrieved.getRelatedAlarms().stream().findFirst(), is(Optional.of(linkDownAlarmOnR2)));
+    }
+    
+    private final class AlarmFeedbackListenerImpl implements AlarmFeedbackListener {
+        @Override
+        public void handleAlarmFeedback(Collection<AlarmFeedback> alarmFeedback) {
+            SituationFeedbackrestServiceIT.this.alarmFeedback = alarmFeedback;
+        }
     }
 
 }

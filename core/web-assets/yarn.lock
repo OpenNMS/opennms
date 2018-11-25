@@ -8176,9 +8176,9 @@ tslib@^1.9.0:
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.3.tgz#d7e4dd79245d85428c4d7e4822a79917954ca286"
 
-"tslint-loader@https://github.com/wbuchwalter/tslint-loader.git#093230076f3b453c4f8b7aa2ee074932aa109e84":
-  version "3.5.3"
-  resolved "https://github.com/wbuchwalter/tslint-loader.git#093230076f3b453c4f8b7aa2ee074932aa109e84"
+tslint-loader@^3.5.4:
+  version "3.5.4"
+  resolved "https://registry.yarnpkg.com/tslint-loader/-/tslint-loader-3.5.4.tgz#052af7f0772434451ea1b247bb55407f878a4c40"
   dependencies:
     loader-utils "^1.0.2"
     mkdirp "^0.5.1"

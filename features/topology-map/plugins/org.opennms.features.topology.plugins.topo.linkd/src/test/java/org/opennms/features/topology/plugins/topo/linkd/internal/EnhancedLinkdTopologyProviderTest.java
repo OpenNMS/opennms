@@ -53,12 +53,12 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider.ProtocolSupported;
-import org.opennms.netmgt.dao.api.LldpLinkDao;
-import org.opennms.netmgt.dao.api.OspfLinkDao;
+import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
+import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.FilterManager;
-import org.opennms.netmgt.model.LldpLink;
-import org.opennms.netmgt.model.OspfLink;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -97,14 +97,14 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @Test
     public void testGetIcon() {
-        LinkdVertex vertex1 = LinkdVertex.create(m_databasePopulator.getNode1(), null);
-        LinkdVertex vertex2 = LinkdVertex.create(m_databasePopulator.getNode2(), null);
-        LinkdVertex vertex3 = LinkdVertex.create(m_databasePopulator.getNode3(), null);
-        LinkdVertex vertex4 = LinkdVertex.create(m_databasePopulator.getNode4(), null);
-        LinkdVertex vertex5 = LinkdVertex.create(m_databasePopulator.getNode5(), null);
-        LinkdVertex vertex6 = LinkdVertex.create(m_databasePopulator.getNode6(), null);
-        LinkdVertex vertex7 = LinkdVertex.create(m_databasePopulator.getNode7(), null);
-        LinkdVertex vertex8 = LinkdVertex.create(m_databasePopulator.getNode8(), null);
+        LinkdVertex vertex1 = LinkdVertex.create(m_databasePopulator.getNode(1), null);
+        LinkdVertex vertex2 = LinkdVertex.create(m_databasePopulator.getNode(2), null);
+        LinkdVertex vertex3 = LinkdVertex.create(m_databasePopulator.getNode(3), null);
+        LinkdVertex vertex4 = LinkdVertex.create(m_databasePopulator.getNode(4), null);
+        LinkdVertex vertex5 = LinkdVertex.create(m_databasePopulator.getNode(5), null);
+        LinkdVertex vertex6 = LinkdVertex.create(m_databasePopulator.getNode(6), null);
+        LinkdVertex vertex7 = LinkdVertex.create(m_databasePopulator.getNode(7), null);
+        LinkdVertex vertex8 = LinkdVertex.create(m_databasePopulator.getNode(8), null);
         Assert.assertTrue("linkd.system.snmp.1.3.6.1.4.1.5813.1.25".equals(vertex1.getIconKey()));
         Assert.assertTrue("linkd.system".equals(vertex2.getIconKey()));
         Assert.assertTrue("linkd.system".equals(vertex3.getIconKey()));

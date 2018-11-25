@@ -246,7 +246,7 @@ else:
 
 NOTE: We have to use `run-type` `exec` here because _Jython_ chokes on the +import+ keyword in `eval` mode.
 
-NOTE: As profit that this is really _Python_, notice the substitution of _Python's_ +None+ value for Java's +null+ in the log call.
+NOTE: As proof that this is really _Python_, notice the substitution of _Python's_ +None+ value for Java's +null+ in the log call.
 
 ===== Advanced examples
 

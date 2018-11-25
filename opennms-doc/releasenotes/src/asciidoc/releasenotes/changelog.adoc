@@ -14,7 +14,7 @@ The codename for 24.0.0 is _TODO NOT DEFINED YET_.
 
 ===== Breaking Changes
 
-* The NCS-Alarm page and the NCS-Topology-Plugin have been removed. See issue TODO MVR.
+* The NCS-Alarm page and the NCS-Topology-Plugin have been removed. See issue HZN-1422.
 
 ===== Bug
 

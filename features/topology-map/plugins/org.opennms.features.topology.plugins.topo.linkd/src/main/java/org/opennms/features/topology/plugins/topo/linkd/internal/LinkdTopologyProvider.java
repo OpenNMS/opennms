@@ -30,7 +30,6 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -49,36 +48,36 @@ import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.dao.api.BridgeTopologyDao;
-import org.opennms.netmgt.dao.api.CdpElementDao;
-import org.opennms.netmgt.dao.api.CdpLinkDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.IpNetToMediaDao;
-import org.opennms.netmgt.dao.api.IsIsElementDao;
-import org.opennms.netmgt.dao.api.IsIsLinkDao;
-import org.opennms.netmgt.dao.api.LldpElementDao;
-import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.api.TopologyDao;
-import org.opennms.netmgt.model.CdpElement;
-import org.opennms.netmgt.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.CdpElement;
+import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
+import org.opennms.netmgt.enlinkd.model.IsIsElement;
+import org.opennms.netmgt.enlinkd.model.IsIsLink;
+import org.opennms.netmgt.enlinkd.model.LldpElement;
+import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
+import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
+import org.opennms.netmgt.enlinkd.service.api.BridgePort;
+import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
+import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
+import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
+import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
 import org.opennms.netmgt.model.FilterManager;
-import org.opennms.netmgt.model.IpNetToMedia;
-import org.opennms.netmgt.model.IsIsElement;
-import org.opennms.netmgt.model.IsIsLink;
-import org.opennms.netmgt.model.LldpElement;
-import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.model.topology.BridgePort;
-import org.opennms.netmgt.model.topology.BridgeTopologyException;
-import org.opennms.netmgt.model.topology.BroadcastDomain;
-import org.opennms.netmgt.model.topology.SharedSegment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionOperations;
@@ -121,7 +120,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private NodeDao m_nodeDao;
     private SnmpInterfaceDao m_snmpInterfaceDao;
     private IpInterfaceDao m_ipInterfaceDao;
-    private TopologyDao m_topologyDao;
     private FilterManager m_filterManager;
 
     private LldpLinkDao m_lldpLinkDao;
@@ -131,7 +129,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private OspfLinkDao m_ospfLinkDao;
     private IsIsLinkDao m_isisLinkDao;
     private IsIsElementDao m_isisElementDao;
-    private BridgeTopologyDao m_bridgeTopologyDao;
+    private BridgeTopologyService m_bridgeTopologyService;
     private IpNetToMediaDao m_ipNetToMediaDao;
 
     private Map<Integer, OnmsIpInterface> m_nodeToOnmsIpPrimaryMap =new HashMap<>();
@@ -154,14 +152,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     public static final String TOPOLOGY_NAMESPACE_LINKD = "nodes";
     
-    public enum ProtocolSupported {
-        LLDP,
-        OSPF,
-        ISIS,
-        BRIDGE,
-        CDP
-    }
-
     private SelectionAware selectionAwareDelegate = new LinkdSelectionAware();
 
     public LinkdTopologyProvider(MetricRegistry registry) {
@@ -332,13 +322,13 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             String sourceLldpChassisId = nodelldpelementidMap.get(sourceLink.getNode().getId()).getLldpChassisId();
             if (sourceLldpChassisId.equals(sourceLink.getLldpRemChassisId())) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("getLldpLinks: self link not adding source: {}",sourceLink.printTopology());
+                    LOG.debug("getLldpLinks: self link not adding source: {}",sourceLink.toString());
                 }
                 parsed.add(sourceLink.getId());
                 continue;
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getLldpLinks: source: {}",sourceLink.printTopology());
+                LOG.debug("getLldpLinks: source: {}",sourceLink.toString());
             }
 
             CompositeKey key = new CompositeKey(
@@ -356,7 +346,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             }
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getLldpLinks: lldp: {} target: {}", sourceLink.getLldpRemChassisId(), targetLink.printTopology());
+                LOG.debug("getLldpLinks: lldp: {} target: {}", sourceLink.getLldpRemChassisId(), targetLink.toString());
             }
 
             parsed.add(sourceLink.getId());
@@ -406,7 +396,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             }
             parsed.add(sourceLink.getId());
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getOspfLinks: source: {}", sourceLink.printTopology());
+                LOG.debug("getOspfLinks: source: {}", sourceLink.toString());
             }
             OspfLink targetLink = targetLinks.get(new CompositeKey(sourceLink.getOspfRemIpAddr() , sourceLink.getOspfIpAddr()));
             if(targetLink == null) {
@@ -418,7 +408,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                     continue;
             }
 
-            LOG.debug("getOspfLinks: target: {}", targetLink.printTopology());
+            LOG.debug("getOspfLinks: target: {}", targetLink.toString());
             parsed.add(targetLink.getId());
            results.add(Pair.of(sourceLink, targetLink));
         }
@@ -475,7 +465,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 continue;
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getCdpLinks: source: {} ", sourceLink.printTopology());
+                LOG.debug("getCdpLinks: source: {} ", sourceLink.toString());
             }
             CdpElement sourceCdpElement = cdpelementmap.get(sourceLink.getNode().getId());
 
@@ -494,7 +484,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             }
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getCdpLinks: cdp: {}, target: {} ", sourceLink.getCdpCacheDevicePort(), targetLink.printTopology());
+                LOG.debug("getCdpLinks: cdp: {}, target: {} ", sourceLink.getCdpCacheDevicePort(), targetLink.toString());
             }
 
             parsed.add(sourceLink.getId());
@@ -554,7 +544,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 continue;
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getIsIsLinks: source: {}", sourceLink.printTopology());
+                LOG.debug("getIsIsLinks: source: {}", sourceLink.toString());
             }
             IsIsElement sourceElement = elementmap.get(sourceLink.getNode().getId());
             IsIsLink targetLink = targetLinkMap.get(new CompositeKey(sourceLink.getIsisISAdjIndex(),
@@ -569,7 +559,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 continue;
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getIsIsLinks: target: {}", targetLink.printTopology());
+                LOG.debug("getIsIsLinks: target: {}", targetLink.toString());
             }
             results.add(Pair.of(sourceLink, targetLink));
             parsed.add(sourceLink.getId());
@@ -580,7 +570,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private void getBridgeLinks() throws BridgeTopologyException {
         
-        for (BroadcastDomain domain: m_bridgeTopologyDao.load()) {
+        for (BroadcastDomain domain: m_bridgeTopologyService.findAll()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getBridgeLinks:\n {}", domain.printTopology());
             }
@@ -746,10 +736,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         m_ipInterfaceDao = ipInterfaceDao;
     }
 
-    public void setTopologyDao(TopologyDao topologyDao) {
-        m_topologyDao = topologyDao;
-    }
-
     public void setFilterManager(FilterManager filterManager) {
         m_filterManager = filterManager;
     }
@@ -802,12 +788,12 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         m_isisElementDao = isisElementDao;
     }
 
-    public BridgeTopologyDao getBridgeTopologyDao() {
-        return m_bridgeTopologyDao;
+    public BridgeTopologyService getBridgeTopologyService() {
+        return m_bridgeTopologyService;
     }
 
-    public void setBridgeTopologyDao(BridgeTopologyDao bridgeTopologyDao) {
-        m_bridgeTopologyDao = bridgeTopologyDao;
+    public void setBridgeTopologyService(BridgeTopologyService bridgeTopologyService) {
+        m_bridgeTopologyService = bridgeTopologyService;
     }
 
     public IpNetToMediaDao getIpNetToMediaDao() {
@@ -840,7 +826,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 .withSemanticZoomLevel(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL)
                 .withPreferredLayout("D3 Layout") // D3 Layout
                 .withCriteria(() -> {
-                    final OnmsNode node = m_topologyDao.getDefaultFocusPoint();
+                    final OnmsNode node = m_nodeDao.getDefaultFocusPoint();
 
                     if (node != null) {
                         final Vertex defaultVertex = getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getNodeId());
@@ -915,6 +901,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                     LOG.debug("refresh: ipNetToMedia: {}:{}. No OnmsIpInterface found.", ipnettomedia.getPhysAddress(),InetAddressUtils.str(ipnettomedia.getNetAddress()));
                     continue;
                 }
+                LOG.debug("refresh: ipNetToMedia: {}:{}. OnmsIpInterface found node:[{}].", ipnettomedia.getPhysAddress(),
+                          InetAddressUtils.str(ipnettomedia.getNetAddress()),onmsip.getNodeId());
                 if (!m_macToNodeidMap.containsKey(ipnettomedia.getPhysAddress())) {
                     m_macToNodeidMap.put(ipnettomedia.getPhysAddress(), onmsip.getNodeId());
                 }
@@ -924,6 +912,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                     multiIpMacs.add(ipnettomedia.getPhysAddress());
                     LOG.debug("refresh: ipNetToMedia: {}:{}. Multiple OnmsIpInterface found.", ipnettomedia.getPhysAddress(),InetAddressUtils.str(ipnettomedia.getNetAddress()));
                 }
+                if (m_nodeToOnmsSnmpMap.containsKey(onmsip.getNodeId())) {
                 for (OnmsSnmpInterface onmssnmp : m_nodeToOnmsSnmpMap.get(onmsip.getNodeId()).values() ) {
                     if (onmssnmp.getId().intValue() == onmssnmp.getId().intValue()) {
                         if (!m_macToOnmsSnmpMap.containsKey(ipnettomedia.getPhysAddress())) {
@@ -935,6 +924,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                             LOG.debug("refresh: ipNetToMedia: {}:{}. Multiple OnmsSnmpInterface found.", ipnettomedia.getPhysAddress(),InetAddressUtils.str(ipnettomedia.getNetAddress()));                                
                         }
                     }
+                }
+                } else {
+                    LOG.debug("refresh: ipNetToMedia: {}:{}. No OnmsSnmpInterface found.", ipnettomedia.getPhysAddress(),InetAddressUtils.str(ipnettomedia.getNetAddress()));
                 }
             }
             LOG.info("refresh: IpNetToMedia loaded");

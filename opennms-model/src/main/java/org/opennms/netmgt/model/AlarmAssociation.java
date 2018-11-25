@@ -45,6 +45,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
+import com.google.common.base.MoreObjects;
+
 /**
  * <p> Entity to store situations and their associated (related) alarms with other details like mappedTime </p>
  */
@@ -118,6 +120,14 @@ public class AlarmAssociation implements Serializable {
         return mappedTime;
     }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("situation", getSituationAlarm().getId())
+                .add("alarm", getRelatedAlarm().getId())
+                .add("time", getMappedTime())
+                .toString();
+    }
 
     @Override
     public boolean equals(Object o) {

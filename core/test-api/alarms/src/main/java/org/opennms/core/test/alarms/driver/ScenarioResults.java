@@ -50,9 +50,28 @@ public class ScenarioResults {
         return alarmsByTime.getOrDefault(time, Collections.emptyList());
     }
 
+    public OnmsAlarm getAlarmAt(long time, int id) {
+        return getAlarms(time).stream()
+                .filter(a -> a.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Alarm " + id + " not found at time: " + time));
+    }
+
     public List<OnmsAlarm> getAlarmsAtLastKnownTime() {
         final Long lastTime = getLastKnownTime();
         return alarmsByTime.get(lastTime);
+    }
+
+    public List<OnmsAlarm> getAcknowledgedAlarms(long time) {
+        return getAlarms(time).stream()
+                .filter(alarm -> alarm.getAckTime() != null && alarm.getAckUser() != null)
+                .collect(Collectors.toList());
+    }
+
+    public List<OnmsAlarm> getUnAcknowledgedAlarms(long time) {
+        return getAlarms(time).stream()
+                .filter(alarm -> alarm.getAckTime() == null && alarm.getAckUser() == null)
+                .collect(Collectors.toList());
     }
 
     public Long getLastKnownTime() {

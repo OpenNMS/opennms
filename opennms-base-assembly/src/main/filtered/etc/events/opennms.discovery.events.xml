@@ -29,10 +29,10 @@
    <event>
       <uei>uei.opennms.org/internal/discovery/newSuspect</uei>
       <event-label>OpenNMS-defined internal event: discovery newSuspect</event-label>
-      <descr>&lt;p>Interface %interface% has been discovered and is
+      <descr>&lt;p>Interface %interface% has been discovered in location %parm[location]% and is
             being queued for a services scan.&lt;/p></descr>
       <logmsg dest="logndisplay">
-            A new interface (%interface%) has been discovered and is
+            A new interface (%interface%) has been discovered in location %parm[location]% and is
             being queued for a services scan.
         </logmsg>
       <severity>Warning</severity>

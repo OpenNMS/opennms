@@ -29,11 +29,8 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -41,8 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
@@ -50,15 +45,15 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.core.test.MockLogger;
 import org.opennms.core.utils.LldpUtils;
-import org.opennms.netmgt.model.CdpElement;
-import org.opennms.netmgt.model.CdpLink;
-import org.opennms.netmgt.model.IsIsElement;
-import org.opennms.netmgt.model.IsIsLink;
-import org.opennms.netmgt.model.LldpElement;
-import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.CdpElement;
+import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.IsIsElement;
+import org.opennms.netmgt.enlinkd.model.IsIsLink;
+import org.opennms.netmgt.enlinkd.model.LldpElement;
+import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OspfLink;
-import org.opennms.netmgt.model.topology.Topology;
+import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -203,7 +198,7 @@ public class LinkdTopologyProviderTest {
         assertEquals(matchesOld, matchesNew);
     }
 
-    private <Link extends Topology> void assertMatching(List<Link> allLinks, List<Pair<Link, Link>> matchedLinks){
+    private <Link> void assertMatching(List<Link> allLinks, List<Pair<Link, Link>> matchedLinks){
         // we expect:
         // 1 and 3 will match
         // 4 and 5 will match

@@ -103,5 +103,16 @@
       <artifactId>opennms-icmp-best</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-core</artifactId>
+      <version>${dropwizardMetricsVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.daemon</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

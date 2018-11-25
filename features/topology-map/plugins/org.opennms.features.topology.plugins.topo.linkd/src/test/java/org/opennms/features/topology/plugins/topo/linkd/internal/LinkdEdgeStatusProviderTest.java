@@ -49,17 +49,17 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Status;
-import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.enlinkd.model.IsIsElement;
+import org.opennms.netmgt.enlinkd.model.IsIsLink;
+import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.service.api.BridgePort;
+import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.model.IsIsLink;
-import org.opennms.netmgt.model.IsIsElement;
-import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OspfLink;
-import org.opennms.netmgt.model.topology.BridgePort;
 
 import com.codahale.metrics.MetricRegistry;
 
@@ -213,7 +213,7 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
                                       InetAddressUtils.str(link5.getOspfRemIpAddr()),  ProtocolSupported.OSPF));
 
         //cdp link
-        LinkdEdge edgeG = LinkdEdge.create("504|505", node4Vertex, node5Vertex,ProtocolSupported.CDP );
+        LinkdEdge edgeG = LinkdEdge.create("504|505", node4Vertex, node5Vertex, ProtocolSupported.CDP );
         edgeG.setSourceNodeid(m_node4.getId());
         edgeG.setTargetNodeid(m_node5.getId());
         edgeG.setSourceIfIndex(101);
@@ -221,7 +221,7 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         m_edges.add(edgeG);
 
         // another ospf link
-        LinkdEdge edgeChennaiTodehli = LinkdEdge.create("310|314", dehliVertex, chennaiVertex,ProtocolSupported.OSPF);
+        LinkdEdge edgeChennaiTodehli = LinkdEdge.create("310|314", dehliVertex, chennaiVertex, ProtocolSupported.OSPF);
         edgeChennaiTodehli.setSourceNodeid(m_nodeDehli.getId());
         edgeChennaiTodehli.setTargetNodeid(m_nodeChennai.getId());
         edgeChennaiTodehli.setSourceIfIndex(13);

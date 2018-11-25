@@ -41,17 +41,19 @@ import java.util.Dictionary;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.karaf.features.FeaturesService;
 import org.apache.karaf.features.FeaturesService.Option;
+import org.apache.karaf.kar.KarService;
 import org.ops4j.pax.url.mvn.MavenResolver;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -71,10 +73,11 @@ public class KarafExtender {
     private static final String PAX_MVN_PID = "org.ops4j.pax.url.mvn";
     private static final String PAX_MVN_REPOSITORIES = "org.ops4j.pax.url.mvn.repositories";
 
+    public static final String WAIT_FOR_KAR_ATTRIBUTE = "wait-for-kar";
     public static final String FEATURES_URI = "features.uri";
     public static final String FEATURES_BOOT = "features.boot";
     private static final String COMMENT_REGEX = "^\\s*(#.*)?$";
-    private static final Pattern FEATURE_VERSION_PATTERN = Pattern.compile("(.*?)(/(.*))?");
+    private static final Pattern FEATURE_VERSION_PATTERN = Pattern.compile("(?<name>.+?)(/(?<version>.*))?(\\s+(?<attributes>.*))?");
 
     private final Path m_karafHome = Paths.get(System.getProperty("karaf.home"));
     private final Path m_repositories = m_karafHome.resolve("repositories");
@@ -83,11 +86,16 @@ public class KarafExtender {
     private ConfigurationAdmin m_configurationAdmin;
     private MavenResolver m_mavenResolver;
     private FeaturesService m_featuresService;
+    private KarService m_karService;
+
+    private Thread m_installThread;
+    private Thread m_karDependencyInstallThread;
 
     public void init() throws InterruptedException {
         Objects.requireNonNull(m_configurationAdmin, "configurationAdmin");
         Objects.requireNonNull(m_mavenResolver, "mavenResolver");
         Objects.requireNonNull(m_featuresService, "featuresService");
+        Objects.requireNonNull(m_karService, "karService");
 
         List<Repository> repositories;
         try {
@@ -111,78 +119,109 @@ public class KarafExtender {
         // Filter the list of features
         filterFeatures(featuresBoot);
 
-        // Build a comma separated list of our Maven repositories
-        final StringBuilder mavenReposSb = new StringBuilder();
-        for (Repository repository : repositories) {
-            if (mavenReposSb.length() != 0) {
-                mavenReposSb.append(",");
+        if (!repositories.isEmpty()) {
+            // Build a comma separated list of our Maven repositories
+            final StringBuilder mavenReposSb = new StringBuilder();
+            for (Repository repository : repositories) {
+                if (mavenReposSb.length() != 0) {
+                    mavenReposSb.append(",");
+                }
+                mavenReposSb.append(repository.toMavenUri());
             }
-            mavenReposSb.append(repository.toMavenUri());
-        }
-        final String mavenRepos = mavenReposSb.toString();
+            final String mavenRepos = mavenReposSb.toString();
 
-        LOG.info("Updating Maven repositories to include: {}", mavenRepos);
-        try {
-            final Configuration config = m_configurationAdmin.getConfiguration(PAX_MVN_PID);
-            if (config == null) {
-                throw new IOException("The OSGi configuration (admin) registry was found for pid " + PAX_MVN_PID +
-                        ", but a configuration could not be located/generated.  This shouldn't happen.");
+            LOG.info("Updating Maven repositories to include: {}", mavenRepos);
+            try {
+                final Configuration config = m_configurationAdmin.getConfiguration(PAX_MVN_PID);
+                if (config == null) {
+                    throw new IOException("The OSGi configuration (admin) registry was found for pid " + PAX_MVN_PID +
+                            ", but a configuration could not be located/generated.  This shouldn't happen.");
+                }
+                final Dictionary<String, Object> props = config.getProperties();
+                if (!mavenRepos.equals(props.get(PAX_MVN_REPOSITORIES))) {
+                    props.put(PAX_MVN_REPOSITORIES, mavenRepos);
+                    config.update(props);
+                }
+            } catch (IOException e) {
+                LOG.error("Failed to update the list of Maven repositories to '{}'. Aborting.",
+                        mavenRepos, e);
+                return;
             }
-            final Dictionary<String, Object> props = config.getProperties();
-            if (!mavenRepos.equals(props.get(PAX_MVN_REPOSITORIES))) {
-                props.put(PAX_MVN_REPOSITORIES, mavenRepos);
-                config.update(props);
+
+            // The configuration update is async, we need to wait for the feature URLs to be resolvable before we use them
+            LOG.info("Waiting up-to 30 seconds for the Maven repositories to be updated...");
+            // Attempting to resolve a missing features writes an exception to the log
+            // We sleep fix a fixed amount of time before our first try in order to help minimize the logged
+            // exceptions, even if we catch them
+            Thread.sleep(2000);
+            for (int i = 28; i > 0 && !canResolveAllFeatureUris(repositories); i--) {
+                Thread.sleep(1000);
             }
-        } catch (IOException e) {
-            LOG.error("Failed to update the list of Maven repositories to '{}'. Aborting.",
-                    mavenRepos, e);
-            return;
-        }
 
-        // The configuration update is async, we need to wait for the feature URLs to be resolvable before we use them
-        LOG.info("Waiting up-to 30 seconds for the Maven repositories to be updated...");
-        // Attempting to resolve a missing features writes an exception to the log
-        // We sleep fix a fixed amount of time before our first try in order to help minimize the logged
-        // exceptions, even if we catch them
-        Thread.sleep(2000);
-        for (int i = 28; i > 0 && !canResolveAllFeatureUris(repositories); i--) {
-            Thread.sleep(1000);
-        }
-
-        for (Repository repository : repositories) {
-            for (URI featureUri : repository.getFeatureUris()) {
-                try {
-                    LOG.info("Adding feature repository: {}", featureUri);
-                    m_featuresService.addRepository(featureUri);
-                } catch (Exception e) {
-                    LOG.error("Failed to add feature repository '{}'. Skipping.", featureUri, e);
+            for (Repository repository : repositories) {
+                for (URI featureUri : repository.getFeatureUris()) {
+                    try {
+                        LOG.info("Adding feature repository: {}", featureUri);
+                        m_featuresService.addRepository(featureUri);
+                    } catch (Exception e) {
+                        LOG.error("Failed to add feature repository '{}'. Skipping.", featureUri, e);
+                    }
                 }
             }
+        } else {
+            LOG.debug("No repositories to install.");
         }
 
         final Set<String> featuresToInstall = featuresBoot.stream()
-            .map(f -> f.getVersion() != null ? f.getName() + "/" + f.getVersion() : f.getName())
-            .collect(Collectors.toCollection(LinkedHashSet::new));
+                .filter(f -> f.getKarDependency() == null) // Exclude any features depending on .kars
+                .map(Feature::toInstallString)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        // Because of the fix for the following issue, we need to call the
-        // feature installation in another thread since this method is invoked
-        // during a feature installation itself and feature installations are
-        // now single-threaded.
-        //
-        // https://issues.apache.org/jira/browse/KARAF-3798
-        // https://github.com/apache/karaf/pull/138
-        //
-        CompletableFuture.runAsync(new Runnable() {
-            @Override
-            public void run() {
+        if (!featuresToInstall.isEmpty()) {
+            // Because of the fix for the following issue, we need to call the
+            // feature installation in another thread since this method is invoked
+            // during a feature installation itself and feature installations are
+            // now single-threaded.
+            //
+            // https://issues.apache.org/jira/browse/KARAF-3798
+            // https://github.com/apache/karaf/pull/138
+            //
+            m_installThread = new Thread(() -> {
                 try {
                     LOG.info("Installing features: {}", featuresToInstall);
                     m_featuresService.installFeatures(featuresToInstall, EnumSet.noneOf(Option.class));
                 } catch (Exception e) {
                     LOG.error("Failed to install one or more features.", e);
                 }
-            }
-        });
+            });
+            m_installThread.setName("Karaf-Extender-Feature-Install");
+            m_installThread.start();
+        } else {
+            LOG.debug("No features to install.");
+        }
+
+
+        final List<Feature> featuresWithKarDependencies = featuresBoot.stream()
+                .filter(f -> f.getKarDependency() != null)
+                .collect(Collectors.toList());
+        if (!featuresWithKarDependencies.isEmpty()) {
+            final KarDependencyHandler karDependencyHandler = new KarDependencyHandler(featuresWithKarDependencies,
+                    m_karService, m_featuresService);
+            m_karDependencyInstallThread = new Thread(karDependencyHandler);
+            m_karDependencyInstallThread.setName("Karaf-Extender-Feature-Install-For-Kars");
+            m_karDependencyInstallThread.start();
+        } else {
+            LOG.debug("No features with dependencies on .kar files to install.");
+        }
+    }
+
+    public void destroy() {
+        if (m_installThread != null) {
+            m_installThread.interrupt();
+        }
+        if (m_karDependencyInstallThread != null) {
+            m_karDependencyInstallThread.interrupt();
+        }
     }
 
     private boolean canResolveAllFeatureUris(List<Repository> repositories) {
@@ -231,6 +270,21 @@ public class KarafExtender {
         return repositories;
     }
 
+    private static Map<String,String> parseAttributes(String attributes) {
+        final Map<String,String> attributeMap = new LinkedHashMap<>();
+        if (attributes == null) {
+            return attributeMap;
+        }
+
+        for (String attributeKvp : attributes.split("\\s")) {
+            String tokens[] = attributeKvp.split("=");
+            if (tokens.length == 2) {
+                attributeMap.put(tokens[0].trim(), tokens[1].trim());
+            }
+        }
+        return attributeMap;
+    }
+
     public List<Feature> getFeaturesIn(Path featuresBootFile) throws IOException {
         final List<Feature> features = Lists.newLinkedList();
         for (String line : getLinesIn(featuresBootFile)) {
@@ -238,11 +292,13 @@ public class KarafExtender {
             if (!m.matches()) {
                 continue;
             }
-            if (m.group(3) == null) {
-                features.add(new Feature(m.group(1)));
-            } else {
-                features.add(new Feature(m.group(1), m.group(3)));
-            }
+            final Map<String,String> attributes = parseAttributes(m.group("attributes"));
+            final Feature feature = Feature.builder()
+                    .withName(m.group("name"))
+                    .withVersion(m.group("version"))
+                    .withKarDependency(attributes.get(WAIT_FOR_KAR_ATTRIBUTE))
+                    .build();
+            features.add(feature);
         }
         return features;
     }
@@ -282,7 +338,10 @@ public class KarafExtender {
         while (it.hasNext()) {
             final Feature feature = it.next();
             if (feature.getName().startsWith("!") && feature.getName().length() > 1) {
-                featuresToExclude.add(new Feature(feature.getName().substring(1), feature.getVersion()));
+                featuresToExclude.add(Feature.builder()
+                                .withName(feature.getName().substring(1))
+                                .withVersion(feature.getVersion())
+                                .build());
                 it.remove();
             }
         }
@@ -313,7 +372,7 @@ public class KarafExtender {
     private static List<Path> getRepositoryFolders(Path folder) throws IOException {
         final List<Path> paths = Lists.newLinkedList();
         if (!folder.toFile().exists()) {
-            LOG.warn("Repository folder {} does not exist!", folder);
+            LOG.info("Repository folder {} does not exist. No repositories will be added.", folder);
             return paths;
         }
 
@@ -351,4 +410,9 @@ public class KarafExtender {
     public void setFeaturesService(FeaturesService featuresService) {
         m_featuresService = featuresService;
     }
+
+    public void setKarService(KarService karService) {
+        m_karService = karService;
+    }
+
 }

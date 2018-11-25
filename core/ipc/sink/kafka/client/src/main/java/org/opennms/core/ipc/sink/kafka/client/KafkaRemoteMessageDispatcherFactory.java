@@ -76,15 +76,21 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
         try (MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
             LOG.trace("dispatch({}): sending message {}", topic, message);
             final ProducerRecord<String,byte[]> record = new ProducerRecord<>(topic, module.marshal(message));
-            try {
-                // From KafkaProducer's JavaDoc: The producer is thread safe and should generally be shared among all threads for best performance.
-                final Future<RecordMetadata> future = producer.send(record);
-                // The call to dispatch() is synchronous, so we block until the message was sent
-                future.get();
-            } catch (InterruptedException e) {
-                LOG.warn("Interrupted while sending message to topic {}.", topic, e);
-            } catch (ExecutionException e) {
-                LOG.error("Error occured while sending message to topic {}.", topic, e);
+            // Keep sending record till it delivers successfully.
+            while(true) {
+                try {
+                    // From KafkaProducer's JavaDoc: The producer is thread safe and should generally be shared among all threads for best performance.
+                    final Future<RecordMetadata> future = producer.send(record);
+                    // The call to dispatch() is synchronous, so we block until the message was sent
+                    future.get();
+                    break;
+                } catch (InterruptedException e) {
+                    LOG.warn("Interrupted while sending message to topic {}.", topic, e);
+                    Thread.currentThread().interrupt();
+                    break;
+                } catch (ExecutionException e) {
+                    LOG.warn("Timeout occured while sending message to topic {}, it will be attempted again.", topic);
+                }
             }
         }
     }

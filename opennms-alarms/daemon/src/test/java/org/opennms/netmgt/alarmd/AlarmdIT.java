@@ -322,14 +322,14 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         OnmsAlarm situation = m_alarmDao.findByReductionKey("Situation1");
         assertEquals(2, situation.getRelatedAlarms().size());
 
-        //send situation in with 3rd alarm, should result in 1 situation with 3 alarms
+        //send situation in with 3rd alarm, should result in 1 situation with 1 alarm since the situation's related
+        //alarms will be overwritten with this new related alarm
         List<String> newReductionKeys = new ArrayList<>(Arrays.asList("Alarm3"));
         sendSituationEvent("Situation1", node, newReductionKeys);
         await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
         situation = m_alarmDao.findByReductionKey("Situation1");
-        assertEquals(3, situation.getRelatedAlarms().size());
+        assertEquals(1, situation.getRelatedAlarms().size());
     }
-
 
     @Test
     @Transactional
@@ -386,7 +386,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
         situation1 = m_alarmDao.findByReductionKey("Situation1");
         // Verify that Situation3 can't be related to Situation1
-        assertEquals(2, situation1.getRelatedAlarms().size());
+        assertEquals(0, situation1.getRelatedAlarms().size());
         assertFalse(situation1.getRelatedAlarms().contains(situation4));
 
     }

@@ -45,7 +45,6 @@
 
             <!-- Pax JDBC -->
             <value>org.ops4j.pax.jdbc-1.0.1</value>
-
           </importRepositoryExclusions>
           <repositories>
 
@@ -69,6 +68,9 @@
             <!-- OpenNMS features bundle -->
             <repository>file:${project.build.outputDirectory}/features.xml</repository>
 
+            <!-- OpenNMS Karaf extensions -->
+            <repository>file:${project.build.outputDirectory}/karaf-extensions.xml</repository>
+
             <!-- OpenNMS OSGI Core feature bundle -->
             <repository>mvn:org.opennms.osgi/opennms-osgi-core-rest/${project.version}/xml/features</repository>
 
@@ -78,6 +80,9 @@
             <!-- JMX Config Generator features -->
             <repository>mvn:org.opennms.features/jmxconfiggenerator/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features/vaadin-jmxconfiggenerator/${project.version}/xml/features</repository>
+
+            <!-- Enlinkd features -->
+            <repository>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.service.api/${project.version}/xml/features</repository>
 
             <!-- BSM features -->
             <repository>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service.api/${project.version}/xml/features</repository>
@@ -100,7 +105,6 @@
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-base/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-browsers/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-linkd/${project.version}/xml/features</repository>
-            <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-sfree/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-vmware/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-application/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-bsm/${project.version}/xml/features</repository>
@@ -142,7 +146,6 @@
 
             <!-- Jest Feature -->
             <repository>mvn:org.opennms.features.jest/opennms-jest/${project.version}/xml/features</repository>
-
           </repositories>
 
           <!--
@@ -311,7 +314,6 @@
             <feature>opennms-topology-runtime-base</feature>
             <feature>opennms-topology-runtime-browsers</feature>
             <feature>opennms-topology-runtime-linkd</feature>
-            <feature>opennms-topology-runtime-sfree</feature>
             <feature>opennms-topology-runtime-vmware</feature>
             <feature>opennms-topology-runtime-application</feature>
             <feature>opennms-topology-runtime-bsm</feature>
@@ -333,6 +335,9 @@
             <feature>opennms-telemetry-jti</feature>
             <feature>opennms-telemetry-nxos</feature>
 
+            <!-- Enlinkd -->
+            <feature>org.opennms.features.enlinkd.service.api</feature>
+
             <!-- BSM -->
             <feature>org.opennms.features.bsm.service.api</feature>
             <feature>org.opennms.features.bsm.shell-commands</feature>
@@ -353,6 +358,8 @@
 
 	    <!-- Integration API -->
 	    <feature>opennms-api-layer</feature>
+
+	    <feature>karaf-extender</feature>
           </features>
         </configuration>
       </plugin>
@@ -586,13 +593,6 @@
     <dependency>
       <groupId>org.opennms.osgi.features.topology</groupId>
       <artifactId>opennms-topology-runtime-graphml</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>opennms-topology-runtime-sfree</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
