@@ -91,6 +91,7 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
 
     private String alarmTopic;
     private long alarmSyncIntervalMs;
+    private boolean startWithCleanState = false;
 
     private KafkaStreams streams;
     private ScheduledExecutorService scheduler;
@@ -159,6 +160,10 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
         }
 
         try {
+            if (startWithCleanState) {
+                LOG.info("Performing stream state cleanup.");
+                streams.cleanUp();
+            }
             LOG.info("Starting alarm datasync stream.");
             streams.start();
             LOG.info("Starting alarm datasync started.");
@@ -299,6 +304,11 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
 
     public void setAlarmSyncIntervalMs(long intervalMs) {
         alarmSyncIntervalMs = intervalMs;
+    }
+
+    @Override
+    public void setStartWithCleanState(boolean startWithCleanState) {
+        this.startWithCleanState = startWithCleanState;
     }
 
     private ReadOnlyKeyValueStore<String, byte[]> getAlarmTableNow() throws InvalidStateStoreException {

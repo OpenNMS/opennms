@@ -28,11 +28,21 @@
 
 package org.opennms.features.kafka.producer.datasync;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 
+/**
+ * This interface was created to be able to expose the methods on
+ * {@link KafkaAlarmDataSync} to the {@link org.opennms.features.kafka.producer.shell.SyncAlarms}
+ * shell command.
+ */
 public interface AlarmDataStore {
+
+    void init() throws IOException;
+
+    void destroy();
 
     boolean isEnabled();
 
@@ -43,5 +53,7 @@ public interface AlarmDataStore {
     OpennmsModelProtos.Alarm getAlarm(String reductionKey);
 
     AlarmSyncResults synchronizeAlarmsWithDb();
+
+    void setStartWithCleanState(boolean startWithCleanState);
 
 }
