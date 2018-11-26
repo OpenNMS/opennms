@@ -1,42 +1,51 @@
 <?xml version="1.0"?>
 <telemetryd-config>
-    <protocol name="Netflow-5" description="Listener for Netflow 5 UDP packets" enabled="true">
-        <listener name="Netflow-5-UDP-50000" class-name="org.opennms.netmgt.telemetry.listeners.udp.UdpListener">
-            <parameter key="port" value="50000"/>
-            <parameter key="host" value="0.0.0.0"/>
-        </listener>
+    <listener name="Netflow-5" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="true">
+        <parameter key="port" value="50000"/>
+        <parameter key="host" value="0.0.0.0"/>
 
-        <adapter name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5Adapter">
+        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser" queue="Netflow-5" />
+    </listener>
+
+    <queue name="Netflow-5">
+        <adapter name="Netflow-5-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter" enabled="true">
         </adapter>
-    </protocol>
+    </queue>
 
-    <protocol name="Netflow-9" description="Listener for Netflow 9 UDP packets" enabled="true">
-        <listener name="Netflow-9-UDP-50001" class-name="org.opennms.netmgt.telemetry.listeners.flow.netflow9.UdpListener">
-            <parameter key="port" value="50001"/>
-            <parameter key="host" value="0.0.0.0"/>
-        </listener>
 
-        <adapter name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.v9.Netflow9Adapter">
+    <listener name="Netflow-9" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="true">
+        <parameter key="port" value="50001"/>
+        <parameter key="host" value="0.0.0.0"/>
+
+        <parser name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser" queue="Netflow-9" />
+    </listener>
+
+    <queue name="Netflow-9">
+        <adapter name="Netflow-9-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9Adapter" enabled="true">
         </adapter>
-    </protocol>
+    </queue>
 
-    <protocol name="IPFIX" description="Listener for IPFIX UDP packets" enabled="true">
-        <listener name="IPFIX-UDP-50002" class-name="org.opennms.netmgt.telemetry.listeners.flow.ipfix.UdpListener">
-            <parameter key="port" value="50002"/>
-            <parameter key="host" value="0.0.0.0"/>
-        </listener>
+    <listener name="IPFIX" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="true">
+        <parameter key="port" value="50002"/>
+        <parameter key="host" value="0.0.0.0"/>
 
-        <adapter name="IPFIX-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.ipfix.IpfixAdapter">
+        <parser name="IPFIX-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser" queue="IPFIX" />
+    </listener>
+
+    <queue name="IPFIX">
+        <adapter name="IPFIX-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapter" enabled="true">
         </adapter>
-    </protocol>
+    </queue>
 
-    <protocol name="SFlow" description="Listener for SFlow UDP packets" enabled="true">
-        <listener name="SFlow-UDP-50003" class-name="org.opennms.netmgt.telemetry.listeners.sflow.Listener">
-            <parameter key="port" value="50003"/>
-            <parameter key="host" value="0.0.0.0"/>
-        </listener>
+    <listener name="SFlow" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="true">
+        <parameter key="port" value="50003"/>
+        <parameter key="host" value="0.0.0.0"/>
 
-        <adapter name="SFlow-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowAdapter">
+        <parser name="SFlow-Parser" class-name="org.opennms.netmgt.telemetry.protocols.sflow.parser.SFlowUdpParser" queue="SFlow" />
+    </listener>
+
+    <queue name="SFlow">
+        <adapter name="SFlow-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter" enabled="true">
         </adapter>
-    </protocol>
+    </queue>
 </telemetryd-config>

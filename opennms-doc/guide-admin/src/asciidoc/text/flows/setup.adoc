@@ -35,14 +35,16 @@ NOTE: In this example we enable the NetFlow v5 protocol, but the same process ca
 .Enable NetFlow v5 in telemetryd-configuration.xml
 [source, xml]
 ----
-<protocol name="Netflow-5" description="Listener for Netflow 5 UDP packets" enabled="true">
-   <listener name="Netflow-5-UDP-8877" class-name="org.opennms.netmgt.telemetry.listeners.udp.UdpListener">
-        <parameter key="port" value="8877"/>
-    </listener>
+<listener name="Netflow-5-UDP-8877" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="true">
+    <parameter key="port" value="8877"/>
 
-    <adapter name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.Netflow5Adapter">
+    <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser" queue="Netflow-5" />
+</listener>
+
+<queue name="Netflow-5">
+    <adapter name="Netflow-5-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter" enabled="true">
     </adapter>
- </protocol>
+</queue>
 ----
 
 Apply the changes without restarting by sending a `reloadDaemonConfig` event via the CLI:
@@ -79,7 +81,7 @@ In this example we'll look at enabling a generic listener for the NetFlow v5 pro
 IMPORTANT: NetFlow v5 uses the generic UDP listener, but other protocols require a specific listener.
            See the examples in `${OPENNMS_HOME}/etc/telemetryd-configuration.xml`, or <<ga-telemetryd-listener, Telemetryd Listener Reference>> for details.
 
-To enable and configure an _UDP Listener_ for NetFlow v5 on Minion, connect to the _Karaf Console_ and set the following properties:
+To enable and configure a _Listener_ for NetFlow v5 on Minion, connect to the _Karaf Console_ and set the following properties:
 
 [source]
 ----
@@ -87,8 +89,10 @@ $ ssh -p 8201 admin@localhost
 ...
 admin@minion()> config:edit org.opennms.features.telemetry.listeners-udp-8877
 admin@minion()> config:property-set name Netflow-5
-admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.udp.UdpListener
-admin@minion()> config:property-set listener.port 8877
+admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener
+admin@minion()> config:property-set parameters.port 8877
+admin@minion()> config:property-set parsers.0.name Netflow-5-Parser
+admin@minion()> config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser
 admin@minion()> config:update
 ----
 
@@ -98,7 +102,9 @@ TIP: If a configuration management tool is used, the properties file can be crea
 ----
 name = Netflow-5
 class-name = org.opennms.netmgt.telemetry.listeners.udp.UdpListener
-listener.port = 8877
+parameters.port = 8877
+parser.0.name Netflow-5-Parser
+parser.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser
 ----
 
 NOTE: The associated protocol, in this case `Netflow-5` must also be enabled on _{opennms-product-name}_ for the messages to be processed.

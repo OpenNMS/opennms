@@ -1,22 +1,24 @@
 <?xml version="1.0"?>
 <telemetryd-config>
-  <protocol name="JTI" description="Junos Telemetry Interface (JTI)">
-    <listener name="JTI-UDP-50000" class-name="org.opennms.netmgt.telemetry.listeners.udp.UdpListener">
-      <parameter key="port" value="50000"/>
-    </listener>
+  <listener name="JTI-UDP-50000" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="true">
+    <parameter key="port" value="50000"/>
 
-    <adapter name="JTI-GPB" class-name="org.opennms.netmgt.telemetry.adapters.jti.JtiGpbAdapter">
+    <parser name="JTI-Parser" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" queue="JTI" />
+  </listener>
+
+  <queue name="JTI">
+    <adapter name="JTI-GPB" class-name="org.opennms.netmgt.telemetry.protocols.jti.adapter.JtiGpbAdapter" enabled="true">
       <parameter key="script" value="etc/telemetryd-adapters/junos-telemetry-interface.groovy" />
-    </adapter>
 
-    <package name="JTI-Default">
-      <rrd step="300">
-        <rra>RRA:AVERAGE:0.5:1:2016</rra>
-        <rra>RRA:AVERAGE:0.5:12:1488</rra>
-        <rra>RRA:AVERAGE:0.5:288:366</rra>
-        <rra>RRA:MAX:0.5:288:366</rra>
-        <rra>RRA:MIN:0.5:288:366</rra>
-      </rrd>
-    </package>
-  </protocol>
+      <package name="JTI-Default">
+        <rrd step="300">
+          <rra>RRA:AVERAGE:0.5:1:2016</rra>
+          <rra>RRA:AVERAGE:0.5:12:1488</rra>
+          <rra>RRA:AVERAGE:0.5:288:366</rra>
+          <rra>RRA:MAX:0.5:288:366</rra>
+          <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+      </package>
+    </adapter>
+  </queue>
 </telemetryd-config>
