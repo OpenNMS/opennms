@@ -209,7 +209,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                 .map(fact -> fact.getAlarmAssociation().getRelatedAlarm().getId())
                     .filter(alarmId -> !situation.getRelatedAlarmIds().contains(alarmId))
                     .collect(Collectors.toSet());
-        deletedAlarmIds.stream().forEach(alarmId -> {
+        deletedAlarmIds.forEach(alarmId -> {
             final AlarmAssociationAndFact associationAndFact = associationFacts.remove(alarmId);
             if (associationAndFact != null) {
                 LOG.debug("Deleting AlarmAssociationAndFact from session: {}", associationAndFact.getAlarmAssociation());
