@@ -157,6 +157,7 @@ public class KafkaRpcServerManager {
         private final AtomicBoolean closed = new AtomicBoolean(false);
         private String topic;
         private RpcModule<RpcRequest, RpcResponse> module;
+        private Cache<String, ByteString> byteStringCache = CacheBuilder.from("maximumSize=100,expireAfterWrite=1m").build();
 
         public KafkaConsumerRunner(RpcModule<RpcRequest, RpcResponse> rpcModule, KafkaConsumer<String, byte[]> consumer, String topic) {
             this.consumer = consumer;
@@ -202,7 +203,19 @@ public class KafkaRpcServerManager {
                                     continue;
                                 }
                             }
-                            RpcRequest request = module.unmarshalRequest(rpcMessage.getRpcContent().toStringUtf8());
+                            ByteString rpcContent = rpcMessage.getRpcContent();;
+                            if (rpcMessage.getTotalChunks() > 0) {
+                                if (byteStringCache.getIfPresent(rpcId) != null) {
+                                    byteStringCache.getIfPresent(rpcId).concat(rpcMessage.getRpcContent());
+                                } else {
+                                    byteStringCache.put(rpcId, rpcMessage.getRpcContent());
+                                }
+                                if(rpcMessage.getTotalChunks() != rpcMessage.getCurrentChunkNumber()+1) {
+                                    continue;
+                                }
+                                rpcContent = byteStringCache.getIfPresent(rpcId);
+                            }
+                            RpcRequest request = module.unmarshalRequest(rpcContent.toStringUtf8());
                             CompletableFuture<RpcResponse> future = module.execute(request);
                             future.whenComplete((res, ex) -> {
                                 final RpcResponse response;
