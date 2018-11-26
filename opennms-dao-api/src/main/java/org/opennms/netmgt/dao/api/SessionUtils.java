@@ -51,7 +51,7 @@ public interface SessionUtils {
     <V> V withTransaction(Supplier<V> supplier);
 
     /**
-     * Invoked the given supplier within the context of a read-only transaction.
+     * Invokes the given supplier within the context of a read-only transaction.
      *
      * @param supplier supplier to invoke
      * @param <V> type returned by the supplier
