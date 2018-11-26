@@ -57,7 +57,6 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <property name="ospfTopologyService" ref="ospfTopologyService"/>
         <property name="isisTopologyService" ref="isisTopologyService" />
         <property name="bridgeTopologyService" ref="bridgeTopologyService" />
-        <property name="ipNetToMediaTopologyService" ref="ipNetToMediaTopologyService"/>
         <property name="topologyProviderInfo" ref="enlinkdTopologyProviderInfo"/>
     </bean>
 

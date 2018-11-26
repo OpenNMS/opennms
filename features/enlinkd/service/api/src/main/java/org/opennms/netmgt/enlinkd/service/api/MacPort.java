@@ -52,6 +52,14 @@ public class MacPort implements Topology {
         return port;
     }
 
+    public static MacPort create(Set<String> macs) {
+        
+        
+        MacPort port = new MacPort();
+        macs.stream().filter(mac -> mac!= null).forEach(mac -> port.getMacPortMap().put(mac, new HashSet<>()));
+        return port;
+    }
+
     public static MacPort merge(IpNetToMedia media, MacPort port) {
         
         if (!port.getMacPortMap().containsKey(media.getPhysAddress())) {
@@ -66,11 +74,19 @@ public class MacPort implements Topology {
     private Integer m_macPortIfIndex;
     private String  m_macPortName;
     private Map<String, Set<InetAddress>> m_macPortMap = new HashMap<>();
-
     
-    public MacPort() {
+    private MacPort() {
     }
-
+    
+    public boolean hasInetAddresses() {
+        for (Set<InetAddress> ips: m_macPortMap.values()) {
+            if (ips!= null && ips.size() > 0) { 
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public String getIpMacInfo() {
         
         final StringBuffer strbfr = new StringBuffer();

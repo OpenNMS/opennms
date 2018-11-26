@@ -119,7 +119,7 @@
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
   
-      <bean id="nodeTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.NodeTopologyServiceImpl">
+    <bean id="nodeTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.NodeTopologyServiceImpl">
       <property name="nodeDao" ref="nodeDao" />
     </bean>
 
@@ -128,10 +128,12 @@
         <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
         <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
         <property name="bridgeStpLinkDao" ref="bridgeStpLinkDao" />
+        <property name="ipNetToMediaDao" ref="ipNetToMediaDao" />
     </bean>
 
     <bean id="ipNetToMediaTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.IpNetToMediaTopologyServiceImpl">
         <property name="ipNetToMediaDao" ref="ipNetToMediaDao" />
+        <property name="ipInterfaceDao" ref="ipInterfaceDao" />
     </bean>
         
    <bean id="cdpTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.CdpTopologyServiceImpl">

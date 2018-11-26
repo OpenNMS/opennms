@@ -29,10 +29,7 @@
 package org.opennms.netmgt.enlinkd.service.impl;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -40,7 +37,6 @@ import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
 import org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService;
-import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
@@ -48,9 +44,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
 
 public class IpNetToMediaTopologyServiceImpl implements
         IpNetToMediaTopologyService {
@@ -169,38 +162,6 @@ public class IpNetToMediaTopologyServiceImpl implements
 
     public void setIpNetToMediaDao(IpNetToMediaDao ipNetToMediaDao) {
         m_ipNetToMediaDao = ipNetToMediaDao;
-    }
-
-    @Override
-    public List<MacPort> getMacPorts() {
-        final Map<String,MacPort> macToMacPortMap = new HashMap<>();
-        final Table<Integer, Integer, MacPort> nodeIfindexToMacPortTable = HashBasedTable.create();
-        m_ipNetToMediaDao.
-                findAll().
-                stream().forEach(m -> {
-                    if (m.getNode() != null ) {
-                        if (nodeIfindexToMacPortTable.contains(m.getNode().getId(), m.getIfIndex())) {
-                            MacPort.merge(m, nodeIfindexToMacPortTable.get(m.getNode().getId(), m.getIfIndex()));
-                        } else {
-                            nodeIfindexToMacPortTable.put(m.getNode().getId(), m.getIfIndex(), MacPort.create(m));
-                        }
-                    } else {
-                        if (macToMacPortMap.containsKey(m.getPhysAddress())) {
-                            MacPort.merge(m, macToMacPortMap.get(m.getPhysAddress()));
-                        } else {
-                            macToMacPortMap.put(m.getPhysAddress(), MacPort.create(m));
-                        }
-                    }
-                });
-       List<MacPort> ports = nodeIfindexToMacPortTable.values().stream().collect(Collectors.toList(
-                    ));
-       ports.stream().forEach(mp -> {
-           mp.getMacPortMap().keySet().stream().filter(mac -> macToMacPortMap.containsKey(mac)).forEach(mac -> {
-                   mp.getMacPortMap().get(mac).addAll(macToMacPortMap.remove(mac).getMacPortMap().get(mac));
-           });
-       });
-       ports.addAll(macToMacPortMap.values());
-       return ports;
     }
 
     public IpInterfaceDao getIpInterfaceDao() {

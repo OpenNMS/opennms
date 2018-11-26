@@ -30,7 +30,6 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,7 +66,6 @@ import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
-import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
@@ -412,7 +410,7 @@ public class EnhancedLinkdMockDataPopulator {
     public void setUpMock() {
         EasyMock.expect(m_cdpLinkDao.findAll()).andReturn(new ArrayList<CdpLink>()).anyTimes();
         EasyMock.expect(m_cdpElementDao.findAll()).andReturn(new ArrayList<CdpElement>()).anyTimes();
-        EasyMock.expect(m_bridgeTopologyService.findAll()).andReturn(new HashSet<BroadcastDomain>()).anyTimes();
+        EasyMock.expect(m_bridgeTopologyService.matchBridgeLinks()).andReturn(new ArrayList<>()).anyTimes();
         EasyMock.expect(m_isisLinkDao.findAll()).andReturn(new ArrayList<IsIsLink>()).anyTimes();
         EasyMock.expect(m_isisElementDao.findAll()).andReturn(new ArrayList<IsIsElement>()).anyTimes();
 

@@ -38,22 +38,25 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.enlinkd.persistence.api.BridgeBridgeLinkDao;
-import org.opennms.netmgt.enlinkd.persistence.api.BridgeElementDao;
-import org.opennms.netmgt.enlinkd.persistence.api.BridgeMacLinkDao;
-import org.opennms.netmgt.enlinkd.persistence.api.BridgeStpLinkDao;
+import org.apache.commons.lang3.tuple.Triple;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
-import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
+import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
+import org.opennms.netmgt.enlinkd.persistence.api.BridgeBridgeLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.BridgeElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.BridgeMacLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.BridgeStpLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
 import org.opennms.netmgt.enlinkd.service.api.Bridge;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
+import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
@@ -61,6 +64,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 
 public class BridgeTopologyServiceImpl implements BridgeTopologyService {
     
@@ -72,6 +78,7 @@ public class BridgeTopologyServiceImpl implements BridgeTopologyService {
     private BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
     private BridgeMacLinkDao m_bridgeMacLinkDao;
     private BridgeStpLinkDao m_bridgeStpLinkDao;
+    private IpNetToMediaDao m_ipNetToMediaDao;
 
     volatile Map<Integer, Set<BridgeForwardingTableEntry>> m_nodetoBroadcastDomainMap= new HashMap<Integer, Set<BridgeForwardingTableEntry>>();
     volatile Set<BroadcastDomain> m_domains;
@@ -737,6 +744,91 @@ SEG:        for (SharedSegment segment : bmlsegments) {
 
     public void setBridgeStpLinkDao(BridgeStpLinkDao bridgeStpLinkDao) {
         m_bridgeStpLinkDao = bridgeStpLinkDao;
+    }
+
+    @Override
+    public List<MacPort> getMacPorts() {
+        final Map<String,MacPort> macToMacPortMap = new HashMap<>();
+        final Table<Integer, Integer, MacPort> nodeIfindexToMacPortTable = HashBasedTable.create();
+        m_ipNetToMediaDao.
+                findAll().
+                stream().forEach(m -> {
+                    if (m.getNode() != null ) {
+                        if (nodeIfindexToMacPortTable.contains(m.getNode().getId(), m.getIfIndex())) {
+                            MacPort.merge(m, nodeIfindexToMacPortTable.get(m.getNode().getId(), m.getIfIndex()));
+                        } else {
+                            nodeIfindexToMacPortTable.put(m.getNode().getId(), m.getIfIndex(), MacPort.create(m));
+                        }
+                    } else {
+                        if (macToMacPortMap.containsKey(m.getPhysAddress())) {
+                            MacPort.merge(m, macToMacPortMap.get(m.getPhysAddress()));
+                        } else {
+                            macToMacPortMap.put(m.getPhysAddress(), MacPort.create(m));
+                        }
+                    }
+                });
+       List<MacPort> ports = nodeIfindexToMacPortTable.values().stream().collect(Collectors.toList(
+                    ));
+       ports.stream().forEach(mp -> {
+           mp.getMacPortMap().keySet().stream().filter(mac -> macToMacPortMap.containsKey(mac)).forEach(mac -> {
+                   mp.getMacPortMap().get(mac).addAll(macToMacPortMap.remove(mac).getMacPortMap().get(mac));
+           });
+       });
+       ports.addAll(macToMacPortMap.values());
+       return ports;
+    }
+
+    @Override
+    public List<Triple<List<BridgePort>, List<MacPort>, BridgePort>> matchBridgeLinks() {
+        final List<Triple<List<BridgePort>, List<MacPort>, BridgePort>> links = new ArrayList<>();
+        final List<MacPort> macPortMap = getMacPorts();
+        
+        m_domains.stream().forEach(dm ->{
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("matchBridgeLinks:\n {}", dm.printTopology());
+            }
+
+            dm.getSharedSegments().stream().forEach( shs -> {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("matchBridgeLinks: \n{}", shs.printTopology());
+                }
+                Set<String> macs = new HashSet<String>();
+                List<MacPort> macPorts = new ArrayList<MacPort>();
+                macPortMap.stream().filter( mp -> 
+                    shs.getMacsOnSegment().containsAll(mp.getMacPortMap().keySet())).
+                    forEach(mp -> {
+                        macPorts.add(mp);
+                        macs.addAll(mp.getMacPortMap().keySet());
+                });
+                Set<String>  noMacPortMacs = new HashSet<String>(shs.getMacsOnSegment());
+                noMacPortMacs.removeAll(macs);
+                if (noMacPortMacs.size() >0) {
+                    macPorts.add(MacPort.create(noMacPortMacs));
+                }
+                
+                macPorts.stream().forEach(mp -> {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("matchBridgeLinks: \n{}", mp.printTopology());
+                    }
+                });
+                try {
+                   Triple<List<BridgePort>, List<MacPort>, BridgePort> triple = 
+                    Triple.of(new ArrayList<BridgePort>(shs.getBridgePortsOnSegment()), macPorts, shs.getDesignatedPort());
+                   links.add(triple);
+                } catch (BridgeTopologyException e) {
+                    LOG.error("{}, cannot add segment {} ",e.getMessage(), e.printTopology());
+                }
+            });
+        });
+        return links;
+    }
+
+    public IpNetToMediaDao getIpNetToMediaDao() {
+        return m_ipNetToMediaDao;
+    }
+
+    public void setIpNetToMediaDao(IpNetToMediaDao ipNetToMediaDao) {
+        m_ipNetToMediaDao = ipNetToMediaDao;
     }
     
 }

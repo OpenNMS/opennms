@@ -34,6 +34,7 @@ import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
+import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -51,8 +52,23 @@ public class LinkdVertex extends SimpleLeafVertex {
         s_nodeStatusMap.put(OnmsNode.NodeType.DELETED, "Deleted");
     }
 
+    public static LinkdVertex create(MacPort port) {
+        LinkdVertex vertex = new LinkdVertex(port.getMacPortMap().keySet().toString());
+        vertex.setLabel(port.getMacPortMap().keySet().toString());
+        vertex.setNodeType(s_nodeStatusMap.get(OnmsNode.NodeType.UNKNOWN));
+        if (port.hasInetAddresses()) {
+            vertex.setIpAddress(port.getMacPortMap().toString());
+        } else {
+            vertex.setIpAddress("no ip address");
+        }
+
+        vertex.setManaged("Not an OpenNMS Node");
+        return vertex;
+        
+    }
+    
     public static LinkdVertex create(OnmsNode node, OnmsIpInterface primary) {
-        LinkdVertex vertex = new LinkdVertex(node);
+        LinkdVertex vertex = new LinkdVertex(node.getNodeId());
         vertex.setNodeID(node.getId());
         vertex.setLabel(node.getLabel());
         vertex.setNodeType(s_nodeStatusMap.get(node.getType()));
@@ -115,8 +131,8 @@ public class LinkdVertex extends SimpleLeafVertex {
         m_isManaged = isManaged;
     }
 
-    private LinkdVertex(OnmsNode node) {
-        super(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, node.getNodeId(), 0, 0);
+    private LinkdVertex(String id) {
+        super(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, id, 0, 0);
     }
     
     @Override

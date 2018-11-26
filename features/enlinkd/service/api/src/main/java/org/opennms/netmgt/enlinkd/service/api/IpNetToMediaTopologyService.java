@@ -30,7 +30,6 @@ package org.opennms.netmgt.enlinkd.service.api;
 
 
 import java.util.Date;
-import java.util.List;
 
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 
@@ -39,7 +38,5 @@ public interface IpNetToMediaTopologyService {
     void delete(int nodeid);
     void reconcile(int nodeId, Date now);
     void store(int nodeId, IpNetToMedia link);
-    
-    List<MacPort> getMacPorts(); 
     
 }
