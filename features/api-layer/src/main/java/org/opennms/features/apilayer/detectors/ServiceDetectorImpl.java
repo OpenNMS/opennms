@@ -37,9 +37,9 @@ import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
 
 /**
- * Maps {@link ServiceDetector} with {@link AsyncServiceDetector}
- * All service detectors from integration-api are async in nature.
- * All Setters are ignored here.
+ * This is a proxy object created to map {@link ServiceDetector} with {@link AsyncServiceDetector}
+ * {@link ServiceDetector} from integration api is Async in nature.
+ *
  */
 public class ServiceDetectorImpl implements AsyncServiceDetector {
 

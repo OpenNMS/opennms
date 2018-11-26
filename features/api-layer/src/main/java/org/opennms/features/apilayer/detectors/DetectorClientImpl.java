@@ -35,6 +35,9 @@ import java.util.concurrent.CompletableFuture;
 import org.opennms.integration.api.v1.detectors.DetectorClient;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 
+/**
+ *  Implements {@link DetectorClient} for OpenNMS instance.
+ */
 public class DetectorClientImpl implements DetectorClient {
 
     private LocationAwareDetectorClient locationAwareDetectorClient;

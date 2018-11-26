@@ -35,11 +35,9 @@ import org.opennms.integration.api.v1.detectors.DetectRequest;
 import org.opennms.integration.api.v1.detectors.ServiceDetector;
 import org.opennms.integration.api.v1.detectors.ServiceDetectorFactory;
 import org.opennms.netmgt.provision.DetectResults;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
 
 /**
- *  Maps {@link ServiceDetectorFactory} implementations to {@link org.opennms.netmgt.provision.ServiceDetectorFactory}
+ * This is a proxy object created to map {@link ServiceDetectorFactory} implementations to {@link org.opennms.netmgt.provision.ServiceDetectorFactory}
  */
 public class ServiceDetectorFactoryImpl<T extends org.opennms.netmgt.provision.ServiceDetector> implements org.opennms.netmgt.provision.ServiceDetectorFactory<T> {
 
@@ -57,9 +55,7 @@ public class ServiceDetectorFactoryImpl<T extends org.opennms.netmgt.provision.S
     @Override
     @SuppressWarnings("unchecked")
     public T createDetector(Map<String, String> properties) {
-        ServiceDetector serviceDetector = serviceDetectorFactory.createDetector();
-        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(serviceDetector);
-        wrapper.setPropertyValues(properties);
+        ServiceDetector serviceDetector = serviceDetectorFactory.createDetector(properties);
         return (T) new ServiceDetectorImpl(serviceDetector);
     }
 

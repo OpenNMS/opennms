@@ -33,7 +33,7 @@ import org.opennms.integration.api.v1.detectors.ServiceDetectorFactory;
 import org.osgi.framework.BundleContext;
 
 /**
- * Manager to plug detectors from integration-api to provision.
+ * Manager to plug detectors from integration-api to provisioning detectors.
  */
 public class DetectorManager extends InterfaceMapper<ServiceDetectorFactory, org.opennms.netmgt.provision.ServiceDetectorFactory> {
 

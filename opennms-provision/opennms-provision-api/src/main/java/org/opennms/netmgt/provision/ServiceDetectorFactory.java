@@ -49,8 +49,14 @@ public interface ServiceDetectorFactory<T extends ServiceDetector> {
     Class<T> getDetectorClass();
 
     /**
-     * Instantiates a new detector.
-     *
+     * Instantiates a new detector and set bean properties.
+     * One of the ways to set bean properties is using Spring @{@link org.springframework.beans.BeanWrapper}
+     * <pre>
+     * {@code
+     *         BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(serviceDetector);
+     *         wrapper.setPropertyValues(properties);
+     * }
+     * </pre>
      * Detectors are treated as protoypes and should only be used for a
      * single call to "isServiceDetected".
      *
