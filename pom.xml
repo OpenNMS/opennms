@@ -1396,10 +1396,9 @@
     <skipSignJar>true</skipSignJar>
 
     <!-- change to match which version of opennms-pluginmanger you want to run -->
-    <!-- TODO MVR use released version instead of SNAPSHOT before merging back to develop -->
-    <pluginmanagerVersion>1.2-SNAPSHOT</pluginmanagerVersion>
-    <licencemanagerVersion>1.2-SNAPSHOT</licencemanagerVersion>
-    <featuremanagerVersion>1.2-SNAPSHOT</featuremanagerVersion>
+    <pluginmanagerVersion>1.2.0</pluginmanagerVersion>
+    <licencemanagerVersion>1.2.0</licencemanagerVersion>
+    <featuremanagerVersion>1.2.0</featuremanagerVersion>
 
     <!-- nodejs development -->
     <frontendPluginVersion>1.6</frontendPluginVersion>
