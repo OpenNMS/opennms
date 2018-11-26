@@ -28,12 +28,14 @@
 
 package org.opennms.features.kafka.producer.shell;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.kafka.producer.datasync.AlarmDataStore;
@@ -55,8 +57,17 @@ public class SyncAlarms implements Action {
     @Reference
     private AlarmDao alarmDao;
 
+    @Option(name = "-c", aliases = "--clean-state", description = "Restart the streams client with a clean state before performing the sync.")
+    private boolean startWithCleanState = false;
+
     @Override
-    public Object execute() {
+    public Object execute() throws IOException {
+        if (startWithCleanState) {
+            alarmDataStore.destroy();
+            alarmDataStore.setStartWithCleanState(true);
+            alarmDataStore.init();
+        }
+
         if (!waitForAlarmDataStore(alarmDataStore)) {
             return null;
         }
