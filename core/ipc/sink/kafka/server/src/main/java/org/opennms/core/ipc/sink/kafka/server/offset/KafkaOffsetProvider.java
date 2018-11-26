@@ -174,7 +174,7 @@ public class KafkaOffsetProvider {
                                     }
                                     KafkaOffset mon = new KafkaOffset(group, topic, partition, realOffset,
                                             consumerOffset, lag);
-                                    LOGGER.debug("group : {} , topic: {}:{} , offsets : {}-{}-{}", group, topic,
+                                    LOGGER.trace("group : {} , topic: {}:{} , offsets : {}-{}-{}", group, topic,
                                             partition, consumerOffset, realOffset, lag);
 
                                     Map<Integer, KafkaOffset> map = consumerOffsetMap.get(topic);
@@ -195,19 +195,19 @@ public class KafkaOffsetProvider {
                                     for (KafkaOffset offset : map.values()) {
                                         totalLag += offset.getLag();
                                     }
-                                    LOGGER.debug(" Total lag for topic {} is {} ", topic, totalLag);
+                                    LOGGER.trace(" Total lag for topic {} is {} ", topic, totalLag);
 
                                     consumerLagMap.put(topic, totalLag);
 
                                 } catch (Exception e) {
-                                    LOGGER.debug("Exception while getting offset", e);
+                                    LOGGER.trace("Exception while getting offset", e);
                                 }
                             }
                         }
                     }
                 }
             } catch (Exception e) {
-                LOGGER.debug("Exception while getting offset", e);
+                LOGGER.trace("Exception while getting offset", e);
             } finally {
                 consumer.close();
             }
@@ -251,7 +251,7 @@ public class KafkaOffsetProvider {
             }
         }
         if (resetBroker.get() == NUM_RETRIES) {
-            LOGGER.debug(" Max num of retries reached, try if there is another broker");
+            LOGGER.trace(" Max num of retries reached, try if there is another broker");
             kafkaHost = HostAndPort.getNextHostAndPort(kafkaHost);
             if (kafkaHost == null) {
                 // No valid kafkaHost, shutdown offset consumer.
@@ -302,14 +302,14 @@ public class KafkaOffsetProvider {
                     kafka.api.OffsetRequest.CurrentVersion(), KafkaOffsetConstants.CLIENT_NAME);
             OffsetResponse response = consumer.getOffsetsBefore(request);
             if (response.hasError()) {
-                LOGGER.debug("Error fetching Offset Data from the Broker. Reason: {}",
+                LOGGER.trace("Error fetching Offset Data from the Broker. Reason: {}",
                         response.errorCode(topic, partition));
                 lastOffset = 0;
             }
             long[] offsets = response.offsets(topic, partition);
             lastOffset = offsets[0];
         } catch (Exception e) {
-            LOGGER.debug("Error while collecting the log Size for topic: {}:{} ", topic, partition, e);
+            LOGGER.trace("Error while collecting the log Size for topic: {}:{} ", topic, partition, e);
             // Store first partitionNumber and track errors with that partition
             if (partitionNumber == INVALID) {
                 partitionNumber = partition;
