@@ -126,8 +126,10 @@
 	        	<td><a href="javascript: void submitEditForm('<%=notif.getName()%>');">Edit</a></td>
 			</tr>
 <% } %>
-		<tr><td colspan="6"><a href="javascript: document.newNotificationForm.submit()">Create a new notification</a></td></tr>
-      </table>
+	  </table>
+	<div class="card-footer">
+		<a class="btn btn-secondary" href="javascript: document.newNotificationForm.submit()">Create a new notification</a>
+	</div>
 </div> <!-- panel -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

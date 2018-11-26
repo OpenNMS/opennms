@@ -144,23 +144,14 @@
             </div> <!-- row -->
 			</td>
 		</tr>
-        <tr>
-          <td colspan="2">
-            <input type="reset" class="btn btn-secondary" value="Reset Address and Services"/>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2">
-           <a href="javascript:next()">Validate rule results &#155;&#155;&#155;</a>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2">
-           <a href="javascript:skipVerification()">Skip results validation &#155;&#155;&#155;</a>
-          </td>
-        </tr>
       </table>
-    </form>
+    <div class="card-footer">
+            <input type="reset" class="btn btn-secondary" value="Reset Address and Services"/>
+        <a class="btn btn-secondary" href="javascript:next()">Validate rule results <i class="fa fa-arrow-right"></i></a>
+        <a class="btn btn-secondary" href="javascript:skipVerification()">Skip results validation <i class="fa fa-arrow-right"></i></a>
+    </div>
+</div>
+</form>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 

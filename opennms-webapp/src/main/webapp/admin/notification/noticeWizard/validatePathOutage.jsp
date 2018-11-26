@@ -128,8 +128,8 @@
       </form>
   </div> <!-- card-body -->
   <div class="card-footer">
-    <a HREF="javascript:rebuild()">&#139;&#139;&#139; Rebuild</a>&nbsp;&nbsp;&nbsp;
-    <a HREF="javascript:next()">Finish &#155;&#155;&#155;</a>
+      <a class="btn btn-secondary" href="javascript:rebuild()"><i class="fa fa-arrow-left"></i> Rebuild</a>
+      <a class="btn btn-secondary" href="javascript:next()">Next <i class="fa fa-arrow-right"></i></a>
   </div> <!-- card-footer -->
 </div> <!-- panel -->
 

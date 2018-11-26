@@ -225,13 +225,10 @@
             </table>
           </td>
          </tr>
-         
-        <tr>
-          <td colspan="2">
-            <a HREF="javascript:finish()">Finish</a>
-          </td>
-        </tr>
       </table>
+        <div class="card-footer">
+              <a class="btn btn-secondary" href="javascript:finish()">Finish</a>
+        </div>
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
