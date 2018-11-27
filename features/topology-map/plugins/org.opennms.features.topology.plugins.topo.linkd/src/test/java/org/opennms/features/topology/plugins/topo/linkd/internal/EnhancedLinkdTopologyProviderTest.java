@@ -53,12 +53,9 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
-import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
-import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
-import org.opennms.netmgt.model.FilterManager;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -86,25 +83,23 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @Test
     public void testDataCorrectness(){
-        LldpTopologyService lldpLinkDao = m_databasePopulator.getLldpTopologyService();
-        List<LldpLink> links = lldpLinkDao.findAllLldpLinks();
+        List<LldpLink> links = m_databasePopulator.findAllLldpLinks();
         assertEquals(16, links.size());
 
-        OspfTopologyService ospfLinkDao = m_databasePopulator.getOspfTopologyService();
-        List<OspfLink> ospfLinks = ospfLinkDao.findAllOspfLinks();
+        List<OspfLink> ospfLinks = m_databasePopulator.findAllOspfLinks();
         assertEquals(2, ospfLinks.size());
     }
 
     @Test
     public void testGetIcon() {
-        LinkdVertex vertex1 = LinkdVertex.create(m_databasePopulator.getNode(1), null);
-        LinkdVertex vertex2 = LinkdVertex.create(m_databasePopulator.getNode(2), null);
-        LinkdVertex vertex3 = LinkdVertex.create(m_databasePopulator.getNode(3), null);
-        LinkdVertex vertex4 = LinkdVertex.create(m_databasePopulator.getNode(4), null);
-        LinkdVertex vertex5 = LinkdVertex.create(m_databasePopulator.getNode(5), null);
-        LinkdVertex vertex6 = LinkdVertex.create(m_databasePopulator.getNode(6), null);
-        LinkdVertex vertex7 = LinkdVertex.create(m_databasePopulator.getNode(7), null);
-        LinkdVertex vertex8 = LinkdVertex.create(m_databasePopulator.getNode(8), null);
+        LinkdVertex vertex1 = LinkdVertex.create(m_databasePopulator.getNode(1));
+        LinkdVertex vertex2 = LinkdVertex.create(m_databasePopulator.getNode(2));
+        LinkdVertex vertex3 = LinkdVertex.create(m_databasePopulator.getNode(3));
+        LinkdVertex vertex4 = LinkdVertex.create(m_databasePopulator.getNode(4));
+        LinkdVertex vertex5 = LinkdVertex.create(m_databasePopulator.getNode(5));
+        LinkdVertex vertex6 = LinkdVertex.create(m_databasePopulator.getNode(6));
+        LinkdVertex vertex7 = LinkdVertex.create(m_databasePopulator.getNode(7));
+        LinkdVertex vertex8 = LinkdVertex.create(m_databasePopulator.getNode(8));
         Assert.assertTrue("linkd.system.snmp.1.3.6.1.4.1.5813.1.25".equals(vertex1.getIconKey()));
         Assert.assertTrue("linkd.system".equals(vertex2.getIconKey()));
         Assert.assertTrue("linkd.system".equals(vertex3.getIconKey()));
@@ -365,25 +360,6 @@ public class EnhancedLinkdTopologyProviderTest {
         assertEquals(2, eventsReceived.get());
     }
 
-    public class TestFilterManager implements FilterManager {
-
-        @Override
-        public void enableAuthorizationFilter(String[] authorizationGroups) {}
-
-        @Override
-        public void disableAuthorizationFilter() {}
-
-        @Override
-        public String[] getAuthorizationGroups() {
-            return new String[0];
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return false;
-        }
-    }
-
     private VertexRef addVertexToTopr() {
         return m_topologyProvider.addVertex(0, 0);
     }
@@ -393,8 +369,6 @@ public class EnhancedLinkdTopologyProviderTest {
         m_databasePopulator.tearDown();
         if(m_topologyProvider != null) {
             m_topologyProvider.resetContainer();
-            m_topologyProvider.setLldpTopologyService(m_databasePopulator.getLldpTopologyService());
-            m_topologyProvider.setNodeDao(m_databasePopulator.getNodeDao());
         }
     }
 }

@@ -31,19 +31,28 @@ package org.opennms.netmgt.enlinkd;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyUpdater;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements OnmsTopologyUpdater {
 
+    public static OnmsTopologyVertex create(Node node) {
+        return OnmsTopologyVertex.create(node.getId(), 
+                                         node.getLabel(), 
+                                         InetAddressUtils.str(node.getSnmpPrimaryIpAddr()), 
+                                         node.getSysoid());
+    }
+    
     private static final Logger LOG = LoggerFactory.getLogger(EnlinkdOnmsTopologyUpdater.class);
 
     private final OnmsTopologyDao m_topologyDao;
@@ -86,8 +95,8 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
         return m_nodeTopologyService;
     }
 
-    public Map<Integer, OnmsNode> getNodeMap() {
-        return m_nodeTopologyService.findAll().stream().collect(Collectors.toMap(node -> node.getId(), node -> node));
+    public Map<Integer, Node> getNodeMap() {
+        return m_nodeTopologyService.findAll().stream().collect(Collectors.toMap(node -> node.getNodeId(), node -> node));
 
     }
             

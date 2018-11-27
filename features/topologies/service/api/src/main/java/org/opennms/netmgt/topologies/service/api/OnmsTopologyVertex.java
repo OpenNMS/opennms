@@ -29,83 +29,34 @@
 package org.opennms.netmgt.topologies.service.api;
 
 
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
-
-import org.opennms.netmgt.model.OnmsNode;
 
 public class OnmsTopologyVertex extends OnmsTopologyAbstractRef implements OnmsTopologyRef {
 
-    private static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
-    private static final String HTML_TOOLTIP_TAG_END  = "</p>";
-    private static final EnumMap<OnmsNode.NodeType, String> s_nodeStatusMap;
 
-    static {
-        s_nodeStatusMap = new EnumMap<>(OnmsNode.NodeType.class);
-        s_nodeStatusMap.put(OnmsNode.NodeType.ACTIVE, "Active");
-        s_nodeStatusMap.put(OnmsNode.NodeType.UNKNOWN, "Unknown");
-        s_nodeStatusMap.put(OnmsNode.NodeType.DELETED, "Deleted");
-    }
-
-    public static OnmsTopologyVertex create(OnmsNode node) {
-        if (node != null) {
-            return new OnmsTopologyVertex(node);
+    public static OnmsTopologyVertex create(String id,String label,String address, String iconKey) {
+        if (id != null) {
+            return new OnmsTopologyVertex(id,label,address,iconKey);
         }
         return null;
     }
     
-    private final OnmsNode m_node;
+    private final String m_label;
+    private final String m_address;
+    private final String m_iconKey;
+    private Map<String,String> m_attributes = new HashMap<String,String>();
     private Set<String> m_protocolSupported = new HashSet<String>();
 
-    private OnmsTopologyVertex(OnmsNode node) {
-        super(node.getNodeId());
-        m_node=node;
+    private OnmsTopologyVertex(String id, String label, String address,String iconKey) {
+        super(id);
+        m_label=label;
+        m_address=address;
+        m_iconKey=iconKey;
     }
 
-    public OnmsNode getNode() {
-        return m_node;
-    }
-
-    public String getIconKey() {
-        if (m_node.getSysObjectId() == null) {
-            return "linkd.system";
-        }
-        if (m_node.getSysObjectId().startsWith(".")) {
-            return "linkd.system.snmp" + m_node.getSysObjectId();
-        }
-        return "linkd.system.snmp." + m_node.getSysObjectId();
-    }
-
-    public String getTooltipText() {
-        final StringBuilder tooltipText = new StringBuilder();
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append(m_node.getLabel());
-        tooltipText.append(": ");
-        //FIXME add ip address (shold be loopback first
-//        tooltipText.append("(");
-//        tooltipText.append(getIpAddress());
-//        tooltipText.append(")");
-        tooltipText.append("(");
-        tooltipText.append(s_nodeStatusMap.get(m_node.getType()));
-        tooltipText.append("/Managed");
-        tooltipText.append(")");
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-        
-        if (m_node.getLocation() != null && m_node.getLocation().getLocationName().trim().length() > 0) {
-                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append(m_node.getLocation().getLocationName());
-                tooltipText.append(HTML_TOOLTIP_TAG_END);
-        }
-        
-        if (m_protocolSupported.size() > 0) {
-            tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-            tooltipText.append(m_protocolSupported.toString());
-            tooltipText.append(HTML_TOOLTIP_TAG_END);
-        }
-        return tooltipText.toString();
-
-    }
 
     public Set<String> getProtocolSupported() {
         return m_protocolSupported;
@@ -114,6 +65,31 @@ public class OnmsTopologyVertex extends OnmsTopologyAbstractRef implements OnmsT
     public void setProtocolSupported(
             Set<String> protocolSupported) {
         m_protocolSupported = protocolSupported;
+    }
+
+
+    public Map<String, String> getAttributes() {
+        return m_attributes;
+    }
+
+
+    public void setAttributes(Map<String, String> attributes) {
+        m_attributes = attributes;
+    }
+
+
+    public String getLabel() {
+        return m_label;
+    }
+
+
+    public String getAddress() {
+        return m_address;
+    }
+
+
+    public String getIconKey() {
+        return m_iconKey;
     }
 
 }

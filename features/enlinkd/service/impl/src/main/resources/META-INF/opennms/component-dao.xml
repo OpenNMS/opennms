@@ -16,6 +16,7 @@
     <bean id="nodeTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.NodeTopologyServiceImpl">
       <property name="nodeDao" ref="nodeDao" />
     </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.service.api.NodeTopologyService" ref="nodeTopologyService" />
 
     <bean id="bridgeTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.BridgeTopologyServiceImpl">
         <property name="bridgeElementDao" ref="bridgeElementDao" />

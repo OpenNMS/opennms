@@ -33,15 +33,15 @@ import java.util.Map;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 
 public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
@@ -61,10 +61,10 @@ public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
     @Override
     public OnmsTopology getTopology() {
-        Map<Integer, OnmsNode> nodeMap=getNodeMap();
+        Map<Integer, Node> nodeMap=getNodeMap();
         OnmsTopology topology = new OnmsTopology();
         m_ospfTopologyService.findAllOspfElements().stream().forEach(cdpelement -> {
-            OnmsTopologyVertex vertex = OnmsTopologyVertex.create(nodeMap.get(cdpelement.getNode().getId()));
+            OnmsTopologyVertex vertex = create(nodeMap.get(cdpelement.getNode().getId()));
             vertex.getProtocolSupported().add(ProtocolSupported.OSPF.name());
             topology.getVertices().add(vertex);
         });

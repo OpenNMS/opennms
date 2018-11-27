@@ -33,10 +33,10 @@ import java.util.Map;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
@@ -60,10 +60,10 @@ public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
     @Override
     public OnmsTopology getTopology() {
-        Map<Integer, OnmsNode> nodeMap= getNodeMap();
+        Map<Integer, Node> nodeMap= getNodeMap();
         OnmsTopology topology = new OnmsTopology();
         m_cdpTopologyService.findAllCdpElements().stream().forEach(element -> {
-            OnmsTopologyVertex vertex = OnmsTopologyVertex.create(nodeMap.get(element.getNode().getId()));
+            OnmsTopologyVertex vertex = super.create(nodeMap.get(element.getNode().getId()));
             vertex.getProtocolSupported().add(ProtocolSupported.CDP.name());
             topology.getVertices().add(vertex);
         });

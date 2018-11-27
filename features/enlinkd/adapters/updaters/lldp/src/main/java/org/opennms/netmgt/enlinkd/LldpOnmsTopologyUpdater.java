@@ -33,14 +33,14 @@ import java.util.Map;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 
 public class LldpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
@@ -60,10 +60,10 @@ public class LldpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
     @Override
     public OnmsTopology getTopology() {
-        Map<Integer, OnmsNode> nodeMap= getNodeMap();
+        Map<Integer, Node> nodeMap= getNodeMap();
         OnmsTopology topology = new OnmsTopology();
         m_lldpTopologyService.findAllLldpElements().stream().forEach(element -> {
-            OnmsTopologyVertex vertex = OnmsTopologyVertex.create(nodeMap.get(element.getNode().getId()));
+            OnmsTopologyVertex vertex = create(nodeMap.get(element.getNode().getId()));
             vertex.getProtocolSupported().add(ProtocolSupported.LLDP.name());
             topology.getVertices().add(vertex);
         });

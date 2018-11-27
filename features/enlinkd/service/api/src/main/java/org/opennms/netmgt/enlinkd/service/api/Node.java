@@ -34,12 +34,54 @@ import java.net.InetAddress;
 import java.util.Objects;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
 
 public class Node {
 
+    public static Node create(OnmsNode node) {
+        if (node.getPrimaryInterface() != null) {
+            return new Node(node.getId(), 
+                               node.getLabel(),
+                               node.getPrimaryInterface().getIpAddress(),
+                               node.getSysObjectId(), 
+                               node.getSysName(),
+                               node.getLocation() == null ? null : node.getLocation().getLocationName(),
+                               node.getType(),
+                               node.getPrimaryInterface().isManaged());
+        }
+        OnmsIpInterface elected = null;
+        for (OnmsIpInterface ipinterface: node.getIpInterfaces()) {
+            if (elected == null) {
+                elected = ipinterface;
+                continue;
+            }
+            if (!elected.isManaged() && ipinterface.isManaged()) {
+                elected = ipinterface;
+                continue;
+            }
+        }
+        if (elected != null) {
+            return new Node(node.getId(), 
+                               node.getLabel(),
+                               elected.getIpAddress(),
+                               node.getSysObjectId(), node.getSysName(),node.getLocation() == null ? null : node.getLocation().getLocationName(),
+                               node.getType(),
+                               elected.isManaged());
+        }
+        return new Node(node.getId(), 
+                           node.getLabel(),
+                           null,
+                           node.getSysObjectId(), 
+                           node.getSysName(),
+                           node.getLocation() == null ? null : node.getLocation().getLocationName(),
+                           node.getType(),
+                           false);
+
+    }
     private final int m_nodeId;
 
-    private final InetAddress m_snmpprimaryaddr;
+    private final InetAddress m_snmpPrimaryAddr;
 
     private final String m_sysoid;
 
@@ -49,26 +91,34 @@ public class Node {
 
     private final String m_location;
 
+    private final OnmsNode.NodeType m_type;
+    
+    private final boolean m_isManaged;
     public String getLocation() {
         return m_location;
     }
 
-    public Node(final int nodeId, final String label,
-            final InetAddress snmpPrimaryAddr, final String sysoid, final String sysname, final String location) {
+    private Node(final int nodeId, final String label,
+            final InetAddress snmpPrimaryAddr, final String sysoid, final String sysname, final String location, final OnmsNode.NodeType type, final boolean isManaged) {
         m_nodeId = nodeId;
         m_label=label;
-        m_snmpprimaryaddr = snmpPrimaryAddr;
+        m_snmpPrimaryAddr = snmpPrimaryAddr;
         m_sysoid = sysoid;
         m_sysname = sysname;
         m_location = location;
+        m_type = type;
+        m_isManaged = isManaged;
     }
 
+    public String getId() {
+        return Integer.toString(m_nodeId);
+    }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .append("nodeId", m_nodeId)
-                .append("snmpPrimaryAddr", str(m_snmpprimaryaddr))
+                .append("snmpPrimaryAddr", str(m_snmpPrimaryAddr))
                 .append("sysOid", m_sysoid).toString();
     }
 
@@ -77,7 +127,7 @@ public class Node {
     }
 
     public InetAddress getSnmpPrimaryIpAddr() {
-        return m_snmpprimaryaddr;
+        return m_snmpPrimaryAddr;
     }
 
     public String getSysoid() {
@@ -94,16 +144,24 @@ public class Node {
         if (o == null || getClass() != o.getClass()) return false;
         Node node = (Node) o;
         return Objects.equals(m_nodeId, node.m_nodeId) &&
-                Objects.equals(m_snmpprimaryaddr, node.m_snmpprimaryaddr);
+                Objects.equals(m_snmpPrimaryAddr, node.m_snmpPrimaryAddr);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_nodeId, m_snmpprimaryaddr);
+        return Objects.hash(m_nodeId, m_snmpPrimaryAddr);
     }
 
     public String getLabel() {
         return m_label;
+    }
+
+    public OnmsNode.NodeType getType() {
+        return m_type;
+    }
+
+    public boolean isManaged() {
+        return m_isManaged;
     }
 
 }

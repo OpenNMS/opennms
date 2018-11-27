@@ -55,6 +55,7 @@ import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
+import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -117,15 +118,15 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         m_edges = new ArrayList<>();
         // Cloud is identified by the designated bridge and designated port
         AbstractVertex cloud = new AbstractVertex("nodes", "1:48", "cloud");
-        LinkdVertex node1Vertex = LinkdVertex.create(m_node1, null);
-        LinkdVertex node2Vertex = LinkdVertex.create(m_node2, null);
-        LinkdVertex node3Vertex = LinkdVertex.create(m_node3, null);;
+        LinkdVertex node1Vertex = LinkdVertex.create(Node.create(m_node1));
+        LinkdVertex node2Vertex = LinkdVertex.create(Node.create(m_node2));
+        LinkdVertex node3Vertex = LinkdVertex.create(Node.create(m_node3));
 
-        LinkdVertex node4Vertex = LinkdVertex.create(m_node4, null);
-        LinkdVertex node5Vertex = LinkdVertex.create(m_node5, null);
+        LinkdVertex node4Vertex = LinkdVertex.create(Node.create(m_node4));
+        LinkdVertex node5Vertex = LinkdVertex.create(Node.create(m_node5));
 
-        LinkdVertex dehliVertex = LinkdVertex.create(m_nodeDehli,null);
-        LinkdVertex chennaiVertex = LinkdVertex.create(m_nodeChennai, null);
+        LinkdVertex dehliVertex = LinkdVertex.create(Node.create(m_nodeDehli));
+        LinkdVertex chennaiVertex = LinkdVertex.create(Node.create(m_nodeChennai));
 
         // identification of link is done with targets id..that is port or mac        
         BridgePort bpnode1port48 = new BridgePort();

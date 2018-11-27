@@ -28,13 +28,13 @@
 
 package org.opennms.netmgt.enlinkd.service.impl;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.Alias;
-import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.enlinkd.service.api.Node;
@@ -48,8 +48,6 @@ public class NodeTopologyServiceImpl implements org.opennms.netmgt.enlinkd.servi
     
     @Override
     public List<Node> findAllSnmpNode() {
-        final List<Node> nodes = new ArrayList<Node>();
-
         final Criteria criteria = new Criteria(OnmsNode.class);
         criteria.setAliases(Arrays.asList(new Alias[] { new Alias(
                                                                   "ipInterfaces",
@@ -58,12 +56,8 @@ public class NodeTopologyServiceImpl implements org.opennms.netmgt.enlinkd.servi
         criteria.addRestriction(new EqRestriction("type", NodeType.ACTIVE));
         criteria.addRestriction(new EqRestriction("iface.isSnmpPrimary",
                                                   PrimaryType.PRIMARY));
-        for (final OnmsNode node : m_nodeDao.findMatching(criteria)) {
-            nodes.add(new Node(node.getId(), node.getLabel(),
-                               node.getPrimaryInterface().getIpAddress(),
-                               node.getSysObjectId(), node.getSysName(),node.getLocation() == null ? null : node.getLocation().getLocationName()));
-        }
-        return nodes;
+        return m_nodeDao.findMatching(criteria).stream().map(Node::create).collect(Collectors.toList());
+
     }
 
     @Override
@@ -80,10 +74,7 @@ public class NodeTopologyServiceImpl implements org.opennms.netmgt.enlinkd.servi
         final List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
 
         if (nodes.size() > 0) {
-            final OnmsNode node = nodes.get(0);
-            return new Node(node.getId(), node.getLabel(),
-                            node.getPrimaryInterface().getIpAddress(),
-                            node.getSysObjectId(), node.getSysName(),node.getLocation() == null ? null : node.getLocation().getLocationName());
+            return Node.create(nodes.get(0));
         } else {
             return null;
         }
@@ -98,8 +89,18 @@ public class NodeTopologyServiceImpl implements org.opennms.netmgt.enlinkd.servi
     }
 
     @Override
-    public List<OnmsNode> findAll() {
-        return m_nodeDao.findAll();
+    public List<Node> findAll() {
+        final Criteria criteria = new Criteria(OnmsNode.class);
+        criteria.setAliases(Arrays.asList(new Alias[] { new Alias(
+                                                                  "ipInterfaces",
+                                                                  "iface",
+                                                                  JoinType.LEFT_JOIN) }));
+        return m_nodeDao.findMatching(criteria).stream().map(Node::create).collect(Collectors.toList());
+    }
+
+    @Override
+    public Node getDefaultFocusPoint() {
+        return Node.create(m_nodeDao.getDefaultFocusPoint());
     }
         
 }

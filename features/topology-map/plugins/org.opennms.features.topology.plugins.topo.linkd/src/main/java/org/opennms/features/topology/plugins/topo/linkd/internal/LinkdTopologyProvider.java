@@ -45,8 +45,6 @@ import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
@@ -59,16 +57,13 @@ import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
+import org.opennms.netmgt.enlinkd.service.api.Node;
+import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
-import org.opennms.netmgt.model.FilterManager;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.PrimaryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.support.TransactionOperations;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
@@ -106,24 +101,18 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private static Logger LOG = LoggerFactory.getLogger(LinkdTopologyProvider.class);
 
-    private TransactionOperations m_transactionOperations;
-    private NodeDao m_nodeDao;
     private SnmpInterfaceDao m_snmpInterfaceDao;
-    //FIXME remove ipInterfaceDao from Dependency Use nodeTopologyService
-    private IpInterfaceDao m_ipInterfaceDao;
-    private FilterManager m_filterManager;
 
+    private NodeTopologyService m_nodeTopologyService;
     private BridgeTopologyService m_bridgeTopologyService;
     private CdpTopologyService m_cdpTopologyService;
     private LldpTopologyService m_lldpTopologyService;
     private OspfTopologyService m_ospfTopologyService;
     private IsisTopologyService m_isisTopologyService;
 
-    private Map<Integer, OnmsIpInterface> m_nodeToOnmsIpPrimaryMap =new HashMap<>();
     private Table<Integer, Integer,OnmsSnmpInterface> m_nodeToOnmsSnmpTable = HashBasedTable.create();
 
     private final Timer m_loadFullTimer;
-    private final Timer m_loadIpInterfacesTimer;
     private final Timer m_loadSnmpInterfacesTimer;
     private final Timer m_loadLldpLinksTimer;
     private final Timer m_loadOspfLinksTimer;
@@ -141,7 +130,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         super(TOPOLOGY_NAMESPACE_LINKD);
         Objects.requireNonNull(registry);
         m_loadFullTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "full"));
-        m_loadIpInterfacesTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "ipinterfaces"));
         m_loadSnmpInterfacesTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "snmpinterfaces"));
         m_loadLldpLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "lldp"));
         m_loadOspfLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "ospf"));
@@ -156,13 +144,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         if(m_nodeToOnmsSnmpTable.contains(nodeid,ifindex) ) {
                 return m_nodeToOnmsSnmpTable.get(nodeid,ifindex);
         }
-        OnmsSnmpInterface snmpiface = new OnmsSnmpInterface();
-        OnmsNode node = new OnmsNode();
-        node.setId(nodeid);
-        snmpiface.setNode(node);
-        snmpiface.setIfIndex(ifindex);
-        snmpiface.setIfName("No Interface Found");
-        return snmpiface;
+        return null;
     }
     
     @Override
@@ -183,14 +165,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             ProtocolSupported discoveredBy) {
         addEdges(LinkdEdge.create(id, sourceV, targetV, sourceinterface, targetInterface,sourceAddr,targetAddr,discoveredBy));
     }
-    
-    private void loadVertices() {
-        for (OnmsNode node : m_nodeDao.findAll()) {
-            OnmsIpInterface primary = m_nodeToOnmsIpPrimaryMap.get(node.getId());
-            addVertices(LinkdVertex.create(node,primary));
-        }
-    }
-    
+        
     private void loadEdges() {
 
         Timer.Context context = m_loadLldpLinksTimer.time();
@@ -418,67 +393,18 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         }
     }
 
-    public TransactionOperations getTransactionOperations() {
-        return m_transactionOperations;
-    }
-
-    public void setTransactionOperations(TransactionOperations transactionOperations) {
-        m_transactionOperations = transactionOperations;
-    }
-
-    public SnmpInterfaceDao getSnmpInterfaceDao() {
-        return m_snmpInterfaceDao;
-    }
-
-    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
-        m_snmpInterfaceDao = snmpInterfaceDao;
-    }
-
-    public NodeDao getNodeDao() {
-        return m_nodeDao;
-    }
-
-    public void setNodeDao(NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
-    }
-
-    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
-        m_ipInterfaceDao = ipInterfaceDao;
-    }
-
-    public void setFilterManager(FilterManager filterManager) {
-        m_filterManager = filterManager;
-    }
-
-    public FilterManager getFilterManager() {
-        return m_filterManager;
-    }
-
-    public IpInterfaceDao getIpInterfaceDao() {
-        return m_ipInterfaceDao;
-    }
-
-    public BridgeTopologyService getBridgeTopologyService() {
-        return m_bridgeTopologyService;
-    }
-
-    public void setBridgeTopologyService(BridgeTopologyService bridgeTopologyService) {
-        m_bridgeTopologyService = bridgeTopologyService;
-    }
-
-        
     @Override
     public Defaults getDefaults() {
         return new Defaults()
                 .withSemanticZoomLevel(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL)
                 .withPreferredLayout("D3 Layout") // D3 Layout
                 .withCriteria(() -> {
-                    final OnmsNode node = m_nodeDao.getDefaultFocusPoint();
+                    final Node node = m_nodeTopologyService.getDefaultFocusPoint();
 
                     if (node != null) {
-                        final Vertex defaultVertex = getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getNodeId());
+                        final Vertex defaultVertex = getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getId());
                         if (defaultVertex != null) {
-                            return Lists.newArrayList(LinkdHopCriteria.createCriteria(node.getNodeId(), node.getLabel()));
+                            return Lists.newArrayList(LinkdHopCriteria.createCriteria(node.getId(), node.getLabel()));
                         }
                     }
                     return Lists.newArrayList();
@@ -486,24 +412,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
     
     private void doRefresh() {        
-        Timer.Context vcontext = m_loadIpInterfacesTimer.time();
-        try {
-            for (OnmsIpInterface ip: m_ipInterfaceDao.findAll()) {
-                if (ip.getIsSnmpPrimary().equals(PrimaryType.PRIMARY)) {
-                    m_nodeToOnmsIpPrimaryMap.put(ip.getNode().getId(), ip);
-                } else {
-                    m_nodeToOnmsIpPrimaryMap.putIfAbsent(ip.getNode().getId(), ip);
-                }
-
-            }
-            LOG.info("refresh: Ip Interface loaded");
-        } catch (Exception e){
-            LOG.error("Loading Ip Interface failed: {}", e.getMessage(), e);
-        } finally {
-            vcontext.stop();
-        }
-
-        vcontext = m_loadSnmpInterfacesTimer.time();
+        Timer.Context vcontext = m_loadSnmpInterfacesTimer.time();
         try {
             for (OnmsSnmpInterface snmp: m_snmpInterfaceDao.findAll()) {
                 if (!m_nodeToOnmsSnmpTable.contains(snmp.getNode().getId(),snmp.getIfIndex())) {
@@ -520,7 +429,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
         vcontext = m_loadVerticesTimer.time();
         try {
-            loadVertices();
+            for (Node node : m_nodeTopologyService.findAll()) {
+                addVertices(LinkdVertex.create(node));
+            }
             LOG.info("refresh: Loaded Vertices");
         } catch (Exception e){
             LOG.error("Exception Loading Vertices: {}",e.getMessage(),e);
@@ -545,7 +456,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         try {
             resetContainer();
             m_nodeToOnmsSnmpTable.clear();
-            m_nodeToOnmsIpPrimaryMap.clear();
             doRefresh();
         } finally {
             context.stop();
@@ -579,4 +489,25 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     public void setIsisTopologyService(IsisTopologyService isisTopologyService) {
         m_isisTopologyService = isisTopologyService;
     }
+    public NodeTopologyService getNodeTopologyService() {
+        return m_nodeTopologyService;
+    }
+    public void setNodeTopologyService(NodeTopologyService nodeTopologyService) {
+        m_nodeTopologyService = nodeTopologyService;
+    }
+    public SnmpInterfaceDao getSnmpInterfaceDao() {
+        return m_snmpInterfaceDao;
+    }
+    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
+        m_snmpInterfaceDao = snmpInterfaceDao;
+    }
+    public BridgeTopologyService getBridgeTopologyService() {
+        return m_bridgeTopologyService;
+    }
+    public void setBridgeTopologyService(BridgeTopologyService bridgeTopologyService) {
+        m_bridgeTopologyService = bridgeTopologyService;
+    }
+
+        
+
 }
