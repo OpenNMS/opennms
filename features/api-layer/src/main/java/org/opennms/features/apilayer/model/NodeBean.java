@@ -44,7 +44,7 @@ public class NodeBean implements Node {
     public NodeBean(OnmsNode node) {
         this.node = Objects.requireNonNull(node);
         this.snmpInterfaces = node.getSnmpInterfaces().stream()
-                .map(s -> new SnmpInterfaceBean(s))
+                .map(SnmpInterfaceBean::new)
                 .collect(Collectors.toList());
     }
 
