@@ -50,7 +50,7 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
 
     private TopologyEntityDao topologyEntityDao;
 
-    LoadingCache<String, List<NodeTopologyEntity>> nodeTopologyEntities = createCache(
+    private LoadingCache<String, List<NodeTopologyEntity>> nodeTopologyEntities = createCache(
             new CacheLoader<String, List<NodeTopologyEntity>>() {
                 @Override
                 public List<NodeTopologyEntity> load(String key) {
@@ -59,7 +59,7 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
             }
     );
 
-    LoadingCache<String, List<CdpLinkTopologyEntity>> cdpLinkTopologyEntities = createCache(
+    private LoadingCache<String, List<CdpLinkTopologyEntity>> cdpLinkTopologyEntities = createCache(
             new CacheLoader<String, List<CdpLinkTopologyEntity>>() {
                 @Override
                 public List<CdpLinkTopologyEntity> load(String key) {
