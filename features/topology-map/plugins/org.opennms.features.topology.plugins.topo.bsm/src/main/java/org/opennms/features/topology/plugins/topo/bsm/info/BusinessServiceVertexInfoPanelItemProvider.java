@@ -71,12 +71,12 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.Table;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.v7.ui.themes.BaseTheme;
 
 public class BusinessServiceVertexInfoPanelItemProvider extends VertexInfoPanelItemProvider {
 

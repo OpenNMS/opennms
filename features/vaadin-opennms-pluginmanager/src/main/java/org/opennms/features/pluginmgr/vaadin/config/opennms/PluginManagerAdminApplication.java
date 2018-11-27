@@ -36,25 +36,23 @@ import java.util.Map;
 import org.opennms.features.pluginmgr.SessionPluginManager;
 import org.opennms.features.pluginmgr.vaadin.pluginmanager.PluginManagerUIMainPanel;
 import org.opennms.web.api.OnmsHeaderProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.ExternalResource;
-import com.vaadin.server.Page;
+import com.vaadin.server.Page.Styles;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServletRequest;
-import com.vaadin.server.Page.Styles;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * Plugin Manager Administration Application.
@@ -161,7 +159,7 @@ public class PluginManagerAdminApplication extends UI {
 		
 		// dynamically inject style for non write borders - avoids changing themes css
 		// Get the stylesheet of the page
-		Styles styles = Page.getCurrent().getStyles();
+		Styles styles = getUI().getPage().getStyles();
         // inject the new font size as a style. We need .v-app to override Vaadin's default styles here
 		styles.add(".v-app .v-textfield-readonly {border: 1px solid #b6b6b6!important;"
 		+ " border-top-color: #9d9d9d!important;"

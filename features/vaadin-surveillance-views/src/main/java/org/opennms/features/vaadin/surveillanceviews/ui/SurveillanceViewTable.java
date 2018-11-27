@@ -46,10 +46,10 @@ import org.opennms.netmgt.model.SurveillanceStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.ui.Label;
+import com.vaadin.v7.event.ItemClickEvent;
+import com.vaadin.v7.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Table;
+import com.vaadin.v7.ui.Table;
 
 /**
  * This class represents the surveillance view table itself.

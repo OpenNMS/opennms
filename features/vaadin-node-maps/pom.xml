@@ -99,6 +99,11 @@
 				<groupId>org.opennms.maven.plugins</groupId>
 				<artifactId>features-maven-plugin</artifactId>
 				<configuration>
+					<features>
+						<feature>opennms-core-web</feature>
+						<feature>vaadin</feature>
+						<feature>geolocation</feature>
+					</features>
 					<bundles>
 						<bundle>mvn:org.opennms.features/vaadin-node-maps/${project.version}</bundle>
 						<bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
@@ -108,16 +113,6 @@
 						<bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.nominatim/${project.version}</bundle>
 						<bundle>mvn:org.opennms.features.geolocation/org.opennms.features.geolocation.api/${project.version}</bundle>
 					</bundles>
-					<features>
-						<feature>opennms-core-web</feature>
-						<feature>vaadin</feature>
-                        <feature>geolocation</feature>
-					</features>
-					<!--
-					<repositories>
-						<repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</repository>
-					</repositories>
-					-->
 				</configuration>
 			</plugin>
 		</plugins>
@@ -185,13 +180,11 @@
 			<groupId>org.opennms.features.topology</groupId>
 			<artifactId>org.opennms.features.topology.api</artifactId>
 			<version>${project.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.opennms.features.topology.plugins</groupId>
 			<artifactId>org.opennms.features.topology.plugins.browsers</artifactId>
 			<version>${project.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.opennms.features.geolocation</groupId>
@@ -277,6 +270,12 @@
 		    <artifactId>gwt-test-utils</artifactId>
 		    <version>0.47</version>
 		    <scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
         <dependency>
             <groupId>com.google.gwt</groupId>

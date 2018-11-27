@@ -39,16 +39,16 @@ import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
 import org.opennms.netmgt.icmp.proxy.PingStringUtils;
 import org.opennms.netmgt.icmp.proxy.PingSummary;
 
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.ProgressBar;
-import com.vaadin.ui.TextArea;
+import com.vaadin.v7.ui.ProgressBar;
+import com.vaadin.v7.ui.TextArea;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 /**

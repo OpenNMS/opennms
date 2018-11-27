@@ -103,7 +103,7 @@
                 <configuration>
                     <bundles>
                         <bundle>mvn:org.opennms.features/vaadin-dashboard/${project.version}</bundle>
-                        <bundle>wrap:mvn:org.vaadin.addons/dragdroplayouts/1.1.1</bundle>
+                        <bundle>wrap:mvn:org.vaadin.addons/dragdroplayouts/1.4.2</bundle>
                     </bundles>
                     <features>
                         <feature>opennms-core</feature>
@@ -179,7 +179,7 @@
         <dependency>
             <groupId>org.vaadin.addons</groupId>
             <artifactId>dragdroplayouts</artifactId>
-            <version>1.1.1</version>
+            <version>1.4.2</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

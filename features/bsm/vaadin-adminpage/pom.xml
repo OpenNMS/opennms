@@ -25,6 +25,7 @@
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Vaadin-Package-Version>1</Vaadin-Package-Version>
+                        <Vaadin-Widgetsets>org.opennms.vaadin.DefaultWidgetset</Vaadin-Widgetsets>
                     </instructions>
                 </configuration>
             </plugin>
@@ -52,6 +53,11 @@
         <dependency>
             <groupId>org.opennms.features.vaadin-components</groupId>
             <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>widgetset</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

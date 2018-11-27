@@ -33,14 +33,14 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import com.vaadin.data.Validator;
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.converter.StringToLongConverter;
-import com.vaadin.data.validator.NullValidator;
+import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.data.util.BeanItem;
+import com.vaadin.v7.data.util.converter.StringToLongConverter;
+import com.vaadin.v7.data.validator.NullValidator;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.NativeSelect;
+import com.vaadin.v7.ui.TextField;
 
 /**
  * Vaadin-Form to allow configuring a Ping command {@link org.opennms.netmgt.icmp.Pinger}.

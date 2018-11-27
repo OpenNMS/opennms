@@ -109,13 +109,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionOperations;
 
-import com.github.wolfie.refresher.Refresher;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
-import com.vaadin.data.Property;
+import com.vaadin.v7.data.Property;
+import com.vaadin.event.UIEvents;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
@@ -129,14 +129,14 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
 
@@ -146,13 +146,13 @@ import com.vaadin.ui.Window;
 @PreserveOnRefresh
 public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener, VerticesUpdateManager.VerticesUpdateListener {
 
-    private class DynamicUpdateRefresher implements Refresher.RefreshListener {
+    private class DynamicUpdateRefresher implements UIEvents.PollListener {
         private final Object lockObject = new Object();
         private boolean m_refreshInProgress = false;
 
 
         @Override
-        public void refresh(Refresher refresher) {
+        public void poll(UIEvents.PollEvent pollEvent) {
              if (needsRefresh()) {
                 refreshUI();
             }
@@ -182,7 +182,6 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
             return true;
         }
-
     }
 
     private interface RequestParameterHandler {
@@ -346,7 +345,6 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                             @Override
                             public Component getComponent() {
                                 m_currentHudDisplay = new HudDisplay();
-                                m_currentHudDisplay.setImmediate(true);
                                 m_currentHudDisplay.setProvider(m_graphContainer.getTopologyServiceClient().getNamespace().equals("nodes")
                                         ? "Linkd"
                                         : m_graphContainer.getTopologyServiceClient().getNamespace());
@@ -713,10 +711,8 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
     private void setupAutoRefresher() {
         if (m_graphContainer.hasAutoRefreshSupport()) {
-            Refresher refresher = new Refresher();
-            refresher.setRefreshInterval((int) m_graphContainer.getAutoRefreshSupport().getInterval() * 1000); // ask every <interval> seconds for changes
-            refresher.addListener(new DynamicUpdateRefresher());
-            addExtension(refresher);
+            setPollInterval((int) m_graphContainer.getAutoRefreshSupport().getInterval() * 1000); // ask every <interval> seconds for changes
+            addPollListener(new DynamicUpdateRefresher());
         }
     }
 
@@ -752,7 +748,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         m_mapLayout.setSizeFull();
 
         m_menuBar = new TopologyMenuBar();
-        m_contextMenu = new TopologyContextMenu();
+        m_contextMenu = new TopologyContextMenu(getUI());
         updateMenu();
         if(m_widgetManager.widgetCount() != 0) {
             updateWidgetView(m_widgetManager);

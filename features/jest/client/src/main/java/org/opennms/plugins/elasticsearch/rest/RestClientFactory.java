@@ -29,8 +29,11 @@
 package org.opennms.plugins.elasticsearch.rest;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.Socket;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,7 +47,9 @@ import java.util.stream.Collectors;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
+import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.protocol.HttpContext;
 import org.opennms.plugins.elasticsearch.rest.credentials.CredentialsParser;
 import org.opennms.plugins.elasticsearch.rest.credentials.CredentialsProvider;
 import org.opennms.plugins.elasticsearch.rest.executors.LimitedRetriesRequestExecutor;
