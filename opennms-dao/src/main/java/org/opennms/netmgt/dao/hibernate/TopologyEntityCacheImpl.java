@@ -91,16 +91,7 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
     }
 
     private int getCacheDuration(){
-        String duration = System.getProperty(SYSTEM_PROPERTY_CACHE_DURATION, "300");
-        try {
-            return Integer.parseInt(duration);
-        } catch(NumberFormatException e) {
-            String message = String.format("cannot parse system property: %s with value=%s, using default instead."
-                    , SYSTEM_PROPERTY_CACHE_DURATION
-                    , duration);
-            LOG.warn(message, e);
-        }
-        return 300;
+        return Integer.getInteger(SYSTEM_PROPERTY_CACHE_DURATION, 300);
     }
 
     public void setTopologyEntityDao(TopologyEntityDao topologyEntityDao){
