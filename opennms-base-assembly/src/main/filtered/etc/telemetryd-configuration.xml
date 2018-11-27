@@ -92,6 +92,16 @@
         </adapter>
     </queue>
 
+    <!-- Multi-port listener for Netflow v5, Netflow v9, IPFIX and SFlow -->
+    <listener name="SFlow-UDP-6343" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="false">
+        <parameter key="port" value="9999"/>
+
+        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser" queue="Netflow-5" />
+        <parser name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser" queue="Netflow-9" />
+        <parser name="IPFIX-TCP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser" queue="IPFIX" />
+        <parser name="SFlow-Parser" class-name="org.opennms.netmgt.telemetry.protocols.sflow.parser.SFlowUdpParser" queue="SFlow" />
+    </listener>
+
     <!-- NXOS listener & adapters -->
     <listener name="NXOS-UDP-50001" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="false">
         <parameter key="port" value="50001"/>
