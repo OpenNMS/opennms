@@ -28,42 +28,70 @@
 
 package org.opennms.netmgt.topologies.service.api;
 
-import java.util.HashSet;
-import java.util.Set;
+public class OnmsTopologyPort extends OnmsTopologyAbstractRef implements OnmsTopologyRef {
 
-public class OnmsTopology {
-
-    private Set<OnmsTopologyVertex> m_vertices;
-    private Set<OnmsTopologyShared> m_edges;
+    public static OnmsTopologyPort create(OnmsTopologyVertex vertex, Integer index) {
+        if (vertex !=  null ) {
+            return new OnmsTopologyPort(vertex.getId()+":"+index,vertex,index);
+        }
+        
+        return null;
+    }
+        
+    private final OnmsTopologyVertex m_vertex;
+    private final Integer m_index;
     
-    public OnmsTopology() {
-        m_vertices = new HashSet<OnmsTopologyVertex>();
-        m_edges = new HashSet<OnmsTopologyShared>();
+    private String m_port;
+    private String m_addr;
+    private String m_speed;
+    
+
+    private OnmsTopologyPort(String id, OnmsTopologyVertex vertex, Integer index) {
+        super(id);
+        m_vertex = vertex;
+        m_index = index;
     }
 
-    public OnmsTopologyVertex getVertex(String id) {
-        return m_vertices.stream().filter(vertex -> id.equals(vertex.getId())).findAny().orElse(null);
+
+    public String getPort() {
+        return m_port;
     }
 
-    public OnmsTopologyShared getEdge(String id) {
-        return m_edges.stream().filter(edge -> id.equals(edge.getId())).findAny().orElse(null);
+
+    public void setPort(String port) {
+        m_port = port;
     }
 
-    public Set<OnmsTopologyVertex> getVertices() {
-        return m_vertices;
+
+    public String getAddr() {
+        return m_addr;
     }
 
-    public void setVertices(Set<OnmsTopologyVertex> vertices) {
-        m_vertices = vertices;
+
+    public void setAddr(String addr) {
+        m_addr = addr;
     }
 
-    public Set<OnmsTopologyShared> getEdges() {
-        return m_edges;
+
+    public String getSpeed() {
+        return m_speed;
     }
 
-    public void setConnections(Set<OnmsTopologyShared> edges) {
-        m_edges = edges;
-    }    
 
+    public void setSpeed(String speed) {
+        m_speed = speed;
+    }
+
+
+    public OnmsTopologyVertex getVertex() {
+        return m_vertex;
+    }
+
+
+    public Integer getIndex() {
+        return m_index;
+    }
+
+    
+     
 }
-

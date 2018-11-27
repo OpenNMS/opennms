@@ -40,6 +40,7 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 public class IsisOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
@@ -75,13 +76,13 @@ public class IsisOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
             OnmsTopologyVertex source = topology.getVertex(sourceLink.getNode().getId().toString());
             OnmsTopologyVertex target = topology.getVertex(targetLink.getNode().getId().toString());
-            OnmsTopologyEdge edge = OnmsTopologyEdge.create(source, target, sourceLink.getIsisCircIfIndex(),targetLink.getIsisCircIfIndex());
-            edge.setSourcePort(targetLink.getIsisISAdjNeighSNPAAddress());
-            edge.setSourceIfIndex(sourceLink.getIsisCircIfIndex());
-            edge.setSourceAddr(targetLink.getIsisISAdjNeighSNPAAddress());
-            edge.setTargetPort(sourceLink.getIsisISAdjNeighSNPAAddress());
-            edge.setTargetIfIndex(targetLink.getIsisCircIfIndex());
-            edge.setTargetAddr(sourceLink.getIsisISAdjNeighSNPAAddress());
+            OnmsTopologyPort sourcePort= OnmsTopologyPort.create(source, sourceLink.getIsisCircIfIndex());
+            sourcePort.setPort(targetLink.getIsisISAdjNeighSNPAAddress());
+            sourcePort.setAddr(targetLink.getIsisISAdjNeighSNPAAddress());
+            OnmsTopologyPort targetPort= OnmsTopologyPort.create(target, targetLink.getIsisCircIfIndex());
+            targetPort.setPort(sourceLink.getIsisISAdjNeighSNPAAddress());
+            targetPort.setAddr(sourceLink.getIsisISAdjNeighSNPAAddress());
+            OnmsTopologyEdge edge = OnmsTopologyEdge.create(sourcePort, targetPort);
             edge.setDiscoveredBy(ProtocolSupported.ISIS.name());
             topology.getEdges().add(edge);
        }

@@ -28,42 +28,40 @@
 
 package org.opennms.netmgt.topologies.service.api;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.List;
 
-public class OnmsTopology {
+public class OnmsTopologyShared extends OnmsTopologyAbstractRef implements OnmsTopologyRef {
 
-    private Set<OnmsTopologyVertex> m_vertices;
-    private Set<OnmsTopologyShared> m_edges;
+    public static OnmsTopologyShared create(OnmsTopologyPort top,OnmsTopologyPort...sources) {
+        if (top !=  null && sources != null ) {
+            return new OnmsTopologyShared(top.getId()+"-Shared",sources);
+        }
+        
+        return null;
+    }
+        
+    private final OnmsTopologyPort[] m_sources;
+    private String m_discoveredBy;
+
+    protected OnmsTopologyShared(String id, OnmsTopologyPort...sources) {
+        super(id);
+        m_sources = sources;
+    }
+
+    public List<OnmsTopologyPort> getSources() {
+        return Arrays.asList(m_sources);
+    }
+
+    public String getDiscoveredBy() {
+        return m_discoveredBy;
+    }
+
+    public void setDiscoveredBy(String discoveredBy) {
+        m_discoveredBy = discoveredBy;
+    }
+
+
+
     
-    public OnmsTopology() {
-        m_vertices = new HashSet<OnmsTopologyVertex>();
-        m_edges = new HashSet<OnmsTopologyShared>();
-    }
-
-    public OnmsTopologyVertex getVertex(String id) {
-        return m_vertices.stream().filter(vertex -> id.equals(vertex.getId())).findAny().orElse(null);
-    }
-
-    public OnmsTopologyShared getEdge(String id) {
-        return m_edges.stream().filter(edge -> id.equals(edge.getId())).findAny().orElse(null);
-    }
-
-    public Set<OnmsTopologyVertex> getVertices() {
-        return m_vertices;
-    }
-
-    public void setVertices(Set<OnmsTopologyVertex> vertices) {
-        m_vertices = vertices;
-    }
-
-    public Set<OnmsTopologyShared> getEdges() {
-        return m_edges;
-    }
-
-    public void setConnections(Set<OnmsTopologyShared> edges) {
-        m_edges = edges;
-    }    
-
 }
-

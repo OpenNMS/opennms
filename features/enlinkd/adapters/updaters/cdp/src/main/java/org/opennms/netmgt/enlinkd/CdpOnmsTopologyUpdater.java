@@ -40,6 +40,7 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
@@ -74,13 +75,13 @@ public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
             OnmsTopologyVertex source = topology.getVertex(sourceLink.getNode().getId().toString());
             OnmsTopologyVertex target = topology.getVertex(targetLink.getNode().getId().toString());
-            OnmsTopologyEdge edge = OnmsTopologyEdge.create(source, target, sourceLink.getCdpCacheIfIndex(),targetLink.getCdpCacheIfIndex());
-            edge.setSourcePort(sourceLink.getCdpInterfaceName());
-            edge.setSourceIfIndex(sourceLink.getCdpCacheIfIndex());
-            edge.setSourceAddr(targetLink.getCdpCacheAddress());
-            edge.setTargetPort(targetLink.getCdpInterfaceName());
-            edge.setTargetIfIndex(targetLink.getCdpCacheIfIndex());
-            edge.setTargetAddr(sourceLink.getCdpCacheAddress());
+            OnmsTopologyPort sourcePort= OnmsTopologyPort.create(source, sourceLink.getCdpCacheIfIndex());
+            sourcePort.setPort(sourceLink.getCdpInterfaceName());
+            sourcePort.setAddr(targetLink.getCdpCacheAddress());
+            OnmsTopologyPort targetPort= OnmsTopologyPort.create(target, targetLink.getCdpCacheIfIndex());
+            targetPort.setPort(targetLink.getCdpInterfaceName());
+            targetPort.setAddr(sourceLink.getCdpCacheAddress());
+            OnmsTopologyEdge edge = OnmsTopologyEdge.create(sourcePort, targetPort);
             edge.setDiscoveredBy(ProtocolSupported.CDP.name());
             topology.getEdges().add(edge);
        }

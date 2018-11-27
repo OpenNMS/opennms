@@ -40,6 +40,7 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 public class LldpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
@@ -74,13 +75,13 @@ public class LldpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
             LldpLink targetLink = pair.getRight();
             OnmsTopologyVertex source = topology.getVertex(sourceLink.getNode().getId().toString());
             OnmsTopologyVertex target = topology.getVertex(targetLink.getNode().getId().toString());
-            OnmsTopologyEdge edge = OnmsTopologyEdge.create(source, target, sourceLink.getLldpPortIfindex(),targetLink.getLldpPortIfindex());
-            edge.setSourcePort(sourceLink.getLldpPortDescr());
-            edge.setSourceIfIndex(sourceLink.getLldpPortIfindex());
-            edge.setSourceAddr(sourceLink.getLldpPortId());
-            edge.setTargetPort(targetLink.getLldpPortDescr());
-            edge.setTargetIfIndex(targetLink.getLldpPortIfindex());
-            edge.setTargetAddr(targetLink.getLldpRemPortId());
+            OnmsTopologyPort sourcePort = OnmsTopologyPort.create(source, sourceLink.getLldpPortIfindex());
+            OnmsTopologyPort targetPort = OnmsTopologyPort.create(target, targetLink.getLldpPortIfindex());
+            sourcePort.setPort(sourceLink.getLldpPortDescr());
+            sourcePort.setAddr(sourceLink.getLldpPortId());
+            targetPort.setPort(targetLink.getLldpPortDescr());
+            targetPort.setAddr(targetLink.getLldpRemPortId());
+            OnmsTopologyEdge edge = OnmsTopologyEdge.create(sourcePort, targetPort);
             edge.setDiscoveredBy(ProtocolSupported.LLDP.name());
             topology.getEdges().add(edge);
        }

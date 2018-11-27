@@ -41,6 +41,7 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
@@ -75,13 +76,13 @@ public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
             OspfLink targetLink = pair.getRight();
             OnmsTopologyVertex source = topology.getVertex(sourceLink.getNode().getId().toString());
             OnmsTopologyVertex target = topology.getVertex(targetLink.getNode().getId().toString());
-            OnmsTopologyEdge edge = OnmsTopologyEdge.create(source, target, sourceLink.getOspfIfIndex(),targetLink.getOspfIfIndex());
-            edge.setSourcePort(InetAddressUtils.str(sourceLink.getOspfIpAddr()));
-            edge.setSourceIfIndex(sourceLink.getOspfIfIndex());
-            edge.setSourceAddr(InetAddressUtils.str(targetLink.getOspfRemIpAddr()));
-            edge.setTargetPort(InetAddressUtils.str(targetLink.getOspfIpAddr()));
-            edge.setTargetIfIndex(targetLink.getOspfIfIndex());
-            edge.setTargetAddr(InetAddressUtils.str(sourceLink.getOspfRemIpAddr()));
+            OnmsTopologyPort sourcePort = OnmsTopologyPort.create(source, sourceLink.getOspfIfIndex());
+            sourcePort.setPort(InetAddressUtils.str(sourceLink.getOspfIpAddr()));
+            sourcePort.setAddr(InetAddressUtils.str(targetLink.getOspfRemIpAddr()));
+            OnmsTopologyPort targetPort = OnmsTopologyPort.create(target, targetLink.getOspfIfIndex());
+            targetPort.setPort(InetAddressUtils.str(targetLink.getOspfIpAddr()));
+            targetPort.setAddr(InetAddressUtils.str(sourceLink.getOspfRemIpAddr()));
+            OnmsTopologyEdge edge = OnmsTopologyEdge.create(sourcePort, targetPort);
             edge.setDiscoveredBy(ProtocolSupported.OSPF.name());
             topology.getEdges().add(edge);
        }
