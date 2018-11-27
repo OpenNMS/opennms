@@ -96,8 +96,7 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
     }
 
     public Map<Integer, Node> getNodeMap() {
-        return m_nodeTopologyService.findAll().stream().collect(Collectors.toMap(node -> node.getNodeId(), node -> node));
-
+        return m_nodeTopologyService.findAll().stream().collect(Collectors.toMap(node -> node.getNodeId(), node -> node, (n1,n2) ->n1));
     }
             
 }

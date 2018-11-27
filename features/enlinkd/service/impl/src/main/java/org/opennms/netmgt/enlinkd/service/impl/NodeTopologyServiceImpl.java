@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.enlinkd.service.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,6 +42,7 @@ import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.PrimaryType;
+import org.springframework.transaction.annotation.Transactional;
 
 public class NodeTopologyServiceImpl implements org.opennms.netmgt.enlinkd.service.api.NodeTopologyService {
 
@@ -56,7 +58,7 @@ public class NodeTopologyServiceImpl implements org.opennms.netmgt.enlinkd.servi
         criteria.addRestriction(new EqRestriction("type", NodeType.ACTIVE));
         criteria.addRestriction(new EqRestriction("iface.isSnmpPrimary",
                                                   PrimaryType.PRIMARY));
-        return m_nodeDao.findMatching(criteria).stream().map(Node::create).collect(Collectors.toList());
+        return new ArrayList<Node>(m_nodeDao.findMatching(criteria).stream().collect(Collectors.toMap( node -> node.getId(), node -> Node.create(node),(n1,n2) -> n1)).values());
 
     }
 
@@ -88,14 +90,11 @@ public class NodeTopologyServiceImpl implements org.opennms.netmgt.enlinkd.servi
         m_nodeDao = nodeDao;
     }
 
+    //FIXME and the perfomances?
     @Override
+    @Transactional
     public List<Node> findAll() {
-        final Criteria criteria = new Criteria(OnmsNode.class);
-        criteria.setAliases(Arrays.asList(new Alias[] { new Alias(
-                                                                  "ipInterfaces",
-                                                                  "iface",
-                                                                  JoinType.LEFT_JOIN) }));
-        return m_nodeDao.findMatching(criteria).stream().map(Node::create).collect(Collectors.toList());
+        return m_nodeDao.findAll().stream().map(Node::create).collect(Collectors.toList());
     }
 
     @Override

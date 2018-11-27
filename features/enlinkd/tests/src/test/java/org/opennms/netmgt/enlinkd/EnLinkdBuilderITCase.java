@@ -51,6 +51,7 @@ import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -130,6 +131,9 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
     protected BridgeTopologyService m_bridgeTopologyService;
 
     @Autowired
+    protected NodeTopologyService m_nodeTopologyService;
+
+    @Autowired
     protected OnmsTopologyDao m_topologyDao;
 
     @Override
@@ -150,7 +154,8 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
         p.setProperty("log4j.logger.org.hibernate", "WARN");
         p.setProperty("log4j.logger.org.springframework","WARN");
         p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
-        MockLogAppender.setupLogging(p);
+        p.setProperty("log4j.logger.org.opennms.netmgt.enlinkd", "DEBUG");
+               MockLogAppender.setupLogging(p);
     }
 
     @After

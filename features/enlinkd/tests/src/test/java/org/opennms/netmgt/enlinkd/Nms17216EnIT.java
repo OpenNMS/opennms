@@ -768,6 +768,16 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.LLDP.name()));
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.OSPF.name()));
 
+        assertEquals(2, m_nodeTopologyService.findAllSnmpNode().size());
+        assertEquals(2, m_nodeTopologyService.findAll().size());
+        
+        m_nodeTopologyService.findAll().stream().forEach( node -> {
+            System.err.println(node);
+            assertNotNull(node.getId());
+            assertNotNull(node.getLabel());
+            assertNotNull(node.getSnmpPrimaryIpAddr());
+            assertTrue(node.isManaged());
+        });
         CdpOnmsTopologyUpdater cdptopology = m_linkd.getCdpTopologyUpdater();
         assertNotNull(cdptopology);
         OnmsTopology topology = cdptopology.getTopology();
