@@ -33,12 +33,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.hibernate.criterion.CriteriaSpecification;
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.enlinkd.service.api.Node;
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.PrimaryType;
@@ -94,7 +96,10 @@ public class NodeTopologyServiceImpl implements org.opennms.netmgt.enlinkd.servi
     @Override
     @Transactional
     public List<Node> findAll() {
-        return m_nodeDao.findAll().stream().map(Node::create).collect(Collectors.toList());
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
+        criteria.createAlias("ipInterfaces","iface", OnmsCriteria.LEFT_JOIN);
+        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+        return m_nodeDao.findMatching(criteria).stream().map(Node::create).collect(Collectors.toList());
     }
 
     @Override
