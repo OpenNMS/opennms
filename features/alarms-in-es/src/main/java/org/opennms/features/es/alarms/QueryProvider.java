@@ -73,6 +73,16 @@ public class QueryProvider {
         return render("get_alarms_at.ftl", ImmutableMap.builder()
                 .put("time", time)
                 .put("numMaxAlarms", NUM_MAX_ALARMS)
+                .put("idOnly", false)
+                .build());
+    }
+
+    public String getActiveAlarmsAtTimeAndExclude(long time, Set<Integer> alarmIdsToKeep) {
+        return render("get_alarms_at.ftl", ImmutableMap.builder()
+                .put("time", time)
+                .put("alarmIdsToExclude", alarmIdsToKeep)
+                .put("numMaxAlarms", NUM_MAX_ALARMS)
+                .put("idOnly", true)
                 .build());
     }
 
@@ -85,28 +95,6 @@ public class QueryProvider {
     public String getCurrentAlarms() {
         return render("get_current_alarms.ftl", ImmutableMap.builder()
                 .put("numMaxAlarms", NUM_MAX_ALARMS)
-                .build());
-    }
-
-    public String markAlarmAsDeleted(int alarmId, long deletedTime) {
-        return render("mark_alarm_as_deleted.ftl", ImmutableMap.builder()
-                .put("alarmId", alarmId)
-                .put("deletedTime", deletedTime)
-                .build());
-    }
-
-    public String getActiveAlarmsAtTimeAndExclude(long time, Set<Integer> alarmIdsToKeep) {
-        return render("get_active_alarms_at_time_and_exclude.ftl", ImmutableMap.builder()
-                .put("time", time)
-                .put("alarmIds", alarmIdsToKeep)
-                .put("numMaxAlarms", NUM_MAX_ALARMS)
-                .build());
-    }
-
-    public String markOtherAlarmsAsDeleted(Set<Integer> alarmIdsToKeep, long deletedTime) {
-        return render("mark_other_alarms_as_deleted.ftl", ImmutableMap.builder()
-                .put("alarmIds", alarmIdsToKeep)
-                .put("deletedTime", deletedTime)
                 .build());
     }
 

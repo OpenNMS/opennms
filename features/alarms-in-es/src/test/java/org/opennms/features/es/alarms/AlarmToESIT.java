@@ -164,7 +164,7 @@ public class AlarmToESIT {
     }
 
     @Test
-    public void canIndexSituationsInElasticsearch() {
+    public void canIndexSituationsInElasticsearch() throws InterruptedException {
         Scenario scenario = Scenario.builder()
                 .withLegacyAlarmBehavior()
                 // Create some node down alarms

@@ -37,7 +37,6 @@ import org.opennms.netmgt.model.OnmsSeverity;
 
 public class ExtAlarmsMatchers {
 
-
     private static class HasSeverity extends TypeSafeMatcher<AlarmDocumentDTO> {
         private final OnmsSeverity severity;
 

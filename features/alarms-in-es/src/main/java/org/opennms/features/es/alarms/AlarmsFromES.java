@@ -53,10 +53,27 @@ public class AlarmsFromES {
         this.client = Objects.requireNonNull(client);
     }
 
+    /**
+     * Retrieves the last known state of the alarm with the given id, at or before the given time.
+     *
+     * If the alarm was deleted at (or before) this time, the returned document will only
+     * include mininimal information. To retrieve the complete state prior to the delete
+     * you can perform another call to this this function with a time less than {@link AlarmDocumentDTO#getDeletedTime()}.
+     *
+     * @param id database id of the alarm to query
+     * @param time timestamps in milliseconds
+     * @return the last known state of the alarm, or {@code null} if none was found
+     */
     public AlarmDocumentDTO getAlarmAt(int id, long time) {
         return findAlarms(queryProvider.getAlarmAt(id, time), false).stream().findFirst().orElse(null);
     }
 
+    /**
+     * Retrieves the last know state of all alarms at the given time, that were not deleted.
+     *
+     * @param time timestamps in milliseconds
+     * @return the last known state all the (not-deleted) alarms
+     */
     public List<AlarmDocumentDTO> getAlarmsAt(long time) {
         return findAlarms(queryProvider.getAlarmsAt(time), true);
     }

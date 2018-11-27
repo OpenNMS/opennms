@@ -217,25 +217,31 @@ public class AlarmsToES implements AlarmLifecycleListener, Runnable  {
                             try {
                                 result = client.execute(search);
                             } catch (IOException e) {
-                                LOG.error("Bulk delete failed.", e);
+                                LOG.error("Querying for active alarms failed.", e);
                                 return;
                             }
                             if (!result.isSucceeded()) {
-                                LOG.error("Bulk delete failed with: {}", result.getErrorMessage());
+                                LOG.error("Querying for active alarms failed with: {}", result.getErrorMessage());
                             }
 
                             final List<SearchResult.Hit<AlarmDocumentDTO, Void>> hits = result.getHits(AlarmDocumentDTO.class);
-                            List<AlarmDocumentDTO> docs = hits.stream().map(h -> h.source).collect(Collectors.toList());
+                            final List<AlarmDocumentDTO> docs = hits.stream().map(h -> h.source).collect(Collectors.toList());
 
                             if (!docs.isEmpty()) {
-                                List<AlarmDocumentDTO> deletes = docs.stream()
+                                final List<AlarmDocumentDTO> deletes = docs.stream()
                                         .map(d -> documentMapper.createAlarmDocumentForDelete(d.getId(), d.getReductionKey()))
                                         .collect(Collectors.toList());
+                                if (LOG.isDebugEnabled()) {
+                                    LOG.debug("Deleting alarms with IDs: {}", deletes.stream().map(a -> Integer.toString(a.getId()))
+                                            .collect(Collectors.joining(",")));
+                                }
 
                                 // Break the list up into small batches limited by the configured batch size
                                 for (List<AlarmDocumentDTO> partition : Lists.partition(deletes, batchSize)) {
                                     indexAlarms(partition);
                                 }
+                            } else {
+                                LOG.debug("Did not find any extraneous alarms that need to be deleted.");
                             }
                         }
 

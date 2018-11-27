@@ -1,16 +1,16 @@
 {
+  "size": 0,
   "query": {
     "bool" : {
+      <#if alarmIdsToExclude?has_content>
       "must_not": [
         {
-          "range": {
-            "@deleted-time": {
-              "lte": ${time?long?c},
-              "format": "epoch_millis"
-            }
+          "terms": {
+            "id": [<#list alarmIdsToExclude as alarmId>${alarmId?long?c}<#sep>,</#list>]
           }
         }
       ],
+      </#if>
       "filter": [
         {
           "range": {
@@ -32,6 +32,11 @@
       "aggs": {
         "latest_alarm": {
           "top_hits": {
+            <#if idOnly>
+            "_source": {
+                "includes": [ "id" ]
+            },
+            </#if>
             "sort": [
               {
                 "@update-time": {
@@ -41,6 +46,19 @@
             ],
             "size" : 1
           }
+        },
+        "any_deletes": {
+            "sum": {
+                "field": "@deleted-time"
+            }
+        },
+        "delete_bucket_filter": {
+            "bucket_selector": {
+                "buckets_path": {
+                  "anyDeletes": "any_deletes"
+                },
+                "script": "params.anyDeletes < 1"
+            }
         }
       }
     }
