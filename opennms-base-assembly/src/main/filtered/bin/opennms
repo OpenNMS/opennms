@@ -894,9 +894,10 @@ case "$COMMAND" in
 		;;
 
 	ssh)
-	    karafSshPort=`grep "^sshPort=" ${OPENNMS_HOME}/etc/org.apache.karaf.shell.cfg | cut -d= -f2`
-		$opennms_echo "Trying to establish SSH connection to OpenNMS Karaf Shell (localhost:$karafSshPort)..."
-		ssh -o NoHostAuthenticationForLocalhost=yes -o HostKeyAlgorithms=+ssh-dss -l admin -p $karafSshPort localhost
+		karafSshPort=`grep "^sshPort" ${OPENNMS_HOME}/etc/org.apache.karaf.shell.cfg | cut -d= -f2`
+		karafUser=`grep "^karaf.local.user" ${OPENNMS_HOME}/etc/system.properties | cut -d= -f2 | tr -d "[:blank:]"`
+		$opennms_echo "Trying to establish SSH connection to OpenNMS Karaf Shell ($karafUser@localhost:$karafSshPort)..."
+		ssh -o NoHostAuthenticationForLocalhost=yes -o HostKeyAlgorithms=+ssh-dss -l $karafUser -p $karafSshPort localhost
 		;;
 
 	pause)
