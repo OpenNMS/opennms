@@ -68,6 +68,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
 import com.google.common.base.MoreObjects;
@@ -204,6 +205,10 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     private Set<AlarmAssociation> m_associatedAlarms = new HashSet<>();
 
     private Set<OnmsAlarm> m_relatedSituations = new HashSet<>();
+
+    private boolean situation;
+
+    private boolean partOfSituation;
 
     /**
      * default constructor
@@ -1224,12 +1229,22 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         m_associatedAlarms.removeIf(associatedAlarm -> associatedAlarm.getRelatedAlarm().getId().equals(alarm.getId()));
     }
 
-
-    // Any alarm with related alarms is a 'Situation'
-    @Transient
-    @XmlTransient
+    @Formula(value = "(SELECT COUNT(*)>0 FROM ALARM_SITUATIONS S WHERE S.SITUATION_ID=ALARMID)")
     public boolean isSituation() {
-        return !m_associatedAlarms.isEmpty();
+        return this.situation;
+    }
+
+    public void setSituation(final boolean situation) {
+        this.situation = situation;
+    }
+
+    @Formula(value = "(SELECT COUNT(*)>0 FROM ALARM_SITUATIONS S WHERE S.RELATED_ALARM_ID=ALARMID)")
+    public boolean isPartOfSituation() {
+        return this.partOfSituation;
+    }
+
+    public void setPartOfSituation(final boolean partOfSituation) {
+        this.partOfSituation = partOfSituation;
     }
 
     @XmlTransient
@@ -1246,12 +1261,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         return getRelatedSituations().stream()
                 .map(OnmsAlarm::getId)
                 .collect(Collectors.toSet());
-    }
-
-    @Transient
-    @XmlTransient
-    public boolean isPartOfSituation() {
-        return !m_relatedSituations.isEmpty();
     }
 
     public void setRelatedSituations(Set<OnmsAlarm> alarms) {

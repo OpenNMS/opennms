@@ -32,8 +32,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Subqueries;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,14 +51,21 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmRepository;
+import org.opennms.netmgt.dao.api.CriteriaConverter;
+import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.alarm.AcknowledgeType;
+import org.opennms.web.alarm.AlarmQueryParms;
 import org.opennms.web.alarm.AlarmUtil;
+import org.opennms.web.alarm.SortStyle;
+import org.opennms.web.controller.alarm.AlarmFilterController;
 import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +91,7 @@ import com.google.common.collect.Sets;
 @JUnitTemporaryDatabase
 @DirtiesContext // XXX needed? JUnitTemporaryDatabase marks dirty by default
 public class AlarmRepositoryFilterIT implements InitializingBean {
-    
+
     @Autowired
     DatabasePopulator m_dbPopulator;
     
@@ -549,9 +563,118 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         assertEquals(1, situations.length);
         assertEquals(2, alarms.length);
     }
+
+    public void checkFilteringAndSorting(final SortStyle sortStyle, final List<Filter> filterList, final int limit, final int multiple, final int expectedCount, final int expectedResults) {
+        final AlarmQueryParms parms = new AlarmQueryParms();
+        parms.ackType = AcknowledgeType.UNACKNOWLEDGED;
+        parms.display = null;
+        parms.filters = filterList;
+        parms.limit = limit;
+        parms.multiple = multiple;
+        // apply the sort style
+        parms.sortStyle = sortStyle;
+
+        final AlarmCriteria queryCriteria = new AlarmCriteria(parms);
+        final AlarmCriteria countCriteria = new AlarmCriteria(filterList, AcknowledgeType.UNACKNOWLEDGED);
+
+        // get alarm entities
+        final OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(queryCriteria));
+        // get alarm count
+        final long alarmCount = m_daoAlarmRepo.countMatchingAlarms(AlarmUtil.getOnmsCriteria(countCriteria));
+
+        // check expected values
+        assertEquals(expectedCount, alarmCount);
+        assertEquals(expectedResults, alarms.length);
+        // check that the entity is populated with values
+        assertNotNull(alarms[0].getId());
+    }
+
+    @Test
+    @Transactional
+    @JUnitTemporaryDatabase
+    public void testFilteringAndSorting() {
+        final OnmsDistPoller poller = m_dbPopulator.getDistPollerDao().whoami();
+
+        // set up alarms...
+        final OnmsEvent event = new OnmsEvent();
+        event.setEventLog("Y");
+        event.setEventDisplay("Y");
+        event.setEventCreateTime(new Date());
+        event.setDistPoller(poller);
+        event.setEventTime(new Date());
+        event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
+        event.setEventUei("uei://org/opennms/test/EventDaoTest");
+        event.setEventSource("test");
+        m_dbPopulator.getEventDao().save(event);
+        m_dbPopulator.getEventDao().flush();
+
+        final OnmsNode node = m_dbPopulator.getNodeDao().findAll().iterator().next();
+
+        final OnmsAlarm alarm1 = new OnmsAlarm();
+        alarm1.setNode(node);
+        alarm1.setUei(event.getEventUei());
+        alarm1.setSeverityId(event.getEventSeverity());
+        alarm1.setFirstEventTime(event.getEventTime());
+        alarm1.setLastEvent(event);
+        alarm1.setCounter(1);
+        alarm1.setDistPoller(poller);
+        m_dbPopulator.getAlarmDao().save(alarm1);
+        m_dbPopulator.getAlarmDao().flush();
+
+        final OnmsAlarm alarm2 = new OnmsAlarm();
+        alarm2.setNode(node);
+        alarm2.setUei(event.getEventUei());
+        alarm2.setSeverityId(event.getEventSeverity());
+        alarm2.setFirstEventTime(event.getEventTime());
+        alarm2.setLastEvent(event);
+        alarm2.setCounter(1);
+        alarm2.setDistPoller(poller);
+        m_dbPopulator.getAlarmDao().save(alarm2);
+        m_dbPopulator.getAlarmDao().flush();
+
+        // ...and one situation
+        final OnmsAlarm alarm3 = new OnmsAlarm();
+        alarm3.setNode(node);
+        alarm3.setUei(event.getEventUei());
+        alarm3.setSeverityId(event.getEventSeverity());
+        alarm3.setFirstEventTime(event.getEventTime());
+        alarm3.setLastEvent(event);
+        alarm3.setCounter(1);
+        alarm3.setDistPoller(poller);
+        alarm2.setRelatedAlarms(Sets.newHashSet(alarm1, alarm2));
+        m_dbPopulator.getAlarmDao().save(alarm3);
+        m_dbPopulator.getAlarmDao().flush();
+
+        // some more alarms
+        for(int i=0;i<10; i++) {
+            final OnmsAlarm alarm = new OnmsAlarm();
+            alarm.setNode(node);
+            alarm.setUei(event.getEventUei());
+            alarm.setSeverityId(event.getEventSeverity());
+            alarm.setFirstEventTime(event.getEventTime());
+            alarm.setLastEvent(event);
+            alarm.setCounter(1);
+            alarm.setDistPoller(poller);
+            m_dbPopulator.getAlarmDao().save(alarm);
+            m_dbPopulator.getAlarmDao().flush();
+        }
+
+        // 14 in total
+        assertEquals(14, m_dbPopulator.getAlarmDao().findAll().size());
+
+        // check for the single situation
+        checkFilteringAndSorting(SortStyle.ID, Lists.newArrayList(new SituationFilter(true)), 10, 0, 1, 1);
+        // check for all, first page of two
+        checkFilteringAndSorting(SortStyle.ID, Lists.newArrayList(), 10, 0, 14, 10);
+        // check for second page
+        checkFilteringAndSorting(SortStyle.ID, Lists.newArrayList(), 10, 1, 14, 4);
+        // check that all the sort styles work
+        for(SortStyle sortStyle : SortStyle.values()) {
+            checkFilteringAndSorting(sortStyle, Lists.newArrayList(new SituationFilter(true)), 10, 0, 1, 1);
+        }
+    }
     
     private AlarmCriteria getCriteria(Filter...filters){
         return new AlarmCriteria(filters);
     }
-    
 }
