@@ -85,7 +85,7 @@ public class NodeTopologyEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "VertexInfo{" +
+        return "NodeTopologyEntity{" +
                 "id=" + id +
                 ", type=" + type +
                 ", sysObjectId='" + sysObjectId + '\'' +
