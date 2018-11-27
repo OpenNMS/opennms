@@ -33,6 +33,11 @@ import java.util.List;
 import org.opennms.netmgt.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.model.NodeTopologyEntity;
 
+/**
+ * Caches TopologyEmtities. This is a cache wrapper around @{@link TopologyEntityDao}. See there for an explanation of
+ * TopologyEntrities.
+ * We use the cache to improve the displaying speed of topologies.
+ */
 public interface TopologyEntityCache {
 
     List<NodeTopologyEntity> getNodeTopolgyEntities();
