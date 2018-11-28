@@ -19,6 +19,9 @@
 
     <module>api-layer</module>
 
+    <!-- Alarms -->
+    <module>alarms</module>
+
     <!-- AMQP Event Gateway and Alarm Northbounder -->
     <module>amqp</module>
 
@@ -173,6 +176,5 @@
     <module>ifttt</module>
 
     <module>jest</module>
-    <module>alarms-in-es</module>
   </modules>
 </project>

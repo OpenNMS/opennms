@@ -360,7 +360,7 @@
 	    <feature>opennms-api-layer</feature>
 
 	    <feature>karaf-extender</feature>
-	    <feature>alarms-in-es</feature>
+	    <feature>opennms-alarm-history-elastic</feature>
           </features>
         </configuration>
       </plugin>
@@ -823,6 +823,12 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.situation-feedback</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.alarms.history</groupId>
+      <artifactId>org.opennms.features.alarms.history.elastic</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
     </dependency>
