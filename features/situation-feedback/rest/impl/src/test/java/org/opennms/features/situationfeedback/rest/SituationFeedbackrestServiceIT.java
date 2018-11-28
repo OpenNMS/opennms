@@ -37,8 +37,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -155,7 +155,7 @@ public class SituationFeedbackrestServiceIT {
         OnmsAlarm restrieved = alarmDao.findByReductionKey(situation.getReductionKey());
         // Since alarm feedback is not processed locally in the ReST API we expect the situation to remain unchanged
         assertThat(restrieved.getRelatedAlarms().size(), is(2));
-        assertThat(restrieved.getRelatedAlarms().stream().findFirst(), is(Optional.of(linkDownAlarmOnR2)));
+        assertThat(restrieved.getRelatedAlarms(), Matchers.containsInAnyOrder(linkDownAlarmOnR1, linkDownAlarmOnR2));
     }
     
     private final class AlarmFeedbackListenerImpl implements AlarmFeedbackListener {
