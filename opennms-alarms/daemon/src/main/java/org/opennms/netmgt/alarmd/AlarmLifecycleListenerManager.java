@@ -35,6 +35,9 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
@@ -65,6 +68,16 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
     private final Set<AlarmLifecycleListener> listeners = Sets.newConcurrentHashSet();
     private Timer timer;
 
+    /**
+     * This lock is used to prevent us from issuing create/update/delete callbacks
+     * while a snapshot is in progress.
+     *
+     * Callbacks hold a read-lock, while the snapshot holds a write lock.
+     *
+     * A fair lock is used so that the callbacks continue to be processed in order.
+     */
+    private final ReadWriteLock snapshotRwLock = new ReentrantReadWriteLock(true);
+
     @Autowired
     private AlarmDao alarmDao;
 
@@ -92,23 +105,41 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
         }
     }
 
-    private void doSnapshot() {
+    protected void doSnapshot() {
         if (listeners.size() < 1) {
             return;
         }
-        template.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                final List<OnmsAlarm> allAlarms = alarmDao.findAll();
-                listeners.forEach(l -> l.handleAlarmSnapshot(allAlarms));
+
+        final AtomicLong numAlarms = new AtomicLong(-1);
+        final long systemMillisBefore = System.currentTimeMillis();
+        snapshotRwLock.writeLock().lock();
+        try {
+            template.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus status) {
+                    final List<OnmsAlarm> allAlarms = alarmDao.findAll();
+                    numAlarms.set(allAlarms.size());
+                    forEachListener(l -> l.handleAlarmSnapshot(allAlarms));
+                }
+            });
+        } finally {
+            snapshotRwLock.writeLock().unlock();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Alarm snapshot for {} alarms completed. Other callbacks were blocked for a total of {}ms.",
+                        numAlarms.get(), System.currentTimeMillis() - systemMillisBefore);
             }
-        });
+        }
     }
 
     public void onNewOrUpdatedAlarm(OnmsAlarm alarm) {
-        forEachListener(l -> l.handleNewOrUpdatedAlarm(alarm));
+        // Don't propagate the callbacks while a snapshot is in progress
+        snapshotRwLock.readLock().lock();
+        try {
+            forEachListener(l -> l.handleNewOrUpdatedAlarm(alarm));
+        } finally {
+            snapshotRwLock.readLock().unlock();
+        }
     }
-
 
     @Override
     public void onAlarmArchived(OnmsAlarm alarm, String previousReductionKey) {
@@ -117,9 +148,15 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
 
     @Override
     public void onAlarmDeleted(OnmsAlarm alarm) {
-        final Integer alarmId = alarm.getId();
-        final String reductionKey = alarm.getReductionKey();
-        forEachListener(l -> l.handleDeletedAlarm(alarmId, reductionKey));
+        // Don't propagate the callbacks while a snapshot is in progress
+        snapshotRwLock.readLock().lock();
+        try {
+            final Integer alarmId = alarm.getId();
+            final String reductionKey = alarm.getReductionKey();
+            forEachListener(l -> l.handleDeletedAlarm(alarmId, reductionKey));
+        } finally {
+            snapshotRwLock.readLock().unlock();
+        }
     }
 
     @Override
@@ -195,6 +232,14 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
     public void onListenerUnregistered(final AlarmLifecycleListener listener, final Map<String,String> properties) {
         LOG.debug("onListenerUnregistered: {} with properties: {}", listener, properties);
         listeners.remove(listener);
+    }
+
+    public void setAlarmDao(AlarmDao alarmDao) {
+        this.alarmDao = alarmDao;
+    }
+
+    public void setTransactionTemplate(TransactionTemplate template) {
+        this.template = template;
     }
 
     @Override

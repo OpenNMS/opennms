@@ -110,6 +110,7 @@ The _Kafka Producer_ exposes the following options to help fine tune its behavio
 | `suppressIncrementalAlarms` | `true`           | Suppresses forwarding alarms that differ only by count or last event time.
                                                    Set this to `false` to prevent suppressing these alarms.
 | `kafkaSendQueueCapacity` | `1000`           | The capacity for the queue of Kafka messages that is used when a Kafka message is pushed but Kafka is unavailable.
+| `startAlarmSyncWithCleanState` | `false`       | Set this to `true` to force the Kafka Streams client to start with a clean state on every boot.
 |===
 
 ==== Configuring Filtering
