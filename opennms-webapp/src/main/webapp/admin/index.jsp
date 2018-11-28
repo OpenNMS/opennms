@@ -258,7 +258,7 @@
         <h3 class="panel-title">Descriptions</h3>
       </div>
       <div class="panel-body">
-        <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://www.opennms.org" target="new">the OpenNMS wiki</a>.
+        <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://wiki.opennms.org" target="new">the OpenNMS wiki</a>.
         </p>
 
         <p><b>Configure Users, Groups and On-Call Roles</b>: Add, modify or delete
