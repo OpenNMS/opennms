@@ -94,7 +94,7 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
 
     @Override
     public String getName() {
-        return null;
+        return this.name;
     }
 
     @Override

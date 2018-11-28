@@ -18,5 +18,6 @@
     <module>nxos</module>
     <module>sflow</module>
     <module>netflow</module>
+    <module>carbon</module>
   </modules>
 </project>

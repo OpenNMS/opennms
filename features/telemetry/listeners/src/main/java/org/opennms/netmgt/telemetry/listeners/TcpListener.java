@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners;
 
 import java.net.InetSocketAddress;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
 import org.slf4j.Logger;
@@ -47,6 +48,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.internal.SocketUtils;
 
@@ -96,14 +98,16 @@ public class TcpListener implements Listener {
                                     @Override
                                     protected void channelRead0(final ChannelHandlerContext ctx,
                                                                 final ByteBuf msg) throws Exception {
-                                        session.parse(ReferenceCountUtil.retain(msg).nioBuffer())
-                                                .handle((result, ex) -> {
-                                                    ReferenceCountUtil.release(msg);
-                                                    if (ex != null) {
-                                                        ctx.fireExceptionCaught(ex);
-                                                    }
-                                                    return result;
-                                                });;
+                                        final CompletableFuture<?> future = session.parse(ReferenceCountUtil.retain(msg).nioBuffer());
+                                        if (future != null) {
+                                            future.handle((result, ex) -> {
+                                                ReferenceCountUtil.release(msg);
+                                                if (ex != null) {
+                                                    ctx.fireExceptionCaught(ex);
+                                                }
+                                                return result;
+                                            });
+                                        }
                                     }
                                 })
                                 .addLast(new ChannelInboundHandlerAdapter() {
