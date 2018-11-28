@@ -92,7 +92,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
      *
      * Callbacks hold a read-lock, while the synchronization process holds a write lock.
      *
-     * A fair lock is used so that the callbacks continue to be processed in oroder.
+     * A fair lock is used so that the callbacks continue to be processed in order.
      */
     private final ReadWriteLock alarmSyncRwLock = new ReentrantReadWriteLock(true);
 
