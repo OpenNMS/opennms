@@ -64,7 +64,7 @@ public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
         Map<Integer, Node> nodeMap= getNodeMap();
         OnmsTopology topology = new OnmsTopology();
         m_cdpTopologyService.findAllCdpElements().stream().forEach(element -> {
-            OnmsTopologyVertex vertex = super.create(nodeMap.get(element.getNode().getId()));
+            OnmsTopologyVertex vertex = create(nodeMap.get(element.getNode().getId()));
             vertex.getProtocolSupported().add(ProtocolSupported.CDP.name());
             topology.getVertices().add(vertex);
         });
