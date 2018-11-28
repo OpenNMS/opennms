@@ -323,6 +323,18 @@
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.NodeDao" ref="nodeDao" />
 
+  <bean id="topologyEntityDao" class="org.opennms.netmgt.dao.hibernate.TopologyEntityDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyEntityDao" ref="topologyEntityDao" />
+
+  <bean id="topologyEntityCache" class="org.opennms.netmgt.dao.hibernate.TopologyEntityCacheImpl">
+    <property name="topologyEntityDao" ref="topologyEntityDao" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyEntityCache" ref="topologyEntityCache" />
+
   <bean id="nodeLabel" class="org.opennms.netmgt.dao.hibernate.NodeLabelDaoImpl"/>
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.NodeLabel" ref="nodeLabel" />
