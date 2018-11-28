@@ -28,6 +28,7 @@
 
 package org.opennms.core.rpc.echo;
 
+import java.util.List;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -46,6 +47,9 @@ public class EchoRequest implements RpcRequest {
 
     @XmlAttribute(name="message")
     private String message;
+
+    @XmlAttribute(name="largeMessage")
+    private List<String> largeMessage;
 
     @XmlAttribute(name="location")
     private String location;
@@ -81,6 +85,14 @@ public class EchoRequest implements RpcRequest {
 
     public String getMessage() {
         return message;
+    }
+
+    public List<String> getLargeMessage() {
+        return largeMessage;
+    }
+
+    public void setLargeMessage(List<String> largeMessage) {
+        this.largeMessage = largeMessage;
     }
 
     public void setLocation(String location) {
@@ -128,7 +140,7 @@ public class EchoRequest implements RpcRequest {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, message, location, delay,
+        return Objects.hash(id, message, largeMessage, location, delay,
                 shouldThrow, systemId);
     }
 
@@ -143,6 +155,7 @@ public class EchoRequest implements RpcRequest {
         final EchoRequest other = (EchoRequest) obj;
         return Objects.equals(this.id, other.id) &&
                 Objects.equals(this.message, other.message) &&
+                Objects.equals(this.largeMessage, other.largeMessage) &&
                 Objects.equals(this.location, other.location) &&
                 Objects.equals(this.delay, other.delay) &&
                 Objects.equals(this.shouldThrow, other.shouldThrow) &&
@@ -151,7 +164,7 @@ public class EchoRequest implements RpcRequest {
 
     @Override
     public String toString() {
-        return String.format("EchoRequest[id=%d, message=%s, location=%s, systemId=%s, delay=%s, shouldThrow=%s]",
-                id, message, location, systemId, delay, shouldThrow);
+        return String.format("EchoRequest[id=%d, message=%s, largeMessage=%s location=%s, systemId=%s, delay=%s, shouldThrow=%s]",
+                id, message, location, largeMessage, systemId, delay, shouldThrow);
     }
 }

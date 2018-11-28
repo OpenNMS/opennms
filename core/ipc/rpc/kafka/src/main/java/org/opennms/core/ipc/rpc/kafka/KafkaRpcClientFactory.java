@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.rpc.kafka;
 
+import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.getMaxBufferSize;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +61,7 @@ import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.joda.time.Duration;
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
@@ -79,26 +82,33 @@ import org.slf4j.LoggerFactory;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 public class KafkaRpcClientFactory implements RpcClientFactory {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaRpcClientFactory.class);
+    private static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
+            .withRateLimit(LOG)
+            .maxRate(5).every(Duration.standardSeconds(30))
+            .build();
     private static final Long TIMEOUT_FOR_KAFKA_RPC = Long.getLong(String.format("%sttl", KafkaRpcConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),
-                                                          30000);
-    private static final Integer MAX_BUFFER_SIZE = Integer.getInteger(String.format("%smax.buffer.size.configured", KafkaRpcConstants.KAFKA_CONFIG_SYS_PROP_PREFIX), 921600);
+            30000);
+    private static final Integer MAX_BUFFER_SIZE = getMaxBufferSize();
     private String location;
     private KafkaProducer<String, byte[]> producer;
     private final Properties kafkaConfig = new Properties();
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
-                                                            .setNameFormat("rpc-client-kafka-consumer-%d")
-                                                            .build();
+            .setNameFormat("rpc-client-kafka-consumer-%d")
+            .build();
     private final ThreadFactory timerThreadFactory = new ThreadFactoryBuilder()
-                                                         .setNameFormat("rpc-client-timeout-tracker-%d")
-                                                         .build();
+            .setNameFormat("rpc-client-timeout-tracker-%d")
+            .build();
     private final ExecutorService executor = Executors.newSingleThreadExecutor(threadFactory);
     private final ExecutorService timerExecutor = Executors.newSingleThreadExecutor(timerThreadFactory);
     private final Map<String, ResponseCallback> rpcResponseMap = new ConcurrentHashMap<>();
     private KafkaConsumerRunner kafkaConsumerRunner;
     private DelayQueue<ResponseCallback> delayQueue = new DelayQueue<>();
+    // Used to cache responses when large message are involved.
+    private Map<String, ByteString> messageCache = new ConcurrentHashMap<>();
 
     @Override
     public <S extends RpcRequest, T extends RpcResponse> RpcClient<S, T> getClient(RpcModule<S, T> module) {
@@ -113,7 +123,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory(
                         KafkaRpcConstants.RPC_REQUEST_TOPIC_NAME, module.getId(), request.getLocation());
                 String requestTopic = topicNameFactory.getName();
-                String marshalledRequest = module.marshalRequest(request);
+                String marshalRequest = module.marshalRequest(request);
                 // Generate RPC Id for every request to track request/response.
                 String rpcId = UUID.randomUUID().toString();
                 // Calculate timeout based on ttl and default timeout.
@@ -128,56 +138,64 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 delayQueue.offer(responseHandler);
                 rpcResponseMap.put(rpcId, responseHandler);
                 kafkaConsumerRunner.startConsumingForModule(module.getId());
-                if (request.getSystemId() != null) {
+                byte[] messageInBytes = marshalRequest.getBytes();
+                int totalChunks = KafkaRpcConstants.getTotalChunks(messageInBytes.length, MAX_BUFFER_SIZE);
+                // Divide the message in chunks and send each chunk as a different message with the same key.
+                for (int chunk = 0; chunk < totalChunks; chunk++) {
+                    // Calculate bufferSize for each chunk, it is MAX_BUFFER_SIZE except for last chunk it is remaining buffer.
+                    int bufferSize = KafkaRpcConstants.getBufferSize(messageInBytes.length, MAX_BUFFER_SIZE, chunk);
+                    ByteString byteString = ByteString.copyFrom(messageInBytes, chunk * MAX_BUFFER_SIZE, bufferSize);
                     // For directed RPCs, send request to all partitions (consumers),
-                    // this forces partitions >= max(number of minions at location)
-                    RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage.newBuilder()
-                                                                 .setRpcId(rpcId)
-                                                                 .setSystemId(request.getSystemId())
-                                                                 .setExpirationTime(expirationTime)
-                                                                 .setRpcContent(ByteString.copyFromUtf8(marshalledRequest))
-                                                                 .build();
-                    List<PartitionInfo> partitionInfo = producer.partitionsFor(requestTopic);
-                    partitionInfo.stream().forEach(partition -> {
-                        // Use rpc Id as key.
-                        final ProducerRecord<String, byte[]> record = new ProducerRecord<>(requestTopic,
-                                partition.partition(), rpcId, rpcMessage.toByteArray());
-                        producer.send(record);
-                    });
-                } else {
-                    ByteString byteString = ByteString.copyFromUtf8(marshalledRequest);
-                    if (byteString.size() > MAX_BUFFER_SIZE) {
-                        int numChunks = byteString.size()% MAX_BUFFER_SIZE + 1;
-                        byte[][] chunks = new byte[numChunks][MAX_BUFFER_SIZE];
-                        for (int i=0; i < numChunks; i++) {
-                            byteString.copyTo(chunks[i], i*MAX_BUFFER_SIZE, 0, MAX_BUFFER_SIZE);
-                            byteString = ByteString.copyFrom(chunks[i]);
-                            RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage.newBuilder()
-                                    .setRpcId(rpcId)
-                                    .setExpirationTime(expirationTime)
-                                    .setRpcContent(byteString)
-                                    .setCurrentChunkNumber(i)
-                                    .setTotalChunks(numChunks)
-                                    .build();
+                    // as it is reasonable to assume that partitions >= consumers(number of minions at location)
+                    int chunkNum = chunk;
+                    if (request.getSystemId() != null) {
+                        RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage.newBuilder()
+                                .setRpcId(rpcId)
+                                .setSystemId(request.getSystemId())
+                                .setExpirationTime(expirationTime)
+                                .setRpcContent(byteString)
+                                .setCurrentChunkNumber(chunk)
+                                .setTotalChunks(totalChunks)
+                                .build();
+                        List<PartitionInfo> partitionInfo = producer.partitionsFor(requestTopic);
+                        partitionInfo.stream().forEach(partition -> {
                             // Use rpc Id as key.
                             final ProducerRecord<String, byte[]> record = new ProducerRecord<>(requestTopic,
-                                    rpcId, rpcMessage.toByteArray());
-                            producer.send(record);
-                        }
+                                    partition.partition(), rpcId, rpcMessage.toByteArray());
+                            producer.send(record, (recordMetadata, e) -> {
+                                if (e != null) {
+                                    RATE_LIMITED_LOG.error(" RPC request {} with id {} couldn't be sent to Kafka", rpcMessage, rpcId, e);
+                                    future.completeExceptionally(e);
+                                } else {
+                                    if(LOG.isDebugEnabled()) {
+                                        LOG.debug("RPC Request {} with id {} chunk {} sent to minion at location {}", request, rpcId, chunkNum, request.getLocation());
+                                    }
+                                }
+                            });
+                        });
                     } else {
                         RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage.newBuilder()
                                 .setRpcId(rpcId)
                                 .setExpirationTime(expirationTime)
                                 .setRpcContent(byteString)
+                                .setCurrentChunkNumber(chunk)
+                                .setTotalChunks(totalChunks)
                                 .build();
                         // Use rpc Id as key.
                         final ProducerRecord<String, byte[]> record = new ProducerRecord<>(requestTopic,
                                 rpcId, rpcMessage.toByteArray());
-                        producer.send(record);
+                        producer.send(record, (recordMetadata, e) -> {
+                            if (e != null) {
+                                RATE_LIMITED_LOG.error(" RPC request {} with id {} couldn't be sent to Kafka", rpcMessage, rpcId, e);
+                                future.completeExceptionally(e);
+                            } else {
+                                if(LOG.isDebugEnabled()) {
+                                    LOG.debug("RPC Request {} with id {} chunk {} sent to minion at location {}", request, rpcId, chunkNum, request.getLocation());
+                                }
+                            }
+                        });
                     }
-
                 }
-                LOG.debug("RPC Request {} with id {} sent to minion at location {}", request, rpcId, request.getLocation());
                 return future;
             }
         };
@@ -232,7 +250,9 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         }
     }
 
-    /** Handle Response from kafka consumer and timeout thread **/
+    /**
+     * Handle Response from kafka consumer and timeout thread
+     **/
     private class ResponseHandler<S extends RpcRequest, T extends RpcResponse> implements ResponseCallback {
 
         private final CompletableFuture<T> responseFuture;
@@ -241,9 +261,9 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         private final String rpcId;
         private Map<String, String> loggingContext;
         private boolean isProcessed = false;
- 
+
         public ResponseHandler(CompletableFuture<T> responseFuture, RpcModule<S, T> rpcModule, String rpcId,
-                long timeout, Map<String, String> loggingContext) {
+                               long timeout, Map<String, String> loggingContext) {
             this.responseFuture = responseFuture;
             this.rpcModule = rpcModule;
             this.expirationTime = timeout;
@@ -255,7 +275,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         public void sendResponse(String message) {
             T response = null;
             // restore Logging context on callback.
-            try (MDCCloseable mdc = Logging.withContextMapCloseable(loggingContext)){
+            try (MDCCloseable mdc = Logging.withContextMapCloseable(loggingContext)) {
                 // When message is not null, it's called from kafka consumer otherwise it is from timeout tracker.
                 if (message != null) {
                     response = rpcModule.unmarshalResponse(message);
@@ -272,8 +292,9 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                     responseFuture.completeExceptionally(new RequestTimedOutException(new TimeoutException()));
                 }
                 rpcResponseMap.remove(rpcId);
+                messageCache.remove(rpcId);
             } catch (Exception e) {
-               LOG.warn("error while handling response for RPC request id {}", rpcId, e);
+                LOG.warn("error while handling response for RPC request id {}", rpcId, e);
             }
         }
 
@@ -307,6 +328,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
     }
 
     private class KafkaConsumerRunner implements Runnable {
+
         private final KafkaConsumer<String, byte[]> consumer;
         private final AtomicBoolean closed = new AtomicBoolean(false);
         private final Set<String> moduleIdsForTopics = new HashSet<>();
@@ -349,8 +371,23 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                         ResponseCallback responseCb = rpcResponseMap.get(record.key());
                         if (responseCb != null) {
                             RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage
-                                                                         .parseFrom(record.value());
-                            responseCb.sendResponse(rpcMessage.getRpcContent().toStringUtf8());
+                                    .parseFrom(record.value());
+                            ByteString rpcContent = rpcMessage.getRpcContent();
+                            // This is large message, wait for the whole message to arrive.
+                            if (rpcMessage.getTotalChunks() > 1) {
+                                String rpcId = rpcMessage.getRpcId();
+                                ByteString byteString = messageCache.get(rpcId);
+                                if (byteString != null) {
+                                    messageCache.put(rpcId, byteString.concat(rpcMessage.getRpcContent()));
+                                } else {
+                                    messageCache.put(rpcId, rpcMessage.getRpcContent());
+                                }
+                                if (rpcMessage.getTotalChunks() != rpcMessage.getCurrentChunkNumber() + 1) {
+                                    continue;
+                                }
+                                rpcContent = messageCache.get(rpcId);
+                            }
+                            responseCb.sendResponse(rpcContent.toStringUtf8());
                         } else {
                             LOG.warn("Received a response for request with ID:{}, but no outstanding request was found with this id, The request may have timed out.",
                                     record.key());
@@ -370,7 +407,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             closed.set(true);
             consumer.wakeup();
         }
-        
+
         public void startConsumingForModule(String moduleId) {
             if (moduleIdsForTopics.contains(moduleId)) {
                 return;
@@ -388,7 +425,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
 
     }
 
-    
+
     public void stop() {
         LOG.info("stop kafka consumer runner");
         kafkaConsumerRunner.stop();

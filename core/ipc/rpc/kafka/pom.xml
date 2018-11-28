@@ -61,6 +61,11 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>com.swrve</groupId>
+        <artifactId>rate-limited-logger</artifactId>
+        <version>${rateLimitedLoggerVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.lib</artifactId>
         <scope>test</scope>

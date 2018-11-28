@@ -28,6 +28,7 @@
 
 package org.opennms.core.rpc.echo;
 
+import java.util.List;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -51,6 +52,9 @@ public class EchoResponse implements RpcResponse {
     @XmlAttribute(name="message")
     private String message;
 
+    @XmlAttribute(name="largeMessage")
+    private List<String> largeMessage;
+
     public EchoResponse() { }
 
     public EchoResponse(String message) {
@@ -73,6 +77,14 @@ public class EchoResponse implements RpcResponse {
         this.message = message;
     }
 
+    public List<String> getLargeMessage() {
+        return largeMessage;
+    }
+
+    public void setLargeMessage(List<String> largeMessage) {
+        this.largeMessage = largeMessage;
+    }
+
     public String getMessage() {
         return message;
     }
@@ -84,7 +96,7 @@ public class EchoResponse implements RpcResponse {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, message, error);
+        return Objects.hash(id, message, largeMessage, error);
     }
 
     @Override
@@ -98,12 +110,13 @@ public class EchoResponse implements RpcResponse {
         final EchoResponse other = (EchoResponse) obj;
         return Objects.equals(this.id, other.id) &&
                 Objects.equals(this.message, other.message) &&
+                Objects.equals(this.largeMessage, other.largeMessage) &&
                 Objects.equals(this.error, other.error);
     }
 
     @Override
     public String toString() {
-        return String.format("EchoResponse[id=%d, message=%s, error=%s]",
-                id, message, error);
+        return String.format("EchoResponse[id=%d, message=%s, largeMessage=%s, error=%s]",
+                id, message, largeMessage, error);
     }
 }

@@ -75,6 +75,7 @@ public class EchoRpcModule extends AbstractXmlRpcModule<EchoRequest, EchoRespons
             EchoResponse response = new EchoResponse();
             response.setId(request.getId());
             response.setMessage(request.getMessage());
+            response.setLargeMessage(request.getLargeMessage());
             future.complete(response);
         }
     }

@@ -28,11 +28,51 @@
 
 package org.opennms.core.ipc.rpc.kafka;
 
+import java.util.Properties;
+
 public interface KafkaRpcConstants {
     
     public static final String KAFKA_CONFIG_PID = "org.opennms.core.ipc.rpc.kafka";
     public static final String KAFKA_CONFIG_SYS_PROP_PREFIX = KAFKA_CONFIG_PID + ".";
     public static final String RPC_REQUEST_TOPIC_NAME = "rpc-request";
     public static final String RPC_RESPONSE_TOPIC_NAME = "rpc-response";
+    //By default, kafka allows 1MB buffer sizes, here rpcContent (refer to proto/rpc.proto) is limited to 900KB to allow space for other parameters in proto file.
+    public static final int MAX_BUFFER_SIZE_CONFIGURED = 921600;
+    public static final String MAX_BUFFER_SIZE_PROPERTY = "max.buffer.size";
+
+    static int getTotalChunks(int messageSize, int maxBufferSize) {
+        int totalChunks = 0;
+        if (messageSize > maxBufferSize) {
+            totalChunks = (messageSize / maxBufferSize) + (messageSize % maxBufferSize == 0 ? 0 : 1);
+        } else {
+            totalChunks = 1;
+        }
+        return totalChunks;
+    };
+
+    static int getBufferSize(int messageSize, int maxBufferSize, int chunk) {
+        int bufferSize = messageSize;
+        if (getTotalChunks(messageSize, maxBufferSize) > 1) {
+            bufferSize = (messageSize - chunk * maxBufferSize > maxBufferSize) ? maxBufferSize : messageSize - chunk * maxBufferSize;
+        }
+        return bufferSize;
+    }
+
+    static int getMaxBufferSize() {
+        //Configurable buffer size but it should be always less than MAX_BUFFER_SIZE_CONFIGURED.
+        int maxBufferSize = Math.min(MAX_BUFFER_SIZE_CONFIGURED,
+                Integer.getInteger(String.format("%s%s", KAFKA_CONFIG_SYS_PROP_PREFIX, MAX_BUFFER_SIZE_PROPERTY), MAX_BUFFER_SIZE_CONFIGURED));
+        return maxBufferSize;
+    }
+
+    static int getMaxBufferSize(Properties properties) {
+        int maxBufferSize = MAX_BUFFER_SIZE_CONFIGURED;
+        try {
+            maxBufferSize = Math.min(MAX_BUFFER_SIZE_CONFIGURED, Integer.parseInt(properties.getProperty(MAX_BUFFER_SIZE_PROPERTY)));
+        } catch (NumberFormatException e) {
+            // pass
+        }
+        return maxBufferSize;
+    }
 
 }
