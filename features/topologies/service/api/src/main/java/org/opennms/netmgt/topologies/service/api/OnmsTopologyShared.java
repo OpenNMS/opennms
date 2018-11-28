@@ -33,9 +33,9 @@ import java.util.List;
 
 public class OnmsTopologyShared extends OnmsTopologyAbstractRef implements OnmsTopologyRef {
 
-    public static OnmsTopologyShared create(OnmsTopologyPort top,OnmsTopologyPort...sources) {
-        if (top !=  null && sources != null ) {
-            return new OnmsTopologyShared(top.getId()+"-Shared",sources);
+    public static OnmsTopologyShared create(String id,OnmsTopologyPort...sources) {
+        if (id !=  null && sources != null && sources.length > 1) {
+            return new OnmsTopologyShared(id,sources);
         }
         
         return null;

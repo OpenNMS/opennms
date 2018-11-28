@@ -761,8 +761,9 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.runSingleSnmpCollection(switch2.getId()));
         assertEquals(11, m_cdpLinkDao.countAll());
         
-        // Now we support by default configuration: CDP, ISIS, LLDP and OSPF
-        assertEquals(4, m_topologyDao.getSupportedProtocols().size());
+        // Now we support by default configuration: BRIDGE, CDP, ISIS, LLDP and OSPF
+        assertEquals(5, m_topologyDao.getSupportedProtocols().size());
+        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.BRIDGE.name()));
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.CDP.name()));
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.ISIS.name()));
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.LLDP.name()));

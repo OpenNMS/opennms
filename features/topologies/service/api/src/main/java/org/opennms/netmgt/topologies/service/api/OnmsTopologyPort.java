@@ -31,10 +31,12 @@ package org.opennms.netmgt.topologies.service.api;
 public class OnmsTopologyPort extends OnmsTopologyAbstractRef implements OnmsTopologyRef {
 
     public static OnmsTopologyPort create(OnmsTopologyVertex vertex, Integer index) {
-        if (vertex !=  null ) {
+        if (vertex !=  null && index != null) {
             return new OnmsTopologyPort(vertex.getId()+":"+index,vertex,index);
         }
-        
+        if (vertex !=  null ) {
+            return new OnmsTopologyPort(vertex.getId()+":-1",vertex,-1);
+        }
         return null;
     }
         

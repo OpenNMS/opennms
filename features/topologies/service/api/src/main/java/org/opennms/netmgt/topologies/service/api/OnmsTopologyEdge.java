@@ -30,9 +30,9 @@ package org.opennms.netmgt.topologies.service.api;
 
 public class OnmsTopologyEdge extends OnmsTopologyShared {
 
-    public static OnmsTopologyEdge create(OnmsTopologyPort source, OnmsTopologyPort target) {
+    public static OnmsTopologyEdge create(String id, OnmsTopologyPort source, OnmsTopologyPort target) {
         if (source !=  null && target != null && !source.getId().equals(target.getId())) {
-            return new OnmsTopologyEdge(source.getId()+"-"+target.getId(), source, target);
+            return new OnmsTopologyEdge(id, source, target);
         }
         
         return null;

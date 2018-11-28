@@ -37,6 +37,7 @@ import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
+import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.model.OnmsNode;
 
 public class LinkdVertex extends SimpleLeafVertex {
@@ -53,15 +54,14 @@ public class LinkdVertex extends SimpleLeafVertex {
     }
 
     public static LinkdVertex create(MacPort port) {
-        LinkdVertex vertex = new LinkdVertex(port.getMacPortMap().keySet().toString());
-        vertex.setLabel(port.getMacPortMap().keySet().toString());
+        LinkdVertex vertex = new LinkdVertex(Topology.getId(port));
+        vertex.setLabel(Topology.getId(port));
         vertex.setNodeType(s_nodeStatusMap.get(OnmsNode.NodeType.UNKNOWN));
         if (port.hasInetAddresses()) {
-            vertex.setIpAddress(port.getMacPortMap().toString());
+            vertex.setIpAddress(port.getIpMacInfo());
         } else {
             vertex.setIpAddress("no ip address");
         }
-
         vertex.setManaged("Not an OpenNMS Node");
         return vertex;
         

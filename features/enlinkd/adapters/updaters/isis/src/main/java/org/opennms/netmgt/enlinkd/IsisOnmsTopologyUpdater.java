@@ -36,6 +36,7 @@ import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
+import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
@@ -82,7 +83,8 @@ public class IsisOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
             OnmsTopologyPort targetPort= OnmsTopologyPort.create(target, targetLink.getIsisCircIfIndex());
             targetPort.setPort(sourceLink.getIsisISAdjNeighSNPAAddress());
             targetPort.setAddr(sourceLink.getIsisISAdjNeighSNPAAddress());
-            OnmsTopologyEdge edge = OnmsTopologyEdge.create(sourcePort, targetPort);
+            String id = Topology.getDefaultEdgeId(sourceLink.getId(), targetLink.getId());
+            OnmsTopologyEdge edge = OnmsTopologyEdge.create(id,sourcePort, targetPort);
             edge.setDiscoveredBy(ProtocolSupported.ISIS.name());
             topology.getEdges().add(edge);
        }

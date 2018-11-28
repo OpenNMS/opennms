@@ -31,4 +31,32 @@ package org.opennms.netmgt.enlinkd.service.api;
 public interface Topology {
 
     String printTopology();
+
+    public static String getDefaultEdgeId(int sourceId,int targetId) {
+        return Math.min(sourceId, targetId) + "|" + Math.max(sourceId, targetId);
+    }  
+    public static String getId(BridgePort designated) {
+        return  designated.getNodeId()+":"+designated.getBridgePort();
+    }
+    public static String getId(MacPort macPort) {
+        if (macPort.getNodeId() == null) {
+            return macPort.getMacPortMap().keySet().toString();
+        }
+        return Integer.toString(macPort.getNodeId());
+    }
+    public static String getEdgeId(BridgePort bp, MacPort macport ) {
+            return getId(bp)+"|"+getId(macport);
+    }
+    public static String getEdgeId(BridgePort sourcebp, BridgePort targetbp ) {
+        if (sourcebp.getNodeId().intValue() < targetbp.getNodeId().intValue()) {
+            return getId(sourcebp)+"|"+getId(targetbp);
+        }
+        return getId(targetbp)+"|"+getId(sourcebp);
+    }
+    public static String getEdgeId(String id, MacPort macport) {
+        return id + "|" + getId(macport);
+    }
+    public static String getEdgeId(String id, BridgePort bp) {
+        return id + "|" + bp.getNodeId() + ":" + bp.getBridgePort();
+    }
 }

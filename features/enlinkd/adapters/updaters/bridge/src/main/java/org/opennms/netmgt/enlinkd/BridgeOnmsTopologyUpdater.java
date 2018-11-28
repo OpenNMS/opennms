@@ -28,12 +28,25 @@
 
 package org.opennms.netmgt.enlinkd;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang3.tuple.Triple;
+import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.MacPort;
+import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
+import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyShared;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +70,59 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
     @Override
     public OnmsTopology getTopology() {
-        return new OnmsTopology();
+        Map<Integer, Node> nodeMap= getNodeMap();
+        OnmsTopology topology = new OnmsTopology();
+        for (Triple<List<BridgePort>, List<MacPort>, BridgePort> shared: m_bridgeTopologyService.matchBridgeLinks()) {
+            Set<OnmsTopologyPort> ports = new HashSet<>();
+            for (BridgePort bp: shared.getLeft()) {
+                Node node = nodeMap.get(bp.getNodeId());
+                if (topology.getVertex(node.getId()) == null) {
+                    topology.getVertices().add(create(node));
+                }
+                OnmsTopologyVertex vertex = topology.getVertex(node.getId());
+                vertex.getProtocolSupported().add(ProtocolSupported.BRIDGE.name());
+                OnmsTopologyPort port = OnmsTopologyPort.create(vertex, bp.getBridgePortIfIndex());
+                port.setAddr(Integer.toString(bp.getBridgePort()));
+                port.setPort(bp.printTopology());
+                ports.add(port);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("getTopology: adding: {}", bp.printTopology());
+                }
+            }
+            for (MacPort macPort: shared.getMiddle()) {
+                String id = Topology.getId(macPort);
+                if (topology.getVertex(id) ==  null) {
+                    if (macPort.getNodeId() != null) {
+                        Node node = nodeMap.get(macPort.getNodeId());
+                        if (topology.getVertex(node.getId()) == null) {
+                            topology.getVertices().add(create(node));
+                        }
+                    } else {
+                        topology.getVertices().add(create(macPort));
+                    }
+                }
+                OnmsTopologyVertex vertex = topology.getVertex(id);
+                vertex.getProtocolSupported().add(ProtocolSupported.BRIDGE.name());
+                OnmsTopologyPort port = OnmsTopologyPort.create(vertex, macPort.getMacPortIfIndex());
+                port.setAddr(macPort.getIpMacInfo());
+                if (macPort.getMacPortIfIndex() != null) {
+                    port.setPort(Integer.toString(macPort.getMacPortIfIndex()));
+                } else {
+                    port.setPort("-1");
+                }
+                ports.add(port);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("getTopology: adding: {}", macPort.printTopology());
+                }
+            }
+            OnmsTopologyShared edge = OnmsTopologyShared.create(
+                                                          Topology.getId(shared.getRight()), 
+                                                          ports.toArray(new OnmsTopologyPort[ports.size()]));
+            edge.setDiscoveredBy(ProtocolSupported.BRIDGE.name());
+            topology.getEdges().add(edge);
+
+        }
+        return topology;
     }
 
     @Override
@@ -67,7 +132,7 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
     @Override
     public String getProtocol() {
-        return ProtocolSupported.CDP.name();
+        return ProtocolSupported.BRIDGE.name();
     }
             
 }

@@ -57,6 +57,7 @@ import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
+import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
@@ -169,7 +170,7 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         node5port578.setNode(m_node5);
         node5port578.setIfIndex(link2.getIsisCircIfIndex());
         
-        m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getDefaultEdgeId(link1.getId(), link2.getId()), 
+        m_edges.add(LinkdEdge.create(Topology.getDefaultEdgeId(link1.getId(), link2.getId()), 
                                      node4Vertex, node5Vertex, 
                                      node4port599, node5port578, 
                                      link2.getIsisISAdjNeighSNPAAddress(), link1.getIsisISAdjNeighSNPAAddress(), 
@@ -192,7 +193,7 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         node5portPort2.setNode(m_node5);
         node5portPort2.setIfIndex(link4.getLldpPortIfindex());
          
-         m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getDefaultEdgeId(link3.getId(), link4.getId()), node4Vertex, node5Vertex, 
+         m_edges.add(LinkdEdge.create(Topology.getDefaultEdgeId(link3.getId(), link4.getId()), node4Vertex, node5Vertex, 
                                       node4portPort1, node5portPort2, link3.getLldpPortDescr(), link4.getLldpPortDescr(), ProtocolSupported.LLDP));
         
         //ospf link
@@ -208,7 +209,7 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
          OnmsSnmpInterface node5portPort10100 = new OnmsSnmpInterface();
          node5portPort10100.setNode(m_node5);
          node5portPort10100.setIfIndex(link6.getOspfIfIndex());
-         m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getDefaultEdgeId(link5.getId(), link6.getId()), node4Vertex, node5Vertex, 
+         m_edges.add(LinkdEdge.create(Topology.getDefaultEdgeId(link5.getId(), link6.getId()), node4Vertex, node5Vertex, 
                                       node4portPort10101, node5portPort10100, 
                                       InetAddressUtils.str(link6.getOspfRemIpAddr()), 
                                       InetAddressUtils.str(link5.getOspfRemIpAddr()),  ProtocolSupported.OSPF));
