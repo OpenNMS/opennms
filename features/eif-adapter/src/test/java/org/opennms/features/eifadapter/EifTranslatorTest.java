@@ -67,6 +67,7 @@ public class EifTranslatorTest {
         OnmsNode fqhostnameNode = new OnmsNode(m_locationDao.getDefaultLocation(), "localhost.localdomain");
         OnmsNode shortnameNode = new OnmsNode(m_locationDao.getDefaultLocation(), "localhost");
         OnmsNode originNode = new OnmsNode(m_locationDao.getDefaultLocation(), "10.0.0.7");
+        OnmsNode localhostIpNode = new OnmsNode(m_locationDao.getDefaultLocation(),"127.0.0.1");
 
         fqhostnameNode.setForeignSource("eifTestSource");
         fqhostnameNode.setForeignId("eifTestId");
@@ -74,14 +75,17 @@ public class EifTranslatorTest {
         shortnameNode.setForeignId("eifTestId");
         originNode.setForeignSource("eifTestSource");
         originNode.setForeignId("eifTestId");
+        localhostIpNode.setForeignId("eifTestLocalhostIp");
 
         fqhostnameNode.setId(1);
         shortnameNode.setId(2);
         originNode.setId(3);
+        localhostIpNode.setId(4);
 
         m_nodeDao.saveOrUpdate(fqhostnameNode);
         m_nodeDao.saveOrUpdate(shortnameNode);
         m_nodeDao.saveOrUpdate(originNode);
+        m_nodeDao.saveOrUpdate(localhostIpNode);
         m_nodeDao.flush();
     }
 
@@ -211,7 +215,9 @@ public class EifTranslatorTest {
                 +"fqhostname='';hostname='localhost';origin='127.0.0.1';adapter_host='dummyHost';"
                 +"date='07/22/2016';severity='WARNING';msg='My Dummy Event Message';situation_eventdata='~';END";
         Event e = translateEifToOpenNMS(m_nodeDao, new StringBuilder(incomingEif)).get(0);
-        assertEquals("NodeId "+e.getNodeid()+" must equal 2","2",e.getNodeid().toString());
+        // nodeId will be 4 if 'localhost' fails to resolve, and we fall back to using the IP address.
+        assertTrue("NodeId " + e.getNodeid() + " must be either 2 or 4",
+                e.getNodeid() == 2 || e.getNodeid() == 4);
     }
 
     @Test
