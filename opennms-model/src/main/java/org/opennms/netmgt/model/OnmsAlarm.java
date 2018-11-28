@@ -206,9 +206,9 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 
     private Set<OnmsAlarm> m_relatedSituations = new HashSet<>();
 
-    private boolean situation;
+    private boolean m_situation;
 
-    private boolean partOfSituation;
+    private boolean m_partOfSituation;
 
     /**
      * default constructor
@@ -1231,20 +1231,20 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 
     @Formula(value = "(SELECT COUNT(*)>0 FROM ALARM_SITUATIONS S WHERE S.SITUATION_ID=ALARMID)")
     public boolean isSituation() {
-        return this.situation;
+        return m_situation;
     }
 
     public void setSituation(final boolean situation) {
-        this.situation = situation;
+        m_situation = situation;
     }
 
     @Formula(value = "(SELECT COUNT(*)>0 FROM ALARM_SITUATIONS S WHERE S.RELATED_ALARM_ID=ALARMID)")
     public boolean isPartOfSituation() {
-        return this.partOfSituation;
+        return m_partOfSituation;
     }
 
     public void setPartOfSituation(final boolean partOfSituation) {
-        this.partOfSituation = partOfSituation;
+        m_partOfSituation = partOfSituation;
     }
 
     @XmlTransient
