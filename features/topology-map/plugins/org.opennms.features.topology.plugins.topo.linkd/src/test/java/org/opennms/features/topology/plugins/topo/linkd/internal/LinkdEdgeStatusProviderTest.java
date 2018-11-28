@@ -33,8 +33,10 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.easymock.EasyMock;
 import org.junit.After;
@@ -55,6 +57,7 @@ import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
+import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
@@ -138,7 +141,7 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         sourceinterfacenode1port48.setNode(m_node1);
         sourceinterfacenode1port48.setIfIndex(48);;
 
-        m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getEdgeId(cloud, bpnode1port48), 
+        m_edges.add(LinkdEdge.create(Topology.getEdgeId(cloud.getId(), bpnode1port48), 
                                      cloud, node1Vertex, null, sourceinterfacenode1port48, "cloud", "bp: 48", ProtocolSupported.BRIDGE));
 
         BridgePort bpnode2port24 = new BridgePort();
@@ -148,14 +151,16 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         OnmsSnmpInterface sourceinterfacenode2port24 = new OnmsSnmpInterface();
         sourceinterfacenode2port24.setNode(m_node2);
         sourceinterfacenode2port24.setIfIndex(24);;
-        m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getEdgeId(cloud, bpnode2port24), 
+        m_edges.add(LinkdEdge.create(Topology.getEdgeId(cloud.getId(), bpnode2port24), 
                                      cloud, node2Vertex, null, sourceinterfacenode2port24, null, null, ProtocolSupported.BRIDGE));
 
-        String mac = "a8d0e5a0a467";
-        m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getEdgeId(cloud, mac), 
+        Set<String> macs =  new HashSet<>();
+        macs.add("a8d0e5a0a467");
+        MacPort mac = MacPort.create(macs);
+        m_edges.add(LinkdEdge.create(Topology.getEdgeId(cloud.getId(), mac), 
                                      cloud, node3Vertex, 
                                      null, null, 
-                                     null, mac, ProtocolSupported.BRIDGE));
+                                     null, mac.printTopology(), ProtocolSupported.BRIDGE));
         
         // isis link
         IsIsLink link1 = createIsIsLink(m_node4, 599, 599, 1, 1, "001f12accbf1", "000110255062");
