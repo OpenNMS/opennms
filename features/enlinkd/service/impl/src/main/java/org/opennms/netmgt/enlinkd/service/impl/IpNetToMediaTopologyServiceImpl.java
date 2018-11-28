@@ -139,6 +139,7 @@ public class IpNetToMediaTopologyServiceImpl implements
         OnmsIpInterface onmsip = onmsiplist.iterator().next();
         ipnetToMedia.setNode(onmsip.getNode());
         if (onmsip.getSnmpInterface() == null) {
+            ipnetToMedia.setIfIndex(-1);
             return;
         }
         ipnetToMedia.setIfIndex(onmsip.getIfIndex());

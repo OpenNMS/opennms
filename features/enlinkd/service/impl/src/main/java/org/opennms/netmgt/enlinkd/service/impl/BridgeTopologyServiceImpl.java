@@ -753,6 +753,9 @@ SEG:        for (SharedSegment segment : bmlsegments) {
         m_ipNetToMediaDao.
                 findAll().
                 stream().forEach(m -> {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("getMacPorts: parsing: {}",m);
+                    }
                     if (m.getNode() != null ) {
                         if (nodeIfindexToMacPortTable.contains(m.getNode().getId(), m.getIfIndex())) {
                             MacPort.merge(m, nodeIfindexToMacPortTable.get(m.getNode().getId(), m.getIfIndex()));

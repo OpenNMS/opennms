@@ -344,14 +344,23 @@ public class IpNetToMedia implements Serializable {
     @Override
     public String toString() {
         StringBuffer strb = new StringBuffer();
-        strb.append("ipnettomedia: source nodeid:["); 
-        strb.append(getSourceNode().getId());
-        strb.append("]. source ifindex:[");
-        strb.append(getSourceIfIndex());
+        strb.append("ipnettomedia: ");
+        strb.append("nodeid:["); 
+        if (getNode() != null) {
+            strb.append(getNode().getId());
+        } else {
+            strb.append("null");
+        }
+        strb.append("]. ifindex:[");
+        strb.append(getIfIndex());
         strb.append("]. ipaddr:[");
         strb.append(getNetAddress());
         strb.append("]. physaddr:[");
         strb.append(getPhysAddress());
+        strb.append(" source nodeid:["); 
+        strb.append(getSourceNode().getId());
+        strb.append("]. source ifindex:[");
+        strb.append(getSourceIfIndex());
         strb.append("]");
 
         return strb.toString();
