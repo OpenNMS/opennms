@@ -221,7 +221,7 @@ session="true"
       <li><a href="https://docs.opennms.org/opennms/releases/latest/guide-user/guide-user.html">Users Guide</a></li>
       <li><a href="https://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html">Administrators Guide</a></li>
       <li><a href="https://docs.opennms.org/opennms/releases/latest/guide-development/guide-development.html">Developers Guide</a></li>
-      <li><a href="https://www.opennms.org/wiki/">Online Wiki Documentation</a></li>
+      <li><a href="https://wiki.opennms.org/wiki/">Online Wiki Documentation</a></li>
     </ul>
     </span>
     <span id="offline-documentation" style="display:none;">
@@ -230,7 +230,7 @@ session="true"
       <li><a href="docs/guide-user/index.html">Users Guide</a></li>
       <li><a href="docs/guide-admin/index.html">Administrators Guide</a></li>
       <li><a href="docs/guide-development/index.html">Developers Guide</a></li>
-      <li><a href="https://www.opennms.org/wiki/">Online Wiki Documentation</a></li>
+      <li><a href="https://wiki.opennms.org/wiki/">Online Wiki Documentation</a></li>
     </ul>
     </span>
   </div>

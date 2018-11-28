@@ -204,7 +204,7 @@ final String baseHref = Util.calculateUrlBase( request );
 					<div id="headernavbarright">
 						<div class="navbar">
 							<ul>
-								<li class="last"><a href="http://www.opennms.org/index.php/FAQ">FAQs</a></li>
+								<li class="last"><a href="https://wiki.opennms.org/wiki/Category:FAQs">FAQs</a></li>
 							</ul>
 						</div>
 					</div>
