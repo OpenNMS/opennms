@@ -36,7 +36,7 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.osgi.VaadinApplicationContext;
 
-import com.vaadin.data.Property;
+import com.vaadin.v7.data.Property;
 
 public interface GraphContainer extends DisplayState {
 

@@ -28,8 +28,9 @@
 
 package org.opennms.netmgt.model;
 
-import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
+
+import com.google.common.base.MoreObjects;
 
 
 /**
@@ -72,9 +73,9 @@ public class LocationMonitorIpInterface {
     
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-            .append("locationMonitor", m_locationMonitor)
-            .append("ipInterface", m_ipInterface)
+        return MoreObjects.toStringHelper(this)
+            .add("locationMonitor", m_locationMonitor)
+            .add("ipInterface", m_ipInterface)
             .toString();
     }
 

@@ -12,7 +12,10 @@
   <name>OpenNMS Sentinel</name>
   <url>http://maven.apache.org</url>
   <properties>
+    <NAME_DISPLAY>Sentinel</NAME_DISPLAY>
+    <NAME_LC>sentinel</NAME_LC>
     <INSTPREFIX>/opt/sentinel</INSTPREFIX>
+    <RUNAS>sentinel</RUNAS>
     <SYSCONFDIR>/opt/sentinel/etc</SYSCONFDIR>
   </properties>
   <build>

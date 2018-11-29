@@ -27,5 +27,10 @@
         </service-properties>
     </service>
 
+    <reference-list interface="org.opennms.features.situationfeedback.api.AlarmFeedbackListener"
+                    availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="situationFeedbackRestService"/>
+    </reference-list>
+
 </blueprint>
 

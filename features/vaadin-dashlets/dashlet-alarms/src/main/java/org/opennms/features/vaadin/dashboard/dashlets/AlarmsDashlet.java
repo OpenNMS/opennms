@@ -28,13 +28,11 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
-import com.google.common.collect.Lists;
-import com.vaadin.server.Page;
-import com.vaadin.ui.AbstractOrderedLayout;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
+import java.util.Calendar;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
 import org.opennms.features.vaadin.dashboard.config.ui.editors.CriteriaBuilderHelper;
@@ -50,10 +48,13 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 
-import java.util.Calendar;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Lists;
+import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.Label;
 
 /**
  * This class represents a Alert Dashlet with minimum details.
@@ -106,7 +107,7 @@ public class AlarmsDashlet extends AbstractDashlet {
     }
 
     @Override
-    public DashletComponent getWallboardComponent() {
+    public DashletComponent getWallboardComponent(final UI ui) {
         if (m_wallboardComponent == null) {
             m_wallboardComponent = new AbstractDashletComponent() {
                 private VerticalLayout m_verticalLayout = new VerticalLayout();
@@ -122,17 +123,17 @@ public class AlarmsDashlet extends AbstractDashlet {
                  * Injects CSS styles on current page for this dashlet
                  */
                 private void injectWallboardStyles() {
-                    Page.getCurrent().getStyles().add(".alerts.cleared { background: #000000; border-left: 15px solid #858585; }");
-                    Page.getCurrent().getStyles().add(".alerts.normal { background: #000000; border-left: 15px solid #336600; }");
-                    Page.getCurrent().getStyles().add(".alerts.indeterminate {  background: #000000; border-left: 15px solid #999; }");
-                    Page.getCurrent().getStyles().add(".alerts.warning { background: #000000; border-left: 15px solid #FFCC00; }");
-                    Page.getCurrent().getStyles().add(".alerts.minor { background: #000000;  border-left: 15px solid #FF9900; }");
-                    Page.getCurrent().getStyles().add(".alerts.major { background: #000000; border-left: 15px solid #FF3300; }");
-                    Page.getCurrent().getStyles().add(".alerts.critical { background: #000000; border-left: 15px solid #CC0000; }");
-                    Page.getCurrent().getStyles().add(".alerts-font {color: #3ba300; font-size: 18px; line-height: normal; }");
-                    Page.getCurrent().getStyles().add(".alerts-noalarms-font { font-size: 18px; line-height: normal; }");
-                    Page.getCurrent().getStyles().add(".alerts { padding: 5px 5px; margin: 1px; }");
-                    Page.getCurrent().getStyles().add(".v-slot-alerts-font { overflow: hidden; }");
+                    ui.getPage().getStyles().add(".alerts.cleared { background: #000000; border-left: 15px solid #858585; }");
+                    ui.getPage().getStyles().add(".alerts.normal { background: #000000; border-left: 15px solid #336600; }");
+                    ui.getPage().getStyles().add(".alerts.indeterminate {  background: #000000; border-left: 15px solid #999; }");
+                    ui.getPage().getStyles().add(".alerts.warning { background: #000000; border-left: 15px solid #FFCC00; }");
+                    ui.getPage().getStyles().add(".alerts.minor { background: #000000;  border-left: 15px solid #FF9900; }");
+                    ui.getPage().getStyles().add(".alerts.major { background: #000000; border-left: 15px solid #FF3300; }");
+                    ui.getPage().getStyles().add(".alerts.critical { background: #000000; border-left: 15px solid #CC0000; }");
+                    ui.getPage().getStyles().add(".alerts-font {color: #3ba300; font-size: 18px; line-height: normal; }");
+                    ui.getPage().getStyles().add(".alerts-noalarms-font { font-size: 18px; line-height: normal; }");
+                    ui.getPage().getStyles().add(".alerts { padding: 5px 5px; margin: 1px; }");
+                    ui.getPage().getStyles().add(".v-slot-alerts-font { overflow: hidden; }");
                 }
 
                 @Override
@@ -159,7 +160,7 @@ public class AlarmsDashlet extends AbstractDashlet {
     }
 
     @Override
-    public DashletComponent getDashboardComponent() {
+    public DashletComponent getDashboardComponent(final UI ui) {
         if (m_dashboardComponent == null) {
             m_dashboardComponent = new AbstractDashletComponent() {
                 private VerticalLayout m_verticalLayout = new VerticalLayout();
@@ -175,17 +176,17 @@ public class AlarmsDashlet extends AbstractDashlet {
                  * Injects CSS styles on current page for this dashlet
                  */
                 private void injectDashboardStyles() {
-                    Page.getCurrent().getStyles().add(".alerts.cleared { background: #000000; border-left: 8px solid #858585; }");
-                    Page.getCurrent().getStyles().add(".alerts.normal { background: #000000; border-left: 8px solid #336600; }");
-                    Page.getCurrent().getStyles().add(".alerts.indeterminate {  background: #000000; border-left: 8px solid #999; }");
-                    Page.getCurrent().getStyles().add(".alerts.warning { background: #000000; border-left: 8px solid #FFCC00; }");
-                    Page.getCurrent().getStyles().add(".alerts.minor { background: #000000;  border-left: 8px solid #FF9900; }");
-                    Page.getCurrent().getStyles().add(".alerts.major { background: #000000; border-left: 8px solid #FF3300; }");
-                    Page.getCurrent().getStyles().add(".alerts.critical { background: #000000; border-left: 8px solid #CC0000; }");
-                    Page.getCurrent().getStyles().add(".alerts-font {color: #3ba300; font-size: 11px; line-height: normal; }");
-                    Page.getCurrent().getStyles().add(".alerts-noalarms-font { font-size: 11px; line-height: normal; }");
-                    Page.getCurrent().getStyles().add(".alerts { padding: 5px 5px; margin: 1px; }");
-                    Page.getCurrent().getStyles().add(".v-slot-alerts-font { overflow: hidden; }");
+                    ui.getPage().getStyles().add(".alerts.cleared { background: #000000; border-left: 8px solid #858585; }");
+                    ui.getPage().getStyles().add(".alerts.normal { background: #000000; border-left: 8px solid #336600; }");
+                    ui.getPage().getStyles().add(".alerts.indeterminate {  background: #000000; border-left: 8px solid #999; }");
+                    ui.getPage().getStyles().add(".alerts.warning { background: #000000; border-left: 8px solid #FFCC00; }");
+                    ui.getPage().getStyles().add(".alerts.minor { background: #000000;  border-left: 8px solid #FF9900; }");
+                    ui.getPage().getStyles().add(".alerts.major { background: #000000; border-left: 8px solid #FF3300; }");
+                    ui.getPage().getStyles().add(".alerts.critical { background: #000000; border-left: 8px solid #CC0000; }");
+                    ui.getPage().getStyles().add(".alerts-font {color: #3ba300; font-size: 11px; line-height: normal; }");
+                    ui.getPage().getStyles().add(".alerts-noalarms-font { font-size: 11px; line-height: normal; }");
+                    ui.getPage().getStyles().add(".alerts { padding: 5px 5px; margin: 1px; }");
+                    ui.getPage().getStyles().add(".v-slot-alerts-font { overflow: hidden; }");
                 }
 
                 @Override
@@ -327,7 +328,7 @@ public class AlarmsDashlet extends AbstractDashlet {
      * @param onmsNode  an {@link OnmsNode} instance
      * @return component for this alarm
      */
-    public Component createAlarmComponent(OnmsAlarm onmsAlarm, OnmsNode onmsNode) {
+    private Component createAlarmComponent(OnmsAlarm onmsAlarm, OnmsNode onmsNode) {
 
         Calendar calendar = Calendar.getInstance();
 

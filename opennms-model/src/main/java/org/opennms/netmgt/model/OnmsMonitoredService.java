@@ -68,7 +68,8 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.hibernate.annotations.Where;
-import org.springframework.core.style.ToStringCreator;
+
+import com.google.common.base.MoreObjects;
 
 @XmlRootElement(name = "service")
 @Entity
@@ -405,19 +406,19 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
      */
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-        .append("id", m_id)
-        .append("lastGood", m_lastGood)
-        .append("lastFail", m_lastFail)
-        .append("qualifier", m_qualifier)
-        .append("status", m_status)
-        .append("source", m_source)
-        .append("notify", m_notify)
-        .append("serviceType", m_serviceType)
+        return MoreObjects.toStringHelper(this)
+        .add("id", m_id)
+        .add("lastGood", m_lastGood)
+        .add("lastFail", m_lastFail)
+        .add("qualifier", m_qualifier)
+        .add("status", m_status)
+        .add("source", m_source)
+        .add("notify", m_notify)
+        .add("serviceType", m_serviceType)
         // cannot include these since the require db queries
-//        .append("ipInterface", m_ipInterface)
-//        .append("currentOutages", m_currentOutages)
-//        .append("applications", m_applications)
+//        .add("ipInterface", m_ipInterface)
+//        .add("currentOutages", m_currentOutages)
+//        .add("applications", m_applications)
         .toString();
     }
 

@@ -40,7 +40,6 @@ import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
-import org.opennms.vaadin.user.UserTimeZoneExtractor;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
@@ -50,20 +49,21 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourceTypeUtils;
+import org.opennms.vaadin.user.UserTimeZoneExtractor;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
-import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.Label;
 
 /**
  * This dashlet class is used to display the reports of a Ksc report.
@@ -77,9 +77,7 @@ public class KscDashlet extends AbstractDashlet {
     private DashletComponent m_wallboardComponent;
     private DashletComponent m_dashboardComponent;
     private static final int DEFAULT_GRAPH_WIDTH_PX = 400;
-
     private final TimeformatService m_timeformatService;
-    private final ZoneId m_userTimezoneId;
 
     /**
      * Constructor for instantiating new objects.
@@ -97,11 +95,10 @@ public class KscDashlet extends AbstractDashlet {
         m_resourceDao = resourceDao;
         m_transactionOperations = transactionOperations;
         m_timeformatService = timeformatService;
-        m_userTimezoneId = UserTimeZoneExtractor.extractUserTimeZoneIdOrNull();
     }
 
     @Override
-    public DashletComponent getWallboardComponent() {
+    public DashletComponent getWallboardComponent(final UI ui) {
         if (m_wallboardComponent == null) {
             m_wallboardComponent = new AbstractDashletComponent() {
                 private GridLayout m_gridLayout = new GridLayout();
@@ -120,6 +117,7 @@ public class KscDashlet extends AbstractDashlet {
                     /**
                      * initializing the parameters
                      */
+                    final ZoneId userTimeZoneId = UserTimeZoneExtractor.extractUserTimeZoneIdOrNull(ui);
                     int columns = 0;
                     int rows = 0;
 
@@ -173,9 +171,9 @@ public class KscDashlet extends AbstractDashlet {
                      * adding the components
                      */
 
-                    Page.getCurrent().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
-                    Page.getCurrent().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
-                    Page.getCurrent().getStyles().add(".margin { margin:5px; }");
+                    ui.getPage().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
+                    ui.getPage().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
+                    ui.getPage().getStyles().add(".margin { margin:5px; }");
 
                     for (int y = 0; y < m_gridLayout.getRows(); y++) {
                         for (int x = 0; x < m_gridLayout.getColumns(); x++) {
@@ -214,10 +212,10 @@ public class KscDashlet extends AbstractDashlet {
                                 }
 
                                 labelTitle.addStyleName("text");
-                                Label labelFrom = new Label("From: " + m_timeformatService.format(beginTime.getTime(), m_userTimezoneId));
+                                Label labelFrom = new Label("From: " + m_timeformatService.format(beginTime.getTime(), userTimeZoneId));
                                 labelFrom.addStyleName("text");
 
-                                Label labelTo = new Label("To: " + m_timeformatService.format(endTime.getTime(), m_userTimezoneId));
+                                Label labelTo = new Label("To: " + m_timeformatService.format(endTime.getTime(), userTimeZoneId));
                                 labelTo.addStyleName("text");
 
                                 Label labelNodeLabel = new Label(data.get("nodeLabel"));
@@ -269,7 +267,7 @@ public class KscDashlet extends AbstractDashlet {
     }
 
     @Override
-    public DashletComponent getDashboardComponent() {
+    public DashletComponent getDashboardComponent(final UI ui) {
         if (m_dashboardComponent == null) {
             m_dashboardComponent = new AbstractDashletComponent() {
                 private VerticalLayout m_verticalLayout = new VerticalLayout();
@@ -283,6 +281,7 @@ public class KscDashlet extends AbstractDashlet {
                 public void refresh() {
                     m_verticalLayout.removeAllComponents();
 
+                    final ZoneId userTimeZoneId = UserTimeZoneExtractor.extractUserTimeZoneIdOrNull(ui);
                     String kscReportName = getDashletSpec().getParameters().get("kscReport");
 
                     if (kscReportName == null || "".equals(kscReportName)) {
@@ -309,9 +308,9 @@ public class KscDashlet extends AbstractDashlet {
 
                     Report kscReport = kscPerformanceReportFactory.getReportByIndex(kscReportId);
 
-                    Page.getCurrent().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
-                    Page.getCurrent().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
-                    Page.getCurrent().getStyles().add(".margin { margin:5px; }");
+                    ui.getPage().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
+                    ui.getPage().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
+                    ui.getPage().getStyles().add(".margin { margin:5px; }");
 
                     Accordion accordion = new Accordion();
                     accordion.setSizeFull();
@@ -349,10 +348,10 @@ public class KscDashlet extends AbstractDashlet {
 
                         labelTitle.addStyleName("text");
 
-                        Label labelFrom = new Label("From: " + m_timeformatService.format(beginTime.getTime(), m_userTimezoneId));
+                        Label labelFrom = new Label("From: " + m_timeformatService.format(beginTime.getTime(), userTimeZoneId));
                         labelFrom.addStyleName("text");
 
-                        Label labelTo = new Label("To: " + m_timeformatService.format(endTime.getTime(), m_userTimezoneId));
+                        Label labelTo = new Label("To: " + m_timeformatService.format(endTime.getTime(), userTimeZoneId));
                         labelTo.addStyleName("text");
 
                         Label labelNodeLabel = new Label(data.get("nodeLabel"));

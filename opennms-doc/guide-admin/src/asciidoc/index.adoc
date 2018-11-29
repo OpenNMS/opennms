@@ -345,25 +345,19 @@ include::text/ifttt/ifttt-integration.adoc[]
 == Telemetry Daemon
 include::text/telemetryd/introduction.adoc[]
 
-[[ga-telemetryd-protocols]]
-=== Protocol Reference
-include::text/telemetryd/protocols/ipfix/ipfix-interface.adoc[]
-include::text/telemetryd/protocols/ipfix/ipfix-adapter.adoc[]
-include::text/telemetryd/protocols/jti/junos-telemetry-interface.adoc[]
-include::text/telemetryd/protocols/jti/jti-adapter.adoc[]
-include::text/telemetryd/protocols/netflow5/netflow5-interface.adoc[]
-include::text/telemetryd/protocols/netflow5/netflow5-adapter.adoc[]
-include::text/telemetryd/protocols/netflow9/netflow9-interface.adoc[]
-include::text/telemetryd/protocols/netflow9/netflow9-adapter.adoc[]
-include::text/telemetryd/protocols/nxos/cisco-nxos-telemetry.adoc[]
-include::text/telemetryd/protocols/nxos/nxos-adapter.adoc[]
-include::text/telemetryd/protocols/sflow/sflow-interface.adoc[]
-include::text/telemetryd/protocols/sflow/sflow-adapter.adoc[]
-
 [[ga-telemetryd-listener]]
 === Listener Reference
-include::text/telemetryd/listener/udp-listener.adoc[]
-include::text/telemetryd/listener/flow-listeners.adoc[]
+include::text/telemetryd/listener/tcp.adoc[]
+include::text/telemetryd/listener/udp.adoc[]
+
+[[ga-telemetryd-protocols]]
+=== Protocol Reference
+include::text/telemetryd/protocols/ipfix.adoc[]
+include::text/telemetryd/protocols/jti.adoc[]
+include::text/telemetryd/protocols/netflow5.adoc[]
+include::text/telemetryd/protocols/netflow9.adoc[]
+include::text/telemetryd/protocols/nxos.adoc[]
+include::text/telemetryd/protocols/sflow.adoc[]
 
 [[ga-elasticsearch-integration]]
 == Elasticsearch Integration

@@ -31,34 +31,70 @@ package org.opennms.karaf.extender;
 import java.util.Objects;
 
 public class Feature {
-    private final String m_name;
-    private final String m_version;
+    private final String name;
+    private final String version;
+    private final String karDependency;
 
-    public Feature(String name) {
-        this(name, null);
+    private Feature(Builder builder) {
+        this.name = builder.name;
+        this.version = builder.version;
+        this.karDependency = builder.karDependency;
     }
 
-    public Feature(String name, String version) {
-        m_name = Objects.requireNonNull(name);
-        m_version = version;
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String name;
+        private String version;
+        private String karDependency;
+
+        public Builder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder withVersion(String version) {
+            this.version = version;
+            return this;
+        }
+
+        public Builder withKarDependency(String karDependency) {
+            this.karDependency = karDependency;
+            return this;
+        }
+
+        public Feature build() {
+            Objects.requireNonNull(name, "name is required");
+            return new Feature(this);
+        }
     }
 
     public String getName() {
-        return m_name;
+        return name;
     }
 
     public String getVersion() {
-        return m_version;
+        return version;
+    }
+
+    public String getKarDependency() {
+        return karDependency;
+    }
+
+    public String toInstallString() {
+        return getVersion() != null ? getName() + "/" + getVersion() : getName();
     }
 
     @Override
     public String toString() {
-        return String.format("Feature[name=%s, version=%s]", m_name, m_version);
+        return String.format("Feature[name=%s, version=%s, karDependency=%s]", name, version, karDependency);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_name, m_version);
+        return Objects.hash(name, version, karDependency);
     }
 
     @Override
@@ -70,8 +106,9 @@ public class Feature {
         if (getClass() != obj.getClass())
             return false;
         Feature other = (Feature) obj;
-        return Objects.equals(this.m_name, other.m_name) &&
-                Objects.equals(this.m_version, other.m_version);
+        return Objects.equals(this.name, other.name) &&
+                Objects.equals(this.version, other.version) &&
+                Objects.equals(this.karDependency, other.karDependency);
     }
 }
 

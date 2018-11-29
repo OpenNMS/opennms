@@ -12,9 +12,9 @@
         <config name="org.opennms.features.telemetry.adapters-sflow">
             name = SFlow
             adapters.1.name = SFlow-Adapter
-            adapters.1.class-name = org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowAdapter
-            adapters.2.name = SFlow-Telemeetry
-            adapters.2.class-name = org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowTelemetryAdapter
+            adapters.1.class-name = org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter
+            adapters.2.name = SFlow-Telemetry
+            adapters.2.class-name = org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowTelemetryAdapter
             adapters.2.parameters.script = /opt/sentinel/etc/sflow-host.groovy
         </config>
         <!-- Point sentinel to the correct elastic endpoint -->

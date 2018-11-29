@@ -262,9 +262,27 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         Assert.assertEquals(newIconName, topologyUIPage.findVertex(vertexName).getIconName());
     }
 
-        /**
-         * Creates and publishes a requisition with 2 dummy nodes with predefined parameters
-         */
+    // See NMS-10451
+    @Test
+    public void verifyCanSelectNonVisibleVertex() {
+        // Ensure nothing is visible for now
+        Assert.assertEquals(0, topologyUIPage.getVisibleVertices().size());
+
+        // Select Nodes tab and select node
+        final TopologyIT.BrowserTab browserTab = topologyUIPage.getTab(TopologyIT.Tabs.Nodes);
+        browserTab.click();
+        browserTab.getRowByLabel("North 2").click();
+
+        // Verify that now the vertex is visible and in focus
+        final List<TopologyIT.VisibleVertex> visibleVertices = topologyUIPage.getVisibleVertices();
+        Assert.assertEquals(1, visibleVertices.size());
+        Assert.assertEquals("North 2", visibleVertices.get(0).getLabel());
+        Assert.assertEquals(1, topologyUIPage.getFocusedVertices().size());
+    }
+
+    /**
+     * Creates and publishes a requisition with 2 dummy nodes with predefined parameters
+     */
     private void createDummyNodes() throws IOException, InterruptedException {
 
         // First node has foreign ID "node1", label - "North 2" and category "Routers"

@@ -16,6 +16,7 @@
       <cm:property name="eventTopic" value="events"/>
       <cm:property name="alarmTopic" value="alarms"/>
       <cm:property name="nodeTopic" value="nodes"/>
+      <cm:property name="alarmFeedbackTopic" value="alarmFeedback"/>
       <cm:property name="metricTopic" value="metrics"/>
       <cm:property name="forward.metrics" value="true"/>
       <cm:property name="nodeRefreshTimeoutMs" value="300000"/> <!-- 5 minutes -->
@@ -25,6 +26,7 @@
       <cm:property name="nodeIdToCriteriaMaxCacheSize" value="10000"/>
       <cm:property name="suppressIncrementalAlarms" value="true"/>
       <cm:property name="kafkaSendQueueCapacity" value="1000"/>
+      <cm:property name="startAlarmSyncWithCleanState" value="false"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -60,6 +62,7 @@
     <property name="eventTopic" value="${eventTopic}"/>
     <property name="alarmTopic" value="${alarmTopic}"/>
     <property name="nodeTopic" value="${nodeTopic}"/>
+    <property name="alarmFeedbackTopic" value="${alarmFeedbackTopic}"/>
     <property name="eventFilter" value="${eventFilter}"/>
     <property name="alarmFilter" value="${alarmFilter}"/>
     <property name="suppressIncrementalAlarms" value="${suppressIncrementalAlarms}"/>
@@ -80,6 +83,7 @@
     <property name="alarmTopic" value="${alarmTopic}"/>
     <property name="alarmSync" value="${alarmSync}"/>
     <property name="suppressIncrementalAlarms" value="${suppressIncrementalAlarms}"/>
+    <property name="startWithCleanState" value="${startAlarmSyncWithCleanState}"/>
   </bean>
 
   <bean factory-ref="kafkaProducer" factory-method="setDataSync">

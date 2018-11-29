@@ -15,19 +15,19 @@
         -->
         <config name="org.opennms.features.telemetry.adapters-netflow5">
             name = Netflow-5
-            class-name = org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5Adapter
+            class-name = org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter
         </config>
         <config name="org.opennms.features.telemetry.adapters-netflow9">
             name = Netflow-9
-            class-name = org.opennms.netmgt.telemetry.adapters.netflow.v9.Netflow9Adapter
+            class-name = org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9Adapter
         </config>
         <config name="org.opennms.features.telemetry.adapters-ipfix">
             name = IPFIX
-            class-name = org.opennms.netmgt.telemetry.adapters.netflow.ipfix.IpfixAdapter
+            class-name = org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapter
         </config>
         <config name="org.opennms.features.telemetry.adapters-sflow">
             name = SFlow
-            class-name = org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowAdapter
+            class-name = org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter
         </config>
         <!-- Point sentinel to the correct elastic endpoint -->
         <config name="org.opennms.features.flows.persistence.elastic">

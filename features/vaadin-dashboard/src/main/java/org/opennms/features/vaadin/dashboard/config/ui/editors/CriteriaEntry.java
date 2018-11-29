@@ -28,9 +28,9 @@
 
 package org.opennms.features.vaadin.dashboard.config.ui.editors;
 
-import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.AbstractField;
+import com.vaadin.v7.ui.NativeSelect;
+import com.vaadin.v7.ui.TextField;
 
 /**
  * This {@link Enum} is used to represent the different types of parameters for a criteria.

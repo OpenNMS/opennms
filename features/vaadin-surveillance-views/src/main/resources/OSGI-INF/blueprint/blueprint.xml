@@ -42,7 +42,7 @@
     <service id="surveillanceViewsService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="surveillanceViewsUIFactory">
         <service-properties>
             <entry key="alias" value="/vaadin-surveillance-views"/>
-            <entry key="init.widgetset" value="org.opennms.features.vaadin.surveillanceviews.SurveillanceViewsWidgetSet"/>
+            <entry key="init.widgetset" value="org.opennms.vaadin.DefaultWidgetset"/>
         </service-properties>
     </service>
 
@@ -65,6 +65,7 @@
     <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="surveillanceViewsConfigUIFactory">
         <service-properties>
             <entry key="alias" value="/admin/vaadin-surveillance-views-config"/>
+            <entry key="init.widgetset" value="org.opennms.vaadin.DefaultWidgetset"/>
         </service-properties>
     </service>
 

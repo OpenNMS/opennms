@@ -34,7 +34,7 @@ import java.net.URL;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 /**
@@ -72,8 +72,6 @@ public class EventsAlarmsWindow extends Window {
 	 * main window. The sub-window contains two embedded browsers which are directed at the Events
 	 * and Alarms page of the selected node
 	 * @param node Selected node
-	 * @param width Width of main window
-	 * @param height Height of main window
 	 * @throws MalformedURLException
 	 */
 	public EventsAlarmsWindow(final Node node, final URL eventsURL, final URL alarmsURL) {
@@ -83,7 +81,6 @@ public class EventsAlarmsWindow extends Window {
 		alarmsBrowser = new Embedded("", new ExternalResource(alarmsURL));
         alarmsBrowser.setSizeFull();
 		
-		setImmediate(true);
 		setResizable(false);
 		
 		/*Adds the two browsers to separate tabs in a tabsheet layout*/

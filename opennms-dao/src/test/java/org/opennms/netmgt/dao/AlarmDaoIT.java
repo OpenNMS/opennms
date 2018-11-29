@@ -335,6 +335,61 @@ public class AlarmDaoIT implements InitializingBean {
 
 	@Test
 	@Transactional
+	public void testSituationSeverities() {
+		final OnmsEvent event = new OnmsEvent();
+		event.setEventLog("Y");
+		event.setEventDisplay("Y");
+		event.setEventCreateTime(new Date());
+		event.setDistPoller(m_distPollerDao.whoami());
+		event.setEventTime(new Date());
+		event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
+		event.setEventUei("uei://org/opennms/test/EventDaoTest");
+		event.setEventSource("test");
+		m_eventDao.save(event);
+
+		final OnmsNode node = m_nodeDao.findAll().iterator().next();
+
+		final OnmsAlarm alarm1 = new OnmsAlarm();
+		alarm1.setNode(node);
+		alarm1.setUei(event.getEventUei());
+		alarm1.setSeverityId(event.getEventSeverity());
+		alarm1.setFirstEventTime(event.getEventTime());
+		alarm1.setLastEvent(event);
+		alarm1.setCounter(1);
+		alarm1.setDistPoller(m_distPollerDao.whoami());
+		m_alarmDao.save(alarm1);
+
+		for(OnmsSeverity onmsSeverity : OnmsSeverity.values()) {
+			final OnmsAlarm situation = new OnmsAlarm();
+			situation.setNode(node);
+			situation.setUei(event.getEventUei());
+			situation.setSeverityId(onmsSeverity.getId());
+			situation.setFirstEventTime(event.getEventTime());
+			situation.setLastEvent(event);
+			situation.setCounter(1);
+			situation.setDistPoller(m_distPollerDao.whoami());
+			situation.setRelatedAlarms(Sets.newHashSet(alarm1));
+			m_alarmDao.save(situation);
+		}
+
+		m_alarmDao.findAll();
+
+		final List<SituationSummary> summaries = m_alarmDao.getSituationSummaries();
+		Assert.assertNotNull(summaries);
+		Assert.assertEquals(4, summaries.size());
+		Assert.assertEquals(1, summaries.stream().filter(s -> s.getSituationSeverity().equals(OnmsSeverity.CRITICAL)).count());
+		Assert.assertEquals(1, summaries.stream().filter(s -> s.getSituationSeverity().equals(OnmsSeverity.MAJOR)).count());
+		Assert.assertEquals(1, summaries.stream().filter(s -> s.getSituationSeverity().equals(OnmsSeverity.MINOR)).count());
+		Assert.assertEquals(1, summaries.stream().filter(s -> s.getSituationSeverity().equals(OnmsSeverity.WARNING)).count());
+		Assert.assertEquals(0, summaries.stream().filter(s -> s.getSituationSeverity().equals(OnmsSeverity.NORMAL)).count());
+		Assert.assertEquals(0, summaries.stream().filter(s -> s.getSituationSeverity().equals(OnmsSeverity.CLEARED)).count());
+		Assert.assertEquals(0, summaries.stream().filter(s -> s.getSituationSeverity().equals(OnmsSeverity.INDETERMINATE)).count());
+		Assert.assertEquals(1, summaries.get(0).getRelatedAlarms());
+	}
+
+
+	@Test
+	@Transactional
 	public void testAlarmSummary_WithEmptyNodeIdsArray() {
 		List<AlarmSummary> summary = m_alarmDao.getNodeAlarmSummaries();
 		Assert.assertNotNull(summary); // the result does not really matter, as long as we get a result

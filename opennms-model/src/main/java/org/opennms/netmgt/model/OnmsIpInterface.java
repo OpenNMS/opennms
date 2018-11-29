@@ -68,7 +68,8 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
-import org.springframework.core.style.ToStringCreator;
+
+import com.google.common.base.MoreObjects;
 
 /**
  * <p>OnmsIpInterface class.</p>
@@ -426,15 +427,15 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      */
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-        .append("id", m_id)
-        .append("ipAddr", InetAddressUtils.str(m_ipAddress))
-        .append("netMask", InetAddressUtils.str(m_netMask))
-        .append("ipHostName", m_ipHostName)
-        .append("isManaged", m_isManaged)
-        .append("isSnmpPrimary", m_isSnmpPrimary)
-        .append("ipLastCapsdPoll", m_ipLastCapsdPoll)
-        .append("nodeId", getNodeId())
+        return MoreObjects.toStringHelper(this)
+        .add("id", m_id)
+        .add("ipAddr", InetAddressUtils.str(m_ipAddress))
+        .add("netMask", InetAddressUtils.str(m_netMask))
+        .add("ipHostName", m_ipHostName)
+        .add("isManaged", m_isManaged)
+        .add("isSnmpPrimary", m_isSnmpPrimary)
+        .add("ipLastCapsdPoll", m_ipLastCapsdPoll)
+        .add("nodeId", getNodeId())
         .toString();
     }
 

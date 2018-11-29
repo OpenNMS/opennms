@@ -1303,8 +1303,8 @@
     <gsonVersion>2.8.0</gsonVersion>
     <guavaVersion>18.0</guavaVersion>
     <guavaOldVersion>17.0</guavaOldVersion>
-    <gwtVersion>2.6.1</gwtVersion>
-    <gwtPluginVersion>2.6.1</gwtPluginVersion>
+    <gwtVersion>2.8.2</gwtVersion>
+    <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
     <hawtioVersion>1.4.68</hawtioVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
@@ -1387,20 +1387,18 @@
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
-    <vaadinVersion>7.2.7</vaadinVersion>
-    <vaadinSharedEpsVersion>1.0.2</vaadinSharedEpsVersion>
+    <vaadinVersion>8.5.2</vaadinVersion>
     <!-- Requiring a more recent plugin version which passes the classpath via ENV -->
-    <vaadin.plugin.version>8.1.0</vaadin.plugin.version>
-    <vaadinAddonContextMenuVersion>4.2.1</vaadinAddonContextMenuVersion>
-    <vaadinAddonRefresherVersion>1.2.3.7</vaadinAddonRefresherVersion>
-    <vaadinAddonConfirmDialogVersion>2.0.4</vaadinAddonConfirmDialogVersion>
+    <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
+    <vaadinAddonContextMenuVersion>2.0.0</vaadinAddonContextMenuVersion>
+    <vaadinAddonConfirmDialogVersion>3.2.0</vaadinAddonConfirmDialogVersion>
     <skipPdfGeneration>true</skipPdfGeneration>
     <skipSignJar>true</skipSignJar>
 
     <!-- change to match which version of opennms-pluginmanger you want to run -->
-    <pluginmanagerVersion>1.1.0</pluginmanagerVersion>
-    <licencemanagerVersion>1.1.0</licencemanagerVersion>
-    <featuremanagerVersion>1.1.0</featuremanagerVersion>
+    <pluginmanagerVersion>1.2.0</pluginmanagerVersion>
+    <licencemanagerVersion>1.2.0</licencemanagerVersion>
+    <featuremanagerVersion>1.2.0</featuremanagerVersion>
 
     <!-- nodejs development -->
     <frontendPluginVersion>1.6</frontendPluginVersion>
@@ -3309,49 +3307,58 @@
       <!-- Vaadin -->
       <dependency>
         <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-server</artifactId>
+        <artifactId>vaadin-compatibility-server</artifactId>
 	    <version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-compatibility-shared</artifactId>
+        <version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+	    <artifactId>vaadin-compatibility-client-compiled</artifactId>
+	    <version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+	    <artifactId>vaadin-compatibility-client</artifactId>
+	    <version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+	    <artifactId>vaadin-compatibility-themes</artifactId>
+	    <version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-server</artifactId>
+        <version>${vaadinVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
         <artifactId>vaadin-shared</artifactId>
         <version>${vaadinVersion}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>com.vaadin.external.google</groupId>
-            <artifactId>guava</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-shared-deps</artifactId>
-        <version>${vaadinSharedEpsVersion}</version>
+        <artifactId>vaadin-client-compiled</artifactId>
+        <version>${vaadinVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
-	    <artifactId>vaadin-client-compiled</artifactId>
-	    <version>${vaadinVersion}</version>
+        <artifactId>vaadin-client</artifactId>
+        <version>${vaadinVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
-	    <artifactId>vaadin-client</artifactId>
-	    <version>${vaadinVersion}</version>
+        <artifactId>vaadin-themes</artifactId>
+        <version>${vaadinVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
-	    <artifactId>vaadin-themes</artifactId>
-	    <version>${vaadinVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.vaadin.addons</groupId>
-        <artifactId>contextmenu</artifactId>
+        <artifactId>vaadin-context-menu</artifactId>
         <version>${vaadinAddonContextMenuVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.vaadin.addons</groupId>
-        <artifactId>refresher</artifactId>
-        <version>${vaadinAddonRefresherVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.vaadin.addon</groupId>

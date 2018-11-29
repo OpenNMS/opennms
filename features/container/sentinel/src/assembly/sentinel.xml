@@ -20,9 +20,6 @@
       <useDefaultExcludes>false</useDefaultExcludes>
       <directory>${project.build.directory}/unpacked/org.opennms.container.shared-${project.version}</directory>
       <outputDirectory></outputDirectory>
-      <excludes>
-        <exclude>**/etc/featuresBoot.d/**</exclude>
-      </excludes>
     </fileSet>
   </fileSets>
 </assembly>

@@ -31,6 +31,8 @@ package org.opennms.netmgt.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 import java.util.Date;
 
@@ -57,6 +59,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Sets;
 
 /**
  * Tests for Acknowledgment DAO
@@ -174,5 +178,60 @@ public class AcknowledgmentDaoIT implements InitializingBean {
         
         assertEquals(ack2.getAckUser(), alarm2.getAlarmAckUser());
         assertEquals(ack2.getAckTime(), alarm2.getAlarmAckTime());
+    }
+
+    @Test
+    public void clearingSituationClearsRelatedAlarms() {
+
+        OnmsAlarm alarm1 = new OnmsAlarm();
+        alarm1.setId(1);
+        alarm1.setAlarmType(1);
+        alarm1.setUei("uei://org/opennms/test/EventDaoTest");
+        alarm1.setSeverity(OnmsSeverity.WARNING);
+        alarm1.setReductionKey("n1:oops1");
+        alarm1.setLastEventTime(new Date(1000));
+        alarm1.setCounter(new Integer(1));
+        alarm1.setDistPoller(m_distPollerDao.whoami());
+        m_alarmDao.save(alarm1);
+        m_alarmDao.flush();
+
+        OnmsAlarm alarm2 = new OnmsAlarm();
+        alarm2.setId(2);
+        alarm2.setAlarmType(1);
+        alarm2.setUei("uei://org/opennms/test/EventDaoTest");
+        alarm2.setSeverity(OnmsSeverity.WARNING);
+        alarm2.setReductionKey("n1:oops2");
+        alarm2.setLastEventTime(new Date(1000));
+        alarm2.setCounter(new Integer(1));
+        alarm2.setDistPoller(m_distPollerDao.whoami());
+        m_alarmDao.save(alarm2);
+        m_alarmDao.flush();
+
+        OnmsAlarm situation = new OnmsAlarm();
+        situation.setId(3);
+        situation.setAlarmType(1);
+        situation.setUei("uei://org/opennms/test/EventDaoTest");
+        situation.setSeverity(OnmsSeverity.CRITICAL);
+        situation.setReductionKey("n1:situation");
+        situation.setLastEventTime(new Date(2000));
+        situation.setRelatedAlarms(Sets.newHashSet(alarm1, alarm2));
+        situation.setCounter(new Integer(1));
+        situation.setDistPoller(m_distPollerDao.whoami());
+        m_alarmDao.save(situation);
+        m_alarmDao.flush();
+
+        OnmsAcknowledgment clear = new OnmsAcknowledgment(situation);
+        clear.setAckAction(AckAction.CLEAR);
+        getAcknowledgmentDao().processAck(clear);
+
+        // The situation should be cleared
+        OnmsAlarm retrievedSituation = m_alarmDao.get(situation.getId());
+        assertThat(retrievedSituation.getSeverity(), equalTo(OnmsSeverity.CLEARED));
+        // Both related alarms should be cleared
+        OnmsAlarm retrieved1 = m_alarmDao.get(situation.getId());
+        assertThat(retrieved1.getSeverity(), equalTo(OnmsSeverity.CLEARED));
+        OnmsAlarm retrieved2 = m_alarmDao.get(situation.getId());
+        assertThat(retrieved2.getSeverity(), equalTo(OnmsSeverity.CLEARED));
+
     }
 }

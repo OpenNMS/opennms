@@ -73,6 +73,22 @@ message Alarm {
   repeated Alarm relatedAlarm = 22;
 }
 
+message AlarmFeedback {
+  string situation_key = 1;
+  string situation_fingerprint = 2;
+  string alarm_key = 3;
+  enum FeedbackType {
+    FALSE_POSITIVE = 0;
+    FALSE_NEGATIVE = 1;
+    CORRECT = 2;
+    UNKNOWN = 3;
+  }
+  FeedbackType feedback_type = 4;
+  string reason = 5;
+  string user = 6;
+  uint64 timestamp = 7;
+}
+
 message IpInterface {
   uint64 id = 1;
   string ip_address = 2;

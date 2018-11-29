@@ -35,12 +35,12 @@ import org.opennms.vaadin.user.UserTimeZoneExtractor;
 import org.slf4j.LoggerFactory;
 import org.opennms.features.vaadin.api.Logger;
 
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 
 /**
@@ -106,7 +106,7 @@ public class MibConsolePanel extends Panel implements Logger {
      * @param message the message
      */
     private void logMsg(String level, String message) {
-        String msg = timeformatService.format(Instant.now(), UserTimeZoneExtractor.extractUserTimeZoneIdOrNull()) + level + message;
+        String msg = timeformatService.format(Instant.now(), UserTimeZoneExtractor.extractUserTimeZoneIdOrNull(getUI())) + level + message;
         Label error = new Label(msg, ContentMode.HTML);
         logContent.addComponent(error);
         scrollIntoView();

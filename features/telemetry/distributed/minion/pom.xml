@@ -33,11 +33,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.telemetry.listeners</groupId>
-      <artifactId>org.opennms.features.telemetry.listeners.udp</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.compendium</artifactId>
       <scope>provided</scope>
@@ -53,11 +48,11 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.features.telemetry</groupId>
-      <artifactId>org.opennms.features.telemetry.daemon</artifactId>
-      <version>${project.version}</version>
-      <scope>compile</scope>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>org.opennms.features.telemetry</groupId>-->
+      <!--<artifactId>org.opennms.features.telemetry.daemon</artifactId>-->
+      <!--<version>${project.version}</version>-->
+      <!--<scope>compile</scope>-->
+    <!--</dependency>-->
   </dependencies>
 </project>

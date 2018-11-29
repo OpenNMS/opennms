@@ -125,7 +125,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.UrlResource;
-import org.springframework.core.style.ToStringCreator;
+import com.google.common.base.MoreObjects;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
@@ -1995,22 +1995,22 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
         @Override
         public String toString() {
-            return (new ToStringCreator(this)
-            .append("modelImportCount", getModelImportCount())
-            .append("modelImportCompletedCount", getModelImportCompletedCount())
-            .append("nodeCount", getNodeCount())
-            .append("nodeCompletedCount", getNodeCompletedCount())
-            .append("nodeCategoryCount", getNodeCategoryCount())
-            .append("nodeCategoryCompletedCount", getNodeCategoryCompletedCount())
-            .append("interfaceCount", getInterfaceCount())
-            .append("interfaceCompletedCount", getInterfaceCompletedCount())
-            .append("monitoredServiceCount", getMonitoredServiceCount())
-            .append("monitoredServiceCompletedCount", getMonitoredServiceCompletedCount())
-            .append("serviceCategoryCount", getServiceCategoryCount())
-            .append("serviceCategoryCompletedCount", getServiceCategoryCompletedCount())
-            .append("assetCount", getAssetCount())
-            .append("assetCompletedCount", getAssetCompletedCount())
-            .toString());
+            return MoreObjects.toStringHelper(this)
+            .add("modelImportCount", getModelImportCount())
+            .add("modelImportCompletedCount", getModelImportCompletedCount())
+            .add("nodeCount", getNodeCount())
+            .add("nodeCompletedCount", getNodeCompletedCount())
+            .add("nodeCategoryCount", getNodeCategoryCount())
+            .add("nodeCategoryCompletedCount", getNodeCategoryCompletedCount())
+            .add("interfaceCount", getInterfaceCount())
+            .add("interfaceCompletedCount", getInterfaceCompletedCount())
+            .add("monitoredServiceCount", getMonitoredServiceCount())
+            .add("monitoredServiceCompletedCount", getMonitoredServiceCompletedCount())
+            .add("serviceCategoryCount", getServiceCategoryCount())
+            .add("serviceCategoryCompletedCount", getServiceCategoryCompletedCount())
+            .add("assetCount", getAssetCount())
+            .add("assetCompletedCount", getAssetCompletedCount())
+            .toString();
         }
 
         @Override

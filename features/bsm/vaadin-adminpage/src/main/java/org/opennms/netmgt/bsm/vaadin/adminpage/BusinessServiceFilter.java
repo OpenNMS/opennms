@@ -30,9 +30,9 @@ package org.opennms.netmgt.bsm.vaadin.adminpage;
 
 import java.util.Map;
 
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property;
 
 public class BusinessServiceFilter implements Container.Filter {
     public static final String NAME_PROPERTY = "name";

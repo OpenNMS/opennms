@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+    <context:annotation-config />
+
+	<bean id="adapterRegistry" class="org.opennms.netmgt.telemetry.protocols.registry.impl.TelemetryAdapterRegistryImpl" />
+	<onmsgi:list id="adapterFactoryList" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
+		<onmsgi:listener ref="adapterRegistry" bind-method="onBind" unbind-method="onUnbind" />
+	</onmsgi:list>
+
+	<bean id="listenerRegistry" class="org.opennms.netmgt.telemetry.protocols.registry.impl.TelemetryListenerRegistryImpl" />
+	<onmsgi:list id="listenerFactoryList" interface="org.opennms.netmgt.telemetry.api.receiver.ListenerFactory">
+		<onmsgi:listener ref="listenerRegistry" bind-method="onBind" unbind-method="onUnbind" />
+	</onmsgi:list>
+
+	<bean id="parserRegistry" class="org.opennms.netmgt.telemetry.protocols.registry.impl.TelemetryParserRegistryImpl" />
+	<onmsgi:list id="parserFactoryList" interface="org.opennms.netmgt.telemetry.api.receiver.ParserFactory">
+		<onmsgi:listener ref="parserRegistry" bind-method="onBind" unbind-method="onUnbind" />
+	</onmsgi:list>
+
+	<bean id="telemetryRegistry" class="org.opennms.netmgt.telemetry.protocols.registry.impl.TelemetryRegistryImpl" />
+	<onmsgi:service interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" ref="telemetryRegistry" />
+
+</beans>

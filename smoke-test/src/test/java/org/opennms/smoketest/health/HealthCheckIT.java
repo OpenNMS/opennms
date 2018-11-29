@@ -136,12 +136,13 @@ public class HealthCheckIT {
 
                         // Read stdout and verify
                         final String shellOutput = sshClient.getStdout();
-                        final int count = StringUtils.countOccurrencesOf(shellOutput, "Success");
-                        final String overallStatus = getOverallStatus(shellOutput);
 
                         // Log what was read, to help debugging issues
                         logger.info("log:display");
                         logger.info("{}", shellOutput);
+
+                        final int count = StringUtils.countOccurrencesOf(shellOutput, "Success");
+                        final String overallStatus = getOverallStatus(shellOutput);
                         logger.info("{} checks are successful and overall status is {}, expected >= {} and \"Everything is awesome\"", count, overallStatus, expectedHealthCheckServices);
 
                         // We check if at least the number of expected health

@@ -40,7 +40,7 @@ import org.opennms.osgi.EventProxyAware;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.vaadin.ui.Table;
+import com.vaadin.v7.ui.Table;
 import com.vaadin.ui.UI;
 
 public abstract class AbstractSelectionLinkGenerator implements Table.ColumnGenerator, EventProxyAware {

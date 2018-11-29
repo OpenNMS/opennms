@@ -28,6 +28,10 @@
 
 package org.opennms.features.situationfeedback.api;
 
+import java.util.Objects;
+
+import com.google.common.base.Enums;
+
 /**
  * Expresses Feedback on the Correlation of an Alarm.
  */
@@ -39,49 +43,97 @@ public class AlarmFeedback {
         CORRECT, // Alarm is correctly correlated
         UNKNOWN;
 
-        public static FeedbackType getType(String type) {
-            switch(type) {
-            case "FALSE_POSITVE": 
-                return FALSE_POSITIVE;
-            case "FALSE_NEGATIVE":
-                return FALSE_NEGATIVE;
-            case "CORRECT":
-                return CORRECT;
-            default:
-                return UNKNOWN;
-            }
+        public static FeedbackType valueOfOrUnknown(String type) {
+            return Enums.getIfPresent(FeedbackType.class, type).or(UNKNOWN);
         }
     }
 
     // Situation ReductionKey
-    private String situationKey;
+    private final String situationKey;
 
     // this may not be nesc but may prove helpful
-    private String situationFingerprint; // fingerprint of situation/alarms at
-                                         // time of feedback;
+    private final String situationFingerprint; // fingerprint of situation/alarms at time of feedback
+
     // Alarm ReductionKey
-    private String alarmKey;
+    private final String alarmKey;
 
-    private FeedbackType feedbackType;
+    private final FeedbackType feedbackType;
 
-    private String reason;
+    private final String reason;
 
-    private String user;
+    private final String user;
 
-    private long timestamp;
+    private final long timestamp;
 
-    public AlarmFeedback() {
+    private AlarmFeedback(Builder builder) {
+        this.situationKey = builder.situationKey;
+        this.situationFingerprint = builder.situationFingerprint;
+        this.alarmKey = builder.alarmKey;
+        this.feedbackType = builder.feedbackType;
+        this.reason = builder.reason;
+        this.user = builder.user;
+        this.timestamp = builder.timestamp;
     }
 
-    public AlarmFeedback(String situationKey, String situationFingerprint, String alarmKey, FeedbackType feedbackType, String reason, String user,
-            long timestamp) {
-        this.situationKey = situationKey;
-        this.situationFingerprint = situationFingerprint;
-        this.alarmKey = alarmKey;
-        this.feedbackType = feedbackType;
-        this.reason = reason;
-        this.user = user;
-        this.timestamp = timestamp;
+    public static class Builder {
+        private String situationKey;
+        private String situationFingerprint;
+        private String alarmKey;
+        private AlarmFeedback.FeedbackType feedbackType;
+        private String reason;
+        private String user;
+        private long timestamp;
+
+        private Builder() {
+            timestamp = System.currentTimeMillis();
+        }
+
+        public Builder withSituationKey(String situationKey) {
+            this.situationKey = situationKey;
+            return this;
+        }
+
+        public Builder withSituationFingerprint(String situationFingerprint) {
+            this.situationFingerprint = situationFingerprint;
+            return this;
+        }
+
+        public Builder withAlarmKey(String alarmKey) {
+            this.alarmKey = alarmKey;
+            return this;
+        }
+
+        public Builder withFeedbackType(AlarmFeedback.FeedbackType feedbackType) {
+            this.feedbackType = feedbackType;
+            return this;
+        }
+
+        public Builder withReason(String reason) {
+            this.reason = reason;
+            return this;
+        }
+
+        public Builder withUser(String user) {
+            this.user = user;
+            return this;
+        }
+
+        public Builder withTimestamp(long timestamp) {
+            this.timestamp = timestamp;
+            return this;
+        }
+
+        public AlarmFeedback build() {
+            Objects.requireNonNull(situationKey, "The situation key cannot be null");
+            Objects.requireNonNull(alarmKey, "The alarm key cannot be null");
+            Objects.requireNonNull(feedbackType, "The feedback type cannot be null");
+
+            return new AlarmFeedback(this);            
+        }
+    }
+    
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
     public String getSituationKey() {
@@ -114,7 +166,8 @@ public class AlarmFeedback {
 
     @Override
     public String toString() {
-        return "Feedback[" + getFeedbackType() + ":" + getSituationKey() + ":" + getAlarmKey() + ":" + getReason() + "]";
+        return "Feedback[" + getFeedbackType() + ":" + getSituationKey() + ":" + getAlarmKey() + ":" + getReason() +
+                "]";
     }
 
 }
