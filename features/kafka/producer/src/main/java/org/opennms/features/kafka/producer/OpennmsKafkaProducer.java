@@ -35,6 +35,8 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -83,6 +85,16 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private final CountDownLatch forwardedEvent = new CountDownLatch(1);
     private final CountDownLatch forwardedAlarm = new CountDownLatch(1);
     private final CountDownLatch forwardedNode = new CountDownLatch(1);
+
+    /**
+     * This lock is used to prevent any callbacks issued by the {@link AlarmLifecycleListener} from
+     * being processed while the synchronization process is in flight.
+     *
+     * Callbacks hold a read-lock, while the synchronization process holds a write lock.
+     *
+     * A fair lock is used so that the callbacks continue to be processed in order.
+     */
+    private final ReadWriteLock alarmSyncRwLock = new ReentrantReadWriteLock(true);
 
     private KafkaProducer<String, byte[]> producer;
 
@@ -295,12 +307,24 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     @Override
     public void handleNewOrUpdatedAlarm(OnmsAlarm alarm) {
-        updateAlarm(alarm.getReductionKey(), alarm);
+        // Wait until the sync operation is complete before processing the update
+        alarmSyncRwLock.readLock().lock();
+        try {
+            updateAlarm(alarm.getReductionKey(), alarm);
+        } finally {
+            alarmSyncRwLock.readLock().unlock();
+        }
     }
 
     @Override
     public void handleDeletedAlarm(int alarmId, String reductionKey) {
-        handleDeletedAlarm(reductionKey);
+        // Wait until the sync operation is complete before processing the update
+        alarmSyncRwLock.readLock().lock();
+        try {
+            handleDeletedAlarm(reductionKey);
+        } finally {
+            alarmSyncRwLock.readLock().unlock();
+        }
     }
 
     public void handleDeletedAlarm(String reductionKey) {
@@ -362,5 +386,9 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     public CountDownLatch getNodeForwardedLatch() {
         return forwardedNode;
+    }
+
+    public ReadWriteLock getAlarmSyncRwLock() {
+        return alarmSyncRwLock;
     }
 }

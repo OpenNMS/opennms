@@ -26,34 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.kafka.producer.datasync;
+package org.opennms.netmgt.dao.hibernate;
 
-import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 
-import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
+import org.opennms.netmgt.dao.api.TopologyEntityDao;
+import org.opennms.netmgt.model.CdpLinkTopologyEntity;
+import org.opennms.netmgt.model.NodeTopologyEntity;
+import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-/**
- * This interface was created to be able to expose the methods on
- * {@link KafkaAlarmDataSync} to the {@link org.opennms.features.kafka.producer.shell.SyncAlarms}
- * shell command.
- */
-public interface AlarmDataStore {
+public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements TopologyEntityDao {
 
-    void init() throws IOException;
+    @Override
+    public List<NodeTopologyEntity> getNodeTopologyEntities() {
+        return (List<NodeTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.model.NodeTopologyEntity(n.id, n.type, n.sysObjectId, n.label, n.location) from org.opennms.netmgt.model.OnmsNode n");
+    }
 
-    void destroy();
-
-    boolean isEnabled();
-
-    boolean isReady();
-
-    Map<String, OpennmsModelProtos.Alarm> getAlarms();
-
-    OpennmsModelProtos.Alarm getAlarm(String reductionKey);
-
-    AlarmSyncResults synchronizeAlarmsWithDb();
-
-    void setStartWithCleanState(boolean startWithCleanState);
-
+    @Override
+    public List<CdpLinkTopologyEntity> getCdpLinkTopologyEntities() {
+        return (List<CdpLinkTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.model.CdpLinkTopologyEntity(l.id, l.node.id, l.cdpCacheIfIndex, " +
+                        "l.cdpInterfaceName, l.cdpCacheAddress, l.cdpCacheDeviceId, l.cdpCacheDevicePort) from org.opennms.netmgt.model.CdpLink l");
+    }
 }

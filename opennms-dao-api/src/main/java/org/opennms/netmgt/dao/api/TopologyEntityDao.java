@@ -26,34 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.kafka.producer.datasync;
+package org.opennms.netmgt.dao.api;
 
-import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 
-import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
+import org.opennms.netmgt.model.CdpLinkTopologyEntity;
+import org.opennms.netmgt.model.NodeTopologyEntity;
 
 /**
- * This interface was created to be able to expose the methods on
- * {@link KafkaAlarmDataSync} to the {@link org.opennms.features.kafka.producer.shell.SyncAlarms}
- * shell command.
+ * Retrieves TopologyEntities from the database. TopologyEntities are views on OnmsEntities (such as OnmsNode, CdpLink, etc.)
+ * which are reduced to the needs of displaying a toplogy:
+ * - they are derived from one OnmsEntity / a database table
+ * - they contain only the relevant subset of attributes of their OnmsEntity
+ * - relations are just referenced by a primitive key such as a String or Integer instead of (lazy loaded) object references
+ * The above features allow for fast database retrieval.
  */
-public interface AlarmDataStore {
-
-    void init() throws IOException;
-
-    void destroy();
-
-    boolean isEnabled();
-
-    boolean isReady();
-
-    Map<String, OpennmsModelProtos.Alarm> getAlarms();
-
-    OpennmsModelProtos.Alarm getAlarm(String reductionKey);
-
-    AlarmSyncResults synchronizeAlarmsWithDb();
-
-    void setStartWithCleanState(boolean startWithCleanState);
-
+public interface TopologyEntityDao {
+    List<NodeTopologyEntity> getNodeTopologyEntities();
+    List<CdpLinkTopologyEntity> getCdpLinkTopologyEntities();
 }
