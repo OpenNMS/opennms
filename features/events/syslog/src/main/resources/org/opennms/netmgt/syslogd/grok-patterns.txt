@@ -1,7 +1,7 @@
 # Note: Ordering is important in this file. Patterns should be ordered from most specific to least specific. The first
 # pattern found to match will be the one used.
 
-# Patterns for syslog messages parsed incorrectly during OCE audit
+# Support for Cisco syslog message patterns
 <%{INT:facilityPriority}>%{INT:parmSequenceNum}: %{MONTH:month}%{WHITESPACE:ignore}%{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second}: %{STRING:message}
 <%{INT:facilityPriority}>%{INT:parmSequenceNum}: %{NOSPACE:ignore}: %{MONTH:month}%{WHITESPACE:ignore}%{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction} %{STRING:timezone}: %{STRING:message}
 <%{INT:facilityPriority}>%{MONTH:month}%{WHITESPACE:ignore}%{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction} %{STRING:timezone}:%{WHITESPACE:ignore}%{NOSPACE:ignore}: %{NOSPACE:ignore}:%{MONTH:month}%{WHITESPACE:ignore}%{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction} %{STRING:timezone}: %{NOSPACE:ignore}: %{STRING:message}

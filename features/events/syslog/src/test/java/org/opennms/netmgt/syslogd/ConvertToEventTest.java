@@ -666,13 +666,10 @@ public class ConvertToEventTest {
     }
 
     /**
-     * Test that all patterns found from auditing are successfully parsed such that their log message starts with a
-     * given mnemonic.
+     * Test that Cisco syslog messages are successfully parsed such that their log message starts with a given mnemonic.
      */
     @Test
     public void testNewAuditPatterns() {
-        // The following are patterns that had been previously seen to fail when auditing syslog messages for the OCE
-        // project
         testAuditPattern("<189>98485: Nov  1 11:09:04: %SYS-5-CONFIG_I: Configured from console by hostname123 on " +
                 "vty1 (1.2.3.4)", "%SYS-5-CONFIG_I");
         testAuditPattern("<189>414: 000414: Nov  1 11:07:45.159 CDT: %SYS-5-CONFIG_I: Configured from console by " +
