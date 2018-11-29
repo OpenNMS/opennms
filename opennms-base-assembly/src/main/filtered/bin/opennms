@@ -119,7 +119,7 @@ show_help () {
 
 Usage: $0 [-f] [-n] [-t] [-p] [-o] [-c timeout] [-v] [-Q] <command> [<service>]
  
-  command options: start|stop|restart|status|check|pause|resume|kill
+  command options: start|stop|restart|status|ssh|check|pause|resume|kill
 
   service options: all|<a service id from the etc/service-configuration.xml>
       defaults to all
@@ -891,6 +891,13 @@ case "$COMMAND" in
 				# nothing
 				;;
 		esac
+		;;
+
+	ssh)
+		karafSshPort=`grep "^sshPort" ${OPENNMS_HOME}/etc/org.apache.karaf.shell.cfg | cut -d= -f2`
+		karafUser=`grep "^karaf.local.user" ${OPENNMS_HOME}/etc/system.properties | cut -d= -f2 | tr -d "[:blank:]"`
+		$opennms_echo "Trying to establish SSH connection to OpenNMS Karaf Shell ($karafUser@localhost:$karafSshPort)..."
+		ssh -o NoHostAuthenticationForLocalhost=yes -o HostKeyAlgorithms=+ssh-dss -l $karafUser -p $karafSshPort localhost
 		;;
 
 	pause)

@@ -167,6 +167,9 @@
     <bean id="nodeDao" class="org.opennms.netmgt.dao.mock.MockNodeDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.NodeDao" ref="nodeDao" />
 
+    <bean id="cdpLinkDao" class="org.opennms.netmgt.dao.mock.MockCdpLinkDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.CdpLinkDao" ref="cdpLinkDao" />
+
     <bean id="requisitionedCategoryAssociationDao" class="org.opennms.netmgt.dao.mock.MockRequisitionedCategoryAssociationDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.RequisitionedCategoryAssociationDao" ref="requisitionedCategoryAssociationDao" />
 
@@ -226,6 +229,7 @@
         <property name="locationMonitorDao" ref="locationMonitorDao" />
         <property name="acknowledgmentDao" ref="acknowledgmentDao" />
         <property name="serviceTypeDao" ref="serviceTypeDao" />
+        <property name="cdpLinkDao" ref="cdpLinkDao" />
     </bean>
 
     <bean id="timeKeeper" class="org.opennms.netmgt.collection.support.DefaultTimeKeeper" />
