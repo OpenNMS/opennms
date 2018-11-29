@@ -29,8 +29,10 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
@@ -40,6 +42,8 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.TopologyEntityDao;
+import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
 import org.opennms.netmgt.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.model.NodeTopologyEntity;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -67,8 +71,42 @@ public class TopologyEntityDaoHibernateIT {
     @Autowired
     private DatabasePopulator populator;
 
+    @Autowired
+    private CdpLinkDao cdpLinkDao;
+
     @BeforeTransaction
     public void setUp() {
+        populator.addExtension(new DatabasePopulator.Extension<CdpLinkDao>() {
+            @Override
+            public DatabasePopulator.DaoSupport getDaoSupport() {
+                return new DatabasePopulator.DaoSupport<>(CdpLinkDao.class, cdpLinkDao);
+            }
+
+            @Override
+            public void onPopulate(DatabasePopulator populator, CdpLinkDao dao) {
+                CdpLink cdpLink = new CdpLink();
+                cdpLink.setNode(populator.getNode1());
+                cdpLink.setCdpCacheDeviceId("cdpCacheDeviceId");
+                cdpLink.setCdpInterfaceName("cdpInterfaceName");
+                cdpLink.setCdpCacheDevicePort("cdpCacheDevicePort");
+                cdpLink.setCdpCacheAddressType(CdpLink.CiscoNetworkProtocolType.chaos);
+                cdpLink.setCdpCacheAddress("CdpCacheAddress");
+                cdpLink.setCdpCacheDeviceIndex(33);
+                cdpLink.setCdpCacheDevicePlatform("CdpCacheDevicePlatform");
+                cdpLink.setCdpCacheIfIndex(33);
+                cdpLink.setCdpCacheVersion("CdpCacheVersion");
+                cdpLink.setCdpLinkLastPollTime(new Date());
+                dao.save(cdpLink);
+                dao.flush();
+            }
+
+            @Override
+            public void onShutdown(DatabasePopulator populator, CdpLinkDao dao) {
+                for (final CdpLink link : dao.findAll()) {
+                    dao.delete(link);
+                }
+            }
+        });
         populator.populateDatabase();
     }
 
