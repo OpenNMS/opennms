@@ -26,22 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.enlinkd.persistence.impl;
 
 import java.util.List;
 
-import org.opennms.netmgt.model.CdpLinkTopologyEntity;
-import org.opennms.netmgt.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityDao;
+import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-/**
- * Retrieves TopologyEntities from the database. TopologyEntities are views on OnmsEntities (such as OnmsNode, CdpLink, etc.)
- * which are reduced to the needs of displaying a toplogy:
- * - they are derived from one OnmsEntity / a database table
- * - they contain only the relevant subset of attributes of their OnmsEntity
- * - relations are just referenced by a primitive key such as a String or Integer instead of (lazy loaded) object references
- * The above features allow for fast database retrieval.
- */
-public interface TopologyEntityDao {
-    List<NodeTopologyEntity> getNodeTopologyEntities();
-    List<CdpLinkTopologyEntity> getCdpLinkTopologyEntities();
+public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements TopologyEntityDao {
+
+    @Override
+    public List<NodeTopologyEntity> getNodeTopologyEntities() {
+        return (List<NodeTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.enlinkd.model.NodeTopologyEntity(n.id, n.type, n.sysObjectId, n.label, n.location) from org.opennms.netmgt.model.OnmsNode n");
+    }
+
+    @Override
+    public List<CdpLinkTopologyEntity> getCdpLinkTopologyEntities() {
+        return (List<CdpLinkTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity(l.id, l.node.id, l.cdpCacheIfIndex, " +
+                        "l.cdpInterfaceName, l.cdpCacheAddress, l.cdpCacheDeviceId, l.cdpCacheDevicePort) from org.opennms.netmgt.enlinkd.model.CdpLink l");
+    }
 }

@@ -40,7 +40,7 @@
     </bean>
 
     <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="topologyEntityCache">
-        <constructor-arg value="org.opennms.netmgt.dao.api.TopologyEntityCache"/>
+        <constructor-arg value="org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache"/>
     </bean>
 
     <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="snmpInterfaceDao">

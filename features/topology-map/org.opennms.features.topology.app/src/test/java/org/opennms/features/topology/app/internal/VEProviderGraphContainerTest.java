@@ -67,7 +67,7 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.service.DefaultTopologyService;
 import org.opennms.features.topology.app.internal.service.SimpleServiceLocator;
-import org.opennms.netmgt.dao.api.TopologyEntityCache;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 
 public class VEProviderGraphContainerTest {
 

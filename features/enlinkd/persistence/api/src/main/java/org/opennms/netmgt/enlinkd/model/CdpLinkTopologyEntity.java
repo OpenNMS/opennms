@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model;
+package org.opennms.netmgt.enlinkd.model;
 
 /**
  * This is NOT a Hibernate/JPA entity but rather a lightweight model without less attributes than CdpLink and no lazy

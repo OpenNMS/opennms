@@ -26,10 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model;
+package org.opennms.netmgt.enlinkd.model;
 
 import java.io.Serializable;
 
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 /**

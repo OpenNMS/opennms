@@ -26,15 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.hibernate;
+package org.opennms.netmgt.enlinkd.persistence.impl;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.netmgt.dao.api.TopologyEntityCache;
-import org.opennms.netmgt.dao.api.TopologyEntityDao;
-import org.opennms.netmgt.model.CdpLinkTopologyEntity;
-import org.opennms.netmgt.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityDao;
+import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

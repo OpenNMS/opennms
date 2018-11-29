@@ -26,12 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.enlinkd.persistence.api;
 
 import java.util.List;
 
-import org.opennms.netmgt.model.CdpLinkTopologyEntity;
-import org.opennms.netmgt.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+
 
 /**
  * Caches TopologyEmtities. This is a cache wrapper around @{@link TopologyEntityDao}. See there for an explanation of

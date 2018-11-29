@@ -41,11 +41,11 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.api.TopologyEntityDao;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityDao;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
-import org.opennms.netmgt.model.CdpLinkTopologyEntity;
-import org.opennms.netmgt.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -97,14 +97,10 @@ public class TopologyEntityDaoHibernateIT {
                 cdpLink.setCdpCacheVersion("CdpCacheVersion");
                 cdpLink.setCdpLinkLastPollTime(new Date());
                 dao.save(cdpLink);
-                dao.flush();
             }
 
             @Override
             public void onShutdown(DatabasePopulator populator, CdpLinkDao dao) {
-                for (final CdpLink link : dao.findAll()) {
-                    dao.delete(link);
-                }
             }
         });
         populator.populateDatabase();
