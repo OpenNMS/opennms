@@ -36,7 +36,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 
-public interface IsisTopologyService {
+public interface IsisTopologyService extends TopologyService {
         
     void delete(int nodeid);
     void reconcile(int nodeId, Date now);

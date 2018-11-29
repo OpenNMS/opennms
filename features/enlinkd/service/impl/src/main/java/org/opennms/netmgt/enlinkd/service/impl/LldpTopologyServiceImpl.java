@@ -52,7 +52,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
-public class LldpTopologyServiceImpl implements LldpTopologyService {
+public class LldpTopologyServiceImpl extends TopologyServiceImpl implements LldpTopologyService {
 
     private static final Logger LOG = LoggerFactory.getLogger(LldpTopologyServiceImpl.class);
 
@@ -90,6 +90,7 @@ public class LldpTopologyServiceImpl implements LldpTopologyService {
         if (link == null)
             return;
         saveLldpLink(nodeId, link);
+       updatesAvailable();
     }
 
     @Transactional
@@ -144,6 +145,8 @@ public class LldpTopologyServiceImpl implements LldpTopologyService {
         element.setLldpNodeLastPollTime(element.getLldpNodeCreateTime());
         m_lldpElementDao.saveOrUpdate(element);
         m_lldpElementDao.flush();
+        updatesAvailable();
+
     }
 
     public LldpLinkDao getLldpLinkDao() {

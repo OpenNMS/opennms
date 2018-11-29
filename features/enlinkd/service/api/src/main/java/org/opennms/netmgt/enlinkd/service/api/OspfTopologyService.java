@@ -36,7 +36,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 
-public interface OspfTopologyService {
+public interface OspfTopologyService extends TopologyService {
         
     void delete(int nodeid);
     void reconcile(int nodeId, Date now);

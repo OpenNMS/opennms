@@ -757,9 +757,11 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
 
         assertTrue(m_linkd.runSingleSnmpCollection(switch1.getId()));
         assertEquals(5, m_cdpLinkDao.countAll());
+        assertTrue(m_cdpTopologyService.hasUpdates());
         
         assertTrue(m_linkd.runSingleSnmpCollection(switch2.getId()));
         assertEquals(11, m_cdpLinkDao.countAll());
+        assertTrue(m_cdpTopologyService.hasUpdates());
         
         // Now we support by default configuration: BRIDGE, CDP, ISIS, LLDP and OSPF
         assertEquals(5, m_topologyDao.getSupportedProtocols().size());
@@ -769,6 +771,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.LLDP.name()));
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.OSPF.name()));
 
+        m_cdpTopologyService.updatesAvailable();
         assertEquals(2, m_nodeTopologyService.findAllSnmpNode().size());
         assertEquals(2, m_nodeTopologyService.findAll().size());
         
@@ -779,6 +782,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
             assertNotNull(node.getSnmpPrimaryIpAddr());
             assertTrue(node.isManaged());
         });
+        
         CdpOnmsTopologyUpdater cdptopology = m_linkd.getCdpTopologyUpdater();
         assertNotNull(cdptopology);
         OnmsTopology topology = cdptopology.getTopology();
@@ -791,8 +795,18 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
                   ProtocolSupported.CDP.name(),m_linkd);
         assertEquals(protocols+":Consumer:Logger", tl.getId());
                 
+        assertTrue(m_cdpTopologyService.hasUpdates());
+        System.err.println("--------Printing updates start----------");
         m_linkd.runTopologyUpdater(ProtocolSupported.CDP);
-        
+        System.err.println("--------Printing updates end----------");
+        assertTrue(!m_cdpTopologyService.hasUpdates());
+        assertTrue(!m_cdpTopologyService.parseUpdates());
+        System.err.println("--------no updates start----------");
+        m_linkd.runTopologyUpdater(ProtocolSupported.CDP);
+        System.err.println("--------no updates end----------");
+        m_cdpTopologyService.updatesAvailable();
+        assertTrue(m_cdpTopologyService.parseUpdates());
+        assertTrue(!m_cdpTopologyService.hasUpdates());
     }
 
 }

@@ -68,7 +68,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
-public class BridgeTopologyServiceImpl implements BridgeTopologyService {
+public class BridgeTopologyServiceImpl extends TopologyServiceImpl implements BridgeTopologyService {
     
     private final static Logger LOG = LoggerFactory.getLogger(BridgeTopologyServiceImpl.class);
     @Autowired
@@ -151,6 +151,7 @@ public class BridgeTopologyServiceImpl implements BridgeTopologyService {
             LOG.error("BridgeBridgeLinkDao: {}", e.getMessage(),e );
         }
 
+        updatesAvailable();
     }
 
     @Transactional
@@ -338,6 +339,7 @@ public class BridgeTopologyServiceImpl implements BridgeTopologyService {
         if (bridge == null)
             return;
         saveBridgeElement(nodeId, bridge);
+        updatesAvailable();
     }
 
     @Transactional

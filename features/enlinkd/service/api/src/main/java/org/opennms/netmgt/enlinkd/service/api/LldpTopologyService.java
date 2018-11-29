@@ -36,7 +36,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 
-public interface LldpTopologyService {
+public interface LldpTopologyService extends TopologyService {
         
     void delete(int nodeid);
     void reconcile(int nodeId, Date now);

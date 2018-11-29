@@ -52,7 +52,7 @@ public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     public OspfOnmsTopologyUpdater(EventForwarder eventforwarder,
             OnmsTopologyDao topologyDao, OspfTopologyService ospfTopologyService, NodeTopologyService nodeTopologyService,
             long interval, long initialsleeptime) {
-        super(eventforwarder, topologyDao,nodeTopologyService,interval, initialsleeptime);
+        super(eventforwarder, ospfTopologyService,topologyDao,nodeTopologyService,interval, initialsleeptime);
         m_ospfTopologyService = ospfTopologyService;
     }            
     

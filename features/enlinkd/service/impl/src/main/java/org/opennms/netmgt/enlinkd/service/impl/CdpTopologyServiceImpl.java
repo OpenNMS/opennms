@@ -52,7 +52,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
-public class CdpTopologyServiceImpl implements CdpTopologyService {
+public class CdpTopologyServiceImpl extends TopologyServiceImpl implements CdpTopologyService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CdpTopologyServiceImpl.class);
 
@@ -106,6 +106,7 @@ public class CdpTopologyServiceImpl implements CdpTopologyService {
         element.setCdpNodeLastPollTime(element.getCdpNodeCreateTime());
         m_cdpElementDao.saveOrUpdate(element);
         m_cdpElementDao.flush();
+        updatesAvailable();
 
     }
 
@@ -113,7 +114,8 @@ public class CdpTopologyServiceImpl implements CdpTopologyService {
     public void store(int nodeId, CdpLink link) {
         if (link == null)
             return;
-        saveCdpLink(nodeId, link);        
+        saveCdpLink(nodeId, link);
+        updatesAvailable();
     }
     
     @Transactional

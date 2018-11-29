@@ -51,7 +51,7 @@ public class LldpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     public LldpOnmsTopologyUpdater(EventForwarder eventforwarder,
             OnmsTopologyDao topologyDao, LldpTopologyService lldpTopologyService, NodeTopologyService nodeTopologyService,
             long interval, long initialsleeptime) {
-        super(eventforwarder, topologyDao,nodeTopologyService,interval, initialsleeptime);
+        super(eventforwarder, lldpTopologyService, topologyDao,nodeTopologyService,interval, initialsleeptime);
         m_lldpTopologyService = lldpTopologyService;
     }            
     

@@ -51,7 +51,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
-public class OspfTopologyServiceImpl implements OspfTopologyService {
+public class OspfTopologyServiceImpl extends TopologyServiceImpl implements OspfTopologyService {
 
     private static final Logger LOG = LoggerFactory.getLogger(OspfTopologyServiceImpl.class);
 
@@ -104,6 +104,7 @@ public class OspfTopologyServiceImpl implements OspfTopologyService {
         element.setOspfNodeLastPollTime(element.getOspfNodeCreateTime());
         m_ospfElementDao.saveOrUpdate(element);
         m_ospfElementDao.flush();
+        updatesAvailable();
 
     }
 
@@ -112,6 +113,7 @@ public class OspfTopologyServiceImpl implements OspfTopologyService {
         if (link == null)
             return;
         saveOspfLink(nodeId, link);
+        updatesAvailable();
     }
     
     private void saveOspfLink(final int nodeId, final OspfLink saveMe) {

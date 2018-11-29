@@ -36,6 +36,7 @@ import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
+import org.opennms.netmgt.enlinkd.service.api.TopologyService;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
@@ -66,18 +67,23 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
 
     private final OnmsTopologyDao m_topologyDao;
     private final NodeTopologyService m_nodeTopologyService;
+    private final TopologyService m_topologyService;
 
     public EnlinkdOnmsTopologyUpdater(EventForwarder eventforwarder,
+            TopologyService topologyService,
             OnmsTopologyDao topologyDao, NodeTopologyService nodeTopologyService,
             long interval, long initialsleeptime) {
         super(eventforwarder, interval, initialsleeptime);
         m_topologyDao = topologyDao;
+        m_topologyService = topologyService;
         m_nodeTopologyService = nodeTopologyService;
     }            
     
     @Override
     public void runDiscovery() {
         LOG.debug("run: start");
+        if (m_topologyService.parseUpdates()) {
+            LOG.debug("run: updates");
         OnmsTopology topo = getTopology();
         topo.getVertices().stream().forEach(vertex -> {
             try {
@@ -93,6 +99,7 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
                 LOG.error("update: cannot {}: {} {} {}", e.getMessageStatus(), e.getId(), e.getProtocol(),e.getMessage());
             }
         });
+        }
         LOG.debug("run: end");
     }
 

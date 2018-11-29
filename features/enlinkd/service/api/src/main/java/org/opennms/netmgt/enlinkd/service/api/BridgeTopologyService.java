@@ -38,7 +38,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
 
-public interface BridgeTopologyService {
+public interface BridgeTopologyService extends TopologyService {
 
     // this indicates the total size of in memory bft
     boolean collectBft(int nodeid, int maxsize);

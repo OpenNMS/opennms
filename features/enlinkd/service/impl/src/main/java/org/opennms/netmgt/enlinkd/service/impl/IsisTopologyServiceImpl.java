@@ -51,7 +51,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
-public class IsisTopologyServiceImpl implements IsisTopologyService {
+public class IsisTopologyServiceImpl extends TopologyServiceImpl implements IsisTopologyService {
 
     private static final Logger LOG = LoggerFactory.getLogger(IsisTopologyServiceImpl.class);
 
@@ -89,6 +89,7 @@ public class IsisTopologyServiceImpl implements IsisTopologyService {
         if (link == null)
             return;
         saveIsisLink(nodeId, link);
+        updatesAvailable();
     }
 
     @Transactional
@@ -146,6 +147,8 @@ public class IsisTopologyServiceImpl implements IsisTopologyService {
         element.setIsisNodeLastPollTime(element.getIsisNodeCreateTime());
         m_isisElementDao.saveOrUpdate(element);
         m_isisElementDao.flush();
+        updatesAvailable();
+
     
     }
 

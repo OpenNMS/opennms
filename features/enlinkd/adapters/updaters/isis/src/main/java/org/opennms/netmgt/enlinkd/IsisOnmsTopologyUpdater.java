@@ -52,7 +52,7 @@ public class IsisOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     public IsisOnmsTopologyUpdater(EventForwarder eventforwarder,
             OnmsTopologyDao topologyDao, IsisTopologyService isisTopologyService, NodeTopologyService nodeTopologyService,
             long interval, long initialsleeptime) {
-        super(eventforwarder, topologyDao,nodeTopologyService,interval, initialsleeptime);
+        super(eventforwarder,isisTopologyService, topologyDao,nodeTopologyService,interval, initialsleeptime);
         m_isisTopologyService = isisTopologyService;
     }            
     

@@ -51,7 +51,7 @@ public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     public CdpOnmsTopologyUpdater(EventForwarder eventforwarder,
             OnmsTopologyDao topologyDao, CdpTopologyService cdpTopologyService, NodeTopologyService nodeTopologyService,
             long interval, long initialsleeptime) {
-        super(eventforwarder, topologyDao,nodeTopologyService,interval, initialsleeptime);
+        super(eventforwarder, cdpTopologyService,topologyDao,nodeTopologyService,interval, initialsleeptime);
         m_cdpTopologyService = cdpTopologyService;
     }            
     

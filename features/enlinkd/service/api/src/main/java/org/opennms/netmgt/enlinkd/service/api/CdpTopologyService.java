@@ -36,7 +36,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 
-public interface CdpTopologyService {
+public interface CdpTopologyService extends TopologyService {
         
     void delete(int nodeid);
     void reconcile(int nodeId, Date now);

@@ -59,7 +59,7 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     public BridgeOnmsTopologyUpdater(EventForwarder eventforwarder,
             OnmsTopologyDao topologyDao, BridgeTopologyService bridgeTopologyService, NodeTopologyService nodeTopologyService,
             long interval, long initialsleeptime) {
-        super(eventforwarder, topologyDao,nodeTopologyService,interval, initialsleeptime);
+        super(eventforwarder, bridgeTopologyService,topologyDao,nodeTopologyService,interval, initialsleeptime);
         m_bridgeTopologyService = bridgeTopologyService;
     }            
     
