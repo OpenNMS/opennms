@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -59,6 +59,9 @@ public class AlarmSummaryDTO {
     @XmlElement(name="label")
     private String label;
 
+    @XmlElement(name="nodeLabel")
+    private String nodeLabel;
+
     @XmlElement(name="logMessage")
     private String logMessage;
 
@@ -112,6 +115,14 @@ public class AlarmSummaryDTO {
         this.label = label;
     }
 
+    public String getNodeLabel() {
+        return label;
+    }
+
+    public void setNodeLabel(final String nodeLabel) {
+        this.nodeLabel = nodeLabel;
+    }
+
     public String getLogMessage() {
         return logMessage;
     }
@@ -140,12 +151,13 @@ public class AlarmSummaryDTO {
                 Objects.equals(severity, alarmDTO.severity) &&
                 Objects.equals(description, alarmDTO.description) &&
                 Objects.equals(label, alarmDTO.label) &&
+                Objects.equals(nodeLabel, alarmDTO.nodeLabel) &&
                 Objects.equals(logMessage, alarmDTO.logMessage);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, reductionKey, type, severity, description, label, logMessage);
+        return Objects.hash(id, reductionKey, type, severity, description, label, nodeLabel, logMessage);
     }
 
 }
