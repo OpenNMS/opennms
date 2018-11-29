@@ -40,6 +40,7 @@ import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.CdpLinkDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -55,6 +56,7 @@ import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.api.UserNotificationDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
+import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -153,7 +155,8 @@ public class DatabasePopulator {
     private LocationMonitorDao m_locationMonitorDao;
     private AcknowledgmentDao m_acknowledgmentDao;
     private TransactionOperations m_transOperation;
-    
+    private CdpLinkDao m_cdpLinkDao;
+
     private OnmsNode m_node1;
     private OnmsNode m_node2;
     private OnmsNode m_node3;
@@ -262,6 +265,9 @@ public class DatabasePopulator {
             iface.getNode().getIpInterfaces().remove(iface);
             m_ipInterfaceDao.delete(iface);
         }
+        for (final CdpLink link : m_cdpLinkDao.findAll()) {
+            m_cdpLinkDao.delete(link);
+        }
         for (final OnmsNode node : m_nodeDao.findAll()) {
             m_nodeDao.delete(node);
         }
@@ -298,6 +304,7 @@ public class DatabasePopulator {
         m_snmpInterfaceDao.flush();
         m_ipInterfaceDao.flush();
         m_nodeDao.flush();
+        m_cdpLinkDao.flush();
         m_serviceTypeDao.flush();
         
         LOG.debug("==== DatabasePopulator Reset Finished ====");
@@ -336,7 +343,11 @@ public class DatabasePopulator {
         getNodeDao().save(node6);
         getNodeDao().flush();
         setNode6(node6);
-        
+
+        CdpLink cdpLink = createCdpLink();
+        getCdpLinkDao().save(cdpLink);
+        getCdpLinkDao().flush();
+
         final OnmsEvent event = buildEvent(builder.getDistPoller());
         event.setEventCreateTime(new Date(1436881548292L));
         event.setEventTime(new Date(1436881548292L));
@@ -404,6 +415,22 @@ public class DatabasePopulator {
         LOG.debug("= DatabasePopulatorExtension Populate Finished =");
         
         LOG.debug("==== DatabasePopulator Finished ====");
+    }
+
+    private CdpLink createCdpLink() {
+        CdpLink link = new CdpLink();
+        link.setNode(getNode1());
+        link.setCdpCacheDeviceId("cdpCacheDeviceId");
+        link.setCdpInterfaceName("cdpInterfaceName");
+        link.setCdpCacheDevicePort("cdpCacheDevicePort");
+        link.setCdpCacheAddressType(CdpLink.CiscoNetworkProtocolType.chaos);
+        link.setCdpCacheAddress("CdpCacheAddress");
+        link.setCdpCacheDeviceIndex(33);
+        link.setCdpCacheDevicePlatform("CdpCacheDevicePlatform");
+        link.setCdpCacheIfIndex(33);
+        link.setCdpCacheVersion("CdpCacheVersion");
+        link.setCdpLinkLastPollTime(new Date());
+        return link;
     }
 
     private OnmsCategory getCategory(final String categoryName) {
@@ -690,6 +717,14 @@ public class DatabasePopulator {
         m_nodeDao = nodeDao;
     }
 
+    public CdpLinkDao getCdpLinkDao() {
+        return m_cdpLinkDao;
+    }
+
+
+    public void setCdpLinkDao(final CdpLinkDao cdpLinkDao) {
+        this.m_cdpLinkDao = cdpLinkDao;
+    }
 
     public NotificationDao getNotificationDao() {
         return m_notificationDao;

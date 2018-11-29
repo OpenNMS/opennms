@@ -26,34 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.kafka.producer.datasync;
+package org.opennms.netmgt.dao.api;
 
-import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 
-import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
+import org.opennms.netmgt.model.CdpLinkTopologyEntity;
+import org.opennms.netmgt.model.NodeTopologyEntity;
 
 /**
- * This interface was created to be able to expose the methods on
- * {@link KafkaAlarmDataSync} to the {@link org.opennms.features.kafka.producer.shell.SyncAlarms}
- * shell command.
+ * Caches TopologyEmtities. This is a cache wrapper around @{@link TopologyEntityDao}. See there for an explanation of
+ * TopologyEntrities.
+ * We use the cache to improve the displaying speed of topologies.
  */
-public interface AlarmDataStore {
+public interface TopologyEntityCache {
 
-    void init() throws IOException;
+    List<NodeTopologyEntity> getNodeTopolgyEntities();
 
-    void destroy();
+    List<CdpLinkTopologyEntity> getCdpLinkTopologyEntities();
 
-    boolean isEnabled();
-
-    boolean isReady();
-
-    Map<String, OpennmsModelProtos.Alarm> getAlarms();
-
-    OpennmsModelProtos.Alarm getAlarm(String reductionKey);
-
-    AlarmSyncResults synchronizeAlarmsWithDb();
-
-    void setStartWithCleanState(boolean startWithCleanState);
+    void refresh();
 
 }

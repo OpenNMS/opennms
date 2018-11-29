@@ -44,6 +44,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 import org.apache.kafka.common.serialization.Serdes;
@@ -90,6 +91,7 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
 
     private String alarmTopic;
     private long alarmSyncIntervalMs;
+    private boolean startWithCleanState = false;
 
     private KafkaStreams streams;
     private ScheduledExecutorService scheduler;
@@ -158,6 +160,10 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
         }
 
         try {
+            if (startWithCleanState) {
+                LOG.info("Performing stream state cleanup.");
+                streams.cleanUp();
+            }
             LOG.info("Starting alarm datasync stream.");
             streams.start();
             LOG.info("Starting alarm datasync started.");
@@ -220,42 +226,50 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
         // Retrieve the map of alarms by reduction key from the ktable
         final Map<String, OpennmsModelProtos.Alarm> alarmsInKtableByReductionKey = getAlarms();
 
-        // Perform the synchronization in a single transaction context
-        return transactionOperations.execute(status -> {
-            final Set<String> reductionKeysInKtable = alarmsInKtableByReductionKey.keySet();
+        // Lock the producer, preventing it from processing any callbacks while
+        // the synchronization process is performed
+        final Lock lock = kafkaProducer.getAlarmSyncRwLock().writeLock();
+        lock.lock();
+        try {
+            // Perform the synchronization in a single transaction context
+            return transactionOperations.execute(status -> {
+                final Set<String> reductionKeysInKtable = alarmsInKtableByReductionKey.keySet();
 
-            // Retrieve all of the alarms from the database and apply the filter (if any) to these
-            final List<OnmsAlarm> alarmsInDb = alarmDao.findAll().stream()
-                    .filter(kafkaProducer::shouldForwardAlarm)
-                    .collect(Collectors.toList());
+                // Retrieve all of the alarms from the database and apply the filter (if any) to these
+                final List<OnmsAlarm> alarmsInDb = alarmDao.findAll().stream()
+                        .filter(kafkaProducer::shouldForwardAlarm)
+                        .collect(Collectors.toList());
 
-            final Map<String, OnmsAlarm> alarmsInDbByReductionKey = alarmsInDb.stream()
-                    .collect(Collectors.toMap(OnmsAlarm::getReductionKey, a -> a));
-            final Set<String> reductionKeysInDb = alarmsInDbByReductionKey.keySet();
+                final Map<String, OnmsAlarm> alarmsInDbByReductionKey = alarmsInDb.stream()
+                        .collect(Collectors.toMap(OnmsAlarm::getReductionKey, a -> a));
+                final Set<String> reductionKeysInDb = alarmsInDbByReductionKey.keySet();
 
-            // Push deletes for keys that are in the ktable, but not in the database
-            final Set<String> reductionKeysNotInDb = Sets.difference(reductionKeysInKtable, reductionKeysInDb);
-            reductionKeysNotInDb.forEach(kafkaProducer::handleDeletedAlarm);
+                // Push deletes for keys that are in the ktable, but not in the database
+                final Set<String> reductionKeysNotInDb = Sets.difference(reductionKeysInKtable, reductionKeysInDb);
+                reductionKeysNotInDb.forEach(kafkaProducer::handleDeletedAlarm);
 
-            // Push new entries for keys that are in the database, but not in the ktable
-            final Set<String> reductionKeysNotInKtable = Sets.difference(reductionKeysInDb, reductionKeysInKtable);
-            reductionKeysNotInKtable.forEach(rkey -> kafkaProducer.handleNewOrUpdatedAlarm(alarmsInDbByReductionKey.get(rkey)));
+                // Push new entries for keys that are in the database, but not in the ktable
+                final Set<String> reductionKeysNotInKtable = Sets.difference(reductionKeysInDb, reductionKeysInKtable);
+                reductionKeysNotInKtable.forEach(rkey -> kafkaProducer.handleNewOrUpdatedAlarm(alarmsInDbByReductionKey.get(rkey)));
 
-            // Handle Updates
-            final Set<String> reductionKeysUpdated = new LinkedHashSet<>();
-            final Set<String> commonReductionKeys = Sets.intersection(reductionKeysInKtable, reductionKeysInDb);
-            commonReductionKeys.forEach(rkey -> {
-                final OnmsAlarm dbAlarm = alarmsInDbByReductionKey.get(rkey);
-                final OpennmsModelProtos.Alarm mappedDbAlarm = protobufMapper.toAlarm(dbAlarm).build();
-                final OpennmsModelProtos.Alarm alarmFromKtable = alarmsInKtableByReductionKey.get(rkey);
-                if (!Objects.equals(mappedDbAlarm, alarmFromKtable)) {
-                    kafkaProducer.handleNewOrUpdatedAlarm(dbAlarm);
-                    reductionKeysUpdated.add(rkey);
-                }
+                // Handle Updates
+                final Set<String> reductionKeysUpdated = new LinkedHashSet<>();
+                final Set<String> commonReductionKeys = Sets.intersection(reductionKeysInKtable, reductionKeysInDb);
+                commonReductionKeys.forEach(rkey -> {
+                    final OnmsAlarm dbAlarm = alarmsInDbByReductionKey.get(rkey);
+                    final OpennmsModelProtos.Alarm mappedDbAlarm = protobufMapper.toAlarm(dbAlarm).build();
+                    final OpennmsModelProtos.Alarm alarmFromKtable = alarmsInKtableByReductionKey.get(rkey);
+                    if (!Objects.equals(mappedDbAlarm, alarmFromKtable)) {
+                        kafkaProducer.handleNewOrUpdatedAlarm(dbAlarm);
+                        reductionKeysUpdated.add(rkey);
+                    }
+                });
+                return new AlarmSyncResults(alarmsInKtableByReductionKey, alarmsInDb, alarmsInDbByReductionKey,
+                        reductionKeysNotInKtable, reductionKeysNotInDb, reductionKeysUpdated);
             });
-            return new AlarmSyncResults(alarmsInKtableByReductionKey, alarmsInDb, alarmsInDbByReductionKey,
-                    reductionKeysNotInKtable, reductionKeysNotInDb, reductionKeysUpdated);
-        });
+        } finally {
+            lock.unlock();
+        }
     }
 
     private Properties loadStreamsProperties() throws IOException {
@@ -290,6 +304,11 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
 
     public void setAlarmSyncIntervalMs(long intervalMs) {
         alarmSyncIntervalMs = intervalMs;
+    }
+
+    @Override
+    public void setStartWithCleanState(boolean startWithCleanState) {
+        this.startWithCleanState = startWithCleanState;
     }
 
     private ReadOnlyKeyValueStore<String, byte[]> getAlarmTableNow() throws InvalidStateStoreException {
