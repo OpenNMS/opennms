@@ -527,7 +527,6 @@ public abstract class GrokParserStageSequenceBuilder {
 						factory.whitespace();
 						break;
 					case WHITESPACE:
-						LOG.warn("WHITESPACE pattern followed immediately by another pattern will greedily consume until non-whitespace is encountered");
 						factory.stringUntilNonWhitespace(semanticStringToField(semanticString));
 						break;
 					case STRING:
