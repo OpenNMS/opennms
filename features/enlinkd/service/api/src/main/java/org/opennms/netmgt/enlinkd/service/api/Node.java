@@ -40,6 +40,9 @@ import org.opennms.netmgt.model.OnmsNode;
 public class Node {
 
     public static Node create(OnmsNode node) {
+        if (node == null) {
+            return null;
+        }
         if (node.getPrimaryInterface() != null) {
             return new Node(node.getId(), 
                                node.getLabel(),
