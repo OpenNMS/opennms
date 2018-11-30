@@ -44,6 +44,7 @@ import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyShared;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
@@ -69,7 +70,7 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     }
 
     @Override
-    public OnmsTopology buildTopology() {
+    public OnmsTopology buildTopology() throws OnmsTopologyException {
         Map<Integer, Node> nodeMap= getNodeMap();
         OnmsTopology topology = new OnmsTopology();
         for (Triple<List<BridgePort>, List<MacPort>, BridgePort> shared: m_bridgeTopologyService.matchBridgeLinks()) {
@@ -77,7 +78,7 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
             for (BridgePort bp: shared.getLeft()) {
                 Node node = nodeMap.get(bp.getNodeId());
                 if (topology.getVertex(node.getId()) == null) {
-                    topology.getVertices().add(create(node,ProtocolSupported.BRIDGE));
+                    topology.getVertices().add(create(node));
                 }
                 OnmsTopologyVertex vertex = topology.getVertex(node.getId());
                 OnmsTopologyPort port = OnmsTopologyPort.create(vertex, bp.getBridgePortIfIndex());
@@ -94,7 +95,7 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
                     if (macPort.getNodeId() != null) {
                         Node node = nodeMap.get(macPort.getNodeId());
                         if (topology.getVertex(node.getId()) == null) {
-                            topology.getVertices().add(create(node,ProtocolSupported.BRIDGE));
+                            topology.getVertices().add(create(node));
                         }
                     } else {
                         topology.getVertices().add(create(macPort));

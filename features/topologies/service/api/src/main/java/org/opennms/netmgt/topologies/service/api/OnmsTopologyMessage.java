@@ -30,18 +30,33 @@ package org.opennms.netmgt.topologies.service.api;
 
 public class OnmsTopologyMessage {
 
-    public static OnmsTopologyMessage  create(OnmsTopologyRef messagebody) {
-        return new OnmsTopologyMessage(messagebody, TopologyMessageStatus.NEW);
+    public static OnmsTopologyMessage  create(OnmsTopologyRef messagebody, String protocol) throws OnmsTopologyException {
+        checkOnmsTopologyMessage(messagebody, protocol, TopologyMessageStatus.NEW);
+        return new OnmsTopologyMessage(messagebody, protocol,TopologyMessageStatus.NEW);
     }
     
-    public static OnmsTopologyMessage  update(OnmsTopologyRef messagebody) {
-        return new OnmsTopologyMessage(messagebody, TopologyMessageStatus.UPDATE);
+    public static OnmsTopologyMessage  update(OnmsTopologyRef messagebody,String protocol) throws OnmsTopologyException {
+        checkOnmsTopologyMessage(messagebody, protocol, TopologyMessageStatus.UPDATE);
+        return new OnmsTopologyMessage(messagebody, protocol,TopologyMessageStatus.UPDATE);
     }
     
-    public static OnmsTopologyMessage  delete(OnmsTopologyRef messagebody) {
-        return new OnmsTopologyMessage(messagebody, TopologyMessageStatus.DELETE);        
+    public static OnmsTopologyMessage  delete(OnmsTopologyRef messagebody,String protocol) throws OnmsTopologyException {
+        checkOnmsTopologyMessage(messagebody, protocol, TopologyMessageStatus.DELETE);
+        return new OnmsTopologyMessage(messagebody, protocol,TopologyMessageStatus.DELETE);        
     }
 
+    private static void checkOnmsTopologyMessage(OnmsTopologyRef messagebody, String protocol, TopologyMessageStatus messagestatus) throws OnmsTopologyException {
+        if (messagebody == null && protocol == null) {
+            throw new OnmsTopologyException("Protocol and Ref null, cannot create message", messagestatus);
+        }
+        if (messagebody == null ) {
+            throw new OnmsTopologyException("Ref null, cannot create message", protocol,messagestatus);
+        }
+        if (protocol == null ) {
+            throw new OnmsTopologyException("Protocol null, cannot create message", messagebody,messagestatus);
+        }
+        
+    }
     
     public enum TopologyMessageStatus {
         NEW,
@@ -51,10 +66,12 @@ public class OnmsTopologyMessage {
 
     private final OnmsTopologyRef m_messagebody;
     private final TopologyMessageStatus m_messagestatus;
-
-    private <T extends OnmsTopologyRef>OnmsTopologyMessage(T messagebody, TopologyMessageStatus messagestatus) {
+    private final String m_protocol;
+    
+    private <T extends OnmsTopologyRef>OnmsTopologyMessage(T messagebody, String protocol, TopologyMessageStatus messagestatus) {
         m_messagebody=messagebody;
         m_messagestatus=messagestatus;
+        m_protocol = protocol;
     }
 
     public OnmsTopologyRef getMessagebody() {
@@ -63,6 +80,10 @@ public class OnmsTopologyMessage {
 
     public TopologyMessageStatus getMessagestatus() {
         return m_messagestatus;
+    }
+
+    public String getProtocol() {
+        return m_protocol;
     }
 
 }

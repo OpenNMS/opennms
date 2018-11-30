@@ -31,6 +31,7 @@ package org.opennms.netmgt.enlinkd;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
@@ -41,6 +42,7 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
@@ -61,14 +63,13 @@ public class LldpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     }
 
     @Override
-    public OnmsTopology buildTopology() {
+    public OnmsTopology buildTopology() throws OnmsTopologyException {
         Map<Integer, Node> nodeMap= getNodeMap();
         OnmsTopology topology = new OnmsTopology();
-        m_lldpTopologyService.findAllLldpElements().stream().forEach(element -> {
-            topology.getVertices().add(create(nodeMap.get(element.getNode().getId()),ProtocolSupported.LLDP));
-        });
+        for (LldpElement element: m_lldpTopologyService.findAllLldpElements()) {
+            topology.getVertices().add(create(nodeMap.get(element.getNode().getId())));
+        }
         
-
         for (Pair<LldpLink, LldpLink> pair : m_lldpTopologyService.matchLldpLinks()) {
             LldpLink sourceLink = pair.getLeft();
             LldpLink targetLink = pair.getRight();

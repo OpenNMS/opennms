@@ -35,11 +35,11 @@ import java.util.Map;
 public class OnmsTopologyVertex extends OnmsTopologyAbstractRef implements OnmsTopologyRef {
 
 
-    public static OnmsTopologyVertex create(String id,String protocol,String label,String address, String iconKey) {
-        if (id != null && protocol != null) {
-            return new OnmsTopologyVertex(id,protocol,label,address,iconKey);
+    public static OnmsTopologyVertex create(String id,String label,String address, String iconKey) throws OnmsTopologyException {
+        if (id == null) {
+            throw new OnmsTopologyException("id is null, cannot create vertex");
         }
-        return null;
+        return new OnmsTopologyVertex(id,label,address,iconKey);
     }
     
     private final String m_label;
@@ -47,8 +47,8 @@ public class OnmsTopologyVertex extends OnmsTopologyAbstractRef implements OnmsT
     private final String m_iconKey;
     private Map<String,String> m_attributes = new HashMap<String,String>();
 
-    private OnmsTopologyVertex(String id, String protocol,String label, String address,String iconKey) {
-        super(id,protocol);
+    private OnmsTopologyVertex(String id, String label, String address,String iconKey) {
+        super(id);
         m_label=label;
         m_address=address;
         m_iconKey=iconKey;

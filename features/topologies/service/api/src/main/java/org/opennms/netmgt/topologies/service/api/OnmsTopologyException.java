@@ -84,11 +84,22 @@ public class OnmsTopologyException extends Exception {
         m_messageStatus=status;
     }
 
+    public OnmsTopologyException(String message, OnmsTopologyRef ref, TopologyMessageStatus status) {
+        super(message);
+        m_ref=ref;
+        m_messageStatus=status;
+    }
+
     public OnmsTopologyException(String message,OnmsTopologyRef ref, String protocol, TopologyMessageStatus status,Throwable throwable) {
         super(message, throwable);
         m_ref=ref;
         m_protocol=protocol;
         m_messageStatus=status;
+    }
+
+    public OnmsTopologyException(String string,
+            TopologyMessageStatus messagestatus) {
+        m_messageStatus = messagestatus;
     }
 
     public String getId() {

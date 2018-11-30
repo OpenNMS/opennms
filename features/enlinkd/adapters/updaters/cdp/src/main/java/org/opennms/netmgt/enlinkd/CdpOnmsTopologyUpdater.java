@@ -31,6 +31,7 @@ package org.opennms.netmgt.enlinkd;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
@@ -41,6 +42,7 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
@@ -61,12 +63,12 @@ public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     }
 
     @Override
-    public OnmsTopology buildTopology() {
+    public OnmsTopology buildTopology() throws OnmsTopologyException {
         Map<Integer, Node> nodeMap= getNodeMap();
         OnmsTopology topology = new OnmsTopology();
-        m_cdpTopologyService.findAllCdpElements().stream().forEach(element -> {
-            topology.getVertices().add(create(nodeMap.get(element.getNode().getId()),ProtocolSupported.CDP));
-        });
+        for (CdpElement element: m_cdpTopologyService.findAllCdpElements()) {
+            topology.getVertices().add(create(nodeMap.get(element.getNode().getId())));
+        }
         
         for(Pair<CdpLink, CdpLink> pair : m_cdpTopologyService.matchCdpLinks()) {
             CdpLink sourceLink = pair.getLeft();

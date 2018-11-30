@@ -31,6 +31,7 @@ package org.opennms.netmgt.enlinkd;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
@@ -41,6 +42,7 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
@@ -62,14 +64,14 @@ public class IsisOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     }
 
     @Override
-    public OnmsTopology buildTopology() {
+    public OnmsTopology buildTopology() throws OnmsTopologyException {
         Map<Integer, Node> nodeMap= getNodeMap();
         OnmsTopology topology = new OnmsTopology();
-        m_isisTopologyService.findAllIsIsElements().stream().forEach(element -> {
-            topology.getVertices().add(create(nodeMap.get(element.getNode().getId()),ProtocolSupported.ISIS));
-        });
+        for ( IsIsElement element: m_isisTopologyService.findAllIsIsElements()) {
+            topology.getVertices().add(create(nodeMap.get(element.getNode().getId())));
+        }
         
-        for(Pair<IsIsLink, IsIsLink> pair : m_isisTopologyService.matchIsIsLinks()) {
+        for(Pair<IsIsLink, IsIsLink> pair : m_isisTopologyService.matchIsIsLinks()){
             IsIsLink sourceLink = pair.getLeft();
             IsIsLink targetLink = pair.getRight();
 

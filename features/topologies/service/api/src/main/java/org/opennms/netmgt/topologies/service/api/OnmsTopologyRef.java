@@ -32,5 +32,4 @@ public interface OnmsTopologyRef {
 
     String getId();    
  
-    String getProtocol();
 }

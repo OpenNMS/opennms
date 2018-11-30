@@ -30,12 +30,22 @@ package org.opennms.netmgt.topologies.service.api;
 
 public class OnmsTopologyEdge extends OnmsTopologyShared {
 
-    public static OnmsTopologyEdge create(String id, OnmsTopologyPort source, OnmsTopologyPort target) {
-        if (source !=  null && target != null && !source.getId().equals(target.getId())) {
-            return new OnmsTopologyEdge(id, source, target);
+    public static OnmsTopologyEdge create(String id, OnmsTopologyPort source, OnmsTopologyPort target) throws OnmsTopologyException {
+        if (source == null && target == null) {
+            throw new OnmsTopologyException("source and target port null, cannot create edge");
+        }
+        if (source == null ) {
+            throw new OnmsTopologyException("source port null, cannot create edge");
+        }
+        if (target == null ) {
+            throw new OnmsTopologyException("target port null, cannot create edge");
         }
         
-        return null;
+        if (source.getId().equals(target.getId())) {
+            throw new OnmsTopologyException("target =0 source port, cannot create edge");
+        }
+        
+        return new OnmsTopologyEdge(id, source, target);
     }
         
     private final OnmsTopologyPort m_source;

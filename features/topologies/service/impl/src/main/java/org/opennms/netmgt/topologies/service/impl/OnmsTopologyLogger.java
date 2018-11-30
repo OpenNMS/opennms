@@ -65,7 +65,7 @@ public class OnmsTopologyLogger implements OnmsTopologyConsumer {
         LOG.debug("-------Start receiving message--------");
         LOG.debug("received message type: {}" ,  message.getMessagestatus());
         LOG.debug("ref: {}",message.getMessagebody().getId());
-        LOG.debug("protocol: {}",message.getMessagebody().getProtocol());
+        LOG.debug("protocol: {}",message.getProtocol());
         if (message.getMessagebody() instanceof OnmsTopologyVertex) {
             LOG.debug("vertex: {}", ((OnmsTopologyVertex)message.getMessagebody()).getLabel());
         }

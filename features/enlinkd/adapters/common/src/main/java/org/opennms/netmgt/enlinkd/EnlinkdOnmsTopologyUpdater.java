@@ -53,17 +53,15 @@ import org.slf4j.LoggerFactory;
 
 public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements OnmsTopologyUpdater {
 
-    public static OnmsTopologyVertex create(MacPort macPort) {
+    public static OnmsTopologyVertex create(MacPort macPort) throws OnmsTopologyException {
         return OnmsTopologyVertex.create(Topology.getId(macPort),
-                                         ProtocolSupported.BRIDGE.name(),
                                          Topology.getId(macPort), 
                                          macPort.getIpMacInfo(), 
                                          null);
     }
     
-    public static OnmsTopologyVertex create(Node node, ProtocolSupported protocol) {
+    public static OnmsTopologyVertex create(Node node) throws OnmsTopologyException {
         return OnmsTopologyVertex.create(node.getId(), 
-                                         protocol.name(),
                                          node.getLabel(), 
                                          InetAddressUtils.str(node.getSnmpPrimaryIpAddr()), 
                                          node.getSysoid());
@@ -91,26 +89,26 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
     
     private <T extends OnmsTopologyRef>void update(T topoObject) {
         try {
-            m_topologyDao.update(this, OnmsTopologyMessage.update(topoObject));
+            m_topologyDao.update(this, OnmsTopologyMessage.update(topoObject,getProtocol()));
         } catch (OnmsTopologyException e) {
-            LOG.error("update: {}: {} {} {}", e.getMessageStatus(), e.getId(), e.getProtocol(),e.getMessage());
+            LOG.error("update: status:{} id:{} protocol:{} message{}", e.getMessageStatus(), e.getId(), e.getProtocol(),e.getMessage());
         }
     }
 
     private <T extends OnmsTopologyRef>void delete(T topoObject) {
         try {
-            m_topologyDao.update(this, OnmsTopologyMessage.delete(topoObject));
+            m_topologyDao.update(this, OnmsTopologyMessage.delete(topoObject,getProtocol()));
         } catch (OnmsTopologyException e) {
-            LOG.error("delete: {}: {} {} {}", e.getMessageStatus(), e.getId(), e.getProtocol(),e.getMessage());
+            LOG.error("delete: status:{} id:{} protocol:{} message{}", e.getMessageStatus(), e.getId(), e.getProtocol(),e.getMessage());
         }
     }
 
     private <T extends OnmsTopologyRef>void create(T topoObject) {
         try {
-            m_topologyDao.update(this, OnmsTopologyMessage.create(topoObject));
+            m_topologyDao.update(this, OnmsTopologyMessage.create(topoObject,getProtocol()));
         } catch (OnmsTopologyException e) {
-            LOG.error("delete: {}: {} {} {}", e.getMessageStatus(), e.getId(), e.getProtocol(),e.getMessage());
-        }
+            LOG.error("create: status:{} id:{} protocol:{} message{}", e.getMessageStatus(), e.getId(), e.getProtocol(),e.getMessage());
+       }
     }
 
     @Override
@@ -118,7 +116,13 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
         LOG.debug("run: start");
         if (m_topologyService.parseUpdates()) {
             LOG.debug("run: updates");
-            OnmsTopology topo = buildTopology();
+            OnmsTopology topo;
+            try {
+                topo = buildTopology();
+            } catch (OnmsTopologyException e) {
+                LOG.error("cannot build topology", e);
+                return;
+            }
             synchronized (m_topology) {
                 if (m_runned) {
                     m_topology.getVertices().stream().filter(v -> !topo.hasVertex(v.getId())).forEach(v -> delete(v));
@@ -172,7 +176,7 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
         return m_nodeTopologyService.findAll().stream().collect(Collectors.toMap(node -> node.getNodeId(), node -> node, (n1,n2) ->n1));
     }
     
-    public abstract OnmsTopology buildTopology();
+    public abstract OnmsTopology buildTopology() throws OnmsTopologyException;
     
     @Override
     public OnmsTopology getTopology() {

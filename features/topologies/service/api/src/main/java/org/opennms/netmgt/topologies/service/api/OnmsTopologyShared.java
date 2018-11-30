@@ -33,18 +33,17 @@ import java.util.List;
 
 public class OnmsTopologyShared extends OnmsTopologyAbstractRef implements OnmsTopologyRef {
 
-    public static OnmsTopologyShared create(String id,OnmsTopologyPort...sources) {
-        if (id !=  null && sources != null && sources.length > 1) {
-            return new OnmsTopologyShared(id,sources);
+    public static OnmsTopologyShared create(String id,OnmsTopologyPort...sources) throws OnmsTopologyException {
+        if (id ==  null || sources == null || sources.length <= 1) {
+            throw new OnmsTopologyException("Cannot create Shared");
         }
-        
-        return null;
+        return new OnmsTopologyShared(id,sources);
     }
         
     private final OnmsTopologyPort[] m_sources;
 
     protected OnmsTopologyShared(String id, OnmsTopologyPort...sources) {
-        super(id,sources[0].getProtocol());
+        super(id);
         m_sources = sources;
     }
 

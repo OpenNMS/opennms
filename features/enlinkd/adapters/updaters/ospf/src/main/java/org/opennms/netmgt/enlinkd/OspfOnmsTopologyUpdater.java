@@ -32,6 +32,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
@@ -42,6 +43,7 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
@@ -62,12 +64,12 @@ public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     }
 
     @Override
-    public OnmsTopology buildTopology() {
+    public OnmsTopology buildTopology() throws OnmsTopologyException {
         Map<Integer, Node> nodeMap=getNodeMap();
         OnmsTopology topology = new OnmsTopology();
-        m_ospfTopologyService.findAllOspfElements().stream().forEach(element -> {
-            topology.getVertices().add(create(nodeMap.get(element.getNode().getId()),ProtocolSupported.OSPF));
-        });
+        for (OspfElement element: m_ospfTopologyService.findAllOspfElements()) {
+            topology.getVertices().add(create(nodeMap.get(element.getNode().getId())));
+        }
         
         for(Pair<OspfLink, OspfLink> pair : m_ospfTopologyService.matchOspfLinks()) {
             OspfLink sourceLink = pair.getLeft();
