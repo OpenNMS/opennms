@@ -60,5 +60,9 @@
       <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
     </dependency>
+      <dependency>
+          <groupId>org.opennms.core</groupId>
+          <artifactId>org.opennms.core.lib</artifactId>
+      </dependency>
   </dependencies>
 </project>

@@ -52,6 +52,7 @@ import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.LtRestriction;
 import org.opennms.core.criteria.restrictions.NotNullRestriction;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.SystemPropertiesUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.CollectionStatus;
@@ -215,7 +216,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         Assert.state(m_disconnectedTimeout > 0, "the disconnectedTimeout property must be set");
         Assert.notNull(m_persisterFactory, "The persisterFactory must be set");
 
-        m_minimumConfigurationReloadInterval = Long.getLong("opennms.pollerBackend.minimumConfigurationReloadInterval", 300000L).longValue();
+        m_minimumConfigurationReloadInterval = SystemPropertiesUtils.getLong("opennms.pollerBackend.minimumConfigurationReloadInterval", 300000L).longValue();
 
         configurationUpdated();
     }

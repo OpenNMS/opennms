@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.alarmd;
 
+import org.opennms.core.utils.SystemPropertiesUtils;
 import org.opennms.netmgt.alarmd.drools.DroolsAlarmContext;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.daemon.DaemonTools;
@@ -37,6 +38,7 @@ import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -52,7 +54,7 @@ public class Alarmd extends AbstractServiceDaemon implements ThreadAwareEventLis
     /** Constant <code>NAME="alarmd"</code> */
     public static final String NAME = "alarmd";
 
-    protected static final Integer THREADS = Integer.getInteger("org.opennms.alarmd.threads", 4);
+    protected static final Integer THREADS = SystemPropertiesUtils.getInteger("org.opennms.alarmd.threads", 4);
 
     private AlarmPersister m_persister;
 

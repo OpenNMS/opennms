@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
+import org.opennms.core.utils.SystemPropertiesUtils;
 import org.opennms.netmgt.alarmd.api.AlarmPersisterExtension;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
@@ -71,7 +72,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     public static final String RELATED_REDUCTION_KEY_PREFIX = "related-reductionKey";
 
-    protected static final Integer NUM_STRIPE_LOCKS = Integer.getInteger("org.opennms.alarmd.stripe.locks", Alarmd.THREADS * 4);
+    protected static final Integer NUM_STRIPE_LOCKS = SystemPropertiesUtils.getInteger("org.opennms.alarmd.stripe.locks", Alarmd.THREADS * 4);
     protected static boolean NEW_IF_CLEARED = Boolean.getBoolean("org.opennms.alarmd.newIfClearedAlarmExists");
     protected static boolean LEGACY_ALARM_STATE = Boolean.getBoolean("org.opennms.alarmd.legacyAlarmState");
 
@@ -95,7 +96,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private final Set<AlarmPersisterExtension> extensions = Sets.newConcurrentHashSet();
 
     private boolean m_createNewAlarmIfClearedAlarmExists = LEGACY_ALARM_STATE == true ? false : NEW_IF_CLEARED;
-    
+
     private boolean m_legacyAlarmState = LEGACY_ALARM_STATE;
 
     @Override
@@ -126,7 +127,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     }
 
     private OnmsAlarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
-        
+
         final OnmsEvent persistedEvent = m_eventDao.get(event.getDbid());
         if (persistedEvent == null) {
             throw new IllegalStateException("Event with id " + event.getDbid() + " was deleted before we could retrieve it and create an alarm.");
@@ -134,10 +135,10 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
         final String reductionKey = event.getAlarmData().getReductionKey();
         LOG.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
-        
+
         String key = reductionKey;
         String clearKey = event.getAlarmData().getClearKey();
-        
+
         boolean didSwapReductionKeyWithClearKey = false;
         if (!m_legacyAlarmState && clearKey != null && isResolutionEvent(event)) {
             key = clearKey;
@@ -208,15 +209,15 @@ public class AlarmPersisterImpl implements AlarmPersister {
         // Always set these
         alarm.setLastEvent(persistedEvent);
         alarm.setLastEventTime(persistedEvent.getEventTime());
-        
+
         if (!isResolutionEvent(event)) {
             incrementCounter(alarm);
-            
+
             if (isResolvedAlarm(alarm)) {
                 resetAlarmSeverity(persistedEvent, alarm);
             }
         } else {
-            
+
             if (isResolvedAlarm(alarm)) {
                 incrementCounter(alarm);
             } else {
@@ -299,7 +300,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
         persistedEvent.setAlarm(alarm);
     }
-    
+
     private void updateRelatedAlarms(OnmsAlarm alarm, Event event) {
         // Clear the existing related alarms that may be known for this alarm so that we treat the event as an
         // authoritative source of the related alarms rather than using the union of the previously known related alarms
@@ -369,7 +370,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return situation.getReductionKey().equals(relatedAlarm.getReductionKey()) ||
                 relatedAlarm.getRelatedAlarms().stream().anyMatch(ra -> formingCyclicGraph(situation, ra));
     }
-    
+
     private Set<OnmsAlarm> getRelatedAlarms(List<Parm> list) {
         if (list == null || list.isEmpty()) {
             return Collections.emptySet();
