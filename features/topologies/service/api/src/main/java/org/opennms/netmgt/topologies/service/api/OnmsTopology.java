@@ -65,5 +65,19 @@ public class OnmsTopology {
         m_edges = edges;
     }    
 
+    public boolean hasVertex(String id) {
+        return (getVertex(id) != null);
+    }
+    
+    public boolean hasEdge(String id) {
+        return (getEdge(id) != null);
+    }
+    
+    public OnmsTopology clone() {
+        OnmsTopology topo = new OnmsTopology();
+        topo.setVertices(new HashSet<>(m_vertices));
+        topo.setConnections(new HashSet<>(getEdges()));
+        return topo;
+    }
 }
 

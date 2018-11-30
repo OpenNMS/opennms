@@ -30,8 +30,9 @@ package org.opennms.netmgt.topologies.service.api;
 
 import java.util.Set;
 
-public interface OnmsTopologyConsumer extends OnmsTopologyRef {
+public interface OnmsTopologyConsumer {
     
+    String getName();
     Set<String> getProtocols();
 
     void consume(OnmsTopologyMessage message);

@@ -61,13 +61,11 @@ public class LldpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     }
 
     @Override
-    public OnmsTopology getTopology() {
+    public OnmsTopology buildTopology() {
         Map<Integer, Node> nodeMap= getNodeMap();
         OnmsTopology topology = new OnmsTopology();
         m_lldpTopologyService.findAllLldpElements().stream().forEach(element -> {
-            OnmsTopologyVertex vertex = create(nodeMap.get(element.getNode().getId()));
-            vertex.getProtocolSupported().add(ProtocolSupported.LLDP.name());
-            topology.getVertices().add(vertex);
+            topology.getVertices().add(create(nodeMap.get(element.getNode().getId()),ProtocolSupported.LLDP));
         });
         
 
@@ -84,16 +82,10 @@ public class LldpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
             targetPort.setAddr(targetLink.getLldpRemPortId());
             String id = Topology.getDefaultEdgeId(sourceLink.getId(), targetLink.getId());
             OnmsTopologyEdge edge = OnmsTopologyEdge.create(id,sourcePort, targetPort);
-            edge.setDiscoveredBy(ProtocolSupported.LLDP.name());
             topology.getEdges().add(edge);
        }
         
         return topology;
-    }
-
-    @Override
-    public String getId() {
-        return ProtocolSupported.LLDP.name();
     }
 
     @Override

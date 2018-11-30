@@ -61,13 +61,11 @@ public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     }
 
     @Override
-    public OnmsTopology getTopology() {
+    public OnmsTopology buildTopology() {
         Map<Integer, Node> nodeMap= getNodeMap();
         OnmsTopology topology = new OnmsTopology();
         m_cdpTopologyService.findAllCdpElements().stream().forEach(element -> {
-            OnmsTopologyVertex vertex = create(nodeMap.get(element.getNode().getId()));
-            vertex.getProtocolSupported().add(ProtocolSupported.CDP.name());
-            topology.getVertices().add(vertex);
+            topology.getVertices().add(create(nodeMap.get(element.getNode().getId()),ProtocolSupported.CDP));
         });
         
         for(Pair<CdpLink, CdpLink> pair : m_cdpTopologyService.matchCdpLinks()) {
@@ -84,16 +82,10 @@ public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
             targetPort.setAddr(sourceLink.getCdpCacheAddress());
             String id = Topology.getDefaultEdgeId(sourceLink.getId(), targetLink.getId());
             OnmsTopologyEdge edge = OnmsTopologyEdge.create(id,sourcePort, targetPort);
-            edge.setDiscoveredBy(ProtocolSupported.CDP.name());
             topology.getEdges().add(edge);
        }
         
         return topology;
-    }
-
-    @Override
-    public String getId() {
-        return ProtocolSupported.CDP.name();
     }
 
     @Override

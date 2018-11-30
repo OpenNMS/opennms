@@ -52,6 +52,7 @@ import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -133,6 +134,9 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
 
     @Autowired
     protected CdpTopologyService m_cdpTopologyService;
+
+    @Autowired
+    protected LldpTopologyService m_lldpTopologyService;
 
     @Autowired
     protected NodeTopologyService m_nodeTopologyService;

@@ -49,6 +49,22 @@ public class OnmsTopologyException extends Exception {
         super(message, throwable);
     }
 
+    public OnmsTopologyException(String message, String protocol) {
+        super(message);
+        m_protocol =protocol;
+    }
+
+    public OnmsTopologyException(String message,String protocol, Throwable throwable) {
+        super(message, throwable);
+        m_protocol=protocol;
+    }
+
+    public OnmsTopologyException(String message, String protocol, TopologyMessageStatus status) {
+        super(message);
+        m_protocol =protocol;
+        m_messageStatus=status;
+    }
+
     public OnmsTopologyException(String message, OnmsTopologyRef ref, String protocol) {
         super(message);
         m_ref=ref;

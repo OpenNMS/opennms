@@ -111,7 +111,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
         } else {
     		LOG.debug( "run: node[{}]: lldp identifier : {}",
     				getNodeId(),
-    				lldpLocalGroup.getLldpElement());
+    				lldpLocalGroup.getLldpElement().getLldpChassisId());
         }
 
         m_lldpTopologyService.store(getNodeId(),

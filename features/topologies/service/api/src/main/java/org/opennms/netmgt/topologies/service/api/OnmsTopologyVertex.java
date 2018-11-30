@@ -30,16 +30,14 @@ package org.opennms.netmgt.topologies.service.api;
 
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class OnmsTopologyVertex extends OnmsTopologyAbstractRef implements OnmsTopologyRef {
 
 
-    public static OnmsTopologyVertex create(String id,String label,String address, String iconKey) {
-        if (id != null) {
-            return new OnmsTopologyVertex(id,label,address,iconKey);
+    public static OnmsTopologyVertex create(String id,String protocol,String label,String address, String iconKey) {
+        if (id != null && protocol != null) {
+            return new OnmsTopologyVertex(id,protocol,label,address,iconKey);
         }
         return null;
     }
@@ -48,25 +46,13 @@ public class OnmsTopologyVertex extends OnmsTopologyAbstractRef implements OnmsT
     private final String m_address;
     private final String m_iconKey;
     private Map<String,String> m_attributes = new HashMap<String,String>();
-    private Set<String> m_protocolSupported = new HashSet<String>();
 
-    private OnmsTopologyVertex(String id, String label, String address,String iconKey) {
-        super(id);
+    private OnmsTopologyVertex(String id, String protocol,String label, String address,String iconKey) {
+        super(id,protocol);
         m_label=label;
         m_address=address;
         m_iconKey=iconKey;
     }
-
-
-    public Set<String> getProtocolSupported() {
-        return m_protocolSupported;
-    }
-
-    public void setProtocolSupported(
-            Set<String> protocolSupported) {
-        m_protocolSupported = protocolSupported;
-    }
-
 
     public Map<String, String> getAttributes() {
         return m_attributes;

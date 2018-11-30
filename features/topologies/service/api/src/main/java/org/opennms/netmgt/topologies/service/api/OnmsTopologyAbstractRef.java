@@ -31,13 +31,19 @@ package org.opennms.netmgt.topologies.service.api;
 public abstract class OnmsTopologyAbstractRef {
     
     private final String m_id;
+    private final String m_protocol;
 
-    public OnmsTopologyAbstractRef(String id) {
+    public OnmsTopologyAbstractRef(String id, String protocol) {
         m_id= id;
+        m_protocol = protocol;
     }
 
     public String getId() {
         return m_id;
+    }
+
+    public String getProtocol() {
+        return m_protocol;
     }
 
     @Override
@@ -45,6 +51,8 @@ public abstract class OnmsTopologyAbstractRef {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((m_id == null) ? 0 : m_id.hashCode());
+        result = prime * result
+                + ((m_protocol == null) ? 0 : m_protocol.hashCode());
         return result;
     }
 
@@ -62,7 +70,13 @@ public abstract class OnmsTopologyAbstractRef {
                 return false;
         } else if (!m_id.equals(other.m_id))
             return false;
+        if (m_protocol == null) {
+            if (other.m_protocol != null)
+                return false;
+        } else if (!m_protocol.equals(other.m_protocol))
+            return false;
         return true;
     }
+
     
 }

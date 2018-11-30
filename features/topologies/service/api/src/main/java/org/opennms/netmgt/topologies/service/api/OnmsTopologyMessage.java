@@ -52,7 +52,7 @@ public class OnmsTopologyMessage {
     private final OnmsTopologyRef m_messagebody;
     private final TopologyMessageStatus m_messagestatus;
 
-    private OnmsTopologyMessage(OnmsTopologyRef messagebody, TopologyMessageStatus messagestatus) {
+    private <T extends OnmsTopologyRef>OnmsTopologyMessage(T messagebody, TopologyMessageStatus messagestatus) {
         m_messagebody=messagebody;
         m_messagestatus=messagestatus;
     }

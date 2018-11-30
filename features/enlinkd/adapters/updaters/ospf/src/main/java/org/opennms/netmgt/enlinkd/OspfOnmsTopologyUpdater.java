@@ -62,16 +62,13 @@ public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     }
 
     @Override
-    public OnmsTopology getTopology() {
+    public OnmsTopology buildTopology() {
         Map<Integer, Node> nodeMap=getNodeMap();
         OnmsTopology topology = new OnmsTopology();
-        m_ospfTopologyService.findAllOspfElements().stream().forEach(cdpelement -> {
-            OnmsTopologyVertex vertex = create(nodeMap.get(cdpelement.getNode().getId()));
-            vertex.getProtocolSupported().add(ProtocolSupported.OSPF.name());
-            topology.getVertices().add(vertex);
+        m_ospfTopologyService.findAllOspfElements().stream().forEach(element -> {
+            topology.getVertices().add(create(nodeMap.get(element.getNode().getId()),ProtocolSupported.OSPF));
         });
         
-
         for(Pair<OspfLink, OspfLink> pair : m_ospfTopologyService.matchOspfLinks()) {
             OspfLink sourceLink = pair.getLeft();
             OspfLink targetLink = pair.getRight();
@@ -84,17 +81,10 @@ public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
             targetPort.setPort(InetAddressUtils.str(targetLink.getOspfIpAddr()));
             targetPort.setAddr(InetAddressUtils.str(sourceLink.getOspfRemIpAddr()));
             String id = Topology.getDefaultEdgeId(sourceLink.getId(), targetLink.getId());
-            OnmsTopologyEdge edge = OnmsTopologyEdge.create(id,sourcePort, targetPort);
-            edge.setDiscoveredBy(ProtocolSupported.OSPF.name());
-            topology.getEdges().add(edge);
+            topology.getEdges().add(OnmsTopologyEdge.create(id,sourcePort, targetPort));
        }
         
         return topology;
-    }
-
-    @Override
-    public String getId() {
-        return ProtocolSupported.OSPF.name();
     }
 
     @Override

@@ -49,7 +49,7 @@ public class OnmsTopologyPort extends OnmsTopologyAbstractRef implements OnmsTop
     
 
     private OnmsTopologyPort(String id, OnmsTopologyVertex vertex, Integer index) {
-        super(id);
+        super(id,vertex.getProtocol());
         m_vertex = vertex;
         m_index = index;
     }

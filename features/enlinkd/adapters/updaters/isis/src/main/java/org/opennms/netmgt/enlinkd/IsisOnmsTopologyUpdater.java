@@ -62,13 +62,11 @@ public class IsisOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     }
 
     @Override
-    public OnmsTopology getTopology() {
+    public OnmsTopology buildTopology() {
         Map<Integer, Node> nodeMap= getNodeMap();
         OnmsTopology topology = new OnmsTopology();
         m_isisTopologyService.findAllIsIsElements().stream().forEach(element -> {
-            OnmsTopologyVertex vertex = create(nodeMap.get(element.getNode().getId()));
-            vertex.getProtocolSupported().add(ProtocolSupported.ISIS.name());
-            topology.getVertices().add(vertex);
+            topology.getVertices().add(create(nodeMap.get(element.getNode().getId()),ProtocolSupported.ISIS));
         });
         
         for(Pair<IsIsLink, IsIsLink> pair : m_isisTopologyService.matchIsIsLinks()) {
@@ -85,16 +83,10 @@ public class IsisOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
             targetPort.setAddr(sourceLink.getIsisISAdjNeighSNPAAddress());
             String id = Topology.getDefaultEdgeId(sourceLink.getId(), targetLink.getId());
             OnmsTopologyEdge edge = OnmsTopologyEdge.create(id,sourcePort, targetPort);
-            edge.setDiscoveredBy(ProtocolSupported.ISIS.name());
             topology.getEdges().add(edge);
        }
         
         return topology;
-    }
-
-    @Override
-    public String getId() {
-        return ProtocolSupported.ISIS.name();
     }
 
     @Override

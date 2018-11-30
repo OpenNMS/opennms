@@ -35,6 +35,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.enlinkd.service.api.TopologyService;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -42,6 +43,9 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyRef;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyShared;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyUpdater;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
@@ -50,14 +54,16 @@ import org.slf4j.LoggerFactory;
 public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements OnmsTopologyUpdater {
 
     public static OnmsTopologyVertex create(MacPort macPort) {
-        return OnmsTopologyVertex.create(Topology.getId(macPort), 
+        return OnmsTopologyVertex.create(Topology.getId(macPort),
+                                         ProtocolSupported.BRIDGE.name(),
                                          Topology.getId(macPort), 
                                          macPort.getIpMacInfo(), 
                                          null);
     }
     
-    public static OnmsTopologyVertex create(Node node) {
+    public static OnmsTopologyVertex create(Node node, ProtocolSupported protocol) {
         return OnmsTopologyVertex.create(node.getId(), 
+                                         protocol.name(),
                                          node.getLabel(), 
                                          InetAddressUtils.str(node.getSnmpPrimaryIpAddr()), 
                                          node.getSysoid());
@@ -69,6 +75,9 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
     private final NodeTopologyService m_nodeTopologyService;
     private final TopologyService m_topologyService;
 
+    private OnmsTopology m_topology;
+    private boolean m_runned = false;
+    
     public EnlinkdOnmsTopologyUpdater(EventForwarder eventforwarder,
             TopologyService topologyService,
             OnmsTopologyDao topologyDao, NodeTopologyService nodeTopologyService,
@@ -77,28 +86,76 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
         m_topologyDao = topologyDao;
         m_topologyService = topologyService;
         m_nodeTopologyService = nodeTopologyService;
+        m_topology = new OnmsTopology();
     }            
     
+    private <T extends OnmsTopologyRef>void update(T topoObject) {
+        try {
+            m_topologyDao.update(this, OnmsTopologyMessage.update(topoObject));
+        } catch (OnmsTopologyException e) {
+            LOG.error("update: {}: {} {} {}", e.getMessageStatus(), e.getId(), e.getProtocol(),e.getMessage());
+        }
+    }
+
+    private <T extends OnmsTopologyRef>void delete(T topoObject) {
+        try {
+            m_topologyDao.update(this, OnmsTopologyMessage.delete(topoObject));
+        } catch (OnmsTopologyException e) {
+            LOG.error("delete: {}: {} {} {}", e.getMessageStatus(), e.getId(), e.getProtocol(),e.getMessage());
+        }
+    }
+
+    private <T extends OnmsTopologyRef>void create(T topoObject) {
+        try {
+            m_topologyDao.update(this, OnmsTopologyMessage.create(topoObject));
+        } catch (OnmsTopologyException e) {
+            LOG.error("delete: {}: {} {} {}", e.getMessageStatus(), e.getId(), e.getProtocol(),e.getMessage());
+        }
+    }
+
     @Override
     public void runDiscovery() {
         LOG.debug("run: start");
         if (m_topologyService.parseUpdates()) {
             LOG.debug("run: updates");
-        OnmsTopology topo = getTopology();
-        topo.getVertices().stream().forEach(vertex -> {
-            try {
-                m_topologyDao.update(this, OnmsTopologyMessage.update(vertex));
-            } catch (OnmsTopologyException e) {
-                LOG.error("update: cannot {}: {} {} {}", e.getMessageStatus(), e.getId(), e.getProtocol(),e.getMessage());
+            OnmsTopology topo = buildTopology();
+            synchronized (m_topology) {
+                if (m_runned) {
+                    m_topology.getVertices().stream().filter(v -> !topo.hasVertex(v.getId())).forEach(v -> delete(v));
+                    m_topology.getEdges().stream().filter(g -> !topo.hasEdge(g.getId())).forEach(g -> delete(g));
+
+                    topo.getVertices().stream().filter(v -> !m_topology.hasVertex(v.getId())).forEach(v -> create(v));
+                    topo.getEdges().stream().filter(g -> !m_topology.hasEdge(g.getId())).forEach(g -> create(g));
+                    
+                    topo.getVertices().stream().filter(v -> m_topology.hasVertex(v.getId())).forEach(v -> {
+                        
+                    });
+                    topo.getEdges().stream().filter(g -> m_topology.hasEdge(g.getId())).forEach(g -> {
+                        OnmsTopologyShared og = m_topology.getEdge(g.getId()); 
+                        boolean updated = false;
+                        for (OnmsTopologyPort op: og.getSources()) {
+                            if (!g.hasPort(op.getId())) {
+                                update(g);
+                                updated=true;
+                                break;
+                            }
+                        }
+                        if (!updated) {
+                            for (OnmsTopologyPort p: g.getSources()) {
+                                if (!og.hasPort(p.getId())) {
+                                    update(g);
+                                    break;
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    topo.getVertices().stream().forEach(v -> create(v));
+                    topo.getEdges().stream().forEach(g -> create(g));
+                }
+                m_topology = topo;
             }
-        });
-        topo.getEdges().stream().forEach(edge -> {
-            try {
-                m_topologyDao.update(this, OnmsTopologyMessage.update(edge));
-            } catch (OnmsTopologyException e) {
-                LOG.error("update: cannot {}: {} {} {}", e.getMessageStatus(), e.getId(), e.getProtocol(),e.getMessage());
-            }
-        });
+            m_runned=true;
         }
         LOG.debug("run: end");
     }
@@ -114,6 +171,17 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
     public Map<Integer, Node> getNodeMap() {
         return m_nodeTopologyService.findAll().stream().collect(Collectors.toMap(node -> node.getNodeId(), node -> node, (n1,n2) ->n1));
     }
+    
+    public abstract OnmsTopology buildTopology();
+    
+    @Override
+    public OnmsTopology getTopology() {
+        synchronized (m_topology) {
+            return m_topology.clone();
+        }
+    }
+    
+    
             
 }
 

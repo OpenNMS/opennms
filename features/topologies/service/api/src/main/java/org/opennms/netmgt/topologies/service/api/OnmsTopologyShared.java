@@ -42,26 +42,22 @@ public class OnmsTopologyShared extends OnmsTopologyAbstractRef implements OnmsT
     }
         
     private final OnmsTopologyPort[] m_sources;
-    private String m_discoveredBy;
 
     protected OnmsTopologyShared(String id, OnmsTopologyPort...sources) {
-        super(id);
+        super(id,sources[0].getProtocol());
         m_sources = sources;
     }
 
     public List<OnmsTopologyPort> getSources() {
         return Arrays.asList(m_sources);
     }
-
-    public String getDiscoveredBy() {
-        return m_discoveredBy;
+    
+    public OnmsTopologyPort getPort(String id) {
+        return Arrays.asList(m_sources).stream().filter(p -> id.equals(p.getId())).findAny().orElse(null);
     }
 
-    public void setDiscoveredBy(String discoveredBy) {
-        m_discoveredBy = discoveredBy;
+    public boolean hasPort(String id) {
+        return (getPort(id) != null);
     }
-
-
-
     
 }

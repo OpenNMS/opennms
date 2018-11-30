@@ -32,7 +32,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyShared;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +51,7 @@ public class OnmsTopologyLogger implements OnmsTopologyConsumer {
     }
 
     @Override
-    public String getId() {
+    public String getName() {
         return m_protocols+":Consumer:Logger";
     }
 
@@ -58,7 +62,27 @@ public class OnmsTopologyLogger implements OnmsTopologyConsumer {
 
     @Override
     public void consume(OnmsTopologyMessage message) {
-        LOG.debug("received message type:" +  message.getMessagestatus() + " ref:"+message.getMessagebody().getId());
+        LOG.debug("-------Start receiving message--------");
+        LOG.debug("received message type: {}" ,  message.getMessagestatus());
+        LOG.debug("ref: {}",message.getMessagebody().getId());
+        LOG.debug("protocol: {}",message.getMessagebody().getProtocol());
+        if (message.getMessagebody() instanceof OnmsTopologyVertex) {
+            LOG.debug("vertex: {}", ((OnmsTopologyVertex)message.getMessagebody()).getLabel());
+        }
+        if (message.getMessagebody() instanceof OnmsTopologyEdge) {
+            OnmsTopologyEdge edge = (OnmsTopologyEdge)message.getMessagebody();
+            OnmsTopologyPort source = edge.getSource();
+            OnmsTopologyPort target = edge.getTarget();
+            LOG.debug("edge: vertex {} port {}", source.getVertex().getLabel(), source.getPort());
+            LOG.debug("edge: vertex {} port {}", target.getVertex().getLabel(), target.getPort());
+        } else if (message.getMessagebody() instanceof OnmsTopologyShared) {
+           OnmsTopologyShared shared = (OnmsTopologyShared) message.getMessagebody(); 
+           shared.getSources().stream().forEach( p -> {
+               LOG.debug("edge: vertex {} port {}", p.getVertex().getLabel(), p.getPort());
+           });
+        }
+        LOG.debug("-------End receiving message--------");
+
     }
 
 }

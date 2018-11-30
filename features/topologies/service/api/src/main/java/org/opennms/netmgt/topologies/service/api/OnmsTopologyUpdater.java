@@ -28,10 +28,12 @@
 
 package org.opennms.netmgt.topologies.service.api;
 
-public interface OnmsTopologyUpdater extends OnmsTopologyRef {
+public interface OnmsTopologyUpdater {
     
     OnmsTopology getTopology();
     
     String getProtocol();
+    
+    String getName();
 
 }
