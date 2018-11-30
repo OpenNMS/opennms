@@ -28,12 +28,14 @@
 
 package org.opennms.features.apilayer.utils;
 
+import org.opennms.features.apilayer.model.AlarmFeedbackBean;
 import org.opennms.features.apilayer.model.AlarmBean;
 import org.opennms.features.apilayer.model.DatabaseEventBean;
 import org.opennms.features.apilayer.model.InMemoryEventBean;
 import org.opennms.features.apilayer.model.NodeBean;
 import org.opennms.features.apilayer.model.SnmpInterfaceBean;
 import org.opennms.integration.api.v1.model.Alarm;
+import org.opennms.integration.api.v1.model.AlarmFeedback;
 import org.opennms.integration.api.v1.model.DatabaseEvent;
 import org.opennms.integration.api.v1.model.EventParameter;
 import org.opennms.integration.api.v1.model.InMemoryEvent;
@@ -112,5 +114,9 @@ public class ModelMappers {
                 return Severity.CRITICAL;
         }
         return Severity.INDETERMINATE;
+    }
+    
+    public static AlarmFeedback toFeedback(org.opennms.features.situationfeedback.api.AlarmFeedback feedback) {
+        return feedback == null ? null : new AlarmFeedbackBean(feedback);
     }
 }

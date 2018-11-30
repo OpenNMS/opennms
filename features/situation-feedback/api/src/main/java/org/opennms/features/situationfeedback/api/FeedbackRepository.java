@@ -29,11 +29,21 @@
 package org.opennms.features.situationfeedback.api;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface FeedbackRepository {
 
     void persist(Collection<AlarmFeedback> feedback) throws FeedbackException;
 
+    /**
+     * @param situationKey the reduction key of the situation to get feedback for
+     * @return all of the feedback applicable to the given situation
+     */
     Collection<AlarmFeedback> getFeedback(String situationKey) throws FeedbackException;
+
+    /**
+     * @return all of the feedback present in the repository
+     */
+    List<AlarmFeedback> getAllFeedback() throws FeedbackException;
 
 }

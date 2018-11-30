@@ -108,8 +108,14 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
         String query = "{\n" + "  \"query\": { \"match\": { \"situation_key\": " + gson.toJson(situationKey) + " } }\n" + "}";
         return search(query);
     }
+    
+    @Override
+    public List<AlarmFeedback> getAllFeedback() throws FeedbackException {
+        String query = "{\n" + "\t\"query\": {\"match_all\": {}},\n\t\"sort\": [{\"@timestamp\": {\"order\" : \"asc\"}}]\n" + "}";
+        return search(query);
+    }
 
-    private Collection<AlarmFeedback> search(String query) throws FeedbackException {
+    private List<AlarmFeedback> search(String query) throws FeedbackException {
         Search.Builder builder = new Search.Builder(query).addType(TYPE);
         try {
             return execute(builder.build());
@@ -118,7 +124,7 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
         }
     }
 
-    private Collection<AlarmFeedback> execute(Search search) throws IOException, FeedbackException {
+    private List<AlarmFeedback> execute(Search search) throws IOException, FeedbackException {
         SearchResult result = client.execute(search);
         if (result == null) {
             throw new FeedbackException("Failed to get result");

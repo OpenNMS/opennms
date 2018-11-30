@@ -26,18 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.situationfeedback.api;
+package org.opennms.features.apilayer.dao;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
-/**
- * Implementations of this interface react to alarm feedback being generated.
- */
-public interface AlarmFeedbackListener {
-    /**
-     * Handle the newly generated collection of alarm feedback.
-     *
-     * @param alarmFeedback the collection of alarm feedback
-     */
-    void handleAlarmFeedback(List<AlarmFeedback> alarmFeedback);
+import org.opennms.features.apilayer.utils.ModelMappers;
+import org.opennms.features.situationfeedback.api.FeedbackException;
+import org.opennms.features.situationfeedback.api.FeedbackRepository;
+import org.opennms.integration.api.v1.dao.AlarmFeedbackDao;
+import org.opennms.integration.api.v1.model.AlarmFeedback;
+
+public class AlarmFeedbackDaoImpl implements AlarmFeedbackDao {
+
+    private final FeedbackRepository feedbackRepository;
+
+    public AlarmFeedbackDaoImpl(FeedbackRepository feedbackRepository) {
+        this.feedbackRepository = Objects.requireNonNull(feedbackRepository);
+    }
+
+    @Override
+    public List<AlarmFeedback> getFeedback() {
+        try {
+            return feedbackRepository.getAllFeedback()
+                    .stream()
+                    .map(ModelMappers::toFeedback)
+                    .collect(Collectors.toList());
+        } catch (FeedbackException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

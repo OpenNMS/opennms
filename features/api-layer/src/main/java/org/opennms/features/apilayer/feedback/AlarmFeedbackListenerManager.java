@@ -26,18 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.situationfeedback.api;
+package org.opennms.features.apilayer.feedback;
 
 import java.util.List;
 
-/**
- * Implementations of this interface react to alarm feedback being generated.
- */
-public interface AlarmFeedbackListener {
-    /**
-     * Handle the newly generated collection of alarm feedback.
-     *
-     * @param alarmFeedback the collection of alarm feedback
-     */
-    void handleAlarmFeedback(List<AlarmFeedback> alarmFeedback);
+import org.opennms.features.apilayer.utils.InterfaceMapper;
+import org.opennms.features.apilayer.utils.ModelMappers;
+import org.opennms.features.situationfeedback.api.AlarmFeedback;
+import org.opennms.features.situationfeedback.api.AlarmFeedbackListener;
+import org.osgi.framework.BundleContext;
+
+public class AlarmFeedbackListenerManager extends InterfaceMapper<org.opennms.integration.api.v1.feedback.AlarmFeedbackListener, AlarmFeedbackListener> {
+
+    public AlarmFeedbackListenerManager(BundleContext bundleContext) {
+        super(AlarmFeedbackListener.class, bundleContext);
+    }
+
+    @Override
+    public AlarmFeedbackListener map(org.opennms.integration.api.v1.feedback.AlarmFeedbackListener ext) {
+        return new AlarmFeedbackListener() {
+            @Override
+            public void handleAlarmFeedback(List<AlarmFeedback> alarmFeedback) {
+                alarmFeedback.stream()
+                        .map(ModelMappers::toFeedback)
+                        .forEach(ext::onFeedback);
+            }
+        };
+    }
 }
