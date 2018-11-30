@@ -216,7 +216,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
             return false;
         }
 
-        public void handleRequestParameter(VaadinRequest request) {
+        private void handleRequestParameter(VaadinRequest request) {
             boolean updateURL = false;
             for (RequestParameterHandler handler : requestHandlerList) {
                 if (handler.handleRequest(request)) {
@@ -865,7 +865,6 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     // may change during layout.
     private void loadUserSettings() {
         applyHistory(m_applicationContext.getUsername(), m_historyManager.getHistoryFragment(m_applicationContext.getUsername()));
-        m_graphContainer.redoLayout();
     }
 
     private void applyHistory(String username, String fragment) {
