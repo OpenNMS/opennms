@@ -64,6 +64,7 @@ import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.model.FilterManager;
+import org.opennms.netmgt.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsLinkTopologyEntity;
@@ -75,6 +76,7 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.NodeTopologyEntity;
+import org.opennms.netmgt.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.model.topology.BridgePort;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
@@ -134,11 +136,11 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private BridgeTopologyDao m_bridgeTopologyDao;
     private IpNetToMediaDao m_ipNetToMediaDao;
 
-    private Map<Integer, OnmsIpInterface> m_nodeToOnmsIpPrimaryMap =new HashMap<>();
-    private Map<Integer, Map<Integer,OnmsSnmpInterface>> m_nodeToOnmsSnmpMap = new HashMap<>();
+    private Map<Integer, IpInterfaceTopologyEntity> m_nodeToOnmsIpPrimaryMap =new HashMap<>();
+    private Map<Integer, Map<Integer,SnmpInterfaceTopologyEntity>> m_nodeToOnmsSnmpMap = new HashMap<>();
     private Map<String, Integer> m_macToNodeidMap = new HashMap<>();
-    private Map<String, OnmsIpInterface> m_macToOnmsIpMap = new HashMap<>();
-    private Map<String, OnmsSnmpInterface> m_macToOnmsSnmpMap = new HashMap<>();
+    private Map<String, IpInterfaceTopologyEntity> m_macToOnmsIpMap = new HashMap<>();
+    private Map<String, SnmpInterfaceTopologyEntity> m_macToOnmsSnmpMap = new HashMap<>();
 
     private final Timer m_loadFullTimer;
     private final Timer m_loadIpInterfacesTimer;
@@ -180,19 +182,13 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         m_loadEdgesTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "edges", "none"));
     }
 
-    private OnmsSnmpInterface getSnmpInterface(Integer nodeid, Integer ifindex) {
+    private SnmpInterfaceTopologyEntity getSnmpInterface(Integer nodeid, Integer ifindex) {
         if(m_nodeToOnmsSnmpMap.containsKey(nodeid)) {
             if (m_nodeToOnmsSnmpMap.get(nodeid).containsKey(ifindex)) {
                 return m_nodeToOnmsSnmpMap.get(nodeid).get(ifindex);
             }
         }
-        OnmsSnmpInterface snmpiface = new OnmsSnmpInterface();
-        OnmsNode node = new OnmsNode();
-        node.setId(nodeid);
-        snmpiface.setNode(node);
-        snmpiface.setIfIndex(ifindex);
-        snmpiface.setIfName("No Interface Found");
-        return snmpiface;
+        return new SnmpInterfaceTopologyEntity(null, ifindex, "No Interface Found", 0l, nodeid);
     }
     
     @Override
@@ -206,8 +202,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     protected void connectVertices(String id,AbstractVertex sourceV, AbstractVertex targetV,  
-            OnmsSnmpInterface sourceinterface,
-            OnmsSnmpInterface targetInterface,
+            SnmpInterfaceTopologyEntity sourceinterface,
+            SnmpInterfaceTopologyEntity targetInterface,
             String sourceAddr,
             String targetAddr,
             ProtocolSupported discoveredBy) {
@@ -215,9 +211,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
     
     private void loadVertices() {
-        for (NodeTopologyEntity vertex : m_topologyEntityCache.getNodeTopolgyEntities()) {
-            OnmsIpInterface primary = m_nodeToOnmsIpPrimaryMap.get(vertex.getId());
-            addVertices(LinkdVertex.create(vertex,primary));
+        for (NodeTopologyEntity nodeTopologyEntity : m_topologyEntityCache.getNodeTopolgyEntities()) {
+            IpInterfaceTopologyEntity primary = m_nodeToOnmsIpPrimaryMap.get(nodeTopologyEntity.getId());
+            addVertices(LinkdVertex.create(nodeTopologyEntity,primary));
         }
     }
     
@@ -296,8 +292,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             LldpLinkTopologyEntity targetLink = pair.getRight();
             LinkdVertex source = nodeVertexMap.get(sourceLink.getNodeId());
             LinkdVertex target = nodeVertexMap.get(targetLink.getNodeId());
-            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNodeId(), sourceLink.getLldpPortIfindex());
-            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNodeId(), targetLink.getLldpPortIfindex());
+            SnmpInterfaceTopologyEntity sourceSnmpInterface = getSnmpInterface(sourceLink.getNodeId(), sourceLink.getLldpPortIfindex());
+            SnmpInterfaceTopologyEntity targetSnmpInterface = getSnmpInterface(targetLink.getNodeId(), targetLink.getLldpPortIfindex());
             connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
                     source,target,
                     sourceSnmpInterface,targetSnmpInterface,
@@ -379,8 +375,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             source.getProtocolSupported().add(ProtocolSupported.OSPF);
             LinkdVertex target = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNodeIdAsString());
             target.getProtocolSupported().add(ProtocolSupported.OSPF);
-            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNodeId(), sourceLink.getOspfIfIndex());
-            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNodeId(), targetLink.getOspfIfIndex());
+            SnmpInterfaceTopologyEntity sourceSnmpInterface = getSnmpInterface(sourceLink.getNodeId(), sourceLink.getOspfIfIndex());
+            SnmpInterfaceTopologyEntity targetSnmpInterface = getSnmpInterface(targetLink.getNodeId(), targetLink.getOspfIfIndex());
             connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
                     source,target,
                     sourceSnmpInterface,targetSnmpInterface,
@@ -444,8 +440,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         source.getProtocolSupported().add(ProtocolSupported.CDP);
         LinkdVertex target = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNodeIdAsString());
         target.getProtocolSupported().add(ProtocolSupported.CDP);
-        OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNodeId(), sourceLink.getCdpCacheIfIndex());
-        OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNodeId(), targetLink.getCdpCacheIfIndex());
+        SnmpInterfaceTopologyEntity sourceSnmpInterface = getSnmpInterface(sourceLink.getNodeId(), sourceLink.getCdpCacheIfIndex());
+        SnmpInterfaceTopologyEntity targetSnmpInterface = getSnmpInterface(targetLink.getNodeId(), targetLink.getCdpCacheIfIndex());
         connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
                 source, target,
                 sourceSnmpInterface, targetSnmpInterface,
@@ -521,8 +517,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             source.getProtocolSupported().add(ProtocolSupported.ISIS);
             LinkdVertex target = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNodeIdAsString());
             target.getProtocolSupported().add(ProtocolSupported.ISIS);
-            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNodeId(), sourceLink.getIsisCircIfIndex());
-            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNodeId(), targetLink.getIsisCircIfIndex());
+            SnmpInterfaceTopologyEntity sourceSnmpInterface = getSnmpInterface(sourceLink.getNodeId(), sourceLink.getIsisCircIfIndex());
+            SnmpInterfaceTopologyEntity targetSnmpInterface = getSnmpInterface(targetLink.getNodeId(), targetLink.getIsisCircIfIndex());
             connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
                 source, target,
                 sourceSnmpInterface, targetSnmpInterface,
@@ -609,16 +605,16 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         Set<String> nomappedmacs = new HashSet<String>();
         Map<String,LinkdVertex> macToVertexMap = new HashMap<String, LinkdVertex>();
         for (String mac: segment.getMacsOnSegment()) {
-           OnmsSnmpInterface targetsnmpIface = m_macToOnmsSnmpMap.get(mac);
+           SnmpInterfaceTopologyEntity targetsnmpIface = m_macToOnmsSnmpMap.get(mac);
            if (targetsnmpIface != null) {
-               LinkdVertex vertex = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, targetsnmpIface.getNode().getNodeId());
+               LinkdVertex vertex = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, targetsnmpIface.getNodeIdAsString());
                vertex.getProtocolSupported().add(ProtocolSupported.BRIDGE);
                macToVertexMap.put(mac,vertex);
                continue;
            }
-           OnmsIpInterface targetipIface = m_macToOnmsIpMap.get(mac);
+           IpInterfaceTopologyEntity targetipIface = m_macToOnmsIpMap.get(mac);
            if (targetipIface != null) {
-               LinkdVertex vertex = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, targetipIface.getNode().getNodeId());
+               LinkdVertex vertex = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, targetipIface.getNodeIdAsString());
                vertex.getProtocolSupported().add(ProtocolSupported.BRIDGE);
                macToVertexMap.put(mac,vertex);
                continue;
@@ -648,8 +644,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 target = portToVertexMap.get(bp);
                 targetbp=bp;
             }
-            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourcebp.getNodeId(), sourcebp.getBridgePortIfIndex());
-            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetbp.getNodeId(), targetbp.getBridgePortIfIndex());
+            SnmpInterfaceTopologyEntity sourceSnmpInterface = getSnmpInterface(sourcebp.getNodeId(), sourcebp.getBridgePortIfIndex());
+            SnmpInterfaceTopologyEntity targetSnmpInterface = getSnmpInterface(targetbp.getNodeId(), targetbp.getBridgePortIfIndex());
             connectVertices(getEdgeId(sourcebp,targetbp),
                             source,target,
                             sourceSnmpInterface,targetSnmpInterface,
@@ -665,10 +661,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             LinkdVertex target = macToVertexMap.values().iterator().next();
             BridgePort sourcebp = portToVertexMap.keySet().iterator().next();
             String targetmac = macToVertexMap.keySet().iterator().next();
-            
-            OnmsSnmpInterface sourceinterface = getSnmpInterface(sourcebp.getNodeId(), sourcebp.getBridgePortIfIndex());
-            OnmsSnmpInterface targetinterface = m_macToOnmsSnmpMap.get(targetmac);
-            OnmsIpInterface targetipinterface = m_macToOnmsIpMap.get(targetmac);
+
+            SnmpInterfaceTopologyEntity sourceinterface = getSnmpInterface(sourcebp.getNodeId(), sourcebp.getBridgePortIfIndex());
+            SnmpInterfaceTopologyEntity targetinterface = m_macToOnmsSnmpMap.get(targetmac);
+            IpInterfaceTopologyEntity targetipinterface = m_macToOnmsIpMap.get(targetmac);
             StringBuffer targetAddr = new StringBuffer();
             targetAddr.append(targetmac); 
             if (targetipinterface != null) {
@@ -696,7 +692,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         LOG.debug("parseSegment: adding cloud: id: '{}', {}", cloudVertex.getId(), segment.printTopology() );
         for (BridgePort bp: portToVertexMap.keySet()) {
             LinkdVertex bpportvertex = portToVertexMap.get(bp);
-            OnmsSnmpInterface targetinterface = getSnmpInterface(bp.getNodeId(), bp.getBridgePortIfIndex());
+            SnmpInterfaceTopologyEntity targetinterface = getSnmpInterface(bp.getNodeId(), bp.getBridgePortIfIndex());
             connectVertices(getEdgeId(cloudVertex, bp), cloudVertex, bpportvertex, null, targetinterface, 
                             "shared segment: up bridge " + topVertex.getLabel() + " bp:" + segment.getDesignatedPort().getBridgePort(),
                             "bp: "+bp.getBridgePort(), ProtocolSupported.BRIDGE);
@@ -704,8 +700,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         }
         for (String mac: macToVertexMap.keySet()) {
             LinkdVertex target = macToVertexMap.get(mac);
-            OnmsSnmpInterface targetiface = m_macToOnmsSnmpMap.get(mac);
-            OnmsIpInterface targetipinterface = m_macToOnmsIpMap.get(mac);
+            SnmpInterfaceTopologyEntity targetiface = m_macToOnmsSnmpMap.get(mac);
+            IpInterfaceTopologyEntity targetipinterface = m_macToOnmsIpMap.get(mac);
             StringBuffer targetAddr = new StringBuffer();
             targetAddr.append(mac); 
             if (targetipinterface != null) {
@@ -857,14 +853,14 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     
     private void doRefresh() {        
         Timer.Context vcontext = m_loadIpInterfacesTimer.time();
-        Map<InetAddress, OnmsIpInterface>  ipToOnmsIpMap = new HashMap<InetAddress, OnmsIpInterface>();
+        Map<InetAddress, IpInterfaceTopologyEntity>  ipToOnmsIpMap = new HashMap<InetAddress, IpInterfaceTopologyEntity>();
         Set<InetAddress> duplicated = new HashSet<InetAddress>();
         try {
-            for (OnmsIpInterface ip: m_ipInterfaceDao.findAll()) {
+            for (IpInterfaceTopologyEntity ip: m_topologyEntityCache.getIpTopologyEntities()) {
                 if (ip.getIsSnmpPrimary().equals(PrimaryType.PRIMARY)) {
-                    m_nodeToOnmsIpPrimaryMap.put(ip.getNode().getId(), ip);
+                    m_nodeToOnmsIpPrimaryMap.put(ip.getNodeId(), ip);
                 } else {
-                    m_nodeToOnmsIpPrimaryMap.putIfAbsent(ip.getNode().getId(), ip);
+                    m_nodeToOnmsIpPrimaryMap.putIfAbsent(ip.getNodeId(), ip);
                 }
 
                 if (!ipToOnmsIpMap.containsKey(ip.getIpAddress())) {
@@ -886,11 +882,11 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
         vcontext = m_loadSnmpInterfacesTimer.time();
         try {
-            for (OnmsSnmpInterface snmp: m_snmpInterfaceDao.findAll()) {
+            for (SnmpInterfaceTopologyEntity snmp: m_topologyEntityCache.getSnmpTopologyEntities()) {
                 // Index the SNMP interfaces by node id
-                final int nodeId = snmp.getNode().getId();
+                final int nodeId = snmp.getNodeId();
                 if (!m_nodeToOnmsSnmpMap.containsKey(nodeId)) {
-                    m_nodeToOnmsSnmpMap.put(nodeId, new HashMap<Integer, OnmsSnmpInterface>());
+                    m_nodeToOnmsSnmpMap.put(nodeId, new HashMap<>());
                 }
                 m_nodeToOnmsSnmpMap.get(nodeId).put(snmp.getIfIndex(), snmp);
             }
@@ -913,7 +909,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         // mac -> ip[]  ->  snmp      —> macToSnmpMap
         try {
             for (IpNetToMedia ipnettomedia: m_ipNetToMediaDao.findAll()) {
-                OnmsIpInterface onmsip = ipToOnmsIpMap.get(ipnettomedia.getNetAddress());
+                IpInterfaceTopologyEntity onmsip = ipToOnmsIpMap.get(ipnettomedia.getNetAddress());
                 if (onmsip == null) {
                     LOG.debug("refresh: ipNetToMedia: {}:{}. No OnmsIpInterface found.", ipnettomedia.getPhysAddress(),InetAddressUtils.str(ipnettomedia.getNetAddress()));
                     continue;
@@ -927,7 +923,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                     multiIpMacs.add(ipnettomedia.getPhysAddress());
                     LOG.debug("refresh: ipNetToMedia: {}:{}. Multiple OnmsIpInterface found.", ipnettomedia.getPhysAddress(),InetAddressUtils.str(ipnettomedia.getNetAddress()));
                 }
-                for (OnmsSnmpInterface onmssnmp : m_nodeToOnmsSnmpMap.get(onmsip.getNodeId()).values() ) {
+                for (SnmpInterfaceTopologyEntity onmssnmp : m_nodeToOnmsSnmpMap.get(onmsip.getNodeId()).values() ) {
                     if (onmssnmp.getId().intValue() == onmssnmp.getId().intValue()) {
                         if (!m_macToOnmsSnmpMap.containsKey(ipnettomedia.getPhysAddress())) {
                             m_macToOnmsSnmpMap.put(ipnettomedia.getPhysAddress(), onmssnmp);
