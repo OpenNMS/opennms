@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.model;
 
+import java.util.Optional;
+
 /**
  * This is NOT a Hibernate/JPA entity but rather a lightweight model without less attributes than CdpLink and no lazy
  * loading. We use it to retrieve interface information from the database fast.
@@ -51,6 +53,16 @@ public class SnmpInterfaceTopologyEntity {
         this.ifName=ifName;
         this.ifSpeed = ifSpeed;
         this.nodeId= nodeId;
+    }
+
+    public static SnmpInterfaceTopologyEntity toSnmpInterfaceTopologyEntity(OnmsSnmpInterface snmpInterface) {
+        return new SnmpInterfaceTopologyEntity(
+                snmpInterface.getId(),
+                snmpInterface.getIfIndex(),
+                snmpInterface.getIfName(),
+                snmpInterface.getIfSpeed(),
+                Optional.ofNullable(snmpInterface.getNode()).map(OnmsNode::getId).orElse(null)
+        );
     }
 
     public Integer getId() {

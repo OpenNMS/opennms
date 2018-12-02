@@ -856,7 +856,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         Map<InetAddress, IpInterfaceTopologyEntity>  ipToOnmsIpMap = new HashMap<InetAddress, IpInterfaceTopologyEntity>();
         Set<InetAddress> duplicated = new HashSet<InetAddress>();
         try {
-            for (IpInterfaceTopologyEntity ip: m_topologyEntityCache.getIpTopologyEntities()) {
+            for (IpInterfaceTopologyEntity ip: m_topologyEntityCache.getIpInterfaceTopologyEntities()) {
                 if (ip.getIsSnmpPrimary().equals(PrimaryType.PRIMARY)) {
                     m_nodeToOnmsIpPrimaryMap.put(ip.getNodeId(), ip);
                 } else {
@@ -882,7 +882,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
         vcontext = m_loadSnmpInterfacesTimer.time();
         try {
-            for (SnmpInterfaceTopologyEntity snmp: m_topologyEntityCache.getSnmpTopologyEntities()) {
+            for (SnmpInterfaceTopologyEntity snmp: m_topologyEntityCache.getSnmpInterfaceTopologyEntities()) {
                 // Index the SNMP interfaces by node id
                 final int nodeId = snmp.getNodeId();
                 if (!m_nodeToOnmsSnmpMap.containsKey(nodeId)) {

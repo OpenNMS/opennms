@@ -57,6 +57,8 @@ public interface TopologyEntityCache {
 
     List<SnmpInterfaceTopologyEntity> getSnmpTopologyEntities();
     List<IpInterfaceTopologyEntity> getIpTopologyEntities();
+    List<SnmpInterfaceTopologyEntity> getSnmpInterfaceTopologyEntities();
+    List<IpInterfaceTopologyEntity> getIpInterfaceTopologyEntities();
     void refresh();
 
 }

@@ -117,12 +117,12 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
     }
 
     @Override
-    public List<SnmpInterfaceTopologyEntity> getSnmpTopologyEntities(){
+    public List<SnmpInterfaceTopologyEntity> getSnmpInterfaceTopologyEntities(){
         return this.snmpInterfaceTopologyEntities.getUnchecked(KEY);
     }
 
     @Override
-    public List<IpInterfaceTopologyEntity> getIpTopologyEntities(){
+    public List<IpInterfaceTopologyEntity> getIpInterfaceTopologyEntities(){
         return this.ipInterfaceTopologyEntities.getUnchecked(KEY);
     }
 
