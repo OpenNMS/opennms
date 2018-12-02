@@ -50,6 +50,7 @@ public interface TopologyEntityCache {
     List<OspfLinkTopologyEntity> getOspfLinkTopologyEntities();
     List<IsIsLinkTopologyEntity> getIsIsLinkTopologyEntities();
     List<LldpLinkTopologyEntity> getLldpLinkTopologyEntities();
+    List<CdpElementTopologyEntity> getCdpElementTopologyEntities();
     List<SnmpInterfaceTopologyEntity> getSnmpInterfaceTopologyEntities();
     List<IpInterfaceTopologyEntity> getIpInterfaceTopologyEntities();
     void refresh();

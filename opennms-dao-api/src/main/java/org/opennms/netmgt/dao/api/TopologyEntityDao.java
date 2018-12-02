@@ -30,6 +30,7 @@ package org.opennms.netmgt.dao.api;
 
 import java.util.List;
 
+import org.opennms.netmgt.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.model.NodeTopologyEntity;
@@ -55,4 +56,5 @@ public interface TopologyEntityDao {
     List<OspfLinkTopologyEntity> getOspfLinkTopologyEntities();
     List<SnmpInterfaceTopologyEntity> getSnmpTopologyEntities();
     List<IpInterfaceTopologyEntity> getIpTopologyEntities();
+    List<CdpElementTopologyEntity> getCdpElementTopologyEntities();
 }
