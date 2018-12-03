@@ -34,7 +34,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
-import org.opennms.netmgt.enlinkd.service.api.Node;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
@@ -65,7 +65,7 @@ public class IsisOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
     @Override
     public OnmsTopology buildTopology() throws OnmsTopologyException {
-        Map<Integer, Node> nodeMap= getNodeMap();
+        Map<Integer, NodeTopologyEntity> nodeMap= getNodeMap();
         OnmsTopology topology = new OnmsTopology();
         for ( IsIsElement element: m_isisTopologyService.findAllIsIsElements()) {
             topology.getVertices().add(create(nodeMap.get(element.getNode().getId())));

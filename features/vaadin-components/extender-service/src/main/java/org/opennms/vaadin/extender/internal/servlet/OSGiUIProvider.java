@@ -1,11 +1,11 @@
 package org.opennms.vaadin.extender.internal.servlet;
 
+import org.opennms.vaadin.extender.ApplicationFactory;
+
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.UIProvider;
 import com.vaadin.ui.UI;
-
-import org.opennms.vaadin.extender.ApplicationFactory;
 
 public class OSGiUIProvider extends UIProvider {
     
@@ -24,5 +24,4 @@ public class OSGiUIProvider extends UIProvider {
     public UI createInstance(final UICreateEvent e) {
         return m_uiFactory.createUI();
     }
-
 }

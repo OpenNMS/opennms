@@ -779,7 +779,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
             System.err.println(node);
             assertNotNull(node.getId());
             assertNotNull(node.getLabel());
-            assertNotNull(node.getSnmpPrimaryIpAddr());
+            assertNotNull(node.getPrimaryIpAddr());
             assertTrue(node.isManaged());
         });
         

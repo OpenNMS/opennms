@@ -52,12 +52,12 @@ public class AlarmDaoImpl implements AlarmDao {
     @Override
     public Long getAlarmCount() {
         final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsAlarm.class);
-        return (long)alarmDao.countMatching(criteriaBuilder.toCriteria());
+        return sessionUtils.withReadOnlyTransaction(() -> (long)alarmDao.countMatching(criteriaBuilder.toCriteria()));
     }
 
     @Override
     public List<Alarm> getAlarms() {
-        return sessionUtils.withTransaction(() ->
+        return sessionUtils.withReadOnlyTransaction(() ->
                 alarmDao.findAll().stream().map(ModelMappers::toAlarm).collect(Collectors.toList()));
     }
 }

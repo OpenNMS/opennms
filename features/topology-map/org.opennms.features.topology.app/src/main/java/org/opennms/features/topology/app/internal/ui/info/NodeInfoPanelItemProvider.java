@@ -46,8 +46,8 @@ import com.google.common.base.Strings;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.themes.BaseTheme;
 
 public class NodeInfoPanelItemProvider extends VertexInfoPanelItemProvider {
 

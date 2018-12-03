@@ -49,13 +49,12 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.server.Page;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.themes.BaseTheme;
 
 /**
  * This class represents a table displaying the OpenNMS alarms for given row/column categories.
@@ -278,7 +277,7 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
                 Button icon = getClickableIcon("glyphicon glyphicon-warning-sign", new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent clickEvent) {
-                        final URI currentLocation = Page.getCurrent().getLocation();
+                        final URI currentLocation = getUI().getPage().getLocation();
                         final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
                         final String redirectFragment = contextRoot + "/alarm/detail.htm?quiet=true&id=" + alarm.getId();
 
@@ -304,7 +303,7 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
                 button.addClickListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent clickEvent) {
-                        final URI currentLocation = Page.getCurrent().getLocation();
+                        final URI currentLocation = getUI().getPage().getLocation();
                         final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
                         final String redirectFragment = contextRoot + "/element/node.jsp?quiet=true&node=" + alarm.getNodeId();
 

@@ -28,14 +28,6 @@
 
 package org.opennms.smoketest.sentinel;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.opennms.smoketest.flow.FlowStackIT.TEMPLATE_NAME;
-import static org.opennms.smoketest.flow.FlowStackIT.sendNetflowPacket;
-import static org.opennms.smoketest.flow.FlowStackIT.verify;
-
-import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
@@ -46,21 +38,15 @@ import org.junit.Test;
 import org.junit.rules.Timeout;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
-import org.opennms.smoketest.flow.FlowStackIT;
+import org.opennms.smoketest.telemetry.FlowTestBuilder;
+import org.opennms.smoketest.telemetry.FlowTester;
+import org.opennms.smoketest.telemetry.Ports;
+import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.test.system.api.NewTestEnvironment;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.opennms.test.system.api.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.searchbox.client.JestClient;
-import io.searchbox.client.JestClientFactory;
-import io.searchbox.client.JestResult;
-import io.searchbox.client.config.HttpClientConfig;
-import io.searchbox.core.Search;
-import io.searchbox.core.SearchResult;
-import io.searchbox.indices.template.GetTemplate;
 
 public abstract class AbstractFlowIT {
 
@@ -110,69 +96,28 @@ public abstract class AbstractFlowIT {
         // Determine endpoints
         final InetSocketAddress elasticRestAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.ELASTICSEARCH_6, 9200, "tcp");
         final InetSocketAddress sentinelSshAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301);
-        final InetSocketAddress minionNetflow5ListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, FlowStackIT.NETFLOW5_LISTENER_UDP_PORT, "udp");
-        final InetSocketAddress minionNetflow9ListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, FlowStackIT.NETFLOW9_LISTENER_UDP_PORT, "udp");
-        final InetSocketAddress minionIpfixListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, FlowStackIT.IPFIX_LISTENER_UDP_PORT, "udp");
-        final InetSocketAddress minionSflowListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, FlowStackIT.SFLOW_LISTENER_UDP_PORT, "udp");
-        final String elasticRestUrl = String.format("http://%s:%d", elasticRestAddress.getHostString(), elasticRestAddress.getPort());
+        final InetSocketAddress minionNetflow5ListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, Ports.NETFLOW5_PORT, "udp");
+        final InetSocketAddress minionNetflow9ListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, Ports.NETFLOW9_PORT, "udp");
+        final InetSocketAddress minionIpfixListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, Ports.IPFIX_PORT, "udp");
+        final InetSocketAddress minionSflowListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, Ports.SFLOW_PORT, "udp");
 
         waitForSentinelStartup(sentinelSshAddress);
 
-        // Build the Elastic Rest Client
-        final JestClientFactory factory = new JestClientFactory();
-        factory.setHttpClientConfig(new HttpClientConfig.Builder(elasticRestUrl).multiThreaded(true).build());
-        try (final JestClient client = factory.getObject()) {
-            // Verify that at this point no flows are persisted
-            verify(() -> {
-                final SearchResult response = client.execute(new Search.Builder("").addIndex("netflow-*").build());
-                return response.isSucceeded() && response.getTotal() == 0L;
-            });
+        final FlowTester flowTester = new FlowTestBuilder()
+                .withNetflow5Packet(minionNetflow5ListenerAddress)
+                .withNetflow9Packet(minionNetflow9ListenerAddress)
+                .withIpfixPacket(minionIpfixListenerAddress)
+                .withSFlowPacket(minionSflowListenerAddress)
+                .build(elasticRestAddress);
 
-            // Send flow packet to minion
-            sendNetflowPacket(minionNetflow5ListenerAddress, "/flows/netflow5.dat"); // 2 records
-            sendNetflowPacket(minionNetflow9ListenerAddress, "/flows/netflow9.dat"); // 7 records
-            sendNetflowPacket(minionIpfixListenerAddress, "/flows/ipfix.dat"); // 6 records
-            sendNetflowPacket(minionSflowListenerAddress, "/flows/sflow.dat"); // 1 record
-
-            // Ensure that the template has been created
-            verify(() -> {
-                final JestResult result = client.execute(new GetTemplate.Builder(TEMPLATE_NAME).build());
-                return result.isSucceeded() && result.getJsonObject().get(TEMPLATE_NAME) != null;
-            });
-
-            // Verify directly at elastic that the flows have been created
-            verify(() -> {
-                final SearchResult response = client.execute(new Search.Builder("").addIndex("netflow-*").build());
-                return response.isSucceeded() && response.getTotal() == 16L;
-            });
-        }
+        flowTester.verifyFlows();
     }
 
-    private void waitForSentinelStartup(InetSocketAddress sentinelSshAddress) throws Exception {
-        // Ensure we are actually started the sink and are ready to listen for messages
-        await().atMost(5, MINUTES)
-                .pollInterval(5, SECONDS)
-                .until(() -> {
-                    try (final SshClient sshClient = new SshClient(sentinelSshAddress, "admin", "admin")) {
-                        final PrintStream pipe = sshClient.openShell();
-                        pipe.println("log:display");
-                        pipe.println("logout");
-
-                        // Wait for karaf to process the commands
-                        await().atMost(10, SECONDS).until(sshClient.isShellClosedCallable());
-
-                        // Read stdout and verify
-                        final String shellOutput = sshClient.getStdout();
-                        final String sentinelReadyString = getSentinelReadyString();
-                        final boolean routeStarted = shellOutput.contains(sentinelReadyString);
-
-                        logger.info("log:display");
-                        logger.info("{}", shellOutput);
-                        return routeStarted;
-                    } catch (Exception ex) {
-                        logger.error("Error while trying to verify sentinel startup: {}", ex.getMessage());
-                        return false;
-                    }
-                });
+    private void waitForSentinelStartup(InetSocketAddress sentinelSshAddress) {
+        new KarafShell(sentinelSshAddress).verifyLog(shellOutput -> {
+            final String sentinelReadyString = getSentinelReadyString();
+            final boolean routeStarted = shellOutput.contains(sentinelReadyString);
+            return routeStarted;
+        });
     }
 }

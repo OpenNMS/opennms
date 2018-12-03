@@ -41,6 +41,61 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Vaadin-Package-Version>1</Vaadin-Package-Version>
+                        <Vaadin-Widgetsets>org.opennms.features.topology.app.internal.gwt.TopologyAppWidgetSet</Vaadin-Widgetsets>
+                        <Include-Resource>{maven-resources},target/gwt</Include-Resource>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-maven-plugin</artifactId>
+                <version>${vaadin.plugin.version}</version>
+                <configuration>
+                    <extraJvmArgs>-XX:MaxMetaspaceSize=256m -Xmx1g -Xss1024k</extraJvmArgs>
+                    <webappDirectory>${basedir}/target/gwt/VAADIN/widgetsets</webappDirectory>
+                    <hostedWebapp>${basedir}/target/gwt/VAADIN/widgetsets</hostedWebapp>
+                    <noServer>true</noServer>
+                    <draftCompile>false</draftCompile>
+                    <compileReport>false</compileReport>
+                    <style>OBF</style>
+                    <strict>true</strict>
+                    <runTarget>http://localhost:8980/opennms/topology</runTarget>
+                    <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>goals</id>
+                        <configuration>
+                            <!-- if you don't specify any modules, the plugin will find them -->
+                            <!-- <modules> <module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module>
+                                </modules> -->
+                        </configuration>
+                        <goals>
+                            <goal>resources</goal>
+                            <goal>update-widgetset</goal>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.google.gwt</groupId>
+                        <artifactId>gwt-dev</artifactId>
+                        <version>${gwtVersion}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.google.gwt</groupId>
+                        <artifactId>gwt-user</artifactId>
+                        <version>${gwtVersion}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
     </build>
     <dependencies>

@@ -33,11 +33,7 @@ import static org.junit.Assert.assertEquals;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.easymock.EasyMock;
@@ -47,35 +43,25 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.LldpUtils;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
-import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
-import org.opennms.netmgt.enlinkd.persistence.api.BridgeBridgeLinkDao;
-import org.opennms.netmgt.enlinkd.persistence.api.BridgeElementDao;
-import org.opennms.netmgt.enlinkd.persistence.api.BridgeMacLinkDao;
-import org.opennms.netmgt.enlinkd.persistence.api.BridgeStpLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
-import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
-import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
 import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
-import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
-import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
-import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
-import org.opennms.netmgt.enlinkd.service.api.Topology;
+import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -88,18 +74,6 @@ import com.google.common.net.InetAddresses;
 })
 public class ServiceTest {
 
-
-    private final static int AMOUNT_LINKS = 100000;
-    private final static int AMOUNT_ELEMENTS = 20;
-    private final static int AMOUNT_NODES = 5;
-
-    private Random random;
-
-    @Autowired
-    private NodeTopologyService nodeTopologyService;
-    
-    @Autowired
-    private BridgeTopologyService bridgeTopologyService;
     @Autowired
     private IsisTopologyService isisTopologyService;
     @Autowired
@@ -108,26 +82,11 @@ public class ServiceTest {
     private LldpTopologyService lldpTopologyService;
     @Autowired
     private OspfTopologyService ospfTopologyService;
-    
-    @Autowired
-    private NodeDao nodeDao;
-    
-    @Autowired
-    private BridgeBridgeLinkDao bridgeBridgeLinkDao;
-    @Autowired
-    private BridgeElementDao bridgeElementDao;
-    @Autowired
-    private BridgeMacLinkDao bridgeMacLinkDao;
-    @Autowired
-    private BridgeStpLinkDao bridgeStpLinkdDao;
-    
-    @Autowired
-    private IpNetToMediaDao ipNetToMediaDao;
-    
+                
     @Autowired
     private CdpElementDao cdpElementDao;
     @Autowired
-    private CdpLinkDao cdpLinkDao;
+    private TopologyEntityCache topologyEntityCache;
     
     @Autowired
     private IsIsElementDao isisElementDao;
@@ -140,8 +99,6 @@ public class ServiceTest {
     private LldpLinkDao lldpLinkDao;
     
     @Autowired
-    private OspfElementDao ospfElementDao;
-    @Autowired
     private OspfLinkDao ospfLinkDao;
     
     List<OnmsNode> nodes;
@@ -149,7 +106,7 @@ public class ServiceTest {
     List<IsIsLink> isisLinks;
     
     List<CdpElement> cdpelements;
-    List<CdpLink> cdpLinks;
+    List<CdpLinkTopologyEntity> cdpLinks;
 
     List<OspfLink> ospfLinks;
 
@@ -159,7 +116,6 @@ public class ServiceTest {
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-        random = new Random(42);
         nodes = createNodes(6);
         isiselements = Arrays.asList(
                                      createIsIsElement(nodes.get(0), "nomatch0"),
@@ -225,7 +181,7 @@ public class ServiceTest {
                 createLldpLink(5, nodes.get(5), "match2.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS,  "match2.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID, "match2.1")
         );
 
-        EasyMock.expect(cdpLinkDao.findAll()).andReturn(cdpLinks).anyTimes();
+        EasyMock.expect(topologyEntityCache.getCdpLinkTopologyEntities()).andReturn(cdpLinks).anyTimes();
         EasyMock.expect(cdpElementDao.findAll()).andReturn(cdpelements).anyTimes();
 
         EasyMock.expect(lldpLinkDao.findAll()).andReturn(lldpLinks).anyTimes();
@@ -236,28 +192,25 @@ public class ServiceTest {
 
         EasyMock.expect(ospfLinkDao.findAll()).andReturn(ospfLinks).anyTimes();
         
-        EasyMock.expect(nodeDao.findAll()).andReturn(nodes).anyTimes();
 
-        EasyMock.replay(nodeDao);
         EasyMock.replay(ospfLinkDao);
         EasyMock.replay(isisElementDao);
         EasyMock.replay(isisLinkDao);
         EasyMock.replay(lldpElementDao);
         EasyMock.replay(lldpLinkDao);
         EasyMock.replay(cdpElementDao);
-        EasyMock.replay(cdpLinkDao);
+        EasyMock.replay(topologyEntityCache);
      }
     
     @After
     public void tearDown() {
-        EasyMock.reset(nodeDao);
         EasyMock.reset(ospfLinkDao);
         EasyMock.reset(isisElementDao);
         EasyMock.reset(isisLinkDao);
         EasyMock.reset(lldpElementDao);
         EasyMock.reset(lldpLinkDao);
         EasyMock.reset(cdpElementDao);
-        EasyMock.reset(cdpLinkDao);
+        EasyMock.reset(topologyEntityCache);
     }
 
     @Test
@@ -274,8 +227,7 @@ public class ServiceTest {
 
         // 1 and 3 will match
         // 4 and 5 will match
-        List<Pair<CdpLink, CdpLink>> matchedLinks = cdpTopologyService.matchCdpLinks();
-
+        List<Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> matchedLinks = cdpTopologyService.matchCdpLinks();
         assertMatching(cdpLinks, matchedLinks);
 
     }
@@ -301,13 +253,6 @@ public class ServiceTest {
         assertMatching(lldpLinks, matchedLinks);
     }
 
-    private <E extends Topology> void sortAndAssertEquals(List<Pair<E, E>> matchesOld, List<Pair<E, E>> matchesNew){
-        Comparator<Pair<E, E>> comparator = Comparator.comparing(pair -> pair.getKey().printTopology() + pair.getRight().printTopology());
-        matchesOld.sort(comparator );
-        matchesNew.sort(comparator );
-        assertEquals(matchesOld, matchesNew);
-    }
-
     private <Link> void assertMatching(List<Link> allLinks, List<Pair<Link, Link>> matchedLinks){
         // we expect:
         // 1 and 3 will match
@@ -319,36 +264,12 @@ public class ServiceTest {
         assertEquals(allLinks.get(5), matchedLinks.get(1).getRight());
     }
 
-    private Map<Integer, LldpElement> createLldpElements(List<OnmsNode> nodes) {
-        Map<Integer, LldpElement> elements = new HashMap<>();
-        for (int i = 0; i < AMOUNT_ELEMENTS; i++) {
-            LldpElement element = createLldpElement(getRandom(nodes), "Element"+i);
-            elements.put(element.getNode().getId(), element);
-        }
-        return elements;
-    }
-
     private LldpElement createLldpElement(OnmsNode node, String lLdpChassisId) {
         LldpElement element = new LldpElement();
         element.setNode(node);
         element.setLldpChassisId(lLdpChassisId);
         element.setLldpChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_CHASSISCOMPONENT);
         return element;
-    }
-
-    private List<LldpLink> createLldpLinks(Map<Integer, LldpElement> elements) {
-        List<LldpElement> elementsList = new ArrayList<>(elements.values());
-        List<LldpUtils.LldpPortIdSubType> portSybtypes = Arrays.asList(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID, LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT);
-
-        List<LldpLink> links = new ArrayList<>();
-        for (int i = 0; i < AMOUNT_LINKS; i++) {
-            LldpLink link =
-                    createLldpLink(i, getRandom(elementsList).getNode(), "port"+i, getRandom(portSybtypes) ,
-                            "port"+(AMOUNT_LINKS-i), getRandom(portSybtypes),
-                            getRandom(elementsList).getLldpChassisId());
-            links.add(link);
-        }
-        return links;
     }
 
     private LldpLink createLldpLink(int id, OnmsNode node, String portId, LldpUtils.LldpPortIdSubType portIdSubType
@@ -363,18 +284,6 @@ public class ServiceTest {
             link.setLldpRemChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_CHASSISCOMPONENT); // shouldn't be relevant for match => set it fixed
             link.setNode(node);
         return link;
-    }
-
-
-    private List<OspfLink> createOspfLinks() {
-        List<OspfLink> links = new ArrayList<>();
-        List<InetAddress> addresses = createInetAddresses(AMOUNT_LINKS);
-        List<OnmsNode> nodes = createNodes();
-        for (int i = 0; i < AMOUNT_LINKS; i++) {
-            OspfLink link = createOspfLink(i,getRandom(nodes), addresses.get(i), addresses.get(AMOUNT_LINKS -i-1));
-            links.add(link);
-        }
-        return links;
     }
 
     private OspfLink createOspfLink(int id, OnmsNode node, InetAddress ipAddress, InetAddress remoteAddress) {
@@ -397,10 +306,6 @@ public class ServiceTest {
         return addresses;
     }
 
-    private List<OnmsNode> createNodes() {
-        return createNodes(AMOUNT_NODES);
-    }
-
     private List<OnmsNode> createNodes(int amount) {
         ArrayList<OnmsNode> nodes = new ArrayList<>();
         for (int i = 0; i < amount; i++) {
@@ -411,29 +316,11 @@ public class ServiceTest {
         return nodes;
     }
 
-    private List<IsIsElement> createIsIsElements(List<OnmsNode> nodes) {
-        ArrayList<IsIsElement> elements = new ArrayList<>();
-        for (int i = 0; i < AMOUNT_ELEMENTS; i++) {
-            IsIsElement element = createIsIsElement(getRandom(nodes), "Element"+i);
-            elements.add(element);
-        }
-        return elements;
-    }
-
     private IsIsElement createIsIsElement(OnmsNode node, String isisSysID) {
         IsIsElement element = new IsIsElement();
         element.setNode(node);
         element.setIsisSysID(isisSysID);
         return element;
-    }
-
-    private List<IsIsLink> createIsIsLinks(List<IsIsElement> elements) {
-        List<IsIsLink> links = new ArrayList<>();
-        for (int i = 1; i <= AMOUNT_LINKS; i++) {
-            IsIsLink link = createIsIsLink(i, getRandom(elements).getIsisSysID(), (i + 1)/2, getRandom(elements).getNode());
-            links.add(link);
-        }
-        return links;
     }
 
     private IsIsLink createIsIsLink(int id, String isisISAdjNeighSysID, int isisISAdjIndex, OnmsNode node) {
@@ -448,14 +335,6 @@ public class ServiceTest {
         return link;
     }
 
-    private List<CdpElement> createCdpElements(List<OnmsNode> nodes) {
-        ArrayList<CdpElement> cdpElements = new ArrayList<>();
-        for (int i = 0; i < AMOUNT_ELEMENTS; i++) {
-            cdpElements.add(createCdpElement(getRandom(nodes), "CdpElement"+i));
-        }
-        return cdpElements;
-    }
-
     private CdpElement createCdpElement(OnmsNode node, String globalDeviceId) {
         CdpElement cdpElement = new CdpElement();
         cdpElement.setNode(node);
@@ -463,33 +342,11 @@ public class ServiceTest {
         return cdpElement;
     }
 
-    private List<CdpLink> createCdpLinks(List<CdpElement> cdpElements) {
-        List<CdpLink> links = new ArrayList<>();
-        for (int i = 0; i < AMOUNT_LINKS; i++) {
-
-            CdpLink cdpLink = createCdpLink(i,
-                    getRandom(cdpElements).getNode(),
-                    getRandom(cdpElements).getCdpGlobalDeviceId(),
-                    Integer.toString(AMOUNT_LINKS -i-1),
-                    Integer.toString(i));
-            links.add(cdpLink);
-        }
-        return links;
-    }
-
-    private CdpLink createCdpLink(int id, OnmsNode node, String cdpCacheDeviceId, String cdpInterfaceName, String cdpCacheDevicePort) {
-        CdpLink link = new CdpLink();
-        link.setId(id);
-        link.setCdpCacheDeviceId(cdpCacheDeviceId);
-        link.setCdpInterfaceName(cdpInterfaceName);
-        link.setCdpCacheDevicePort(cdpCacheDevicePort);
-        link.setNode(node);
-        link.setCdpCacheAddressType(CdpLink.CiscoNetworkProtocolType.chaos);
+    private CdpLinkTopologyEntity createCdpLink(int id, OnmsNode node, String cdpCacheDeviceId, String cdpInterfaceName,
+                                                              String cdpCacheDevicePort) {
+        CdpLinkTopologyEntity link = new CdpLinkTopologyEntity(id, node.getId(), 123, cdpInterfaceName,
+                "cdpCacheAddress", cdpCacheDeviceId, cdpCacheDevicePort);
         return link;
-    }
-
-    private <E> E getRandom(List<E> list) {
-        return list.get(random.nextInt(list.size()));
     }
 
 }

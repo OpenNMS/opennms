@@ -45,8 +45,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.HierarchicalContainer;
 import com.vaadin.server.Resource;
 
 public class MbeansHierarchicalContainer extends HierarchicalContainer {

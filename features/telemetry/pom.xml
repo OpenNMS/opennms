@@ -11,12 +11,14 @@
   <packaging>pom</packaging>
   <name>OpenNMS :: Features :: Telemetry</name>
   <modules>
-    <module>adapters</module>
+    <module>api</module>
     <module>common</module>
     <module>config</module>
     <module>daemon</module>
     <module>distributed</module>
     <module>itests</module>
     <module>listeners</module>
+    <module>protocols</module>
+    <module>registry</module>
   </modules>
 </project>

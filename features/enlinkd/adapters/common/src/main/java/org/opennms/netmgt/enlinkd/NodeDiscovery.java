@@ -33,7 +33,7 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.enlinkd.service.api.Node;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
@@ -53,7 +53,7 @@ public abstract class NodeDiscovery extends Discovery {
     /**
      * The node ID of the system used to collect the SNMP information
      */
-    protected final Node m_node;
+    protected final NodeTopologyEntity m_node;
     private final LocationAwareSnmpClient m_locationAwareSnmpClient;
 
     /**
@@ -66,7 +66,7 @@ public abstract class NodeDiscovery extends Discovery {
      *            The SnmpPeer object to collect from.
      */
     public NodeDiscovery(final EventForwarder eventForwarder, final LocationAwareSnmpClient locationAwareSnmpClient,
-            final long interval,final long initial, final Node node) {
+            final long interval,final long initial, final NodeTopologyEntity node) {
         super(eventForwarder,interval, initial);
         m_node = node;
         m_locationAwareSnmpClient=locationAwareSnmpClient;
@@ -105,11 +105,11 @@ public abstract class NodeDiscovery extends Discovery {
      * @return a {@link java.net.InetAddress} object.
      */
     public InetAddress getPrimaryIpAddress() {
-        return m_node.getSnmpPrimaryIpAddr();
+        return m_node.getPrimaryIpAddr();
     }
 
     public String getPrimaryIpAddressString() {
-    	return str(m_node.getSnmpPrimaryIpAddr());
+    	return str(m_node.getPrimaryIpAddr());
     }
 
     /**
@@ -169,7 +169,7 @@ public abstract class NodeDiscovery extends Discovery {
     }
     
     public SnmpAgentConfig getSnmpAgentConfig() {
-        return SnmpPeerFactory.getInstance().getAgentConfig(m_node.getSnmpPrimaryIpAddr(), m_node.getLocation());
+        return SnmpPeerFactory.getInstance().getAgentConfig(m_node.getPrimaryIpAddr(), m_node.getLocation());
     }
 
 

@@ -44,24 +44,17 @@ import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.enlinkd.model.CdpElement;
-import org.opennms.netmgt.enlinkd.model.CdpLink;
-import org.opennms.netmgt.enlinkd.model.IsIsElement;
-import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
-import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
-import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
-import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
-import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
-import org.opennms.netmgt.enlinkd.service.api.Node;
+import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.NetworkBuilder;
@@ -74,33 +67,21 @@ public class EnhancedLinkdMockDataPopulator {
 
     @Autowired
     private BridgeTopologyService m_bridgeTopologyService;
-
     @Autowired
     private NodeTopologyService m_nodeTopologyService;
-
     @Autowired
-    private NodeDao m_nodeDao;
-
+    private CdpTopologyService m_cdpTopologyService;
+    @Autowired
+    private IsisTopologyService m_isisTopologyService;
     @Autowired
     private SnmpInterfaceDao m_snmpInterfaceDao;
-
-    @Autowired
-    private CdpElementDao m_cdpElementDao;
-    @Autowired
-    private CdpLinkDao m_cdpLinkDao;
-    
-    @Autowired
-    private IsIsElementDao m_isisElementDao;
-    @Autowired
-    private IsIsLinkDao m_isisLinkDao;
-    
     @Autowired
     private LldpElementDao m_lldpElementDao;
     @Autowired
     private LldpLinkDao m_lldpLinkDao;
     @Autowired
     private OspfLinkDao m_ospfLinkDao;
-
+    
     private OnmsNode m_node1;
     private OnmsNode m_node2;
     private OnmsNode m_node3;
@@ -366,53 +347,40 @@ public class EnhancedLinkdMockDataPopulator {
     }
 
     public void setUpMock() {
-        EasyMock.expect(m_cdpLinkDao.findAll()).andReturn(new ArrayList<CdpLink>()).anyTimes();
-        EasyMock.expect(m_cdpElementDao.findAll()).andReturn(new ArrayList<CdpElement>()).anyTimes();
-        EasyMock.expect(m_bridgeTopologyService.matchBridgeLinks()).andReturn(new ArrayList<>()).anyTimes();
-        EasyMock.expect(m_isisLinkDao.findAll()).andReturn(new ArrayList<IsIsLink>()).anyTimes();
-        EasyMock.expect(m_isisElementDao.findAll()).andReturn(new ArrayList<IsIsElement>()).anyTimes();
-
-        EasyMock.expect(m_nodeDao.findAll()).andReturn(getOnmsNodes()).anyTimes();
-        EasyMock.expect(m_nodeTopologyService.findAllSnmpNode()).andReturn(getNodes()).anyTimes();
         EasyMock.expect(m_nodeTopologyService.findAll()).andReturn(getNodes()).anyTimes();
         EasyMock.expect(m_snmpInterfaceDao.findAll()).andReturn(getOnmsSnmpInterfaces()).anyTimes();
+        EasyMock.expect(m_bridgeTopologyService.matchBridgeLinks()).andReturn(new ArrayList<>()).anyTimes();
+        EasyMock.expect(m_cdpTopologyService.matchCdpLinks()).andReturn(new ArrayList<>()).anyTimes();
+        EasyMock.expect(m_isisTopologyService.matchIsIsLinks()).andReturn(new ArrayList<>()).anyTimes();
         EasyMock.expect(m_lldpElementDao.findAll()).andReturn(getLldpElements()).anyTimes();
         EasyMock.expect(m_lldpLinkDao.findAll()).andReturn(getLinks()).anyTimes();
         EasyMock.expect(m_ospfLinkDao.findAll()).andReturn(getOspfLinks()).anyTimes();
-        EasyMock.expect(m_nodeDao.getAllLabelsById());
-        EasyMock.expectLastCall().andReturn(getNodeLabelsById()).anyTimes();
         
-        for (int i=1;i<9;i++) {
-            EasyMock.expect(m_nodeDao.get(i)).andReturn(getOnmsNode(i)).anyTimes();
-            EasyMock.expect(m_snmpInterfaceDao.findByNodeIdAndIfIndex(i, -1)).andReturn(null).anyTimes();
-        }
         
-        EasyMock.replay(m_cdpLinkDao, m_isisLinkDao,m_bridgeTopologyService);
-        EasyMock.replay(m_cdpElementDao);
-        EasyMock.replay(m_lldpLinkDao);
-        EasyMock.replay(m_lldpElementDao);
-        EasyMock.replay(m_isisElementDao);
-        EasyMock.replay(m_ospfLinkDao);
-        EasyMock.replay(m_nodeDao);
         EasyMock.replay(m_nodeTopologyService);
         EasyMock.replay(m_snmpInterfaceDao);
+        EasyMock.replay(m_bridgeTopologyService);
+        EasyMock.replay(m_cdpTopologyService);
+        EasyMock.replay(m_isisTopologyService);
+        EasyMock.replay(m_lldpLinkDao);
+        EasyMock.replay(m_lldpElementDao);
+        EasyMock.replay(m_ospfLinkDao);
     }
 
     public void tearDown() {
-        EasyMock.reset(m_cdpLinkDao, m_isisLinkDao,m_bridgeTopologyService);
-        EasyMock.reset(m_cdpElementDao);
-        EasyMock.reset(m_lldpElementDao);
-        EasyMock.reset(m_isisElementDao);
-        EasyMock.reset(m_lldpLinkDao);
-        EasyMock.reset(m_ospfLinkDao);
-        EasyMock.reset(m_nodeDao);
         EasyMock.reset(m_nodeTopologyService);
         EasyMock.reset(m_snmpInterfaceDao);
+        EasyMock.reset(m_bridgeTopologyService);
+        EasyMock.reset(m_cdpTopologyService);
+        EasyMock.reset(m_isisTopologyService);
+        EasyMock.reset(m_lldpElementDao);
+        EasyMock.reset(m_lldpLinkDao);
+        EasyMock.reset(m_ospfLinkDao);
     }
 
 
-    public Node getNode(Integer id) {
-        return Node.create(getOnmsNode(id));
+    public NodeTopologyEntity getNode(Integer id) {
+        return NodeTopologyEntity.create(getOnmsNode(id));
     }
     
     public OnmsNode getOnmsNode(Integer id) {
@@ -527,14 +495,6 @@ public class EnhancedLinkdMockDataPopulator {
         return m_ospfLinks;
     }
 
-    public NodeDao getNodeDao() {
-        return m_nodeDao;
-    }
-
-    public void setNodeDao(final NodeDao nodeDao) {
-        this.m_nodeDao = nodeDao;
-    }
-
     @SuppressWarnings("deprecation")
     public void check(GraphProvider topologyProvider) {
         String vertexNamespace = topologyProvider.getNamespace();
@@ -625,9 +585,18 @@ public class EnhancedLinkdMockDataPopulator {
         return m_nodes;
     }
 
-    public List<Node> getNodes() {
-        return m_nodes.stream().map(Node::create).collect(Collectors.toList());
+    public List<NodeTopologyEntity> getNodes() {
+        return m_nodes.stream().map(NodeTopologyEntity::create).collect(Collectors.toList());
     }
+
+    public List<NodeTopologyEntity> getVertices() {
+        List<NodeTopologyEntity> vertices = new ArrayList<NodeTopologyEntity>();
+        for(OnmsNode node : m_nodes){
+            vertices.add(NodeTopologyEntity.create(node));
+        }
+        return vertices;
+    }
+
     public List<LldpElement> getLldpElements() {
         return m_lldpnodes;
     }

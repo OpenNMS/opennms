@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<telemetryd-config>
+    <listener name="UdpFlowDispatcher" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="true">
+        <parameter key="port" value="50000"/>
+        <parameter key="host" value="0.0.0.0"/>
+
+        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser" queue="Netflow-5" />
+        <parser name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser" queue="Netflow-9" />
+        <parser name="IPFIX-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser" queue="IPFIX" />
+        <parser name="SFlow-Parser" class-name="org.opennms.netmgt.telemetry.protocols.sflow.parser.SFlowUdpParser" queue="SFlow" />
+    </listener>
+    <queue name="Netflow-5">
+        <adapter name="Netflow-5-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter" enabled="true">
+        </adapter>
+    </queue>
+    <queue name="Netflow-9">
+        <adapter name="Netflow-9-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9Adapter" enabled="true">
+        </adapter>
+    </queue>
+    <queue name="IPFIX">
+        <adapter name="IPFIX-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapter" enabled="true">
+        </adapter>
+    </queue>
+    <queue name="SFlow">
+        <adapter name="SFlow-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter" enabled="true">
+        </adapter>
+    </queue>
+</telemetryd-config>

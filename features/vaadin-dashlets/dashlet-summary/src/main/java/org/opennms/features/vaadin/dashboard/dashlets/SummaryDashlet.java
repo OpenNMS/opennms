@@ -28,16 +28,27 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
-import com.vaadin.server.Page;
-import com.vaadin.server.Sizeable;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.*;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
-import org.opennms.features.vaadin.dashboard.model.*;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
+import org.opennms.features.vaadin.dashboard.model.Dashlet;
+import org.opennms.features.vaadin.dashboard.model.DashletComponent;
+import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
+
+import com.vaadin.server.Sizeable;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.UI;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * This class implements a {@link Dashlet} for testing purposes.
@@ -448,7 +459,7 @@ public class SummaryDashlet extends AbstractDashlet {
     }
 
     @Override
-    public DashletComponent getWallboardComponent() {
+    public DashletComponent getWallboardComponent(final UI ui) {
         if (m_wallboardComponent == null) {
             m_wallboardComponent = new AbstractDashletComponent() {
                 private HorizontalLayout m_horizontalLayout = new HorizontalLayout();
@@ -462,17 +473,17 @@ public class SummaryDashlet extends AbstractDashlet {
                  * Injects CSS styles in the current page
                  */
                 private void injectWallboardStyles() {
-                    Page.getCurrent().getStyles().add(".summary.cleared { background: #000000; border-left: 15px solid #858585; }");
-                    Page.getCurrent().getStyles().add(".summary.normal { background: #000000; border-left: 15px solid #336600; }");
-                    Page.getCurrent().getStyles().add(".summary.indeterminate {  background: #000000; border-left: 15px solid #999; }");
-                    Page.getCurrent().getStyles().add(".summary.warning { background: #000000; border-left: 15px solid #FFCC00; }");
-                    Page.getCurrent().getStyles().add(".summary.minor { background: #000000;  border-left: 15px solid #FF9900; }");
-                    Page.getCurrent().getStyles().add(".summary.major { background: #000000; border-left: 15px solid #FF3300; }");
-                    Page.getCurrent().getStyles().add(".summary.critical { background: #000000; border-left: 15px solid #CC0000; }");
-                    Page.getCurrent().getStyles().add(".summary.global { background: #000000; border-left: 15px solid #000000; }");
-                    Page.getCurrent().getStyles().add(".summary { padding: 5px 5px; margin: 1px; }");
-                    Page.getCurrent().getStyles().add(".summary-font { font-size: 24px; line-height: normal; text-align: right; color: #3ba300; }");
-                    Page.getCurrent().getStyles().add(".summary-font-legend { font-size: 16px; line-height: normal; text-align: right; color: #3ba300; }");
+                    ui.getPage().getStyles().add(".summary.cleared { background: #000000; border-left: 15px solid #858585; }");
+                    ui.getPage().getStyles().add(".summary.normal { background: #000000; border-left: 15px solid #336600; }");
+                    ui.getPage().getStyles().add(".summary.indeterminate {  background: #000000; border-left: 15px solid #999; }");
+                    ui.getPage().getStyles().add(".summary.warning { background: #000000; border-left: 15px solid #FFCC00; }");
+                    ui.getPage().getStyles().add(".summary.minor { background: #000000;  border-left: 15px solid #FF9900; }");
+                    ui.getPage().getStyles().add(".summary.major { background: #000000; border-left: 15px solid #FF3300; }");
+                    ui.getPage().getStyles().add(".summary.critical { background: #000000; border-left: 15px solid #CC0000; }");
+                    ui.getPage().getStyles().add(".summary.global { background: #000000; border-left: 15px solid #000000; }");
+                    ui.getPage().getStyles().add(".summary { padding: 5px 5px; margin: 1px; }");
+                    ui.getPage().getStyles().add(".summary-font { font-size: 24px; line-height: normal; text-align: right; color: #3ba300; }");
+                    ui.getPage().getStyles().add(".summary-font-legend { font-size: 16px; line-height: normal; text-align: right; color: #3ba300; }");
                 }
 
                 @Override
@@ -518,7 +529,7 @@ public class SummaryDashlet extends AbstractDashlet {
     }
 
     @Override
-    public DashletComponent getDashboardComponent() {
+    public DashletComponent getDashboardComponent(final UI ui) {
         if (m_dashboardComponent == null) {
             m_dashboardComponent = new AbstractDashletComponent() {
                 private HorizontalLayout m_horizontalLayout = new HorizontalLayout();
@@ -532,17 +543,17 @@ public class SummaryDashlet extends AbstractDashlet {
                  * Injects CSS styles in the current page
                  */
                 private void injectDashboardStyles() {
-                    Page.getCurrent().getStyles().add(".summary.cleared { background: #000000; border-left: 8px solid #858585; }");
-                    Page.getCurrent().getStyles().add(".summary.normal { background: #000000; border-left: 8px solid #336600; }");
-                    Page.getCurrent().getStyles().add(".summary.indeterminate {  background: #000000; border-left: 8px solid #999; }");
-                    Page.getCurrent().getStyles().add(".summary.warning { background: #000000; border-left: 8px solid #FFCC00; }");
-                    Page.getCurrent().getStyles().add(".summary.minor { background: #000000;  border-left: 8px solid #FF9900; }");
-                    Page.getCurrent().getStyles().add(".summary.major { background: #000000; border-left: 8px solid #FF3300; }");
-                    Page.getCurrent().getStyles().add(".summary.critical { background: #000000; border-left: 8px solid #CC0000; }");
-                    Page.getCurrent().getStyles().add(".summary.global { background: #000000; border-left: 8px solid #000000; }");
-                    Page.getCurrent().getStyles().add(".summary { padding: 5px 5px; margin: 1px; }");
-                    Page.getCurrent().getStyles().add(".summary-font { font-size: 17px; line-height: normal; text-align: right; color: #3ba300; }");
-                    Page.getCurrent().getStyles().add(".summary-font-legend { font-size: 9px; line-height: normal; text-align: right; color: #3ba300; }");
+                    ui.getPage().getStyles().add(".summary.cleared { background: #000000; border-left: 8px solid #858585; }");
+                    ui.getPage().getStyles().add(".summary.normal { background: #000000; border-left: 8px solid #336600; }");
+                    ui.getPage().getStyles().add(".summary.indeterminate {  background: #000000; border-left: 8px solid #999; }");
+                    ui.getPage().getStyles().add(".summary.warning { background: #000000; border-left: 8px solid #FFCC00; }");
+                    ui.getPage().getStyles().add(".summary.minor { background: #000000;  border-left: 8px solid #FF9900; }");
+                    ui.getPage().getStyles().add(".summary.major { background: #000000; border-left: 8px solid #FF3300; }");
+                    ui.getPage().getStyles().add(".summary.critical { background: #000000; border-left: 8px solid #CC0000; }");
+                    ui.getPage().getStyles().add(".summary.global { background: #000000; border-left: 8px solid #000000; }");
+                    ui.getPage().getStyles().add(".summary { padding: 5px 5px; margin: 1px; }");
+                    ui.getPage().getStyles().add(".summary-font { font-size: 17px; line-height: normal; text-align: right; color: #3ba300; }");
+                    ui.getPage().getStyles().add(".summary-font-legend { font-size: 9px; line-height: normal; text-align: right; color: #3ba300; }");
                 }
 
                 @Override

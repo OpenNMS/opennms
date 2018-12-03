@@ -8,12 +8,38 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.telemetry</groupId>
   <artifactId>org.opennms.features.telemetry.listeners</artifactId>
-  <packaging>pom</packaging>
+  <packaging>bundle</packaging>
   <name>OpenNMS :: Features :: Telemetry :: Listeners</name>
-  <modules>
-    <module>api</module>
-    <module>flow</module>
-    <module>sflow</module>
-    <module>udp</module>
-  </modules>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.features.telemetry</groupId>
+      <artifactId>org.opennms.features.telemetry.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry</groupId>
+      <artifactId>org.opennms.features.telemetry.common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-all</artifactId>
+    </dependency>
+  </dependencies>
 </project>

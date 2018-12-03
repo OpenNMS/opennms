@@ -330,15 +330,14 @@
       <version>18.0</version>
     </dependency>
     <dependency>
-      <groupId>net.lightbody.bmp</groupId>
-      <artifactId>browsermob-core-littleproxy</artifactId>
-      <version>2.1.0-beta-2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>io.searchbox</groupId>
       <artifactId>jest-complete-osgi</artifactId>
       <version>${jestVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.lightbody.bmp</groupId>
+      <artifactId>browsermob-core-littleproxy</artifactId>
+      <version>2.1.0-beta-2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -353,8 +352,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.telemetry.adapters</groupId>
-      <artifactId>org.opennms.features.telemetry.adapters.netflow</artifactId>
+      <groupId>org.opennms.features.telemetry.protocols.netflow</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.netflow.adapter</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

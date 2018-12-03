@@ -1,0 +1,64 @@
+
+==== IPFIX
+
+The _IP Flow Information Export (IPFIX)_ protocol is a vendor neutral standard standard for transmitting Traffic Flow information.
+See <<ga-flow-support, Flow Support>> for details on flow support in _{opennms-product-name}_.
+
+
+[[telemetryd-ipfix-parser-udp]]
+===== IPFIX UDP Parser
+
+The IPFIX UDP Parser accepts packets received by a <<telemetryd-listener-udp, UDP Listener>> and must forward them to a <<telemetryd-ipfix-adapter, IPFIX Adapter>>.
+
+The IPFIX UDP Parser supports protocol detection.
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser`
+|===
+
+====== Parameters
+
+.Parameters for the IPFIX UDP Parser
+[options="header, autowidth"]
+|===
+| Parameter         | Description                                                                | Required | Default value
+| `templateTimeout` | Templates must be re-declared in the given duration or the will be dropped | required | 30 minutes
+|===
+
+
+[[telemetryd-ipfix-parser-tcp]]
+===== IPFIX TCP Parser
+
+The IPFIX TCP Parser accepts packets received by a <<telemetryd-listener-tcp, TCP Listener>> and must forward them to a <<telemetryd-ipfix-adapter, IPFIX Adapter>>.
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixTcpParser`
+|===
+
+====== Parameters
+
+This parser does not currently have any configurable parameters.
+
+
+[[telemetryd-ipfix-adapter]]
+===== IPFIX Adapter
+
+The IPFIX Adapter is used to handle _IPFIX_ telemetry data received and parsed by either of the <<telemetryd-ipfix-parser-udp, IPFIX UDP Parser>> or <<telemetryd-ipfix-parser-tcp, IPFIX TCP Parser>>.
+Received flows are decoded from the messages into the canonical flow format and are published to the _flow repository_
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapter`
+|===
+
+====== Parameters
+
+This adapter does not currently have any configurable parameters.

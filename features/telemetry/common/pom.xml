@@ -22,7 +22,6 @@
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Import-Package>*</Import-Package>
-            <DynamicImport-Package>org.opennms.netmgt.telemetry.listeners.*</DynamicImport-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -30,18 +29,13 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.features.telemetry.listeners</groupId>
-      <artifactId>org.opennms.features.telemetry.listeners.api</artifactId>
+      <groupId>org.opennms.features.telemetry</groupId>
+      <artifactId>org.opennms.features.telemetry.api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.telemetry.adapters</groupId>
-      <artifactId>org.opennms.features.telemetry.adapters.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.telemetry.adapters</groupId>
-      <artifactId>org.opennms.features.telemetry.adapters.registry</artifactId>
+      <groupId>org.opennms.features.telemetry</groupId>
+      <artifactId>org.opennms.features.telemetry.registry</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

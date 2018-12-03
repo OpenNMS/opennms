@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms.features.telemetry</groupId>
+    <artifactId>org.opennms.features.telemetry.protocols</artifactId>
+    <version>24.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features.telemetry.protocols</groupId>
+  <artifactId>org.opennms.features.telemetry.protocols.nxos</artifactId>
+  <name>OpenNMS :: Features :: Telemetry :: Protocols :: NX-OS Telemetry</name>
+  <packaging>pom</packaging>
+  <modules>
+    <module>adapter</module>
+  </modules>
+</project>

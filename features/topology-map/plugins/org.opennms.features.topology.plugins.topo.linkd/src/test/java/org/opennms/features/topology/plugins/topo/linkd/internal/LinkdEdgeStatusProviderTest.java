@@ -55,10 +55,10 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
-import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -122,15 +122,15 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         m_edges = new ArrayList<>();
         // Cloud is identified by the designated bridge and designated port
         AbstractVertex cloud = new AbstractVertex("nodes", "1:48", "cloud");
-        LinkdVertex node1Vertex = LinkdVertex.create(Node.create(m_node1));
-        LinkdVertex node2Vertex = LinkdVertex.create(Node.create(m_node2));
-        LinkdVertex node3Vertex = LinkdVertex.create(Node.create(m_node3));
+        LinkdVertex node1Vertex = LinkdVertex.create(NodeTopologyEntity.create(m_node1));
+        LinkdVertex node2Vertex = LinkdVertex.create(NodeTopologyEntity.create(m_node2));
+        LinkdVertex node3Vertex = LinkdVertex.create(NodeTopologyEntity.create(m_node3));
 
-        LinkdVertex node4Vertex = LinkdVertex.create(Node.create(m_node4));
-        LinkdVertex node5Vertex = LinkdVertex.create(Node.create(m_node5));
+        LinkdVertex node4Vertex = LinkdVertex.create(NodeTopologyEntity.create(m_node4));
+        LinkdVertex node5Vertex = LinkdVertex.create(NodeTopologyEntity.create(m_node5));
 
-        LinkdVertex dehliVertex = LinkdVertex.create(Node.create(m_nodeDehli));
-        LinkdVertex chennaiVertex = LinkdVertex.create(Node.create(m_nodeChennai));
+        LinkdVertex dehliVertex = LinkdVertex.create(NodeTopologyEntity.create(m_nodeDehli));
+        LinkdVertex chennaiVertex = LinkdVertex.create(NodeTopologyEntity.create(m_nodeChennai));
 
         // identification of link is done with targets id..that is port or mac        
         BridgePort bpnode1port48 = new BridgePort();

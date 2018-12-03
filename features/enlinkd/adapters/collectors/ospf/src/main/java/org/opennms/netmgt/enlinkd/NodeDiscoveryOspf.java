@@ -38,9 +38,9 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.model.OspfElement.Status;
-import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
@@ -76,7 +76,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
             final OspfTopologyService ospfTopologyService,
             final LocationAwareSnmpClient locationAwareSnmpClient,
             final long interval,final long initial,
-            final Node node) {
+            final NodeTopologyEntity node) {
         super(eventForwarder, locationAwareSnmpClient, interval, initial,node);
     	m_ospfTopologyService = ospfTopologyService;
     }

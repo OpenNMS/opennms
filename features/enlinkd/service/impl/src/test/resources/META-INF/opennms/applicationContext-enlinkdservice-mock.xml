@@ -8,55 +8,16 @@
         <constructor-arg value="org.springframework.transaction.PlatformTransactionManager"/>
     </bean>
 
-    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="nodeDao">
-        <constructor-arg value="org.opennms.netmgt.dao.api.NodeDao"/>
-    </bean>
-
-    <bean id="nodeTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.NodeTopologyServiceImpl">
-      <property name="nodeDao" ref="nodeDao" />
-    </bean>
-
-    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="bridgeElementDao">
-        <constructor-arg value="org.opennms.netmgt.enlinkd.persistence.api.BridgeElementDao"/>
-    </bean>
-
-    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="bridgeBridgeLinkDao">
-        <constructor-arg value="org.opennms.netmgt.enlinkd.persistence.api.BridgeBridgeLinkDao"/>
-    </bean>
-
-    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="bridgeMacLinkDao">
-        <constructor-arg value="org.opennms.netmgt.enlinkd.persistence.api.BridgeMacLinkDao"/>
-    </bean>
-
-    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="bridgeStpLinkDao">
-        <constructor-arg value="org.opennms.netmgt.enlinkd.persistence.api.BridgeStpLinkDao"/>
-    </bean>
-
-    <bean id="bridgeTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.BridgeTopologyServiceImpl">
-        <property name="bridgeElementDao" ref="bridgeElementDao" />
-        <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
-        <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
-        <property name="bridgeStpLinkDao" ref="bridgeStpLinkDao" />
-    </bean>
-
-    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="ipNetToMediaDao">
-        <constructor-arg value="org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao"/>
-    </bean>
-
-    <bean id="ipNetToMediaTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.IpNetToMediaTopologyServiceImpl">
-        <property name="ipNetToMediaDao" ref="ipNetToMediaDao" />
-    </bean>
-
     <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="cdpElementDao">
         <constructor-arg value="org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao"/>
     </bean>
-    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="cdpLinkDao">
-        <constructor-arg value="org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao"/>
+    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="topologyEntityCache">
+        <constructor-arg value="org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache"/>
     </bean>
         
    <bean id="cdpTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.CdpTopologyServiceImpl">
-      <property name="cdpLinkDao" ref="cdpLinkDao" />
-      <property name="cdpElementDao" ref="cdpElementDao" />
+       	<property name="topologyEntityCache" ref="topologyEntityCache" />
+      	<property name="cdpElementDao" ref="cdpElementDao" />
    </bean>
 
     <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="isisElementDao">
@@ -83,7 +44,7 @@
       <property name="lldpElementDao" ref="lldpElementDao" />
    </bean>
    
-       <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="ospfElementDao">
+   <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="ospfElementDao">
         <constructor-arg value="org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao"/>
     </bean>
     <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="ospfLinkDao">

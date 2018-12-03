@@ -45,7 +45,7 @@ import org.opennms.netmgt.config.collectd.jmx.CompMember;
 import org.opennms.netmgt.config.collectd.jmx.Mbean;
 
 import com.google.common.base.Strings;
-import com.vaadin.data.Validator;
+import com.vaadin.v7.data.Validator;
 
 
 public class AttributeValidatorTest {

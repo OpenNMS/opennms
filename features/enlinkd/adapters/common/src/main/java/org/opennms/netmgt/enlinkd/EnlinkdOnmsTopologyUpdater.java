@@ -32,10 +32,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
-import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
-import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.enlinkd.service.api.TopologyService;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -60,10 +59,10 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
                                          null);
     }
     
-    public static OnmsTopologyVertex create(Node node) throws OnmsTopologyException {
+    public static OnmsTopologyVertex create(NodeTopologyEntity node) throws OnmsTopologyException {
         return OnmsTopologyVertex.create(node.getId(), 
                                          node.getLabel(), 
-                                         InetAddressUtils.str(node.getSnmpPrimaryIpAddr()), 
+                                         InetAddressUtils.str(node.getPrimaryIpAddr()), 
                                          node.getSysoid());
     }
 
@@ -172,7 +171,7 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
         return m_nodeTopologyService;
     }
 
-    public Map<Integer, Node> getNodeMap() {
+    public Map<Integer, NodeTopologyEntity> getNodeMap() {
         return m_nodeTopologyService.findAll().stream().collect(Collectors.toMap(node -> node.getNodeId(), node -> node, (n1,n2) ->n1));
     }
     

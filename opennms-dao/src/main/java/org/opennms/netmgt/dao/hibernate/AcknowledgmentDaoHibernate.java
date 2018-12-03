@@ -38,6 +38,7 @@ import java.util.function.Consumer;
 import org.hibernate.ObjectNotFoundException;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
+import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -221,6 +222,7 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
                 case CLEAR:
                     LOG.debug("processAck: Clearing ackable: {}...", ackable);
                     if (isAlarm) {
+                        ((OnmsAlarm) ackable).getRelatedAlarms().forEach(relatedAlarm -> clearRelatedAlarm(relatedAlarm));
                         final OnmsSeverity previousSeverity = ackable.getSeverity();
                         callback = (alarm) -> alarmEntityNotifier.didUpdateAlarmSeverity(alarm, previousSeverity);
                     }
@@ -253,5 +255,11 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
             
         }
         LOG.info("processAck: Found and processed acknowledgables for the acknowledgement: {}", ack);
+    }
+
+    private void clearRelatedAlarm(OnmsAlarm alarm) {
+        OnmsAcknowledgment clear = new OnmsAcknowledgment(alarm);
+        clear.setAckAction(AckAction.CLEAR);
+        processAck(clear);
     }
 }

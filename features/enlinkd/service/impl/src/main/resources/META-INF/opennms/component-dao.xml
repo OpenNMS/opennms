@@ -15,6 +15,7 @@
 
     <bean id="nodeTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.NodeTopologyServiceImpl">
       <property name="nodeDao" ref="nodeDao" />
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.enlinkd.service.api.NodeTopologyService" ref="nodeTopologyService" />
 
@@ -34,6 +35,7 @@
     <onmsgi:service interface="org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService" ref="ipNetToMediaTopologyService" />
         
    <bean id="cdpTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.CdpTopologyServiceImpl">
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
       <property name="cdpLinkDao" ref="cdpLinkDao" />
       <property name="cdpElementDao" ref="cdpElementDao" />
    </bean>

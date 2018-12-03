@@ -28,20 +28,28 @@
 
 package org.opennms.netmgt.telemetry.distributed.common;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.opennms.netmgt.telemetry.listeners.api.ListenerDefinition;
+import org.opennms.netmgt.telemetry.config.api.ListenerDefinition;
+import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
 
 public class MapBasedListenerDef implements ListenerDefinition {
     private final String name;
     private final String className;
     private final Map<String, String> parameters;
+    private final List<MapBasedParserDef> parsers;
 
-    public MapBasedListenerDef(Map<String, String> parameters) {
-        name = MapUtils.getRequiredString("name", parameters);
-        className = MapUtils.getRequiredString("class-name", parameters);
-        // Extract the keys from the map that are prefixed with "listener."
-        this.parameters = MapUtils.filterKeysByPrefix(parameters, "listener.");
+    public MapBasedListenerDef(final PropertyTree definition) {
+        this.name = definition.getRequiredString("name");
+        this.className = definition.getRequiredString("class-name");
+
+        this.parameters = definition.getMap("parameters");
+
+        this.parsers = definition.getSubTrees("parsers").values().stream()
+                .map(MapBasedParserDef::new)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -57,6 +65,11 @@ public class MapBasedListenerDef implements ListenerDefinition {
     @Override
     public Map<String, String> getParameterMap() {
         return parameters;
+    }
+
+    @Override
+    public List<MapBasedParserDef> getParsers() {
+        return this.parsers;
     }
 
 }

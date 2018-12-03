@@ -27,7 +27,6 @@
     <module>org.opennms.features.topology.plugins.topo.graphml</module>
     <module>org.opennms.features.topology.plugins.topo.history</module>
     <module>org.opennms.features.topology.plugins.topo.linkd</module>
-    <module>org.opennms.features.topology.plugins.topo.sfree</module>
     <module>org.opennms.features.topology.plugins.topo.vmware</module>
   </modules>
 

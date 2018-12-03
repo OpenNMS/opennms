@@ -35,9 +35,10 @@ import java.util.Set;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
-import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 
 public class LinkdVertex extends SimpleLeafVertex {
@@ -67,7 +68,7 @@ public class LinkdVertex extends SimpleLeafVertex {
         
     }
     
-    public static LinkdVertex create(Node node) {
+    public static LinkdVertex create(NodeTopologyEntity node) {
         LinkdVertex vertex = new LinkdVertex(node.getId());
         vertex.setNodeID(node.getNodeId());
         vertex.setLabel(node.getLabel());
@@ -77,8 +78,8 @@ public class LinkdVertex extends SimpleLeafVertex {
             vertex.setLocation(node.getLocation());
         }
         vertex.setIpAddress("no ip address");
-        if (node.getSnmpPrimaryIpAddr() != null) {
-            vertex.setIpAddress(InetAddressUtils.str(node.getSnmpPrimaryIpAddr()));
+        if (node.getPrimaryIpAddr() != null) {
+            vertex.setIpAddress(InetAddressUtils.str(node.getPrimaryIpAddr()));
         }
         vertex.setManaged("Unmanaged");
         if (node.isManaged()) {

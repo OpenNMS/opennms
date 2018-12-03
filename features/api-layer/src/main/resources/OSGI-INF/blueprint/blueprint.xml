@@ -31,6 +31,7 @@
   <service interface="org.opennms.integration.api.v1.dao.SnmpInterfaceDao" >
     <bean class="org.opennms.features.apilayer.dao.SnmpInterfaceDaoImpl">
       <argument ref="snmpInterfaceDao"/>
+      <argument ref="sessionUtils"/>
     </bean>
   </service>
 

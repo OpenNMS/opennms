@@ -129,20 +129,21 @@
       <bundle>mvn:org.opennms.features.minion.shell/org.opennms.features.minion.shell.collection/${project.version}</bundle>
     </feature>
 
-    <feature name="minion-telemetryd-listeners" description="Minion :: Telemetry :: Listeners" version="${project.version}">
+    <feature name="minion-telemetryd-receivers" description="Minion :: Telemetry :: Receivers" version="${project.version}">
       <!-- Not fully needed, but a convenient way to install netty4 -->
       <feature>camel-netty4</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
       <bundle>mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.jaxb/${project.version}</bundle>
-      <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
-      <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.api/${project.version}</bundle>
-      <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.udp/${project.version}</bundle>
-      <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.flow/${project.version}</bundle>
-      <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.sflow/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.registry/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.parser/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.parser/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.minion/${project.version}</bundle>
     </feature>

@@ -28,14 +28,14 @@
 
 package org.opennms.features.topology.api.support;
 
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickListener;
 
@@ -47,7 +47,6 @@ public class DialogWindow extends Window implements ClickListener {
      public DialogWindow(final UI parentWindow, final String title, final String description) {
         this.parentWindow = parentWindow;
         setCaption(title);
-        setImmediate(true);
         setResizable(false);
         setModal(true);
         setWidth(400, Unit.PIXELS);

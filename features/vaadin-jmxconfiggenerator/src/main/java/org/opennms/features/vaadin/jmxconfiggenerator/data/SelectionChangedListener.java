@@ -28,7 +28,7 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.data;
 
-import com.vaadin.data.Item;
+import com.vaadin.v7.data.Item;
 
 /**
  * Indicates if the selection in the MBeans tree has changed.

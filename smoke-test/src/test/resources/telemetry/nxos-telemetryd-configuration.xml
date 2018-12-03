@@ -1,22 +1,24 @@
 <?xml version="1.0"?>
 <telemetryd-config>
-  <protocol name="NXOS" description="Cisco NXOS Telemetry">
-    <listener name="NXOS-UDP-50000" class-name="org.opennms.netmgt.telemetry.listeners.udp.UdpListener">
-      <parameter key="port" value="50000"/>
-    </listener>
+  <listener name="NXOS-UDP-50001" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="true">
+    <parameter key="port" value="50001"/>
 
-    <adapter name="NXOS-GPB" class-name="org.opennms.netmgt.telemetry.adapters.nxos.NxosGpbAdapter">
+    <parser name="NXOS-GPB" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" queue="NXOS" />
+  </listener>
+
+  <queue name="NXOS">
+    <adapter name="NXOS-GPB" class-name="org.opennms.netmgt.telemetry.protocols.nxos.adapter.NxosGpbAdapter" enabled="true">
       <parameter key="script" value="etc/telemetryd-adapters/cisco-nxos-telemetry-interface.groovy" />
-    </adapter>
 
-    <package name="NXOS-Default">
-      <rrd step="300">
-        <rra>RRA:AVERAGE:0.5:1:2016</rra>
-        <rra>RRA:AVERAGE:0.5:12:1488</rra>
-        <rra>RRA:AVERAGE:0.5:288:366</rra>
-        <rra>RRA:MAX:0.5:288:366</rra>
-        <rra>RRA:MIN:0.5:288:366</rra>
-      </rrd>
-    </package>
-  </protocol>
+      <package name="NXOS-Default">
+        <rrd step="300">
+          <rra>RRA:AVERAGE:0.5:1:2016</rra>
+          <rra>RRA:AVERAGE:0.5:12:1488</rra>
+          <rra>RRA:AVERAGE:0.5:288:366</rra>
+          <rra>RRA:MAX:0.5:288:366</rra>
+          <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+      </package>
+    </adapter>
+  </queue>
 </telemetryd-config>

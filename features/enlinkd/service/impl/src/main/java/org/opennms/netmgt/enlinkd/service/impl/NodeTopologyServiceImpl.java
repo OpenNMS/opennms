@@ -33,25 +33,23 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.hibernate.criterion.CriteriaSpecification;
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.enlinkd.service.api.Node;
-import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.PrimaryType;
-import org.springframework.transaction.annotation.Transactional;
 
 public class NodeTopologyServiceImpl implements org.opennms.netmgt.enlinkd.service.api.NodeTopologyService {
 
     private NodeDao m_nodeDao;
-    
+    private TopologyEntityCache m_topologyEntityCache;
     @Override
-    public List<Node> findAllSnmpNode() {
+    public List<NodeTopologyEntity> findAllSnmpNode() {
         final Criteria criteria = new Criteria(OnmsNode.class);
         criteria.setAliases(Arrays.asList(new Alias[] { new Alias(
                                                                   "ipInterfaces",
@@ -60,12 +58,12 @@ public class NodeTopologyServiceImpl implements org.opennms.netmgt.enlinkd.servi
         criteria.addRestriction(new EqRestriction("type", NodeType.ACTIVE));
         criteria.addRestriction(new EqRestriction("iface.isSnmpPrimary",
                                                   PrimaryType.PRIMARY));
-        return new ArrayList<Node>(m_nodeDao.findMatching(criteria).stream().collect(Collectors.toMap( node -> node.getId(), node -> Node.create(node),(n1,n2) -> n1)).values());
+        return new ArrayList<NodeTopologyEntity>(m_nodeDao.findMatching(criteria).stream().collect(Collectors.toMap( node -> node.getId(), node -> NodeTopologyEntity.create(node),(n1,n2) -> n1)).values());
 
     }
 
     @Override
-    public Node getSnmpNode(final int nodeid) {
+    public NodeTopologyEntity getSnmpNode(final int nodeid) {
         final Criteria criteria = new Criteria(OnmsNode.class);
         criteria.setAliases(Arrays.asList(new Alias[] { new Alias(
                                                                   "ipInterfaces",
@@ -78,12 +76,17 @@ public class NodeTopologyServiceImpl implements org.opennms.netmgt.enlinkd.servi
         final List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
 
         if (nodes.size() > 0) {
-            return Node.create(nodes.get(0));
+            return NodeTopologyEntity.create(nodes.get(0));
         } else {
             return null;
         }
     }
     
+    @Override
+    public List<NodeTopologyEntity> findAll() {
+        return m_topologyEntityCache.getNodeTopolgyEntities();
+    }
+
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
@@ -92,19 +95,18 @@ public class NodeTopologyServiceImpl implements org.opennms.netmgt.enlinkd.servi
         m_nodeDao = nodeDao;
     }
 
-    //FIXME and the perfomances?
     @Override
-    @Transactional
-    public List<Node> findAll() {
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
-        criteria.createAlias("ipInterfaces","iface", OnmsCriteria.LEFT_JOIN);
-        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-        return m_nodeDao.findMatching(criteria).stream().map(Node::create).collect(Collectors.toList());
+    public NodeTopologyEntity getDefaultFocusPoint() {
+        return NodeTopologyEntity.create(m_nodeDao.getDefaultFocusPoint());
     }
 
-    @Override
-    public Node getDefaultFocusPoint() {
-        return Node.create(m_nodeDao.getDefaultFocusPoint());
+    public TopologyEntityCache getTopologyEntityCache() {
+        return m_topologyEntityCache;
     }
+
+    public void setTopologyEntityCache(TopologyEntityCache topologyEntityCache) {
+        m_topologyEntityCache = topologyEntityCache;
+    }
+
         
 }

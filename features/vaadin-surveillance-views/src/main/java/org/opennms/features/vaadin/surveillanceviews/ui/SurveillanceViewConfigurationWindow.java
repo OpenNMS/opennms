@@ -39,23 +39,22 @@ import org.opennms.netmgt.config.surveillanceViews.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.DefaultItemSorter;
-import com.vaadin.data.validator.AbstractStringValidator;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.data.util.DefaultItemSorter;
+import com.vaadin.v7.data.validator.AbstractStringValidator;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.TextField;
 
 /**
  * This class is used to display the surveillance view configuration dialog.
@@ -88,7 +87,7 @@ public class SurveillanceViewConfigurationWindow extends Window {
         setClosable(false);
         setResizable(false);
         setWidth(80, Sizeable.Unit.PERCENTAGE);
-        setHeight(75, Sizeable.Unit.PERCENTAGE);
+        setHeight(82, Sizeable.Unit.PERCENTAGE);
 
         /**
          * Title field
@@ -621,21 +620,14 @@ public class SurveillanceViewConfigurationWindow extends Window {
         columnTableFormLayout.setMargin(true);
         rowTableFormLayout.setMargin(true);
 
-        GridLayout gridLayout = new GridLayout();
-        gridLayout.setSizeFull();
-        gridLayout.setColumns(4);
-        gridLayout.setRows(1);
-        gridLayout.setMargin(true);
+        HorizontalLayout rootLayout = new HorizontalLayout();
+        rootLayout.setSizeFull();
+        rootLayout.setMargin(true);
 
-        gridLayout.addComponent(rowsTable);
-        gridLayout.addComponent(rowTableFormLayout);
-        gridLayout.addComponent(columnsTable);
-        gridLayout.addComponent(columnTableFormLayout);
-
-        gridLayout.setColumnExpandRatio(1, 0.5f);
-        gridLayout.setColumnExpandRatio(2, 1.0f);
-        gridLayout.setColumnExpandRatio(3, 0.5f);
-        gridLayout.setColumnExpandRatio(4, 1.0f);
+        rootLayout.addComponent(rowsTable);
+        rootLayout.addComponent(rowTableFormLayout);
+        rootLayout.addComponent(columnsTable);
+        rootLayout.addComponent(columnTableFormLayout);
 
         /**
          * Creating the vertical layout...
@@ -643,7 +635,7 @@ public class SurveillanceViewConfigurationWindow extends Window {
         VerticalLayout verticalLayout = new VerticalLayout();
 
         verticalLayout.addComponent(baseFormLayout);
-        verticalLayout.addComponent(gridLayout);
+        verticalLayout.addComponent(rootLayout);
 
         /**
          * Using an additional {@link com.vaadin.ui.HorizontalLayout} for layouting the buttons

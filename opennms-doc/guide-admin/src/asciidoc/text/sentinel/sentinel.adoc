@@ -223,7 +223,8 @@ $ ssh -p 8301 admin@localhost
 ----
 admin@sentinel> config:edit org.opennms.features.telemetry.adapters-netflow5
 admin@sentinel> config:property-set name Netflow-5
-admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5Adapter
+admin@sentinel> config:property-set adapters.0.name Netflow-5-Adapter
+admin@sentinel> config:property-set adapters.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter
 admin@sentinel> config:update
 ----
 
@@ -264,7 +265,9 @@ $ ssh -p 8201 admin@localhost
 admin@minion()> config:edit org.opennms.features.telemetry.listeners-udp-8877
 admin@minion()> config:property-set name Netflow-5
 admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.udp.UdpListener
-admin@minion()> config:property-set listener.port 8877
+admin@minion()> config:property-set parameters.port 8877
+admin@minion()> config:property-set parsers.0.name Netflow-5-Parser
+admin@minion()> config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser
 admin@minion()> config:update
 ----
 
@@ -460,7 +463,7 @@ $ ssh -p 8301 admin@localhost
 admin@sentinel> config:edit org.opennms.features.telemetry.adapters-nxos
 admin@sentinel> config:property-set name NXOS
 admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.adapters.nxos.NxosGpbAdapter
-admin@sentinel> config:property-set parameters.script  /opt/sentinel/etc/cisco-nxos-telemetry-interface.groovy
+admin@sentinel> config:property-set parameters.script /opt/sentinel/etc/cisco-nxos-telemetry-interface.groovy
 admin@sentinel> config:update
 ----
 
@@ -490,7 +493,7 @@ $ ssh -p 8301 admin@localhost
 admin@sentinel> config:edit org.opennms.features.telemetry.adapters-jti
 admin@sentinel> config:property-set name JTI
 admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.adapters.jti.JtiGpbAdapter
-admin@sentinel> config:property-set parameters.script  /opt/sentinel/etc/junos-telemetry-interface.groovy
+admin@sentinel> config:property-set parameters.script /opt/sentinel/etc/junos-telemetry-interface.groovy
 admin@sentinel> config:update
 ----
 

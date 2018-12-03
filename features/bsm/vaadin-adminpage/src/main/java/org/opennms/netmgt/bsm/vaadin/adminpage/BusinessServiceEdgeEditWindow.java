@@ -53,16 +53,16 @@ import org.opennms.netmgt.vaadin.core.UIHelper;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
-import com.vaadin.data.Validator;
-import com.vaadin.shared.ui.combobox.FilteringMode;
+import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.NativeSelect;
+import com.vaadin.v7.ui.TextField;
+import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 /**

@@ -30,9 +30,9 @@ package org.opennms.features.topology.plugins.browsers;
 
 import org.opennms.netmgt.model.OnmsServiceType;
 
-import com.vaadin.data.Property;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.ColumnGenerator;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.Table.ColumnGenerator;
 
 public class OnmsServiceTypeGenerator implements ColumnGenerator {
 

@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <resource-types>
+    <!-- Kafka -->
     <resourceType name="kafkaLag" label="Kafka Lag"
                   resourceLabel="${index}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
@@ -16,4 +17,14 @@
       </storageStrategy>
     </resourceType>
 
+    <!-- Netflow -->
+    <resourceType name="netflow" label="Flow Protocol" resourceLabel="${index}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+            <parameter key="sibling-column-name" value="domain"/>
+            <parameter key="replace-all" value="s/\s//"/>
+            <parameter key="replace-all" value="s/:.*//"/>
+            <parameter key="replace-all" value="s/.*\.//"/>
+        </storageStrategy>
+    </resourceType>
 </resource-types>

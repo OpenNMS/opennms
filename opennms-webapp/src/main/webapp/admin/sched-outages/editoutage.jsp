@@ -623,6 +623,13 @@ Could not find an outage to edit because no outage name parameter was specified 
 </style>
 
 <script type="text/javascript">
+
+function select(what, value) {
+	$("input[type=checkbox][name^='" + what + "']").each(function () {
+		$(this).prop('checked', value);
+	});
+}
+
 var enabledIds = new Array();
 var disabledIds = new Array();
 
@@ -1016,7 +1023,10 @@ function updateOutageTypeDisplay(selectElement) {
 					</ul>
 				</li>
 				<li>
-					<p>Status Polling:</p>
+					<p>Status Polling:
+						<br/>
+						<button type="button" class="btn btn-xs" onclick="select('polling-', true)">Select All</button>&nbsp;<button type="button" class="btn btn-xs" onclick="select('polling-', false)">Unselect All</button>
+					</p>
 					<ul class="list-no-bullet">
 						<% List<org.opennms.netmgt.config.poller.Package> pollerSorted = new ArrayList<org.opennms.netmgt.config.poller.Package>(pollingOutages.keySet());
 					       Collections.sort(pollerSorted, new Comparator<org.opennms.netmgt.config.poller.Package>() {
@@ -1033,7 +1043,10 @@ function updateOutageTypeDisplay(selectElement) {
 					</ul>
 				</li>
 				<li>
-					<p>Threshold Checking:</p>
+					<p>Threshold Checking:
+						<br/>
+						<button type="button" class="btn btn-xs" onclick="select('threshold-', true)">Select All</button>&nbsp;<button type="button" class="btn btn-xs" onclick="select('threshold-', false)">Unselect All</button>
+					</p>
 					<ul class="list-no-bullet">
 						<% List<org.opennms.netmgt.config.threshd.Package> threshdSorted = new ArrayList<org.opennms.netmgt.config.threshd.Package>(thresholdOutages.keySet());
 					       Collections.sort(threshdSorted, new Comparator<org.opennms.netmgt.config.threshd.Package>() {
@@ -1050,7 +1063,10 @@ function updateOutageTypeDisplay(selectElement) {
 					</ul>
 				</li>
 				<li>
-					<p>Data Collection:</p>
+					<p>Data Collection:
+						<br/>
+						<button type="button" class="btn btn-xs" onclick="select('collect-', true)">Select All</button>&nbsp;<button type="button" class="btn btn-xs" onclick="select('collect-', false)">Unselect All</button>
+					</p>
 					<ul class="list-no-bullet">
 						<% List<org.opennms.netmgt.config.collectd.Package> collectdSorted = new ArrayList<org.opennms.netmgt.config.collectd.Package>(collectionOutages.keySet());
 					       Collections.sort(collectdSorted, new Comparator<org.opennms.netmgt.config.collectd.Package>() {

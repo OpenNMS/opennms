@@ -108,7 +108,6 @@
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-base/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-browsers/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-linkd/${project.version}/xml/features</repository>
-            <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-sfree/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-vmware/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-application/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-bsm/${project.version}/xml/features</repository>
@@ -318,7 +317,6 @@
             <feature>opennms-topology-runtime-base</feature>
             <feature>opennms-topology-runtime-browsers</feature>
             <feature>opennms-topology-runtime-linkd</feature>
-            <feature>opennms-topology-runtime-sfree</feature>
             <feature>opennms-topology-runtime-vmware</feature>
             <feature>opennms-topology-runtime-application</feature>
             <feature>opennms-topology-runtime-bsm</feature>
@@ -607,13 +605,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>opennms-topology-runtime-sfree</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.osgi.features.topology</groupId>
       <artifactId>opennms-topology-runtime-vmware</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
@@ -847,8 +838,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.telemetry.adapters</groupId>
-      <artifactId>org.opennms.features.telemetry.adapters.api</artifactId>
+      <groupId>org.opennms.features.telemetry</groupId>
+      <artifactId>org.opennms.features.telemetry.api</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

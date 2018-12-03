@@ -34,7 +34,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
-import org.opennms.netmgt.enlinkd.service.api.Node;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
@@ -65,7 +65,7 @@ public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
     @Override
     public OnmsTopology buildTopology() throws OnmsTopologyException {
-        Map<Integer, Node> nodeMap=getNodeMap();
+        Map<Integer, NodeTopologyEntity> nodeMap=getNodeMap();
         OnmsTopology topology = new OnmsTopology();
         for (OspfElement element: m_ospfTopologyService.findAllOspfElements()) {
             topology.getVertices().add(create(nodeMap.get(element.getNode().getId())));

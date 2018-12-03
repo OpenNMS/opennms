@@ -34,10 +34,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Triple;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
-import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
@@ -71,12 +71,12 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
     @Override
     public OnmsTopology buildTopology() throws OnmsTopologyException {
-        Map<Integer, Node> nodeMap= getNodeMap();
+        Map<Integer, NodeTopologyEntity> nodeMap= getNodeMap();
         OnmsTopology topology = new OnmsTopology();
         for (Triple<List<BridgePort>, List<MacPort>, BridgePort> shared: m_bridgeTopologyService.matchBridgeLinks()) {
             Set<OnmsTopologyPort> ports = new HashSet<>();
             for (BridgePort bp: shared.getLeft()) {
-                Node node = nodeMap.get(bp.getNodeId());
+                NodeTopologyEntity node = nodeMap.get(bp.getNodeId());
                 if (topology.getVertex(node.getId()) == null) {
                     topology.getVertices().add(create(node));
                 }
@@ -93,7 +93,7 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
                 String id = Topology.getId(macPort);
                 if (topology.getVertex(id) ==  null) {
                     if (macPort.getNodeId() != null) {
-                        Node node = nodeMap.get(macPort.getNodeId());
+                        NodeTopologyEntity node = nodeMap.get(macPort.getNodeId());
                         if (topology.getVertex(node.getId()) == null) {
                             topology.getVertices().add(create(node));
                         }

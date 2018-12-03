@@ -16,6 +16,11 @@
             <plugin>
                 <groupId>org.opennms.maven.plugins</groupId>
                 <artifactId>features-maven-plugin</artifactId>
+                <configuration>
+                    <features>
+                        <feature>opennms-core-web</feature>
+                    </features>
+                </configuration>
             </plugin>
         </plugins>
     </build>

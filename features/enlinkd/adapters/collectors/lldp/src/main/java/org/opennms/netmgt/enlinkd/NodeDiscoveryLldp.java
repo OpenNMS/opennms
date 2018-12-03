@@ -35,8 +35,8 @@ import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
-import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
@@ -75,7 +75,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
             final LldpTopologyService lldpTopologyService,
             final LocationAwareSnmpClient locationAwareSnmpClient,
             final long interval,final long initial,
-            final Node node) {
+            final NodeTopologyEntity node) {
         super(eventForwarder, locationAwareSnmpClient, interval, initial,node);
     	m_lldpTopologyService = lldpTopologyService;
     }

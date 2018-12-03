@@ -44,6 +44,7 @@ import org.opennms.netmgt.alarmd.Alarmd;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.model.AckAction;
+import org.opennms.netmgt.model.AlarmAssociation;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.slf4j.Logger;
@@ -77,6 +78,8 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     private final Map<Integer, AlarmAndFact> alarmsById = new HashMap<>();
 
     private final Map<Integer, AlarmAcknowledgementAndFact> acknowledgementsByAlarmId = new HashMap<>();
+
+    private final Map<Integer, Map<Integer, AlarmAssociationAndFact>> alarmAssociationById = new HashMap<>();
 
     public DroolsAlarmContext() {
         super(Paths.get(ConfigFileConstants.getHome(), "etc", "alarmd", "drools-rules.d").toFile(), Alarmd.NAME, "DroolsAlarmContext");
@@ -163,6 +166,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             final FactHandle fact = kieSession.insert(alarm);
             alarmAndFact.setFact(fact);
         }
+        handleRelatedAlarms(alarm);
         handleAlarmAcknowledgements(alarm);
     }
 
@@ -180,19 +184,52 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         }
     }
 
+    private void handleRelatedAlarms(OnmsAlarm situation) {
+        if (!situation.isSituation()) {
+            return;
+        }
+        alarmAssociationById.putIfAbsent(situation.getId(), new HashMap<>());
+        final Map<Integer, AlarmAssociationAndFact> associationFacts = alarmAssociationById.get(situation.getId());
+        for (AlarmAssociation association : situation.getAssociatedAlarms()) {
+            Integer alarmId = association.getRelatedAlarm().getId();
+            AlarmAssociationAndFact assocationFact = associationFacts.get(alarmId);
+            if (assocationFact == null) {
+                LOG.debug("Inserting alarm association into session: {}", association);
+                final FactHandle fact = getKieSession().insert(association);
+                associationFacts.put(alarmId, new AlarmAssociationAndFact(association, fact));
+            } else {
+                FactHandle fact = assocationFact.getFact();
+                LOG.trace("Updating alarm assocation in session: {}", assocationFact);
+                getKieSession().update(fact, association);
+                associationFacts.put(alarmId, new AlarmAssociationAndFact(association, fact)); 
+            }
+        }
+        // Remove Fact for any Alarms no longer in the Situation
+        Set<Integer> deletedAlarmIds = associationFacts.values().stream()
+                .map(fact -> fact.getAlarmAssociation().getRelatedAlarm().getId())
+                    .filter(alarmId -> !situation.getRelatedAlarmIds().contains(alarmId))
+                    .collect(Collectors.toSet());
+        deletedAlarmIds.forEach(alarmId -> {
+            final AlarmAssociationAndFact associationAndFact = associationFacts.remove(alarmId);
+            if (associationAndFact != null) {
+                LOG.debug("Deleting AlarmAssociationAndFact from session: {}", associationAndFact.getAlarmAssociation());
+                getKieSession().delete(associationAndFact.getFact());
+            }
+        });
+    }
+
     private void handleAlarmAcknowledgements(OnmsAlarm alarm) {
         final AlarmAcknowledgementAndFact acknowledgmentFact = acknowledgementsByAlarmId.get(alarm.getId());
-        final KieSession kieSession = getKieSession();
         if (acknowledgmentFact == null) {
             OnmsAcknowledgment ack = getLatestAcknowledgement(alarm);
             LOG.debug("Inserting first alarm acknowledgement into session: {}", ack);
-            final FactHandle fact = kieSession.insert(ack);
+            final FactHandle fact = getKieSession().insert(ack);
             acknowledgementsByAlarmId.put(alarm.getId(), new AlarmAcknowledgementAndFact(ack, fact));
         } else {
             FactHandle fact = acknowledgmentFact.getFact();
             OnmsAcknowledgment ack = getLatestAcknowledgement(alarm);
-            LOG.trace("Inserting acknowledgment into session: {}", ack);
-            kieSession.update(fact, ack);
+            LOG.trace("Updating acknowledgment in session: {}", ack);
+            getKieSession().update(fact, ack);
             acknowledgementsByAlarmId.put(alarm.getId(), new AlarmAcknowledgementAndFact(ack, fact));
         }
     }
@@ -223,6 +260,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             getKieSession().delete(alarmAndFact.getFact());
         }
         deleteAlarmAcknowledgement(alarmId);
+        deleteAlarmAssociations(alarmId);
     }
 
     private void deleteAlarmAcknowledgement(int alarmId) {
@@ -230,6 +268,20 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         if (acknowledgmentFact != null) {
             LOG.debug("Deleting ack from session: {}", acknowledgmentFact.getAcknowledgement());
             getKieSession().delete(acknowledgmentFact.getFact());
+        }
+    }
+
+    private void deleteAlarmAssociations(int alarmId) {
+        Map<Integer, AlarmAssociationAndFact> associationFacts = alarmAssociationById.remove(alarmId);
+        if (associationFacts == null) {
+            return;
+        }
+        for (Integer association : associationFacts.keySet()) {
+            AlarmAssociationAndFact assocationFact = associationFacts.get(association);
+            if (assocationFact != null) {
+                LOG.debug("Deleting association from session: {}", assocationFact.getAlarmAssociation());
+                getKieSession().delete(assocationFact.getFact());
+            }
         }
     }
 

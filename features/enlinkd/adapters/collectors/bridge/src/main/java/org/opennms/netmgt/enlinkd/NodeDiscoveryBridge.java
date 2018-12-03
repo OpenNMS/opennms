@@ -43,10 +43,10 @@ import java.util.concurrent.ExecutionException;
 
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
-import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.enlinkd.snmp.CiscoVtpTracker;
 import org.opennms.netmgt.enlinkd.snmp.CiscoVtpVlanTableTracker;
@@ -88,7 +88,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             final BridgeTopologyService bridgeTopologyService,
             final int maxSize,
             final LocationAwareSnmpClient locationAwareSnmpClient,
-            final long interval,final long initial, final Node node) {
+            final long interval,final long initial, final NodeTopologyEntity node) {
         super(eventForwarder, locationAwareSnmpClient, interval, initial,node);
         m_bridgeTopologyService = bridgeTopologyService;
         m_maxSize = maxSize;

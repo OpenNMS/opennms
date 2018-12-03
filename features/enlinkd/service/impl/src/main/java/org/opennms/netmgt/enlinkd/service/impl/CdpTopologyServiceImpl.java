@@ -41,8 +41,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
 import org.opennms.netmgt.model.OnmsNode;
@@ -61,7 +63,8 @@ public class CdpTopologyServiceImpl extends TopologyServiceImpl implements CdpTo
     
     private CdpLinkDao m_cdpLinkDao;
     private CdpElementDao m_cdpElementDao;
-
+    private TopologyEntityCache m_topologyEntityCache;
+    
     public CdpTopologyServiceImpl() {
     }
 
@@ -151,37 +154,37 @@ public class CdpTopologyServiceImpl extends TopologyServiceImpl implements CdpTo
         }.execute();
     }
 
-    public List<Pair<CdpLink, CdpLink>> matchCdpLinks() {
+    public List<Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> matchCdpLinks() {
 
         final Collection<CdpElement> cdpElements = m_cdpElementDao.findAll();
-        final List<CdpLink> allLinks = m_cdpLinkDao.findAll();
+        final List<CdpLinkTopologyEntity> allLinks = m_topologyEntityCache.getCdpLinkTopologyEntities();
         // 1. create lookup maps:
         Map<Integer, CdpElement> cdpelementmap = new HashMap<Integer, CdpElement>();
         for (CdpElement cdpelement: cdpElements) {
             cdpelementmap.put(cdpelement.getNode().getId(), cdpelement);
         }
-        Map<CompositeKey, CdpLink> targetLinkMap = new HashMap<>();
-        for (CdpLink targetLink : allLinks) {
+        Map<CompositeKey, CdpLinkTopologyEntity> targetLinkMap = new HashMap<>();
+        for (CdpLinkTopologyEntity targetLink : allLinks) {
             CompositeKey key = new CompositeKey(targetLink.getCdpCacheDevicePort(),
                     targetLink.getCdpInterfaceName(),
-                    cdpelementmap.get(targetLink.getNode().getId()).getCdpGlobalDeviceId(),
+                    cdpelementmap.get(targetLink.getNodeId()).getCdpGlobalDeviceId(),
                     targetLink.getCdpCacheDeviceId());
             targetLinkMap.put(key, targetLink);
         }
         Set<Integer> parsed = new HashSet<Integer>();
 
         // 2. iterate
-        List<Pair<CdpLink, CdpLink>> results = new ArrayList<>();
-        for (CdpLink sourceLink : allLinks) {
+        List<Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> results = new ArrayList<>();
+        for (CdpLinkTopologyEntity sourceLink : allLinks) {
             if (parsed.contains(sourceLink.getId())) {
                 continue;
             }
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getCdpLinks: source: {} ", sourceLink);
             }
-            CdpElement sourceCdpElement = cdpelementmap.get(sourceLink.getNode().getId());
+            CdpElement sourceCdpElement = cdpelementmap.get(sourceLink.getNodeId());
 
-            CdpLink targetLink = targetLinkMap.get(new CompositeKey(sourceLink.getCdpInterfaceName(),
+            CdpLinkTopologyEntity targetLink = targetLinkMap.get(new CompositeKey(sourceLink.getCdpInterfaceName(),
                     sourceLink.getCdpCacheDevicePort(),
                     sourceLink.getCdpCacheDeviceId(),
                     sourceCdpElement.getCdpGlobalDeviceId()));
@@ -212,11 +215,6 @@ public class CdpTopologyServiceImpl extends TopologyServiceImpl implements CdpTo
         return m_cdpElementDao.findAll();
     }
 
-    @Override
-    public List<CdpLink> findAllCdpLinks() {
-        return m_cdpLinkDao.findAll();
-    }
-
     public CdpLinkDao getCdpLinkDao() {
         return m_cdpLinkDao;
     }
@@ -231,6 +229,14 @@ public class CdpTopologyServiceImpl extends TopologyServiceImpl implements CdpTo
 
     public void setCdpElementDao(CdpElementDao cdpElementDao) {
         m_cdpElementDao = cdpElementDao;
+    }
+
+    public TopologyEntityCache getTopologyEntityCache() {
+        return m_topologyEntityCache;
+    }
+
+    public void setTopologyEntityCache(TopologyEntityCache topologyEntityCache) {
+        m_topologyEntityCache = topologyEntityCache;
     }
 
 }

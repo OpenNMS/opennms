@@ -30,10 +30,10 @@ package org.opennms.features.topology.plugins.browsers;
 
 import org.opennms.netmgt.model.OnmsSeverity;
 
-import com.vaadin.data.Property;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.ColumnGenerator;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.Table.ColumnGenerator;
 
 public class SeverityGenerator implements ColumnGenerator {
 

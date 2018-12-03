@@ -30,14 +30,16 @@ package org.opennms.netmgt.enlinkd.service.api;
 
 import java.util.List;
 
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+
 public interface NodeTopologyService {
 
-    List<Node> findAllSnmpNode();
+    List<NodeTopologyEntity> findAllSnmpNode();
 
-    Node getSnmpNode(int nodeid);
+    NodeTopologyEntity getSnmpNode(int nodeid);
     
-    List<Node> findAll();
+    List<NodeTopologyEntity> findAll();
 
-    Node getDefaultFocusPoint();
+    NodeTopologyEntity getDefaultFocusPoint();
         
 }

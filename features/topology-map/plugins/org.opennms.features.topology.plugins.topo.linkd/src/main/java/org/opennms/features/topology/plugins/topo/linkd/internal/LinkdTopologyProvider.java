@@ -46,9 +46,10 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
@@ -57,7 +58,6 @@ import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
-import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
@@ -140,7 +140,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             ProtocolSupported discoveredBy) {
         addEdges(LinkdEdge.create(id, sourceV, targetV, sourceinterface, targetInterface,sourceAddr,targetAddr,discoveredBy));
     }
-        
+    
     private void loadEdges() {
 
         Timer.Context context = m_loadLldpLinksTimer.time();
@@ -236,16 +236,15 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     private void getCdpLinks() {
-
-        for(Pair<CdpLink, CdpLink> pair : m_cdpTopologyService.matchCdpLinks()) {
-            CdpLink sourceLink = pair.getLeft();
-            CdpLink targetLink = pair.getRight();
-            LinkdVertex source = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
+        for(Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity> pair : m_cdpTopologyService.matchCdpLinks()) {
+            CdpLinkTopologyEntity sourceLink = pair.getLeft();
+            CdpLinkTopologyEntity targetLink = pair.getRight();
+            LinkdVertex source = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNodeIdAsString());
             source.getProtocolSupported().add(ProtocolSupported.CDP);
-            LinkdVertex target = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
+            LinkdVertex target = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNodeIdAsString());
             target.getProtocolSupported().add(ProtocolSupported.CDP);
-            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNode().getId(), sourceLink.getCdpCacheIfIndex());
-            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNode().getId(), targetLink.getCdpCacheIfIndex());
+            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNodeId(), sourceLink.getCdpCacheIfIndex());
+            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNodeId(), targetLink.getCdpCacheIfIndex());
             connectVertices(Topology.getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
                 source, target,
                 sourceSnmpInterface, targetSnmpInterface,
@@ -367,14 +366,14 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         
         }
     }
-
+        
     @Override
     public Defaults getDefaults() {
         return new Defaults()
                 .withSemanticZoomLevel(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL)
                 .withPreferredLayout("D3 Layout") // D3 Layout
                 .withCriteria(() -> {
-                    final Node node = m_nodeTopologyService.getDefaultFocusPoint();
+                    final NodeTopologyEntity node = m_nodeTopologyService.getDefaultFocusPoint();
 
                     if (node != null) {
                         final Vertex defaultVertex = getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getId());
@@ -404,7 +403,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
         vcontext = m_loadVerticesTimer.time();
         try {
-            for (Node node : m_nodeTopologyService.findAll()) {
+            for (NodeTopologyEntity node : m_nodeTopologyService.findAll()) {
                 addVertices(LinkdVertex.create(node));
             }
             LOG.info("refresh: Loaded Vertices");
@@ -470,19 +469,16 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     public void setNodeTopologyService(NodeTopologyService nodeTopologyService) {
         m_nodeTopologyService = nodeTopologyService;
     }
-    public SnmpInterfaceDao getSnmpInterfaceDao() {
-        return m_snmpInterfaceDao;
-    }
-    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
-        m_snmpInterfaceDao = snmpInterfaceDao;
-    }
     public BridgeTopologyService getBridgeTopologyService() {
         return m_bridgeTopologyService;
     }
     public void setBridgeTopologyService(BridgeTopologyService bridgeTopologyService) {
         m_bridgeTopologyService = bridgeTopologyService;
     }
-
-        
-
+    public SnmpInterfaceDao getSnmpInterfaceDao() {
+        return m_snmpInterfaceDao;
+    }
+    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
+        m_snmpInterfaceDao = snmpInterfaceDao;
+    }
 }

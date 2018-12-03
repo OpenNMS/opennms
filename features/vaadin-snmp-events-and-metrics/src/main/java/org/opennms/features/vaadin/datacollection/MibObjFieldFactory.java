@@ -30,15 +30,15 @@ package org.opennms.features.vaadin.datacollection;
 
 import java.util.List;
 
-import com.vaadin.data.Container;
-import com.vaadin.data.validator.RegexpValidator;
-import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.ui.AbstractSelect.NewItemHandler;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.validator.RegexpValidator;
+import com.vaadin.v7.data.validator.StringLengthValidator;
+import com.vaadin.v7.ui.AbstractSelect.NewItemHandler;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.TableFieldFactory;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.TableFieldFactory;
+import com.vaadin.v7.ui.TextField;
 
 /**
  * The MIB Object Field.
@@ -60,9 +60,6 @@ public class MibObjFieldFactory implements TableFieldFactory {
         this.resourceTypes = resourceTypes;
     }
 
-    /* (non-Javadoc)
-     * @see com.vaadin.ui.TableFieldFactory#createField(com.vaadin.data.Container, java.lang.Object, java.lang.Object, com.vaadin.ui.Component)
-     */
     @Override
     public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
         if (propertyId.equals("oid")) {

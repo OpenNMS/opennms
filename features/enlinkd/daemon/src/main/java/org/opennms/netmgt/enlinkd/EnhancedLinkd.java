@@ -37,6 +37,7 @@ import java.util.Map;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
@@ -44,7 +45,6 @@ import org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
-import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -205,7 +205,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         createScheduler();
 
         LOG.debug("init: Loading nodes.....");
-        List<Node> nodes = m_queryMgr.findAllSnmpNode();
+        List<NodeTopologyEntity> nodes = m_queryMgr.findAllSnmpNode();
         Assert.notNull(m_nodes);
         LOG.debug("init: Nodes loaded.");
         LOG.debug("init: Loading Bridge Topology.....");
@@ -279,9 +279,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             m_discoveryBridgeDomains.schedule();
     }
 
-    private void scheduleCollection(List<Node> nodes) {
+    private void scheduleCollection(List<NodeTopologyEntity> nodes) {
         synchronized (nodes) {
-            for (final Node node : nodes) {
+            for (final NodeTopologyEntity node : nodes) {
                 scheduleCollectionForNode(node);
             }
         }
@@ -294,7 +294,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      * 
      * @param node
      */
-    private void scheduleCollectionForNode(final Node node) {
+    private void scheduleCollectionForNode(final NodeTopologyEntity node) {
 
         List<NodeDiscovery> colls = new ArrayList<>();
         
@@ -430,7 +430,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         }
         LOG.debug("scheduleNodeCollection: Loading node {} from database",
                   nodeid);
-        Node node = m_queryMgr.getSnmpNode(nodeid);
+        NodeTopologyEntity node = m_queryMgr.getSnmpNode(nodeid);
         if (node == null) {
             LOG.warn("scheduleNodeCollection: Failed to get linkable node from database with ID {}. Exiting",
                            nodeid);

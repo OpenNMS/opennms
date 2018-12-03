@@ -34,9 +34,9 @@ import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia.IpNetToMediaType;
 import org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService;
-import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -68,7 +68,7 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
 	            final IpNetToMediaTopologyService ipNetToMediaTopologyService,
 	            final LocationAwareSnmpClient locationAwareSnmpClient,
 	            final long interval,final long initial,
-	            final Node node) {
+	            final NodeTopologyEntity node) {
 	        super(eventForwarder, locationAwareSnmpClient, interval, initial,node);
     	m_ipNetToMediaTopologyService = ipNetToMediaTopologyService;
     }

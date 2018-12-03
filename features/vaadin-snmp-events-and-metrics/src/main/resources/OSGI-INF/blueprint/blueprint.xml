@@ -39,18 +39,21 @@
     <service id="mibCompilerService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="mibCompilerApplicationFactory">
         <service-properties>
             <entry key="alias" value="/mib-compiler" />
+            <entry key="init.widgetset" value="org.opennms.vaadin.DefaultWidgetset"></entry>
         </service-properties>
     </service>
 
     <service id="eventsAdminService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="eventAdminApplicationFactory">
         <service-properties>
             <entry key="alias" value="/admin/admin-events" />
+            <entry key="init.widgetset" value="org.opennms.vaadin.DefaultWidgetset"></entry>
         </service-properties>
     </service>
 
     <service id="snmpCollectionsService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="snmpCollectionAdminApplicationFactory">
         <service-properties>
             <entry key="alias" value="/admin/admin-snmp-collections" />
+            <entry key="init.widgetset" value="org.opennms.vaadin.DefaultWidgetset"></entry>
         </service-properties>
     </service>
 

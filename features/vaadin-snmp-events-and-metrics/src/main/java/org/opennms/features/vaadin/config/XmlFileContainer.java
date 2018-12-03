@@ -35,7 +35,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import com.vaadin.data.util.FilesystemContainer;
+import com.vaadin.v7.data.util.FilesystemContainer;
 
 /**
  * The Class XmlFileContainer.

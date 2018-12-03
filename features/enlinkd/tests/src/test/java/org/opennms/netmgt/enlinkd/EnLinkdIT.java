@@ -56,13 +56,13 @@ import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia.IpNetToMediaType;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
-import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -91,29 +91,29 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         final int switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME).getId().intValue();
         
 
-        List<Node> linkablenodes = m_linkd.getQueryManager().findAllSnmpNode();
+        List<NodeTopologyEntity> linkablenodes = m_linkd.getQueryManager().findAllSnmpNode();
         assertNotNull(linkablenodes);
         assertEquals(3, linkablenodes.size());
         
-        for (Node linkablenode: linkablenodes) {
+        for (NodeTopologyEntity linkablenode: linkablenodes) {
         	if (linkablenode.getNodeId() == mumbai) {
-        		assertEquals(InetAddressUtils.addr(MUMBAI_IP), linkablenode.getSnmpPrimaryIpAddr());
+        		assertEquals(InetAddressUtils.addr(MUMBAI_IP), linkablenode.getPrimaryIpAddr());
         		assertEquals(MUMBAI_SYSOID,linkablenode.getSysoid());
         	} else if (linkablenode.getNodeId() == delhi) {
-        		assertEquals(InetAddressUtils.addr(DELHI_IP), linkablenode.getSnmpPrimaryIpAddr());
+        		assertEquals(InetAddressUtils.addr(DELHI_IP), linkablenode.getPrimaryIpAddr());
         		assertEquals(DELHI_SYSOID,linkablenode.getSysoid());
         	} else if (linkablenode.getNodeId() == switch1) {
-        		assertEquals(InetAddressUtils.addr(SWITCH1_IP), linkablenode.getSnmpPrimaryIpAddr());
+        		assertEquals(InetAddressUtils.addr(SWITCH1_IP), linkablenode.getPrimaryIpAddr());
         		assertEquals(SWITCH1_SYSOID,linkablenode.getSysoid());
         	} else {
         		assertTrue(false);
         	}
         }
 
-        Node delhilinkablenode = m_linkd.getQueryManager().getSnmpNode(delhi);
+        NodeTopologyEntity delhilinkablenode = m_linkd.getQueryManager().getSnmpNode(delhi);
         assertNotNull(delhilinkablenode);
 		assertEquals(delhi, delhilinkablenode.getNodeId());
-		assertEquals(InetAddressUtils.addr(DELHI_IP), delhilinkablenode.getSnmpPrimaryIpAddr());
+		assertEquals(InetAddressUtils.addr(DELHI_IP), delhilinkablenode.getPrimaryIpAddr());
 		assertEquals(DELHI_SYSOID,delhilinkablenode.getSysoid());
         
     }
