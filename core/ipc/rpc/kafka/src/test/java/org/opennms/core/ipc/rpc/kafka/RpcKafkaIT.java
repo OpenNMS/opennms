@@ -39,10 +39,10 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.DEFAULT_TTL_PROPERTY;
+import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.MAX_BUFFER_SIZE_PROPERTY;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
@@ -79,11 +79,11 @@ public class RpcKafkaIT {
 
     private static final String KAFKA_CONFIG_PID = "org.opennms.core.ipc.rpc.kafka.";
     public static final String REMOTE_LOCATION_NAME = "remote";
-    public static final String MAX_BUFFER_SIZE = "500000";
+    public static final String MAX_BUFFER_SIZE = "1000000";
 
     static {
-        System.setProperty(String.format("%sttl", KAFKA_CONFIG_PID), "20000");
-        System.setProperty(String.format("%smax.buffer.size", KAFKA_CONFIG_PID), MAX_BUFFER_SIZE);
+        System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, DEFAULT_TTL_PROPERTY), "20000");
+        System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, MAX_BUFFER_SIZE_PROPERTY), MAX_BUFFER_SIZE);
     }
 
     @Rule
@@ -106,14 +106,14 @@ public class RpcKafkaIT {
 
     @Before
     public void setup() throws Exception {
-        System.setProperty(String.format("%sbootstrap.servers", KAFKA_CONFIG_PID), kafkaServer.getKafkaConnectString());
-        System.setProperty(String.format("%sauto.offset.reset", KAFKA_CONFIG_PID), "earliest");
+        System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG), kafkaServer.getKafkaConnectString());
+        System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "earliest");
         rpcClient = new KafkaRpcClientFactory();
         echoClient = new MockEchoClient(rpcClient);
         rpcClient.start();
         kafkaConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
         kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        kafkaConfig.put("rpcid.cache.config", "maximumSize=1000,expireAfterWrite=15s");
+        kafkaConfig.put(KafkaRpcConstants.RPCID_CACHE_CONFIG, "maximumSize=1000,expireAfterWrite=15s");
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(KafkaRpcConstants.KAFKA_CONFIG_PID).getProperties())
                 .thenReturn(kafkaConfig);
@@ -277,14 +277,10 @@ public class RpcKafkaIT {
     public void testLargeMessages() throws ExecutionException, InterruptedException {
         final EchoRequest request = new EchoRequest();
         request.setLocation(REMOTE_LOCATION_NAME);
-        List<String> largeMessage = new ArrayList<>();
-        for(int i=0; i < 100; i ++) {
-            String message = Strings.repeat("*", Integer.parseInt(MAX_BUFFER_SIZE));
-            largeMessage.add(message);
-        }
-        request.setLargeMessage(largeMessage);
+        String message = Strings.repeat("*", Integer.parseInt(MAX_BUFFER_SIZE));
+        request.setBody(message);
         EchoResponse expectedResponse = new EchoResponse();
-        expectedResponse.setLargeMessage(largeMessage);
+        expectedResponse.setBody(message);
         EchoResponse actualResponse = echoClient.execute(request).get();
         assertEquals(expectedResponse, actualResponse);
     }
@@ -294,14 +290,10 @@ public class RpcKafkaIT {
         final EchoRequest request = new EchoRequest();
         request.setLocation(REMOTE_LOCATION_NAME);
         request.setSystemId(minionIdentity.getId());
-        List<String> largeMessage = new ArrayList<>();
-        for(int i=0; i < 100; i ++) {
-            String message = Strings.repeat("*", Integer.parseInt(MAX_BUFFER_SIZE));
-            largeMessage.add(message);
-        }
-        request.setLargeMessage(largeMessage);
+        String message = Strings.repeat("*", Integer.parseInt(MAX_BUFFER_SIZE));
+        request.setBody(message);
         EchoResponse expectedResponse = new EchoResponse();
-        expectedResponse.setLargeMessage(largeMessage);
+        expectedResponse.setBody(message);
         EchoResponse actualResponse = echoClient.execute(request).get();
         assertEquals(expectedResponse, actualResponse);
     }

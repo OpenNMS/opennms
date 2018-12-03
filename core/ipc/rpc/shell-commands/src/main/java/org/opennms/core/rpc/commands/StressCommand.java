@@ -28,8 +28,6 @@
 
 package org.opennms.core.rpc.commands;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -53,6 +51,8 @@ import com.google.common.base.Strings;
 @Command(scope = "rpc", name = "stress", description="Generates RPC requests against the Echo module")
 @Service
 public class StressCommand implements Action {
+
+    private static final Integer MAX_BUFFER_SIZE = 500000;
 
     @Reference
     public RpcClientFactory rpcClientFactory;
@@ -142,19 +142,10 @@ public class StressCommand implements Action {
     private EchoRequest buildRequest(Integer messageSize) {
         final EchoRequest request = new EchoRequest();
         request.setId(System.currentTimeMillis());
-        List<String> largeMessage = new ArrayList<>();
-        if(messageSize > 500000) {
-           for(int i=0; i < messageSize/500000; i++) {
-               String message = Strings.repeat("*", 500000);
-               largeMessage.add(message);
-           }
-           if(messageSize%500000 != 0) {
-               String message = Strings.repeat("*", messageSize%500000);
-               largeMessage.add(message);
-           }
-            request.setLargeMessage(largeMessage);
+        String message = Strings.repeat("*", messageSize);
+        if(messageSize > MAX_BUFFER_SIZE) {
+            request.setBody(message);
         } else {
-            String message = Strings.repeat("*", messageSize);
             request.setMessage(message);
         }
         request.setLocation(location);

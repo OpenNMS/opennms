@@ -30,6 +30,8 @@ package org.opennms.core.ipc.rpc.kafka;
 
 import java.util.Properties;
 
+/** This handles all the configuration specific to RPC and some utils common to OpenNMS/Minion
+ */
 public interface KafkaRpcConstants {
     
     public static final String KAFKA_CONFIG_PID = "org.opennms.core.ipc.rpc.kafka";
@@ -39,32 +41,29 @@ public interface KafkaRpcConstants {
     //By default, kafka allows 1MB buffer sizes, here rpcContent (refer to proto/rpc.proto) is limited to 900KB to allow space for other parameters in proto file.
     public static final int MAX_BUFFER_SIZE_CONFIGURED = 921600;
     public static final String MAX_BUFFER_SIZE_PROPERTY = "max.buffer.size";
+    //Configurable buffer size in system properties but it should always be less than MAX_BUFFER_SIZE_CONFIGURED
+    public static final Integer MAX_BUFFER_SIZE = Math.min(MAX_BUFFER_SIZE_CONFIGURED, Integer.getInteger(String.format("%s%s", KAFKA_CONFIG_SYS_PROP_PREFIX, MAX_BUFFER_SIZE_PROPERTY), MAX_BUFFER_SIZE_CONFIGURED));
+    public static final long DEFAULT_TTL_CONFIGURED = 30000;
+    public static final String DEFAULT_TTL_PROPERTY = "ttl";
+    public static final long DEFAULT_TTL = Long.getLong(String.format("%s%s", KAFKA_CONFIG_SYS_PROP_PREFIX, DEFAULT_TTL_PROPERTY),
+            DEFAULT_TTL_CONFIGURED);
+    // Config for rpcId and message Cache to expire since there is no way easy way to remove keys from map.
+    public static final String DEFAULT_CACHE_CONFIG = "maximumSize=1000,expireAfterWrite=5m";
+    public static final String RPCID_CACHE_CONFIG = "rpcid.cache.config";
 
-    static int getTotalChunks(int messageSize, int maxBufferSize) {
-        int totalChunks = 0;
-        if (messageSize > maxBufferSize) {
-            totalChunks = (messageSize / maxBufferSize) + (messageSize % maxBufferSize == 0 ? 0 : 1);
-        } else {
-            totalChunks = 1;
-        }
-        return totalChunks;
-    };
 
+
+    // Calculate remaining buffer size for each chunk.
     static int getBufferSize(int messageSize, int maxBufferSize, int chunk) {
         int bufferSize = messageSize;
-        if (getTotalChunks(messageSize, maxBufferSize) > 1) {
-            bufferSize = (messageSize - chunk * maxBufferSize > maxBufferSize) ? maxBufferSize : messageSize - chunk * maxBufferSize;
+        if (messageSize > maxBufferSize) {
+            int remaining = messageSize - chunk * maxBufferSize;
+            bufferSize = (remaining > maxBufferSize) ? maxBufferSize : remaining;
         }
         return bufferSize;
     }
 
-    static int getMaxBufferSize() {
-        //Configurable buffer size but it should be always less than MAX_BUFFER_SIZE_CONFIGURED.
-        int maxBufferSize = Math.min(MAX_BUFFER_SIZE_CONFIGURED,
-                Integer.getInteger(String.format("%s%s", KAFKA_CONFIG_SYS_PROP_PREFIX, MAX_BUFFER_SIZE_PROPERTY), MAX_BUFFER_SIZE_CONFIGURED));
-        return maxBufferSize;
-    }
-
+    // Retrieve max buffer size from karaf configuration properties.
     static int getMaxBufferSize(Properties properties) {
         int maxBufferSize = MAX_BUFFER_SIZE_CONFIGURED;
         try {

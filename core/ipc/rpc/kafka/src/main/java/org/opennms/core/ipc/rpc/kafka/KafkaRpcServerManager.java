@@ -28,7 +28,11 @@
 
 package org.opennms.core.ipc.rpc.kafka;
 
+import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.DEFAULT_CACHE_CONFIG;
+import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.RPCID_CACHE_CONFIG;
+
 import java.io.IOException;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
@@ -65,11 +69,17 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.math.IntMath;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
+/**
+ * This Manager runs on Minion, A consumer thread will be started on each RPC module which handles the request and executes
+ * it on module and sends the response to Kafka. When the request is for specific minion ( with system-id in request),
+ * it matches the system-id with minionId and executes the request if it intended for itself.
+ */
 public class KafkaRpcServerManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaRpcServerManager.class);
@@ -77,7 +87,6 @@ public class KafkaRpcServerManager {
             .withRateLimit(LOG)
             .maxRate(5).every(Duration.standardSeconds(30))
             .build();
-    private static final String MESSAGE_CACHE_CONFIG = "maximumSize=100,expireAfterWrite=1m";
     private final Map<String, RpcModule<RpcRequest, RpcResponse>> registerdModules = new ConcurrentHashMap<>();
     private final Properties kafkaConfig = new Properties();
     private final KafkaConfigProvider kafkaConfigProvider;
@@ -91,6 +100,8 @@ public class KafkaRpcServerManager {
     private Map<RpcModule<RpcRequest, RpcResponse>, KafkaConsumerRunner> rpcModuleConsumers = new ConcurrentHashMap<>();
     // cache to hold rpcId for directed RPCs and expire them
     private Cache<String, Long>  rpcIdCache;
+    // cache to hold rpcId and ByteString when there are multiple chunks for the message.
+    private Cache<String, ByteString> messageCache;
 
     public KafkaRpcServerManager(KafkaConfigProvider configProvider, MinionIdentity minionIdentity) {
         this.kafkaConfigProvider = configProvider;
@@ -112,9 +123,10 @@ public class KafkaRpcServerManager {
         LOG.info("initializing the Kafka producer with: {}", kafkaConfig);
         producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<String, byte[]>(kafkaConfig), KafkaProducer.class.getClassLoader());
         // Configurable cache config.
-        String cacheConfig = kafkaConfig.getProperty("rpcid.cache.config", "maximumSize=1000,expireAfterWrite=10m");
         maxBufferSize = KafkaRpcConstants.getMaxBufferSize(kafkaConfig);
+        String cacheConfig = kafkaConfig.getProperty(RPCID_CACHE_CONFIG, DEFAULT_CACHE_CONFIG);
         rpcIdCache = CacheBuilder.from(cacheConfig).build();
+        messageCache = CacheBuilder.from(cacheConfig).build();
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -156,7 +168,11 @@ public class KafkaRpcServerManager {
     }
 
     public void destroy() {
-
+        if (producer != null) {
+            producer.close();
+        }
+         rpcIdCache.invalidateAll();
+         messageCache.invalidateAll();
     }
 
 
@@ -166,7 +182,7 @@ public class KafkaRpcServerManager {
         private final AtomicBoolean closed = new AtomicBoolean(false);
         private String topic;
         private RpcModule<RpcRequest, RpcResponse> module;
-        private Cache<String, ByteString> messageCache = CacheBuilder.from(MESSAGE_CACHE_CONFIG).build();
+
 
         public KafkaConsumerRunner(RpcModule<RpcRequest, RpcResponse> rpcModule, KafkaConsumer<String, byte[]> consumer, String topic) {
             this.consumer = consumer;
@@ -193,14 +209,13 @@ public class KafkaRpcServerManager {
                             String rpcId = rpcMessage.getRpcId();
                             long expirationTime = rpcMessage.getExpirationTime();
                             if (expirationTime < System.currentTimeMillis()) {
-                                LOG.debug("ttl already expired for the request id = {}, won't process.", rpcMessage.getRpcId());
+                                LOG.warn("ttl already expired for the request id = {}, won't process.", rpcMessage.getRpcId());
                                 continue;
                             }
                             boolean hasSystemId = rpcMessage.hasSystemId();
-                            String minionId = getMinionIdentity().getId();
+                            String minionId = minionIdentity.getId();
                             if (hasSystemId && !(minionId.equals(rpcMessage.getSystemId()))) {
                                 // directed RPC and not directed at this minion
-                                LOG.debug("MinionIdentity {} doesn't match with systemId {}, ignore the request", minionId, rpcMessage.getSystemId());
                                 continue;
                             }
                             if (hasSystemId) {
@@ -218,7 +233,8 @@ public class KafkaRpcServerManager {
                                 }
                             }
                             ByteString rpcContent = rpcMessage.getRpcContent();
-                            // For bigger messages which expand into multiple messages, cache them until all of them arrive.
+
+                            // For larger messages which gets split into multiple chunks, cache them until all of them arrive.
                             if (rpcMessage.getTotalChunks() > 1) {
                                 ByteString byteString = messageCache.getIfPresent(rpcId);
                                 if (byteString != null) {
@@ -250,10 +266,10 @@ public class KafkaRpcServerManager {
                                             module.getId());
                                     final String responseAsString = module.marshalResponse(response);
                                     final byte[] messageInBytes = responseAsString.getBytes();
-                                    int totalChunks = KafkaRpcConstants.getTotalChunks(messageInBytes.length, maxBufferSize);
+                                    int totalChunks = IntMath.divide(messageInBytes.length, maxBufferSize, RoundingMode.UP);
                                     // Divide the message in chunks and send each chunk as a different message with the same key.
                                     for (int chunk = 0; chunk < totalChunks; chunk++) {
-                                        // Calculate bufferSize for each chunk, it is MAX_BUFFER_SIZE except for last chunk it is remaining buffer.
+                                        // Calculate remaining bufferSize for each chunk.
                                         int bufferSize = KafkaRpcConstants.getBufferSize(messageInBytes.length, maxBufferSize, chunk);
                                         ByteString byteString = ByteString.copyFrom(messageInBytes, chunk * maxBufferSize, bufferSize);
                                         RpcMessageProtos.RpcMessage rpcResponse = RpcMessageProtos.RpcMessage.newBuilder()
@@ -269,8 +285,8 @@ public class KafkaRpcServerManager {
                                             if (e != null) {
                                                 RATE_LIMITED_LOG.error(" RPC response {} with id {} couldn't be sent to Kafka", rpcResponse, rpcId, e);
                                             } else {
-                                                if (LOG.isDebugEnabled()) {
-                                                    LOG.debug("request with id {} executed, sending response {}, chunk number {} ", rpcId, responseAsString, chunkNum);
+                                                if (LOG.isTraceEnabled()) {
+                                                    LOG.trace("request with id {} executed, sending response {}, chunk number {} ", rpcId, responseAsString, chunkNum);
                                                 }
                                             }
                                         });
@@ -296,12 +312,7 @@ public class KafkaRpcServerManager {
 
     }
 
-    public MinionIdentity getMinionIdentity() {
-        return minionIdentity;
-    }
-
-    public Cache<String, Long> getRpcIdCache() {
+    protected Cache<String, Long> getRpcIdCache() {
         return rpcIdCache;
     }
 }
-;
