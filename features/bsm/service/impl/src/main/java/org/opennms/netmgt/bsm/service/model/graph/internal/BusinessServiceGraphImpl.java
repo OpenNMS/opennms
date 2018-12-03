@@ -36,6 +36,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.edge.ApplicationEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
@@ -60,6 +61,7 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
     private final Map<Long, GraphVertex> m_verticesByBusinessServiceId = Maps.newHashMap();
     private final Map<Integer, GraphVertex> m_verticesByIpServiceId = Maps.newHashMap();
     private final Map<String, GraphVertex> m_verticesByReductionKey = Maps.newHashMap();
+    private final Map<Integer, GraphVertex> m_verticesByApplicationId = Maps.newHashMap();
     private final Map<Long, GraphVertex> m_verticesByEdgeId = Maps.newHashMap();
     private final Map<Integer, Set<GraphVertex>> m_verticesByLevel = Maps.newHashMap();
     private final Map<Long, GraphEdge> m_edgesByEdgeId = Maps.newHashMap();
@@ -128,6 +130,25 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
                     }
 
                     @Override
+                    public Void visit(ApplicationEdge edge) {
+                        vertexForEdge[0] = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, edge.getApplication());
+                        addVertex(vertexForEdge[0]);
+                        m_verticesByApplicationId.put(vertexForEdge[0].getApplication().getId(), vertexForEdge[0]);
+
+                        for (String reductionKey : edge.getReductionKeys()) {
+                            GraphVertex reductionKeyVertex = m_verticesByReductionKey.get(reductionKey);
+                            if (reductionKeyVertex == null) {
+                                reductionKeyVertex = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, reductionKey);
+                                addVertex(reductionKeyVertex);
+                                m_verticesByReductionKey.put(reductionKey, reductionKeyVertex);
+                            }
+                            GraphEdgeImpl intermediaryEdge = new GraphEdgeImpl(MAP_IDENTITY);
+                            addEdge(intermediaryEdge, vertexForEdge[0], reductionKeyVertex);
+                        }
+                        return null;
+                    }
+
+                    @Override
                     public Void visit(ReductionKeyEdge edge) {
                         String reductionKey = edge.getReductionKey();
                         vertexForEdge[0] = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, edge.getReductionKey());
@@ -152,6 +173,11 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
             @Override
             public GraphVertex visit(IpServiceEdge edge) {
                 return m_verticesByIpServiceId.get(edge.getIpService().getId());
+            }
+
+            @Override
+            public GraphVertex visit(ApplicationEdge edge) {
+                return m_verticesByApplicationId.get(edge.getApplication().getId());
             }
 
             @Override
@@ -206,6 +232,11 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
     @Override
     public GraphVertex getVertexByIpServiceId(Integer id) {
         return m_verticesByIpServiceId.get(id);
+    }
+
+    @Override
+    public GraphVertex getVertexByApplicationId(Integer id) {
+        return m_verticesByApplicationId.get(id);
     }
 
     @Override

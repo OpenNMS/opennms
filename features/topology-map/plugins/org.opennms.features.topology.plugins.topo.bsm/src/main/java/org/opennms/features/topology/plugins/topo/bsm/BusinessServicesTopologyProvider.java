@@ -183,6 +183,11 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
                         .filter(v -> v.getType() == Type.IpService)
                         .forEach(v -> businessServiceIds.add(((BusinessServiceVertex) v.getParent()).getServiceId()));
 
+                // Application
+                filteredSet.stream()
+                        .filter(v -> v.getType() == Type.Application)
+                        .forEach(v -> businessServiceIds.add(((BusinessServiceVertex) v.getParent()).getServiceId()));
+
                 // Reduction keys (Only consider children of Business Services)
                 filteredSet.stream()
                     .filter(v -> v.getType() == Type.ReductionKey
@@ -194,6 +199,11 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
                         .filter(v -> v.getType() == Type.IpService)
                         .map(v -> businessServiceManager.getIpServiceById(((IpServiceVertex) v).getIpServiceId()).getNodeId())
                         .collect(Collectors.toSet());
+
+                filteredSet.stream()
+                        .filter(v -> v.getType() == Type.Application)
+                        .forEach(v -> nodeIds.addAll(businessServiceManager.getApplicationById(((ApplicationVertex) v).getApplicationId()).getNodeIds()));
+
                 return new SelectionChangedListener.IdSelection<>(nodeIds);
             default:
                 // pass

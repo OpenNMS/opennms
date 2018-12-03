@@ -270,5 +270,23 @@
                              referencedTableName="alarms" referencedColumnNames="alarmid"/>
   </changeSet>
 
+  <changeSet id="24.0.0-bsm-application-edge" author="cpape">
+    <createTable tableName="bsm_service_application" >
+      <column name="id" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="applicationid" type="integer">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="bsm_service_application" columnNames="id" constraintName="bsm_service_application_pkey" />
+    <addForeignKeyConstraint constraintName="fk_bsm_service_application_edge_id"
+                             baseTableName="bsm_service_application" baseColumnNames="id"
+                             referencedTableName="bsm_service_edge" referencedColumnNames="id" onDelete="CASCADE"/>
+    <addForeignKeyConstraint constraintName="fk_bsm_service_application_applicationid"
+                             baseTableName="bsm_service_application" baseColumnNames="applicationid"
+                             referencedTableName="applications" referencedColumnNames="id" onDelete="CASCADE"/>
+  </changeSet>
+
 </databaseChangeLog>
 
