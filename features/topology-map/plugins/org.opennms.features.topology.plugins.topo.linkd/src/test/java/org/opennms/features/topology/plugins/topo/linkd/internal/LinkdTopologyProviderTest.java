@@ -45,7 +45,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.core.test.MockLogger;
 import org.opennms.core.utils.LldpUtils;
-import org.opennms.netmgt.model.CdpElement;
+import org.opennms.netmgt.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsLinkTopologyEntity;
@@ -116,7 +116,7 @@ public class LinkdTopologyProviderTest {
         // 4 and 5 will match
 
         List<OnmsNode> nodes = createNodes(6);
-        List<CdpElement> elements = Arrays.asList(
+        List<CdpElementTopologyEntity> elements = Arrays.asList(
                 createCdpElement(nodes.get(0), "Element0"),
                 createCdpElement(nodes.get(1), "match1.4"),
                 createCdpElement(nodes.get(2), "Element2"),
@@ -292,11 +292,8 @@ public class LinkdTopologyProviderTest {
         return link;
     }
 
-    private CdpElement createCdpElement(OnmsNode node, String globalDeviceId) {
-        CdpElement cdpElement = new CdpElement();
-        cdpElement.setNode(node);
-        cdpElement.setCdpGlobalDeviceId(globalDeviceId);
-        return cdpElement;
+    private CdpElementTopologyEntity createCdpElement(OnmsNode node, String globalDeviceId) {
+        return new CdpElementTopologyEntity(null, globalDeviceId, node.getId());
     }
 
     private CdpLinkTopologyEntity createCdpLinkTopologyEntity(int id, OnmsNode node, String cdpCacheDeviceId, String cdpInterfaceName,

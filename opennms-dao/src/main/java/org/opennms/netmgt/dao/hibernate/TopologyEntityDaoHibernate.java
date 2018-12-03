@@ -34,6 +34,8 @@ import org.opennms.netmgt.dao.api.TopologyEntityDao;
 import org.opennms.netmgt.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.model.IpInterfaceTopologyEntity;
+import org.opennms.netmgt.model.IsIsElementTopologyEntity;
+import org.opennms.netmgt.model.LldpElementTopologyEntity;
 import org.opennms.netmgt.model.NodeTopologyEntity;
 import org.opennms.netmgt.model.IsIsLinkTopologyEntity;
 import org.opennms.netmgt.model.LldpLinkTopologyEntity;
@@ -98,4 +100,17 @@ public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements T
                         "from org.opennms.netmgt.model.CdpElement e");
     }
 
+    @Override
+    public List<LldpElementTopologyEntity> getLldpElementTopologyEntities() {
+        return (List<LldpElementTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.model.LldpElementTopologyEntity(e.id, e.lldpChassisId, e.node.id)" +
+                        "from org.opennms.netmgt.model.LldpElement e");
+    }
+
+    @Override
+    public List<IsIsElementTopologyEntity> getIsIsElementTopologyEntities() {
+        return (List<IsIsElementTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.model.IsIsElementTopologyEntity(e.id, e.isisSysID, e.node.id)" +
+                        "from org.opennms.netmgt.model.IsIsElement e");
+    }
 }
