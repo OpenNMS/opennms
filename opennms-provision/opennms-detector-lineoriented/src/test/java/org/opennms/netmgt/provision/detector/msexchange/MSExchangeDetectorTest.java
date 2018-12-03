@@ -34,6 +34,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 
 import org.junit.After;
 import org.junit.Before;
@@ -92,7 +93,7 @@ public class MSExchangeDetectorTest implements InitializingBean {
         m_imapServer.init();
         m_imapServer.startServer();
 
-        m_detector = m_detectorFactory.createDetector();
+        m_detector = m_detectorFactory.createDetector(new HashMap<>());
         m_detector.setPop3Port(110);
         m_detector.setImapPort(143);
         m_detector.setTimeout(500);
