@@ -106,6 +106,8 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private final DocumentEnricher documentEnricher;
 
+    private final DocumentModifier documentModifier;
+
     private final SearchQueryProvider searchQueryProvider = new SearchQueryProvider();
 
     private final ClassificationEngine classificationEngine;
@@ -126,6 +128,11 @@ public class ElasticFlowRepository implements FlowRepository {
      * Time taken to enrich the flows in a log
      */
     private final Timer logEnrichementTimer;
+
+    /**
+     * Time taken to enrich the flows in a log
+     */
+    private final Timer logModificationTimer;
 
     /**
      * Time taken to persist the flows in a log
@@ -157,12 +164,15 @@ public class ElasticFlowRepository implements FlowRepository {
     private final ConcurrentMap<Integer, Set<Integer>> markerCache = Maps.newConcurrentMap();
 
     public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy,
-                                 DocumentEnricher documentEnricher, ClassificationEngine classificationEngine,
+                                 DocumentEnricher documentEnricher,
+                                 DocumentModifier documentModifier,
+                                 ClassificationEngine classificationEngine,
                                  TransactionOperations transactionOperations, NodeDao nodeDao, SnmpInterfaceDao snmpInterfaceDao,
                                  int bulkRetryCount, long maxFlowDurationMs) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.documentEnricher = Objects.requireNonNull(documentEnricher);
+        this.documentModifier = Objects.requireNonNull(documentModifier);
         this.classificationEngine = Objects.requireNonNull(classificationEngine);
         this.transactionOperations = Objects.requireNonNull(transactionOperations);
         this.nodeDao = Objects.requireNonNull(nodeDao);
@@ -173,6 +183,7 @@ public class ElasticFlowRepository implements FlowRepository {
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
         logConversionTimer = metricRegistry.timer("logConversion");
         logEnrichementTimer = metricRegistry.timer("logEnrichment");
+        logModificationTimer = metricRegistry.timer("logModification");
         logPersistingTimer = metricRegistry.timer("logPersisting");
         logMarkingTimer = metricRegistry.timer("logMarking");
         flowsPerLog = metricRegistry.histogram("flowsPerLog");
@@ -213,6 +224,13 @@ public class ElasticFlowRepository implements FlowRepository {
         LOG.debug("Enriching {} flow documents.", flowDocuments.size());
         try (final Timer.Context ctx = logEnrichementTimer.time()) {
             documentEnricher.enrich(flowDocuments, source);
+        }
+
+        LOG.debug("Modifiying {} flow documents.", flowDocuments.size());
+        try (final Timer.Context ctx = logEnrichementTimer.time()) {
+            for (final FlowDocument flowDocument : flowDocuments) {
+                documentModifier.modify(flowDocument, source);
+            }
         }
 
         LOG.debug("Persisting {} flow documents.", flowDocuments.size());

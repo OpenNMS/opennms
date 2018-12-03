@@ -31,11 +31,12 @@ package org.opennms.netmgt.flows.elastic;
 import static com.jayway.awaitility.Awaitility.with;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.junit.Assert.assertEquals;
 
+import javax.script.ScriptEngineManager;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -100,13 +101,14 @@ public class DefaultDirectionIT {
         try (final JestClient jestClient = restClientFactory.createClient()) {
             final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
             final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
+            final DocumentModifier documentModifier = new DocumentModifier(new ScriptEngineManager());
             final ClassificationEngine classificationEngine = mockDocumentEnricherFactory.getClassificationEngine();
             final MockTransactionTemplate mockTransactionTemplate = new MockTransactionTemplate();
 
             mockTransactionTemplate.setTransactionManager(new MockTransactionManager());
 
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
-                    new ElasticFlowRepository(new MetricRegistry(), jestClient, IndexStrategy.MONTHLY, documentEnricher,
+                    new ElasticFlowRepository(new MetricRegistry(), jestClient, IndexStrategy.MONTHLY, documentEnricher, documentModifier,
                             classificationEngine, mockTransactionTemplate, new MockNodeDao(), new MockSnmpInterfaceDao(), 3, 12000), jestClient);
             // persist data
             elasticFlowRepository.persist(Lists.newArrayList(getMockFlowWithoutDirection()),

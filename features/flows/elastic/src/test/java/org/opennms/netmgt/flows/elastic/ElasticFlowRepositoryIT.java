@@ -34,6 +34,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 
 import java.io.IOException;
 
+import javax.script.ScriptEngineManager;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
@@ -71,6 +73,7 @@ public class ElasticFlowRepositoryIT {
 
         final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
         final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
+        final DocumentModifier documentModifier = new DocumentModifier(new ScriptEngineManager());
         final ClassificationEngine classificationEngine = mockDocumentEnricherFactory.getClassificationEngine();
 
         // Verify exception is thrown
@@ -81,7 +84,7 @@ public class ElasticFlowRepositoryIT {
             mockTransactionTemplate.setTransactionManager(new MockTransactionManager());
 
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
-                    client, IndexStrategy.MONTHLY, documentEnricher, classificationEngine,
+                    client, IndexStrategy.MONTHLY, documentEnricher, documentModifier, classificationEngine,
                     mockTransactionTemplate, new MockNodeDao(), new MockSnmpInterfaceDao(),
                     3, 12000);
 

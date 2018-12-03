@@ -28,8 +28,11 @@
 
 package org.opennms.netmgt.flows.elastic;
 
+import java.util.Map;
+
 import org.opennms.netmgt.flows.api.Flow;
 
+import com.google.common.collect.Maps;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -282,6 +285,13 @@ public class FlowDocument {
      */
     @SerializedName("node_src")
     private NodeDocument nodeSrc;
+
+    /**
+     * Custom flow data.
+     */
+    @SerializedName("custom")
+    private Map<String, Object> custom = Maps.newHashMap();
+
 
     public long getTimestamp() {
         return timestamp;
@@ -601,6 +611,18 @@ public class FlowDocument {
 
     public void setNodeSrc(NodeDocument nodeSrc) {
         this.nodeSrc = nodeSrc;
+    }
+
+    public Map<String, Object> getCustom() {
+        return this.custom;
+    }
+
+    public void setCustom(final Map<String, Object> custom) {
+        this.custom = custom;
+    }
+
+    public void setCustom(final String key, final Object value) {
+        this.custom.put(key, value);
     }
 
     public static FlowDocument from(final Flow flow) {

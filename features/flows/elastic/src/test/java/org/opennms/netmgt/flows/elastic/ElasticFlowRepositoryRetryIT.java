@@ -31,6 +31,8 @@ package org.opennms.netmgt.flows.elastic;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import javax.script.ScriptEngineManager;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
@@ -102,12 +104,13 @@ public class ElasticFlowRepositoryRetryIT {
 
             final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
             final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
+            final DocumentModifier documentModifier = new DocumentModifier(new ScriptEngineManager());
             final ClassificationEngine classificationEngine = mockDocumentEnricherFactory.getClassificationEngine();
             final MockTransactionTemplate mockTransactionTemplate = new MockTransactionTemplate();
             mockTransactionTemplate.setTransactionManager(new MockTransactionManager());
 
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
-                    new ElasticFlowRepository(new MetricRegistry(), client, IndexStrategy.MONTHLY, documentEnricher,
+                    new ElasticFlowRepository(new MetricRegistry(), client, IndexStrategy.MONTHLY, documentEnricher, documentModifier,
                             classificationEngine, mockTransactionTemplate, new MockNodeDao(), new MockSnmpInterfaceDao(), 3, 12000), client);
 
             consumer.accept(elasticFlowRepository);

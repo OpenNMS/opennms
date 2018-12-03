@@ -45,6 +45,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.script.ScriptEngineManager;
+
 import org.hamcrest.Matcher;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.hamcrest.number.IsCloseTo;
@@ -102,6 +104,7 @@ public class FlowQueryIT {
         MockLogAppender.setupLogging(true, "DEBUG");
         final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
         final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
+        final DocumentModifier documentModifier = new DocumentModifier(new ScriptEngineManager());
         final ClassificationEngine classificationEngine = mockDocumentEnricherFactory.getClassificationEngine();
 
         final MetricRegistry metricRegistry = new MetricRegistry();
@@ -109,7 +112,7 @@ public class FlowQueryIT {
         final JestClient client = restClientFactory.createClient();
         final MockTransactionTemplate mockTransactionTemplate = new MockTransactionTemplate();
         mockTransactionTemplate.setTransactionManager(new MockTransactionManager());
-        flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
+        flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher, documentModifier,
                 classificationEngine, mockTransactionTemplate, new MockNodeDao(), new MockSnmpInterfaceDao(), 3, 12000);
         final IndexSettings settings = new IndexSettings();
         final ElasticFlowRepositoryInitializer initializer = new ElasticFlowRepositoryInitializer(client, settings);

@@ -110,6 +110,14 @@
         <argument ref="nodeCacheConfig" />
     </bean>
 
+    <bean id="scriptEngineManager" class="org.opennms.features.osgi.script.OSGiScriptEngineManager">
+        <argument ref="blueprintBundleContext" />
+    </bean>
+
+    <bean id="documentModifier" class="org.opennms.netmgt.flows.elastic.DocumentModifier">
+        <argument ref="scriptEngineManager" />
+    </bean>
+
     <!-- Metrics -->
     <bean id="flowRepositoryMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
     <bean id="flowRepositoryMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
@@ -130,6 +138,7 @@
         <argument ref="jestClient"/>
         <argument ref="indexStrategy"/>
         <argument ref="documentEnricher"/>
+        <argument ref="documentModifier"/>
         <argument ref="classificationEngine"/>
         <argument ref="transactionOperations"/>
         <argument ref="nodeDao"/>

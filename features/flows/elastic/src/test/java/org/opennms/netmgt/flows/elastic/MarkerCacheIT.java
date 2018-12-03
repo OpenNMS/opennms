@@ -39,6 +39,8 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import javax.script.ScriptEngineManager;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -154,13 +156,15 @@ public class MarkerCacheIT {
                         .withExpireAfterWrite(300)
                         .build());
 
+        final DocumentModifier documentModifier = new DocumentModifier(new ScriptEngineManager());
+
 
         final JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder("http://localhost:" + wireMockRule.port()).build());
 
         try (JestClient client = factory.getObject()) {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
-                    client, IndexStrategy.MONTHLY, documentEnricher, classificationEngine,
+                    client, IndexStrategy.MONTHLY, documentEnricher, documentModifier, classificationEngine,
                     transactionOperations, nodeDao, snmpInterfaceDao,
                     3, 12000);
 
