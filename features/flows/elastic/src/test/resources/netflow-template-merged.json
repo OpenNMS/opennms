@@ -893,6 +893,10 @@
               "type": "integer"
             }
           }
+        },
+        "custom": {
+          "dynamic": true,
+          "type": "object"
         }
       }
     }
