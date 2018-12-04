@@ -30,6 +30,8 @@ package org.opennms.netmgt.config;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -286,7 +288,14 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
             if (extEvents != null) {
                 // Events exposed via the registry currently take priority over the events defined
                 // in the configuration files. This behavior may change with HZN-1419.
-                events.getEvents().addAll(0, extEvents.getEvents());
+                List<Event> prioritizedEvents = new ArrayList<>(events.getEvents());
+                // TODO - do we need to explicitly raise priority for the
+                // plugin configs?
+                // TODO - need to reduce this to a Set<Event> keeping only the Highest priority Event 
+                // note: this is already done during processing of the ordered list.
+                prioritizedEvents.addAll(extEvents.getEvents());
+                prioritizedEvents.sort(Comparator.comparing(Event::getPriority));
+                events.setEvents(prioritizedEvents);
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Events with the following UEIs are contributed by one or more extensions: {}", extEvents.getEvents().stream()
                         .map(Event::getUei)

@@ -36,6 +36,7 @@ import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -64,6 +65,12 @@ public class Event implements Serializable, Comparable<Event> {
      */
     @XmlElement(name="uei", required=true)
     private String m_uei;
+
+    /**
+     * The Priority of the Event definition. Higher number has higher priority.
+     */
+    @XmlElement(name="priority", defaultValue="0", required=false)
+    private Integer m_priority;
 
     /**
      * A human readable name used to identify an event in the web ui
@@ -202,6 +209,14 @@ public class Event implements Serializable, Comparable<Event> {
 
     public void setUei(final String uei) {
         m_uei = ConfigUtils.assertNotEmpty(uei, "uei").intern();
+    }
+
+    public Integer getPriority() {
+        return m_priority;
+    }
+
+    public void setPriority(Integer priority) {
+        m_priority = priority;
     }
 
     public String getEventLabel() {
