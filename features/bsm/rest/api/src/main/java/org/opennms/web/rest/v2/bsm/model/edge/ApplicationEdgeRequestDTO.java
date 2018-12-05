@@ -48,7 +48,7 @@ public class ApplicationEdgeRequestDTO extends AbstractEdgeRequestDTO {
     @Override
     public boolean equals(Object obj) {
         if (obj == null) { return false; }
-        if (!(obj instanceof IpServiceEdgeRequestDTO)) { return false; }
+        if (!(obj instanceof ApplicationEdgeRequestDTO)) { return false; }
         if (!super.equals(obj)) {
             return false;
         }
