@@ -89,12 +89,14 @@ public class TopologiesRestService {
         return Response.ok(getGraphMl(supportedProtocol)).build();
     }
 
-    private GraphmlType getGraphMl(String protocolSupported) throws InvalidGraphException, OnmsTopologyException {
+    // FIXME enrich the tooltip with address speed and attributes
+    private GraphmlType getGraphMl(String protocolSupported)
+            throws InvalidGraphException, OnmsTopologyException {
         OnmsTopology topology = m_topologyDao.getTopology(protocolSupported);
         GraphML graphml = new GraphML();
         GraphMLGraph graph = new GraphMLGraph();
-        graph.setProperty(NAMESPACE,protocolSupported);
-        graph.setProperty(LABEL,protocolSupported + " Topology");
+        graph.setProperty(NAMESPACE, protocolSupported);
+        graph.setProperty(LABEL, protocolSupported + " Topology");
         graph.setId(protocolSupported);
         topology.getVertices().stream().forEach(vertex -> {
             GraphMLNode gnode = new GraphMLNode();
@@ -106,19 +108,41 @@ public class TopologiesRestService {
             graph.addNode(gnode);
         });
         topology.getEdges().stream().forEach(shared -> {
-            if ( shared instanceof OnmsTopologyEdge) {
+            if (shared instanceof OnmsTopologyEdge) {
                 OnmsTopologyEdge edge = (OnmsTopologyEdge) shared;
                 GraphMLEdge gedge = new GraphMLEdge();
                 gedge.setId(edge.getId());
                 gedge.setSource(graph.getNodeById(edge.getSource().getVertex().getId()));
                 gedge.setTarget(graph.getNodeById(edge.getTarget().getVertex().getId()));
-                gedge.setProperty(TOOLTIP_TEXT, edge.getSource().getPort() + edge.getTarget().getPort());
-                gedge.setProperty(SOURCE_IFINDEX, edge.getSource().getIndex());
-                gedge.setProperty(TARGET_IFINDEX, edge.getTarget().getIndex());
+                gedge.setProperty(TOOLTIP_TEXT, edge.getSource().getPort()
+                        + edge.getTarget().getPort());
+                gedge.setProperty(SOURCE_IFINDEX,
+                                  edge.getSource().getIndex());
+                gedge.setProperty(TARGET_IFINDEX,
+                                  edge.getTarget().getIndex());
                 graph.addEdge(gedge);
+            } else {
+                final GraphMLNode gcloud = new GraphMLNode();
+                gcloud.setId(shared.getId());
+                gcloud.setProperty(LABEL, shared.getId());
+                gcloud.setProperty(NODE_ID, -1);
+                gcloud.setProperty(ICON_KEY, "cloud");
+                gcloud.setProperty(TOOLTIP_TEXT,
+                                   "shared segment ->" + shared.getId());
+                shared.getSources().stream().forEach(port -> {
+                    GraphMLEdge gedge = new GraphMLEdge();
+                    gedge.setId(gcloud.getId() + "|" + port.getId());
+                    gedge.setSource(gcloud);
+                    gedge.setTarget(graph.getNodeById(port.getVertex().getId()));
+                    gedge.setProperty(TOOLTIP_TEXT,
+                                      "connection to: " + port.getPort());
+                    gedge.setProperty(SOURCE_IFINDEX, -1);
+                    gedge.setProperty(TARGET_IFINDEX, port.getIndex());
+                    graph.addEdge(gedge);
+                });
             }
         });
         graphml.addGraph(graph);
         return GraphMLWriter.convert(graphml);
-   }
+    }
 }
