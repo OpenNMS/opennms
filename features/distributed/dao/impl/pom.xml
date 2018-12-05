@@ -34,6 +34,7 @@
                         </Export-Package>
                         <Import-Package>
                             com.google.common.base,
+                            com.google.common.cache,
                             com.google.common.collect,
 
                             org.aopalliance.aop,
