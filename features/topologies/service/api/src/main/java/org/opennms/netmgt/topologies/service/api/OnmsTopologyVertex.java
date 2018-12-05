@@ -28,10 +28,6 @@
 
 package org.opennms.netmgt.topologies.service.api;
 
-
-import java.util.HashMap;
-import java.util.Map;
-
 public class OnmsTopologyVertex extends OnmsTopologyAbstractRef implements OnmsTopologyRef {
 
 
@@ -42,40 +38,30 @@ public class OnmsTopologyVertex extends OnmsTopologyAbstractRef implements OnmsT
         return new OnmsTopologyVertex(id,label,address,iconKey);
     }
     
+    private Integer m_nodeid;
     private final String m_label;
-    private final String m_address;
     private final String m_iconKey;
-    private Map<String,String> m_attributes = new HashMap<String,String>();
 
     private OnmsTopologyVertex(String id, String label, String address,String iconKey) {
         super(id);
         m_label=label;
-        m_address=address;
         m_iconKey=iconKey;
     }
-
-    public Map<String, String> getAttributes() {
-        return m_attributes;
-    }
-
-
-    public void setAttributes(Map<String, String> attributes) {
-        m_attributes = attributes;
-    }
-
 
     public String getLabel() {
         return m_label;
     }
 
-
-    public String getAddress() {
-        return m_address;
-    }
-
-
     public String getIconKey() {
         return m_iconKey;
+    }
+
+    public Integer getNodeid() {
+        return m_nodeid;
+    }
+
+    public void setNodeid(Integer nodeid) {
+        m_nodeid = nodeid;
     }
 
 }

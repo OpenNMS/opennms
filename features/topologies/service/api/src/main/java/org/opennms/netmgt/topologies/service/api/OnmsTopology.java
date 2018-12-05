@@ -32,7 +32,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class OnmsTopology {
-
+    public final static String NAMESPACE = "namespace";
+    public final static String ICON_KEY = "iconKey";
+    public final static String LABEL = "label";
+    public final static String NODE_ID = "nodeID";
+    public final static String TOOLTIP_TEXT = "tooltipText";
+    public final static String SOURCE_IFINDEX= "sourceifindex";
+    public final static String TARGET_IFINDEX= "targetifindex";
+    
     private Set<OnmsTopologyVertex> m_vertices;
     private Set<OnmsTopologyShared> m_edges;
     

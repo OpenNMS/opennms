@@ -52,14 +52,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Path("topologies")
 public class TopologiesRestService {
-
-    private final static String NAMESPACE = "namespace";
-    private final static String ICON_KEY = "iconKey";
-    private final static String LABEL = "label";
-    private final static String NODE_ID = "nodeID";
-    private final static String TOOLTIP_TEXT = "tooltipText";
-    private final static String SOURCE_IFINDEX= "sourceifindex";
-    private final static String TARGET_IFINDEX= "targetifindex";
     
     @Autowired
     private OnmsTopologyDao m_topologyDao;
@@ -95,16 +87,22 @@ public class TopologiesRestService {
         OnmsTopology topology = m_topologyDao.getTopology(protocolSupported);
         GraphML graphml = new GraphML();
         GraphMLGraph graph = new GraphMLGraph();
-        graph.setProperty(NAMESPACE, protocolSupported);
-        graph.setProperty(LABEL, protocolSupported + " Topology");
+        graph.setProperty(OnmsTopology.NAMESPACE, protocolSupported);
+        graph.setProperty(OnmsTopology.LABEL, protocolSupported + " Topology");
         graph.setId(protocolSupported);
         topology.getVertices().stream().forEach(vertex -> {
             GraphMLNode gnode = new GraphMLNode();
             gnode.setId(vertex.getId());
-            gnode.setProperty(LABEL, vertex.getLabel());
-            gnode.setProperty(NODE_ID, vertex.getId());
-            gnode.setProperty(ICON_KEY, vertex.getIconKey());
-            gnode.setProperty(TOOLTIP_TEXT, vertex.getAddress());
+            gnode.setProperty(OnmsTopology.LABEL, vertex.getLabel());
+            if (vertex.getNodeid() != null) {
+                gnode.setProperty(OnmsTopology.NODE_ID, vertex.getNodeid());                               
+            }
+            if (vertex.getIconKey() != null) {
+                gnode.setProperty(OnmsTopology.ICON_KEY, vertex.getIconKey());
+            }
+            if (vertex.getToolTipText() != null) {
+                gnode.setProperty(OnmsTopology.TOOLTIP_TEXT, vertex.getToolTipText());
+            }
             graph.addNode(gnode);
         });
         topology.getEdges().stream().forEach(shared -> {
@@ -114,30 +112,30 @@ public class TopologiesRestService {
                 gedge.setId(edge.getId());
                 gedge.setSource(graph.getNodeById(edge.getSource().getVertex().getId()));
                 gedge.setTarget(graph.getNodeById(edge.getTarget().getVertex().getId()));
-                gedge.setProperty(TOOLTIP_TEXT, edge.getSource().getPort()
+                gedge.setProperty(OnmsTopology.TOOLTIP_TEXT, edge.getSource().getPort()
                         + edge.getTarget().getPort());
-                gedge.setProperty(SOURCE_IFINDEX,
+                gedge.setProperty(OnmsTopology.SOURCE_IFINDEX,
                                   edge.getSource().getIndex());
-                gedge.setProperty(TARGET_IFINDEX,
+                gedge.setProperty(OnmsTopology.TARGET_IFINDEX,
                                   edge.getTarget().getIndex());
                 graph.addEdge(gedge);
             } else {
                 final GraphMLNode gcloud = new GraphMLNode();
                 gcloud.setId(shared.getId());
-                gcloud.setProperty(LABEL, shared.getId());
-                gcloud.setProperty(NODE_ID, -1);
-                gcloud.setProperty(ICON_KEY, "cloud");
-                gcloud.setProperty(TOOLTIP_TEXT,
+                gcloud.setProperty(OnmsTopology.LABEL, shared.getId());
+                gcloud.setProperty(OnmsTopology.NODE_ID, -1);
+                gcloud.setProperty(OnmsTopology.ICON_KEY, "cloud");
+                gcloud.setProperty(OnmsTopology.TOOLTIP_TEXT,
                                    "shared segment ->" + shared.getId());
                 shared.getSources().stream().forEach(port -> {
                     GraphMLEdge gedge = new GraphMLEdge();
                     gedge.setId(gcloud.getId() + "|" + port.getId());
                     gedge.setSource(gcloud);
                     gedge.setTarget(graph.getNodeById(port.getVertex().getId()));
-                    gedge.setProperty(TOOLTIP_TEXT,
+                    gedge.setProperty(OnmsTopology.TOOLTIP_TEXT,
                                       "connection to: " + port.getPort());
-                    gedge.setProperty(SOURCE_IFINDEX, -1);
-                    gedge.setProperty(TARGET_IFINDEX, port.getIndex());
+                    gedge.setProperty(OnmsTopology.SOURCE_IFINDEX, -1);
+                    gedge.setProperty(OnmsTopology.TARGET_IFINDEX, port.getIndex());
                     graph.addEdge(gedge);
                 });
             }

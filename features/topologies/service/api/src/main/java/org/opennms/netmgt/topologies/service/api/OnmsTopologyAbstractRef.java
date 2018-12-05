@@ -31,6 +31,8 @@ package org.opennms.netmgt.topologies.service.api;
 public abstract class OnmsTopologyAbstractRef {
     
     private final String m_id;
+    
+    private String m_toolTipText;
 
     public OnmsTopologyAbstractRef(String id) {
         m_id= id;
@@ -63,6 +65,14 @@ public abstract class OnmsTopologyAbstractRef {
         } else if (!m_id.equals(other.m_id))
             return false;
         return true;
+    }
+
+    public String getToolTipText() {
+        return m_toolTipText;
+    }
+
+    public void setToolTipText(String toolTipText) {
+        m_toolTipText = toolTipText;
     }
 
     

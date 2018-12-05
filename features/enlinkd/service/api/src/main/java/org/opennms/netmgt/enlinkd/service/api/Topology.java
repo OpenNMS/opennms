@@ -28,9 +28,100 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.model.OnmsNode;
+
 public interface Topology {
 
     String printTopology();
+
+    public static String getToolTipText(MacPort port) {
+        final StringBuilder tooltipText = new StringBuilder();
+        tooltipText.append(getId(port));
+        tooltipText.append(": ");
+        tooltipText.append("(");
+        if (port.hasInetAddresses()) {
+            tooltipText.append(port.getIpMacInfo());
+        } else {
+            tooltipText.append("no ip address");
+        }
+        tooltipText.append(")");
+        tooltipText.append("(");
+        tooltipText.append(getNodeStatus(OnmsNode.NodeType.UNKNOWN));
+        tooltipText.append("/");
+        tooltipText.append("Not an OpenNMS Node");
+        tooltipText.append(")");
+        
+        
+        return tooltipText.toString();
+    
+    }
+
+    public static String getToolTipText(NodeTopologyEntity node) {
+        final StringBuilder tooltipText = new StringBuilder();
+        tooltipText.append(node.getLabel());
+        tooltipText.append(": ");
+        tooltipText.append("(");
+        tooltipText.append(InetAddressUtils.str(node.getPrimaryIpAddr()));
+        tooltipText.append(")");
+        tooltipText.append("(");
+        tooltipText.append(getNodeStatus(node.getType()));
+        tooltipText.append("/");
+        tooltipText.append(getIsManaged(node.isManaged()));
+        tooltipText.append(")");
+        
+        if (node.getLocation() != null && node.getLocation().trim().length() > 0) {
+                tooltipText.append(node.getLocation());
+        }
+        
+        return tooltipText.toString();
+    
+    }
+    
+    public static String getIsManaged(boolean isManaged) {
+        if (isManaged) {
+            return "Managed";
+        }
+        return "Unmanaged";
+
+    }
+    
+    public static String getIconKey(MacPort macPort) {
+        return "linkd.system";        
+    }
+    public static String getIconKey(NodeTopologyEntity node) {
+        if (node.getSysoid() == null) {
+            return "linkd.system";
+        }
+        if (node.getSysoid().startsWith(".")) {
+            return "linkd.system.snmp" +node.getSysoid();
+        }
+        return "linkd.system.snmp." + node.getSysoid();
+        
+    }
+    public static String getNodeStatus(OnmsNode.NodeType nodeType) {
+        if (nodeType == null) {
+            return "undefined";
+        }
+            
+        String status;
+        switch (nodeType) {
+            case ACTIVE:
+                status = "Active";
+                break;
+            case UNKNOWN:
+                status = "Unknown";
+                break;
+            case DELETED:
+                status = "Deleted";
+                break;
+            default:
+                status = "undefined";
+                break;
+        }
+        return status;
+    }
 
     public static String getDefaultEdgeId(int sourceId,int targetId) {
         return Math.min(sourceId, targetId) + "|" + Math.max(sourceId, targetId);
@@ -59,4 +150,6 @@ public interface Topology {
     public static String getEdgeId(String id, BridgePort bp) {
         return id + "|" + bp.getNodeId() + ":" + bp.getBridgePort();
     }
+    
+    
 }

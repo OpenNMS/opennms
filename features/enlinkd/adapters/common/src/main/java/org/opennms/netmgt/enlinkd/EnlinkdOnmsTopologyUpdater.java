@@ -53,17 +53,22 @@ import org.slf4j.LoggerFactory;
 public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements OnmsTopologyUpdater {
 
     public static OnmsTopologyVertex create(MacPort macPort) throws OnmsTopologyException {
-        return OnmsTopologyVertex.create(Topology.getId(macPort),
+        OnmsTopologyVertex vertex = OnmsTopologyVertex.create(Topology.getId(macPort),
                                          Topology.getId(macPort), 
                                          macPort.getIpMacInfo(), 
                                          null);
+        vertex.setToolTipText(Topology.getToolTipText(macPort));
+        return vertex;
     }
     
     public static OnmsTopologyVertex create(NodeTopologyEntity node) throws OnmsTopologyException {
-        return OnmsTopologyVertex.create(node.getId(), 
+        OnmsTopologyVertex vertex  = OnmsTopologyVertex.create(node.getId(), 
                                          node.getLabel(), 
                                          InetAddressUtils.str(node.getPrimaryIpAddr()), 
                                          node.getSysoid());
+        vertex.setToolTipText(Topology.getToolTipText(node));
+        vertex.setNodeid(node.getNodeId());
+        return vertex;
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(EnlinkdOnmsTopologyUpdater.class);

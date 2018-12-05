@@ -30,6 +30,8 @@ package org.opennms.netmgt.topologies.service.api;
 
 public interface OnmsTopologyRef {
 
-    String getId();    
+    String getId();   
+    
+    String getToolTipText();
  
 }
