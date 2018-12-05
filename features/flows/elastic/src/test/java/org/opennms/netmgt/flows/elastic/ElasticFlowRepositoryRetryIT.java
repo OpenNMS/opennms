@@ -36,6 +36,8 @@ import javax.script.ScriptEngineManager;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.core.test.elastic.ExecutionTime;
@@ -49,6 +51,7 @@ import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
 import org.opennms.plugins.elasticsearch.rest.executors.DefaultRequestExecutor;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.test.JUnitConfigurationEnvironment;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Throwables;
@@ -56,6 +59,8 @@ import com.google.common.collect.Lists;
 
 import io.searchbox.client.JestClient;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@JUnitConfigurationEnvironment
 public class ElasticFlowRepositoryRetryIT {
 
     private static final long START_DELAY = 10000; // in ms

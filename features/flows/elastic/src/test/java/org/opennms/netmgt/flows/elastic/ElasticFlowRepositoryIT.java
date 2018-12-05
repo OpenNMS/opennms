@@ -38,6 +38,8 @@ import javax.script.ScriptEngineManager;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.dao.mock.MockTransactionManager;
@@ -45,6 +47,7 @@ import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.test.JUnitConfigurationEnvironment;
 
 import com.codahale.metrics.MetricRegistry;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
@@ -55,6 +58,8 @@ import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.config.HttpClientConfig;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@JUnitConfigurationEnvironment
 public class ElasticFlowRepositoryIT {
 
     private static final String ERROR_RESPONSE = "{\"took\":97,\"errors\":true,\"items\":[{\"index\":{\"_index\":\"flow-2017-11\",\"_type\":\"flow\",\"_id\":\"AV_8xp7OaWbS_xJQivfD\",\"status\":400,\"error\":{\"type\":\"mapper_parsing_exception\",\"reason\":\"failed to parse [timestamp]\",\"caused_by\":{\"type\":\"number_format_exception\",\"reason\":\"For input string: \\\"XXX\\\"\"}}}}]}";

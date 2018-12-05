@@ -53,7 +53,9 @@ import org.hamcrest.number.IsCloseTo;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.elasticsearch.plugin.DriftPlugin;
@@ -73,6 +75,7 @@ import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
+import org.opennms.test.JUnitConfigurationEnvironment;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
@@ -80,6 +83,8 @@ import com.google.common.collect.Table;
 
 import io.searchbox.client.JestClient;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@JUnitConfigurationEnvironment
 public class FlowQueryIT {
 
     private static final String HTTP_PORT = "9205";

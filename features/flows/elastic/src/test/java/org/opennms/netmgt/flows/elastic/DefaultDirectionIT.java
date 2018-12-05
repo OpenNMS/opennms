@@ -43,6 +43,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
@@ -54,6 +56,7 @@ import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +67,8 @@ import io.searchbox.client.JestClient;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@JUnitConfigurationEnvironment
 public class DefaultDirectionIT {
     private static Logger LOG = LoggerFactory.getLogger(DefaultDirectionIT.class);
     private static final String HTTP_PORT = "9205";
