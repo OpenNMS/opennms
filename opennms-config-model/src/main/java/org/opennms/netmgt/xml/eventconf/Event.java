@@ -36,7 +36,6 @@ import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -69,7 +68,7 @@ public class Event implements Serializable, Comparable<Event> {
     /**
      * The Priority of the Event definition. Higher number has higher priority.
      */
-    @XmlElement(name="priority", defaultValue="0", required=false)
+    @XmlElement(name = "priority", required = false)
     private Integer m_priority;
 
     /**
@@ -212,7 +211,7 @@ public class Event implements Serializable, Comparable<Event> {
     }
 
     public Integer getPriority() {
-        return m_priority;
+        return m_priority == null ? 0 : m_priority;
     }
 
     public void setPriority(Integer priority) {
