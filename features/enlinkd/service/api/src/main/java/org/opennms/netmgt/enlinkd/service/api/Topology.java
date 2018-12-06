@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -63,7 +62,7 @@ public interface Topology {
         tooltipText.append(node.getLabel());
         tooltipText.append(": ");
         tooltipText.append("(");
-        tooltipText.append(InetAddressUtils.str(node.getPrimaryIpAddr()));
+        tooltipText.append(node.getAddress());
         tooltipText.append(")");
         tooltipText.append("(");
         tooltipText.append(getNodeStatus(node.getType()));

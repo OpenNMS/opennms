@@ -72,7 +72,6 @@ public class EnhancedLinkdTopologyProviderTest {
     @Autowired
     private EnhancedLinkdMockDataPopulator m_databasePopulator;
 
-
     @Before
     public void setUp() throws Exception{
         MockLogAppender.setupLogging();

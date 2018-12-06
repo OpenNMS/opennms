@@ -52,6 +52,7 @@ public class LinkdVertex extends SimpleLeafVertex {
         LinkdVertex vertex = new LinkdVertex(node.getId());
         vertex.setNodeID(node.getNodeId());
         vertex.setLabel(node.getLabel());
+        vertex.setIpAddress(node.getAddress());
         vertex.setIconKey(Topology.getIconKey(node));
         vertex.setTooltipText(Topology.getToolTipText(node));
         return vertex;

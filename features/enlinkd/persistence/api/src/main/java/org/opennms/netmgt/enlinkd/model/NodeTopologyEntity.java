@@ -34,6 +34,7 @@ import java.net.InetAddress;
 import java.util.Objects;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -116,6 +117,9 @@ public class NodeTopologyEntity {
         return m_nodeId;
     }
 
+    public String getAddress() {
+        return InetAddressUtils.str(m_primaryAddr);
+    }
     public InetAddress getPrimaryIpAddr() {
         return m_primaryAddr;
     }
