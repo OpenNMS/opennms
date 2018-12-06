@@ -66,9 +66,14 @@ public class LinkdVertex extends SimpleLeafVertex {
     
     @Override
     public String getTooltipText() {
-        StringBuffer tooltipText = new StringBuffer(super.getTooltipText());
+        StringBuffer tooltipText = new StringBuffer();
+        tooltipText.append("<p>");
+        tooltipText.append(super.getTooltipText());
+        tooltipText.append("</p>");
         if (m_protocolSupported.size() > 0) {
+            tooltipText.append("<p>");
             tooltipText.append(m_protocolSupported.toString());
+            tooltipText.append("</p>");
         }
         return tooltipText.toString();
     }
