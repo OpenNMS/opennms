@@ -87,6 +87,11 @@ public class TrapIdentityDTO {
     }
 
     @Override
+    public String toString() {
+        return "[Generic=" + getGeneric() + ", Specific=" + getSpecific() + ", EnterpriseId=" + getEnterpriseId() + "]";
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
