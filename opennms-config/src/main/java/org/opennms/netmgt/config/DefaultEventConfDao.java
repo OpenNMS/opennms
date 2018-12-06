@@ -289,10 +289,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
                 // Events exposed via the registry currently take priority over the events defined
                 // in the configuration files. This behavior may change with HZN-1419.
                 List<Event> prioritizedEvents = new ArrayList<>(events.getEvents());
-                // TODO - do we need to explicitly raise priority for the
-                // plugin configs?
-                // TODO - need to reduce this to a Set<Event> keeping only the Highest priority Event 
-                // note: this is already done during processing of the ordered list.
+                // TODO - do we need to explicitly raise priority for the plugin configs where priority is unset?
                 prioritizedEvents.addAll(extEvents.getEvents());
                 prioritizedEvents.sort(Comparator.comparing(Event::getPriority));
                 events.setEvents(prioritizedEvents);
