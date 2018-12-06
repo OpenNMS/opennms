@@ -126,14 +126,14 @@ public class EnhancedLinkdTopologyProviderTest {
         assertEquals("v0", vertexA.getId());
         //LoggerFactory.getLogger(this.getClass()).debug(m_topologyProvider.getVertices().get(0).toString());
         assertTrue(m_topologyProvider.containsVertexId(vertexA));
-        assertTrue(m_topologyProvider.containsVertexId(new DefaultVertexRef("nodes", "v0")));
-        assertFalse(m_topologyProvider.containsVertexId(new DefaultVertexRef("nodes", "v1")));
+        assertTrue(m_topologyProvider.containsVertexId(new DefaultVertexRef("nodes", "v0",m_topologyProvider.getNamespace() + ":" + "v0")));
+        assertFalse(m_topologyProvider.containsVertexId(new DefaultVertexRef("nodes", "v1",m_topologyProvider.getNamespace() + ":" + "v1")));
 
         ((AbstractVertex)vertexA).setIpAddress("10.0.0.4");
 
         // Search by VertexRef
-        VertexRef vertexAref = new DefaultVertexRef(m_topologyProvider.getNamespace(), "v0");
-        VertexRef vertexBref = new DefaultVertexRef(m_topologyProvider.getNamespace(), "v1");
+        VertexRef vertexAref = new DefaultVertexRef(m_topologyProvider.getNamespace(), "v0",m_topologyProvider.getNamespace() + ":" + "v0");
+        VertexRef vertexBref = new DefaultVertexRef(m_topologyProvider.getNamespace(), "v1",m_topologyProvider.getNamespace() + ":" + "v1");
         assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(vertexAref)).size());
         assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(vertexBref)).size());
 

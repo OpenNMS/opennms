@@ -43,7 +43,6 @@ import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
@@ -525,7 +524,7 @@ public class EnhancedLinkdMockDataPopulator {
          * This is a little hokey because it relies on the fact that edges are only judged to be equal based
          * on the namespace and id tuple.
          */
-        Vertex mockVertex = EasyMock.createMock(Vertex.class);
+        LinkdVertex mockVertex = EasyMock.createMock(LinkdVertex.class);
         EasyMock.expect(mockVertex.getId()).andReturn("v0").anyTimes();
         EasyMock.expect(mockVertex.getLabel()).andReturn(null).anyTimes();
         EasyMock.replay(mockVertex);

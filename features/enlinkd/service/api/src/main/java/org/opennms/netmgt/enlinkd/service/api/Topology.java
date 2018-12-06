@@ -28,13 +28,40 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.model.OnmsNode;
 
 public interface Topology {
 
     String printTopology();
-
+    
+    public static String getToolTipText(String label, Integer index, String port, String address, Long speed) {
+        final StringBuilder tooltipText = new StringBuilder();
+        tooltipText.append(label);
+        if (port != null ) {
+            tooltipText.append("(");
+            tooltipText.append(port);
+            tooltipText.append(")");
+        }
+        if (address != null ) {
+            tooltipText.append("(");
+            tooltipText.append(address);
+            tooltipText.append(")");
+        }
+        if (index != null ) {
+            tooltipText.append("(index:");
+            tooltipText.append(index);
+            tooltipText.append(")");
+        }
+        if (speed != null ) {
+            tooltipText.append("(");
+            tooltipText.append(InetAddressUtils.getHumanReadableIfSpeed(speed));
+            tooltipText.append(")");
+        }
+        return tooltipText.toString();
+    }
+    
     public static String getToolTipText(MacPort port) {
         final StringBuilder tooltipText = new StringBuilder();
         tooltipText.append(getId(port));

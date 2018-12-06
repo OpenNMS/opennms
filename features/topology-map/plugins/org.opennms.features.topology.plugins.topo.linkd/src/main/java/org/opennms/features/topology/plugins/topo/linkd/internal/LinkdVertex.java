@@ -33,11 +33,21 @@ import java.util.Set;
 
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
 
 public class LinkdVertex extends SimpleLeafVertex {
+
+    public static LinkdVertex create(BridgePort designated) {
+        LinkdVertex cloudVertex = new LinkdVertex(Topology.getId(designated));
+        cloudVertex.setLabel("Shared Segment");
+        cloudVertex.setIconKey("cloud");
+        cloudVertex.setTooltipText("'Shared Segment' designated port: " +designated.printTopology());
+        return cloudVertex;
+        
+    }
 
     public static LinkdVertex create(MacPort port) {
         LinkdVertex vertex = new LinkdVertex(Topology.getId(port));

@@ -40,7 +40,6 @@ import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAware;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
-import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -132,13 +131,20 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         return selectionAwareDelegate.contributesTo(type);
     }
 
-    protected void connectVertices(String id,AbstractVertex sourceV, AbstractVertex targetV,  
-            OnmsSnmpInterface sourceinterface,
-            OnmsSnmpInterface targetInterface,
+    protected void connectVertices(String id,LinkdVertex sourceV, LinkdVertex targetV,  
+            OnmsSnmpInterface sourceIntf,
+            OnmsSnmpInterface targetIntf,
             String sourceAddr,
             String targetAddr,
             ProtocolSupported discoveredBy) {
-        addEdges(LinkdEdge.create(id, sourceV, targetV, sourceinterface, targetInterface,sourceAddr,targetAddr,discoveredBy));
+                addEdges(
+                 LinkdEdge.create(
+                                  id, 
+                                  LinkdPort.create(sourceV, sourceIntf,sourceAddr),
+                                  LinkdPort.create(targetV, targetIntf,targetAddr),
+                                  discoveredBy
+                          )
+                 );
     }
     
     private void loadEdges() {
@@ -340,10 +346,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             }
         
             LinkdVertex topVertex = portToNodeVertexMap.get(topologylink.getRight());
-            AbstractVertex cloudVertex = addVertex(Topology.getId(topologylink.getRight()), 0, 0);
-            cloudVertex.setLabel("Shared Segment");
-            cloudVertex.setIconKey("cloud");
-            cloudVertex.setTooltipText("'Shared Segment' designated port: " + topologylink.getRight().printTopology());
+            LinkdVertex cloudVertex = LinkdVertex.create(topologylink.getRight());
+            addVertices(cloudVertex);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("parseSegment: adding cloud: id: '{}', {}", cloudVertex.getId(), topologylink.getRight().printTopology());
             }
