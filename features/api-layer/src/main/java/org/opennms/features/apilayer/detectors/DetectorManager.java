@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,35 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.icmp;
+package org.opennms.features.apilayer.detectors;
 
-import java.util.Map;
+import org.opennms.features.apilayer.utils.InterfaceMapper;
+import org.opennms.integration.api.v1.detectors.ServiceDetectorFactory;
+import org.osgi.framework.BundleContext;
 
-import org.opennms.netmgt.icmp.PingerFactory;
-import org.opennms.netmgt.provision.support.GenericServiceDetectorFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+/**
+ * Manager to plug detectors from integration-api to provisioning detectors.
+ */
+public class DetectorManager extends InterfaceMapper<ServiceDetectorFactory, org.opennms.netmgt.provision.ServiceDetectorFactory> {
 
-@Component
-public class IcmpDetectorFactory extends GenericServiceDetectorFactory<IcmpDetector> {
 
-    @Autowired(required=false)
-    private PingerFactory pingerFactory;
-
-    public IcmpDetectorFactory() {
-        super(IcmpDetector.class);
+    public DetectorManager(BundleContext bundleContext) {
+        super(org.opennms.netmgt.provision.ServiceDetectorFactory.class, bundleContext);
     }
 
     @Override
-    public IcmpDetector createDetector(Map<String, String> properties) {
-        final IcmpDetector detector = new IcmpDetector();
-        setBeanProperties(detector, properties);
-        detector.setPingerFactory(pingerFactory);
-        return detector;
-    }
-
-    public void setPingerFactory(PingerFactory pingerFactory) {
-        this.pingerFactory = pingerFactory;
+    public org.opennms.netmgt.provision.ServiceDetectorFactory map(ServiceDetectorFactory ext) {
+        return new ServiceDetectorFactoryImpl(ext);
     }
 
 }

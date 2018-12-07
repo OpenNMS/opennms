@@ -42,8 +42,6 @@ import org.opennms.netmgt.provision.ServiceDetectorFactory;
 import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -67,7 +65,7 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
             for (ServiceDetectorFactory<?> factory : m_detectorFactories) {
                 // Determine the implementation type
                 Map<String, String> props = new HashMap<>();
-                ServiceDetector detector = factory.createDetector();
+                ServiceDetector detector = factory.createDetector(props);
                 // Register the factory
                 onBind(factory, props);
                 // Add the detector to the service registry
@@ -137,6 +135,11 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
     }
 
     @Override
+    public String getDetectorClassNameFromServiceName(String serviceName) {
+        return m_classNameByServiceName.get(serviceName);
+    }
+
+    @Override
     public Set<String> getClassNames() {
         return Collections.unmodifiableSet(m_factoriesByClassName.keySet());
     }
@@ -160,13 +163,11 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
         if (factory == null) {
             return null;
         }
-        final ServiceDetector detector = factory.createDetector();
-        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(detector);
-        wrapper.setPropertyValues(properties);
+        final ServiceDetector detector = factory.createDetector(properties);
         return detector;
     }
 
     private static String getServiceName(ServiceDetectorFactory<? extends ServiceDetector> factory) {
-        return factory.createDetector().getServiceName();
+        return factory.createDetector(new HashMap<>()).getServiceName();
     }
 }
