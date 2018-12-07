@@ -256,10 +256,10 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
          try {
              onmsTopologyUpdater = createAndRegister(this,proto);
         } catch (OnmsTopologyException e) {
-            LOG.error("OnmsTopologyException: cannote schedule: {} {} {}", e.getMessage(),e.getId(),e.getProtocol());
+            LOG.error("scheduleOnmsTopologyUpdater: cannote schedule: {} {} {}", e.getMessage(),e.getId(),e.getProtocol());
             return null;
         }
-         LOG.info("scheduleDiscoveryCdpTopology: Scheduling {}",
+         LOG.info("scheduleOnmsTopologyUpdater: Scheduling {}",
                    onmsTopologyUpdater.getInfo());
          onmsTopologyUpdater.setScheduler(m_scheduler);
          onmsTopologyUpdater.schedule();
