@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -97,7 +97,7 @@ public abstract class AlarmMapper {
         // the field will not be serialized.
         if (alarm.isSituation()) {
             alarmDTO.setRelatedAlarms(alarm.getRelatedAlarms().stream()
-                                      .map(a -> alarmToAlarmSummaryDTO(a))
+                                      .map(this::alarmToAlarmSummaryDTO)
                                       .sorted(Comparator.comparing(AlarmSummaryDTO::getId))
                                       .collect(Collectors.toList()));
         }
@@ -126,6 +126,7 @@ public abstract class AlarmMapper {
         @Mapping(source = "reductionKey", target = "reductionKey"),
         @Mapping(source = "description", target = "description"),
         @Mapping(source = "lastEvent.eventUei", target = "uei"),
+        @Mapping(source = "nodeLabel", target = "nodeLabel"),
         @Mapping(source = "logMsg", target = "logMessage"),
     })
     public abstract AlarmSummaryDTO alarmToAlarmSummaryDTO(OnmsAlarm alarm);
