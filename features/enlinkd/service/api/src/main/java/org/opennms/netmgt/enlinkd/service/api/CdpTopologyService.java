@@ -32,7 +32,7 @@ package org.opennms.netmgt.enlinkd.service.api;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
@@ -45,6 +45,6 @@ public interface CdpTopologyService extends TopologyService {
     void store(int nodeId, CdpLink link);
 
     List<CdpElement> findAllCdpElements();
-    List<Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> matchCdpLinks();
+    List<ImmutablePair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> matchCdpLinks();
 
 }

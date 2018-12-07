@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
@@ -154,7 +155,7 @@ public class CdpTopologyServiceImpl extends TopologyServiceImpl implements CdpTo
         }.execute();
     }
 
-    public List<Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> matchCdpLinks() {
+    public List<ImmutablePair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> matchCdpLinks() {
 
         final Collection<CdpElement> cdpElements = m_cdpElementDao.findAll();
         final List<CdpLinkTopologyEntity> allLinks = m_topologyEntityCache.getCdpLinkTopologyEntities();
@@ -174,7 +175,7 @@ public class CdpTopologyServiceImpl extends TopologyServiceImpl implements CdpTo
         Set<Integer> parsed = new HashSet<Integer>();
 
         // 2. iterate
-        List<Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> results = new ArrayList<>();
+        List<ImmutablePair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> results = new ArrayList<>();
         for (CdpLinkTopologyEntity sourceLink : allLinks) {
             if (parsed.contains(sourceLink.getId())) {
                 continue;
@@ -204,7 +205,7 @@ public class CdpTopologyServiceImpl extends TopologyServiceImpl implements CdpTo
 
             parsed.add(sourceLink.getId());
             parsed.add(targetLink.getId());
-            results.add(Pair.of(sourceLink, targetLink));
+            results.add((ImmutablePair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>) Pair.of(sourceLink, targetLink));
         }
         return results;
     }

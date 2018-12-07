@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.tuple.Triple;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
@@ -73,7 +73,7 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     public OnmsTopology buildTopology() throws OnmsTopologyException {
         Map<Integer, NodeTopologyEntity> nodeMap= getNodeMap();
         OnmsTopology topology = new OnmsTopology();
-        for (Triple<List<BridgePort>, List<MacPort>, BridgePort> shared: m_bridgeTopologyService.matchBridgeLinks()) {
+        for (ImmutableTriple<List<BridgePort>, List<MacPort>, BridgePort> shared: m_bridgeTopologyService.matchBridgeLinks()) {
             Set<OnmsTopologyPort> ports = new HashSet<>();
             for (BridgePort bp: shared.getLeft()) {
                 NodeTopologyEntity node = nodeMap.get(bp.getNodeId());

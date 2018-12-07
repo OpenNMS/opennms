@@ -32,7 +32,7 @@ package org.opennms.netmgt.enlinkd.service.api;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 
@@ -46,5 +46,5 @@ public interface IsisTopologyService extends TopologyService {
     List<IsIsElement> findAllIsIsElements();
     List<IsIsLink> findAllIsIsLinks();
     
-    List<Pair<IsIsLink, IsIsLink>> matchIsIsLinks();
+    List<ImmutablePair<IsIsLink, IsIsLink>> matchIsIsLinks();
 }

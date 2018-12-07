@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
@@ -218,7 +218,7 @@ public class ServiceTest {
 
         // 1 and 3 will match
         // 4 and 5 will match
-        List<Pair<IsIsLink, IsIsLink>> matchedLinks = isisTopologyService.matchIsIsLinks();
+        List<ImmutablePair<IsIsLink, IsIsLink>> matchedLinks = isisTopologyService.matchIsIsLinks();
         assertMatching(isisLinks, matchedLinks);
     }
 
@@ -227,7 +227,7 @@ public class ServiceTest {
 
         // 1 and 3 will match
         // 4 and 5 will match
-        List<Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> matchedLinks = cdpTopologyService.matchCdpLinks();
+        List<ImmutablePair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> matchedLinks = cdpTopologyService.matchCdpLinks();
         assertMatching(cdpLinks, matchedLinks);
 
     }
@@ -239,7 +239,7 @@ public class ServiceTest {
         // 4 and 5 will match
 
 
-        List<Pair<OspfLink, OspfLink>> matchedLinks = ospfTopologyService.matchOspfLinks();
+        List<ImmutablePair<OspfLink, OspfLink>> matchedLinks = ospfTopologyService.matchOspfLinks();
         assertMatching(ospfLinks, matchedLinks);
     }
 
@@ -249,11 +249,11 @@ public class ServiceTest {
         // 1 and 3 will match
         // 4 and 5 will match
 
-        List<Pair<LldpLink, LldpLink>> matchedLinks = lldpTopologyService.matchLldpLinks();
+        List<ImmutablePair<LldpLink, LldpLink>> matchedLinks = lldpTopologyService.matchLldpLinks();
         assertMatching(lldpLinks, matchedLinks);
     }
 
-    private <Link> void assertMatching(List<Link> allLinks, List<Pair<Link, Link>> matchedLinks){
+    private <Link> void assertMatching(List<Link> allLinks, List<ImmutablePair<Link, Link>> matchedLinks){
         // we expect:
         // 1 and 3 will match
         // 4 and 5 will match

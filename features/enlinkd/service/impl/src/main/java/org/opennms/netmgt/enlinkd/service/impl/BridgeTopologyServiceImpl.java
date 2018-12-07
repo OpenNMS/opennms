@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
@@ -784,8 +785,8 @@ SEG:        for (SharedSegment segment : bmlsegments) {
     }
 
     @Override
-    public List<Triple<List<BridgePort>, List<MacPort>, BridgePort>> matchBridgeLinks() {
-        final List<Triple<List<BridgePort>, List<MacPort>, BridgePort>> links = new ArrayList<>();
+    public List<ImmutableTriple<List<BridgePort>, List<MacPort>, BridgePort>> matchBridgeLinks() {
+        final List<ImmutableTriple<List<BridgePort>, List<MacPort>, BridgePort>> links = new ArrayList<>();
         final List<MacPort> macPortMap = getMacPorts();
         
         m_domains.stream().forEach(dm ->{
@@ -819,7 +820,7 @@ SEG:        for (SharedSegment segment : bmlsegments) {
                 try {
                    Triple<List<BridgePort>, List<MacPort>, BridgePort> triple = 
                     Triple.of(new ArrayList<BridgePort>(shs.getBridgePortsOnSegment()), macPorts, shs.getDesignatedPort());
-                   links.add(triple);
+                   links.add((ImmutableTriple<List<BridgePort>, List<MacPort>, BridgePort>) triple);
                 } catch (BridgeTopologyException e) {
                     LOG.error("{}, cannot add segment {} ",e.getMessage(), e.printTopology());
                 }

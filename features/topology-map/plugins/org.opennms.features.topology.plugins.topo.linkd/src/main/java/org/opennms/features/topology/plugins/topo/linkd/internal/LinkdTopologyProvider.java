@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAware;
@@ -197,7 +197,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private void getLldpLinks() {
 
-        for (Pair<LldpLink, LldpLink> pair : m_lldpTopologyService.matchLldpLinks()) {
+        for (ImmutablePair<LldpLink, LldpLink> pair : m_lldpTopologyService.matchLldpLinks()) {
             LldpLink sourceLink = pair.getLeft();
             LldpLink targetLink = pair.getRight();
             LinkdVertex source = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
@@ -216,7 +216,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private void getOspfLinks() {
 
-        for (Pair<OspfLink, OspfLink> pair : m_ospfTopologyService.matchOspfLinks()) {
+        for (ImmutablePair<OspfLink, OspfLink> pair : m_ospfTopologyService.matchOspfLinks()) {
             OspfLink sourceLink = pair.getLeft();
             OspfLink targetLink = pair.getRight();
 
@@ -236,7 +236,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     private void getCdpLinks() {
-        for(Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity> pair : m_cdpTopologyService.matchCdpLinks()) {
+        for(ImmutablePair<CdpLinkTopologyEntity, CdpLinkTopologyEntity> pair : m_cdpTopologyService.matchCdpLinks()) {
             CdpLinkTopologyEntity sourceLink = pair.getLeft();
             CdpLinkTopologyEntity targetLink = pair.getRight();
             LinkdVertex source = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNodeIdAsString());
@@ -256,7 +256,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private void getIsIsLinks() {
 
-        for(Pair<IsIsLink, IsIsLink> pair : m_isisTopologyService.matchIsIsLinks()) {
+        for(ImmutablePair<IsIsLink, IsIsLink> pair : m_isisTopologyService.matchIsIsLinks()) {
             IsIsLink sourceLink = pair.getLeft();
             IsIsLink targetLink = pair.getRight();
             LinkdVertex source = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
@@ -276,7 +276,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     
     private void getBridgeLinks() throws BridgeTopologyException {
-        for (Triple<List<BridgePort>, List<MacPort>, BridgePort> topologylink: m_bridgeTopologyService.matchBridgeLinks()) {
+        for (ImmutableTriple<List<BridgePort>, List<MacPort>, BridgePort> topologylink: m_bridgeTopologyService.matchBridgeLinks()) {
             Map<BridgePort,LinkdVertex> portToNodeVertexMap = new HashMap<BridgePort, LinkdVertex>();
             for (BridgePort bp : topologylink.getLeft()) {
                 LinkdVertex vertex = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, bp.getNodeId().toString());
