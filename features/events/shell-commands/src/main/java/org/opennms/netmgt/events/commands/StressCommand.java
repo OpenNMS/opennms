@@ -116,7 +116,7 @@ public class StressCommand implements Action {
 
     private final Meter eventsGenerated = metrics.meter("events-generated");
 
-    private class JexlEventGenerator extends EventGenerator {
+    protected class JexlEventGenerator extends EventGenerator {
         private final JexlContext context = new MapContext();
         private final List<Expression> expressions = new ArrayList<>();
 
@@ -136,6 +136,14 @@ public class StressCommand implements Action {
         @Override
         public Event getNextEvent() {
             final EventBuilder eb = new EventBuilder(eventUei, EVENT_SOURCE);
+
+            if (eventNodeId != null) {
+                eb.setNodeid(eventNodeId.intValue());
+            }
+            if (eventIpInterface != null) {
+                eb.setInterface(InetAddressUtils.addr(eventIpInterface));
+            }
+
             context.set("eb", eb);
             for (Expression expression : expressions) {
                 expression.evaluate(context);
@@ -144,7 +152,7 @@ public class StressCommand implements Action {
         }
     }
 
-    private class EventGenerator implements Runnable {
+    protected class EventGenerator implements Runnable {
         @Override
         public void run() {
             final RateLimiter rateLimiter = RateLimiter.create(eventsPerSecondPerThread);
