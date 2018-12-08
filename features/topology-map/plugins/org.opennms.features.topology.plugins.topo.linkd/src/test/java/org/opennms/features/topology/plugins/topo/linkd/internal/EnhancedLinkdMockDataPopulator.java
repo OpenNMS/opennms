@@ -51,6 +51,8 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
@@ -71,23 +73,11 @@ import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
-import org.opennms.netmgt.model.CdpElement;
-import org.opennms.netmgt.model.CdpLink;
-import org.opennms.netmgt.model.IpNetToMedia;
-import org.opennms.netmgt.model.IsIsElement;
-import org.opennms.netmgt.model.IsIsLink;
-import org.opennms.netmgt.model.LldpElement;
-import org.opennms.netmgt.model.LldpLink;
-import org.opennms.netmgt.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
-import org.opennms.netmgt.model.NodeTopologyEntity;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OspfLink;
-import org.opennms.netmgt.model.OspfLinkTopologyEntity;
-import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class EnhancedLinkdMockDataPopulator {
@@ -458,11 +448,11 @@ public class EnhancedLinkdMockDataPopulator {
     }
 
     private List<OspfLinkTopologyEntity> convertToOspf(List<OspfLink> links) {
-        return links.stream().map(link -> new OspfLinkTopologyEntity(link)).collect(Collectors.toList());
+        return links.stream().map(OspfLinkTopologyEntity::create).collect(Collectors.toList());
     }
 
     private List<LldpLinkTopologyEntity> convertToLldp(List<LldpLink> links) {
-        return links.stream().map(link -> new LldpLinkTopologyEntity(link)).collect(Collectors.toList());
+        return links.stream().map(LldpLinkTopologyEntity::create).collect(Collectors.toList());
     }
 
     public void tearDown() {
