@@ -90,7 +90,7 @@ public class CdpLinkTopologyEntity {
 
     @Override
     public String toString() {
-        return "CdpLinkInfo{" +
+        return "CdpLinkTopologyEntity{" +
                 "id=" + id +
                 ", nodeId=" + nodeId +
                 ", cdpCacheIfIndex=" + cdpCacheIfIndex +

@@ -31,12 +31,14 @@ package org.opennms.netmgt.enlinkd.persistence.api;
 import java.util.List;
 
 import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
-
+import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
 
 /**
- * Caches TopologyEmtities. This is a cache wrapper around @{@link TopologyEntityDao}. See there for an explanation of
- * TopologyEntrities.
+ * Caches TopologyEntities. This is a cache wrapper around @{@link TopologyEntityDao}. See there for an explanation of
+ * TopologyEntities.
  * We use the cache to improve the displaying speed of topologies.
  */
 public interface TopologyEntityCache {
@@ -44,6 +46,12 @@ public interface TopologyEntityCache {
     List<NodeTopologyEntity> getNodeTopolgyEntities();
 
     List<CdpLinkTopologyEntity> getCdpLinkTopologyEntities();
+
+    List<OspfLinkTopologyEntity> getOspfLinkTopologyEntities();
+
+    List<IsIsLinkTopologyEntity> getIsIsLinkTopologyEntities();
+
+    List<LldpLinkTopologyEntity> getLldpLinkTopologyEntities();
 
     void refresh();
 

@@ -71,7 +71,6 @@ import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
-import org.opennms.netmgt.dao.api.TopologyEntityCache;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.IpNetToMedia;

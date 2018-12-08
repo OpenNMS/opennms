@@ -26,36 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model;
+package org.opennms.netmgt.enlinkd.model;
 
-import java.net.InetAddress;
-import java.util.Objects;
 
 /**
- * This is NOT a Hibernate/JPA entity but rather a lightweight model without less attributes than OspfLink and no lazy
+ * This is NOT a Hibernate/JPA entity but rather a lightweight model without less attributes than IsIsLink and no lazy
  * loading. We use it to retrieve link information from the database fast.
  */
-public class OspfLinkTopologyEntity {
+public class IsIsLinkTopologyEntity {
     private final Integer id;
     private final Integer nodeId;
-    private final InetAddress ospfIpAddr;
-    private final InetAddress ospfRemIpAddr;
-    private final Integer ospfIfIndex;
+    private final Integer isisISAdjIndex;
+    private final Integer isisCircIfIndex;
+    private final String isisISAdjNeighSysID;
+    private final String isisISAdjNeighSNPAAddress;
 
-    public OspfLinkTopologyEntity(Integer id, Integer nodeId, InetAddress ospfIpAddr, InetAddress ospfRemIpAddr, Integer ospfIfIndex) {
+
+    public IsIsLinkTopologyEntity(Integer id, Integer nodeId, Integer isisISAdjIndex, Integer isisCircIfIndex, String isisISAdjNeighSysID,
+                                  String isisISAdjNeighSNPAAddress){
         this.id = id;
         this.nodeId = nodeId;
-        this.ospfIpAddr = ospfIpAddr;
-        this.ospfRemIpAddr = ospfRemIpAddr;
-        this.ospfIfIndex = ospfIfIndex;
-    }
-
-    public OspfLinkTopologyEntity(OspfLink link) {
-        this(link.getId()
-                , link.getNode().getId()
-                , link.getOspfIpAddr()
-                , link.getOspfRemIpAddr()
-                , link.getOspfIfIndex());
+        this.isisISAdjIndex = isisISAdjIndex;
+        this.isisCircIfIndex = isisCircIfIndex;
+        this.isisISAdjNeighSysID = isisISAdjNeighSysID;
+        this.isisISAdjNeighSNPAAddress = isisISAdjNeighSNPAAddress;
     }
 
     public Integer getId() {
@@ -73,26 +67,31 @@ public class OspfLinkTopologyEntity {
         return null;
     }
 
-    public InetAddress getOspfIpAddr() {
-        return ospfIpAddr;
+    public Integer getIsisISAdjIndex() {
+        return isisISAdjIndex;
     }
 
-    public InetAddress getOspfRemIpAddr() {
-        return ospfRemIpAddr;
+    public Integer getIsisCircIfIndex() {
+        return isisCircIfIndex;
     }
 
-    public Integer getOspfIfIndex() {
-        return ospfIfIndex;
+    public String getIsisISAdjNeighSysID() {
+        return isisISAdjNeighSysID;
+    }
+
+    public String getIsisISAdjNeighSNPAAddress() {
+        return isisISAdjNeighSNPAAddress;
     }
 
     @Override
     public String toString() {
-        return "OspfLinkTopologyEntity{" +
+        return "IsIsLinkTopologyEntity{" +
                 "id=" + id +
                 ", nodeId=" + nodeId +
-                ", ospfIpAddr=" + ospfIpAddr +
-                ", ospfRemIpAddr=" + ospfRemIpAddr +
-                ", ospfIfIndex=" + ospfIfIndex +
+                ", isisISAdjIndex='" + isisISAdjIndex + '\'' +
+                ", isisCircIfIndex=" + isisCircIfIndex +
+                ", isisISAdjNeighSysID='" + isisISAdjNeighSysID + '\'' +
+                ", isisISAdjNeighSNPAAddress='" + isisISAdjNeighSNPAAddress + '\'' +
                 '}';
     }
 }

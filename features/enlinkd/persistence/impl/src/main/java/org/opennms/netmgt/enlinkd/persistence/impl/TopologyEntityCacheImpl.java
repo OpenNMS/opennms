@@ -30,7 +30,11 @@ package org.opennms.netmgt.enlinkd.persistence.impl;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
+import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityDao;
 import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
@@ -51,43 +55,65 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
     private TopologyEntityDao topologyEntityDao;
 
     private LoadingCache<String, List<NodeTopologyEntity>> nodeTopologyEntities = createCache(
-            new CacheLoader<String, List<NodeTopologyEntity>>() {
-                @Override
-                public List<NodeTopologyEntity> load(String key) {
-                    return topologyEntityDao.getNodeTopologyEntities();
-                }
-            }
-    );
+            () -> topologyEntityDao.getNodeTopologyEntities());
 
     private LoadingCache<String, List<CdpLinkTopologyEntity>> cdpLinkTopologyEntities = createCache(
-            new CacheLoader<String, List<CdpLinkTopologyEntity>>() {
-                @Override
-                public List<CdpLinkTopologyEntity> load(String key) {
-                    return topologyEntityDao.getCdpLinkTopologyEntities();
-                }
-            }
-    );
+            () -> topologyEntityDao.getCdpLinkTopologyEntities());
 
-    private <Key, Value> LoadingCache<Key, Value> createCache(CacheLoader<Key, Value> loader) {
+    private LoadingCache<String, List<IsIsLinkTopologyEntity>> isIsLinkTopologyEntities = createCache(
+            ()-> topologyEntityDao.getIsIsLinkTopologyEntities());
+
+    private LoadingCache<String, List<OspfLinkTopologyEntity>> ospfLinkTopologyEntities = createCache (
+            () -> topologyEntityDao.getOspfLinkTopologyEntities());
+
+    private LoadingCache<String, List<LldpLinkTopologyEntity>> lldpLinkTopologyEntities = createCache (
+            () -> topologyEntityDao.getLldpLinkTopologyEntities());
+
+    private <Key, Value> LoadingCache<Key, Value> createCache(Supplier<Value> entitySupplier) {
+        CacheLoader<Key, Value> loader = new CacheLoader<Key, Value>() {
+            @Override
+            public Value load(Key key) {
+                return entitySupplier.get();
+            }
+        };
         return CacheBuilder
                 .newBuilder()
                 .expireAfterWrite(getCacheDuration(), TimeUnit.SECONDS)
                 .build(loader);
     }
 
-
+    @Override
     public List<NodeTopologyEntity> getNodeTopolgyEntities() {
         return this.nodeTopologyEntities.getUnchecked(KEY);
     }
 
+    @Override
     public List<CdpLinkTopologyEntity> getCdpLinkTopologyEntities() {
         return this.cdpLinkTopologyEntities.getUnchecked(KEY);
+    }
+
+    @Override
+    public List<OspfLinkTopologyEntity> getOspfLinkTopologyEntities() {
+        return this.ospfLinkTopologyEntities.getUnchecked(KEY);
+    }
+
+    @Override
+    public List<IsIsLinkTopologyEntity> getIsIsLinkTopologyEntities() {
+        return this.isIsLinkTopologyEntities.getUnchecked(KEY);
+    }
+
+    @Override
+    public List<LldpLinkTopologyEntity> getLldpLinkTopologyEntities() {
+        return this.lldpLinkTopologyEntities.getUnchecked(KEY);
     }
 
     @Override
     public void refresh(){
         nodeTopologyEntities.refresh(KEY);
         cdpLinkTopologyEntities.refresh(KEY);
+        nodeTopologyEntities.refresh(KEY);
+        isIsLinkTopologyEntities.refresh(KEY);
+        lldpLinkTopologyEntities.refresh(KEY);
     }
 
     private int getCacheDuration(){
