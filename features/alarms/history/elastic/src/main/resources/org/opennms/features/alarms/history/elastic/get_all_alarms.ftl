@@ -1,9 +1,10 @@
 {
   "aggs": {
     "alarms_by_id": {
-      "terms": {
-        "field": "id",
-        "size": ${numMaxAlarms?long?c}
+      "composite" : {
+        "sources" : [
+          { "alarms_by_id": { "terms" : { "field": "id" } } }
+        ]
       },
       "aggs": {
         "latest_alarm": {

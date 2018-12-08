@@ -51,7 +51,7 @@ public class ElasticHealthCheck implements HealthCheck {
 
     @Override
     public String getDescription() {
-        return "Retrieve the number of active alarms stored in Elasticsearch (Alarm History)";
+        return "Number of active alarms stored in Elasticsearch (Alarm History)";
     }
 
     @Override

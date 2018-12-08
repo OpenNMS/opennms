@@ -51,7 +51,6 @@ public class QueryProviderTest {
         validate(queryProvider.getAlarmAt(1,1));
         validate(queryProvider.getActiveAlarmsAt(1));
         validate(queryProvider.getAllAlarms());
-        validate(queryProvider.getCurrentAlarms());
     }
 
     private void validate(String query) {

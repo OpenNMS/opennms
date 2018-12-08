@@ -51,8 +51,6 @@ import freemarker.template.TemplateExceptionHandler;
  */
 public class QueryProvider {
 
-    private static final int NUM_MAX_ALARMS = 1000;
-
     private final Configuration cfg = new Configuration(Configuration.VERSION_2_3_23);
 
     public QueryProvider() {
@@ -72,7 +70,6 @@ public class QueryProvider {
     public String getActiveAlarmsAt(long time) {
         return render("get_alarms_at.ftl", ImmutableMap.builder()
                 .put("time", time)
-                .put("numMaxAlarms", NUM_MAX_ALARMS)
                 .put("idOnly", false)
                 .build());
     }
@@ -81,20 +78,12 @@ public class QueryProvider {
         return render("get_alarms_at.ftl", ImmutableMap.builder()
                 .put("time", time)
                 .put("alarmIdsToExclude", alarmIdsToKeep)
-                .put("numMaxAlarms", NUM_MAX_ALARMS)
                 .put("idOnly", true)
                 .build());
     }
 
     public String getAllAlarms() {
         return render("get_all_alarms.ftl", ImmutableMap.builder()
-                .put("numMaxAlarms", NUM_MAX_ALARMS)
-                .build());
-    }
-
-    public String getCurrentAlarms() {
-        return render("get_current_alarms.ftl", ImmutableMap.builder()
-                .put("numMaxAlarms", NUM_MAX_ALARMS)
                 .build());
     }
 
@@ -108,7 +97,5 @@ public class QueryProvider {
             throw new RuntimeException(e);
         }
     }
-
-
 
 }
