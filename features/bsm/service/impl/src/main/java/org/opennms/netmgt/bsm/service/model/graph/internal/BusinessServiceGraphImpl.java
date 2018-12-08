@@ -36,6 +36,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.edge.ApplicationEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
@@ -135,15 +136,25 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
                         addVertex(vertexForEdge[0]);
                         m_verticesByApplicationId.put(vertexForEdge[0].getApplication().getId(), vertexForEdge[0]);
 
-                        for (String reductionKey : edge.getReductionKeys()) {
-                            GraphVertex reductionKeyVertex = m_verticesByReductionKey.get(reductionKey);
-                            if (reductionKeyVertex == null) {
-                                reductionKeyVertex = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, reductionKey);
-                                addVertex(reductionKeyVertex);
-                                m_verticesByReductionKey.put(reductionKey, reductionKeyVertex);
+                        for (IpService ipService : edge.getApplication().getIpServices()) {
+                            final GraphVertex ipServiceVertex = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, ipService);
+                            final GraphEdgeImpl ipVertexEdgeEdge = new GraphEdgeImpl(MAP_IDENTITY);
+                            addVertex(ipServiceVertex);
+                            m_verticesByIpServiceId.put(ipServiceVertex.getIpService().getId(), ipServiceVertex);
+
+                            addEdge(ipVertexEdgeEdge, vertexForEdge[0], ipServiceVertex);
+
+                            for (String reductionKey : ipService.getReductionKeys()) {
+                                GraphVertex reductionKeyVertex = m_verticesByReductionKey.get(reductionKey);
+                                if (reductionKeyVertex == null) { // not already added
+                                    reductionKeyVertex = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, reductionKey);
+                                    addVertex(reductionKeyVertex);
+                                    m_verticesByReductionKey.put(reductionKey, reductionKeyVertex);
+                                }
+                                // Always add an edge
+                                GraphEdgeImpl intermediaryEdge = new GraphEdgeImpl(MAP_IDENTITY);
+                                addEdge(intermediaryEdge, ipServiceVertex, reductionKeyVertex);
                             }
-                            GraphEdgeImpl intermediaryEdge = new GraphEdgeImpl(MAP_IDENTITY);
-                            addEdge(intermediaryEdge, vertexForEdge[0], reductionKeyVertex);
                         }
                         return null;
                     }

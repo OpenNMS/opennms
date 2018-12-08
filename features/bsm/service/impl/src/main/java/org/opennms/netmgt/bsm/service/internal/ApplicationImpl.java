@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.Application;
+import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.dao.util.ReductionKeyHelper;
 import org.opennms.netmgt.model.OnmsApplication;
 
@@ -67,6 +68,11 @@ public class ApplicationImpl implements Application {
     @Override
     public Set<String> getReductionKeys() {
         return Collections.unmodifiableSet(ReductionKeyHelper.getReductionKeys(m_entity));
+    }
+
+    @Override
+    public Set<IpService> getIpServices() {
+        return Collections.unmodifiableSet(m_entity.getMonitoredServices().stream().map(e -> new IpServiceImpl(m_manager, e)).collect(Collectors.toSet()));
     }
 
     @Override

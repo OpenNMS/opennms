@@ -37,5 +37,7 @@ public interface Application {
 
     Set<String> getReductionKeys();
 
+    Set<IpService> getIpServices();
+
     Set<Integer> getNodeIds();
 }
