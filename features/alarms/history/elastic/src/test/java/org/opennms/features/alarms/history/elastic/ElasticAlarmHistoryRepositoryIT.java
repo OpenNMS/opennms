@@ -32,6 +32,7 @@ import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsEqual.equalTo;
 
@@ -41,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.elasticsearch.index.reindex.ReindexPlugin;
 import org.elasticsearch.painless.PainlessPlugin;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -104,22 +106,26 @@ public class ElasticAlarmHistoryRepositoryIT {
     }
 
     @Test
-    public void canGetAlarmAtTimestamp() throws InterruptedException {
+    public void canGetAlarmAtTimestamp() {
+        OnmsAlarm a1 = createAlarm(1, 1L);
+
         // An alarm that doesn't exist should return null
-        assertThat(repo.getAlarmWithDbIdAt(1, 0), nullValue());
+        assertThat(repo.getAlarmWithDbIdAt(a1.getId(), 0), nullValue());
+        assertThat(repo.getAlarmWithReductionKeyIdAt(a1.getReductionKey(), 0), nullValue());
 
         // t=1
         PseudoClock.getInstance().advanceTime(1, TimeUnit.MILLISECONDS);
 
-        // Index some alarm
-        OnmsAlarm a1 = createAlarm(1, 1L);
+        // Index a1
         indexer.handleNewOrUpdatedAlarm(a1);
 
         // The alarm does exist at this time
-        await().until(() -> repo.getAlarmWithDbIdAt(1, 1), notNullValue());
+        await().until(() -> repo.getAlarmWithDbIdAt(a1.getId(), 1), notNullValue());
+        await().until(() -> repo.getAlarmWithReductionKeyIdAt(a1.getReductionKey(), 1), notNullValue());
 
         // The alarm didn't exist and this time
-        assertThat(repo.getAlarmWithDbIdAt(1, 0), nullValue());
+        assertThat(repo.getAlarmWithDbIdAt(a1.getId(), 0), nullValue());
+        assertThat(repo.getAlarmWithReductionKeyIdAt(a1.getReductionKey(), 0), nullValue());
 
         // t=2
         PseudoClock.getInstance().advanceTime(1, TimeUnit.MILLISECONDS);
@@ -128,7 +134,8 @@ public class ElasticAlarmHistoryRepositoryIT {
         updateAlarmWithEvent(a1, 2L);
         indexer.handleNewOrUpdatedAlarm(a1);
 
-        await().until(() -> repo.getAlarmWithDbIdAt(1, 2).getCounter(), equalTo(2));
+        await().until(() -> repo.getAlarmWithDbIdAt(a1.getId(), 2).getCounter(), equalTo(2));
+        assertThat(repo.getAlarmWithReductionKeyIdAt(a1.getReductionKey(), 2).getCounter(), equalTo(2));
 
         // t=3
         PseudoClock.getInstance().advanceTime(1, TimeUnit.MILLISECONDS);
@@ -137,7 +144,49 @@ public class ElasticAlarmHistoryRepositoryIT {
         PseudoClock.getInstance().advanceTime(1, TimeUnit.MILLISECONDS);
         indexer.handleDeletedAlarm(a1.getId(), a1.getReductionKey());
 
-        await().until(() -> repo.getAlarmWithDbIdAt(1, 4).getDeletedTime(), notNullValue());
+        await().until(() -> repo.getAlarmWithDbIdAt(a1.getId(), 4).getDeletedTime(), notNullValue());
+        assertThat(repo.getAlarmWithReductionKeyIdAt(a1.getReductionKey(), 4).getDeletedTime(), notNullValue());
+    }
+
+    @Test
+    public void canGetStatesForAlarmWithDbId() {
+        OnmsAlarm a1 = createAlarm(1, 1L);
+
+        // An alarm that doesn't exist should return an empty list
+        assertThat(repo.getStatesForAlarmWithDbId(a1.getId()), empty());
+        assertThat(repo.getStatesForAlarmWithReductionKey(a1.getReductionKey()), empty());
+
+        // t=1
+        PseudoClock.getInstance().advanceTime(1, TimeUnit.MILLISECONDS);
+
+        // Index a1
+        indexer.handleNewOrUpdatedAlarm(a1);
+
+        // A single state change
+        await().until(() -> repo.getStatesForAlarmWithDbId(a1.getId()), hasSize(equalTo(1)));
+        assertThat(repo.getStatesForAlarmWithReductionKey(a1.getReductionKey()), hasSize(equalTo(1)));
+
+        // t=2
+        PseudoClock.getInstance().advanceTime(1, TimeUnit.MILLISECONDS);
+
+        // Update the alarm
+        updateAlarmWithEvent(a1, 2L);
+        indexer.handleNewOrUpdatedAlarm(a1);
+
+        // Two state changes
+        await().until(() -> repo.getStatesForAlarmWithDbId(a1.getId()), hasSize(equalTo(2)));
+        assertThat(repo.getStatesForAlarmWithReductionKey(a1.getReductionKey()), hasSize(equalTo(2)));
+
+        // t=3
+        PseudoClock.getInstance().advanceTime(1, TimeUnit.MILLISECONDS);
+
+        // Delete the alarm
+        PseudoClock.getInstance().advanceTime(1, TimeUnit.MILLISECONDS);
+        indexer.handleDeletedAlarm(a1.getId(), a1.getReductionKey());
+
+        // Three state changes
+        await().until(() -> repo.getStatesForAlarmWithDbId(a1.getId()), hasSize(equalTo(3)));
+        assertThat(repo.getStatesForAlarmWithReductionKey(a1.getReductionKey()), hasSize(equalTo(3)));
     }
 
     @Test
@@ -156,6 +205,7 @@ public class ElasticAlarmHistoryRepositoryIT {
 
         // One alarm active
         await().until(() -> repo.getActiveAlarmsAt(queryTime), hasSize(equalTo(1)));
+        assertThat(repo.getNumActiveAlarmsAt(queryTime), equalTo(1L));
 
         // t=2
         PseudoClock.getInstance().advanceTime(1, TimeUnit.MILLISECONDS);
@@ -166,6 +216,7 @@ public class ElasticAlarmHistoryRepositoryIT {
 
         // Two alarms active
         await().until(() -> repo.getActiveAlarmsAt(queryTime), hasSize(equalTo(2)));
+        assertThat(repo.getNumActiveAlarmsAt(queryTime), equalTo(2L));
 
         // t=3
         PseudoClock.getInstance().advanceTime(1, TimeUnit.MILLISECONDS);
@@ -175,6 +226,7 @@ public class ElasticAlarmHistoryRepositoryIT {
 
         // One alarm active
         await().until(() -> repo.getActiveAlarmsAt(queryTime), hasSize(equalTo(1)));
+        assertThat(repo.getNumActiveAlarmsAt(queryTime), equalTo(1L));
 
         // t=4
         PseudoClock.getInstance().advanceTime(1, TimeUnit.MILLISECONDS);
@@ -184,6 +236,7 @@ public class ElasticAlarmHistoryRepositoryIT {
 
         // No alarms
         await().until(() -> repo.getActiveAlarmsAt(queryTime), hasSize(equalTo(0)));
+        assertThat(repo.getNumActiveAlarmsAt(queryTime), equalTo(0L));
     }
 
     @Test
@@ -246,7 +299,7 @@ public class ElasticAlarmHistoryRepositoryIT {
     private static OnmsAlarm createAlarm(int id, long firstEventTime) {
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setId(id);
-        alarm.setReductionKey("" + id);
+        alarm.setReductionKey("rkey-" + id);
         alarm.setFirstEventTime(new Date(firstEventTime));
         alarm.setCounter(1);
 

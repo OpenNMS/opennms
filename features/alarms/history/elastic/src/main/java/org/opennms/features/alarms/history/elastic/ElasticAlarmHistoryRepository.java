@@ -56,24 +56,32 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
 
     @Override
     public AlarmState getAlarmWithDbIdAt(long id, long time) {
-        return findAlarms(queryProvider.getAlarmAt(id, time), false)
+        return findAlarms(queryProvider.getAlarmByDbIdAt(id, time), false)
                 .stream().findFirst()
                 .orElse(null);
     }
 
     @Override
     public AlarmState getAlarmWithReductionKeyIdAt(String reductionKey, long time) {
-        return null;
+        return findAlarms(queryProvider.getAlarmByReductionKeyAt(reductionKey, time), false)
+                .stream().findFirst()
+                .orElse(null);
     }
 
     @Override
     public List<AlarmState> getStatesForAlarmWithDbId(long id) {
-        return null;
+        return findAlarms(queryProvider.getAlarmStatesByDbId(id), false)
+                .stream()
+                .map(a -> (AlarmState)a)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<AlarmState> getStatesForAlarmWithReductionKey(String reductionKey) {
-        return null;
+        return findAlarms(queryProvider.getAlarmStatesByReductionKey(reductionKey), false)
+                .stream()
+                .map(a -> (AlarmState)a)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -92,7 +100,9 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
 
     @Override
     public long getNumActiveAlarmsAt(long time) {
-        return 0;
+        // We could improve this to only retrieve the count, instead of
+        // actually retrieving and mapping all the documents back
+        return getActiveAlarmsAt(time).size();
     }
 
     @Override
@@ -102,11 +112,12 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
 
     @Override
     public long getNumActiveAlarmsNow() {
-        return 0;
+        return getNumActiveAlarmsAt(System.currentTimeMillis());
     }
 
     private List<AlarmDocumentDTO> findAlarms(String query, boolean inAggregation) {
         final Search search = new Search.Builder(query)
+                // TODO: Smarter indexing
                 .addIndex("opennms-alarms-*")
                 .addType(AlarmDocumentDTO.TYPE)
                 .build();
@@ -131,7 +142,6 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
             final CompositeAggregation alarmsById = result.getAggregations().getAggregation("alarms_by_id", CompositeAggregation.class);
             if (alarmsById != null) {
                 for (CompositeAggregation.Entry entry : alarmsById.getBuckets()) {
-                    //final String alarmId = entry.getKey();
                     final TopHitsAggregation topHitsAggregation = entry.getTopHitsAggregation("latest_alarm");
                     final List<SearchResult.Hit<AlarmDocumentDTO, Void>> hits = topHitsAggregation.getHits(AlarmDocumentDTO.class);
                     hits.stream().map(h -> h.source).forEach(alarms::add);
@@ -140,31 +150,5 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
             return alarms;
         }
     }
-
-    /*
-    // Old stuff
-
-    public AlarmDocumentDTO getAlarmAt(int id, long time) {
-        return findAlarms(queryProvider.getAlarmAt(id, time), false).stream().findFirst().orElse(null);
-    }
-
-    public List<AlarmDocumentDTO> getAlarmsAt(long time) {
-        return findAlarms(queryProvider.getAlarmsAt(time), true);
-    }
-
-    public List<AlarmDocumentDTO> getAllAlarms() {
-        return findAlarms(queryProvider.getAllAlarms(), true);
-    }
-
-    public List<AlarmDocumentDTO> getCurrentAlarms() {
-        return findAlarms(queryProvider.getCurrentAlarms(), true);
-    }
-
-
-    */
-
-
-
-
 
 }

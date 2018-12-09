@@ -51,6 +51,8 @@ import freemarker.template.TemplateExceptionHandler;
  */
 public class QueryProvider {
 
+    private static final long MAX_STATES_FOR_ALARM = 100;
+
     private final Configuration cfg = new Configuration(Configuration.VERSION_2_3_23);
 
     public QueryProvider() {
@@ -60,9 +62,30 @@ public class QueryProvider {
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
     }
 
-    public String getAlarmAt(long id, long time) {
+    public String getAlarmStatesByDbId(long id) {
+        return render("get_alarm.ftl", ImmutableMap.builder()
+                .put("alarmId", id)
+                .put("maxResults", MAX_STATES_FOR_ALARM)
+                .build());
+    }
+
+    public String getAlarmStatesByReductionKey(String reductionKey) {
+        return render("get_alarm.ftl", ImmutableMap.builder()
+                .put("reductionKey", reductionKey)
+                .put("maxResults", MAX_STATES_FOR_ALARM)
+                .build());
+    }
+
+    public String getAlarmByDbIdAt(long id, long time) {
         return render("get_alarm_at.ftl", ImmutableMap.builder()
                 .put("alarmId", id)
+                .put("time", time)
+                .build());
+    }
+
+    public String getAlarmByReductionKeyAt(String reductionKey, long time) {
+        return render("get_alarm_at.ftl", ImmutableMap.builder()
+                .put("reductionKey", reductionKey)
                 .put("time", time)
                 .build());
     }

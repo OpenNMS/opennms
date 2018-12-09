@@ -172,11 +172,6 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
         executor.shutdown();
     }
 
-    private Collection<String> getIndicesForDeleteAt(long time) {
-        // TODO: Add proper logic
-        return Collections.singletonList(indexStrategy.getIndex(alarmIndexPrefix, Instant.ofEpochMilli(time)));
-    }
-
     @Override
     public void run() {
         templateInitializer.initialize();
