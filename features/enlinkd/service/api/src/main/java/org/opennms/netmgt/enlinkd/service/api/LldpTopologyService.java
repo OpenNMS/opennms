@@ -32,7 +32,6 @@ package org.opennms.netmgt.enlinkd.service.api;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 
@@ -46,7 +45,7 @@ public interface LldpTopologyService extends TopologyService {
     List<LldpElement> findAllLldpElements();
     List<LldpLink> findAllLldpLinks();
     
-    List<ImmutablePair<LldpLink, LldpLink>> matchLldpLinks();
+    List<TopologyConnection<LldpLink, LldpLink>> match();
 
     
 }

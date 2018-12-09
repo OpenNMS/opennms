@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
@@ -61,6 +60,7 @@ import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.TopologyConnection;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -218,7 +218,7 @@ public class ServiceTest {
 
         // 1 and 3 will match
         // 4 and 5 will match
-        List<ImmutablePair<IsIsLink, IsIsLink>> matchedLinks = isisTopologyService.matchIsIsLinks();
+        List<TopologyConnection<IsIsLink, IsIsLink>> matchedLinks = isisTopologyService.match();
         assertMatching(isisLinks, matchedLinks);
     }
 
@@ -227,7 +227,7 @@ public class ServiceTest {
 
         // 1 and 3 will match
         // 4 and 5 will match
-        List<ImmutablePair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> matchedLinks = cdpTopologyService.matchCdpLinks();
+        List<TopologyConnection<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> matchedLinks = cdpTopologyService.match();
         assertMatching(cdpLinks, matchedLinks);
 
     }
@@ -239,7 +239,7 @@ public class ServiceTest {
         // 4 and 5 will match
 
 
-        List<ImmutablePair<OspfLink, OspfLink>> matchedLinks = ospfTopologyService.matchOspfLinks();
+        List<TopologyConnection<OspfLink, OspfLink>> matchedLinks = ospfTopologyService.match();
         assertMatching(ospfLinks, matchedLinks);
     }
 
@@ -249,11 +249,11 @@ public class ServiceTest {
         // 1 and 3 will match
         // 4 and 5 will match
 
-        List<ImmutablePair<LldpLink, LldpLink>> matchedLinks = lldpTopologyService.matchLldpLinks();
+        List<TopologyConnection<LldpLink, LldpLink>> matchedLinks = lldpTopologyService.match();
         assertMatching(lldpLinks, matchedLinks);
     }
 
-    private <Link> void assertMatching(List<Link> allLinks, List<ImmutablePair<Link, Link>> matchedLinks){
+    private <Link> void assertMatching(List<Link> allLinks, List<TopologyConnection<Link, Link>> matchedLinks){
         // we expect:
         // 1 and 3 will match
         // 4 and 5 will match

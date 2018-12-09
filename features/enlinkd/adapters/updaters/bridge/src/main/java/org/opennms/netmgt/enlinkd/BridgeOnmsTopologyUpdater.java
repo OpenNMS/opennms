@@ -29,11 +29,9 @@
 package org.opennms.netmgt.enlinkd;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
@@ -41,6 +39,7 @@ import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
+import org.opennms.netmgt.enlinkd.service.api.TopologyShared;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
@@ -73,7 +72,7 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     public OnmsTopology buildTopology() throws OnmsTopologyException {
         Map<Integer, NodeTopologyEntity> nodeMap= getNodeMap();
         OnmsTopology topology = new OnmsTopology();
-        for (ImmutableTriple<List<BridgePort>, List<MacPort>, BridgePort> shared: m_bridgeTopologyService.matchBridgeLinks()) {
+        for (TopologyShared<BridgePort,MacPort> shared: m_bridgeTopologyService.match()) {
             Set<OnmsTopologyPort> ports = new HashSet<>();
             for (BridgePort bp: shared.getLeft()) {
                 NodeTopologyEntity node = nodeMap.get(bp.getNodeId());
@@ -89,7 +88,7 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
                     LOG.debug("getTopology: adding: {}", bp.printTopology());
                 }
             }
-            for (MacPort macPort: shared.getMiddle()) {
+            for (MacPort macPort: shared.getRight()) {
                 String id = Topology.getId(macPort);
                 if (topology.getVertex(id) ==  null) {
                     if (macPort.getNodeId() != null) {
@@ -115,7 +114,7 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
                 }
             }
             OnmsTopologyShared edge = OnmsTopologyShared.create(
-                                                          Topology.getId(shared.getRight()), 
+                                                          Topology.getId(shared.getTop()), 
                                                           ports.toArray(new OnmsTopologyPort[ports.size()]));
             topology.getEdges().add(edge);
 

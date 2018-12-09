@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,20 +28,34 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
-
-import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.enlinkd.model.IsIsElement;
-import org.opennms.netmgt.enlinkd.model.IsIsLink;
+public class TopologyShared <L,R> {
+    
+    public static <L, R> TopologyShared<L, R>   of(List<L> left, List<R> right,L top) {
+        return new TopologyShared<L,R>(left, right, top);
+    }
 
-public interface IsisTopologyService extends TopologyService {
-        
-    void delete(int nodeid);
-    void reconcile(int nodeId, Date now);
-    void store(int nodeId, IsIsLink link);
-    void store(int nodeId, IsIsElement element);
+    private TopologyShared(List<L> left, List<R> right,L top ) {
+        this.top = top;
+        this.left = left;
+        this.right = right;
+    }
 
-    List<IsIsElement> findAllIsIsElements();
-    List<TopologyConnection<IsIsLink, IsIsLink>> match();
+    private L top;
+    private List<L> left;
+    private List<R> right;
+
+    public List<L> getLeft() {
+        return left;
+    }
+
+    public List<R> getRight() {
+        return right;
+    }
+
+    public L getTop() {
+        return top;
+    }
+    
 }

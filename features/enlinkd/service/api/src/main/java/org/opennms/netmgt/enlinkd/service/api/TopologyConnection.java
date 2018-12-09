@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,20 +28,27 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
+public class TopologyConnection <L,R> {
+    
+    public static <L, R> TopologyConnection<L, R>   of(L left, R right) {
+        return new TopologyConnection<L,R>(left, right);
+    }
 
-import java.util.Date;
-import java.util.List;
 
-import org.opennms.netmgt.enlinkd.model.IsIsElement;
-import org.opennms.netmgt.enlinkd.model.IsIsLink;
+    private TopologyConnection(L left, R right) {
+        this.left = left;
+        this.right = right;
+    }
 
-public interface IsisTopologyService extends TopologyService {
-        
-    void delete(int nodeid);
-    void reconcile(int nodeId, Date now);
-    void store(int nodeId, IsIsLink link);
-    void store(int nodeId, IsIsElement element);
+    private R right;
+    private L left;
 
-    List<IsIsElement> findAllIsIsElements();
-    List<TopologyConnection<IsIsLink, IsIsLink>> match();
+    public L getLeft() {
+        return left;
+    }
+
+    public R getRight() {
+        return right;
+    }
+    
 }

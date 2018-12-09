@@ -30,7 +30,6 @@ package org.opennms.netmgt.enlinkd;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
@@ -38,6 +37,7 @@ import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
+import org.opennms.netmgt.enlinkd.service.api.TopologyConnection;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
@@ -71,7 +71,7 @@ public class IsisOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
             topology.getVertices().add(create(nodeMap.get(element.getNode().getId())));
         }
         
-        for(ImmutablePair<IsIsLink, IsIsLink> pair : m_isisTopologyService.matchIsIsLinks()){
+        for(TopologyConnection<IsIsLink, IsIsLink> pair : m_isisTopologyService.match()){
             IsIsLink sourceLink = pair.getLeft();
             IsIsLink targetLink = pair.getRight();
 

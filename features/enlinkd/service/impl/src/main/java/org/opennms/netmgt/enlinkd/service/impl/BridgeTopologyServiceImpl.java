@@ -38,8 +38,6 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
@@ -59,6 +57,7 @@ import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
+import org.opennms.netmgt.enlinkd.service.api.TopologyShared;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -785,8 +784,8 @@ SEG:        for (SharedSegment segment : bmlsegments) {
     }
 
     @Override
-    public List<ImmutableTriple<List<BridgePort>, List<MacPort>, BridgePort>> matchBridgeLinks() {
-        final List<ImmutableTriple<List<BridgePort>, List<MacPort>, BridgePort>> links = new ArrayList<>();
+    public List<TopologyShared<BridgePort, MacPort>> match() {
+        final List<TopologyShared<BridgePort, MacPort>> links = new ArrayList<>();
         final List<MacPort> macPortMap = getMacPorts();
         
         m_domains.stream().forEach(dm ->{
@@ -818,9 +817,12 @@ SEG:        for (SharedSegment segment : bmlsegments) {
                     }
                 });
                 try {
-                   Triple<List<BridgePort>, List<MacPort>, BridgePort> triple = 
-                    Triple.of(new ArrayList<BridgePort>(shs.getBridgePortsOnSegment()), macPorts, shs.getDesignatedPort());
-                   links.add((ImmutableTriple<List<BridgePort>, List<MacPort>, BridgePort>) triple);
+                   links.add(
+                             TopologyShared.of(
+                                       new ArrayList<BridgePort>(shs.getBridgePortsOnSegment()), 
+                                       macPorts, 
+                                       shs.getDesignatedPort())
+                             );
                 } catch (BridgeTopologyException e) {
                     LOG.error("{}, cannot add segment {} ",e.getMessage(), e.printTopology());
                 }
