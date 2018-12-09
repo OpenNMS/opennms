@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
@@ -179,7 +180,7 @@ public class IsisTopologyServiceImpl extends TopologyServiceImpl implements Isis
     }
 
     @Override
-    public List<Pair<IsIsLink, IsIsLink>> matchIsIsLinks() {
+    public List<ImmutablePair<IsIsLink, IsIsLink>> matchIsIsLinks() {
         List<IsIsElement> elements = m_isisElementDao.findAll();
         List<IsIsLink> allLinks = m_isisLinkDao.findAll();
         // 1.) create lookupMaps
@@ -198,7 +199,7 @@ public class IsisTopologyServiceImpl extends TopologyServiceImpl implements Isis
 
         // 2. iterate
         Set<Integer> parsed = new HashSet<Integer>();
-        List<Pair<IsIsLink, IsIsLink>> results = new ArrayList<>();
+        List<ImmutablePair<IsIsLink, IsIsLink>> results = new ArrayList<>();
 
         for (IsIsLink sourceLink : allLinks) {
             if (parsed.contains(sourceLink.getId())) {
@@ -222,7 +223,7 @@ public class IsisTopologyServiceImpl extends TopologyServiceImpl implements Isis
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getIsIsLinks: target: {}", targetLink);
             }
-            results.add(Pair.of(sourceLink, targetLink));
+            results.add((ImmutablePair<IsIsLink, IsIsLink>) Pair.of(sourceLink, targetLink));
             parsed.add(sourceLink.getId());
             parsed.add(targetLink.getId());
         }

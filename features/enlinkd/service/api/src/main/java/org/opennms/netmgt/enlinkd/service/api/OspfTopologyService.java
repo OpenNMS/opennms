@@ -32,7 +32,7 @@ package org.opennms.netmgt.enlinkd.service.api;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 
@@ -46,6 +46,6 @@ public interface OspfTopologyService extends TopologyService {
     List<OspfElement> findAllOspfElements(); 
     List<OspfLink> findAllOspfLinks(); 
     
-    List<Pair<OspfLink, OspfLink>> matchOspfLinks();
+    List<ImmutablePair<OspfLink, OspfLink>> matchOspfLinks();
 
 }

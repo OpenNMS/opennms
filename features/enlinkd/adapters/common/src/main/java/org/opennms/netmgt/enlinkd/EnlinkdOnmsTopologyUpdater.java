@@ -117,9 +117,23 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
 
     @Override
     public void runDiscovery() {
-        LOG.debug("run: start");
-        if (m_topologyService.parseUpdates()) {
-            LOG.debug("run: updates");
+        LOG.debug("run: start {}", getName());
+        if (!m_runned) {
+            synchronized (m_topology) {
+                try {
+                    m_topology = buildTopology();
+                    m_runned = true;
+                    m_topologyService.parseUpdates();
+                    m_topology.getVertices().stream().forEach(v -> create(v));
+                    m_topology.getEdges().stream().forEach(g -> create(g));
+                    LOG.debug("run: {} first run topology calculated", getName());
+                } catch (OnmsTopologyException e) {
+                    LOG.error("run: {} first run: cannot build topology",getName(), e);
+                    return;
+                }
+            }
+        } else if (m_topologyService.parseUpdates()) {
+            LOG.debug("run: updates {}, recalculating topology ", getName());
             OnmsTopology topo;
             try {
                 topo = buildTopology();
@@ -128,44 +142,35 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
                 return;
             }
             synchronized (m_topology) {
-                if (m_runned) {
-                    m_topology.getVertices().stream().filter(v -> !topo.hasVertex(v.getId())).forEach(v -> delete(v));
-                    m_topology.getEdges().stream().filter(g -> !topo.hasEdge(g.getId())).forEach(g -> delete(g));
+                m_topology.getVertices().stream().filter(v -> !topo.hasVertex(v.getId())).forEach(v -> delete(v));
+                m_topology.getEdges().stream().filter(g -> !topo.hasEdge(g.getId())).forEach(g -> delete(g));
 
-                    topo.getVertices().stream().filter(v -> !m_topology.hasVertex(v.getId())).forEach(v -> create(v));
-                    topo.getEdges().stream().filter(g -> !m_topology.hasEdge(g.getId())).forEach(g -> create(g));
-                    
-                    topo.getVertices().stream().filter(v -> m_topology.hasVertex(v.getId())).forEach(v -> {
-                        
-                    });
-                    topo.getEdges().stream().filter(g -> m_topology.hasEdge(g.getId())).forEach(g -> {
-                        OnmsTopologyShared og = m_topology.getEdge(g.getId()); 
-                        boolean updated = false;
-                        for (OnmsTopologyPort op: og.getSources()) {
-                            if (!g.hasPort(op.getId())) {
+                topo.getVertices().stream().filter(v -> !m_topology.hasVertex(v.getId())).forEach(v -> create(v));
+                topo.getEdges().stream().filter(g -> !m_topology.hasEdge(g.getId())).forEach(g -> create(g));
+                
+                topo.getEdges().stream().filter(g -> m_topology.hasEdge(g.getId())).forEach(g -> {
+                    OnmsTopologyShared og = m_topology.getEdge(g.getId()); 
+                    boolean updated = false;
+                    for (OnmsTopologyPort op: og.getSources()) {
+                        if (!g.hasPort(op.getId())) {
+                            update(g);
+                            updated=true;
+                            break;
+                        }
+                    }
+                    if (!updated) {
+                        for (OnmsTopologyPort p: g.getSources()) {
+                            if (!og.hasPort(p.getId())) {
                                 update(g);
-                                updated=true;
                                 break;
                             }
                         }
-                        if (!updated) {
-                            for (OnmsTopologyPort p: g.getSources()) {
-                                if (!og.hasPort(p.getId())) {
-                                    update(g);
-                                    break;
-                                }
-                            }
-                        }
-                    });
-                } else {
-                    topo.getVertices().stream().forEach(v -> create(v));
-                    topo.getEdges().stream().forEach(g -> create(g));
-                }
+                    }
+                });
                 m_topology = topo;
             }
-            m_runned=true;
         }
-        LOG.debug("run: end");
+        LOG.debug("run: end {}", getName());
     }
 
     public OnmsTopologyDao getTopologyDao() {
@@ -189,7 +194,10 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
         }
     }
     
-    
+    @Override
+    public boolean isReady() {
+        return true;
+    }
             
 }
 

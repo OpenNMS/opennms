@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
@@ -176,10 +177,10 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
     }
 
     @Override
-    public List<Pair<LldpLink, LldpLink>> matchLldpLinks() {
+    public List<ImmutablePair<LldpLink, LldpLink>> matchLldpLinks() {
         
 //        List<Pair<LldpLink, LldpLink>> matchLldpLinks(Map<Integer, LldpElement> nodelldpelementidMap, List<LldpLink> allLinks) {
-            List<Pair<LldpLink, LldpLink>> results = new ArrayList<>();
+            List<ImmutablePair<LldpLink, LldpLink>> results = new ArrayList<>();
 
             Map<Integer, LldpElement> nodelldpelementidMap = m_lldpElementDao.findAll().
                     stream().
@@ -238,7 +239,7 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
 
                 parsed.add(sourceLink.getId());
                 parsed.add(targetLink.getId());
-                results.add(Pair.of(sourceLink, targetLink));
+                results.add((ImmutablePair<LldpLink, LldpLink>) Pair.of(sourceLink, targetLink));
             }
             return results;
        // }
