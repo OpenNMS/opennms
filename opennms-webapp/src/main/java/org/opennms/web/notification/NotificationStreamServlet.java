@@ -87,7 +87,6 @@ public class NotificationStreamServlet extends WebSocketServlet {
         }
 
         private void sendNotification(final BrowserNotificationMessage message) {
-            // TODO fooker: Send some JSON
             final JSONObject json = new JSONObject();
             json.append("id", message.getId());
             json.append("head", message.getHead());
