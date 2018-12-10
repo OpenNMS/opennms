@@ -585,7 +585,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         Objects.requireNonNull(applicationId);
         final OnmsApplication application = applicationDao.get(applicationId);
         if (application == null) {
-            throw new NoSuchElementException("OnmsAppliction with id " + applicationId);
+            throw new NoSuchElementException("OnmsApplication with id " + applicationId);
         }
         return application;
     }

@@ -39,6 +39,8 @@ import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.dao.util.ReductionKeyHelper;
 import org.opennms.netmgt.model.OnmsApplication;
 
+import com.google.common.base.MoreObjects;
+
 public class ApplicationImpl implements Application {
 
     private final BusinessServiceManager m_manager;
@@ -96,10 +98,9 @@ public class ApplicationImpl implements Application {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("id", this.getId())
-                .add("application", this.getApplicationName())
-                .add("reductionKeys", this.getReductionKeys())
+        return MoreObjects.toStringHelper(this)
+                .add("m_manager", m_manager)
+                .add("m_entity", m_entity)
                 .toString();
     }
 }

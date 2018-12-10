@@ -46,10 +46,8 @@ public class ReductionKeyHelper {
         Objects.requireNonNull(application);
         Set<String> reductionKeys = new HashSet<>();
 
-        for(OnmsMonitoredService monitoredService : application.getMonitoredServices()) {
-            reductionKeys.add(getNodeLostServiceReductionKey(monitoredService));
-            reductionKeys.add(getInterfaceDownReductionKey(monitoredService));
-            reductionKeys.add(getNodeDownReductionKey(monitoredService));
+        for (OnmsMonitoredService monitoredService : application.getMonitoredServices()) {
+            reductionKeys.addAll(getReductionKeys(monitoredService));
         }
 
         return reductionKeys;

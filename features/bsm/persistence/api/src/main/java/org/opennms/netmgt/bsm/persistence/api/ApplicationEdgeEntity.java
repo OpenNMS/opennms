@@ -42,10 +42,12 @@ import javax.persistence.Transient;
 import org.opennms.netmgt.dao.util.ReductionKeyHelper;
 import org.opennms.netmgt.model.OnmsApplication;
 
+import com.google.common.base.MoreObjects;
+
 @Entity
-@Table(name = "bsm_service_application")
+@Table(name = "bsm_service_applications")
 @PrimaryKeyJoinColumn(name="id")
-@DiscriminatorValue("application")
+@DiscriminatorValue("applications")
 public class ApplicationEdgeEntity extends BusinessServiceEdgeEntity {
 
     private OnmsApplication m_application;
@@ -68,9 +70,8 @@ public class ApplicationEdgeEntity extends BusinessServiceEdgeEntity {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("super", super.toString())
-                .add("application", m_application)
+        return MoreObjects.toStringHelper(this)
+                .add("m_application", m_application)
                 .toString();
     }
 

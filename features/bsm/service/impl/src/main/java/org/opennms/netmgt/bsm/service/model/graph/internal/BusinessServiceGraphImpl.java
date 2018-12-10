@@ -114,19 +114,7 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
                         vertexForEdge[0] = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, edge.getIpService());
                         addVertex(vertexForEdge[0]);
                         m_verticesByIpServiceId.put(vertexForEdge[0].getIpService().getId(), vertexForEdge[0]);
-
-                        // SPECIAL CASE: Map the reductions keys to the intermediary vertex using the Identity map
-                        for (String reductionKey : edge.getReductionKeys()) {
-                            GraphVertex reductionKeyVertex = m_verticesByReductionKey.get(reductionKey);
-                            if (reductionKeyVertex == null) { // not already added
-                                reductionKeyVertex = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, reductionKey);
-                                addVertex(reductionKeyVertex);
-                                m_verticesByReductionKey.put(reductionKey, reductionKeyVertex);
-                            }
-                            // Always add an edge
-                            GraphEdgeImpl intermediaryEdge = new GraphEdgeImpl(MAP_IDENTITY);
-                            addEdge(intermediaryEdge, vertexForEdge[0], reductionKeyVertex);
-                        }
+                        addReductionKeyVerticesToVertex(vertexForEdge[0], edge.getReductionKeys());
                         return null;
                     }
 
@@ -141,20 +129,8 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
                             final GraphEdgeImpl ipVertexEdgeEdge = new GraphEdgeImpl(MAP_IDENTITY);
                             addVertex(ipServiceVertex);
                             m_verticesByIpServiceId.put(ipServiceVertex.getIpService().getId(), ipServiceVertex);
-
                             addEdge(ipVertexEdgeEdge, vertexForEdge[0], ipServiceVertex);
-
-                            for (String reductionKey : ipService.getReductionKeys()) {
-                                GraphVertex reductionKeyVertex = m_verticesByReductionKey.get(reductionKey);
-                                if (reductionKeyVertex == null) { // not already added
-                                    reductionKeyVertex = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, reductionKey);
-                                    addVertex(reductionKeyVertex);
-                                    m_verticesByReductionKey.put(reductionKey, reductionKeyVertex);
-                                }
-                                // Always add an edge
-                                GraphEdgeImpl intermediaryEdge = new GraphEdgeImpl(MAP_IDENTITY);
-                                addEdge(intermediaryEdge, ipServiceVertex, reductionKeyVertex);
-                            }
+                            addReductionKeyVerticesToVertex(ipServiceVertex, ipService.getReductionKeys());
                         }
                         return null;
                     }
@@ -176,6 +152,19 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
             m_edgesByEdgeId.put(edge.getId(), graphEdge);
         }
         return businessServiceVertex;
+    }
+
+    private void addReductionKeyVerticesToVertex(GraphVertex vertex, Set<String> reductionKeys) {
+        for (String reductionKey : reductionKeys) {
+            GraphVertex reductionKeyVertex = m_verticesByReductionKey.get(reductionKey);
+            if (reductionKeyVertex == null) {
+                reductionKeyVertex = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, reductionKey);
+                addVertex(reductionKeyVertex);
+                m_verticesByReductionKey.put(reductionKey, reductionKeyVertex);
+            }
+            GraphEdgeImpl intermediaryEdge = new GraphEdgeImpl(MAP_IDENTITY);
+            addEdge(intermediaryEdge, vertex, reductionKeyVertex);
+        }
     }
 
     private GraphVertex getExistingVertex(Edge edge) {

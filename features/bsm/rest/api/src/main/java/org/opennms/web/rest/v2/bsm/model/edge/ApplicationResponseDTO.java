@@ -41,6 +41,7 @@ import org.opennms.web.rest.api.support.JAXBResourceLocationAdapter;
 import org.opennms.web.rest.api.support.JsonResourceLocationDeserializationProvider;
 import org.opennms.web.rest.api.support.JsonResourceLocationSerializationProvider;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 @XmlRootElement(name = "application")
@@ -108,9 +109,10 @@ public class ApplicationResponseDTO {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("id", m_id)
-                .add("applicationName", m_applicationName)
+        return MoreObjects.toStringHelper(this)
+                .add("m_id", m_id)
+                .add("m_applicationName", m_applicationName)
+                .add("location", location)
                 .toString();
     }
 }

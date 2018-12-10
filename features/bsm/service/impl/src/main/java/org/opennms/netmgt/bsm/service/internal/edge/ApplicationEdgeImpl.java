@@ -37,6 +37,8 @@ import org.opennms.netmgt.bsm.service.model.Application;
 import org.opennms.netmgt.bsm.service.model.edge.ApplicationEdge;
 import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
 
+import com.google.common.base.MoreObjects;
+
 public class ApplicationEdgeImpl extends AbstractEdge<ApplicationEdgeEntity> implements ApplicationEdge {
 
     public ApplicationEdgeImpl(BusinessServiceManager manager, ApplicationEdgeEntity entity) {
@@ -60,9 +62,7 @@ public class ApplicationEdgeImpl extends AbstractEdge<ApplicationEdgeEntity> imp
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("parent", super.toString())
-                .add("application", getApplication())
+        return MoreObjects.toStringHelper(this)
                 .toString();
     }
 
