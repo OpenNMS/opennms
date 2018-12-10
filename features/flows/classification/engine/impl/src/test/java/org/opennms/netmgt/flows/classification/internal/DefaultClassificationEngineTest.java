@@ -52,16 +52,14 @@ public class DefaultClassificationEngineTest {
     public void verifyRuleEngineBasic() {
         DefaultClassificationEngine engine = new DefaultClassificationEngine(() ->
             Lists.newArrayList(
-                    new RuleBuilder().withName("rule1").withSrcPort(80).build(),
-                    new RuleBuilder().withName("rule2").withDstPort(443).build(),
-                    new RuleBuilder().withName("rule3").withSrcPort(8888).withDstPort(9999).build(),
-                    new RuleBuilder().withName("rule4").withSrcPort(8888).withDstPort(80).build(),
-                    new RuleBuilder().withName("rule5").build()
+                    new RuleBuilder().withName("rule1").withPort(80).build(),
+                    new RuleBuilder().withName("rule2").withPort(443).build(),
+                    new RuleBuilder().withName("rule3").withPort(8888).build(),
+                    new RuleBuilder().withName("rule4").build()
             ), FilterService.NOOP);
 
         assertEquals("rule2", engine.classify(new ClassificationRequestBuilder().withSrcPort(9999).withDstPort(443).build()));
         assertEquals("rule3", engine.classify(new ClassificationRequestBuilder().withSrcPort(8888).withDstPort(9999).build()));
-        assertEquals("rule4", engine.classify(new ClassificationRequestBuilder().withSrcPort(8888).withDstPort(80).build()));
     }
 
     @Test
@@ -74,7 +72,7 @@ public class DefaultClassificationEngineTest {
                 new Rule("DUMMY", "192.168.1.*", "8000-9000,80,8080"),
                 new Rule("RANGE-TEST", "7000-8000"),
                 new Rule("OpenNMS", "8980"),
-                new RuleBuilder().withName("OpenNMS Monitor").withDstPort("1077").withSrcPort("5347").withSrcAddress("10.0.0.5").build()
+                new RuleBuilder().withName("OpenNMS Monitor").withPort("5347").withAddress("10.0.0.5").build()
             ), FilterService.NOOP
         );
 
@@ -100,7 +98,7 @@ public class DefaultClassificationEngineTest {
                         .withDstPort(1077)
                         .withDstAddress("192.168.0.2")
                         .withProtocol(ProtocolType.TCP).build()));
-        assertEquals("HTTP", engine.classify(
+        assertEquals("OpenNMS Monitor", engine.classify(
                 new ClassificationRequestBuilder()
                         .withLocation("Default")
                         .withSrcAddress("10.0.0.5")
@@ -140,9 +138,9 @@ public class DefaultClassificationEngineTest {
     @Test
     public void verifyAddressRuleWins() {
         final ClassificationEngine engine = new DefaultClassificationEngine(() -> Lists.newArrayList(
-            new RuleBuilder().withName("HTTP").withDstPort(80).build(),
-            new RuleBuilder().withName("XXX2").withSrcAddress("192.168.2.1").withSrcPort(4789).build(),
-            new RuleBuilder().withName("XXX").withDstAddress("192.168.2.1").build()
+            new RuleBuilder().withName("HTTP").withPort(80).build(),
+            new RuleBuilder().withName("XXX2").withAddress("192.168.2.1").withPort(4789).build(),
+            new RuleBuilder().withName("XXX").withAddress("192.168.2.1").build()
         ), FilterService.NOOP);
 
         final ClassificationRequest classificationRequest = new ClassificationRequest("Default", 0, null, 80, "192.168.2.1", ProtocolType.TCP);

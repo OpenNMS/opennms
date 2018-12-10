@@ -79,7 +79,7 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
         given().get().then().assertThat().statusCode(204); // 204 because "system-defined" rules are disabled
 
         // POST (create) a rule
-        final RuleDTO httpRule = builder().withName("http").withDstPort("80,8080").withProtocol("tcp,udp").build();
+        final RuleDTO httpRule = builder().withName("http").withPort("80,8080").withProtocol("tcp,udp").build();
         String header = given().contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body(httpRule)
@@ -97,14 +97,14 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
                 .extract().response().as(RuleDTO.class);
         assertThat(receivedHttpRule.getId(), is(classificationId));
         assertThat(receivedHttpRule.getName(), is(httpRule.getName()));
-        assertThat(receivedHttpRule.getDstAddress(), is(httpRule.getDstAddress()));
+        assertThat(receivedHttpRule.getAddress(), is(httpRule.getAddress()));
         assertThat(receivedHttpRule.getProtocols(), is(httpRule.getProtocols()));
         assertThat(receivedHttpRule.getGroup().getName(), is(Groups.USER_DEFINED));
 
         // Post another rule
         given().contentType(ContentType.JSON)
             .accept(ContentType.JSON)
-            .body(builder().withName("https").withDstPort("443").withProtocol("tcp").build())
+            .body(builder().withName("https").withPort("443").withProtocol("tcp").build())
             .post().then().assertThat().statusCode(201); // created
 
         // Verify creation worked
@@ -119,9 +119,9 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
 
         // UPDATE 1st rule
         receivedHttpRule.setName("http-opennms");
-        receivedHttpRule.setDstPort("8980");
+        receivedHttpRule.setPort("8980");
         receivedHttpRule.setProtocol("tcp");
-        receivedHttpRule.setDstAddress("127.0.0.1");
+        receivedHttpRule.setAddress("127.0.0.1");
         given().contentType(ContentType.JSON)
                 .body(receivedHttpRule)
                 .log().all()
@@ -140,7 +140,7 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
                 .extract().response().as(RuleDTO.class);
         assertThat(updatedRule.getId(), is(classificationId));
         assertThat(updatedRule.getName(), is(receivedHttpRule.getName()));
-        assertThat(updatedRule.getDstAddress(), is(receivedHttpRule.getDstAddress()));
+        assertThat(updatedRule.getAddress(), is(receivedHttpRule.getAddress()));
         assertThat(updatedRule.getProtocols(), is(receivedHttpRule.getProtocols()));
         assertThat(updatedRule.getGroup().getName(), is(Groups.USER_DEFINED));
 

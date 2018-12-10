@@ -34,13 +34,11 @@ import java.util.Objects;
 
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.FilterService;
-import org.opennms.netmgt.flows.classification.internal.matcher.DstAddressMatcher;
-import org.opennms.netmgt.flows.classification.internal.matcher.DstPortMatcher;
+import org.opennms.netmgt.flows.classification.internal.matcher.AddressMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.FilterMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.Matcher;
+import org.opennms.netmgt.flows.classification.internal.matcher.PortMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.ProtocolMatcher;
-import org.opennms.netmgt.flows.classification.internal.matcher.SrcAddressMatcher;
-import org.opennms.netmgt.flows.classification.internal.matcher.SrcPortMatcher;
 import org.opennms.netmgt.flows.classification.persistence.api.RulePriorityComparator;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleDefinition;
 
@@ -56,17 +54,11 @@ public class CombinedClassifier implements Classifier {
         if (ruleDefinition.hasProtocolDefinition()) {
             matchers.add(new ProtocolMatcher(ruleDefinition.getProtocol()));
         }
-        if (ruleDefinition.hasSrcPortDefinition()) {
-            matchers.add(new SrcPortMatcher(ruleDefinition.getSrcPort()));
+        if (ruleDefinition.hasAddressDefinition()) {
+            matchers.add(new AddressMatcher(ruleDefinition.getAddress()));
         }
-        if (ruleDefinition.hasSrcAddressDefinition()) {
-            matchers.add(new SrcAddressMatcher(ruleDefinition.getSrcAddress()));
-        }
-        if (ruleDefinition.hasDstAddressDefinition()) {
-            matchers.add(new DstAddressMatcher(ruleDefinition.getDstAddress()));
-        }
-        if (ruleDefinition.hasDstPortDefinition()) {
-            matchers.add(new DstPortMatcher(ruleDefinition.getDstPort()));
+        if (ruleDefinition.hasPortDefinition()) {
+            matchers.add(new PortMatcher(ruleDefinition.getPort()));
         }
         if (ruleDefinition.hasExportFilterDefinition()) {
             matchers.add(new FilterMatcher(ruleDefinition.getExporterFilter(), filterService));

@@ -41,36 +41,21 @@ public class RuleBuilder {
         return this;
     }
 
-    public RuleBuilder withDstAddress(String dstAddress) {
-        rule.setDstAddress(dstAddress);
+    public RuleBuilder withAddress(String address) {
+        rule.setAddress(address);
         return this;
     }
 
-    public RuleBuilder withDstPort(String dstPort) {
-        rule.setDstPort(dstPort);
+    public RuleBuilder withPort(String port) {
+        rule.setPort(port);
         return this;
     }
 
-    public RuleBuilder withDstPort(int dstPort) {
-        rule.setDstPort("" + dstPort);
+    public RuleBuilder withPort(int dstPort) {
+        rule.setPort("" + dstPort);
         return this;
     }
 
-
-    public RuleBuilder withSrcAddress(String srcAddress) {
-        rule.setSrcAddress(srcAddress);
-        return this;
-    }
-
-    public RuleBuilder withSrcPort(String srcPort) {
-        rule.setSrcPort(srcPort);
-        return this;
-    }
-
-    public RuleBuilder withSrcPort(int srcPort) {
-        rule.setSrcPort("" + srcPort);
-        return this;
-    }
 
     public RuleBuilder withProtocol(String protocol) {
         rule.setProtocol(protocol);
@@ -95,10 +80,8 @@ public class RuleBuilder {
     public RuleBuilder fromRule(Rule rule) {
         Objects.requireNonNull(rule);
         withName(rule.getName());
-        withSrcAddress(rule.getSrcAddress());
-        withSrcPort(rule.getSrcPort());
-        withDstAddress(rule.getDstAddress());
-        withDstPort(rule.getDstPort());
+        withAddress(rule.getAddress());
+        withPort(rule.getPort());
         withProtocol(rule.getProtocol());
         withExporterFilter(rule.getExporterFilter());
         if (rule.getGroup() != null) {

@@ -108,13 +108,12 @@ public class DefaultClassificationServiceIT {
     @Test
     public void verifyCsvImport() {
         // Rules
-        final Rule http2Rule = new RuleBuilder().withName("http2").withProtocol("TCP,UDP").withDstAddress("127.0.0.1").build();
-        final Rule googleRule = new RuleBuilder().withName("google").withDstAddress("8.8.8.8").build();
+        final Rule http2Rule = new RuleBuilder().withName("http2").withProtocol("TCP,UDP").withAddress("127.0.0.1").build();
+        final Rule googleRule = new RuleBuilder().withName("google").withAddress("8.8.8.8").build();
         final Rule opennmsMonitorRule = new RuleBuilder()
                 .withName("opennms-monitor")
                 .withProtocol("TCP")
-                .withSrcAddress("10.0.0.1").withSrcPort(1000)
-                .withDstAddress("10.0.0.2").withDstPort(8980)
+                .withAddress("10.0.0.2").withPort(8980)
                 .build();
 
         // Dummy input
@@ -133,7 +132,7 @@ public class DefaultClassificationServiceIT {
         assertThat(ruleDao.findByDefinition(new RuleBuilder()
                 .withName("http") // name differs
                 .withProtocol("tcp,udp")
-                .withDstAddress("127.0.0.1").build()), hasSize(1));
+                .withAddress("127.0.0.1").build()), hasSize(1));
         assertThat(ruleDao.findByDefinition(googleRule), hasSize(1));
         assertThat(ruleDao.findByDefinition(opennmsMonitorRule), hasSize(1));
     }
@@ -143,8 +142,8 @@ public class DefaultClassificationServiceIT {
         // Dummy input
         final String csv = new CsvBuilder()
                 .withHeader(false)
-                .withRule(new RuleBuilder().withName("http2").withProtocol("TCP,UDP").withDstAddress("127.0.0.1"))
-                .withRule(new RuleBuilder().withName("google").withDstAddress("8.8.8.8"))
+                .withRule(new RuleBuilder().withName("http2").withProtocol("TCP,UDP").withAddress("127.0.0.1"))
+                .withRule(new RuleBuilder().withName("google").withAddress("8.8.8.8"))
                 .build();
 
         // Import
@@ -156,10 +155,10 @@ public class DefaultClassificationServiceIT {
         assertThat(ruleDao.findByDefinition(new RuleBuilder()
                 .withName("http")
                 .withProtocol("tcp,udp")
-                .withDstAddress("127.0.0.1").build()), hasSize(1));
+                .withAddress("127.0.0.1").build()), hasSize(1));
         assertThat(ruleDao.findByDefinition(new RuleBuilder()
                 .withName("google")
-                .withDstAddress("8.8.8.8").build()), hasSize(1));
+                .withAddress("8.8.8.8").build()), hasSize(1));
     }
 
     @Test
@@ -178,7 +177,7 @@ public class DefaultClassificationServiceIT {
 
         // define csv and import
         final String csv = new CsvBuilder()
-                .withRule(new RuleBuilder().withName("http2").withDstAddress("127.0.0.1").withProtocol("TCP,UDP"))
+                .withRule(new RuleBuilder().withName("http2").withAddress("127.0.0.1").withProtocol("TCP,UDP"))
                 .build();
         classificationService.importRules(new ByteArrayInputStream(csv.getBytes()), true, true);
 
@@ -195,7 +194,7 @@ public class DefaultClassificationServiceIT {
                 .withGroup(userGroup)
                 .withName("rule1")
                 .withProtocol("tcp,udp")
-                .withDstPort(111)
+                .withPort(111)
                 .build();
         ruleDao.save(rule1);
 
@@ -205,8 +204,8 @@ public class DefaultClassificationServiceIT {
         // Define another rule, to import
         Rule rule2 = new RuleBuilder()
                 .withName("rule2")
-                .withDstAddress("127.0.0.1")
-                .withDstPort(222)
+                .withAddress("127.0.0.1")
+                .withPort(222)
                 .withProtocol("tcp,udp")
                 .build();
 

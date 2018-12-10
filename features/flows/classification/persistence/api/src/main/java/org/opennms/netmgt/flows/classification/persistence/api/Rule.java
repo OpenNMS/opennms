@@ -70,8 +70,8 @@ public class Rule implements RuleDefinition {
      * May contain wildcards, e.g. 192.168.1.*. 192.168.*.*.
      * May be null.
      */
-    @Column(name="dst_address")
-    private String dstAddress;
+    @Column(name="address")
+    private String address;
 
     /**
      * The port to map.
@@ -79,16 +79,8 @@ public class Rule implements RuleDefinition {
      * 80,8980,8000-9000
      * Must always be provided.
      */
-    @Column(name="dst_port")
-    private String dstPort;
-
-    // see dstPort
-    @Column(name="src_port")
-    private String srcPort;
-
-    // see dstAddress
-    @Column(name="src_address")
-    private String srcAddress;
+    @Column(name="port")
+    private String port;
 
     @Column(name="exporter_filter")
     private String exporterFilter;
@@ -116,10 +108,10 @@ public class Rule implements RuleDefinition {
         
     }
 
-    public Rule(String name, String dstAddress, String dstPort) {
+    public Rule(String name, String address, String port) {
         this.name = name;
-        this.dstPort = dstPort;
-        this.dstAddress = dstAddress;
+        this.port = port;
+        this.address = address;
     }
 
     public Rule(String name, String port) {
@@ -144,39 +136,21 @@ public class Rule implements RuleDefinition {
     }
 
     @Override
-    public String getDstAddress() {
-        return dstAddress;
+    public String getAddress() {
+        return address;
     }
 
-    public void setDstAddress(String dstAddress) {
-        this.dstAddress = dstAddress;
-    }
-
-    @Override
-    public String getDstPort() {
-        return dstPort;
-    }
-
-    public void setDstPort(String dstPort) {
-        this.dstPort = dstPort;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     @Override
-    public String getSrcPort() {
-        return srcPort;
+    public String getPort() {
+        return port;
     }
 
-    public void setSrcPort(String srcPort) {
-        this.srcPort = srcPort;
-    }
-
-    @Override
-    public String getSrcAddress() {
-        return srcAddress;
-    }
-
-    public void setSrcAddress(String srcAddress) {
-        this.srcAddress = srcAddress;
+    public void setPort(String port) {
+        this.port = port;
     }
 
     @Override
@@ -222,10 +196,8 @@ public class Rule implements RuleDefinition {
     public String toString() {
         return MoreObjects.toStringHelper(getClass())
             .add("name", name)
-            .add("dstAddress", dstAddress)
-            .add("dstPort", dstPort)
-            .add("srcAddress", srcAddress)
-            .add("srcPort", srcPort)
+            .add("address", address)
+            .add("port", port)
             .add("exporterFilter", exporterFilter)
             .add("protocol", protocol)
             .add("position", position)

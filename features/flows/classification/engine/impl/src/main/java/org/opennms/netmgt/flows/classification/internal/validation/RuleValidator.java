@@ -68,20 +68,12 @@ public class RuleValidator {
             validateProtocol(rule.getProtocol());
         }
         // Ensure dst port is defined correctly
-        if (rule.hasDstPortDefinition()) {
-            validatePort(ErrorContext.DstPort, rule.getDstPort());
+        if (rule.hasPortDefinition()) {
+            validatePort(ErrorContext.Port, rule.getPort());
         }
         // Ensure dst ip address is defined correctly
-        if (rule.hasDstAddressDefinition()) {
-            validateIpAddress(ErrorContext.DstAddress, rule.getDstAddress());
-        }
-        // Ensure src port is defined correctly
-        if (rule.hasSrcPortDefinition()) {
-            validatePort(ErrorContext.SrcPort, rule.getSrcPort());
-        }
-        // Ensure src ip address is defined correctly
-        if (rule.hasSrcAddressDefinition()) {
-            validateIpAddress(ErrorContext.SrcAddress, rule.getSrcAddress());
+        if (rule.hasAddressDefinition()) {
+            validateIpAddress(ErrorContext.Address, rule.getAddress());
         }
         // Ensure filter is defined correctly
         if (rule.hasExportFilterDefinition()) {

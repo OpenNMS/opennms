@@ -95,8 +95,8 @@ public class ClassificationRuleDaoIT {
         // Create dummy
         final Rule rule = new RuleBuilder()
                 .withName("HTTP")
-                .withDstAddress("127.0.0.1")
-                .withDstPort("80,8080")
+                .withAddress("127.0.0.1")
+                .withPort("80,8080")
                 .withProtocol("tcp")
                 .withGroup(customGroup)
                 .build();
@@ -121,8 +121,8 @@ public class ClassificationRuleDaoIT {
     @Test
     public void verifyFetchingOnlyEnabledRules() {
         // Create a bunch of rules
-        ruleDao.save(new RuleBuilder().withName("Rule 1").withDstPort(1000).withGroup(staticGroup).build());
-        ruleDao.save(new RuleBuilder().withName("Rule 2").withDstPort(1000).withGroup(customGroup).build());
+        ruleDao.save(new RuleBuilder().withName("Rule 1").withPort(1000).withGroup(staticGroup).build());
+        ruleDao.save(new RuleBuilder().withName("Rule 2").withPort(1000).withGroup(customGroup).build());
 
         // Verify creation
         assertThat(ruleDao.findAllEnabledRules(), hasSize(2));
@@ -143,10 +143,8 @@ public class ClassificationRuleDaoIT {
     public void verifyFindByDefinition() {
         final Rule fullyDefinedRule = new RuleBuilder()
                 .withName("HTTP")
-                .withSrcAddress("10.0.0.1")
-                .withSrcPort("55555")
-                .withDstAddress("127.0.0.1")
-                .withDstPort("80,8080")
+                .withAddress("127.0.0.1")
+                .withPort("80,8080")
                 .withProtocol("tcp")
                 .withExporterFilter("some-filter-value")
                 .withGroup(customGroup)
@@ -158,20 +156,12 @@ public class ClassificationRuleDaoIT {
         tmpRule.setName("dummy"); // name does not matter
         assertThat(ruleDao.findByDefinition(tmpRule), hasSize(0));
 
-        // define src address
-        tmpRule.setSrcAddress(fullyDefinedRule.getSrcAddress());
+        // Define address
+        tmpRule.setAddress(fullyDefinedRule.getAddress());
         assertThat(ruleDao.findByDefinition(tmpRule), hasSize(0));
 
-        // define src port
-        tmpRule.setSrcPort(fullyDefinedRule.getSrcPort());
-        assertThat(ruleDao.findByDefinition(tmpRule), hasSize(0));
-
-        // Define dst address
-        tmpRule.setDstAddress(fullyDefinedRule.getDstAddress());
-        assertThat(ruleDao.findByDefinition(tmpRule), hasSize(0));
-
-        // Define dst port
-        tmpRule.setDstPort(fullyDefinedRule.getDstPort());
+        // Define port
+        tmpRule.setPort(fullyDefinedRule.getPort());
         assertThat(ruleDao.findByDefinition(tmpRule), hasSize(0));
 
         // Define protocol

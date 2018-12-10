@@ -117,6 +117,6 @@ public class GroupValidatorIT {
     }
 
     private static Rule createDummyRule() {
-        return new RuleBuilder().withDstAddress("127.0.0.1").withName("dummy").build();
+        return new RuleBuilder().withAddress("127.0.0.1").withName("dummy").build();
     }
 }

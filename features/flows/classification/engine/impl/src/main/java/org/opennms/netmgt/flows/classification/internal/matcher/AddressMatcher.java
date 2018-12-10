@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,8 +28,33 @@
 
 package org.opennms.netmgt.flows.classification.internal.matcher;
 
-public class SrcPortMatcher extends PortMatcher {
-    public SrcPortMatcher(String ports) {
-        super(ports, (request) -> request.getSrcPort());
+import org.opennms.core.utils.IPLike;
+import org.opennms.netmgt.flows.classification.ClassificationRequest;
+import org.opennms.netmgt.flows.classification.internal.value.StringValue;
+
+public class AddressMatcher implements Matcher {
+
+    private final StringValue value;
+
+    public AddressMatcher(String input) {
+        this.value = new StringValue(input);
+    }
+
+    @Override
+    public boolean matches(ClassificationRequest request) {
+        if (value.isWildcard()) {
+            return true;
+        }
+
+        final String srcAddress = request.getSrcAddress();
+        final String dstAddress = request.getDstAddress();
+
+        if (value.hasWildcard()) {
+            return (srcAddress != null && IPLike.matches(srcAddress, value.getValue())) ||
+                   (dstAddress != null && IPLike.matches(dstAddress, value.getValue()));
+        } else {
+            return value.getValue().equals(srcAddress) ||
+                   value.getValue().equals(dstAddress);
+        }
     }
 }

@@ -35,7 +35,6 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -101,10 +100,10 @@ public class DefaultClassificationEngineIT {
             Group userDefinedGroup = groupDao.findByName(Groups.USER_DEFINED);
 
             final ArrayList<Rule> rules = Lists.newArrayList(
-                    new RuleBuilder().withName("rule1").withDstPort(80).withGroup(userDefinedGroup).build(),
-                    new RuleBuilder().withName("rule2").withDstPort(100).withExporterFilter("categoryName == 'Routers'").withGroup(userDefinedGroup).build(),
-                    new RuleBuilder().withName("rule3").withDstPort(200).withExporterFilter("categoryName == 'Develop' | ipAddr == '192.168.1.1'").withGroup(userDefinedGroup).build(),
-                    new RuleBuilder().withName("rule4").withDstPort(300).withExporterFilter("categoryName == 'Routers' & ipAddr == '192.168.1.1'").withGroup(userDefinedGroup).build()
+                    new RuleBuilder().withName("rule1").withPort(80).withGroup(userDefinedGroup).build(),
+                    new RuleBuilder().withName("rule2").withPort(100).withExporterFilter("categoryName == 'Routers'").withGroup(userDefinedGroup).build(),
+                    new RuleBuilder().withName("rule3").withPort(200).withExporterFilter("categoryName == 'Develop' | ipAddr == '192.168.1.1'").withGroup(userDefinedGroup).build(),
+                    new RuleBuilder().withName("rule4").withPort(300).withExporterFilter("categoryName == 'Routers' & ipAddr == '192.168.1.1'").withGroup(userDefinedGroup).build()
             );
             for (Rule eachRule : rules) {
                 ruleDao.save(eachRule);
@@ -136,22 +135,22 @@ public class DefaultClassificationEngineIT {
         assertThat(classificationEngine.classify(classificationRequest), is("rule1"));
 
         // update request to match rule 2
-        classificationRequest.setDstPort(100);
+        classificationRequest.setSrcPort(100);
         classificationRequest.setExporterAddress("192.168.1.1");
         assertThat(classificationEngine.classify(classificationRequest), is("rule2"));
 
         // update request to match rule 3
-        classificationRequest.setDstPort(200);
+        classificationRequest.setSrcPort(200);
         classificationRequest.setExporterAddress("192.168.1.1");
         assertThat(classificationEngine.classify(classificationRequest), is("rule3"));
 
         // update request to match rule 4
-        classificationRequest.setDstPort(300);
+        classificationRequest.setSrcPort(300);
         classificationRequest.setExporterAddress("192.168.1.1");
         assertThat(classificationEngine.classify(classificationRequest), is("rule4"));
 
         // Update no rule matches
-        classificationRequest.setDstPort(443);
+        classificationRequest.setSrcPort(443);
         assertThat(classificationEngine.classify(classificationRequest), is(nullValue()));
     }
 }

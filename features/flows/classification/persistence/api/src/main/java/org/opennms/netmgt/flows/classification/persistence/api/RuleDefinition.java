@@ -34,13 +34,9 @@ public interface RuleDefinition {
 
     String getName();
 
-    String getDstAddress();
+    String getAddress();
 
-    String getDstPort();
-
-    String getSrcPort();
-
-    String getSrcAddress();
+    String getPort();
 
     String getProtocol();
 
@@ -51,10 +47,8 @@ public interface RuleDefinition {
     // a protocol definition has a lesser priority (+1) than port (+2) or address definition (+3)
     default int calculatePriority() {
         int priority = 0;
-        if (hasSrcAddressDefinition()) priority += 9;
-        if (hasSrcPortDefinition()) priority += 3;
-        if (hasDstAddressDefinition()) priority += 9;
-        if (hasDstPortDefinition()) priority += 3;
+        if (hasAddressDefinition()) priority += 9;
+        if (hasPortDefinition()) priority += 3;
         if (hasProtocolDefinition()) priority += 1;
         if (hasExportFilterDefinition()) priority += 1;
         return priority;
@@ -64,20 +58,12 @@ public interface RuleDefinition {
         return isDefined(getProtocol());
     }
 
-    default boolean hasDstAddressDefinition() {
-        return isDefined(getDstAddress());
+    default boolean hasAddressDefinition() {
+        return isDefined(getAddress());
     }
 
-    default boolean hasDstPortDefinition() {
-        return isDefined(getDstPort());
-    }
-
-    default boolean hasSrcAddressDefinition() {
-        return isDefined(getSrcAddress());
-    }
-
-    default boolean hasSrcPortDefinition() {
-        return isDefined(getSrcPort());
+    default boolean hasPortDefinition() {
+        return isDefined(getPort());
     }
 
     default boolean hasExportFilterDefinition() {
@@ -86,10 +72,8 @@ public interface RuleDefinition {
 
     default boolean hasDefinition() {
         return hasProtocolDefinition()
-                || hasDstAddressDefinition()
-                || hasDstPortDefinition()
-                || hasSrcAddressDefinition()
-                || hasSrcPortDefinition()
+                || hasAddressDefinition()
+                || hasPortDefinition()
                 || hasExportFilterDefinition();
     }
 

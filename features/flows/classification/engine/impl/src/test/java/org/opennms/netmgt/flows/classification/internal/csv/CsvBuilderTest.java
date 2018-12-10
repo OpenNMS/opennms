@@ -39,31 +39,29 @@ public class CsvBuilderTest {
     @Test
     public void verifyBuilder() {
         final String expectedCsv = new CsvBuilder()
-                .withRule(new RuleBuilder().withName("http2").withProtocol("TCP,UDP").withDstAddress("127.0.0.1"))
-                .withRule(new RuleBuilder().withName("google").withDstAddress("8.8.8.8"))
-                .withRule(new RuleBuilder().withName("opennms").withDstPort(8980))
+                .withRule(new RuleBuilder().withName("http2").withProtocol("TCP,UDP").withAddress("127.0.0.1"))
+                .withRule(new RuleBuilder().withName("google").withAddress("8.8.8.8"))
+                .withRule(new RuleBuilder().withName("opennms").withPort(8980))
                 .withRule(new RuleBuilder()
                         .withName("opennms-monitor")
-                        .withSrcAddress("10.0.0.1").withSrcPort(10000)
-                        .withDstAddress("10.0.0.2").withDstPort(8980))
+                        .withAddress("10.0.0.2").withPort(8980))
                 .withRule(new RuleBuilder().withName("http").withProtocol("TCP"))
                 .withRule(new RuleBuilder()
                         .withName("xxx")
                         .withProtocol("tcp,udp")
-                        .withSrcAddress("10.0.0.1").withSrcPort(10000)
-                        .withDstAddress("10.0.0.2").withDstPort(8980)
+                        .withAddress("10.0.0.2").withPort(8980)
                         .withExporterFilter("some-filter-value")
                 )
                 .build();
 
         final StringBuilder builder = new StringBuilder();
         builder.append(CsvServiceImpl.HEADERS_STRING);
-        builder.append("http2;TCP,UDP;;;127.0.0.1;;\n");
-        builder.append("google;;;;8.8.8.8;;\n");
-        builder.append("opennms;;;;;8980;\n");
-        builder.append("opennms-monitor;;10.0.0.1;10000;10.0.0.2;8980;\n");
-        builder.append("http;TCP;;;;;\n");
-        builder.append("xxx;tcp,udp;10.0.0.1;10000;10.0.0.2;8980;some-filter-value");
+        builder.append("http2;TCP,UDP;127.0.0.1;;\n");
+        builder.append("google;;8.8.8.8;;\n");
+        builder.append("opennms;;;8980;\n");
+        builder.append("opennms-monitor;;10.0.0.2;8980;\n");
+        builder.append("http;TCP;;;\n");
+        builder.append("xxx;tcp,udp;10.0.0.2;8980;some-filter-value");
 
         final String actualCsv = builder.toString();
         assertEquals(expectedCsv, actualCsv);

@@ -53,12 +53,12 @@ public class ClassificationRequestDTOValidator {
         }
 
         // Verify Dst
-        validatePort(ErrorContext.DstPort, requestDTO.getDstPort());
-        validateAddress(ErrorContext.DstAddress, requestDTO.getDstAddress());
+        validatePort(ErrorContext.Port, requestDTO.getDstPort());
+        validateAddress(ErrorContext.Address, requestDTO.getDstAddress());
 
         // Verify Src
-        validatePort(ErrorContext.SrcPort, requestDTO.getSrcPort());
-        validateAddress(ErrorContext.SrcAddress, requestDTO.getSrcAddress());
+        validatePort(ErrorContext.Port, requestDTO.getSrcPort());
+        validateAddress(ErrorContext.Address, requestDTO.getSrcAddress());
 
         // Verify Exporter Address
         validateAddress(ErrorContext.ExporterAddress, requestDTO.getExporterAddress());

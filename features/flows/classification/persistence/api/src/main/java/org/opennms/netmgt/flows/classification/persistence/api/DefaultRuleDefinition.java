@@ -33,10 +33,8 @@ import java.util.Objects;
 public class DefaultRuleDefinition implements RuleDefinition {
 
     private String name;
-    private String dstAddress;
-    private String dstPort;
-    private String srcPort;
-    private String srcAddress;
+    private String address;
+    private String port;
     private String protocol;
     private String exporterFilter;
     private int groupPriority;
@@ -47,23 +45,13 @@ public class DefaultRuleDefinition implements RuleDefinition {
     }
 
     @Override
-    public String getDstAddress() {
-        return dstAddress;
+    public String getAddress() {
+        return address;
     }
 
     @Override
-    public String getDstPort() {
-        return dstPort;
-    }
-
-    @Override
-    public String getSrcPort() {
-        return srcPort;
-    }
-
-    @Override
-    public String getSrcAddress() {
-        return srcAddress;
+    public String getPort() {
+        return port;
     }
 
     @Override
@@ -85,20 +73,12 @@ public class DefaultRuleDefinition implements RuleDefinition {
         this.name = name;
     }
 
-    public void setDstAddress(String dstAddress) {
-        this.dstAddress = dstAddress;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    public void setDstPort(String dstPort) {
-        this.dstPort = dstPort;
-    }
-
-    public void setSrcPort(String srcPort) {
-        this.srcPort = srcPort;
-    }
-
-    public void setSrcAddress(String srcAddress) {
-        this.srcAddress = srcAddress;
+    public void setPort(String port) {
+        this.port = port;
     }
 
     public void setProtocol(String protocol) {
@@ -120,17 +100,15 @@ public class DefaultRuleDefinition implements RuleDefinition {
         DefaultRuleDefinition that = (DefaultRuleDefinition) o;
         return Objects.equals(groupPriority, that.groupPriority)
                 && Objects.equals(name, that.name)
-                && Objects.equals(dstAddress, that.dstAddress)
-                && Objects.equals(dstPort, that.dstPort)
-                && Objects.equals(srcPort, that.srcPort)
-                && Objects.equals(srcAddress, that.srcAddress)
+                && Objects.equals(address, that.address)
+                && Objects.equals(port, that.port)
                 && Objects.equals(protocol, that.protocol)
                 && Objects.equals(exporterFilter, that.exporterFilter);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, dstAddress, dstPort, srcPort, srcAddress, protocol, exporterFilter, groupPriority);
+        return Objects.hash(name, address, port, protocol, exporterFilter, groupPriority);
     }
 
 }

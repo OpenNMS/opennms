@@ -78,28 +78,15 @@ public class ClassificationRuleDaoImpl extends AbstractDaoHibernate<Rule, Intege
     private static CriteriaBuilder createCriteriaBuilderDefinition(Rule rule) {
         final CriteriaBuilder builder = new CriteriaBuilder(Rule.class);
 
-        // DST
-        if (rule.hasDstAddressDefinition()) {
-            builder.ilike("dstAddress", rule.getDstAddress());
+        if (rule.hasAddressDefinition()) {
+            builder.ilike("address", rule.getAddress());
         } else {
-            builder.isNull("dstAddress");
+            builder.isNull("address");
         }
-        if (rule.hasDstPortDefinition()) {
-            builder.ilike("dstPort", rule.getDstPort());
+        if (rule.hasPortDefinition()) {
+            builder.ilike("port", rule.getPort());
         } else {
-            builder.isNull("dstPort");
-        }
-
-        // SOURCE
-        if (rule.hasSrcAddressDefinition()) {
-            builder.ilike("srcAddress", rule.getSrcAddress());
-        } else {
-            builder.isNull("srcAddress");
-        }
-        if (rule.hasSrcPortDefinition()) {
-            builder.ilike("srcPort", rule.getSrcPort());
-        } else {
-            builder.isNull("srcPort");
+            builder.isNull("port");
         }
 
         // COMMON

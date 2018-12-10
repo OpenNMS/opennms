@@ -108,8 +108,8 @@ public class ClassificationGroupDaoIT {
 
         // INSERT
         final Group group = new GroupBuilder().withName("custom")
-                .withRule(new RuleBuilder().withName("http").withDstPort(80).build())
-                .withRule(new RuleBuilder().withName("http").withDstPort(8080).build())
+                .withRule(new RuleBuilder().withName("http").withPort(80).build())
+                .withRule(new RuleBuilder().withName("http").withPort(8080).build())
                 .build();
         groupDao.save(group);
         assertThat(groupDao.countAll(), is(1));
@@ -134,8 +134,8 @@ public class ClassificationGroupDaoIT {
     public void verifyKeepsOrder() {
         // INSERT
         Group group = new GroupBuilder().withName(Groups.SYSTEM_DEFINED)
-                .withRule(new RuleBuilder().withName("http").withDstPort(80).withPosition(2).build())
-                .withRule(new RuleBuilder().withName("http").withDstPort(8080).withPosition(1).build())
+                .withRule(new RuleBuilder().withName("http").withPort(80).withPosition(2).build())
+                .withRule(new RuleBuilder().withName("http").withPort(8080).withPosition(1).build())
                 .build();
         groupDao.save(group);
         group = groupDao.findByName(Groups.SYSTEM_DEFINED);
@@ -143,11 +143,11 @@ public class ClassificationGroupDaoIT {
         final Rule rule1 = group.getRules().get(0);
         assertThat(rule1.getPosition(), is(1));
         assertThat(rule1.getName(), is("http"));
-        assertThat(rule1.getDstPort(), is("8080"));
+        assertThat(rule1.getPort(), is("8080"));
 
         final Rule rule2 = group.getRules().get(1);
         assertThat(rule2.getPosition(), is(2));
         assertThat(rule2.getName(), is("http"));
-        assertThat(rule2.getDstPort(), is("80"));
+        assertThat(rule2.getPort(), is("80"));
     }
 }

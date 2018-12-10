@@ -78,10 +78,8 @@ public class CsvBuilder {
                                 String.format(rowFormat,
                                         rule.getName() == null ? "" : rule.getName(),
                                         rule.getProtocol() == null ? "" : rule.getProtocol(),
-                                        rule.getSrcAddress() == null ? "" : rule.getSrcAddress(),
-                                        rule.getSrcPort() == null ? "" : rule.getSrcPort(),
-                                        rule.getDstAddress() == null ? "" : rule.getDstAddress(),
-                                        rule.getDstPort() == null ? "" : rule.getDstPort(),
+                                        rule.getAddress() == null ? "" : rule.getAddress(),
+                                        rule.getPort() == null ? "" : rule.getPort(),
                                         rule.getExporterFilter() == null ? "" : rule.getExporterFilter()
                                 )
                         )

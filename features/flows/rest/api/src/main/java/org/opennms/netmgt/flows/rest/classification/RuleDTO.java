@@ -39,10 +39,8 @@ import com.google.common.collect.Lists;
 public class RuleDTO {
     private Integer id;
     private String name;
-    private String dstAddress;
-    private String dstPort;
-    private String srcAddress;
-    private String srcPort;
+    private String address;
+    private String port;
     private String exporterFilter;
 
     private GroupDTO group;
@@ -65,36 +63,20 @@ public class RuleDTO {
         this.name = name;
     }
 
-    public String getDstAddress() {
-        return dstAddress;
+    public String getAddress() {
+        return address;
     }
 
-    public void setDstAddress(String dstAddress) {
-        this.dstAddress = dstAddress;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    public String getDstPort() {
-        return dstPort;
+    public String getPort() {
+        return port;
     }
 
-    public void setDstPort(String dstPort) {
-        this.dstPort = dstPort;
-    }
-
-    public String getSrcAddress() {
-        return srcAddress;
-    }
-
-    public void setSrcAddress(String srcAddress) {
-        this.srcAddress = srcAddress;
-    }
-
-    public String getSrcPort() {
-        return srcPort;
-    }
-
-    public void setSrcPort(String srcPort) {
-        this.srcPort = srcPort;
+    public void setPort(String port) {
+        this.port = port;
     }
 
     public void setProtocol(String protocol) {
@@ -148,10 +130,8 @@ public class RuleDTO {
         final RuleDTO that = (RuleDTO) o;
         return Objects.equals(id, that.id)
                 && Objects.equals(name, that.name)
-                && Objects.equals(dstAddress, that.dstAddress)
-                && Objects.equals(dstPort, that.dstPort)
-                && Objects.equals(srcAddress, that.srcAddress)
-                && Objects.equals(srcPort, that.srcPort)
+                && Objects.equals(address, that.address)
+                && Objects.equals(port, that.port)
                 && Objects.equals(protocols, that.protocols)
                 && Objects.equals(exporterFilter, that.exporterFilter)
                 && Objects.equals(group, that.group)
@@ -160,6 +140,6 @@ public class RuleDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, dstAddress, dstPort, srcAddress, srcPort, protocols, exporterFilter, group, position);
+        return Objects.hash(id, name, address, port, protocols, exporterFilter, group, position);
     }
 }

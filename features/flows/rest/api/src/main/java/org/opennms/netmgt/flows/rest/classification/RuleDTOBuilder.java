@@ -41,23 +41,13 @@ public class RuleDTOBuilder {
         return this;
     }
 
-    public RuleDTOBuilder withDstPort(String dstPort) {
-        this.ruleDTO.setDstPort(dstPort);
+    public RuleDTOBuilder withPort(String port) {
+        this.ruleDTO.setPort(port);
         return this;
     }
 
-    public RuleDTOBuilder withDstAddress(String dstAddress) {
-        this.ruleDTO.setDstAddress(dstAddress);
-        return this;
-    }
-
-    public RuleDTOBuilder withSrcPort(String srcPort) {
-        this.ruleDTO.setSrcPort(srcPort);
-        return this;
-    }
-
-    public RuleDTOBuilder withSrcAddress(String srcAddress) {
-        this.ruleDTO.setSrcAddress(srcAddress);
+    public RuleDTOBuilder withAddress(String address) {
+        this.ruleDTO.setAddress(address);
         return this;
     }
 

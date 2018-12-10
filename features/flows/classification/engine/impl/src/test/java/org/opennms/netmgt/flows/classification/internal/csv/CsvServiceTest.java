@@ -58,7 +58,7 @@ public class CsvServiceTest {
 
         // Verify output
         assertThat(rows.length, is(2));
-        assertThat(rows[1], is("dummy;;;;;;"));
+        assertThat(rows[1], is("dummy;;;;"));
     }
 
     @Test
@@ -68,8 +68,7 @@ public class CsvServiceTest {
         final Rule rule = new RuleBuilder()
                 .withName("dummy")
                 .withProtocol("tcp,udp,icmp")
-                .withDstPort("80,1234").withDstAddress("8.8.8.8")
-                .withSrcPort("55555").withSrcAddress("10.0.0.1")
+                .withPort("80,1234").withAddress("8.8.8.8")
                 .withExporterFilter("categoryName = 'Databases'")
                 .build();
         final String response = csvService.createCSV(Lists.newArrayList(rule));
@@ -77,7 +76,7 @@ public class CsvServiceTest {
 
         // Verify output
         assertThat(rows.length, is(2));
-        assertThat(rows[1], is("dummy;tcp,udp,icmp;10.0.0.1;55555;8.8.8.8;80,1234;categoryName = 'Databases'"));
+        assertThat(rows[1], is("dummy;tcp,udp,icmp;8.8.8.8;80,1234;categoryName = 'Databases'"));
     }
 
     @Test
@@ -85,7 +84,7 @@ public class CsvServiceTest {
         final CsvService csvService = new CsvServiceImpl(createNiceMock(RuleValidator.class));
         final List<Rule> rules = csvService.parseCSV(
                 new ByteArrayInputStream(
-                        "dummy;tcp,udp,icmp;10.0.0.1;55555;8.8.8.8;80,1234;categoryName = 'Databases'".getBytes()),
+                        "dummy;tcp,udp,icmp;8.8.8.8;80,1234;categoryName = 'Databases'".getBytes()),
                 false
                 ).getRules();
         assertThat(rules, hasSize(1));
@@ -93,10 +92,8 @@ public class CsvServiceTest {
         assertThat(rule.getId(), is(nullValue()));
         assertThat(rule.getName(), is("dummy"));
         assertThat(rule.getProtocol(), is("tcp,udp,icmp"));
-        assertThat(rule.getDstPort(), is("80,1234"));
-        assertThat(rule.getDstAddress(), is("8.8.8.8"));
-        assertThat(rule.getSrcPort(), is("55555"));
-        assertThat(rule.getSrcAddress(), is("10.0.0.1"));
+        assertThat(rule.getPort(), is("80,1234"));
+        assertThat(rule.getAddress(), is("8.8.8.8"));
         assertThat(rule.getExporterFilter(), is("categoryName = 'Databases'"));
     }
 
@@ -104,14 +101,14 @@ public class CsvServiceTest {
     public void verifyParsingEmpty() {
         final CsvService csvService = new CsvServiceImpl(createNiceMock(RuleValidator.class));
 
-        final List<Rule> rules = csvService.parseCSV(new ByteArrayInputStream(";;;;;;".getBytes()), false).getRules();
+        final List<Rule> rules = csvService.parseCSV(new ByteArrayInputStream(";;;;".getBytes()), false).getRules();
         assertThat(rules, hasSize(1));
         final Rule rule = rules.get(0);
         assertThat(rule.getId(), is(nullValue()));
-        assertThat(rule.getDstPort(), is(nullValue()));
+        assertThat(rule.getPort(), is(nullValue()));
         assertThat(rule.getName(), is(nullValue()));
         assertThat(rule.getProtocol(), is(nullValue()));
-        assertThat(rule.getDstAddress(), is(nullValue()));
+        assertThat(rule.getAddress(), is(nullValue()));
     }
 
     @Test

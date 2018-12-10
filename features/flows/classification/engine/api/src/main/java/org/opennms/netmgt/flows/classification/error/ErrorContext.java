@@ -32,10 +32,8 @@ public interface ErrorContext {
     String Entity = "entity";
     String Name = "name";
     String Protocol = "protocol";
-    String DstPort = "dstPort";
-    String DstAddress = "dstAddress";
-    String SrcPort = "srcPort";
-    String SrcAddress = "srcAddress";
+    String Port = "port";
+    String Address = "address";
     String ExportFilter = "exporterFilter";
     String ExporterAddress = "exporterAddress";
 }

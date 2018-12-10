@@ -142,8 +142,8 @@ public class MarkerCacheIT {
                         .withHeader("Content-Type", "application/json")));
 
         final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(
-                new RuleBuilder().withName("http").withDstPort("80").withProtocol("tcp,udp").build(),
-                new RuleBuilder().withName("https").withDstPort("443").withProtocol("tcp,udp").build()
+                new RuleBuilder().withName("http").withPort("80").withProtocol("tcp,udp").build(),
+                new RuleBuilder().withName("https").withPort("443").withProtocol("tcp,udp").build()
         ), FilterService.NOOP);
 
         final DocumentEnricher documentEnricher = new DocumentEnricher(

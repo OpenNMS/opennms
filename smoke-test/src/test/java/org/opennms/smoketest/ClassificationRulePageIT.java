@@ -148,7 +148,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         // Create dummy group
         groupTab.addNewRule(new RuleDTOBuilder()
                 .withName("http")
-                .withDstPort("80,8080")
+                .withPort("80,8080")
                 .withProtocol("udp,tcp").build());
         assertThat(groupTab.isEmpty(), is(false));
 
@@ -169,8 +169,8 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
                 createFrom(rule)
                         .withName("OpenNMS")
                         .withProtocol("tcp")
-                        .withDstAddress("5.5.5.5")
-                        .withDstPort("8980")
+                        .withAddress("5.5.5.5")
+                        .withPort("8980")
                         .withSrcAddress("127.0.0.1")
                         .withSrcPort("55557")
                         .withExporterFilter("categoryName == 'Routers'")
@@ -207,7 +207,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         for (int i=0; i<NUMBER_OF_RULES; i++) {
             final RuleDTO rule = new RuleDTOBuilder()
                     .withName("http" + i)
-                    .withDstPort(Integer.toString(i))
+                    .withPort(Integer.toString(i))
                     .withProtocol("tcp,udp").build();
             groupTab.addNewRule(rule);
         }
@@ -337,12 +337,12 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         groupTab.addNewRule(new RuleDTOBuilder()
                 .withName("OpenNMS Monitoring")
                 .withSrcAddress("10.0.0.5")
-                .withDstPort("8980")
+                .withPort("8980")
                 .withProtocol("udp,tcp")
                 .build());
         groupTab.addNewRule(new RuleDTOBuilder()
                 .withName("OpenNMS")
-                .withDstPort("8980")
+                .withPort("8980")
                 .withProtocol("udp,tcp")
                 .build());
 
@@ -382,13 +382,13 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
             final GroupTab groupTab = new GroupTab(this.uiPage, Tabs.USER_DEFINED).click();
             groupTab.addNewRule(new RuleDTOBuilder()
                     .withName("test")
-                    .withDstPort("8980")
+                    .withPort("8980")
                     .withProtocol("udp,tcp")
                     .withExporterFilter("categoryName == 'Routers'")
                     .build());
             groupTab.addNewRule(new RuleDTOBuilder()
                     .withName("OpenNMS")
-                    .withDstPort("8980")
+                    .withPort("8980")
                     .withProtocol("udp,tcp")
                     .build());
 
@@ -693,8 +693,8 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         public RuleModal setInput(RuleDTO rule) {
             // Input form
             setInput("rule.name", rule.getName());
-            setInput("rule.dstAddress", rule.getDstAddress());
-            setInput("rule.dstPort", rule.getDstPort());
+            setInput("rule.dstAddress", rule.getAddress());
+            setInput("rule.dstPort", rule.getPort());
             setInput("rule.srcAddress", rule.getSrcAddress());
             setInput("rule.srcPort", rule.getSrcPort());
             setInput("rule.exporterFilter", rule.getExporterFilter());
@@ -956,8 +956,8 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
                 .withProtocol(rule.getProtocol())
                 .withSrcAddress(rule.getSrcAddress())
                 .withSrcPort(rule.getSrcPort())
-                .withDstAddress(rule.getDstAddress())
-                .withDstPort(rule.getDstPort())
+                .withAddress(rule.getDstAddress())
+                .withPort(rule.getDstPort())
                 .withExporterFilter(rule.getExporterFilter());
     }
 }

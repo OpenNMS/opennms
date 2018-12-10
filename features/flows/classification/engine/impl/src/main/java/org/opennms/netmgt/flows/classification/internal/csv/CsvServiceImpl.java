@@ -49,7 +49,7 @@ import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
 public class CsvServiceImpl implements CsvService {
 
-    public static final String[] HEADERS = {"name","protocol","srcAddress","srcPort", "dstAddress", "dstPort", "exporterFilter"};
+    public static final String[] HEADERS = {"name","protocol","address","port", "exporterFilter"};
 
     public static final String HEADERS_STRING = String.join(";", HEADERS) + "\n";
 
@@ -77,19 +77,15 @@ public class CsvServiceImpl implements CsvService {
                 // Read Values
                 final String name = record.get(0);
                 final String protocol = record.get(1);
-                final String srcAddress = record.get(2);
-                final String srcPort = record.get(3);
-                final String dstAddress = record.get(4);
-                final String dstPort = record.get(5);
-                final String exportFilter = record.get(6);
+                final String address = record.get(2);
+                final String port = record.get(3);
+                final String exportFilter = record.get(4);
 
                 // Set values
                 final Rule rule = new Rule();
                 rule.setName("".equals(name) ? null : name);
-                rule.setDstPort("".equals(dstPort) ? null : dstPort);
-                rule.setDstAddress("".equals(dstAddress) ? null : dstAddress);
-                rule.setSrcPort("".equals(srcPort) ? null : srcPort);
-                rule.setSrcAddress("".equals(srcAddress) ? null : srcAddress);
+                rule.setPort("".equals(port) ? null : port);
+                rule.setAddress("".equals(address) ? null : address);
                 rule.setProtocol("".equals(protocol) ? null : protocol);
                 rule.setExporterFilter("".equals(exportFilter) ? null : exportFilter);
 

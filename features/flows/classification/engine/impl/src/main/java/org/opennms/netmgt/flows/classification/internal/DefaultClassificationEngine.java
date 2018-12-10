@@ -44,7 +44,6 @@ import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.classifier.Classifier;
 import org.opennms.netmgt.flows.classification.internal.classifier.CombinedClassifier;
 import org.opennms.netmgt.flows.classification.internal.value.PortValue;
-import org.opennms.netmgt.flows.classification.persistence.api.DefaultRuleDefinition;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.persistence.api.RulePriorityComparator;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleDefinition;
@@ -94,22 +93,16 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         // In case src AND dst port are defined, the rule is only sorted by dst port.
         // In case neither src NOR dst port are defined, the rule is applied to ALL ports.
         for (Rule eachRule : rules) {
-            // src AND dst port are defined, only map rule to dst port
-            if (eachRule.hasSrcPortDefinition() && eachRule.hasDstPortDefinition()) {
-                for (Integer eachPort : new PortValue(eachRule.getDstPort()).getPorts()) {
+            // port is defined, map rule to port
+            if (eachRule.hasPortDefinition()) {
+                for (Integer eachPort : new PortValue(eachRule.getPort()).getPorts()) {
                     final List<Rule> portRules = rulePortList.get(eachPort);
                     if (!portRules.contains(eachRule)) {
                         portRules.add(eachRule);
                     }
                 }
-            } else if (eachRule.hasSrcPortDefinition() || eachRule.hasDstPortDefinition()) {
-                // either src or dst is defined
-                final PortValue portValue = new PortValue(eachRule.hasDstPortDefinition() ? eachRule.getDstPort() : eachRule.getSrcPort());
-                for (Integer eachPort : portValue.getPorts()) {
-                    rulePortList.get(eachPort).add(eachRule);
-                }
-            } else if (!eachRule.hasDstPortDefinition() && !eachRule.hasSrcPortDefinition()) {
-                // Special treatment for rules which don't define a src or dst port, which are added ONCE
+            } else {
+                // Special treatment for rules which don't define a port, which are added ONCE
                 // to all ports
                 anyPortRules.add(eachRule);
             }
@@ -132,31 +125,8 @@ public class DefaultClassificationEngine implements ClassificationEngine {
             final List<Rule> portRules = rulePortList.get(port);
 
             // Convert rule to classifier
-            final List<Classifier> classifiers = portRules.stream().map(rule -> {
-                final DefaultRuleDefinition portRule = new DefaultRuleDefinition();
-                portRule.setName(rule.getName());
-                portRule.setProtocol(rule.getProtocol());
-                portRule.setSrcAddress(rule.getSrcAddress());
-                portRule.setDstAddress(rule.getDstAddress());
-                portRule.setExporterFilter(rule.getExporterFilter());
-                portRule.setGroupPriority(rule.getGroupPriority());
-
-                // Check weather to apply rule for src or dst port (both may be very unlikely, but possible)
-                if (rule.hasDstPortDefinition() && rule.hasSrcPortDefinition()) {
-                    portRule.setSrcPort(rule.getSrcPort()); // keep src port as is, to apply filter
-                } else {
-                    // Only src or dst ports are defined (or none)
-                    // if none, the value of either src or dst port may be empty, as the filtering already occurred
-                    // through the index of the rule in the classifierPortList.
-                    if (rule.hasDstPortDefinition()) {
-                        portRule.setDstPort(Integer.toString(port));
-                    }
-                    if (rule.hasSrcPortDefinition()) {
-                        portRule.setSrcPort(Integer.toString(port));
-                    }
-                }
-                return new CombinedClassifier(portRule, filterService);
-            })
+            final List<Classifier> classifiers = portRules.stream()
+                    .map(rule -> new CombinedClassifier(rule, filterService))
             .collect(Collectors.toList());
             classifierPortList.set(port, classifiers);
         }

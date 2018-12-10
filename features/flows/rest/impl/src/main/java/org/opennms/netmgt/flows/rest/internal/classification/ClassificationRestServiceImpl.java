@@ -170,10 +170,8 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         final Rule rule = classificationService.getRule(id);
         final Rule newRule = convert(newValue);
         rule.setProtocol(newRule.getProtocol());
-        rule.setDstPort(newRule.getDstPort());
-        rule.setDstAddress(newRule.getDstAddress());
-        rule.setSrcPort(newRule.getSrcPort());
-        rule.setSrcAddress(newRule.getSrcAddress());
+        rule.setPort(newRule.getPort());
+        rule.setAddress(newRule.getAddress());
         rule.setName(newRule.getName());
         rule.setExporterFilter(newValue.getExporterFilter());
 
@@ -274,17 +272,11 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         if (!Strings.isNullOrEmpty(ruleDTO.getName())) {
             rule.setName(ruleDTO.getName());
         }
-        if (!Strings.isNullOrEmpty(ruleDTO.getDstAddress())) {
-            rule.setDstAddress(ruleDTO.getDstAddress());
+        if (!Strings.isNullOrEmpty(ruleDTO.getAddress())) {
+            rule.setAddress(ruleDTO.getAddress());
         }
-        if (!Strings.isNullOrEmpty(ruleDTO.getDstPort())) {
-            rule.setDstPort(ruleDTO.getDstPort());
-        }
-        if (!Strings.isNullOrEmpty(ruleDTO.getSrcAddress())) {
-            rule.setSrcAddress(ruleDTO.getSrcAddress());
-        }
-        if (!Strings.isNullOrEmpty(ruleDTO.getSrcPort())) {
-            rule.setSrcPort(ruleDTO.getSrcPort());
+        if (!Strings.isNullOrEmpty(ruleDTO.getPort())) {
+            rule.setPort(ruleDTO.getPort());
         }
         if (!Strings.isNullOrEmpty(ruleDTO.getExporterFilter())) {
             rule.setExporterFilter(ruleDTO.getExporterFilter());
@@ -298,11 +290,9 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         final RuleDTO ruleDTO = new RuleDTO();
         ruleDTO.setId(rule.getId());
         ruleDTO.setName(rule.getName());
-        ruleDTO.setDstAddress(rule.getDstAddress());
+        ruleDTO.setAddress(rule.getAddress());
         ruleDTO.setProtocol(rule.getProtocol());
-        ruleDTO.setDstPort(rule.getDstPort());
-        ruleDTO.setSrcAddress(rule.getSrcAddress());
-        ruleDTO.setSrcPort(rule.getSrcPort());
+        ruleDTO.setPort(rule.getPort());
         ruleDTO.setGroup(convert(rule.getGroup()));
         ruleDTO.setPosition(rule.getPosition());
         ruleDTO.setExporterFilter(rule.getExporterFilter());
