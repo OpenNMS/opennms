@@ -46,9 +46,9 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.opennms.distributed.core.api.RestClient;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
-import org.opennms.distributed.core.api.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

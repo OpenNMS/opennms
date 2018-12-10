@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.net.InetAddress;
 
 import org.opennms.netmgt.enlinkd.model.OspfLink;
@@ -38,8 +40,6 @@ import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.TableTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.opennms.core.utils.InetAddressUtils.str;
 
 public class OspfNbrTableTracker extends TableTracker {
 	private final static Logger LOG = LoggerFactory.getLogger(OspfNbrTableTracker.class);

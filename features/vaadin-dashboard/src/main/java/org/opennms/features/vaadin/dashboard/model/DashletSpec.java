@@ -28,10 +28,11 @@
 
 package org.opennms.features.vaadin.dashboard.model;
 
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Map;
 import java.util.TreeMap;
+
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * This class defines the required configuration for instantiating a {@link Dashlet}.

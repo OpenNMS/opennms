@@ -28,12 +28,13 @@
 
 package org.opennms.netmgt.provision.service.vmware;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
-import java.util.Objects;
 
 @XmlRootElement(name = "custom-attribute")
 @XmlAccessorType(XmlAccessType.NONE)

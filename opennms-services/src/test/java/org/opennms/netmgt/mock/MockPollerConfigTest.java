@@ -30,10 +30,10 @@ package org.opennms.netmgt.mock;
 
 import java.util.Enumeration;
 
-import junit.framework.TestCase;
-
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
+
+import junit.framework.TestCase;
 
 /**
  * @author brozow

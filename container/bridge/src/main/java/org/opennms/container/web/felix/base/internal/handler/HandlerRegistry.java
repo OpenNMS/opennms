@@ -16,13 +16,15 @@
  */
 package org.opennms.container.web.felix.base.internal.handler;
 
-import org.osgi.service.http.NamespaceException;
-import javax.servlet.ServletException;
-import javax.servlet.Servlet;
-import javax.servlet.Filter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Arrays;
+
+import javax.servlet.Filter;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+
+import org.osgi.service.http.NamespaceException;
 
 public final class HandlerRegistry
 {

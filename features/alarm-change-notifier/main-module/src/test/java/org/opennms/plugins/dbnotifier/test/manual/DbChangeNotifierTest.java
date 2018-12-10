@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-
 import org.opennms.plugins.dbnotifier.DatabaseChangeNotifier;
 import org.opennms.plugins.dbnotifier.DbNotificationClientQueueImpl;
 import org.opennms.plugins.dbnotifier.DbNotifierDataSourceFactory;

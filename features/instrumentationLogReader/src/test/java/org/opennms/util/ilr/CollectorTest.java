@@ -28,7 +28,9 @@
 
 package org.opennms.util.ilr;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -41,11 +43,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-
-
-
 import org.junit.Test;
-import org.opennms.util.ilr.Collector;
 import org.opennms.util.ilr.Collector.SortColumn;
 import org.opennms.util.ilr.Collector.SortOrder;
 

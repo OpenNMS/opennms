@@ -28,6 +28,12 @@
 
 package org.opennms.features.reporting.repository.remote;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -36,10 +42,6 @@ import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 /**
  * <p>DefaultRemoteRepositoryTest class.</p>

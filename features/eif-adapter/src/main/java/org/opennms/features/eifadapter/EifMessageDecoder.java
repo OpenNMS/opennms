@@ -32,9 +32,9 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 import org.apache.camel.component.netty4.ChannelHandlerFactory;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
-import org.opennms.netmgt.dao.api.NodeDao;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;

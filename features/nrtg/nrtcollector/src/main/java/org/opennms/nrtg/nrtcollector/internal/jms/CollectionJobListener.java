@@ -28,6 +28,14 @@
 
 package org.opennms.nrtg.nrtcollector.internal.jms;
 
+import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+
 import org.opennms.nrtg.api.model.CollectionJob;
 import org.opennms.nrtg.api.model.LightweightMeasurementSet;
 import org.opennms.nrtg.api.model.MeasurementSet;
@@ -37,13 +45,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.converter.MessageConversionException;
 import org.springframework.jms.support.converter.SimpleMessageConverter;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import java.util.Date;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * JMS Listener for {@link CollectionJob}-messages. Will call the

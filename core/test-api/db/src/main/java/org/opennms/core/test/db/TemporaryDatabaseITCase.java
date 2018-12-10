@@ -36,8 +36,6 @@ import java.util.Date;
 
 import javax.sql.DataSource;
 
-import junit.framework.AssertionFailedError;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -48,6 +46,8 @@ import org.junit.runner.Description;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import junit.framework.AssertionFailedError;
 
 /**
  * <p>For each unit test method, creates a temporary database before the unit

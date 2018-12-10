@@ -28,8 +28,9 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans;
 
-import com.vaadin.v7.data.Item;
 import org.opennms.features.vaadin.jmxconfiggenerator.Config;
+
+import com.vaadin.v7.data.Item;
 
 class IconUpdater {
     void updateIcon(Item item, boolean selected) {

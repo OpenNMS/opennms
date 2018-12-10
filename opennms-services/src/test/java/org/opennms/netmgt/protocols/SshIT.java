@@ -33,11 +33,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.monitors.support.Ssh;
+
+import junit.framework.TestCase;
 
 /**
  * 

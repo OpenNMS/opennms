@@ -28,7 +28,8 @@
 
 package org.opennms.netmgt.model;
 
-import org.codehaus.jackson.annotate.JsonBackReference;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -43,8 +44,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.LinkedHashSet;
-import java.util.Set;
+
+import org.codehaus.jackson.annotate.JsonBackReference;
 
 import com.google.common.base.MoreObjects;
 

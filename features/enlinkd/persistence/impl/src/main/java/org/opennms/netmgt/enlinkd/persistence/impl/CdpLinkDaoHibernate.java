@@ -31,9 +31,9 @@ package org.opennms.netmgt.enlinkd.persistence.impl;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.util.Assert;
 

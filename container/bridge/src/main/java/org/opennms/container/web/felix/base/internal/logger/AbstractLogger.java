@@ -18,8 +18,8 @@
  */
 package org.opennms.container.web.felix.base.internal.logger;
 
-import org.osgi.service.log.LogService;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.log.LogService;
 
 public abstract class AbstractLogger
     implements LogService

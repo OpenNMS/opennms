@@ -34,10 +34,11 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
-//import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.support.DetectFutureNettyImpl.ServiceDetectionFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+//import org.opennms.netmgt.provision.DetectFuture;
 
 /**
  * <p>DetectorHandlerNettyImpl class.</p>

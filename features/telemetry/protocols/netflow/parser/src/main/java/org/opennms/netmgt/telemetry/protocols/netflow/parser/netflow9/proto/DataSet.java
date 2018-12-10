@@ -36,8 +36,8 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Template;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Template;
 
 import com.google.common.base.MoreObjects;
 

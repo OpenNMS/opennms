@@ -35,9 +35,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.netmgt.alarmd.api.Preservable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.alarmd.api.Preservable;
 
 /**
  * Based on Matt's queue implementation of event forwarding in opennmsd (OVAPI daemon)

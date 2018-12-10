@@ -28,11 +28,11 @@
 
 package org.opennms.netmgt.telemetry.config.model;
 
-import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTestNoCastor;
-
 import java.util.Arrays;
 import java.util.Collection;
+
+import org.junit.runners.Parameterized;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
 public class TelemetrydConfigTest extends XmlTestNoCastor<TelemetrydConfig> {
     public TelemetrydConfigTest(TelemetrydConfig sampleObject, Object sampleXml) {

@@ -40,8 +40,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
-import org.opennms.netmgt.collection.api.StrategyDefinition;
 import org.opennms.netmgt.collection.api.Parameter;
+import org.opennms.netmgt.collection.api.StrategyDefinition;
 
 /**
  * Selects a PersistenceSelectorStrategy that decides which data is

@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.enlinkd.model;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Date;
@@ -50,8 +52,6 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.netmgt.model.FilterManager;
 import org.opennms.netmgt.model.OnmsNode;
-
-import static org.opennms.core.utils.InetAddressUtils.str;
 
 @Entity
 @Table(name="ospfElement")

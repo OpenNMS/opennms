@@ -28,14 +28,14 @@
 
 package org.opennms.osgi;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.opennms.osgi.locator.OnmsServiceManagerLocator;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The EventRegistry is a single point of entry to get an EventListener/EventConsumer registered in the underlying OSGi-Container.

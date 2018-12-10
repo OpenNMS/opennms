@@ -28,20 +28,20 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCOISIS_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCOISIS_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCOISIS_ISIS_SYS_ID;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCOISIS_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCOISIS_SNMP_RESOURCE;
 
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
-import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.IsIsElement.IsisAdminState;
+import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjNeighSysType;
 import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjState;
 import org.opennms.netmgt.model.OnmsNode;

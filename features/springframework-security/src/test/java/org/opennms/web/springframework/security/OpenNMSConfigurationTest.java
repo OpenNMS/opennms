@@ -34,8 +34,8 @@ import static org.junit.Assert.assertNull;
 import java.util.Collections;
 
 import javax.security.auth.login.AppConfigurationEntry;
-import javax.security.auth.login.Configuration;
 import javax.security.auth.login.AppConfigurationEntry.LoginModuleControlFlag;
+import javax.security.auth.login.Configuration;
 
 import org.junit.Test;
 import org.opennms.bootstrap.OpenNMSProxyLoginModule;

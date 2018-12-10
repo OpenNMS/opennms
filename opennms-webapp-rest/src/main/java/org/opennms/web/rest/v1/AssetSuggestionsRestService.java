@@ -49,7 +49,6 @@ import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.web.svclayer.support.PropertyUtils;
-
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.InitializingBean;

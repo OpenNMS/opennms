@@ -28,9 +28,9 @@
 
 package org.opennms.features.vaadin.dashboard.model;
 
-import com.vaadin.ui.Component;
-
 import java.util.Map;
+
+import com.vaadin.ui.Component;
 
 /**
  * This interface defines the required methods for implementing a factory providing {@link Dashlet} instances.

@@ -28,13 +28,13 @@
 
 package org.opennms.web.alarm.filter;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.opennms.web.alarm.AcknowledgeType;
 import org.opennms.web.alarm.AlarmQueryParms;
 import org.opennms.web.alarm.SortStyle;
 import org.opennms.web.filter.Filter;
-
-import java.util.Arrays;
-import java.util.List;
 
 
 /**

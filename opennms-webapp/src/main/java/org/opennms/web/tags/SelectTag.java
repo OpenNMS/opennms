@@ -28,16 +28,17 @@
 
 package org.opennms.web.tags;
 
-import org.apache.commons.lang.StringUtils;
-import org.opennms.web.tags.select.SelectTagHandler;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.SimpleTagSupport;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.SimpleTagSupport;
+
+import org.apache.commons.lang.StringUtils;
+import org.opennms.web.tags.select.SelectTagHandler;
 
 /**
  * Creates a HTML select-element for a given number of objects (called m_elements).

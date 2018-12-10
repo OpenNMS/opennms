@@ -28,6 +28,10 @@
 
 package org.opennms.core.rpc.aws.sqs;
 
+import java.util.Dictionary;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
@@ -41,10 +45,6 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.util.Dictionary;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * Used to verify and validate the thread profiles of the RPC

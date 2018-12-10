@@ -30,18 +30,15 @@ package org.opennms.netmgt.alarmd.northbounder.syslog;
 
 import java.util.List;
 
+import org.graylog2.syslog4j.Syslog;
+import org.graylog2.syslog4j.SyslogIF;
+import org.graylog2.syslog4j.SyslogRuntimeException;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
-
-import org.graylog2.syslog4j.Syslog;
-import org.graylog2.syslog4j.SyslogIF;
-import org.graylog2.syslog4j.SyslogRuntimeException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.InitializingBean;
 
 /**

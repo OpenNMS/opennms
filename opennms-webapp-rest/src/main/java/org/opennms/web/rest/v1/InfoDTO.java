@@ -30,8 +30,8 @@ package org.opennms.web.rest.v1;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.web.rest.v1.config.TicketerConfig;
 import org.opennms.web.rest.v1.config.DatetimeformatConfig;
+import org.opennms.web.rest.v1.config.TicketerConfig;
 
 
 @XmlRootElement(name="info")

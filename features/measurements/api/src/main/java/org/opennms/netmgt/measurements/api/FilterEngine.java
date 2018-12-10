@@ -31,14 +31,14 @@ package org.opennms.netmgt.measurements.api;
 import java.util.List;
 import java.util.ServiceLoader;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.RowSortedTable;
-
 import org.opennms.netmgt.measurements.api.exceptions.FilterException;
 import org.opennms.netmgt.measurements.model.FilterDef;
 import org.opennms.netmgt.measurements.model.FilterMetaData;
 import org.springframework.stereotype.Component;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.collect.RowSortedTable;
 
 /**
  * Used to apply a series of {@link Filter} to a {@link RowSortedTable}. 

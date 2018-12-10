@@ -33,7 +33,6 @@ import static org.junit.Assert.assertThat;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -45,8 +44,8 @@ import java.util.function.Consumer;
 import org.junit.Test;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
 
 import com.google.common.base.Throwables;
 

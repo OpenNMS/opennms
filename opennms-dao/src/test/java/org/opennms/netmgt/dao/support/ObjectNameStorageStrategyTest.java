@@ -28,10 +28,12 @@
 
 package org.opennms.netmgt.dao.support;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.support.ObjectNameStorageStrategy;
 import org.opennms.netmgt.config.datacollection.Parameter;

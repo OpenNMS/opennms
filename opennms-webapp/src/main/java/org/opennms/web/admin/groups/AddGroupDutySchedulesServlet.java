@@ -39,8 +39,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.config.groups.Group;
+import org.opennms.netmgt.config.users.DutySchedule;
 
 /**
  * A servlet that handles adding new duty schedules to a group

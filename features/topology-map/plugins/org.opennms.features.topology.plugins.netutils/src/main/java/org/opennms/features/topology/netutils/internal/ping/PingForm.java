@@ -33,12 +33,12 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import com.vaadin.ui.FormLayout;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.util.BeanItem;
 import com.vaadin.v7.data.util.converter.StringToLongConverter;
 import com.vaadin.v7.data.validator.NullValidator;
-import com.vaadin.ui.FormLayout;
 import com.vaadin.v7.ui.NativeSelect;
 import com.vaadin.v7.ui.TextField;
 

@@ -31,6 +31,7 @@ import java.io.File;
 import java.net.InetAddress;
 import java.util.Collections;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -41,8 +42,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.springframework.core.io.FileSystemResource;
-
-import org.junit.Assert;
 
 import com.google.common.collect.Lists;
 

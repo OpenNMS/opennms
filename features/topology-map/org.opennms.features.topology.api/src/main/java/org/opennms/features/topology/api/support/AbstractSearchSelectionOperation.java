@@ -28,11 +28,11 @@
 
 package org.opennms.features.topology.api.support;
 
+import java.util.List;
+
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
-
-import java.util.List;
 
 public abstract class AbstractSearchSelectionOperation implements Operation {
 

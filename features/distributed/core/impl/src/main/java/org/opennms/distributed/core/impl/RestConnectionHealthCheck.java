@@ -29,10 +29,10 @@
 package org.opennms.distributed.core.impl;
 
 import org.opennms.core.health.api.Context;
-import org.opennms.distributed.core.api.RestClient;
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
+import org.opennms.distributed.core.api.RestClient;
 
 /**
  * Verifies the connection to the OpenNMS ReST API.

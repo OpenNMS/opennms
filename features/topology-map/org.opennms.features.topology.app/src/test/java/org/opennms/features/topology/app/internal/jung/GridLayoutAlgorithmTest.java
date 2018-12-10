@@ -28,10 +28,10 @@
 
 package org.opennms.features.topology.app.internal.jung;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.opennms.features.topology.api.BoundingBox;
-
-import static org.junit.Assert.assertEquals;
 
 public class GridLayoutAlgorithmTest {
 

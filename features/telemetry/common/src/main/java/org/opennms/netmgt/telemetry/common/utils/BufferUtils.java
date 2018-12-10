@@ -30,7 +30,6 @@ package org.opennms.netmgt.telemetry.common.utils;
 
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.google.common.base.Preconditions;

@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.notifd;
 
-import org.junit.Test;
-import org.opennms.core.soa.support.DefaultServiceRegistry;
-import org.opennms.netmgt.model.notifd.NotificationStrategy;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.opennms.core.soa.support.DefaultServiceRegistry;
+import org.opennms.netmgt.model.notifd.NotificationStrategy;
 
 public class ServiceRegistryExecutorTest {
 

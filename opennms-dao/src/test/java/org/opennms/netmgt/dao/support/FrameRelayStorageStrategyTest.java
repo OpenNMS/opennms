@@ -28,9 +28,8 @@
 
 package org.opennms.netmgt.dao.support;
 
-import org.junit.Assert;
-
 import org.easymock.EasyMock;
+import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.collection.api.StorageStrategyService;
 import org.opennms.netmgt.model.ResourcePath;

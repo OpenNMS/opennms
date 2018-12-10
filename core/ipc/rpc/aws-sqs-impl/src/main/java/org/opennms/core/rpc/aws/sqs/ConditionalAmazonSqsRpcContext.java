@@ -28,6 +28,8 @@
 
 package org.opennms.core.rpc.aws.sqs;
 
+import static org.opennms.core.rpc.common.RpcStrategy.Strategy.SQS;
+
 import org.opennms.core.rpc.common.RpcStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +39,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-
-import static org.opennms.core.rpc.common.RpcStrategy.Strategy.SQS;
 
 @Configuration
 @Conditional(ConditionalAmazonSqsRpcContext.Condition.class)

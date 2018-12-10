@@ -28,23 +28,23 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui;
 
-import org.opennms.netmgt.vaadin.core.UIHelper;
 import org.opennms.features.vaadin.jmxconfiggenerator.JmxConfigGeneratorUI;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.MetaConfigModel;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.ServiceConfig;
+import org.opennms.netmgt.vaadin.core.UIHelper;
 
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.util.BeanItem;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.validator.RegexpValidator;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Button;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.Field;
-import com.vaadin.ui.FormLayout;
 import com.vaadin.v7.ui.PasswordField;
 import com.vaadin.v7.ui.TextField;
 import com.vaadin.v7.ui.VerticalLayout;

@@ -28,11 +28,11 @@
 
 package org.opennms.web.springframework.security;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import javax.servlet.http.HttpServletRequest;
 
 public class OnmsUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 

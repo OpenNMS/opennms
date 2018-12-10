@@ -28,8 +28,9 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator;
 
-import com.vaadin.ui.UI;
 import org.opennms.vaadin.extender.AbstractApplicationFactory;
+
+import com.vaadin.ui.UI;
 
 public class JmxConfigGeneratorUIFactory extends AbstractApplicationFactory {
 

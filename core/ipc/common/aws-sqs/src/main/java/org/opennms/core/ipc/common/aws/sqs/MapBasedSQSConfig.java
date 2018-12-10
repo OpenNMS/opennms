@@ -28,11 +28,11 @@
 
 package org.opennms.core.ipc.common.aws.sqs;
 
-import com.amazonaws.regions.Regions;
-
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import com.amazonaws.regions.Regions;
 
 /**
  * SQS configuration from a map of values.

@@ -31,8 +31,6 @@ package org.opennms.core.test.db;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import junit.framework.TestCase;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.netmgt.mock.MockEventUtil;
@@ -42,6 +40,8 @@ import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockService.SvcMgmtStatus;
 import org.opennms.netmgt.xml.event.Event;
+
+import junit.framework.TestCase;
 
 /**
  * @author brozow

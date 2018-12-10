@@ -28,6 +28,16 @@
 
 package org.opennms.core.ipc.common.aws.sqs;
 
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+
+import org.opennms.core.utils.SystemInfoUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.amazon.sqs.javamessaging.ProviderConfiguration;
 import com.amazon.sqs.javamessaging.SQSConnectionFactory;
 import com.amazonaws.ClientConfiguration;
@@ -46,15 +56,6 @@ import com.google.common.base.Suppliers;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import org.opennms.core.utils.SystemInfoUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
 public class DefaultAmazonSQSManager implements AmazonSQSManager {
 

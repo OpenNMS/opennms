@@ -33,9 +33,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
 
-import liquibase.resource.ResourceAccessor;
-
 import org.springframework.core.io.Resource;
+
+import liquibase.resource.ResourceAccessor;
 
 public class ExistingResourceAccessor implements ResourceAccessor {
     private final Resource m_resource;

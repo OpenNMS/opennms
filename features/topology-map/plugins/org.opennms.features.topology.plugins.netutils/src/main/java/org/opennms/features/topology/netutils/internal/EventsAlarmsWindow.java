@@ -34,8 +34,8 @@ import java.net.URL;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * The EventsAlarmsWindow class constructs a custom Window component which

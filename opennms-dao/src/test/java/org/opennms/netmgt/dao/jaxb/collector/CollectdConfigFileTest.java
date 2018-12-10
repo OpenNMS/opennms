@@ -30,12 +30,10 @@ package org.opennms.netmgt.dao.jaxb.collector;
 
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.opennms.netmgt.dao.jaxb.InvocationAnticipator;
-import org.opennms.netmgt.dao.jaxb.collector.CollectdConfigFile;
-import org.opennms.netmgt.dao.jaxb.collector.CollectdConfigVisitor;
 import org.springframework.core.io.ClassPathResource;
+
+import junit.framework.TestCase;
 
 public class CollectdConfigFileTest extends TestCase {
     

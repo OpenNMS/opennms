@@ -18,10 +18,10 @@
  */
 package org.opennms.container.web.felix.base.internal.logger;
 
-import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
+import org.osgi.util.tracker.ServiceTracker;
 
 public final class LogServiceLogger
     extends AbstractLogger

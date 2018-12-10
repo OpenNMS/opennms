@@ -33,6 +33,7 @@ import static org.opennms.core.web.HttpClientWrapperConfigHelper.PARAMETER_KEYS.
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.Test;
 import org.opennms.netmgt.model.notifd.Argument;
 

@@ -28,13 +28,13 @@
 
 package org.opennms.features.jmxconfiggenerator.graphs;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.opennms.features.jmxconfiggenerator.log.Slf4jLogAdapter;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.opennms.features.jmxconfiggenerator.log.Slf4jLogAdapter;
 
 public class GraphConfigGeneratorTest {
 

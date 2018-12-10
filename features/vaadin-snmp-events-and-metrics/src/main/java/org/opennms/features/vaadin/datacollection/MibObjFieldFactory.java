@@ -30,12 +30,12 @@ package org.opennms.features.vaadin.datacollection;
 
 import java.util.List;
 
+import com.vaadin.ui.Component;
 import com.vaadin.v7.data.Container;
 import com.vaadin.v7.data.validator.RegexpValidator;
 import com.vaadin.v7.data.validator.StringLengthValidator;
 import com.vaadin.v7.ui.AbstractSelect.NewItemHandler;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.ui.Component;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TableFieldFactory;
 import com.vaadin.v7.ui.TextField;

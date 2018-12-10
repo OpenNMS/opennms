@@ -28,8 +28,10 @@
 
 package org.opennms.features.reporting.model.remoterepository;
 
-import javax.xml.bind.annotation.*;
 import java.net.URI;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "remoteRepository")
 public class RemoteRepositoryDefinition {

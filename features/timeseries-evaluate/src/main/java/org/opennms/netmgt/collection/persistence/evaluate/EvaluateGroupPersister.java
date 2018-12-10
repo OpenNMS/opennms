@@ -30,7 +30,6 @@ package org.opennms.netmgt.collection.persistence.evaluate;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.rrd.RrdRepository;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -28,13 +28,14 @@
 
 package org.opennms.features.topology.plugins.topo.graphml.status;
 
+import java.util.Map;
+import java.util.Set;
+
+import org.opennms.netmgt.model.OnmsSeverity;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
-import org.opennms.netmgt.model.OnmsSeverity;
-
-import java.util.Map;
-import java.util.Set;
 
 public class GraphMLEdgeStatus extends GraphMLStatus {
 

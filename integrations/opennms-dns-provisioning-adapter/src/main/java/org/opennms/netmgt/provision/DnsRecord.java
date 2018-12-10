@@ -31,10 +31,10 @@ package org.opennms.netmgt.provision;
 import java.net.InetAddress;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class DnsRecord {
     private static final Logger LOG = LoggerFactory.getLogger(DnsRecord.class);

@@ -33,7 +33,6 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
-import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 
 public interface TcpParser extends Parser {
     interface Handler {

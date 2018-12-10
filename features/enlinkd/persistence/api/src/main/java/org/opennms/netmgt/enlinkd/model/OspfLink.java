@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.enlinkd.model;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Date;
@@ -48,8 +50,6 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.netmgt.model.FilterManager;
 import org.opennms.netmgt.model.OnmsNode;
-
-import static org.opennms.core.utils.InetAddressUtils.str;
 @Entity
 @Table(name="ospfLink")
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")

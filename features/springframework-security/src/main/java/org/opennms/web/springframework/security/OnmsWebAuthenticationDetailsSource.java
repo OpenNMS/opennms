@@ -28,9 +28,9 @@
 
 package org.opennms.web.springframework.security;
 
-import org.springframework.security.authentication.AuthenticationDetailsSource;
-
 import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.security.authentication.AuthenticationDetailsSource;
 
 public class OnmsWebAuthenticationDetailsSource implements AuthenticationDetailsSource<HttpServletRequest, OnmsAuthenticationDetails> {
 

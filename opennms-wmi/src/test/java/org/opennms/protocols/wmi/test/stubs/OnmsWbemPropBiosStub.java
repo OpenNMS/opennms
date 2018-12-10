@@ -28,8 +28,8 @@
 
 package org.opennms.protocols.wmi.test.stubs;
 
-import org.opennms.protocols.wmi.wbem.OnmsWbemProperty;
 import org.opennms.protocols.wmi.WmiException;
+import org.opennms.protocols.wmi.wbem.OnmsWbemProperty;
 
 public class OnmsWbemPropBiosStub implements OnmsWbemProperty {
     @Override

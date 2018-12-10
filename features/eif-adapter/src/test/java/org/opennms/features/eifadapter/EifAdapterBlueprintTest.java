@@ -31,8 +31,6 @@ package org.opennms.features.eifadapter;
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-import com.google.common.collect.Lists;
-
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,9 +42,7 @@ import java.util.Map;
 import org.apache.camel.BeanInject;
 import org.apache.camel.util.KeyValueHolder;
 import org.apache.commons.io.IOUtils;
-
 import org.junit.Test;
-
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -55,8 +51,9 @@ import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.xml.event.Event;
-
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.collect.Lists;
 
 public class EifAdapterBlueprintTest extends CamelBlueprintTest {
 

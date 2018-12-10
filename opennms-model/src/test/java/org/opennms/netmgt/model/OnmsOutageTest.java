@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.model;
 
-import org.junit.Test;
-import org.opennms.core.test.xml.XmlTest;
-import org.opennms.core.test.xml.JsonTest;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-
 import java.io.IOException;
 import java.util.Date;
+
+import org.junit.Test;
+import org.opennms.core.test.xml.JsonTest;
+import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 public class OnmsOutageTest {
 

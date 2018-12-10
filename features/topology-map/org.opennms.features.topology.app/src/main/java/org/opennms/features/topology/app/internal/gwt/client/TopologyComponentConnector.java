@@ -28,6 +28,8 @@
 
 package org.opennms.features.topology.app.internal.gwt.client;
 
+import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Widget;
@@ -37,8 +39,6 @@ import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.AbstractComponentConnector;
 import com.vaadin.shared.ui.Connect;
 import com.vaadin.shared.ui.ContentMode;
-
-import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 
 @Connect(org.opennms.features.topology.app.internal.TopologyComponent.class)
 public class TopologyComponentConnector extends AbstractComponentConnector{

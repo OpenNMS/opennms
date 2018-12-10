@@ -28,11 +28,12 @@
 
 package org.opennms.web.tags.filters;
 
-import org.opennms.web.event.EventUtil;
-import org.opennms.web.filter.Filter;
+import java.util.List;
 
 import javax.servlet.ServletContext;
-import java.util.List;
+
+import org.opennms.web.event.EventUtil;
+import org.opennms.web.filter.Filter;
 
 public class EventFilterCallback extends AbstractFilterCallback {
 

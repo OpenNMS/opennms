@@ -28,9 +28,10 @@
 
 package org.opennms.util.ilr;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeThat;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -43,8 +44,6 @@ import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.internal.matchers.TypeSafeMatcher;
 import org.junit.runner.RunWith;
-import org.opennms.util.ilr.BaseLogMessage;
-import org.opennms.util.ilr.Duration;
 
 
 /**

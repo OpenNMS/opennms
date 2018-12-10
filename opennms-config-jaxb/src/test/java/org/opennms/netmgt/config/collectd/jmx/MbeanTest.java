@@ -28,13 +28,13 @@
 
 package org.opennms.netmgt.config.collectd.jmx;
 
-import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
-import org.opennms.netmgt.collection.api.AttributeType;
-
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
+
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.netmgt.collection.api.AttributeType;
 
 /**
  * The Test Class for Mbean.

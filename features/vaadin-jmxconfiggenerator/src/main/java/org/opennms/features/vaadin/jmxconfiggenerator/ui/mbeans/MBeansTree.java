@@ -29,10 +29,10 @@
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans;
 
 import com.vaadin.event.Action;
-import com.vaadin.v7.event.ItemClickEvent;
-import com.vaadin.v7.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.shared.ui.MultiSelectMode;
 import com.vaadin.ui.Component;
+import com.vaadin.v7.event.ItemClickEvent;
+import com.vaadin.v7.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.v7.ui.Tree;
 
 /**

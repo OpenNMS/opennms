@@ -18,8 +18,9 @@
  */
 package org.opennms.container.web.felix.base.internal.logger;
 
-import org.osgi.framework.ServiceReference;
 import java.io.PrintStream;
+
+import org.osgi.framework.ServiceReference;
 
 public final class ConsoleLogger
     extends AbstractLogger

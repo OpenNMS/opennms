@@ -31,10 +31,10 @@ package org.opennms.netmgt.enlinkd.persistence.impl;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
-import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityDao;
 import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

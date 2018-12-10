@@ -29,6 +29,7 @@
 package org.opennms.systemreport;
 
 import java.util.Map;
+
 import org.springframework.core.io.Resource;
 
 public interface SystemReportPlugin extends Comparable<SystemReportPlugin> {

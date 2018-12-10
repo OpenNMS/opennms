@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.dao.api;
 
-import org.opennms.netmgt.model.OnmsFilterFavorite;
-
 import java.util.List;
+
+import org.opennms.netmgt.model.OnmsFilterFavorite;
 
 public interface FilterFavoriteDao extends OnmsDao<OnmsFilterFavorite, Integer> {
     OnmsFilterFavorite findBy(String userName, String filterName);

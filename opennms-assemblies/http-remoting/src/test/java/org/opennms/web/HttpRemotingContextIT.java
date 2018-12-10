@@ -32,8 +32,6 @@ import javax.servlet.Filter;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletException;
 
-import junit.framework.TestCase;
-
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
@@ -43,6 +41,8 @@ import org.springframework.mock.web.MockServletConfig;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.orm.hibernate3.support.OpenSessionInViewFilter;
 import org.springframework.web.context.ContextLoaderListener;
+
+import junit.framework.TestCase;
 
 /**
  * Test the Spring context for the http-remoting project by loading it with a

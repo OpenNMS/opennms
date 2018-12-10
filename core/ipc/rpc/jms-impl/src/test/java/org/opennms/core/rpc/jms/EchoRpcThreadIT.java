@@ -31,6 +31,7 @@ package org.opennms.core.rpc.jms;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
+
 import org.apache.camel.Component;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.ClassRule;

@@ -30,9 +30,9 @@ package org.opennms.netmgt.provision.service.operations;
 
 import javax.xml.bind.ValidationException;
 
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
 public class RequisitionImport {
     private static final Logger LOG = LoggerFactory.getLogger(RequisitionImport.class);

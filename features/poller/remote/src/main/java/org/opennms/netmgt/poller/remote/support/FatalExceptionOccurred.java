@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.poller.remote.support;
 
-import org.opennms.netmgt.poller.remote.support.PollerFrontEndState;
-
 public class FatalExceptionOccurred extends PollerFrontEndState {
     private final Throwable m_throwable;
 

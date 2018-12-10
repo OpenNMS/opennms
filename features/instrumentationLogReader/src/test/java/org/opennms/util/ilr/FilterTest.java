@@ -28,8 +28,16 @@
 
 package org.opennms.util.ilr;
 
-import static org.junit.Assert.*;
-import static org.opennms.util.ilr.Filter.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.opennms.util.ilr.Filter.and;
+import static org.opennms.util.ilr.Filter.byServiceID;
+import static org.opennms.util.ilr.Filter.collectionCount;
+import static org.opennms.util.ilr.Filter.eq;
+import static org.opennms.util.ilr.Filter.filter;
+import static org.opennms.util.ilr.Filter.lessThan;
+import static org.opennms.util.ilr.Filter.or;
+import static org.opennms.util.ilr.Filter.serviceID;
 
 import java.util.Arrays;
 import java.util.Collection;

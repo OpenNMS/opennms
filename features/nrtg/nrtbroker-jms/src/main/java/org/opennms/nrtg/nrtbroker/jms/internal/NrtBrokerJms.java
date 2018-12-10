@@ -34,19 +34,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.nrtg.api.NrtBroker;
-import org.opennms.nrtg.api.model.CollectionJob;
-import org.opennms.nrtg.api.model.MeasurementSet;
-
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.support.converter.MessageConversionException;
-import org.springframework.jms.support.converter.SimpleMessageConverter;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 
+import org.opennms.nrtg.api.NrtBroker;
+import org.opennms.nrtg.api.model.CollectionJob;
+import org.opennms.nrtg.api.model.MeasurementSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.support.converter.MessageConversionException;
+import org.springframework.jms.support.converter.SimpleMessageConverter;
 
 
 /**

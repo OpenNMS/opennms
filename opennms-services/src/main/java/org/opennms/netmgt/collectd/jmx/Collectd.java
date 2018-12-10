@@ -29,9 +29,9 @@
 package org.opennms.netmgt.collectd.jmx;
 
 import java.util.concurrent.ThreadPoolExecutor;
-import org.opennms.netmgt.scheduler.LegacyScheduler;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
+import org.opennms.netmgt.scheduler.LegacyScheduler;
 
 /**
  * <p>Collectd class.</p>

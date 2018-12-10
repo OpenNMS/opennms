@@ -27,21 +27,6 @@
  *******************************************************************************/
 package org.opennms.features.topology.plugins.topo.graphml.internal;
 
-import com.google.common.collect.Lists;
-import org.apache.commons.io.FilenameUtils;
-import org.opennms.features.topology.api.topo.Ref;
-import org.opennms.features.topology.api.topo.Status;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.script.Compilable;
-import javax.script.CompiledScript;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import javax.script.SimpleBindings;
-import javax.script.SimpleScriptContext;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
@@ -59,6 +44,23 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.script.Compilable;
+import javax.script.CompiledScript;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import javax.script.SimpleBindings;
+import javax.script.SimpleScriptContext;
+
+import org.apache.commons.io.FilenameUtils;
+import org.opennms.features.topology.api.topo.Ref;
+import org.opennms.features.topology.api.topo.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 public class Scripting<E extends Ref, S extends Status> {
 

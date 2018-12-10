@@ -31,9 +31,9 @@ package org.opennms.netmgt.enlinkd.persistence.impl;
 import java.net.InetAddress;
 import java.util.List;
 
-import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
+import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 
 public class OspfElementDaoHibernate extends AbstractDaoHibernate<OspfElement, Integer> implements OspfElementDao {
 

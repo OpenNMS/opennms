@@ -49,8 +49,8 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.filter.ssl.SslFilter;
-import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.core.utils.RelaxedX509ExtendedTrustManager;
+import org.opennms.netmgt.provision.DetectFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

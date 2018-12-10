@@ -33,8 +33,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.opennms.core.criteria.Alias;
-import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.enlinkd.service.api.Node;

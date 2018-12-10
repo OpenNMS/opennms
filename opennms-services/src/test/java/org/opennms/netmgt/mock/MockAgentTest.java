@@ -32,8 +32,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.snmp4j.CommunityTarget;
@@ -54,6 +52,8 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.snmp4j.util.DefaultPDUFactory;
 import org.snmp4j.util.TableEvent;
 import org.snmp4j.util.TableUtils;
+
+import junit.framework.TestCase;
 
 /**
  * Represents a MockAgentTest 

@@ -28,10 +28,11 @@
 
 package org.opennms.netmgt.telemetry.api.receiver;
 
-import org.opennms.core.ipc.sink.api.Message;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Date;
+
+import org.opennms.core.ipc.sink.api.Message;
 
 public class TelemetryMessage implements Message {
     private final InetSocketAddress source;

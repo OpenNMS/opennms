@@ -31,13 +31,10 @@ package org.opennms.netmgt.collectd;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.collectd.SnmpCollectionResource;
-import org.opennms.netmgt.collectd.SnmpCollectionSet;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.MibObjProperty;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

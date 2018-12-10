@@ -35,8 +35,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import junit.framework.TestCase;
-
 import org.easymock.EasyMock;
 import org.opennms.netmgt.config.statsd.model.PackageReport;
 import org.opennms.netmgt.config.statsd.model.StatsdPackage;
@@ -57,6 +55,8 @@ import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
+
+import junit.framework.TestCase;
 
 /**
  * 

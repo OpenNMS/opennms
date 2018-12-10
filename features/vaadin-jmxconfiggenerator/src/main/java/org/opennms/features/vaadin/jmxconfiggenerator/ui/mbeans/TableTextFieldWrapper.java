@@ -30,10 +30,10 @@ package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans;
 
 import java.util.Collection;
 
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.Validator.InvalidValueException;
-import com.vaadin.server.ErrorMessage;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.v7.ui.TextField;

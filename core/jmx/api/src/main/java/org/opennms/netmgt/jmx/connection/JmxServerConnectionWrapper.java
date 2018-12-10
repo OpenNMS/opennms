@@ -27,8 +27,9 @@
  *******************************************************************************/
 package org.opennms.netmgt.jmx.connection;
 
-import javax.management.MBeanServerConnection;
 import java.io.Closeable;
+
+import javax.management.MBeanServerConnection;
 
 /**
  * <p>Wraps the established {@link javax.management.MBeanServerConnection}.<p/>

@@ -28,9 +28,10 @@
 
 package org.opennms.features.topology.api;
 
+import org.opennms.osgi.VaadinApplicationContext;
+
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
-import org.opennms.osgi.VaadinApplicationContext;
 
 public interface IViewContribution {
 

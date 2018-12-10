@@ -28,14 +28,14 @@
 
 package org.opennms.web.rest.v2.bsm;
 
+import static org.opennms.netmgt.bsm.test.BsmTestUtils.toJson;
+
+import java.util.Collections;
+
 import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.xml.JacksonUtils;
-
-import static org.opennms.netmgt.bsm.test.BsmTestUtils.toJson;
-
-import java.util.Collections;
 
 public class BusinessServiceRestServiceJsonIT extends AbstractBusinessServiceRestServiceIT {
 

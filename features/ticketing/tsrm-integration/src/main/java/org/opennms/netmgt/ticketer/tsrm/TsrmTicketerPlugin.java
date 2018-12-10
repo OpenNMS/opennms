@@ -28,6 +28,21 @@
 
 package org.opennms.netmgt.ticketer.tsrm;
 
+import static org.opennms.netmgt.ticketer.tsrm.TsrmConstants.AFFECTED_PERSON;
+import static org.opennms.netmgt.ticketer.tsrm.TsrmConstants.ASSET_NUM;
+import static org.opennms.netmgt.ticketer.tsrm.TsrmConstants.CLASS_ID;
+import static org.opennms.netmgt.ticketer.tsrm.TsrmConstants.CLASS_STRUCTURE_ID;
+import static org.opennms.netmgt.ticketer.tsrm.TsrmConstants.COMMODITY;
+import static org.opennms.netmgt.ticketer.tsrm.TsrmConstants.LOCATION;
+import static org.opennms.netmgt.ticketer.tsrm.TsrmConstants.OWNER_GROUP;
+import static org.opennms.netmgt.ticketer.tsrm.TsrmConstants.SHS_CALLER_TYPE;
+import static org.opennms.netmgt.ticketer.tsrm.TsrmConstants.SHS_REASON_FOR_OUTAGE;
+import static org.opennms.netmgt.ticketer.tsrm.TsrmConstants.SHS_RESOLUTION;
+import static org.opennms.netmgt.ticketer.tsrm.TsrmConstants.SHS_ROOM_NUMBER;
+import static org.opennms.netmgt.ticketer.tsrm.TsrmConstants.SITE_ID;
+import static org.opennms.netmgt.ticketer.tsrm.TsrmConstants.SOURCE;
+import static org.opennms.netmgt.ticketer.tsrm.TsrmConstants.STATUS_IFACE;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -37,7 +52,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Properties;
 
-import static org.opennms.netmgt.ticketer.tsrm.TsrmConstants.*;
 import javax.net.ssl.TrustManager;
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;

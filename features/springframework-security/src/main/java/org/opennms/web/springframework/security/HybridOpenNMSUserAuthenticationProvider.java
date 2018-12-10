@@ -28,9 +28,9 @@
 
 package org.opennms.web.springframework.security;
 
+import org.opennms.netmgt.config.UserManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.config.UserManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;

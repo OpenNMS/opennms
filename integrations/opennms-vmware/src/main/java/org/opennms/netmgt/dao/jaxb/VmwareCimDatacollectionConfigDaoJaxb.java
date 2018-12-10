@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.dao.jaxb;
 
+import java.io.File;
+import java.util.List;
+
 import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.vmware.cim.VmwareCimCollection;
 import org.opennms.netmgt.config.vmware.cim.VmwareCimDatacollectionConfig;
 import org.opennms.netmgt.dao.VmwareCimDatacollectionConfigDao;
 import org.opennms.netmgt.rrd.RrdRepository;
-
-import java.io.File;
-import java.util.List;
 
 /**
  * The Class VmwareCimDatacollectionConfigDaoJaxb

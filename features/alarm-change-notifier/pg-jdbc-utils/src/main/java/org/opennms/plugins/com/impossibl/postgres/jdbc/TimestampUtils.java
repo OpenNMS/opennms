@@ -31,11 +31,6 @@
 
 package org.opennms.plugins.com.impossibl.postgres.jdbc;
 
-import com.impossibl.postgres.datetime.instants.FutureInfiniteInstant;
-import com.impossibl.postgres.datetime.instants.PastInfiniteInstant;
-
-import org.opennms.plugins.com.impossibl.postgres.jdbc.GT;
-
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
@@ -44,6 +39,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
+
+import com.impossibl.postgres.datetime.instants.FutureInfiniteInstant;
+import com.impossibl.postgres.datetime.instants.PastInfiniteInstant;
 
 
 /**

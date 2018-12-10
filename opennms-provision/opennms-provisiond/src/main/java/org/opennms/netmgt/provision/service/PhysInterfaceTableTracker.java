@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.service;
 
 import org.opennms.core.utils.InetAddressUtils;
-
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -37,7 +36,6 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TableTracker;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

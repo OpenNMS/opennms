@@ -29,12 +29,9 @@
 package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-//import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_IP;
-//import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_NAME;
-//import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ASW01_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ASW01_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ASW01_SNMP_RESOURCE;
@@ -58,6 +55,10 @@ import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms7918NetworkBuilder;
+
+//import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_IP;
+//import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_NAME;
+//import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_SNMP_RESOURCE;
 
 public class Nms7918EnIT extends EnLinkdBuilderITCase {
 

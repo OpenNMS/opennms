@@ -41,8 +41,8 @@ import org.opennms.netmgt.flows.classification.internal.matcher.Matcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.ProtocolMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.SrcAddressMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.SrcPortMatcher;
-import org.opennms.netmgt.flows.classification.persistence.api.RulePriorityComparator;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleDefinition;
+import org.opennms.netmgt.flows.classification.persistence.api.RulePriorityComparator;
 
 public class CombinedClassifier implements Classifier {
 

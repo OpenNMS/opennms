@@ -29,8 +29,8 @@
 package org.opennms.features.topology.plugins.topo.application.browsers;
 
 import org.opennms.features.topology.api.browsers.ContentType;
-import org.opennms.features.topology.plugins.browsers.OnmsDaoContainerDatasource;
 import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
+import org.opennms.features.topology.plugins.browsers.OnmsDaoContainerDatasource;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.springframework.transaction.support.TransactionOperations;

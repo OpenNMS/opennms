@@ -28,10 +28,11 @@
 
 package org.opennms.features.topology.app.internal.gwt.client.ui;
 
+import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
+
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.SuggestOracle;
-import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
 
 public class SuggestionMenuItem extends MenuItem {
 

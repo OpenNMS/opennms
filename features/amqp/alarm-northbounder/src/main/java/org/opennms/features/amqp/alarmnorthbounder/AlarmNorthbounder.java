@@ -28,14 +28,14 @@
 
 package org.opennms.features.amqp.alarmnorthbounder;
 
+import java.util.List;
+
 import org.opennms.features.amqp.alarmnorthbounder.internal.DefaultAlarmForwarder;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 public class AlarmNorthbounder extends AbstractNorthbounder {
 

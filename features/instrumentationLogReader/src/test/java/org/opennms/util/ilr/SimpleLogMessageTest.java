@@ -28,14 +28,12 @@
 
 package org.opennms.util.ilr;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.text.ParseException;
 import java.util.Date;
 
 import org.junit.Test;
-import org.opennms.util.ilr.LogMessage;
-import org.opennms.util.ilr.SimpleLogMessage;
 
 
 public class SimpleLogMessageTest {

@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.daemon;
 
+import java.util.function.Consumer;
+
 import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
@@ -36,8 +38,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.function.Consumer;
 
 public class DaemonTools {
 

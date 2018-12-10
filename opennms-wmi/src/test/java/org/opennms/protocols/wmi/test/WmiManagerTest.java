@@ -34,7 +34,6 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
-import junit.framework.TestCase;
 
 import org.opennms.protocols.wmi.IWmiClient;
 import org.opennms.protocols.wmi.WmiException;
@@ -45,6 +44,8 @@ import org.opennms.protocols.wmi.test.stubs.OnmsWbemObjectSetBiosStub;
 import org.opennms.protocols.wmi.test.stubs.OnmsWbemPropBiosStub;
 import org.opennms.protocols.wmi.test.stubs.OnmsWbemPropSetBiosStub;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObjectSet;
+
+import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:matt.raykowski@gmail.com">Matt Raykowski</a>

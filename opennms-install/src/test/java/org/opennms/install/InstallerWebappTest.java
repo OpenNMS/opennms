@@ -34,9 +34,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 
-import junit.framework.TestCase;
-
 import org.opennms.test.FileAnticipator;
+
+import junit.framework.TestCase;
 
 public class InstallerWebappTest extends TestCase {
     private Installer m_installer;

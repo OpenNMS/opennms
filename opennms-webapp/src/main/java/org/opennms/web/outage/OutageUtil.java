@@ -40,16 +40,16 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.api.Util;
-import org.opennms.web.outage.filter.LocationFilter;
-import org.opennms.web.outage.filter.NegativeLocationFilter;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.filter.AssetFilter;
 import org.opennms.web.outage.filter.ForeignSourceFilter;
 import org.opennms.web.outage.filter.InterfaceFilter;
+import org.opennms.web.outage.filter.LocationFilter;
 import org.opennms.web.outage.filter.LostServiceDateAfterFilter;
 import org.opennms.web.outage.filter.LostServiceDateBeforeFilter;
 import org.opennms.web.outage.filter.NegativeForeignSourceFilter;
 import org.opennms.web.outage.filter.NegativeInterfaceFilter;
+import org.opennms.web.outage.filter.NegativeLocationFilter;
 import org.opennms.web.outage.filter.NegativeNodeFilter;
 import org.opennms.web.outage.filter.NegativeServiceFilter;
 import org.opennms.web.outage.filter.NodeFilter;

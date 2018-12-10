@@ -27,15 +27,16 @@
  *******************************************************************************/
 package org.opennms.features.topology.plugins.topo.graphml.status;
 
+import java.util.Map;
+import java.util.Set;
+
+import org.opennms.features.topology.api.topo.Status;
+import org.opennms.netmgt.model.OnmsSeverity;
+
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import org.opennms.features.topology.api.topo.Status;
-import org.opennms.netmgt.model.OnmsSeverity;
-
-import java.util.Map;
-import java.util.Set;
 
 public abstract class GraphMLStatus implements Status {
     private OnmsSeverity severity;

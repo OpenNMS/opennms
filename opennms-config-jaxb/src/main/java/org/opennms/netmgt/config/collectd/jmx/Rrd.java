@@ -29,12 +29,13 @@
 package org.opennms.netmgt.config.collectd.jmx;
 
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Objects;
 
 @XmlRootElement(name = "rrd")
 @XmlAccessorType(XmlAccessType.FIELD)

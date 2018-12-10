@@ -28,8 +28,8 @@
 
 package org.opennms.util.ilr;
 
-import static org.junit.Assert.*;
-import org.opennms.util.ilr.Main;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 public class MainTest {

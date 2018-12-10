@@ -28,6 +28,10 @@
 
 package org.opennms.features.reporting.repository.global;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.opennms.features.reporting.dao.remoterepository.RemoteRepositoryConfigDao;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
@@ -36,10 +40,6 @@ import org.opennms.features.reporting.repository.remote.DefaultRemoteRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <p>DefaultGlobalReportRepository class.</p>

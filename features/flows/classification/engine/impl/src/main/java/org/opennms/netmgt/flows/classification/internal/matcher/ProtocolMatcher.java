@@ -34,9 +34,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
+import org.opennms.netmgt.flows.classification.internal.value.StringValue;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocol;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
-import org.opennms.netmgt.flows.classification.internal.value.StringValue;
 
 public class ProtocolMatcher implements Matcher {
 

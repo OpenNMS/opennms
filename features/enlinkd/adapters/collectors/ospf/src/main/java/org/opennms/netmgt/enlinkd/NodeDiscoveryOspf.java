@@ -31,15 +31,11 @@ package org.opennms.netmgt.enlinkd;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-
-
-
 import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.model.OspfElement.Status;
+import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;

@@ -28,9 +28,9 @@
 
 package org.opennms.protocols.wmi.test.stubs;
 
-import org.opennms.protocols.wmi.wbem.OnmsWbemPropertySet;
-import org.opennms.protocols.wmi.wbem.OnmsWbemProperty;
 import org.opennms.protocols.wmi.WmiException;
+import org.opennms.protocols.wmi.wbem.OnmsWbemProperty;
+import org.opennms.protocols.wmi.wbem.OnmsWbemPropertySet;
 
 public class OnmsWbemPropSetBiosStub implements OnmsWbemPropertySet {
     public OnmsWbemProperty releaseDate;

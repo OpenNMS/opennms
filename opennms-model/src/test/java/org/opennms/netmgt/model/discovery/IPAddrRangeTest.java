@@ -33,9 +33,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Iterator;
 
-import junit.framework.TestCase;
-
 import org.opennms.core.network.IPAddress;
+
+import junit.framework.TestCase;
 
 /**
  * IPAddressRangeTest

@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
-import junit.framework.TestCase;
-
 import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -37,6 +35,8 @@ import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpStore;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+
+import junit.framework.TestCase;
 
 /**
  * We are trying to make sure that this doesn't happen:

@@ -30,18 +30,19 @@ package org.opennms.netmgt.jasper.measurement;
 
 import java.util.Map;
 
-import net.sf.jasperreports.engine.JRDataset;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRRewindableDataSource;
-import net.sf.jasperreports.engine.JRValueParameter;
-import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.query.JRAbstractQueryExecuter;
 import org.opennms.netmgt.jasper.helper.MeasurementsHelper;
 import org.opennms.netmgt.jasper.measurement.local.LocalMeasurementDataSourceWrapper;
 import org.opennms.netmgt.jasper.measurement.remote.RemoteMeasurementDataSourceWrapper;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.sf.jasperreports.engine.JRDataset;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRRewindableDataSource;
+import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.query.JRAbstractQueryExecuter;
 
 class MeasurementQueryExecutor extends JRAbstractQueryExecuter {
 

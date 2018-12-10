@@ -31,10 +31,9 @@ package org.opennms.core.utils;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.core.network.IPAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.opennms.core.network.IPAddress;
 
 public abstract class LldpUtils {
     private static final Logger LOG = LoggerFactory.getLogger(LldpUtils.class);

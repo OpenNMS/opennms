@@ -28,10 +28,11 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation;
 
-import com.vaadin.v7.data.Validator;
+import static org.junit.Assert.fail;
+
 import org.junit.Test;
 
-import static org.junit.Assert.fail;
+import com.vaadin.v7.data.Validator;
 
 /**
  *

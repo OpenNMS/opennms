@@ -28,13 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser;
 
-import org.bson.json.JsonWriter;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows.Record;
-import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows.SampleDatagram;
-import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows.SampleRecord;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -44,8 +39,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import org.bson.json.JsonWriter;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows.Record;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows.SampleDatagram;
+import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows.SampleRecord;
 
 @RunWith(Parameterized.class)
 public class BlackboxTest {

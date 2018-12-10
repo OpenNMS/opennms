@@ -30,10 +30,10 @@ package org.opennms.protocols.json.collector;
 
 import java.io.FileInputStream;
 
-import net.sf.json.JSONObject;
-
-import net.sf.json.JSONSerializer;
 import org.apache.commons.io.IOUtils;
+
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 
 /**
  * The Mock Document Builder.

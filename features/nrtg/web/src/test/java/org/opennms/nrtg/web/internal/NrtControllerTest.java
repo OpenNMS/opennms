@@ -28,12 +28,15 @@
 
 package org.opennms.nrtg.web.internal;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
+
 import org.junit.Before;
-import static org.junit.Assert.*;
+import org.junit.Test;
 import org.opennms.nrtg.web.internal.NrtController.MetricTuple;
 
 /**

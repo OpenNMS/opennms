@@ -28,9 +28,9 @@
 
 package org.opennms.core.schema;
 
-import liquibase.resource.ResourceAccessor;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
+
+import liquibase.resource.ResourceAccessor;
 
 
 /**

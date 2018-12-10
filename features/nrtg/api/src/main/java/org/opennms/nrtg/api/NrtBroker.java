@@ -29,6 +29,7 @@
 package org.opennms.nrtg.api;
 
 import java.util.List;
+
 import org.opennms.nrtg.api.model.CollectionJob;
 import org.opennms.nrtg.api.model.MeasurementSet;
 

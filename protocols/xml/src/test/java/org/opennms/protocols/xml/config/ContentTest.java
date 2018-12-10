@@ -28,13 +28,12 @@
 
 package org.opennms.protocols.xml.config;
 
-import net.sf.json.JSONObject;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.protocols.http.FormFields;
-import org.opennms.protocols.xml.config.Request;
+
+import net.sf.json.JSONObject;
 
 /**
  * The Test Class for Content.

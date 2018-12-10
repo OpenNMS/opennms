@@ -28,13 +28,14 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation;
 
-import com.vaadin.v7.data.Validator;
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import com.vaadin.v7.data.Validator;
 
 public class ValidationResultTest {
 

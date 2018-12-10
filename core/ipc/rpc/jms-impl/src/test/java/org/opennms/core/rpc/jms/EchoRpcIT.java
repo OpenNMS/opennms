@@ -36,7 +36,6 @@ import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.opennms.core.rpc.camel.CamelRpcServerRouteManager;
 import org.opennms.core.rpc.camel.MockMinionIdentity;
-import org.opennms.core.rpc.jms.JmsRpcServerRouteManager;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.netmgt.model.OnmsDistPoller;

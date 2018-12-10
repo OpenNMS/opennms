@@ -28,18 +28,19 @@
 
 package org.opennms.web.tags;
 
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.TagSupport;
+
 import org.opennms.netmgt.model.OnmsFilterFavorite;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.filter.NormalizedQueryParameters;
 import org.opennms.web.filter.QueryParameters;
 import org.opennms.web.tags.filters.FilterCallback;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.ArrayList;
 
 public class FavoriteTag extends TagSupport {
 

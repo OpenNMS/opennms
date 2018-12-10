@@ -28,11 +28,12 @@
 
 package org.opennms.features.vaadin.dashboard.ui.wallboard;
 
+import org.opennms.features.vaadin.dashboard.config.ui.WallboardProvider;
+import org.opennms.features.vaadin.dashboard.model.Wallboard;
+
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.v7.ui.VerticalLayout;
-import org.opennms.features.vaadin.dashboard.config.ui.WallboardProvider;
-import org.opennms.features.vaadin.dashboard.model.Wallboard;
 
 /**
  * @author Marcus Hellberg (marcus@vaadin.com)

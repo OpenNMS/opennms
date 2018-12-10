@@ -29,9 +29,9 @@
 package org.opennms.netmgt.config;
 
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Date;
 
 import org.opennms.core.xml.AbstractMergingJaxbConfigDao;
 import org.opennms.netmgt.config.api.ResourceTypesDao;

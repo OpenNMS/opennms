@@ -31,7 +31,6 @@ import java.net.InetAddress;
 
 import org.junit.Assert;
 import org.junit.Test;
-
 import org.opennms.core.utils.InetAddressUtils;
 
 /**

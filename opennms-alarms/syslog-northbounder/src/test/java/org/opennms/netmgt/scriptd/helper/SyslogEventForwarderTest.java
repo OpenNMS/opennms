@@ -43,12 +43,10 @@ import org.graylog2.syslog4j.server.SyslogServerEventHandlerIF;
 import org.graylog2.syslog4j.server.SyslogServerIF;
 import org.graylog2.syslog4j.server.impl.event.printstream.PrintStreamSyslogServerEventHandler;
 import org.graylog2.syslog4j.server.impl.net.udp.UDPNetSyslogServerConfig;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;

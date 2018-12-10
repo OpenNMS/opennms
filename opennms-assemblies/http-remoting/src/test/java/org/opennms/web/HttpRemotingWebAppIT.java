@@ -30,8 +30,6 @@ package org.opennms.web;
 
 import javax.servlet.ServletContext;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.soa.ServiceRegistry;
@@ -45,6 +43,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import junit.framework.TestCase;
 
 /**
  * Test the Spring context for the http-remoting project.

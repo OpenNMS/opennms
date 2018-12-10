@@ -28,8 +28,9 @@
 
 package org.opennms.features.jmxconfiggenerator.jmxconfig.query;
 
-import javax.management.MBeanAttributeInfo;
 import java.util.regex.Pattern;
+
+import javax.management.MBeanAttributeInfo;
 
 /**
  * Represents a filter criteria to be used by the {@link MBeanServerQuery}.

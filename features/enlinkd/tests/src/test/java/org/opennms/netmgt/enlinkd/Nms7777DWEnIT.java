@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.DW_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.DW_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.DW_SNMP_RESOURCE;

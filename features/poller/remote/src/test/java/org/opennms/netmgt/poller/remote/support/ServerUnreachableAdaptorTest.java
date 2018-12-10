@@ -37,9 +37,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import junit.framework.TestCase;
-
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
+
+import junit.framework.TestCase;
 
 public class ServerUnreachableAdaptorTest extends TestCase {
     public void testPollerStartingWhenBackEndReturnsFalse() {

@@ -28,10 +28,10 @@
 
 package org.opennms.osgi;
 
+import java.util.List;
+
 import org.opennms.osgi.locator.OnmsServiceManagerLocator;
 import org.osgi.framework.BundleContext;
-
-import java.util.List;
 
 class EventProxyImpl implements EventProxy {
 

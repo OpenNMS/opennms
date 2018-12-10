@@ -27,9 +27,9 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
-import org.opennms.netmgt.model.OnmsCategory;
-
 import java.util.Set;
+
+import org.opennms.netmgt.model.OnmsCategory;
 
 /**
  * This interface is used to represent components that are refreshable by a surveillance view table.

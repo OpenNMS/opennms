@@ -37,9 +37,9 @@ import java.util.TreeSet;
 import org.opennms.web.api.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.Container.ItemSetChangeEvent;
 import com.vaadin.v7.data.Container.ItemSetChangeListener;
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.Property.ValueChangeEvent;
 import com.vaadin.v7.data.Property.ValueChangeListener;
 import com.vaadin.v7.ui.CheckBox;

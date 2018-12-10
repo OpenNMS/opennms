@@ -28,11 +28,12 @@
 
 package org.opennms.features.vaadin.dashboard.ui.dashboard;
 
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardProvider;
 import org.opennms.features.vaadin.dashboard.model.Wallboard;
 import org.slf4j.LoggerFactory;
+
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
 
 /**
  * This class is used to represent a dashboard view.

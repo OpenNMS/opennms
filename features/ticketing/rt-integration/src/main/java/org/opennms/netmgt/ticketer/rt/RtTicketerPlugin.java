@@ -35,12 +35,12 @@ import org.apache.commons.lang.StringUtils;
 import org.opennms.api.integration.ticketing.Plugin;
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.rt.ReadOnlyRtConfigDao;
 import org.opennms.netmgt.rt.RTTicket;
+import org.opennms.netmgt.rt.ReadOnlyRtConfigDao;
 import org.opennms.netmgt.rt.RequestTracker;
 import org.opennms.netmgt.rt.RequestTrackerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * OpenNMS Trouble Ticket Plugin API implementation for RT

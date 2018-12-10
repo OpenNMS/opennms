@@ -28,9 +28,9 @@
 
 package org.opennms.web.springframework.security;
 
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
-
 import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 public class OnmsAuthenticationDetails extends WebAuthenticationDetails {
     private static final long serialVersionUID = -7850100700631490637L;

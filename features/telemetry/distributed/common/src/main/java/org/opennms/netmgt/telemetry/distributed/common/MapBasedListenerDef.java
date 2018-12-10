@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.telemetry.config.api.ListenerDefinition;
-import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
 
 public class MapBasedListenerDef implements ListenerDefinition {
     private final String name;

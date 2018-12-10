@@ -29,14 +29,15 @@
 package org.opennms.web.tags.filters;
 
 
+import java.net.URLDecoder;
+import java.util.List;
+
+import javax.servlet.ServletContext;
+
 import org.opennms.netmgt.model.OnmsFilterFavorite;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.filter.FilterUtil;
 import org.opennms.web.filter.QueryParameters;
-
-import javax.servlet.ServletContext;
-import java.net.URLDecoder;
-import java.util.List;
 
 public abstract class AbstractFilterCallback implements FilterCallback {
     private final ServletContext servletContext;

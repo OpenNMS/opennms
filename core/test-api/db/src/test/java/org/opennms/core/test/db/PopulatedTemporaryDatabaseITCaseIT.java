@@ -29,6 +29,7 @@
 package org.opennms.core.test.db;
 
 import java.util.Date;
+
 import org.junit.Test;
 
 public class PopulatedTemporaryDatabaseITCaseIT extends

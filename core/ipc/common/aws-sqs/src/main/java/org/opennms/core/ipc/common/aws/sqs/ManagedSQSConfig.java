@@ -28,12 +28,12 @@
 
 package org.opennms.core.ipc.common.aws.sqs;
 
-import org.osgi.service.cm.ConfigurationAdmin;
-
 import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Map;
+
+import org.osgi.service.cm.ConfigurationAdmin;
 
 public class ManagedSQSConfig extends MapBasedSQSConfig {
 

@@ -30,8 +30,6 @@ package org.opennms.netmgt.dao.support;
 
 import java.util.HashSet;
 
-import junit.framework.TestCase;
-
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
@@ -39,6 +37,8 @@ import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceVisitor;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
+
+import junit.framework.TestCase;
 
 /**
  * @author <a href="dj@opennms.org">DJ Gregor</a>

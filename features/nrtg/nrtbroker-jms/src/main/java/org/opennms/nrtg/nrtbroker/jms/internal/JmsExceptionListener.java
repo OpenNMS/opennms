@@ -28,11 +28,11 @@
 
 package org.opennms.nrtg.nrtbroker.jms.internal;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Markus Neumann

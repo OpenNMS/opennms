@@ -39,8 +39,6 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import junit.framework.TestCase;
-
 import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
 import org.opennms.netmgt.dao.mock.EventWrapper;
@@ -56,6 +54,8 @@ import org.springframework.security.authentication.event.AuthenticationFailureBa
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
+
+import junit.framework.TestCase;
 
 public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
     private EasyMockUtils m_mocks;

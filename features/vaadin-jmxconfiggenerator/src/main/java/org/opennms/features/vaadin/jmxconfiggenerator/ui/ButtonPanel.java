@@ -28,12 +28,12 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui;
 
+import org.opennms.features.vaadin.jmxconfiggenerator.Config;
+import org.opennms.netmgt.vaadin.core.UIHelper;
+
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.v7.ui.HorizontalLayout;
-
-import org.opennms.netmgt.vaadin.core.UIHelper;
-import org.opennms.features.vaadin.jmxconfiggenerator.Config;
 
 public class ButtonPanel extends HorizontalLayout {
 	private final Button next;

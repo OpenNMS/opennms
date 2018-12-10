@@ -31,11 +31,11 @@ package org.opennms.core.ipc.sink.xml;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
+import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.xml.XmlHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.core.ipc.sink.api.Message;
 
 public abstract class AbstractXmlSinkModule<S extends Message, T extends Message> implements SinkModule<S, T> {
 

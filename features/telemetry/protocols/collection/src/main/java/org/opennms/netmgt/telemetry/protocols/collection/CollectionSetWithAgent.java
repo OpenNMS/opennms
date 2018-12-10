@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.telemetry.protocols.collection;
 
+import java.util.Objects;
+
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
-
-import java.util.Objects;
 
 /**
  * Used to group both a collection agent and an associated collection set.

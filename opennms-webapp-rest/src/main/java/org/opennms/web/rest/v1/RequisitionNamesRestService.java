@@ -41,7 +41,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.web.svclayer.api.RequisitionAccessService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

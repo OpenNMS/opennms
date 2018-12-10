@@ -32,8 +32,8 @@ import org.opennms.netmgt.config.surveillanceViews.View;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * Class implementing {@link com.vaadin.ui.Button.ClickListener} for creating the preview window.

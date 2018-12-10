@@ -28,10 +28,10 @@
 
 package org.opennms.nrtg.nrtcollector.internal;
 
-import org.opennms.nrtg.api.ProtocolCollector;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.opennms.nrtg.api.ProtocolCollector;
 
 /**
  * OSGI Implementation

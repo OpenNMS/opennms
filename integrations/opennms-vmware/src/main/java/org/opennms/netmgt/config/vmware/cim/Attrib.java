@@ -33,12 +33,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.opennms.netmgt.collection.api.AttributeType;
+
 //---------------------------------/
 //- Imported classes and packages -/
 //---------------------------------/
-
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.opennms.netmgt.collection.api.AttributeType;
 
 /**
  * An Attribute Object

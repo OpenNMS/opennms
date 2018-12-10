@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.provision.service.requisition;
 
+import java.util.Map;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.netmgt.provision.persist.RequisitionRequest;
-
-import java.util.Map;
-import java.util.Objects;
 
 @XmlRootElement(name = "http-requisition-request")
 @XmlAccessorType(XmlAccessType.NONE)

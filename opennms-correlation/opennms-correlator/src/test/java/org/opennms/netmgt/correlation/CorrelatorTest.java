@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.correlation;
 
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.isA;
+import static org.easymock.EasyMock.same;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,8 +41,6 @@ import org.opennms.core.fiber.Fiber;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
-
-import static org.easymock.EasyMock.*;
 
 import junit.framework.TestCase;
 

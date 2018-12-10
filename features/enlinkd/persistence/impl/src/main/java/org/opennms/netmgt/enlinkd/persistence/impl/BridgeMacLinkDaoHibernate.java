@@ -31,9 +31,9 @@ package org.opennms.netmgt.enlinkd.persistence.impl;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.enlinkd.persistence.api.BridgeMacLinkDao;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
+import org.opennms.netmgt.enlinkd.persistence.api.BridgeMacLinkDao;
 
 public class BridgeMacLinkDaoHibernate extends
         AbstractDaoHibernate<BridgeMacLink, Integer> implements

@@ -39,18 +39,18 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Throwables;
 import com.google.common.io.ByteStreams;
-import com.vaadin.v7.data.Validator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
+import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.Label;
 
 /**
  * This class provides several helper methods for ui stuff, e.g. creating a

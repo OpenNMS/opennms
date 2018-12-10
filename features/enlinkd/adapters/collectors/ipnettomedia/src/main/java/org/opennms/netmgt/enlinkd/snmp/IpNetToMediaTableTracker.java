@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import static org.opennms.core.utils.InetAddressUtils.normalizeMacAddress;
 import static org.opennms.core.utils.InetAddressUtils.isValidBridgeAddress;
+import static org.opennms.core.utils.InetAddressUtils.normalizeMacAddress;
 
 import java.net.InetAddress;
 

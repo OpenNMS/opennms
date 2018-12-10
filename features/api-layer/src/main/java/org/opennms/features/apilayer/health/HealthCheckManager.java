@@ -29,9 +29,9 @@
 package org.opennms.features.apilayer.health;
 
 import org.opennms.features.apilayer.utils.InterfaceMapper;
+import org.opennms.integration.api.v1.health.Context;
 import org.opennms.integration.api.v1.health.HealthCheck;
 import org.opennms.integration.api.v1.health.Response;
-import org.opennms.integration.api.v1.health.Context;
 import org.opennms.integration.api.v1.health.Status;
 import org.osgi.framework.BundleContext;
 

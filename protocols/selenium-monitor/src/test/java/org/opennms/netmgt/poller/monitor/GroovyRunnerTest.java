@@ -29,7 +29,6 @@
 package org.opennms.netmgt.poller.monitor;
 
 import static org.junit.Assert.assertEquals;
-import groovy.lang.GroovyClassLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +41,8 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.opennms.netmgt.junit.runner.SeleniumComputer;
+
+import groovy.lang.GroovyClassLoader;
 
 
 public class GroovyRunnerTest {

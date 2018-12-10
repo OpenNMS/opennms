@@ -28,10 +28,10 @@
 
 package org.opennms.features.reporting.dao;
 
+import java.util.List;
+
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.springframework.core.io.Resource;
-
-import java.util.List;
 
 public interface LocalReportsDao {
     /**

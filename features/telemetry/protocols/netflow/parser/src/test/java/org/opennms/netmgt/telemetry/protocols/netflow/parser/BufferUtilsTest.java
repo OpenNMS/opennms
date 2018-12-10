@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
+import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.sfloat;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.sint;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint32;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint64;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.sfloat;
 
 import java.nio.ByteBuffer;
 

@@ -27,13 +27,14 @@
  *******************************************************************************/
 package org.opennms.features.topology.plugins.topo.graphml.status;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.collect.ImmutableMap;
-import org.opennms.netmgt.model.OnmsSeverity;
-
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+
+import org.opennms.netmgt.model.OnmsSeverity;
+
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableMap;
 
 public class GraphMLVertexStatus extends GraphMLStatus {
     private long alarmCount;

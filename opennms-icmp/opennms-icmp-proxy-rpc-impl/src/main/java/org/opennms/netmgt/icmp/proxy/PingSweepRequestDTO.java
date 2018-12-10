@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.icmp.PingConstants;

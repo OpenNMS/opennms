@@ -28,19 +28,19 @@
 
 package org.opennms.netmgt.config;
 
+import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.assertEquals;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.springframework.core.io.FileSystemResource;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.assertEquals;
 
 public class SnmpDataCollectionTest {
 

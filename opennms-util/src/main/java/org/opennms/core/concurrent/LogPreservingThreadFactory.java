@@ -28,11 +28,11 @@
 
 package org.opennms.core.concurrent;
 
-import org.slf4j.MDC;
-
 import java.util.BitSet;
 import java.util.Map;
 import java.util.concurrent.ThreadFactory;
+
+import org.slf4j.MDC;
 
 public class LogPreservingThreadFactory implements ThreadFactory {
     private final BitSet m_slotNumbers;

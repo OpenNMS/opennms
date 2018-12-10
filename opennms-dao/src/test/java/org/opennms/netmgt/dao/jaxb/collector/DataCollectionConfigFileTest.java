@@ -32,12 +32,10 @@ import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-import junit.framework.TestCase;
-
 import org.opennms.netmgt.dao.jaxb.InvocationAnticipator;
-import org.opennms.netmgt.dao.jaxb.collector.DataCollectionConfigFile;
-import org.opennms.netmgt.dao.jaxb.collector.DataCollectionVisitor;
 import org.springframework.core.io.ClassPathResource;
+
+import junit.framework.TestCase;
 
 public class DataCollectionConfigFileTest extends TestCase {
     

@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.jmx;
 
+import java.util.Map;
+
 import org.opennms.netmgt.config.collectd.jmx.JmxCollection;
 import org.opennms.netmgt.jmx.connection.JmxConnectors;
-
-import java.util.Map;
 
 public class JmxCollectorConfig {
 

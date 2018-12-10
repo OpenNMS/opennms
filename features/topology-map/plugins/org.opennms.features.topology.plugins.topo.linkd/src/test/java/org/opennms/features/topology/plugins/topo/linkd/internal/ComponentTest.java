@@ -30,11 +30,11 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.util.Collection;
 
-import com.vaadin.v7.data.util.BeanItem;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.features.topology.api.topo.AbstractVertex;
+
+import com.vaadin.v7.data.util.BeanItem;
 
 public class ComponentTest {
 	@Test

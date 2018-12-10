@@ -28,24 +28,23 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_WS_C2948_GLOBAL_DEVICEID;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_WS_C2948_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_WS_C2948_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_WS_C2948_SNMP_RESOURCE;
 
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
-import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.model.CdpElement.CdpGlobalDeviceIdFormat;
+import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms7467NetworkBuilder;
-
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_WS_C2948_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_WS_C2948_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_WS_C2948_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_WS_C2948_GLOBAL_DEVICEID;
 
 public class Nms7467EnIT extends EnLinkdBuilderITCase {
 

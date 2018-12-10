@@ -46,9 +46,9 @@ import org.opennms.netmgt.model.SurveillanceStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.ui.Notification;
 import com.vaadin.v7.event.ItemClickEvent;
 import com.vaadin.v7.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.v7.ui.Table;
 
 /**

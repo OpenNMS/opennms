@@ -28,13 +28,9 @@
 
 package org.opennms.netmgt.telemetry.protocols.collection;
 
-import com.google.common.io.Files;
-
-import org.opennms.features.osgi.script.OSGiScriptEngineManager;
-import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
-import org.osgi.framework.BundleContext;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 import javax.script.Compilable;
 import javax.script.CompiledScript;
@@ -42,9 +38,14 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+
+import org.opennms.features.osgi.script.OSGiScriptEngineManager;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.osgi.framework.BundleContext;
+
+import com.google.common.io.Files;
 
 /**
  * Uses an external script, executed via JSR-223, to generate a

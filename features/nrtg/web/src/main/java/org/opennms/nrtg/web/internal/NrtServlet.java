@@ -40,8 +40,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.google.common.net.MediaType;
 import org.opennms.netmgt.model.ResourceId;
+
+import com.google.common.net.MediaType;
 
 public class NrtServlet extends HttpServlet {
 

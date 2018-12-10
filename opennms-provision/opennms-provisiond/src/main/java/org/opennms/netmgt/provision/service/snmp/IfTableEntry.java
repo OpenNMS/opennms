@@ -30,10 +30,10 @@ package org.opennms.netmgt.provision.service.snmp;
 
 import static org.opennms.core.utils.InetAddressUtils.normalizeMacAddress;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.snmp.AbstractSnmpStore;
 import org.opennms.netmgt.snmp.NamedSnmpVar;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**

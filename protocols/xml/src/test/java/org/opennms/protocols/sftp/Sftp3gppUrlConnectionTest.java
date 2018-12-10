@@ -33,11 +33,10 @@ import java.net.URLConnection;
 import java.util.Date;
 
 import org.junit.Assert;
-
 import org.junit.Test;
+import org.opennms.protocols.xml.collector.UrlFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.protocols.xml.collector.UrlFactory;
 
 /**
  * The Class Sftp3gppUrlConnectionTest.

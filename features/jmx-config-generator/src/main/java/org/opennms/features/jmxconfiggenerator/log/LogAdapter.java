@@ -28,10 +28,10 @@
 
 package org.opennms.features.jmxconfiggenerator.log;
 
+import java.io.InputStream;
+
 import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
-
-import java.io.InputStream;
 
 /**
  * The command line tool needs to be enabled to only log to STDOUT or STDERR.

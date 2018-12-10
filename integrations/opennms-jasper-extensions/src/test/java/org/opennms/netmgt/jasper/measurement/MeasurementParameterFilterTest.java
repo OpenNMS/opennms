@@ -31,12 +31,13 @@ package org.opennms.netmgt.jasper.measurement;
 import java.util.Arrays;
 import java.util.Collection;
 
-import net.sf.jasperreports.engine.JRParameter;
-import net.sf.jasperreports.engine.design.JRDesignParameter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+
+import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.design.JRDesignParameter;
 
 @RunWith(Parameterized.class)
 public class MeasurementParameterFilterTest {

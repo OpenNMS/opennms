@@ -32,10 +32,10 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.poller.monitors.support.LoopPlugin;
+
+import junit.framework.TestCase;
 public class LoopPluginTest extends TestCase {
 
     @Override

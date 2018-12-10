@@ -28,11 +28,11 @@
 
 package org.opennms.netmgt.provision;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.model.NetworkBuilder;
-
-import static org.junit.Assert.assertEquals;
 public class DnsRecordTest {
 
 	private NetworkBuilder nb;

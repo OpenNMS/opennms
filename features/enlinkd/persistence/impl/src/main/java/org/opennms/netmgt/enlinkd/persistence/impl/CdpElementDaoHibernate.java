@@ -30,9 +30,9 @@ package org.opennms.netmgt.enlinkd.persistence.impl;
 
 import java.util.List;
 
-import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
+import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
 import org.slf4j.LoggerFactory;
 
 public class CdpElementDaoHibernate extends AbstractDaoHibernate<CdpElement, Integer> implements CdpElementDao {

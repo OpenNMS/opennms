@@ -36,7 +36,6 @@ import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.hardware.HwExtension;
 import org.opennms.netmgt.config.hardware.HwInventoryAdapterConfiguration;
 import org.opennms.netmgt.config.hardware.MibObj;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

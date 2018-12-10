@@ -29,11 +29,11 @@
 package org.opennms.netmgt.scheduler;
 
 
-import junit.framework.TestCase;
-
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.scheduler.mock.MockInterval;
 import org.opennms.netmgt.scheduler.mock.MockScheduler;
+
+import junit.framework.TestCase;
 
 /**
  * Represents a ScheduleTest 

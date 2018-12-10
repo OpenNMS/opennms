@@ -30,9 +30,9 @@ package org.opennms.netmgt.config;
 
 import java.io.InputStream;
 
-import junit.framework.TestCase;
-
 import org.opennms.core.test.ConfigurationTestUtils;
+
+import junit.framework.TestCase;
 
 /**
  * Tests for VacuumdConfigFactory.

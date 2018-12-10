@@ -28,6 +28,8 @@
 
 package org.opennms.core.rpc.aws.sqs;
 
+import java.util.Objects;
+
 import org.apache.camel.CamelContext;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
@@ -40,8 +42,6 @@ import org.opennms.core.rpc.camel.CamelRpcServerRouteManager;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Objects;
 
 public class AmazonSQSServerRouteManager extends CamelRpcServerRouteManager {
     private static final Logger LOG = LoggerFactory.getLogger(CamelRpcServerRouteManager.class);

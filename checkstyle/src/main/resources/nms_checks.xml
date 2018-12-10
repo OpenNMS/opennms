@@ -25,5 +25,17 @@
             <property name="format" value="^UTF-8$"/>
             <message key="forbid.UTF8.string.literal" value="Use ''java.nio.charset.StandardCharsets.UTF_8.name()'' instead of ''{0}''" />
         </module>
+
+        <!--
+            Ensure the imports are in a defined order, otherwise different IDEs enforce different results, which
+            causes unnecessary git diffs
+        -->
+        <module name="ImportOrder">
+            <property name="groups" value="java,javax,org,com,*" />
+            <property name="ordered" value="true" />
+            <property name="separated" value="true" />
+            <property name="option" value="top" />
+            <property name="sortStaticImportsAlphabetically" value="true" />
+        </module>
     </module>
 </module>

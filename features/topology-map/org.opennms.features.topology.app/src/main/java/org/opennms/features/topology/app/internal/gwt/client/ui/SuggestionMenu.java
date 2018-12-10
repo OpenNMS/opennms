@@ -28,10 +28,10 @@
 
 package org.opennms.features.topology.app.internal.gwt.client.ui;
 
+import java.util.List;
+
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
-
-import java.util.List;
 
 public class SuggestionMenu extends MenuBar {
 

@@ -31,11 +31,11 @@ package org.opennms.netmgt.rt;
 import java.io.File;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.opennms.core.test.MockLogAppender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import junit.framework.TestCase;
 
 public class RequestTrackerTest extends TestCase {
     private static final Logger LOG = LoggerFactory.getLogger(RequestTrackerTest.class);

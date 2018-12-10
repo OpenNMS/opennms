@@ -36,9 +36,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.opennms.integration.api.v1.config.syslog.SyslogMatchExtension;
 import org.opennms.integration.api.v1.config.syslog.ParameterAssignment;
 import org.opennms.integration.api.v1.config.syslog.SyslogMatch;
+import org.opennms.integration.api.v1.config.syslog.SyslogMatchExtension;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.syslogd.Match;
 import org.opennms.netmgt.config.syslogd.SyslogdConfigurationGroup;

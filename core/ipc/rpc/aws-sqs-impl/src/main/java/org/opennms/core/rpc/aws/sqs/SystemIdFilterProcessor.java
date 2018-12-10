@@ -28,14 +28,14 @@
 
 package org.opennms.core.rpc.aws.sqs;
 
+import java.util.Objects;
+
 import org.apache.camel.AsyncCallback;
 import org.apache.camel.AsyncProcessor;
 import org.apache.camel.Exchange;
 import org.opennms.core.rpc.camel.CamelRpcConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Objects;
 
 public class SystemIdFilterProcessor implements AsyncProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(SystemIdFilterProcessor.class);

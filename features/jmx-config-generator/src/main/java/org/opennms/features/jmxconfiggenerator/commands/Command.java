@@ -28,7 +28,10 @@
 
 package org.opennms.features.jmxconfiggenerator.commands;
 
-import com.google.common.base.Throwables;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.lang.reflect.Field;
+
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -36,9 +39,7 @@ import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.OptionHandlerFilter;
 import org.opennms.features.jmxconfiggenerator.log.ConsoleLogAdapter;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.lang.reflect.Field;
+import com.google.common.base.Throwables;
 
 /**
  * Overall Command class to group the available commands and provide common methods.

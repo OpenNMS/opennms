@@ -31,9 +31,9 @@ package org.opennms.netmgt.notifd;
 import java.util.List;
 import java.util.SortedMap;
 
+import org.opennms.core.utils.TimeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.core.utils.TimeConverter;
 
 /**
  * This class is used as a thread for executing notices for events that are

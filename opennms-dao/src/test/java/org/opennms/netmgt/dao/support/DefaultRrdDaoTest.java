@@ -34,8 +34,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 
-import junit.framework.TestCase;
-
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
@@ -48,6 +46,8 @@ import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.StringUtils;
+
+import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>

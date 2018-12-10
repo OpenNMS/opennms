@@ -32,9 +32,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
 import org.opennms.netmgt.telemetry.api.receiver.ListenerFactory;
+import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.api.ListenerDefinition;
 import org.opennms.netmgt.telemetry.listeners.TcpListener;
 import org.opennms.netmgt.telemetry.listeners.TcpParser;

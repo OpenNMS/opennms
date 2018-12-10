@@ -32,15 +32,15 @@ import java.io.File;
 
 import org.opennms.features.vaadin.api.Logger;
 
-import com.vaadin.v7.data.util.TextFileProperty;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Window;
+import com.vaadin.v7.data.util.TextFileProperty;
+import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
 
 /**
  * The File Editor Window.

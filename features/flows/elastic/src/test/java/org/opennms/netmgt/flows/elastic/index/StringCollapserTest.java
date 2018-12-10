@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.flows.elastic.index;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;

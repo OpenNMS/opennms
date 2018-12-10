@@ -41,19 +41,18 @@ import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.xml.eventconf.Events;
-
-import com.vaadin.event.Action;
-import com.vaadin.v7.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.v7.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
-import com.vaadin.v7.ui.Tree;
-import com.vaadin.v7.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-
 import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
+
+import com.vaadin.event.Action;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.Window;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.Tree;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * The Class MIB Compiler Panel.

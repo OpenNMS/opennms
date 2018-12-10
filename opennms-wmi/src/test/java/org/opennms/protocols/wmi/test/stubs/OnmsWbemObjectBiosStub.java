@@ -28,13 +28,13 @@
 
 package org.opennms.protocols.wmi.test.stubs;
 
-import org.opennms.protocols.wmi.wbem.OnmsWbemObject;
+import java.util.List;
+
+import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.wbem.OnmsWbemMethodSet;
+import org.opennms.protocols.wmi.wbem.OnmsWbemObject;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObjectPath;
 import org.opennms.protocols.wmi.wbem.OnmsWbemPropertySet;
-import org.opennms.protocols.wmi.WmiException;
-
-import java.util.List;
 
 public class OnmsWbemObjectBiosStub implements OnmsWbemObject {
     public OnmsWbemPropertySet props;

@@ -31,11 +31,11 @@ package org.opennms.netmgt.ticketer.remedy;
 import java.io.File;
 import java.util.Date;
 
-import junit.framework.TestCase;
-
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
 import org.opennms.api.integration.ticketing.Ticket.State;
+
+import junit.framework.TestCase;
 
 public class RemedyTicketerPluginTest extends TestCase {
 

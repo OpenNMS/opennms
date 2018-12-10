@@ -29,8 +29,8 @@
 package org.opennms.core.ipc.sink.aggregation;
 
 import org.opennms.core.ipc.sink.api.AggregationPolicy;
-import org.opennms.core.ipc.sink.api.MessageDispatcher;
 import org.opennms.core.ipc.sink.api.Message;
+import org.opennms.core.ipc.sink.api.MessageDispatcher;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.api.SyncDispatcher;
 

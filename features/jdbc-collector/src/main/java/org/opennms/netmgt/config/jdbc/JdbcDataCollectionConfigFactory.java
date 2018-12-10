@@ -34,9 +34,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JaxbUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.core.xml.JaxbUtils;
 import org.xml.sax.InputSource;
 
 public class JdbcDataCollectionConfigFactory {

@@ -28,14 +28,14 @@
 
 package org.opennms.web.controller;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.opennms.web.navigate.MenuDropdownNavBarEntry;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 public class DashboardController extends AbstractController implements InitializingBean {
     private MenuDropdownNavBarEntry m_dashboardMenuEntries;

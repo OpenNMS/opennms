@@ -28,9 +28,9 @@
 
 package org.opennms.protocols.wmi.test.stubs;
 
+import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObject;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObjectSet;
-import org.opennms.protocols.wmi.WmiException;
 
 public class OnmsWbemObjectSetBiosStub implements OnmsWbemObjectSet {
     public OnmsWbemObject objStub;

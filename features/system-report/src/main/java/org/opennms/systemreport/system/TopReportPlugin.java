@@ -33,10 +33,10 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.opennms.systemreport.AbstractSystemReportPlugin;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 public class TopReportPlugin extends AbstractSystemReportPlugin {
     private static final Logger LOG = LoggerFactory.getLogger(TopReportPlugin.class);

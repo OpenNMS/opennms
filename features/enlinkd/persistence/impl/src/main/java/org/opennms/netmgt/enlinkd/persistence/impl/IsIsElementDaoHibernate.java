@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.enlinkd.persistence.impl;
 
-import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
+import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
 
 public class IsIsElementDaoHibernate extends AbstractDaoHibernate<IsIsElement, Integer> implements IsIsElementDao {
 

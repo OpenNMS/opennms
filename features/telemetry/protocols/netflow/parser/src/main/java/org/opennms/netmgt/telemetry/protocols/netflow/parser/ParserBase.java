@@ -32,7 +32,6 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.IntFunction;
 
 import org.bson.BsonBinary;
 import org.bson.BsonBinaryWriter;

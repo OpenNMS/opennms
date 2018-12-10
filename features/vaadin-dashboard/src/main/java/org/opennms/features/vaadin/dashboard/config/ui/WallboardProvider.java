@@ -28,17 +28,16 @@
 
 package org.opennms.features.vaadin.dashboard.config.ui;
 
-import com.vaadin.v7.data.util.BeanItemContainer;
+import java.io.File;
+import java.io.IOException;
 
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.dashboard.model.Wallboard;
 import org.opennms.features.vaadin.dashboard.model.Wallboards;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
+import com.vaadin.v7.data.util.BeanItemContainer;
 
 /**
  * This class is used for loading, holding and saving of {@link Wallboard} definitions.

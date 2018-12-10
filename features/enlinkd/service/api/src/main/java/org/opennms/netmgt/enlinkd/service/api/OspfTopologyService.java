@@ -30,6 +30,7 @@ package org.opennms.netmgt.enlinkd.service.api;
 
 
 import java.util.Date;
+
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 

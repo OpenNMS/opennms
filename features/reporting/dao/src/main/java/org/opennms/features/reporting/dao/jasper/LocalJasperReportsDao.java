@@ -28,10 +28,10 @@
 
 package org.opennms.features.reporting.dao.jasper;
 
-import org.springframework.core.io.Resource;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+
+import org.springframework.core.io.Resource;
 
 /**
  * <p>LocalJasperReportsDao interface.<p/>

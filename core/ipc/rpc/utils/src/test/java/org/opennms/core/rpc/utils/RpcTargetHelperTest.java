@@ -28,19 +28,19 @@
 
 package org.opennms.core.rpc.utils;
 
-import org.junit.Test;
-import org.opennms.core.rpc.api.RpcTarget;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.OnmsNode;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Test;
+import org.opennms.core.rpc.api.RpcTarget;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsNode;
 
 public class RpcTargetHelperTest {
 

@@ -16,11 +16,12 @@
  */
 package org.opennms.container.web.felix.base.internal.handler;
 
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Map;
+
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
-import java.util.Enumeration;
-import java.util.Collections;
-import java.util.Map;
 
 public final class FilterConfigImpl
     implements FilterConfig

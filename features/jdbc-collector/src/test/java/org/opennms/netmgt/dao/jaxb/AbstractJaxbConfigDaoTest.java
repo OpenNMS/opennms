@@ -30,8 +30,6 @@ package org.opennms.netmgt.dao.jaxb;
 
 import java.io.InputStream;
 
-import junit.framework.TestCase;
-
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.core.xml.MarshallingResourceFailureException;
@@ -40,6 +38,8 @@ import org.opennms.test.ThrowableAnticipator;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+
+import junit.framework.TestCase;
 
 public class AbstractJaxbConfigDaoTest extends TestCase {
 

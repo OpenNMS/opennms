@@ -28,12 +28,12 @@
 
 package org.opennms.netmgt.enlinkd.persistence.impl;
 
+import java.util.List;
+
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
-import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
-
-import java.util.List;
+import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
 
 public class LldpElementDaoHibernate extends AbstractDaoHibernate<LldpElement, Integer> implements LldpElementDao {
 

@@ -28,6 +28,11 @@
 
 package org.opennms.web.svclayer;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -36,11 +41,6 @@ import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 import org.opennms.web.svclayer.model.DatabaseReportDescription;
 import org.opennms.web.svclayer.support.DefaultDatabaseReportListService;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 //import org.springframework.core.io.ClassPathResource;
 //import org.springframework.core.io.Resource;

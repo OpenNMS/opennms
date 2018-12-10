@@ -48,17 +48,17 @@ import org.opennms.netmgt.vaadin.core.UIHelper;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.HashBasedTable;
-import com.vaadin.v7.data.Item;
-import com.vaadin.v7.data.Property;
-import com.vaadin.v7.data.util.BeanItem;
-import com.vaadin.v7.data.util.ContainerHierarchicalWrapper;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Link;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.util.BeanItem;
+import com.vaadin.v7.data.util.ContainerHierarchicalWrapper;
 import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.v7.ui.Label;
-import com.vaadin.ui.Link;
 import com.vaadin.v7.ui.Table;
 import com.vaadin.v7.ui.TreeTable;
 

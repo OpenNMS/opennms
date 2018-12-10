@@ -28,6 +28,8 @@
 
 package org.opennms.features.jmxconfiggenerator;
 
+import java.io.PrintStream;
+
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -41,8 +43,6 @@ import org.opennms.features.jmxconfiggenerator.commands.GraphCreateCommand;
 import org.opennms.features.jmxconfiggenerator.commands.JmxConfigCreateCommand;
 import org.opennms.features.jmxconfiggenerator.commands.QueryCommand;
 import org.opennms.features.jmxconfiggenerator.log.ConsoleLogAdapter;
-
-import java.io.PrintStream;
 
 /**
  * @author Simon Walter <simon.walter@hp-factory.de>

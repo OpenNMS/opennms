@@ -31,9 +31,9 @@ package org.opennms.netmgt.enlinkd.persistence.impl;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.enlinkd.persistence.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
+import org.opennms.netmgt.enlinkd.persistence.api.BridgeBridgeLinkDao;
 
 
 

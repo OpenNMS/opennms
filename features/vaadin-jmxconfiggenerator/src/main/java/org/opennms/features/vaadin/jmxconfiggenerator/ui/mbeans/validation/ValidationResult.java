@@ -28,10 +28,6 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.vaadin.v7.data.Validator;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,6 +36,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.vaadin.v7.data.Validator;
 
 public class ValidationResult {
 

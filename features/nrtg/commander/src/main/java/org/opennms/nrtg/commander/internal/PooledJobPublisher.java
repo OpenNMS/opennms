@@ -33,15 +33,15 @@ package org.opennms.nrtg.commander.internal;
  * @author Markus Neumann
  */
 
+import java.util.TreeSet;
+import java.util.logging.Level;
+
 import org.opennms.nrtg.api.model.CollectionJob;
 import org.opennms.nrtg.api.model.CollectionTask;
 import org.opennms.nrtg.api.model.DefaultCollectionJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.JmsTemplate;
-
-import java.util.TreeSet;
-import java.util.logging.Level;
 
 /**
  * generates {@link CollectionJob}s and publish them via jms

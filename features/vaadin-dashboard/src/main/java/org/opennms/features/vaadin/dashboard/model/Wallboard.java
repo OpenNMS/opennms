@@ -28,12 +28,13 @@
 
 package org.opennms.features.vaadin.dashboard.model;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This class represents a collection of {@link DashletSpec} objects.

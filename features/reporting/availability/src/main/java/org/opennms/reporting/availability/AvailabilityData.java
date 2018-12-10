@@ -40,8 +40,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.api.CatFactory;
@@ -49,6 +47,8 @@ import org.opennms.netmgt.config.categories.CategoryGroup;
 import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.reporting.availability.svclayer.AvailabilityDataService;
 import org.opennms.reporting.datablock.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * AvailabilityData collects all the outages for all node/ip/service

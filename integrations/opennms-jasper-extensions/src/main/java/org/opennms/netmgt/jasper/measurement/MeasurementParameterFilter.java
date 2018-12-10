@@ -28,9 +28,10 @@
 
 package org.opennms.netmgt.jasper.measurement;
 
-import net.sf.jasperreports.engine.JRParameter;
 import org.opennms.netmgt.jasper.helper.MeasurementsHelper;
 import org.opennms.reporting.jasperreports.filter.ParameterFilter;
+
+import net.sf.jasperreports.engine.JRParameter;
 
 public class MeasurementParameterFilter implements ParameterFilter {
 

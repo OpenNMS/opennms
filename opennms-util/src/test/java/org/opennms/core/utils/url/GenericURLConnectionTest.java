@@ -28,11 +28,12 @@
 
 package org.opennms.core.utils.url;
 
-import junit.framework.TestCase;
+import java.net.URL;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import java.net.URL;
+import junit.framework.TestCase;
 
 /**
  * <p>GenericURLConnectionTest class.</p>

@@ -31,12 +31,12 @@ package org.opennms.netmgt.provision.detector.smb.client;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import jcifs.netbios.NbtAddress;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.smb.response.NbtAddressResponse;
 import org.opennms.netmgt.provision.support.Client;
+
+import jcifs.netbios.NbtAddress;
 
 /**
  * <p>SmbClient class.</p>

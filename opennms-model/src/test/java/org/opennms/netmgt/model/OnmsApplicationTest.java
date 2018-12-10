@@ -28,11 +28,11 @@
 
 package org.opennms.netmgt.model;
 
+import java.io.IOException;
+
 import org.junit.Test;
 import org.opennms.core.test.xml.JsonTest;
 import org.opennms.core.test.xml.XmlTest;
-
-import java.io.IOException;
 
 
 public class OnmsApplicationTest {

@@ -41,6 +41,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.opennms.core.test.Level;
+import org.opennms.core.test.LoggingEvent;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.measurements.api.QueryRequestValidator;
+import org.opennms.netmgt.measurements.api.exceptions.ValidationException;
+import org.opennms.netmgt.measurements.model.QueryRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.http.Request;
 import com.github.tomakehurst.wiremock.http.RequestListener;
@@ -59,19 +73,6 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.opennms.core.test.Level;
-import org.opennms.core.test.LoggingEvent;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.measurements.api.QueryRequestValidator;
-import org.opennms.netmgt.measurements.api.exceptions.ValidationException;
-import org.opennms.netmgt.measurements.model.QueryRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class AbstractMeasurementQueryExecutorTest {
 

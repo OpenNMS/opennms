@@ -31,9 +31,9 @@ package org.opennms.core.db;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 
+import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;

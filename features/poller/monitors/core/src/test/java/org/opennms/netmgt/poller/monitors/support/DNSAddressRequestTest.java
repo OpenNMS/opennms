@@ -34,12 +34,10 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.poller.monitors.support.DNSAddressRR;
-import org.opennms.netmgt.poller.monitors.support.DNSAddressRequest;
+
+import junit.framework.TestCase;
 
 public class DNSAddressRequestTest extends TestCase {
 

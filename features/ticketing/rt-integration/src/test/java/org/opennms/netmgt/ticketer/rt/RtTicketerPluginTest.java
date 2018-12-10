@@ -31,12 +31,12 @@ package org.opennms.netmgt.ticketer.rt;
 import java.io.File;
 import java.util.Date;
 
-import junit.framework.TestCase;
-
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import junit.framework.TestCase;
 
 public class RtTicketerPluginTest extends TestCase {
     private static final Logger LOG = LoggerFactory.getLogger(RtTicketerPluginTest.class);

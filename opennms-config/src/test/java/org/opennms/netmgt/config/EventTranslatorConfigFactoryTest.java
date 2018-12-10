@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +40,6 @@ import org.junit.Test;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.UpdateField;
-
-import static org.junit.Assert.*;
 
 public class EventTranslatorConfigFactoryTest {
 

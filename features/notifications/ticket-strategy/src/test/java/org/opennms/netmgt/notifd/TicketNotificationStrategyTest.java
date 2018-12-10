@@ -33,8 +33,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import junit.framework.TestCase;
-
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -44,6 +42,8 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.notifd.Argument;
 import org.opennms.netmgt.notifd.TicketNotificationStrategy.AlarmType;
 import org.opennms.test.mock.EasyMockUtils;
+
+import junit.framework.TestCase;
 
 /**
  * Basic test cases for the TicketNotificationStrategy.

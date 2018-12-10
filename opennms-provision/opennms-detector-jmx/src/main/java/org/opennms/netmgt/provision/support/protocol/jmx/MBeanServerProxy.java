@@ -28,10 +28,11 @@
 
 package org.opennms.netmgt.provision.support.protocol.jmx;
 
-import javax.management.MBeanServer;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+
+import javax.management.MBeanServer;
 
 /**
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison</A>

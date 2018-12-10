@@ -31,13 +31,13 @@ package org.opennms.netmgt.config;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import junit.framework.TestCase;
-
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LocationUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.core.io.ByteArrayResource;
+
+import junit.framework.TestCase;
 
 public class SnmpPeerFactoryTest extends TestCase {
 

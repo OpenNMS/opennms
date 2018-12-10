@@ -29,12 +29,13 @@
 package org.opennms.netmgt.jmx.impl.connection.connectors;
 
 
-import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
+import java.io.IOException;
+import java.util.Objects;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
-import java.io.IOException;
-import java.util.Objects;
+
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 
 public class DefaultConnectionWrapper implements JmxServerConnectionWrapper {
 

@@ -28,11 +28,11 @@
 
 package org.opennms.web.tags.filters;
 
+import java.util.List;
+
 import org.opennms.netmgt.model.OnmsFilterFavorite;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.filter.QueryParameters;
-
-import java.util.List;
 
 public interface FilterCallback {
 

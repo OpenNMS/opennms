@@ -28,10 +28,10 @@
 
 package org.opennms.core.ipc.common.aws.sqs;
 
-import com.google.common.collect.ImmutableMap;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.google.common.collect.ImmutableMap;
 
 public class AmazonSQSQueueConfig {
 

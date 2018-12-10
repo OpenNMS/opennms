@@ -28,7 +28,6 @@
 
 package org.opennms.core.rpc.aws.sqs;
 
-import com.amazon.sqs.javamessaging.SQSConnectionFactory;
 import org.apache.camel.CamelContext;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
@@ -47,6 +46,8 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+
+import com.amazon.sqs.javamessaging.SQSConnectionFactory;
 
 @Ignore("Requires access to AWS")
 @RunWith(OpenNMSJUnit4ClassRunner.class)

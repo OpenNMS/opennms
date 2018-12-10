@@ -28,16 +28,6 @@
 
 package org.opennms.web.rest.support;
 
-import org.junit.Test;
-import org.mockito.stubbing.Answer;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.SecurityContext;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.anyString;
@@ -50,6 +40,16 @@ import static org.opennms.web.api.Authentication.ROLE_MOBILE;
 import static org.opennms.web.api.Authentication.ROLE_READONLY;
 import static org.opennms.web.api.Authentication.ROLE_REST;
 import static org.opennms.web.api.Authentication.ROLE_USER;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.SecurityContext;
+
+import org.junit.Test;
+import org.mockito.stubbing.Answer;
 
 public class SecurityHelperTest {
     private static final String USER = "joe";

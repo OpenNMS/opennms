@@ -28,8 +28,16 @@
 
 package org.opennms.netmgt.dao.support;
 
-import com.google.common.base.Throwables;
-import com.google.common.collect.Maps;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang.CharEncoding;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.api.CollectdConfigFactory;
@@ -53,15 +61,8 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Maps;
 
 /**
  * Retrieves and enumerates elements from the resource tree.

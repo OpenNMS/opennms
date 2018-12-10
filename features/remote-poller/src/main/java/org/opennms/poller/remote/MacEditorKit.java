@@ -19,7 +19,6 @@ import java.awt.Component;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-
 import java.util.HashMap;
 
 import javax.swing.Action;

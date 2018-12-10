@@ -37,10 +37,10 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.rrd.model.v1.RRDv1;
 import org.opennms.netmgt.rrd.model.v1.CFType;
 import org.opennms.netmgt.rrd.model.v1.DSType;
 import org.opennms.netmgt.rrd.model.v1.RRA;
+import org.opennms.netmgt.rrd.model.v1.RRDv1;
 
 /**
  * The Class JRB Parsing Test.

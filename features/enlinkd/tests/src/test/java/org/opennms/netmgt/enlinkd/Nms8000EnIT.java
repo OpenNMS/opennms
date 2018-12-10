@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.enlinkd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMR1_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMR1_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMR1_SNMP_RESOURCE;
@@ -48,8 +50,6 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMSW2_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMSW2_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMSW2_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMSW2_SNMP_RESOURCE_2;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.List;
@@ -62,9 +62,9 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
-import org.opennms.netmgt.enlinkd.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms8000NetworkBuilder;
 

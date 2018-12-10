@@ -28,16 +28,17 @@
 
 package org.opennms.protocols.json.collector;
 
-import net.sf.json.JSONObject;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import net.sf.json.JSONObject;
 
 public class JsonCollectorArrayIT extends JsonCollectorITCase {
 

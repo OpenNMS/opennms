@@ -28,13 +28,14 @@
 
 package org.opennms.features.vaadin.dashboard.config.ui;
 
+import org.opennms.features.vaadin.dashboard.config.DashletSelector;
+import org.opennms.features.vaadin.dashboard.model.DashletSelectorAccess;
+
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import org.opennms.features.vaadin.dashboard.config.DashletSelector;
-import org.opennms.features.vaadin.dashboard.model.DashletSelectorAccess;
 
 /**
  * The Vaadin application used for wallboard configuration. This application instantiates a {@link WallboardConfigView} instance.

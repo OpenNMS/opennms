@@ -28,8 +28,8 @@
 
 package org.opennms.web.svclayer.catstatus.model;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * <p>StatusInterface class.</p>

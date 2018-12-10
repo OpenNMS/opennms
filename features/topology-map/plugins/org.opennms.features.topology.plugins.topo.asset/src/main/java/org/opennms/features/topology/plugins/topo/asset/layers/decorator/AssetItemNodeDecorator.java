@@ -29,8 +29,8 @@
 package org.opennms.features.topology.plugins.topo.asset.layers.decorator;
 
 import org.opennms.features.graphml.model.GraphMLNode;
-import org.opennms.features.topology.plugins.topo.asset.layers.NodeDecorator;
 import org.opennms.features.topology.plugins.topo.asset.layers.AssetLayer;
+import org.opennms.features.topology.plugins.topo.asset.layers.NodeDecorator;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLProperties;
 
 /**

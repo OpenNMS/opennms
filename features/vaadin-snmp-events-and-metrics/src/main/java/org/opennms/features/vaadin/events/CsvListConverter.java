@@ -28,12 +28,12 @@
 
 package org.opennms.features.vaadin.events;
 
-import com.vaadin.v7.data.util.converter.Converter;
+import java.util.ArrayList;
+import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Locale;
+import com.vaadin.v7.data.util.converter.Converter;
 
 /**
  * The CSV List Converter.

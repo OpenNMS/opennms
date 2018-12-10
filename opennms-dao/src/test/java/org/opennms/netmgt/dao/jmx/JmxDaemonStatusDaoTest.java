@@ -35,10 +35,10 @@ import javax.management.MBeanServerFactory;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import junit.framework.TestCase;
-
 import org.opennms.netmgt.model.MockServiceDaemon;
 import org.opennms.netmgt.model.ServiceInfo;
+
+import junit.framework.TestCase;
 
 public class JmxDaemonStatusDaoTest extends TestCase {
     static private MBeanServer mBeanServer;

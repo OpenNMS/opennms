@@ -32,9 +32,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.opennms.core.tasks.BatchTask;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.provision.persist.AbstractRequisitionVisitor;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
@@ -47,6 +44,8 @@ import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvid
 import org.opennms.netmgt.provision.service.operations.ImportOperation;
 import org.opennms.netmgt.provision.service.operations.ImportOperationsManager;
 import org.opennms.netmgt.provision.service.operations.RequisitionImport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 /**

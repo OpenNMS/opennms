@@ -28,13 +28,14 @@
 
 package org.opennms.netmgt.poller.jmx.wrappers;
 
-import com.google.common.base.Throwables;
-
-import javax.management.ObjectName;
-import javax.management.MBeanServerConnection;
-import javax.management.JMException;
-import javax.management.MalformedObjectNameException;
 import java.io.IOException;
+
+import javax.management.JMException;
+import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+
+import com.google.common.base.Throwables;
 
 /**
  * A Wrapper for a JMX Object Name used in JEXL expressions.

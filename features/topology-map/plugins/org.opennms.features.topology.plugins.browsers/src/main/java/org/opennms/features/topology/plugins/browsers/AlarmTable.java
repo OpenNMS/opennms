@@ -28,12 +28,11 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
-import com.vaadin.v7.data.Container;
-import com.vaadin.v7.ui.AbstractSelect;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.v7.ui.NativeSelect;
-import com.vaadin.v7.ui.themes.BaseTheme;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.opennms.features.topology.api.HasExtraComponents;
 import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
@@ -45,10 +44,12 @@ import org.opennms.osgi.VaadinApplicationContextAware;
 import org.opennms.web.api.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.NativeSelect;
+import com.vaadin.v7.ui.themes.BaseTheme;
 
 @SuppressWarnings("serial")
 public class AlarmTable extends SelectionAwareTable implements HasExtraComponents, VaadinApplicationContextAware {

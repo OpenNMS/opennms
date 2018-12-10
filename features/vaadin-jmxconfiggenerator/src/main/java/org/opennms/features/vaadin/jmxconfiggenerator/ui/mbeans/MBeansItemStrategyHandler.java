@@ -39,8 +39,8 @@ import org.opennms.features.vaadin.jmxconfiggenerator.data.StringRenderer;
 import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
 import org.opennms.netmgt.config.collectd.jmx.Mbean;
 
-import com.vaadin.v7.data.Item;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.v7.data.Item;
 
 /**
  *

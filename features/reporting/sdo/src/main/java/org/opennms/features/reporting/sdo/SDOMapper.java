@@ -31,7 +31,6 @@ package org.opennms.features.reporting.sdo;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.BeanUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -51,8 +51,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import junit.framework.TestCase;
-
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.easymock.IArgumentMatcher;
@@ -93,6 +91,8 @@ import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.EasyMockUtils;
+
+import junit.framework.TestCase;
 
 public class PollerBackEndTest extends TestCase {
 

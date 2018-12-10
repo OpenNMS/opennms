@@ -28,11 +28,19 @@
 
 package org.opennms.core.ipc.sink.aws.sqs.itests;
 
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.Message;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
+import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Collectors;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,29 +49,22 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.opennms.core.ipc.common.aws.sqs.AmazonSQSManager;
 import org.opennms.core.ipc.sink.api.SyncDispatcher;
-import org.opennms.core.ipc.sink.aws.sqs.server.AmazonSQSMessageConsumerManager;
 import org.opennms.core.ipc.sink.aws.sqs.client.AmazonSQSRemoteMessageDispatcherFactory;
 import org.opennms.core.ipc.sink.aws.sqs.itests.heartbeat.Heartbeat;
 import org.opennms.core.ipc.sink.aws.sqs.itests.heartbeat.HeartbeatConsumer;
 import org.opennms.core.ipc.sink.aws.sqs.itests.heartbeat.HeartbeatGenerator;
 import org.opennms.core.ipc.sink.aws.sqs.itests.heartbeat.HeartbeatModule;
+import org.opennms.core.ipc.sink.aws.sqs.server.AmazonSQSMessageConsumerManager;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.stream.Collectors;
-
-import static com.jayway.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.model.Message;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 
 /**
  * Used to help profile the sink producer and consumer against AWS SQS.

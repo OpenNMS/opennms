@@ -28,13 +28,13 @@
 
 package org.opennms.core.rpc.utils;
 
+import java.util.Map;
+import java.util.function.Function;
+
 import org.opennms.core.rpc.api.RpcTarget;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * Utility class used to compute the target (location, system-id) for some

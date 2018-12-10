@@ -29,10 +29,10 @@
 package org.opennms.netmgt.snmp.proxy;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.mock;
-import static org.hamcrest.Matchers.contains;
 
 import java.util.ArrayList;
 import java.util.Collections;

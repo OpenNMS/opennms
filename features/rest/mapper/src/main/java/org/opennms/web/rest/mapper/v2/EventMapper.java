@@ -28,6 +28,9 @@
 
 package org.opennms.web.rest.mapper.v2;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.mapstruct.AfterMapping;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
@@ -42,9 +45,6 @@ import org.opennms.web.rest.model.v2.EventDTO;
 import org.opennms.web.rest.model.v2.EventParameterDTO;
 import org.opennms.web.rest.model.v2.ServiceTypeDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", uses = {})
 public abstract class EventMapper {

@@ -30,7 +30,6 @@ package org.opennms.netmgt.protocols.xmp.collector;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

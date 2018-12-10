@@ -32,12 +32,13 @@ import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-import junit.framework.TestCase;
 
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import junit.framework.TestCase;
 
 public class OpenNMSUserDetailsServiceTest extends TestCase {
 	

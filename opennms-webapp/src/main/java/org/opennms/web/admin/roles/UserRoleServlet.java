@@ -38,9 +38,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.netmgt.config.WebRoleContext;
 import org.opennms.netmgt.config.WebCalendar;
 import org.opennms.netmgt.config.WebRole;
+import org.opennms.netmgt.config.WebRoleContext;
 import org.opennms.netmgt.config.WebRoleManager;
 
  /**

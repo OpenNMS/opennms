@@ -30,10 +30,10 @@ package org.opennms.systemreport.formatters;
 
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.systemreport.SystemReportFormatter;
 import org.opennms.systemreport.SystemReportPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 public class TextSystemReportFormatter extends AbstractSystemReportFormatter implements SystemReportFormatter {

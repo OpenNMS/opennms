@@ -32,8 +32,8 @@ import org.opennms.features.topology.api.browsers.AbstractSelectionLinkGenerator
 import org.opennms.features.topology.plugins.browsers.ToStringColumnGenerator;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertex;
 
-import com.vaadin.v7.data.Property;
 import com.vaadin.ui.Button;
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.Table;
 import com.vaadin.v7.ui.themes.BaseTheme;
 

@@ -30,6 +30,7 @@ package org.opennms.core.test.dns;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.opennms.core.test.OpenNMSAbstractTestExecutionListener;
 import org.opennms.core.test.dns.annotations.DNSEntry;
 import org.opennms.core.test.dns.annotations.DNSZone;

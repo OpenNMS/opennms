@@ -34,12 +34,12 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.core.utils.SystemInfoUtils;
-
 import org.junit.Test;
+import org.opennms.core.utils.SystemInfoUtils;
 
 /**
  * The Class DefaultAmazonSQSManagerTest.

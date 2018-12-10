@@ -1,9 +1,9 @@
 package org.opennms.vaadin.extender;
 
-import com.vaadin.ui.UI;
-
 import java.util.Collections;
 import java.util.Map;
+
+import com.vaadin.ui.UI;
 
 public abstract class AbstractApplicationFactory implements ApplicationFactory {
 

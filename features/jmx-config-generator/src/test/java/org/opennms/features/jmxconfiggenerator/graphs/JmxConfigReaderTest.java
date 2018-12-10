@@ -28,13 +28,13 @@
 
 package org.opennms.features.jmxconfiggenerator.graphs;
 
+import java.io.IOException;
+import java.util.Collection;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.jmxconfiggenerator.log.Slf4jLogAdapter;
-
-import java.io.IOException;
-import java.util.Collection;
 
 /**
  * @author Simon Walter <simon.walter@hp-factory.de>

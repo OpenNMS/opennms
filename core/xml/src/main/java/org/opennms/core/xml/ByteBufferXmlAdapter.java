@@ -28,8 +28,9 @@
 
 package org.opennms.core.xml;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.nio.ByteBuffer;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class ByteBufferXmlAdapter extends XmlAdapter<byte[], ByteBuffer> {
 

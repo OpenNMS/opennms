@@ -31,11 +31,11 @@ package org.opennms.netmgt.notifd;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.model.notifd.Argument;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
+
+import junit.framework.TestCase;
 public class SnmpTrapNotificationStrategyTest extends TestCase {
 
     @Override

@@ -27,8 +27,9 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.components.graph;
 
-import com.vaadin.shared.ui.JavaScriptComponentState;
 import org.opennms.core.utils.TimeSeries;
+
+import com.vaadin.shared.ui.JavaScriptComponentState;
 
 /**
  * Stores all of the details required to render the graph.

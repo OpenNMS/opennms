@@ -28,13 +28,13 @@
 
 package org.opennms.features.vaadin.dashboard.config.ui.editors;
 
-import org.opennms.core.criteria.CriteriaBuilder;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.slf4j.LoggerFactory;
 
 /**
  * This {@link Enum} represents the different types of restrictions used to construct a criteria.

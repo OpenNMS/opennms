@@ -27,12 +27,13 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
+import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
+
 import com.vaadin.ui.Button;
 import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.Table;
 import com.vaadin.v7.ui.themes.BaseTheme;
-import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 
 /**
  * This abstract class represents a table based component that is refreshable by an associated surveillance view.

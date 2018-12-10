@@ -28,6 +28,15 @@
 
 package org.opennms.features.topology.plugins.topo.graphml.status;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
+
+import javax.script.ScriptEngineManager;
+import javax.script.SimpleBindings;
+
 import org.opennms.features.topology.api.info.MeasurementsWrapper;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -41,14 +50,6 @@ import org.opennms.features.topology.plugins.topo.graphml.GraphMLTopologyProvide
 import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
 import org.opennms.features.topology.plugins.topo.graphml.internal.Scripting;
 import org.opennms.netmgt.model.OnmsNode;
-
-import javax.script.ScriptEngineManager;
-import javax.script.SimpleBindings;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
 
 public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
 

@@ -31,7 +31,6 @@ package org.opennms.netmgt.notifd;
 import java.util.List;
 
 import org.junit.Assert;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.model.notifd.Argument;

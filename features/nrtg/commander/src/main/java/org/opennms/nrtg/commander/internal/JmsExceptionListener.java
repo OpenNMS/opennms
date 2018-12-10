@@ -28,12 +28,12 @@
 
 package org.opennms.nrtg.commander.internal;
 
+import javax.jms.ExceptionListener;
+import javax.jms.JMSException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
 
 @Component
 public class JmsExceptionListener implements ExceptionListener {

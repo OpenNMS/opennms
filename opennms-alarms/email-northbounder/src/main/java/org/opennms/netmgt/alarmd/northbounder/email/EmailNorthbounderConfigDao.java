@@ -33,7 +33,6 @@ import java.io.IOException;
 
 import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.core.xml.JaxbUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -28,18 +28,21 @@
 
 package org.opennms.netmgt.ticketer.tsrm;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.nio.file.Paths;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
-
-import java.io.File;
-import java.nio.file.Paths;
 
 import com.ibm.maximo.CreateSHSIMPINCResponseType;
 import com.ibm.maximo.CreateSHSIMPINCType;
@@ -50,7 +53,6 @@ import com.ibm.maximo.QuerySHSIMPINCResponseType;
 import com.ibm.maximo.QuerySHSIMPINCType;
 import com.ibm.maximo.SHSIMPINCINCIDENTType;
 import com.ibm.maximo.SHSIMPINCSetType;
-
 import com.ibm.maximo.wsdl.shsimpinc.SHSIMPINCPortType;
 
 public class TsrmMockTest {

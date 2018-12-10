@@ -28,12 +28,12 @@
 
 package org.opennms.features.jmxconfiggenerator.log;
 
-import com.google.common.base.Throwables;
-import com.google.common.io.ByteStreams;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import com.google.common.base.Throwables;
+import com.google.common.io.ByteStreams;
 
 /**
  * The STDOUT/STERR implementation of the {@ink LogAdapter}.

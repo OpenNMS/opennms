@@ -32,9 +32,9 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
-import org.opennms.netmgt.dao.util.ReductionKeyHelper;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.IpService;
+import org.opennms.netmgt.dao.util.ReductionKeyHelper;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
 public class IpServiceImpl implements IpService {

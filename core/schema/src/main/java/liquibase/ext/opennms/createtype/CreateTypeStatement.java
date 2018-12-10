@@ -33,9 +33,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import liquibase.statement.AbstractSqlStatement;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
+
+import liquibase.statement.AbstractSqlStatement;
 
 public class CreateTypeStatement extends AbstractSqlStatement {
 

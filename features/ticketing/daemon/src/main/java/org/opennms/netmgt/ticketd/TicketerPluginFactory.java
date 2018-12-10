@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.ticketd;
 
+import org.opennms.api.integration.ticketing.Plugin;
 import org.springframework.beans.factory.FactoryBean;
-import org.opennms.api.integration.ticketing.*;
 
 /**
  * <p>TicketerPluginFactory class.</p>

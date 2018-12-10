@@ -28,11 +28,6 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.io.InterruptedIOException;
-import java.net.ConnectException;
-import java.net.InetSocketAddress;
-import java.net.NoRouteToHostException;
-import java.net.Socket;
 import java.util.Map;
 
 import org.opennms.core.utils.DefaultSocketWrapper;

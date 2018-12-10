@@ -28,11 +28,11 @@
 
 package org.opennms.web.alarm;
 
+import java.util.List;
+
 import org.opennms.web.filter.Filter;
 import org.opennms.web.filter.NormalizedAcknowledgeType;
 import org.opennms.web.filter.QueryParameters;
-
-import java.util.List;
 
 /**
  * Convenience data structure for holding the arguments to an event query.

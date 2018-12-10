@@ -33,14 +33,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.protocols.json.collector.JsonCollectorITCase;
-import org.opennms.protocols.json.collector.MockDocumentBuilder;
+
+import net.sf.json.JSONObject;
 
 /**
  * The Test class for JSON Collector for Solaris Zones Statistics

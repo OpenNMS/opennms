@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.distributed.common;
 
 import java.util.Map;
+
 import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
 
 public class MapBasedParserDef extends MapBasedQueueDef implements ParserDefinition {

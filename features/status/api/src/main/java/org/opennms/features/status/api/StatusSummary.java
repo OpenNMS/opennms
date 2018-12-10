@@ -28,12 +28,12 @@
 
 package org.opennms.features.status.api;
 
-import org.opennms.netmgt.model.OnmsSeverity;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.opennms.netmgt.model.OnmsSeverity;
 
 public class StatusSummary {
     private final Map<OnmsSeverity, Long> severityMap;

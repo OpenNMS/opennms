@@ -31,6 +31,7 @@ package org.opennms.core.test.db;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
+
 import org.junit.Test;
 
 public class TemporaryDatabaseITCaseIT extends TemporaryDatabaseITCase {

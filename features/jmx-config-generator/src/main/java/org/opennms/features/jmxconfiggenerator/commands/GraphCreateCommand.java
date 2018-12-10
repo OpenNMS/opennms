@@ -28,7 +28,13 @@
 
 package org.opennms.features.jmxconfiggenerator.commands;
 
-import com.google.common.io.ByteStreams;
+import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collection;
+
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -36,12 +42,7 @@ import org.opennms.features.jmxconfiggenerator.graphs.GraphConfigGenerator;
 import org.opennms.features.jmxconfiggenerator.graphs.JmxConfigReader;
 import org.opennms.features.jmxconfiggenerator.graphs.Report;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Collection;
+import com.google.common.io.ByteStreams;
 
 /**
  * Implements the "create-graph" command functionality.

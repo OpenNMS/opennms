@@ -33,8 +33,8 @@ import java.util.List;
 
 import org.opennms.netmgt.config.datacollection.SystemDefChoice;
 
-import com.vaadin.v7.data.validator.RegexpValidator;
 import com.vaadin.ui.Component;
+import com.vaadin.v7.data.validator.RegexpValidator;
 import com.vaadin.v7.ui.CustomField;
 import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.v7.ui.OptionGroup;

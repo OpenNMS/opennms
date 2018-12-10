@@ -34,8 +34,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import net.simon04.jelementtree.ElementTree;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -47,6 +45,8 @@ import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.simon04.jelementtree.ElementTree;
 
 public class NominatimGeocoderService implements GeocoderService {
     private static final String GEOCODE_URL = "http://open.mapquestapi.com/nominatim/v1/search?format=xml";

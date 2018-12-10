@@ -46,8 +46,8 @@ import org.opennms.netmgt.flows.classification.internal.classifier.CombinedClass
 import org.opennms.netmgt.flows.classification.internal.value.PortValue;
 import org.opennms.netmgt.flows.classification.persistence.api.DefaultRuleDefinition;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
-import org.opennms.netmgt.flows.classification.persistence.api.RulePriorityComparator;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleDefinition;
+import org.opennms.netmgt.flows.classification.persistence.api.RulePriorityComparator;
 
 public class DefaultClassificationEngine implements ClassificationEngine {
 

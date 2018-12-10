@@ -28,19 +28,20 @@
 
 package org.opennms.features.jmxconfiggenerator.commands;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanInfo;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
 import org.opennms.features.jmxconfiggenerator.jmxconfig.query.FilterCriteria;
 import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQuery;
 import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQueryException;
 import org.opennms.features.jmxconfiggenerator.jmxconfig.query.QueryResult;
-
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanInfo;
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Implements the "query" command functionality.

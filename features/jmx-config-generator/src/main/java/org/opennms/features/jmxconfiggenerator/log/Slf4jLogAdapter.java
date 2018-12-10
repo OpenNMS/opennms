@@ -28,14 +28,15 @@
 
 package org.opennms.features.jmxconfiggenerator.log;
 
-import com.google.common.base.Throwables;
-import com.google.common.io.ByteStreams;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Throwables;
+import com.google.common.io.ByteStreams;
 
 /**
  * Use this {@ink LogAdapter} when using SLF4j logging.

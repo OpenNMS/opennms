@@ -28,11 +28,11 @@
 
 package org.opennms.features.reporting.dao.remoterepository;
 
-import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
-import org.springframework.core.io.Resource;
-
 import java.net.URI;
 import java.util.List;
+
+import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
+import org.springframework.core.io.Resource;
 
 /**
  * <p>RemoteRepositoryConfigDao interface.</p>

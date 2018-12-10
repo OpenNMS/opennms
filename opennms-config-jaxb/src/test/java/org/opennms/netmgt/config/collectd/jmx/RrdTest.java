@@ -28,12 +28,12 @@
 
 package org.opennms.netmgt.config.collectd.jmx;
 
-import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
-
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
+
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
 /**
  * The Test Class for Rrd.

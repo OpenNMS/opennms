@@ -28,12 +28,12 @@
 
 package org.opennms.core.camel;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.apache.camel.component.properties.PropertiesFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * The apply method is called on each message to determine in which Elasticsearch index 

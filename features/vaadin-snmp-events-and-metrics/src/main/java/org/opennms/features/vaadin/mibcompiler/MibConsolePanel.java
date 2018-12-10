@@ -31,17 +31,17 @@ package org.opennms.features.vaadin.mibcompiler;
 import java.time.Instant;
 
 import org.opennms.features.timeformat.api.TimeformatService;
+import org.opennms.features.vaadin.api.Logger;
 import org.opennms.vaadin.user.UserTimeZoneExtractor;
 import org.slf4j.LoggerFactory;
-import org.opennms.features.vaadin.api.Logger;
 
-import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.v7.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Panel;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * The Class MIB Console Panel.

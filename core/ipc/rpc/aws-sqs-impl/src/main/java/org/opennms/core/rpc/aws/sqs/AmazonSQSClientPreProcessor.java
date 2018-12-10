@@ -28,6 +28,8 @@
 
 package org.opennms.core.rpc.aws.sqs;
 
+import java.util.Objects;
+
 import org.apache.camel.Exchange;
 import org.opennms.core.ipc.common.aws.sqs.AmazonSQSManager;
 import org.opennms.core.ipc.common.aws.sqs.AmazonSQSQueueException;
@@ -36,8 +38,6 @@ import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.core.rpc.camel.CamelRpcClientPreProcessor;
 import org.opennms.core.rpc.camel.CamelRpcConstants;
 import org.opennms.core.rpc.camel.CamelRpcRequest;
-
-import java.util.Objects;
 
 public class AmazonSQSClientPreProcessor extends CamelRpcClientPreProcessor {
 

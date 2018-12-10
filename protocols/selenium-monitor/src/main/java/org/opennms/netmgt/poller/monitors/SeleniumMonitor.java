@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import groovy.lang.GroovyClassLoader;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -48,6 +46,8 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import groovy.lang.GroovyClassLoader;
 
 public class SeleniumMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(SeleniumMonitor.class);

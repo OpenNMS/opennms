@@ -16,10 +16,11 @@
  */
 package org.opennms.container.web.felix.base.internal.context;
 
+import java.io.IOException;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 public interface ExtServletContext
     extends ServletContext

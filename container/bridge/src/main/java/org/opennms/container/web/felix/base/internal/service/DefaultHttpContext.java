@@ -16,11 +16,13 @@
  */
 package org.opennms.container.web.felix.base.internal.service;
 
-import org.osgi.service.http.HttpContext;
-import org.osgi.framework.Bundle;
+import java.net.URL;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.net.URL;
+
+import org.osgi.framework.Bundle;
+import org.osgi.service.http.HttpContext;
 
 public final class DefaultHttpContext 
     implements HttpContext

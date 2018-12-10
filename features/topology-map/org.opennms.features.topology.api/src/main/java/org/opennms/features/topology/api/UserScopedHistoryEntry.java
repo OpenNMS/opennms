@@ -28,10 +28,10 @@
 
 package org.opennms.features.topology.api;
 
-import org.opennms.osgi.VaadinApplicationContext;
-
 import java.util.Collections;
 import java.util.Map;
+
+import org.opennms.osgi.VaadinApplicationContext;
 
 class UserScopedHistoryEntry<T> {
     private final Class<? extends Operation> clazz;

@@ -29,17 +29,20 @@
 package org.opennms.netmgt.poller.monitors;
 
 import static org.junit.Assert.assertEquals;
+import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_LOOKUP;
 import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_NAMESERVER;
+import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RECORD_TYPES;
+import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RECORD_TYPE_CNAME;
 import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RESOLUTION_TYPE;
 import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RESOLUTION_TYPE_BOTH;
 import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RESOLUTION_TYPE_EITHER;
 import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RESOLUTION_TYPE_V4;
 import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RESOLUTION_TYPE_V6;
-import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_LOOKUP;
 
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -53,8 +56,6 @@ import org.opennms.core.test.dns.annotations.DNSZone;
 import org.opennms.core.test.dns.annotations.JUnitDNSServer;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
-import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RECORD_TYPES;
-import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RECORD_TYPE_CNAME;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;

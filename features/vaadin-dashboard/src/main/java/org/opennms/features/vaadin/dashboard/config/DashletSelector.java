@@ -28,15 +28,15 @@
 
 package org.opennms.features.vaadin.dashboard.config;
 
-import org.opennms.features.vaadin.dashboard.model.DashletFactory;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import org.opennms.features.vaadin.dashboard.model.DashletFactory;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is responsible for holding the {@link DashletFactory} instances of the OSGI container.

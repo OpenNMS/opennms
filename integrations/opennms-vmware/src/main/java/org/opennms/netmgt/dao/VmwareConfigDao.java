@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.dao;
 
+import java.util.Map;
+
 import org.opennms.netmgt.config.vmware.VmwareConfig;
 import org.opennms.netmgt.config.vmware.VmwareServer;
-
-import java.util.Map;
 
 /**
  * The Interface VmwareConfigDao

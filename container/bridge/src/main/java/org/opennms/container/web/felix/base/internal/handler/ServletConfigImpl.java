@@ -16,11 +16,12 @@
  */
 package org.opennms.container.web.felix.base.internal.handler;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletConfig;
-import java.util.Enumeration;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Map;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 
 public final class ServletConfigImpl
     implements ServletConfig

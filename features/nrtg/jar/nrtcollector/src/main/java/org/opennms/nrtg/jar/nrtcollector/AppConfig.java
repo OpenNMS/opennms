@@ -28,6 +28,9 @@
 
 package org.opennms.nrtg.jar.nrtcollector;
 
+import javax.jms.ConnectionFactory;
+import javax.jms.ExceptionListener;
+
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.opennms.netmgt.snmp.SnmpStrategy;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy;
@@ -35,8 +38,8 @@ import org.opennms.nrtg.nrtcollector.api.NrtCollector;
 import org.opennms.nrtg.nrtcollector.internal.ProtocolCollectorRegistry;
 import org.opennms.nrtg.nrtcollector.internal.ProtocolCollectorRegistryImpl;
 import org.opennms.nrtg.nrtcollector.internal.jms.CollectionJobListener;
-import org.opennms.nrtg.nrtcollector.internal.jms.NrtCollectorJMSDLMC;
 import org.opennms.nrtg.nrtcollector.internal.jms.JmsExceptionListener;
+import org.opennms.nrtg.nrtcollector.internal.jms.NrtCollectorJMSDLMC;
 import org.opennms.nrtg.protocolcollector.snmp.internal.SnmpProtocolCollector;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,9 +47,6 @@ import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.AbstractMessageListenerContainer;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
-
-import javax.jms.ConnectionFactory;
-import javax.jms.ExceptionListener;
 
 /**
  * Java class as Spring configuration

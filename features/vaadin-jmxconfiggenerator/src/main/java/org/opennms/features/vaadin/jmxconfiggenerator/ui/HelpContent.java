@@ -33,10 +33,10 @@ import java.util.Objects;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
 import com.vaadin.server.Sizeable;
-import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
-import com.vaadin.v7.ui.Label;
 import com.vaadin.ui.PopupView;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.VerticalLayout;
 
 public class HelpContent implements PopupView.Content {

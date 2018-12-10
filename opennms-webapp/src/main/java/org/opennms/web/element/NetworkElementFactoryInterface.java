@@ -34,7 +34,6 @@ import java.util.Map;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 
 public interface NetworkElementFactoryInterface {
 

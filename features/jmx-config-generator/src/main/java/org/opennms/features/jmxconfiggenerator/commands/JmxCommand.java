@@ -28,16 +28,17 @@
 
 package org.opennms.features.jmxconfiggenerator.commands;
 
+import java.io.IOException;
+
+import javax.management.JMException;
+import javax.management.MBeanServerConnection;
+import javax.management.remote.JMXConnector;
+
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.opennms.features.jmxconfiggenerator.jmxconfig.JmxHelper;
 import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQueryException;
-
-import javax.management.JMException;
-import javax.management.MBeanServerConnection;
-import javax.management.remote.JMXConnector;
-import java.io.IOException;
 
 /**
  * Class for all commands which need a JMX server connection.

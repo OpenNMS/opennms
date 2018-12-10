@@ -16,8 +16,8 @@
  */
 package org.opennms.container.web.felix.base.internal.util;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public final class MimeTypes
 {

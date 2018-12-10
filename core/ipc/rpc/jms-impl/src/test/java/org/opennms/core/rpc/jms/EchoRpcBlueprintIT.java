@@ -28,6 +28,10 @@
 
 package org.opennms.core.rpc.jms;
 
+import java.util.Dictionary;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.camel.Component;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.ClassRule;
@@ -41,10 +45,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.util.Dictionary;
-import java.util.Map;
-import java.util.Properties;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={

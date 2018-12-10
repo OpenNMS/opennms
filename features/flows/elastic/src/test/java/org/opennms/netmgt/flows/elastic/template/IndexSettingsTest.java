@@ -29,7 +29,7 @@
 package org.opennms.netmgt.flows.elastic.template;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;

@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.dao.mock;
 
+import java.util.UUID;
+
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
-
-import java.util.UUID;
 
 public class MockMonitoringSystemDao extends AbstractMockDao<OnmsMonitoringSystem, String> implements MonitoringSystemDao {
     @Override
