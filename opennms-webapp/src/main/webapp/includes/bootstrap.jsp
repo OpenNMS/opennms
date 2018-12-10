@@ -108,6 +108,13 @@
     <!-- we used to include the "print.css" here but it turns out it looks like crap -->
   </c:if>
   <link rel="shortcut icon" href="<%= baseHref %>favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="<%= baseHref %>apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="<%= baseHref %>favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="<%= baseHref %>favicon-16x16.png">
+  <link rel="manifest" href="<%= baseHref %>site.webmanifest">
+  <link rel="mask-icon" href="<%= baseHref %>safari-pinned-tab.svg" color="#4c9d45">
+  <meta name="msapplication-TileColor" content="#e9e9e9">
+  <meta name="theme-color" content="#ffffff">
   <c:forEach var="link" items="${paramValues.link}">
     <c:out value="${link}" escapeXml="false" />
   </c:forEach>
