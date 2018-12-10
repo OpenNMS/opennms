@@ -33,21 +33,21 @@ import static junit.framework.TestCase.assertNull;
 
 import org.junit.Test;
 
-public class SystemPropertiesUtilsTest {
+public class SystemPropertiesTest {
 
-    private final static String KEY = SystemPropertiesUtils.class.getName();
+    private final static String KEY = SystemProperties.class.getName();
 
     @Test
     public void shouldResolveLongValues(){
         Long defaultValue = 13L;
 
         System.clearProperty(KEY);
-        assertNull(SystemPropertiesUtils.getLong(KEY));
-        assertEquals(defaultValue, SystemPropertiesUtils.getLong(KEY, defaultValue));
+        assertNull(SystemProperties.getLong(KEY));
+        assertEquals(defaultValue, SystemProperties.getLong(KEY, defaultValue));
 
         System.setProperty(KEY, "42");
-        assertEquals(Long.valueOf(42L), SystemPropertiesUtils.getLong(KEY));
-        assertEquals(Long.valueOf(42L), SystemPropertiesUtils.getLong(KEY, defaultValue));
+        assertEquals(Long.valueOf(42L), SystemProperties.getLong(KEY));
+        assertEquals(Long.valueOf(42L), SystemProperties.getLong(KEY, defaultValue));
     }
 
     @Test
@@ -55,11 +55,11 @@ public class SystemPropertiesUtilsTest {
         Integer defaultValue = 13;
 
         System.clearProperty(KEY);
-        assertNull(SystemPropertiesUtils.getLong(KEY));
-        assertEquals(defaultValue, SystemPropertiesUtils.getInteger(KEY, defaultValue));
+        assertNull(SystemProperties.getLong(KEY));
+        assertEquals(defaultValue, SystemProperties.getInteger(KEY, defaultValue));
 
         System.setProperty(KEY, "42");
-        assertEquals(Integer.valueOf(42), SystemPropertiesUtils.getInteger(KEY));
-        assertEquals(Integer.valueOf(42), SystemPropertiesUtils.getInteger(KEY, defaultValue));
+        assertEquals(Integer.valueOf(42), SystemProperties.getInteger(KEY));
+        assertEquals(Integer.valueOf(42), SystemProperties.getInteger(KEY, defaultValue));
     }
 }

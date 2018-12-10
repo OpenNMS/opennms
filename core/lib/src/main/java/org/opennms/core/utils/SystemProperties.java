@@ -38,9 +38,9 @@ import org.slf4j.LoggerFactory;
  * present value and a malformed value. In case of the latter a log message is produced. Integer.getInteger would just return
  * the defaultValue without informing the user and can therefor lead to hard to find configuration problems.
  */
-public class SystemPropertiesUtils {
+public class SystemProperties {
 
-    private final static Logger LOG = LoggerFactory.getLogger(SystemPropertiesUtils.class);
+    private final static Logger LOG = LoggerFactory.getLogger(SystemProperties.class);
 
     public static Long getLong(String propertyName) {
         return getLong(propertyName, null);
@@ -53,7 +53,7 @@ public class SystemPropertiesUtils {
 
     public static Long getLong(String propertyName, Long defaultValue) {
         Function<String, Long> resolver = (propertyValue) -> (Long.parseLong(propertyValue));
-        return getT(propertyName, defaultValue, resolver);
+        return getProperty(propertyName, defaultValue, resolver);
     }
 
     public static Integer getInteger(String propertyName) {
@@ -67,10 +67,10 @@ public class SystemPropertiesUtils {
 
     public static Integer getInteger(String propertyName, Integer defaultValue) {
         Function<String, Integer> resolver = (propertyValue) -> (Integer.parseInt(propertyValue));
-        return getT(propertyName, defaultValue, resolver);
+        return getProperty(propertyName, defaultValue, resolver);
     }
 
-    private static <T> T getT(String propertyName, T defaultValue, Function<String, T> transformer) {
+    private static <T> T getProperty(String propertyName, T defaultValue, Function<String, T> transformer) {
         String valueAsString = System.getProperty(propertyName);
         if (valueAsString == null) {
             return defaultValue;

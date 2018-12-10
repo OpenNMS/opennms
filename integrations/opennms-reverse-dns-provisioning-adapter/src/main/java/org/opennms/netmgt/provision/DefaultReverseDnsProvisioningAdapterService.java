@@ -31,7 +31,7 @@ package org.opennms.netmgt.provision;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.core.utils.SystemPropertiesUtils;
+import org.opennms.core.utils.SystemProperties;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -86,7 +86,7 @@ public class DefaultReverseDnsProvisioningAdapterService implements
         Assert.notNull(m_ipInterfaceDao, "ReverseDnsProvisioner requires an IpInterfaceDao which is not null.");
         String levelString = System.getProperty("importer.adapter.dns.reverse.level");
         if (levelString != null) {
-        	Integer level = SystemPropertiesUtils.getInteger(levelString);
+        	Integer level = SystemProperties.getInteger(levelString);
         	if (level != null && level.intValue() > 0)
         		m_level=level;
         }
