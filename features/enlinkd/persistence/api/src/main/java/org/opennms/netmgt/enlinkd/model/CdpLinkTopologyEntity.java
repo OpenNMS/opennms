@@ -28,12 +28,11 @@
 
 package org.opennms.netmgt.enlinkd.model;
 
+import org.opennms.netmgt.model.ReadOnlyEntity;
+
 import com.google.common.base.MoreObjects;
 
-/**
- * This is NOT a Hibernate/JPA entity but rather a lightweight model without less attributes than CdpLink and no lazy
- * loading. We use it to retrieve link information from the database fast.
- */
+@ReadOnlyEntity
 public class CdpLinkTopologyEntity {
 
     private final Integer id;

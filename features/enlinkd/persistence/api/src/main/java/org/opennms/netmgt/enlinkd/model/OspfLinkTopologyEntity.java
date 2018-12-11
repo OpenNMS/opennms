@@ -30,12 +30,11 @@ package org.opennms.netmgt.enlinkd.model;
 
 import java.net.InetAddress;
 
+import org.opennms.netmgt.model.ReadOnlyEntity;
+
 import com.google.common.base.MoreObjects;
 
-/**
- * This is NOT a Hibernate/JPA entity but rather a lightweight model without less attributes than OspfLink and no lazy
- * loading. We use it to retrieve link information from the database fast.
- */
+@ReadOnlyEntity
 public class OspfLinkTopologyEntity {
     private final Integer id;
     private final Integer nodeId;

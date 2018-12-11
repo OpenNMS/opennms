@@ -31,14 +31,12 @@ package org.opennms.netmgt.enlinkd.model;
 import java.io.Serializable;
 
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.ReadOnlyEntity;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 import com.google.common.base.MoreObjects;
 
-/**
- * This is NOT a Hibernate/JPA entity but rather a lightweight model without less attributes than OnmsNode and no lazy
- * loading. We use it to retrieve node information from the database fast.
- */
+@ReadOnlyEntity
 public class NodeTopologyEntity implements Serializable {
 
     private Integer id;
@@ -55,11 +53,7 @@ public class NodeTopologyEntity implements Serializable {
         this.location = location;
     }
 
-    public NodeTopologyEntity(Integer id, OnmsNode.NodeType type, String sysObjectId, String label, OnmsMonitoringLocation location){
-        this(id, type, sysObjectId, label, location.getLocationName());
-    }
-
-    public static NodeTopologyEntity toVertexInfo(OnmsNode node){
+    public static NodeTopologyEntity create(OnmsNode node){
         return new NodeTopologyEntity(node.getId(), node.getType(), node.getSysObjectId(), node.getLabel(), node.getLocation().getLocationName());
     }
 
