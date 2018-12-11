@@ -67,6 +67,7 @@ import org.opennms.distributed.core.api.MinionIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.math.IntMath;
@@ -76,9 +77,9 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 /**
- * This Manager runs on Minion, A consumer thread will be started on each RPC module which handles the request and executes
- * it on module and sends the response to Kafka. When the request is for specific minion ( with system-id in request),
- * it matches the system-id with minionId and executes the request if it intended for itself.
+ * This Manager runs on Minion, A consumer thread will be started on each RPC module which handles the request and
+ * executes it on rpc module and sends the response to Kafka. When the request is directed at specific minion
+ * (request with system-id), minion executes the request only if system-id matches with minionId.
  */
 public class KafkaRpcServerManager {
 
@@ -212,7 +213,7 @@ public class KafkaRpcServerManager {
                                 LOG.warn("ttl already expired for the request id = {}, won't process.", rpcMessage.getRpcId());
                                 continue;
                             }
-                            boolean hasSystemId = rpcMessage.hasSystemId();
+                            boolean hasSystemId = !Strings.isNullOrEmpty(rpcMessage.getSystemId());
                             String minionId = minionIdentity.getId();
                             if (hasSystemId && !(minionId.equals(rpcMessage.getSystemId()))) {
                                 // directed RPC and not directed at this minion
@@ -221,7 +222,7 @@ public class KafkaRpcServerManager {
                             if (hasSystemId) {
                                 // directed RPC, there may be more than one request with same request Id, cache and allow only one.
                                 String messageId = rpcId;
-                                // If this message more chunks, chunk number should be added to messageId to make it unique.
+                                // If this message has more than one chunk, chunk number should be added to messageId to make it unique.
                                 if (rpcMessage.getTotalChunks() > 1) {
                                     messageId = messageId + rpcMessage.getCurrentChunkNumber();
                                 }
@@ -234,7 +235,7 @@ public class KafkaRpcServerManager {
                             }
                             ByteString rpcContent = rpcMessage.getRpcContent();
 
-                            // For larger messages which gets split into multiple chunks, cache them until all of them arrive.
+                            // For larger messages which get split into multiple chunks, cache them until all of them arrive.
                             if (rpcMessage.getTotalChunks() > 1) {
                                 ByteString byteString = messageCache.getIfPresent(rpcId);
                                 if (byteString != null) {
@@ -268,16 +269,16 @@ public class KafkaRpcServerManager {
                                     final byte[] messageInBytes = responseAsString.getBytes();
                                     int totalChunks = IntMath.divide(messageInBytes.length, maxBufferSize, RoundingMode.UP);
                                     // Divide the message in chunks and send each chunk as a different message with the same key.
+                                    RpcMessageProtos.RpcMessage.Builder builder = RpcMessageProtos.RpcMessage.newBuilder()
+                                                                                      .setRpcId(rpcId);
                                     for (int chunk = 0; chunk < totalChunks; chunk++) {
                                         // Calculate remaining bufferSize for each chunk.
                                         int bufferSize = KafkaRpcConstants.getBufferSize(messageInBytes.length, maxBufferSize, chunk);
                                         ByteString byteString = ByteString.copyFrom(messageInBytes, chunk * maxBufferSize, bufferSize);
-                                        RpcMessageProtos.RpcMessage rpcResponse = RpcMessageProtos.RpcMessage.newBuilder()
-                                                .setRpcId(rpcId)
-                                                .setTotalChunks(totalChunks)
-                                                .setCurrentChunkNumber(chunk)
-                                                .setRpcContent(byteString)
-                                                .build();
+                                        RpcMessageProtos.RpcMessage rpcResponse = builder.setTotalChunks(totalChunks)
+                                                                                      .setCurrentChunkNumber(chunk)
+                                                                                      .setRpcContent(byteString)
+                                                                                      .build();
                                         final ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<>(
                                                 topicNameFactory.getName(), rpcId, rpcResponse.toByteArray());
                                         int chunkNum = chunk;

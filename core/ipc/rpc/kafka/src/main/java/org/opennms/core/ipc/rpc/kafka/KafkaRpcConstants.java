@@ -30,7 +30,8 @@ package org.opennms.core.ipc.rpc.kafka;
 
 import java.util.Properties;
 
-/** This handles all the configuration specific to RPC and some utils common to OpenNMS/Minion
+/**
+ * This handles all the configuration specific to RPC and some utils common to OpenNMS/Minion.
  */
 public interface KafkaRpcConstants {
     
