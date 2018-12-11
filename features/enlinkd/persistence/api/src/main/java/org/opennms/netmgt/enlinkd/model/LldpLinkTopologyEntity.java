@@ -30,6 +30,8 @@ package org.opennms.netmgt.enlinkd.model;
 
 import org.opennms.core.utils.LldpUtils;
 
+import com.google.common.base.MoreObjects;
+
 /**
  * This is NOT a Hibernate/JPA entity but rather a lightweight model without less attributes than LldpLink and no lazy
  * loading. We use it to retrieve link information from the database fast.
@@ -118,16 +120,16 @@ public class LldpLinkTopologyEntity {
 
     @Override
     public String toString() {
-        return "LldpLinkTopologyEntity{" +
-                "id=" + id +
-                ", nodeId=" + nodeId +
-                ", lldpRemChassisId='" + lldpRemChassisId + '\'' +
-                ", lldpRemPortId='" + lldpRemPortId + '\'' +
-                ", lldpRemPortIdSubType='" + lldpRemPortIdSubType + '\'' +
-                ", lldpPortId='" + lldpPortId + '\'' +
-                ", lldpPortIdSubType='" + lldpPortIdSubType + '\'' +
-                ", lldpPortDescr='" + lldpPortDescr + '\'' +
-                ", lldpPortIfindex=" + lldpPortIfindex +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("nodeId", nodeId)
+                .add("lldpRemChassisId", lldpRemChassisId)
+                .add("lldpRemPortId", lldpRemPortId)
+                .add("lldpRemPortIdSubType", lldpRemPortIdSubType)
+                .add("lldpPortId", lldpPortId)
+                .add("lldpPortIdSubType", lldpPortIdSubType)
+                .add("lldpPortDescr", lldpPortDescr)
+                .add("lldpPortIfindex", lldpPortIfindex)
+                .toString();
     }
 }

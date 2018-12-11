@@ -30,6 +30,8 @@ package org.opennms.netmgt.enlinkd.model;
 
 import java.net.InetAddress;
 
+import com.google.common.base.MoreObjects;
+
 /**
  * This is NOT a Hibernate/JPA entity but rather a lightweight model without less attributes than OspfLink and no lazy
  * loading. We use it to retrieve link information from the database fast.
@@ -86,12 +88,12 @@ public class OspfLinkTopologyEntity {
 
     @Override
     public String toString() {
-        return "OspfLinkTopologyEntity{" +
-                "id=" + id +
-                ", nodeId=" + nodeId +
-                ", ospfIpAddr=" + ospfIpAddr +
-                ", ospfRemIpAddr=" + ospfRemIpAddr +
-                ", ospfIfIndex=" + ospfIfIndex +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("nodeId", nodeId)
+                .add("ospfIpAddr", ospfIpAddr)
+                .add("ospfRemIpAddr", ospfRemIpAddr)
+                .add("ospfIfIndex", ospfIfIndex)
+                .toString();
     }
 }

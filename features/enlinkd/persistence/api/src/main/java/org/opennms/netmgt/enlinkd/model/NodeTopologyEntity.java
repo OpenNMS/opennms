@@ -33,6 +33,8 @@ import java.io.Serializable;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
+import com.google.common.base.MoreObjects;
+
 /**
  * This is NOT a Hibernate/JPA entity but rather a lightweight model without less attributes than OnmsNode and no lazy
  * loading. We use it to retrieve node information from the database fast.
@@ -86,12 +88,12 @@ public class NodeTopologyEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "NodeTopologyEntity{" +
-                "id=" + id +
-                ", type=" + type +
-                ", sysObjectId='" + sysObjectId + '\'' +
-                ", label='" + label + '\'' +
-                ", location=" + location +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("type", type)
+                .add("sysObjectId", sysObjectId)
+                .add("label", label)
+                .add("location", location)
+                .toString();
     }
 }

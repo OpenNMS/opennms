@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.enlinkd.model;
 
+import com.google.common.base.MoreObjects;
+
 /**
  * This is NOT a Hibernate/JPA entity but rather a lightweight model without less attributes than CdpLink and no lazy
  * loading. We use it to retrieve link information from the database fast.
@@ -90,14 +92,14 @@ public class CdpLinkTopologyEntity {
 
     @Override
     public String toString() {
-        return "CdpLinkTopologyEntity{" +
-                "id=" + id +
-                ", nodeId=" + nodeId +
-                ", cdpCacheIfIndex=" + cdpCacheIfIndex +
-                ", cdpInterfaceName='" + cdpInterfaceName + '\'' +
-                ", cdpCacheAddress='" + cdpCacheAddress + '\'' +
-                ", cdpCacheDeviceId='" + cdpCacheDeviceId + '\'' +
-                ", cdpCacheDevicePort='" + cdpCacheDevicePort + '\'' +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("nodeId", nodeId)
+                .add("cdpCacheIfIndex", cdpCacheIfIndex)
+                .add("cdpInterfaceName", cdpInterfaceName)
+                .add("cdpCacheAddress", cdpCacheAddress)
+                .add("cdpCacheDeviceId", cdpCacheDeviceId)
+                .add("cdpCacheDevicePort", cdpCacheDevicePort)
+                .toString();
     }
 }
