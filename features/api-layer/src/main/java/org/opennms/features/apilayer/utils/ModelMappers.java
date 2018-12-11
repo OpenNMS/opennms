@@ -119,4 +119,17 @@ public class ModelMappers {
     public static AlarmFeedback toFeedback(org.opennms.features.situationfeedback.api.AlarmFeedback feedback) {
         return feedback == null ? null : new AlarmFeedbackBean(feedback);
     }
+
+    public static org.opennms.features.situationfeedback.api.AlarmFeedback fromFeedback(AlarmFeedback feedback) {
+        return feedback == null ? null : org.opennms.features.situationfeedback.api.AlarmFeedback.newBuilder()
+                .withTimestamp(feedback.getTimestamp())
+                .withAlarmKey(feedback.getAlarmKey())
+                .withFeedbackType(org.opennms.features.situationfeedback.api.AlarmFeedback.FeedbackType
+                        .valueOfOrUnknown(feedback.getFeedbackType().toString()))
+                .withReason(feedback.getReason())
+                .withSituationFingerprint(feedback.getSituationFingerprint())
+                .withSituationKey(feedback.getSituationKey())
+                .withUser(feedback.getUser())
+                .build();
+    }
 }

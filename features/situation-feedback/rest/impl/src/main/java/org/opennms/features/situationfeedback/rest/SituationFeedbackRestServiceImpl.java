@@ -27,12 +27,12 @@
  *******************************************************************************/
 package org.opennms.features.situationfeedback.rest;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.ws.rs.WebApplicationException;
 
@@ -62,7 +62,7 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
     /**
      * The collection of listeners interested in alarm feedback, populated via runtime binding.
      */
-    private static final Collection<AlarmFeedbackListener> alarmFeedbackListeners = new ArrayList<>();
+    private static final Collection<AlarmFeedbackListener> alarmFeedbackListeners = new CopyOnWriteArrayList<>();
 
     public SituationFeedbackRestServiceImpl(AlarmDao alarmDao, AlarmEntityNotifier alarmEntityNotifier, FeedbackRepository feedbackRepository, TransactionOperations transactionOperations) {
         this.alarmDao = Objects.requireNonNull(alarmDao);
