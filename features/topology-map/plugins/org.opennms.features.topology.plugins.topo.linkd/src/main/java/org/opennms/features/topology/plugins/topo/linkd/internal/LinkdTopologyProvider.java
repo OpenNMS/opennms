@@ -332,13 +332,13 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             String sourceLldpChassisId = nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpChassisId();
             if (sourceLldpChassisId.equals(sourceLink.getLldpRemChassisId())) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("getLldpLinks: self link not adding source: {}",sourceLink.toString());
+                    LOG.debug("getLldpLinks: self link not adding source: {}",sourceLink);
                 }
                 parsed.add(sourceLink.getId());
                 continue;
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getLldpLinks: source: {}",sourceLink.toString());
+                LOG.debug("getLldpLinks: source: {}",sourceLink);
             }
 
             CompositeKey key = new CompositeKey(
@@ -356,7 +356,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             }
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getLldpLinks: lldp: {} target: {}", sourceLink.getLldpRemChassisId(), targetLink.toString());
+                LOG.debug("getLldpLinks: lldp: {} target: {}", sourceLink.getLldpRemChassisId(), targetLink);
             }
 
             parsed.add(sourceLink.getId());
@@ -406,7 +406,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             }
             parsed.add(sourceLink.getId());
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getOspfLinks: source: {}", sourceLink.toString());
+                LOG.debug("getOspfLinks: source: {}", sourceLink);
             }
             OspfLinkTopologyEntity targetLink = targetLinks.get(new CompositeKey(sourceLink.getOspfRemIpAddr() , sourceLink.getOspfIpAddr()));
             if(targetLink == null) {
@@ -418,7 +418,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                     continue;
             }
 
-            LOG.debug("getOspfLinks: target: {}", targetLink.toString());
+            LOG.debug("getOspfLinks: target: {}", targetLink);
             parsed.add(targetLink.getId());
            results.add(Pair.of(sourceLink, targetLink));
         }
@@ -478,7 +478,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 continue;
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getCdpLinks: source: {} ", sourceLink.toString());
+                LOG.debug("getCdpLinks: source: {} ", sourceLink);
             }
             CdpElement sourceCdpElement = cdpelementmap.get(sourceLink.getNodeId());
 
@@ -497,7 +497,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             }
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getCdpLinks: cdp: {}, target: {} ", sourceLink.getCdpCacheDevicePort(), targetLink.toString());
+                LOG.debug("getCdpLinks: cdp: {}, target: {} ", sourceLink.getCdpCacheDevicePort(), targetLink);
             }
 
             parsed.add(sourceLink.getId());
@@ -557,7 +557,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 continue;
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getIsIsLinks: source: {}", sourceLink.toString());
+                LOG.debug("getIsIsLinks: source: {}", sourceLink);
             }
             IsIsElement sourceElement = elementmap.get(sourceLink.getNodeId());
             IsIsLinkTopologyEntity targetLink = targetLinkMap.get(new CompositeKey(sourceLink.getIsisISAdjIndex(),
@@ -572,7 +572,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 continue;
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getIsIsLinks: target: {}", targetLink.toString());
+                LOG.debug("getIsIsLinks: target: {}", targetLink);
             }
             results.add(Pair.of(sourceLink, targetLink));
             parsed.add(sourceLink.getId());
