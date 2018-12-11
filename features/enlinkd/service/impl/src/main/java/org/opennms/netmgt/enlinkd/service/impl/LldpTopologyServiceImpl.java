@@ -178,7 +178,6 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
     @Override
     public List<TopologyConnection<LldpLink, LldpLink>> match() {
         
-//        List<Pair<LldpLink, LldpLink>> matchLldpLinks(Map<Integer, LldpElement> nodelldpelementidMap, List<LldpLink> allLinks) {
             List<TopologyConnection<LldpLink, LldpLink>> results = new ArrayList<>();
 
             Map<Integer, LldpElement> nodelldpelementidMap = m_lldpElementDao.findAll().
