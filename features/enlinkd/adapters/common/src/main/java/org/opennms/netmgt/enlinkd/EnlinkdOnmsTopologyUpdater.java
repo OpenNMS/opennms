@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.service.api.MacCloud;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
@@ -54,11 +55,17 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
 
     public static OnmsTopologyVertex create(MacPort macPort) throws OnmsTopologyException {
         return OnmsTopologyVertex.create(Topology.getId(macPort),
-                                         Topology.getId(macPort), 
-                                         macPort.getIpMacInfo(), 
+                                         macPort.printTopology(), 
+                                         macPort.getPortMacInfo(), 
                                          null);
     }
     
+    public static OnmsTopologyVertex create(MacCloud macCloud) throws OnmsTopologyException {
+        return OnmsTopologyVertex.create(Topology.getId(macCloud), 
+                                         macCloud.printTopology(), 
+                                         macCloud.getMacCloudInfo(), 
+                                         "cloud");
+    }
     public static OnmsTopologyVertex create(NodeTopologyEntity node) throws OnmsTopologyException {
         return OnmsTopologyVertex.create(node.getId(), 
                                          node.getLabel(), 

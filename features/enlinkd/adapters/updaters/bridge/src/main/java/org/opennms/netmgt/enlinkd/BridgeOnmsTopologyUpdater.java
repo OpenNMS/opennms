@@ -72,9 +72,9 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     public OnmsTopology buildTopology() throws OnmsTopologyException {
         Map<Integer, NodeTopologyEntity> nodeMap= getNodeMap();
         OnmsTopology topology = new OnmsTopology();
-        for (TopologyShared<BridgePort,MacPort> shared: m_bridgeTopologyService.match()) {
+        for (TopologyShared shared: m_bridgeTopologyService.match()) {
             Set<OnmsTopologyPort> ports = new HashSet<>();
-            for (BridgePort bp: shared.getLeft()) {
+            for (BridgePort bp: shared.getBridgePorts()) {
                 NodeTopologyEntity node = nodeMap.get(bp.getNodeId());
                 if (topology.getVertex(node.getId()) == null) {
                     topology.getVertices().add(create(node));
@@ -88,7 +88,7 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
                     LOG.debug("getTopology: adding: {}", bp.printTopology());
                 }
             }
-            for (MacPort macPort: shared.getRight()) {
+            for (MacPort macPort: shared.getMacPorts()) {
                 String id = Topology.getId(macPort);
                 if (topology.getVertex(id) ==  null) {
                     if (macPort.getNodeId() != null) {
@@ -102,7 +102,7 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
                 }
                 OnmsTopologyVertex vertex = topology.getVertex(id);
                 OnmsTopologyPort port = OnmsTopologyPort.create(vertex, macPort.getMacPortIfIndex());
-                port.setAddr(macPort.getIpMacInfo());
+                port.setAddr(macPort.getPortMacInfo());
                 if (macPort.getMacPortIfIndex() != null) {
                     port.setPort(Integer.toString(macPort.getMacPortIfIndex()));
                 } else {
@@ -113,8 +113,16 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
                     LOG.debug("getTopology: adding: {}", macPort.printTopology());
                 }
             }
+            if (shared.getCloud() != null) {
+                topology.getVertices().add(create(shared.getCloud()));
+                OnmsTopologyVertex cloudMacVertex = topology.getVertex(Topology.getId(shared.getCloud()));
+                OnmsTopologyPort   cloudMacPort = OnmsTopologyPort.create(cloudMacVertex, -1);
+                cloudMacPort.setAddr(shared.getCloud().getMacCloudInfo());
+                cloudMacPort.setPort("Cloud representing mac addresses");
+                ports.add(cloudMacPort);
+            }
             OnmsTopologyShared edge = OnmsTopologyShared.create(
-                                                          Topology.getId(shared.getTop()), 
+                                                          Topology.getId(shared.getUpPort()), 
                                                           ports.toArray(new OnmsTopologyPort[ports.size()]));
             topology.getEdges().add(edge);
 

@@ -34,11 +34,11 @@ import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.service.api.MacCloud;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
-import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 
 public class LinkdVertex extends SimpleLeafVertex {
@@ -58,16 +58,24 @@ public class LinkdVertex extends SimpleLeafVertex {
         LinkdVertex vertex = new LinkdVertex(Topology.getId(port));
         vertex.setLabel(Topology.getId(port));
         vertex.setNodeType(s_nodeStatusMap.get(OnmsNode.NodeType.UNKNOWN));
-        if (port.hasInetAddresses()) {
-            vertex.setIpAddress(port.getIpMacInfo());
-        } else {
-            vertex.setIpAddress("no ip address");
-        }
+        vertex.setIpAddress(port.getPortMacInfo());
         vertex.setManaged("Not an OpenNMS Node");
+        vertex.setIconKey("system");
         return vertex;
         
     }
-    
+
+    public static LinkdVertex create(MacCloud port) {
+        LinkdVertex vertex = new LinkdVertex(Topology.getId(port));
+        vertex.setLabel(Topology.getId(port));
+        vertex.setNodeType(s_nodeStatusMap.get(OnmsNode.NodeType.UNKNOWN));
+        vertex.setIpAddress("no ip address");
+        vertex.setManaged("Not an OpenNMS Node");
+        vertex.setIconKey("cloud");
+        return vertex;
+        
+    }
+
     public static LinkdVertex create(NodeTopologyEntity node) {
         LinkdVertex vertex = new LinkdVertex(node.getId());
         vertex.setNodeID(node.getNodeId());

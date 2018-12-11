@@ -58,7 +58,7 @@ import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
-import org.opennms.netmgt.enlinkd.service.api.MacPort;
+import org.opennms.netmgt.enlinkd.service.api.MacCloud;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -156,8 +156,8 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
 
         Set<String> macs =  new HashSet<>();
         macs.add("a8d0e5a0a467");
-        MacPort mac = MacPort.create(macs);
-        m_edges.add(LinkdEdge.create(Topology.getEdgeId(cloud.getId(), mac), 
+        MacCloud mac = MacCloud.create(macs);
+        m_edges.add(LinkdEdge.create(Topology.getDefaultEdgeId(cloud.getId(), Topology.getId(mac)), 
                                      cloud, node3Vertex, 
                                      null, null, 
                                      null, mac.printTopology(), ProtocolSupported.BRIDGE));

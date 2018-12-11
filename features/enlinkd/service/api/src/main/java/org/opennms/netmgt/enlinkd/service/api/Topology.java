@@ -38,6 +38,10 @@ public interface Topology {
     public static String getId(BridgePort designated) {
         return  designated.getNodeId()+":"+designated.getBridgePort();
     }
+    
+    public static String getId(MacCloud macCloud) {
+        return macCloud.getMacs().toString();
+    }
     public static String getId(MacPort macPort) {
         if (macPort.getNodeId() == null) {
             return macPort.getMacPortMap().keySet().toString();
@@ -47,6 +51,9 @@ public interface Topology {
     public static String getEdgeId(BridgePort bp, MacPort macport ) {
             return getId(bp)+"|"+getId(macport);
     }
+    public static String getEdgeId(BridgePort bp, MacCloud macport ) {
+        return getId(bp)+"|"+getId(macport);
+}
     public static String getEdgeId(BridgePort sourcebp, BridgePort targetbp ) {
         if (sourcebp.getNodeId().intValue() < targetbp.getNodeId().intValue()) {
             return getId(sourcebp)+"|"+getId(targetbp);
@@ -58,5 +65,9 @@ public interface Topology {
     }
     public static String getEdgeId(String id, BridgePort bp) {
         return id + "|" + bp.getNodeId() + ":" + bp.getBridgePort();
+    }
+
+    static String getDefaultEdgeId(String id, String id2) {
+        return id+"|"+id2;
     }
 }

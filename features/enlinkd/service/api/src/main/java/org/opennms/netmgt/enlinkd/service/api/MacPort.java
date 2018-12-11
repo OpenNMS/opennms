@@ -52,14 +52,6 @@ public class MacPort implements Topology {
         return port;
     }
 
-    public static MacPort create(Set<String> macs) {
-        
-        
-        MacPort port = new MacPort();
-        macs.stream().filter(mac -> mac!= null).forEach(mac -> port.getMacPortMap().put(mac, new HashSet<>()));
-        return port;
-    }
-
     public static MacPort merge(IpNetToMedia media, MacPort port) {
         
         if (!port.getMacPortMap().containsKey(media.getPhysAddress())) {
@@ -77,26 +69,21 @@ public class MacPort implements Topology {
     
     private MacPort() {
     }
-    
-    public boolean hasInetAddresses() {
-        for (Set<InetAddress> ips: m_macPortMap.values()) {
-            if (ips!= null && ips.size() > 0) { 
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    public String getIpMacInfo() {
+        
+    public String getPortMacInfo() {
         
         final StringBuffer strbfr = new StringBuffer();
-        String mac = m_macPortMap.keySet().iterator().next();
-        InetAddress ip = m_macPortMap.get(mac).iterator().next();
-        strbfr.append("ip:["); 
-        strbfr.append(InetAddressUtils.str(ip)); 
-        strbfr.append("], mac:[");
-        strbfr.append(mac);
-        strbfr.append("]");
+        m_macPortMap.keySet().stream().forEach(mac -> {
+            strbfr.append("ip:["); 
+            m_macPortMap.get(mac).stream().forEach(ip -> {
+                strbfr.append(InetAddressUtils.str(ip)); 
+                strbfr.append(" ");
+            });
+            strbfr.append("], mac:[");
+            strbfr.append(mac);
+            strbfr.append("]");
+            
+        });
 
         return strbfr.toString();
     }

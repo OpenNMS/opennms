@@ -76,7 +76,7 @@ public interface BridgeTopologyService extends TopologyService {
     
     Set<BridgeForwardingTableEntry> useBridgeTopologyUpdateBFT(int nodeid);
     
-    List<TopologyShared<BridgePort,MacPort>> match();
+    List<TopologyShared> match();
     
     List<MacPort> getMacPorts(); 
     

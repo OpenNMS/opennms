@@ -28,34 +28,73 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class TopologyShared <L,R> {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class TopologyShared {
     
-    public static <L, R> TopologyShared<L, R>   of(List<L> left, List<R> right,L top) {
-        return new TopologyShared<L,R>(left, right, top);
+    private final static Logger LOG = LoggerFactory.getLogger(TopologyShared.class);
+
+    public static TopologyShared   of(SharedSegment shs, List<MacPort> macPortMap) throws BridgeTopologyException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("matchBridgeLinks: \n{}", shs.printTopology());
+        }
+        Set<String> macsOnMacPorts = new HashSet<String>();
+        List<MacPort> macPortsOnSegment = new ArrayList<MacPort>();
+        macPortMap.stream().filter( mp -> 
+            shs.getMacsOnSegment().containsAll(mp.getMacPortMap().keySet())).
+            forEach(mp -> {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("matchBridgeLinks: add mac port \n{}", mp.printTopology());
+                }
+                macPortsOnSegment.add(mp);
+                macsOnMacPorts.addAll(mp.getMacPortMap().keySet());
+        });
+        TopologyShared tps = new TopologyShared(new ArrayList<BridgePort>(shs.getBridgePortsOnSegment()), 
+                                                   macPortsOnSegment, shs.getDesignatedPort());
+        
+        Set<String>  noMacPortMacs = new HashSet<String>(shs.getMacsOnSegment());
+        noMacPortMacs.removeAll(macsOnMacPorts);
+        if (noMacPortMacs.size() >0) {
+            tps.setCloud(MacCloud.create(noMacPortMacs));
+        }
+        return tps;
     }
 
-    private TopologyShared(List<L> left, List<R> right,L top ) {
+    private TopologyShared(List<BridgePort> left, List<MacPort> right,BridgePort top ) {
         this.top = top;
         this.left = left;
         this.right = right;
     }
 
-    private L top;
-    private List<L> left;
-    private List<R> right;
+    private MacCloud cloud;
+    private BridgePort top;
+    private List<BridgePort> left;
+    private List<MacPort> right;
 
-    public List<L> getLeft() {
+    public List<BridgePort> getBridgePorts() {
         return left;
     }
 
-    public List<R> getRight() {
+    public List<MacPort> getMacPorts() {
         return right;
     }
 
-    public L getTop() {
+    public BridgePort getUpPort() {
         return top;
     }
-    
+
+    public MacCloud getCloud() {
+        return cloud;
+    }
+
+    public void setCloud(MacCloud cloud) {
+        this.cloud = cloud;
+    }
+        
 }

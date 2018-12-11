@@ -32,9 +32,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-//import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_IP;
-//import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_NAME;
-//import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.OSPESS01_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.OSPESS01_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.OSPESS01_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.OSPWL01_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.OSPWL01_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.OSPWL01_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ASW01_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ASW01_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ASW01_SNMP_RESOURCE;
@@ -45,6 +51,7 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.STCASW01_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.STCASW01_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.STCASW01_SNMP_RESOURCE;
 
+import java.net.InetAddress;
 import java.util.List;
 import java.util.Set;
 
@@ -52,35 +59,49 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
+import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms7918NetworkBuilder;
-
+/*
+ * 
+ * 
+ */
 public class Nms7918EnIT extends EnLinkdBuilderITCase {
 
+    private static String pe01macaddress = "001319bdb440";
+    //mac address found on asw01 port 1
+    private static String[] asw01port1 = {
+        "00131971d480", pe01macaddress , "000c295cde87", "000c29f49b80", "000a5e540ee6"
+        };
+
+    private static String samasw01mac ="0012cf3f4ee0";
     // mac address found on asw01 port 2
     private static String[] asw01port2forwarders = {
-        "0012cf68f800", "0012cf3f4ee0"
+        "0012cf68f800", samasw01mac
     };
+
+    // mac address found on asw01 port 3
+    private static String ospess01mac ="001763010d4f"; 
+    private static String[] asw01port3 = {
+        ospess01mac
+    };
+
+    // mac address found on asw01 port 4
+    private static String[] asw01port4 = {
+        "4c5e0c891d93", "000c42f213af", "000c427bfee3", "00176301050f"
+    };
+
     // mac addresses found  on stc port 11 and not on asw e sam
     private static String[] stcport11forwarders = {
         "0003ea017579"  
     };
-    //mac address found on asw01 port 1
-    private static String[] asw01port1 = {
-        "00131971d480", "001319bdb440", "000c295cde87", "000c29f49b80", "000a5e540ee6"
-        };
-    // mac address found on asw01 port 3
-    private static String[] asw01port3 = {
-    	"001763010d4f"
-        };
-    // mac address found on asw01 port 4
-    private static String[] asw01port4 = {
-    	"4c5e0c891d93", "000c42f213af", "000c427bfee3", "00176301050f"
-        };
+    
     // mac address found on sam port 23
     private static String[] samport23 = {
         "0025454ac907"
@@ -93,23 +114,29 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
     private static String[] stcport24 = {
     	"000e83f6120a"
     };            
+    
+    private static String stcasw01mac = "00e0b1bd2652";
     // mac address found on asw01 port 2 and sam port 3
+    
     private static String[] samasw01shared = {
-        "00e0b1bd265e", "00e0b1bd2652", "001d71d5e4e7"
+        "00e0b1bd265e", stcasw01mac, "001d71d5e4e7"
     };
     // mac address found on asw01 port 2 and stc port 11
     private static String[] stcasw01shared = {
         "001763010792"
     };
+    private static String asw01mac01 = "00e0b1bd2f5c";
+    private static String asw01mac02 = "00e0b1bd2f5f";
     // mac address found on sam port 3 and stc port 11 but not on asw01 port 2
     private static String[] stcsamshared = {
-        "00e0b1bd2f5f", "00e0b1bd2f5c"
+        asw01mac01, asw01mac02
     };
+    private static String ospedalewl01mac = "d4ca6ded84d6";
     // mac address found on asw01 port 2 and sam port 3 and stc port 11
     private static String[] shared = {
         "000c42f5d30a", "001d454777dc", "d4ca6ded84ce", "0022557fd894", 
         "0021a4357254", "d4ca6dedd059", "c4641393f352", "d4ca6d954b3b", 
-        "d4ca6d88234f", "0012cf68f80f", "d4ca6ded84d6", "000c42ef1df6", 
+        "d4ca6d88234f", "0012cf68f80f", ospedalewl01mac, "000c42ef1df6", 
         "d4ca6d69c484", "d4ca6d954aed", "d4ca6df7f801", "000c429e3f3d", 
         "4c5e0c246b08", "4c5e0c841245", "d4ca6da2d626", "d4ca6ded84c8",
         "000c42db4e11" 
@@ -120,9 +147,221 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
     @Before
     public void setUpNetwork4930() throws Exception {
     	builder.setNodeDao(m_nodeDao);
-        builder.setIpNetToMediaDao(m_ipNetToMediaDao);
         builder.buildNetwork7918();
     }
+    
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=OSPWL01_IP, port=161, resource= OSPWL01_SNMP_RESOURCE)
+    })
+    public void testNms7918OSPWL01Collection() throws Exception {
+        final OnmsNode ospwl01 = m_nodeDao.findByForeignId("linkd", OSPWL01_NAME);
+        final OnmsNode pe01 = m_nodeDao.findByForeignId("linkd", PE01_NAME);
+        m_linkdConfig.getConfiguration().setUseBridgeDiscovery(true);
+        m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
+
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
+        assertTrue(m_linkdConfig.useBridgeDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        
+        assertTrue(m_linkd.scheduleNodeCollection(ospwl01.getId()));
+
+        assertEquals(0,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(0,m_bridgeMacLinkDao.countAll());
+        assertEquals(0,m_ipNetToMediaDao.countAll());
+        
+        assertTrue(m_linkd.runSingleSnmpCollection(ospwl01.getId()));
+        assertEquals(0,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(0,m_bridgeMacLinkDao.countAll());
+        assertEquals(1,m_ipNetToMediaDao.countAll());
+        m_ipNetToMediaDao.findAll().stream().forEach(ntm -> System.err.println(ntm.toString()));
+        
+        System.err.println("-----------------------");
+        IpNetToMedia inmpe01 = m_ipNetToMediaDao.findByNetAddress(InetAddressUtils.addr(PE01_IP)).iterator().next();
+        System.err.println("-----------------------");
+        assertEquals(pe01.getId(), inmpe01.getNode().getId());
+        assertEquals(pe01macaddress, inmpe01.getPhysAddress());
+
+        assertNull(m_bridgeTopologyService.useBridgeTopologyUpdateBFT(ospwl01.getId()));
+
+        List<MacPort> mps = m_bridgeTopologyService.getMacPorts();
+        assertEquals(1, mps.size());
+        System.err.println("-----------------------");
+        mps.stream().filter(mp -> mp.getMacPortMap().containsKey(pe01macaddress)).forEach(mp -> {
+            assertEquals(1, mp.getMacPortMap().size());
+            Set<InetAddress> ips = mp.getMacPortMap().get(pe01macaddress);
+            assertEquals(1, ips.size());
+            ips.contains(InetAddressUtils.addr(PE01_IP));
+            ips.contains(InetAddressUtils.addr("10.27.19.1"));
+            assertEquals(pe01.getId() ,mp.getNodeId());
+            assertEquals(-1,mp.getMacPortIfIndex().intValue());
+            assertNull(mp.getMacPortName());
+            System.err.println(mp.printTopology());
+            System.err.println(mp.getPortMacInfo());
+   });
+        System.err.println("-----------------------");
+        
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=OSPESS01_IP, port=161, resource= OSPESS01_SNMP_RESOURCE)
+    })
+    public void testNms7918OSPESS01Collection() throws Exception {
+        final OnmsNode ospess01 = m_nodeDao.findByForeignId("linkd", OSPESS01_NAME);
+        final OnmsNode pe01 = m_nodeDao.findByForeignId("linkd", PE01_NAME);
+        m_linkdConfig.getConfiguration().setUseBridgeDiscovery(true);
+        m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
+
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
+        assertTrue(m_linkdConfig.useBridgeDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        
+        assertTrue(m_linkd.scheduleNodeCollection(ospess01.getId()));
+
+        assertEquals(0,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(0,m_bridgeMacLinkDao.countAll());
+        assertEquals(0,m_ipNetToMediaDao.countAll());
+        
+        assertTrue(m_linkd.runSingleSnmpCollection(ospess01.getId()));
+        assertEquals(0,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(0,m_bridgeMacLinkDao.countAll());
+        assertEquals(5,m_ipNetToMediaDao.countAll());
+        m_ipNetToMediaDao.findAll().stream().forEach(ntm -> System.err.println(ntm.toString()));
+        
+        System.err.println("-----------------------");
+        IpNetToMedia inmpe01 = m_ipNetToMediaDao.findByNetAddress(InetAddressUtils.addr(PE01_IP)).iterator().next();
+        System.err.println("-----------------------");
+        assertEquals(pe01.getId(), inmpe01.getNode().getId());
+        assertEquals(pe01macaddress, inmpe01.getPhysAddress());
+
+        assertNull(m_bridgeTopologyService.useBridgeTopologyUpdateBFT(ospess01.getId()));
+
+        List<MacPort> mps = m_bridgeTopologyService.getMacPorts();
+        assertEquals(4, mps.size());
+        System.err.println("-----------------------");
+        mps.stream().filter(mp -> !mp.getMacPortMap().containsKey(pe01macaddress) ).forEach(
+             mp -> {
+                 assertEquals(1, mp.getMacPortMap().size());
+                 String mac = mp.getMacPortMap().keySet().iterator().next();
+                 assertEquals(1, mp.getMacPortMap().get(mac).size());
+                 assertNull(mp.getNodeId());
+                 assertNull(mp.getMacPortIfIndex());
+                 assertNull(mp.getMacPortName());
+                 System.err.println(mp.printTopology());
+                 System.err.println(mp.getPortMacInfo());
+                                     }
+        );
+        System.err.println("-----------------------");
+        System.err.println("-----------------------");
+        mps.stream().filter(mp -> mp.getMacPortMap().containsKey(pe01macaddress)).forEach(mp -> {
+            assertEquals(1, mp.getMacPortMap().size());
+            Set<InetAddress> ips = mp.getMacPortMap().get(pe01macaddress);
+            assertEquals(2, ips.size());
+            ips.contains(InetAddressUtils.addr(PE01_IP));
+            ips.contains(InetAddressUtils.addr("10.27.19.1"));
+            assertEquals(pe01.getId() ,mp.getNodeId());
+            assertEquals(-1,mp.getMacPortIfIndex().intValue());
+            assertNull(mp.getMacPortName());
+            System.err.println(mp.printTopology());
+            System.err.println(mp.getPortMacInfo());
+   });
+        System.err.println("-----------------------");
+        
+    }
+
+    
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=PE01_IP, port=161, resource=PE01_SNMP_RESOURCE)
+    })
+    public void testNms7918PE01Collection() throws Exception {
+        final OnmsNode pe01 = m_nodeDao.findByForeignId("linkd", PE01_NAME);
+        final OnmsNode asw01 = m_nodeDao.findByForeignId("linkd", ASW01_NAME);
+        m_linkdConfig.getConfiguration().setUseBridgeDiscovery(true);
+        m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
+
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
+        assertTrue(m_linkdConfig.useBridgeDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        
+        assertTrue(m_linkd.scheduleNodeCollection(pe01.getId()));
+
+        assertEquals(0,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(0,m_bridgeMacLinkDao.countAll());
+        assertEquals(0,m_ipNetToMediaDao.countAll());
+        
+        assertTrue(m_linkd.runSingleSnmpCollection(pe01.getId()));
+        assertEquals(0,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(0,m_bridgeMacLinkDao.countAll());
+        assertEquals(113,m_ipNetToMediaDao.countAll());
+        m_ipNetToMediaDao.findAll().stream().forEach(ntm -> System.err.println(ntm.toString()));
+        
+        assertNull(m_linkd.getBridgeTopologyService().useBridgeTopologyUpdateBFT(pe01.getId()));
+              
+        List<MacPort> mps = m_bridgeTopologyService.getMacPorts();
+        assertEquals(37, mps.size());
+        System.err.println("-----------------------");
+        mps.stream().filter(mp -> mp.getMacPortMap().containsKey(pe01macaddress)).forEach(mp -> {
+            assertEquals(1, mp.getMacPortMap().size());
+            Set<InetAddress> ips = mp.getMacPortMap().get(pe01macaddress);
+            assertEquals(45, ips.size());
+            ips.contains(InetAddressUtils.addr(PE01_IP));
+            ips.contains(InetAddressUtils.addr("10.27.19.1"));
+            assertEquals(pe01.getId() ,mp.getNodeId());
+            assertEquals(-1,mp.getMacPortIfIndex().intValue());
+            assertNull(mp.getMacPortName());
+            System.err.println(mp.printTopology());
+            System.err.println(mp.getPortMacInfo());
+   });
+        System.err.println("-----------------------");
+        
+        System.err.println("-----------------------");
+        mps.stream().filter(mp -> mp.getMacPortMap().containsKey(asw01mac01)).forEach(mp -> {
+            assertEquals(1, mp.getMacPortMap().size());
+            Set<InetAddress> ips = mp.getMacPortMap().get(asw01mac01);
+            assertEquals(1, ips.size());
+            ips.contains(InetAddressUtils.addr(ASW01_IP));
+            assertEquals(asw01.getId() ,mp.getNodeId());
+            assertEquals(-1,mp.getMacPortIfIndex().intValue());
+            assertNull(mp.getMacPortName());
+            System.err.println(mp.printTopology());
+            System.err.println(mp.getPortMacInfo());
+   });
+        System.err.println("-----------------------");
+
+        System.err.println("-----------------------");
+        mps.stream().filter(mp -> mp.getMacPortMap().containsKey(asw01mac02)).forEach(mp -> {
+            assertEquals(1, mp.getMacPortMap().size());
+            Set<InetAddress> ips = mp.getMacPortMap().get(asw01mac02);
+            assertEquals(1, ips.size());
+            //ips.contains(InetAddressUtils.addr(ASW01_IP));
+            //assertEquals(asw01.getId() ,mp.getNodeId());
+            //assertEquals(-1,mp.getMacPortIfIndex().intValue());
+            //assertNull(mp.getMacPortName());
+            System.err.println(mp.printTopology());
+            System.err.println(mp.getPortMacInfo());
+   });
+        System.err.println("-----------------------");
+
+    }
+
+
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=STCASW01_IP, port=161, resource=STCASW01_SNMP_RESOURCE)
