@@ -68,6 +68,7 @@ import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms7918NetworkBuilder;
+import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 /*
  * 
  * 
@@ -288,6 +289,10 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
     public void testNms7918PE01Collection() throws Exception {
         final OnmsNode pe01 = m_nodeDao.findByForeignId("linkd", PE01_NAME);
         final OnmsNode asw01 = m_nodeDao.findByForeignId("linkd", ASW01_NAME);
+        final OnmsNode ospess01 = m_nodeDao.findByForeignId("linkd", OSPESS01_NAME);
+        final OnmsNode ospwl01 = m_nodeDao.findByForeignId("linkd", OSPWL01_NAME);
+        final OnmsNode samasw01 = m_nodeDao.findByForeignId("linkd", SAMASW01_NAME);
+        final OnmsNode stcasw01 = m_nodeDao.findByForeignId("linkd", STCASW01_NAME);
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(true);
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
@@ -346,14 +351,56 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         System.err.println("-----------------------");
 
         System.err.println("-----------------------");
-        mps.stream().filter(mp -> mp.getMacPortMap().containsKey(asw01mac02)).forEach(mp -> {
+        mps.stream().filter(mp -> mp.getMacPortMap().containsKey(ospess01mac)).forEach(mp -> {
             assertEquals(1, mp.getMacPortMap().size());
-            Set<InetAddress> ips = mp.getMacPortMap().get(asw01mac02);
+            Set<InetAddress> ips = mp.getMacPortMap().get(ospess01mac);
+            assertEquals(5, ips.size());
+            ips.contains(InetAddressUtils.addr(OSPESS01_IP));
+            assertEquals(ospess01.getId() ,mp.getNodeId());
+            assertEquals(-1,mp.getMacPortIfIndex().intValue());
+            assertNull(mp.getMacPortName());
+            System.err.println(mp.printTopology());
+            System.err.println(mp.getPortMacInfo());
+   });
+        System.err.println("-----------------------");
+
+        System.err.println("-----------------------");
+        mps.stream().filter(mp -> mp.getMacPortMap().containsKey(ospedalewl01mac)).forEach(mp -> {
+            assertEquals(1, mp.getMacPortMap().size());
+            Set<InetAddress> ips = mp.getMacPortMap().get(ospedalewl01mac);
             assertEquals(1, ips.size());
-            //ips.contains(InetAddressUtils.addr(ASW01_IP));
-            //assertEquals(asw01.getId() ,mp.getNodeId());
-            //assertEquals(-1,mp.getMacPortIfIndex().intValue());
-            //assertNull(mp.getMacPortName());
+            ips.contains(InetAddressUtils.addr(OSPWL01_IP));
+            assertEquals(ospwl01.getId() ,mp.getNodeId());
+            assertEquals(-1,mp.getMacPortIfIndex().intValue());
+            assertNull(mp.getMacPortName());
+            System.err.println(mp.printTopology());
+            System.err.println(mp.getPortMacInfo());
+   });
+        System.err.println("-----------------------");
+
+        System.err.println("-----------------------");
+        mps.stream().filter(mp -> mp.getMacPortMap().containsKey(samasw01mac)).forEach(mp -> {
+            assertEquals(1, mp.getMacPortMap().size());
+            Set<InetAddress> ips = mp.getMacPortMap().get(samasw01mac);
+            assertEquals(2, ips.size());
+            ips.contains(InetAddressUtils.addr(SAMASW01_IP));
+            assertEquals(samasw01.getId() ,mp.getNodeId());
+            assertEquals(-1,mp.getMacPortIfIndex().intValue());
+            assertNull(mp.getMacPortName());
+            System.err.println(mp.printTopology());
+            System.err.println(mp.getPortMacInfo());
+   });
+        System.err.println("-----------------------");
+
+        System.err.println("-----------------------");
+        mps.stream().filter(mp -> mp.getMacPortMap().containsKey(stcasw01mac)).forEach(mp -> {
+            assertEquals(1, mp.getMacPortMap().size());
+            Set<InetAddress> ips = mp.getMacPortMap().get(stcasw01mac);
+            assertEquals(1, ips.size());
+            ips.contains(InetAddressUtils.addr(STCASW01_IP));
+            assertEquals(stcasw01.getId() ,mp.getNodeId());
+            assertEquals(-1,mp.getMacPortIfIndex().intValue());
+            assertNull(mp.getMacPortName());
             System.err.println(mp.printTopology());
             System.err.println(mp.getPortMacInfo());
    });
@@ -721,24 +768,29 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_bridgeMacLinkDao.countAll());
         
         m_linkd.runDiscoveryBridgeDomains();
+        assertEquals(3,m_bridgeElementDao.countAll());
         checkTopology(asw01,stcasw01,samasw01);
         
         //Another cycle to verify that run works fine with 2 of 3
         assertTrue(m_linkd.runSingleSnmpCollection(asw01.getId()));
         m_linkd.runDiscoveryBridgeDomains();
+        assertEquals(3,m_bridgeElementDao.countAll());
         checkTopology(asw01,stcasw01,samasw01);
 
         assertTrue(m_linkd.runSingleSnmpCollection(samasw01.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(stcasw01.getId()));
         m_linkd.runDiscoveryBridgeDomains();
+        assertEquals(3,m_bridgeElementDao.countAll());
         checkTopology(asw01,stcasw01,samasw01);
 
         assertTrue(m_linkd.runSingleSnmpCollection(asw01.getId()));
         m_linkd.runDiscoveryBridgeDomains();
+        assertEquals(3,m_bridgeElementDao.countAll());
         checkTopology(asw01,stcasw01,samasw01);
 
         assertTrue(m_linkd.runSingleSnmpCollection(stcasw01.getId()));
         m_linkd.runDiscoveryBridgeDomains();
+        assertEquals(3,m_bridgeElementDao.countAll());
         checkTopology(asw01,stcasw01,samasw01);
         
     }
@@ -832,11 +884,87 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
 
         assertTrue(m_linkd.runSingleSnmpCollection(samasw01.getId()));
         m_linkd.runDiscoveryBridgeDomains();
+        assertEquals(3,m_bridgeElementDao.countAll());
         checkAsw01SamAsw01Topology(asw01, samasw01);
 
         assertTrue(m_linkd.runSingleSnmpCollection(stcasw01.getId()));
         m_linkd.runDiscoveryBridgeDomains();
         checkTopology(asw01, stcasw01, samasw01);
+
+    }
+
+    
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=PE01_IP, port=161, resource= PE01_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=OSPESS01_IP, port=161, resource= OSPESS01_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=OSPWL01_IP, port=161, resource= OSPWL01_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=ASW01_IP, port=161, resource=ASW01_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SAMASW01_IP, port=161, resource=SAMASW01_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=STCASW01_IP, port=161, resource=STCASW01_SNMP_RESOURCE)
+    })
+    public void testTopology() throws Exception {
+        
+        final OnmsNode pe01 = m_nodeDao.findByForeignId("linkd", PE01_NAME);
+        final OnmsNode asw01 = m_nodeDao.findByForeignId("linkd", ASW01_NAME);
+        final OnmsNode ospess01 = m_nodeDao.findByForeignId("linkd", OSPESS01_NAME);
+        final OnmsNode ospwl01 = m_nodeDao.findByForeignId("linkd", OSPWL01_NAME);
+        final OnmsNode samasw01 = m_nodeDao.findByForeignId("linkd", SAMASW01_NAME);
+        final OnmsNode stcasw01 = m_nodeDao.findByForeignId("linkd", STCASW01_NAME);
+        
+        m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
+        m_linkdConfig.getConfiguration().setMaxBft(6);
+        
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
+        assertTrue(m_linkdConfig.useBridgeDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
+
+        assertTrue(m_linkd.scheduleNodeCollection(pe01.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(ospess01.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(asw01.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(samasw01.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(stcasw01.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(ospwl01.getId()));
+
+        assertEquals(0,m_ipNetToMediaDao.countAll());
+        assertEquals(0,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(0,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(0,m_bridgeMacLinkDao.countAll());
+
+        assertTrue(m_linkd.runSingleSnmpCollection(pe01.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(asw01.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(ospess01.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(ospwl01.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(samasw01.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(stcasw01.getId()));
+        
+        assertEquals(5,m_bridgeElementDao.countAll());
+        m_bridgeElementDao.findAll().stream().forEach(e -> System.err.println(e));
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(0,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(0,m_bridgeMacLinkDao.countAll());
+        assertEquals(0,m_bridgeMacLinkDao.countAll());
+        assertEquals(116,m_ipNetToMediaDao.countAll());
+        
+
+        m_linkd.runDiscoveryBridgeDomains();
+        checkTopology(asw01,stcasw01,samasw01);
+        List<MacPort> mps = m_bridgeTopologyService.getMacPorts();
+        assertEquals(40, mps.size());
+
+        BridgeOnmsTopologyUpdater topologyUpdater = m_linkd.getBridgeTopologyUpdater();
+        assertNotNull(topologyUpdater);
+        OnmsTopology topology = topologyUpdater.buildTopology();
+        topology.getVertices().stream().forEach(v -> System.err.println(v.getLabel()));
+        topology.getEdges().stream().forEach(e -> System.err.println(e.getId()));
+        assertEquals(29, topology.getVertices().size());
+        assertEquals(7, topology.getEdges().size());
 
     }
 
@@ -1145,9 +1273,9 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         count+=shared.length;
         assertEquals(count,m_bridgeMacLinkDao.countAll());    	
     }
-    
+
+
     private void checkTopology(OnmsNode  asw01, OnmsNode stcasw01, OnmsNode samasw01)    {
-        assertEquals(3,m_bridgeElementDao.countAll());
         assertEquals(0,m_bridgeStpLinkDao.countAll());
         assertEquals(2,m_bridgeBridgeLinkDao.countAll());
         //the final size of bridgemaclink is 
