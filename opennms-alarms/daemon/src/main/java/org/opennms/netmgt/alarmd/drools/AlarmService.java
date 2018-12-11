@@ -32,6 +32,7 @@ import java.util.Date;
 
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.xml.event.Event;
 
 public interface AlarmService {
 
@@ -46,5 +47,12 @@ public interface AlarmService {
     void acknowledgeAlarm(OnmsAlarm alarm, Date now);
 
     void setSeverity(OnmsAlarm alarm, OnmsSeverity severity, Date now);
+
+    /**
+     * Asynchronously broadcast the given event.
+     *
+     * @param e event to broadcast
+     */
+    void sendEvent(Event e);
 
 }
