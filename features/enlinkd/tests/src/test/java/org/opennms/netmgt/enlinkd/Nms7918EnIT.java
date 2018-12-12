@@ -754,43 +754,73 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.scheduleNodeCollection(samasw01.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(stcasw01.getId()));
 
+        assertEquals(0,m_ipNetToMediaDao.countAll());
         assertEquals(0,m_bridgeElementDao.countAll());
         assertEquals(0,m_bridgeStpLinkDao.countAll());
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
+        assertEquals(0,m_bridgeTopologyService.getMacPorts().size());
 
         assertTrue(m_linkd.runSingleSnmpCollection(asw01.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(samasw01.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(stcasw01.getId()));
+        assertEquals(2,m_ipNetToMediaDao.countAll());
         assertEquals(3,m_bridgeElementDao.countAll());
         assertEquals(0,m_bridgeStpLinkDao.countAll());
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
+        assertEquals(1,m_bridgeTopologyService.getMacPorts().size());
+        m_ipNetToMediaDao.findAll().stream().forEach(ntm -> System.err.println(ntm.toString()));
         
         m_linkd.runDiscoveryBridgeDomains();
+        assertEquals(2,m_ipNetToMediaDao.countAll());
         assertEquals(3,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(2,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(49,m_bridgeMacLinkDao.countAll());
+        assertEquals(1,m_bridgeTopologyService.getMacPorts().size());
         checkTopology(asw01,stcasw01,samasw01);
         
         //Another cycle to verify that run works fine with 2 of 3
         assertTrue(m_linkd.runSingleSnmpCollection(asw01.getId()));
         m_linkd.runDiscoveryBridgeDomains();
+        assertEquals(2,m_ipNetToMediaDao.countAll());
         assertEquals(3,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(2,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(49,m_bridgeMacLinkDao.countAll());
+        assertEquals(1,m_bridgeTopologyService.getMacPorts().size());
         checkTopology(asw01,stcasw01,samasw01);
 
         assertTrue(m_linkd.runSingleSnmpCollection(samasw01.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(stcasw01.getId()));
         m_linkd.runDiscoveryBridgeDomains();
+        assertEquals(2,m_ipNetToMediaDao.countAll());
         assertEquals(3,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(2,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(49,m_bridgeMacLinkDao.countAll());
+        assertEquals(1,m_bridgeTopologyService.getMacPorts().size());
         checkTopology(asw01,stcasw01,samasw01);
 
         assertTrue(m_linkd.runSingleSnmpCollection(asw01.getId()));
         m_linkd.runDiscoveryBridgeDomains();
+        assertEquals(2,m_ipNetToMediaDao.countAll());
         assertEquals(3,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(2,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(49,m_bridgeMacLinkDao.countAll());
+        assertEquals(1,m_bridgeTopologyService.getMacPorts().size());
         checkTopology(asw01,stcasw01,samasw01);
 
         assertTrue(m_linkd.runSingleSnmpCollection(stcasw01.getId()));
         m_linkd.runDiscoveryBridgeDomains();
+        assertEquals(2,m_ipNetToMediaDao.countAll());
         assertEquals(3,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(2,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(49,m_bridgeMacLinkDao.countAll());
+        assertEquals(1,m_bridgeTopologyService.getMacPorts().size());
         checkTopology(asw01,stcasw01,samasw01);
         
     }
@@ -826,6 +856,8 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_bridgeStpLinkDao.countAll());
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
+        assertEquals(0,m_ipNetToMediaDao.countAll());
+        assertEquals(0,m_bridgeTopologyService.getMacPorts().size());
 
         assertTrue(m_linkd.runSingleSnmpCollection(asw01.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(samasw01.getId()));
@@ -833,14 +865,35 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_bridgeStpLinkDao.countAll());
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
+        assertEquals(2,m_ipNetToMediaDao.countAll());
+        assertEquals(1,m_bridgeTopologyService.getMacPorts().size());
+        
         m_linkd.runDiscoveryBridgeDomains();
-        checkAsw01SamAsw01Topology(asw01, samasw01);
-
-        m_linkd.runDiscoveryBridgeDomains();
+        assertEquals(2,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(1,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(42,m_bridgeMacLinkDao.countAll());
+        assertEquals(2,m_ipNetToMediaDao.countAll());
+        assertEquals(1,m_bridgeTopologyService.getMacPorts().size());
         checkAsw01SamAsw01Topology(asw01, samasw01);
 
         assertTrue(m_linkd.runSingleSnmpCollection(stcasw01.getId()));
+        assertEquals(3,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(1,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(42,m_bridgeMacLinkDao.countAll());
+        assertEquals(2,m_ipNetToMediaDao.countAll());
+        assertEquals(1,m_bridgeTopologyService.getMacPorts().size());
+        
         m_linkd.runDiscoveryBridgeDomains();
+        assertEquals(2,m_ipNetToMediaDao.countAll());
+        assertEquals(3,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(2,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(49,m_bridgeMacLinkDao.countAll());
+        assertEquals(1,m_bridgeTopologyService.getMacPorts().size());
+        checkTopology(asw01,stcasw01,samasw01);
+
     }
     
     @Test
@@ -872,24 +925,56 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_bridgeStpLinkDao.countAll());
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
+        assertEquals(0,m_ipNetToMediaDao.countAll());
+        assertEquals(0,m_bridgeTopologyService.getMacPorts().size());
 
         assertTrue(m_linkd.runSingleSnmpCollection(asw01.getId()));
         assertEquals(1,m_bridgeElementDao.countAll());
         assertEquals(0,m_bridgeStpLinkDao.countAll());
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
-        
+        assertEquals(1,m_ipNetToMediaDao.countAll());
+        assertEquals(1,m_bridgeTopologyService.getMacPorts().size());
         m_linkd.runDiscoveryBridgeDomains();
+        assertEquals(1,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(0,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(40,m_bridgeMacLinkDao.countAll());
+        assertEquals(1,m_ipNetToMediaDao.countAll());
+        assertEquals(1,m_bridgeTopologyService.getMacPorts().size());
         checkAsw01Topology(asw01);
 
         assertTrue(m_linkd.runSingleSnmpCollection(samasw01.getId()));
+        assertEquals(2,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(0,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(40,m_bridgeMacLinkDao.countAll());
+        assertEquals(2,m_ipNetToMediaDao.countAll());
+        assertEquals(1,m_bridgeTopologyService.getMacPorts().size());
         m_linkd.runDiscoveryBridgeDomains();
-        assertEquals(3,m_bridgeElementDao.countAll());
+        assertEquals(2,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(1,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(42,m_bridgeMacLinkDao.countAll());
+        assertEquals(2,m_ipNetToMediaDao.countAll());
+        assertEquals(1,m_bridgeTopologyService.getMacPorts().size());        
         checkAsw01SamAsw01Topology(asw01, samasw01);
 
         assertTrue(m_linkd.runSingleSnmpCollection(stcasw01.getId()));
+        assertEquals(3,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(1,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(42,m_bridgeMacLinkDao.countAll());
+        assertEquals(2,m_ipNetToMediaDao.countAll());
+        assertEquals(1,m_bridgeTopologyService.getMacPorts().size());
         m_linkd.runDiscoveryBridgeDomains();
-        checkTopology(asw01, stcasw01, samasw01);
+        assertEquals(3,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(2,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(49,m_bridgeMacLinkDao.countAll());
+        assertEquals(2,m_ipNetToMediaDao.countAll());
+        assertEquals(1,m_bridgeTopologyService.getMacPorts().size());
+        checkTopology(asw01,stcasw01,samasw01);
 
     }
 
@@ -969,9 +1054,6 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
     }
 
     private void checkAsw01Topology(OnmsNode  asw01) {
-        assertEquals(1,m_bridgeElementDao.countAll());
-        assertEquals(0,m_bridgeStpLinkDao.countAll());
-        assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         //the final size of bridgemaclink is 
         // 40 =
         //+ 5 = macs learned on port 1 of asw01
@@ -1113,10 +1195,6 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
     }
     
     private void checkAsw01SamAsw01Topology(OnmsNode  asw01,OnmsNode samasw01) {
-        assertEquals(2,m_bridgeElementDao.countAll());
-        assertEquals(0,m_bridgeStpLinkDao.countAll());
-        assertEquals(1,m_bridgeBridgeLinkDao.countAll());
-        
         for (BridgeBridgeLink bblink : m_bridgeBridgeLinkDao.findAll()) {
             assertNotNull(bblink);
             assertEquals(asw01.getId(), bblink.getDesignatedNode().getId());
@@ -1276,8 +1354,6 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
 
 
     private void checkTopology(OnmsNode  asw01, OnmsNode stcasw01, OnmsNode samasw01)    {
-        assertEquals(0,m_bridgeStpLinkDao.countAll());
-        assertEquals(2,m_bridgeBridgeLinkDao.countAll());
         //the final size of bridgemaclink is 
         // 76 =
         // 21 = 21 (21 mac are learned on the common shared and entry for each port, the ports are 3 
