@@ -87,7 +87,7 @@ public class ApplicationImpl implements Application {
         if (obj == null) return false;
         if (obj == this) return true;
         if (getClass() != obj.getClass()) return false;
-        final IpServiceImpl other = (IpServiceImpl) obj;
+        final ApplicationImpl other = (ApplicationImpl) obj;
         return Objects.equals(getEntity(), other.getEntity());
     }
 
