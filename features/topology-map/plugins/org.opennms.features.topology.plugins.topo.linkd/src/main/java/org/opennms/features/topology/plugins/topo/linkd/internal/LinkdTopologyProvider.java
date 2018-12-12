@@ -299,7 +299,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             if (topologylink.getCloud() != null || macportswithoutnodeid.size() > 0) {
                 macCloudVertex = LinkdVertex.create(topologylink.getCloud(),macportswithoutnodeid,topologylink.getUpPort());
                 addVertices(macCloudVertex);
-            } else if (portToNodeVertexMap.size() == 2 && 
+            } 
+            
+            if (portToNodeVertexMap.size() == 2 && 
                     macPortToNodeVertexMap.size() == 0 && macCloudVertex == null ) {
                 LinkdVertex source = null;
                 LinkdVertex target = null;
