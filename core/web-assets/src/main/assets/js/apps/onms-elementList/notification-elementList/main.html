@@ -10,10 +10,10 @@
 					<label>Add Filter:</label>
 					<form class="form-inline" onSubmit="$('#filterModal').modal('hide')" ng-submit="addSearchClause(clause)">
 						<div class="form-group">
-						<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'notifyId'" ng-change="updateClauseValue(clause.property)">
+						<select class="form-control custom-select" ng-model="clause.property" ng-init="clause.property = 'notifyId'" ng-change="updateClauseValue(clause.property)">
 							<option ng-repeat="property in searchProperties" value="{{::property.id}}">{{::property.name}}</option>
 						</select>
-						<select class="form-control" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
+						<select class="form-control custom-select ml-2" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
 							<option value="EQ">=</option>
 							<option value="NE">!=</option>
 							<option value="LT">&lt;</option>
@@ -21,7 +21,7 @@
 							<option value="GT">&gt;</option>
 							<option value="GE">&gt;=</option>
 						</select>
-						<span ng-if="clauseValues.length === 0">
+						<span class="my-2" ng-if="clauseValues.length === 0">
 							<input class="form-control" type="datetime-local"    ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'TIMESTAMP'"/>
 							<input class="form-control" type="text"              ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'STRING' || getSearchProperty(clause.property).type === 'IP_ADDRESS'"
 								placeholder="Type to search..."
@@ -34,9 +34,8 @@
 								<i class="fa fa-spinner fa-spin fa-lg fa-fw"/>
 							</span>
 						</span>
-						<select class="form-control" ng-model="clause.value" ng-if="clauseValues.length !== 0" ng-options="value.id as value.name for value in clauseValues"/>
+						<select class="form-control custom-select my-2" ng-model="clause.value" ng-if="clauseValues.length !== 0" ng-options="value.id as value.name for value in clauseValues"/>
 						</div>
-						<br/><br/>
 						<button class="btn btn-secondary" type="submit">Submit</button>
 					</form>
 				</div>
@@ -78,7 +77,7 @@
 
 
 	<!-- Filter list -->
-	<div class="well well-sm">
+	<div>
 		<span class="h4" style="line-height:2.8;">
 			Filters&nbsp;&nbsp;
 			<a onClick="$('#filterModal').modal()"><i class="fa fa-search-plus fa-lg"></i></a>
@@ -110,19 +109,19 @@
 
 	<!-- Paging controls -->
 	<div>
-		<div class="btn-toolbar">
-			<div class="btn-group">
+		<div class="btn-toolbar justify-content-between">
+			<div>
 				<a class="btn btn-secondary {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(0)">
 					<i class="fa fa-backward"></i>&nbsp;&nbsp;First
 				</a>
-			</div>
-			<div class="btn-group">
 				<a class="btn btn-secondary {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(query.offset-query.limit)">
 					<i class="fa fa-play fa-flip-horizontal"></i>&nbsp;&nbsp;Previous
 				</a>
 			</div>
 
 			<div class="btn-group">
+				<h5 ng-show="query.maxOffset &lt; 0">No items found.</h5>
+				<h5 ng-show="query.maxOffset &gt;= 0">{{query.offset === query.lastOffset ? "Item " + (query.offset + 1) : "Items " + (query.offset + 1) + " - " + (query.lastOffset + 1)}} ({{query.maxOffset + 1}} total)</h5>
 				<a class="btn btn-secondary" ng-click="setOffset(query.offset-(3*query.limit))" ng-hide="(query.offset-(3*query.limit)) &lt; 0" style="width:5em;">
 					{{(query.offset/query.limit) - 2}}
 				</a>
@@ -146,30 +145,23 @@
 				</a>
 			</div>
 
-			<div class="pull-right">
+			<div>
 				<!-- Add 1 to each offset since they are zero-based -->
 				<form class="form-inline" ng-submit="setLimit(query.newLimit)">
 					<div class="input-group" style="margin-left:10px;">
-						<span class="input-group-addon"><i class="fa fa-th-list"></i></span>
+						<div class="input-group-prepend input-group-text"><i class="fa fa-th-list"></i></div>
 						<input class="form-control" type="number" ng-model="query.newLimit"/>
 					</div>
-
-					<div class="btn-group" style="margin-left:5px;">
+					<div>
 						<a class="btn btn-secondary {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(query.offset + query.limit)">
 							Next&nbsp;&nbsp;<i class="fa fa-play"></i>
 						</a>
-					</div>
-
-					<div class="btn-group" style="margin-left:5px;">
 						<a class="btn btn-secondary {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(1000000000)">
 							Last&nbsp;&nbsp;<i class="fa fa-forward"></i>
 						</a>
 					</div>
 				</form>
 			</div>
-
-			<h5 class="pull-right" ng-show="query.maxOffset &lt; 0">No items found.</h5>
-			<h5 class="pull-right" ng-show="query.maxOffset &gt;= 0">{{query.offset === query.lastOffset ? "Item " + (query.offset + 1) : "Items " + (query.offset + 1) + " - " + (query.lastOffset + 1)}} ({{query.maxOffset + 1}} total)</h5>
 		</div>
 	</div>
 

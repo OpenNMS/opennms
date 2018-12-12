@@ -19,10 +19,10 @@ Use $window.location.href = "/element/node.jsp?node=" + items[0].id;
 					<label>Add Filter:</label>
 					<form class="form-inline" onSubmit="$('#filterModal').modal('hide')" ng-submit="addSearchClause(clause)">
 						<div class="form-group">
-						<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'id'" ng-change="updateClauseValue(clause.property)">
+						<select class="form-control custom-select" ng-model="clause.property" ng-init="clause.property = 'id'" ng-change="updateClauseValue(clause.property)">
 							<option ng-repeat="property in searchProperties" value="{{::property.id}}">{{::property.name}}</option>
 						</select>
-						<select class="form-control" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
+						<select class="form-control ml-2 custom-select" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
 							<option value="EQ">=</option>
 							<option value="NE">!=</option>
 							<option value="LT">&lt;</option>
@@ -30,7 +30,7 @@ Use $window.location.href = "/element/node.jsp?node=" + items[0].id;
 							<option value="GT">&gt;</option>
 							<option value="GE">&gt;=</option>
 						</select>
-						<span ng-if="clauseValues.length === 0">
+						<span class="my-2" ng-if="clauseValues.length === 0">
 							<input class="form-control" type="datetime-local"    ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'TIMESTAMP'"/>
 							<input class="form-control" type="text"              ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'STRING' || getSearchProperty(clause.property).type === 'IP_ADDRESS'"
 								placeholder="Type to search..."
@@ -43,9 +43,8 @@ Use $window.location.href = "/element/node.jsp?node=" + items[0].id;
 								<i class="fa fa-spinner fa-spin fa-lg fa-fw"/>
 							</span>
 						</span>
-						<select class="form-control" ng-model="clause.value" ng-if="clauseValues.length !== 0" ng-options="value.id as value.name for value in clauseValues"/>
+						<select class="form-control custom-select my-2" ng-model="clause.value" ng-if="clauseValues.length !== 0" ng-options="value.id as value.name for value in clauseValues"/>
 						</div>
-						<br/><br/>
 						<button class="btn btn-secondary" type="submit">Submit</button>
 					</form>
 				</div>
@@ -213,7 +212,7 @@ Use $window.location.href = "/element/node.jsp?node=" + items[0].id;
 
 				<!-- TODO: Move this control into the filter panel? -->
 				<!-- TODO: Change onchange into a $scope operation -->
-				<select class="form-control form-control-sm pull-right" style="width:auto;" id="monitoringLocation" onchange="javascript:location.href = location.protocol + '//' + location.host + location.pathname + '?monitoringLocation=' + this.options[this.selectedIndex].value;">
+				<select class="custom-select form-control form-control-sm pull-right" style="width:auto;" id="monitoringLocation" onchange="javascript:location.href = location.protocol + '//' + location.host + location.pathname + '?monitoringLocation=' + this.options[this.selectedIndex].value;">
 					<option value="" selected>All locations</option>
 					<option ng-repeat="location in getSearchPropertyValues('location.locationName')" value="{{location.id}}" selected>{{location.name}}</option>
 				</select>
