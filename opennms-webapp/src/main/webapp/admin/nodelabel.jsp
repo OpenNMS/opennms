@@ -110,25 +110,21 @@
           select the name.
         </p>
 
-        <form role="form" class="form-inline" action="admin/nodeLabelChange" method="post">
+        <form role="form" action="admin/nodeLabelChange" method="post">
           <input type="hidden" name="node" value="<%=nodeId%>" />
 
-          <div class="form-group">
             <label>User Defined</label>
             <br/>
-            <input type="radio" name="labeltype" value="user" <%=(currentLabel.getSource() == NodeLabelSource.USER) ? "checked" : ""%> />
-            <input type="text" name="userlabel" class="form-control" value="<%=currentLabel.getLabel()%>" maxlength="255" size="32"/>
-          </div>
+            <input type="radio" name="labeltype" class="mr-1" value="user" <%=(currentLabel.getSource() == NodeLabelSource.USER) ? "checked" : ""%> />
+            <input type="text" name="userlabel" value="<%=currentLabel.getLabel()%>" maxlength="255" size="32"/>
 
           <br/>
           <br/>
 
-          <div class="form-group">
             <label>Automatic</label>
             <br/>
-            <input type="radio" name="labeltype" value="auto" <%=(currentLabel.getSource() != NodeLabelSource.USER) ? "checked" : ""%> />
+            <input type="radio" name="labeltype" class="mr-1" value="auto" <%=(currentLabel.getSource() != NodeLabelSource.USER) ? "checked" : ""%> />
             <%=autoLabel.getLabel()%> (<%=typeMap.get(autoLabel.getSource())%>)
-          </div>
 
           <br/>
           <br/>

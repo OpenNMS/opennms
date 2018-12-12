@@ -99,7 +99,7 @@
 	</div>
 
 	<!-- Use clear:left to make sure that this column breaks onto a new row -->
-	<div class="form-group col-sm-4" style="clear: left;">
+	<div class="form-group col-sm-6" style="clear: left;">
 		<label for="service">Service</label>
 		<select class="form-control custom-select" name="service">
 			<option selected><%=AlarmUtil.ANY_SERVICES_OPTION%></option>
@@ -110,7 +110,7 @@
 		</select>
 	</div>
 
-	<div class="form-group col-sm-4">
+	<div class="form-group col-sm-6">
 		<label for="sortby">Sort By</label>
 		<select class="form-control custom-select" name="sortby">
 			<option value="id">Alarm ID (Descending)</option>
@@ -128,7 +128,7 @@
 		</select>
 	</div>
 
-	<div class="form-group col-sm-4">
+	<div class="form-group col-sm-6">
 		<label for="limit">Number of Alarms Per Page</label>
 		<select class="form-control custom-select" name="limit">
 			<option value="10">10 alarms</option>
@@ -140,27 +140,28 @@
 		</select>
 	</div>
 
-	<div class="col-sm-6">
-		<label>
-			<input type="checkbox" name="useafterfirsteventtime" value="1" /> Alarm's First Event After:
+	<div class="col-sm-6 my-2">
+		<label data-toggle="collapse" data-target="#collapseAlarmsFirstAfter" aria-expanded="false" aria-controls="collapseAlarmsFirstAfter">
+			<input type="checkbox" name="useafterfirsteventtime" value="1" /> Filter for Alarm's First Event After:
 		</label>
 		<!-- 
 		<input type="date" name="beforedate"/>
 		<input type="time" name="beforetime"/>
 		-->
 		<br />
+		<div id="collapseAlarmsFirstAfter" class="collapse">
 		<div class="row">
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control custom-select" name="afterfirsteventtimehour">
 					<c:forEach var="i" begin="1" end="12">
 						<form:option value="${i}" selected="${nowHour==i}">${i}</form:option>
 					</c:forEach>
 				</select>
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<input class="form-control" type="text" name="afterfirsteventtimeminute" maxlength="2" value="${formattedNowMinute}" />
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control custom-select" name="afterfirsteventtimeampm">
 					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
 						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==amPmText}">${dayTime}</form:option>
@@ -169,43 +170,45 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control custom-select" name="afterfirsteventtimemonth">
 					<c:forEach var="month" items="${months}" varStatus="status">
 						<form:option value="${status.index}" selected="${status.count == nowMonth}">${month}</form:option>
 					</c:forEach>
 				</select>
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<input class="form-control" type="text" name="afterfirsteventtimedate" maxlength="2" value="${nowDate}" />
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<input class="form-control" type="text" name="afterfirsteventtimeyear" maxlength="4" value="${nowYear}" />
 			</div>
 		</div>
+		</div>
 	</div>
 
-	<div class="col-sm-6">
-		<label>
-			<input type="checkbox" name="usebeforefirsteventtime" value="1" /> Alarm's First Event Before:
+	<div class="col-sm-6 my-2">
+		<label data-toggle="collapse" data-target="#collapseAlarmsFirstBefore" aria-expanded="false" aria-controls="collapseAlarmsFirstBefore">
+			<input type="checkbox" name="usebeforefirsteventtime" value="1" /> Filter for Alarm's First Event Before:
 		</label>
 		<!-- 
 		<input type="date" name="beforedate"/>
 		<input type="time" name="beforetime"/>
 		-->
 		<br />
+		<div id="collapseAlarmsFirstBefore" class="collapse">
 		<div class="row">
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control custom-select" name="beforefirsteventtimehour">
 					<c:forEach var="i" begin="1" end="12">
 						<form:option value="${i}" selected="${nowHour==i}">${i}</form:option>
 					</c:forEach>
 				</select>
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<input class="form-control" type="text" name="beforefirsteventtimeminute" maxlength="2" value="${formattedNowMinute}" />
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control custom-select" name="beforefirsteventtimeampm">
 					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
 						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==amPmText}">${dayTime}</form:option>
@@ -214,47 +217,45 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control custom-select" name="beforefirsteventtimemonth">
 					<c:forEach var="month" items="${months}" varStatus="status">
 						<form:option value="${status.index}" selected="${status.count == nowMonth}">${month}</form:option>
 					</c:forEach>
 				</select>
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<input class="form-control" type="text" name="beforefirsteventtimedate" maxlength="2" value="${nowDate}" />
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<input class="form-control" type="text" name="beforefirsteventtimeyear" maxlength="4" value="${nowYear}" />
 			</div>
 		</div>
+		</div>
 	</div>
 
-	<div class="col-sm-12">
-		<br />
-	</div>
-
-	<div class="col-sm-6">
-		<label> <input type="checkbox" name="useafterlasteventtime"
-			value="1" /> Alarm's Last Event After:
+	<div class="col-sm-6 my-2">
+		<label data-toggle="collapse" data-target="#collapseAlarmsLastAfter" aria-expanded="false" aria-controls="collapseAlarmsLastAfter">
+			<input type="checkbox" name="useafterlasteventtime"	value="1" /> Filter for Alarm's Last Event After:
 		</label>
 		<!-- 
 		<input type="date" name="beforedate"/>
 		<input type="time" name="beforetime"/>
 		-->
 		<br />
-		<div class="row">
-			<div class="col-sm-2">
+		<div id="collapseAlarmsLastAfter" class="collapse">
+		<div class="row " aria-expanded="false">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control custom-select" name="afterlasteventtimehour">
 					<c:forEach var="i" begin="1" end="12">
 						<form:option value="${i}" selected="${nowHour==i}">${i}</form:option>
 					</c:forEach>
 				</select>
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<input class="form-control" type="text" name="afterlasteventtimeminute" maxlength="2" value="${formattedNowMinute}" />
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control custom-select" name="afterlasteventtimeampm">
 					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
 						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==amPmText}">${dayTime}</form:option>
@@ -263,43 +264,45 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control custom-select" name="afterlasteventtimemonth">
 					<c:forEach var="month" items="${months}" varStatus="status">
 						<form:option value="${status.index}" selected="${status.count == nowMonth}">${month}</form:option>
 					</c:forEach>
 				</select>
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<input class="form-control" type="text" name="afterlasteventtimedate" maxlength="2" value="${nowDate}" />
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<input class="form-control" type="text" name="afterlasteventtimeyear" maxlength="4" value="${nowYear}" />
 			</div>
 		</div>
+		</div>
 	</div>
 
-	<div class="col-sm-6">
-		<label> <input type="checkbox" name="usebeforelasteventtime"
-			value="1" /> Alarm Last Event Before:
+	<div class="col-sm-6 my-2">
+		<label data-toggle="collapse" data-target="#collapseAlarmsLasttBefore" aria-expanded="false" aria-controls="collapseAlarmsLasttBefore">
+			<input type="checkbox" name="usebeforelasteventtime" value="1" /> Filter for Alarm Last Event Before:
 		</label>
 		<!-- 
 		<input type="date" name="beforedate"/>
 		<input type="time" name="beforetime"/>
 		-->
 		<br />
+		<div id="collapseAlarmsLasttBefore" class="collapse">
 		<div class="row">
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control custom-select" name="beforelasteventtimehour">
 					<c:forEach var="i" begin="1" end="12">
 						<form:option value="${i}" selected="${nowHour==i}">${i}</form:option>
 					</c:forEach>
 				</select>
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<input class="form-control" type="text" name="beforelasteventtimeminute" maxlength="2" value="${formattedNowMinute}" />
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control custom-select" name="beforelasteventtimeampm">
 					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
 						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==amPmText}">${dayTime}</form:option>
@@ -308,27 +311,24 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control custom-select" name="beforelasteventtimemonth">
 					<c:forEach var="month" items="${months}" varStatus="status">
 						<form:option value="${status.index}" selected="${status.count == nowMonth}">${month}</form:option>
 					</c:forEach>
 				</select>
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<input class="form-control" type="text" name="beforelasteventtimedate" maxlength="2" value="${nowDate}" />
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<input class="form-control" type="text" name="beforelasteventtimeyear" maxlength="4" value="${nowYear}" />
 			</div>
 		</div>
-	</div>
-
-	<div class="col-sm-12">
-		<br />
+		</div>
 	</div>
 
 	<div class="form-group col-sm-12">
-		<button class="btn btn-secondary" type="submit">Search</button>
+		<button class="btn btn-secondary" type="submit"><i class="fa fa-search"></i> Search</button>
 	</div>
 </form>

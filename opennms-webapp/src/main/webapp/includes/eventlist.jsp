@@ -200,8 +200,8 @@
      <tr>
        <td class="standard" colspan="2">
            <nobr>
-             <input type="button" value="Acknowledge" onclick="submitAck()">
-             <input TYPE="reset" />
+             <input type="button" class="btn btn-secondary" value="Acknowledge" onclick="submitAck()">
+             <input TYPE="reset" class="btn btn-secondary" />
            </nobr>
        </td>
 

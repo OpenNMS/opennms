@@ -62,7 +62,6 @@
 		<span>All Path Outages</span>
 	</div>
 	<table class="table table-sm severity">
-		<thead class="dark">
 			<tr>
 				<th>Critical Path Node</th>
 				<th>Critical Path IP</th>
@@ -70,7 +69,6 @@
 				<th>Number of Nodes</th>
 				<th>Actions</th>
 			</tr>
-		</thead>
 		<% for (String[] pth : testPaths) {
 			pthData = PathOutageManagerDaoImpl.getInstance().getCriticalPathData(pth[1], pth[2]); %>
 		<tr>
@@ -92,7 +90,7 @@
 						.provider(TopologyProvider.PATH_OUTAGE)
 						.getLink();
 			%>
-			<td><a href="<%= topologyLink%>"><i class="fa fa-external-link-square"></i>View in Topology</a></td>
+			<td><a href="<%= topologyLink%>"><i class="fa fa-external-link-square"></i> View in Topology</a></td>
 		</tr>
 		<% } %>
 	</table>

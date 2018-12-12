@@ -271,11 +271,11 @@
 </div>
 
 <% if (notice.getTimeReplied() == null) { %>
-  <form class="form-inline" method="post" name="acknowledge" action="notification/acknowledge">
+  <form class="mb-3" method="post" name="acknowledge" action="notification/acknowledge">
     <input type="hidden" name="curUser" value="<%=request.getRemoteUser()%>">
     <input type="hidden" name="notices" value="<%=notice.getId()%>"/>
     <input type="hidden" name="redirect" value="<%= request.getServletPath() + "?" + request.getQueryString()%>" />
-    <input class="form-control" type="submit" value="Acknowledge" />
+    <input type="submit" class="btn btn-secondary" value="Acknowledge" />
   </form>
 <% } %>
 

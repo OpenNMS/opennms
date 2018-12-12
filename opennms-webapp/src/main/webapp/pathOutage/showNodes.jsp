@@ -59,24 +59,20 @@
         <span>Path Outage Node List</span>
     </div>
     <table class="table table-sm severity">
-          <thead class="dark">
           <tr>
           <th>Critical Path</th>
           <th>Status</th>
           </tr>
-          </thead>
 
           <tr>
           <td><%= critIp %></td>
           <td class="bright severity-<%= pthData[3].toLowerCase() %>"><%= critSvc %></td>
           </tr>
 
-          <thead class="dark">
           <tr>
           <th>Node</th>
           <th>Status</th>
           </tr>
-          </thead>
 
           <% for (Integer nodeid : nodeList) {
               String labelColor[] = PathOutageManagerDaoImpl.getInstance().getLabelAndStatus(nodeid.toString(), null); %>
