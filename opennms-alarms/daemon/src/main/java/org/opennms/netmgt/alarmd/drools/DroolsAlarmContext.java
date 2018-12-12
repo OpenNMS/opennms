@@ -120,7 +120,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 
             // Log details that help explain what actions are being performed, if any
             if (LOG.isDebugEnabled()) {
-                if (alarmIdsToAdd.size() > 0 || alarmIdsToRemove.size() > 0 || alarmIdsToUpdate.size() > 0) {
+                if (!alarmIdsToAdd.isEmpty() || !alarmIdsToRemove.isEmpty() || !alarmIdsToUpdate.isEmpty()) {
                     LOG.debug("Adding {} alarms, removing {} alarms and updating {} alarms for snapshot.",
                             alarmIdsToAdd.size(), alarmIdsToRemove.size(), alarmIdsToUpdate.size());
                 } else {
