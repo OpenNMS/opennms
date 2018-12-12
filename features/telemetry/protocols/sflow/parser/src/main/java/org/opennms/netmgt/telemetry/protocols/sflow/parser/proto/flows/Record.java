@@ -118,7 +118,6 @@ public abstract class Record<T> {
 
         } else {
             LOG.debug("Unknown record type: {}:{}", dataFormat.enterpriseNumber, dataFormat.formatNumber);
-            System.out.println("Unknown record type: " + dataFormat.enterpriseNumber + " / " + dataFormat.formatNumber);
             this.data = new Opaque(buffer, Optional.empty(), Opaque::parseUnknown);
         }
     }

@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -109,7 +110,7 @@ public class DhcpDetectorTest implements InitializingBean {
                 "</DhcpdConfiguration>");
 
         DhcpdConfigFactory.init();
-        m_detector = m_detectorFactory.createDetector();
+        m_detector = m_detectorFactory.createDetector(new HashMap<>());
         m_dhcpd = Dhcpd.getInstance();
         m_dhcpd.init();
 

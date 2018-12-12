@@ -1354,7 +1354,7 @@
     <postgresqlVersion>9.4.1211</postgresqlVersion>
     <powermockVersion>1.6.4</powermockVersion>
     <!-- TODO: Update to release artifact before tagging 24.0.0 -->
-    <opennmsApiVersion>1.0.0-alpha1-SNAPSHOT</opennmsApiVersion>
+    <opennmsApiVersion>1.0.0-alpha2-SNAPSHOT</opennmsApiVersion>
     <osgiVersion>6.0.0</osgiVersion>
     <osgiCompendiumVersion>5.0.0</osgiCompendiumVersion>
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
@@ -2252,12 +2252,6 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>geronimo-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>gwt-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>

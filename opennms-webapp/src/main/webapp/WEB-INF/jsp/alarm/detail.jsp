@@ -297,7 +297,7 @@
                     <c:if test="${relatedVar.lastEvent != null }">
                         <span title="Event ${relatedVar.lastEvent.id}">
                             <a href="event/detail.htm?id=${relatedVar.lastEvent.id}">
-                                <onms:datetime date="${alarm.lastEventTime}" />
+                                <onms:datetime date="${relatedVar.lastEventTime}" />
                             </a>
                         </span>
                     </c:if>
@@ -368,7 +368,7 @@
                     <c:if test="${relatedVar.lastEvent != null }">
                         <span title="Event ${relatedVar.lastEvent.id}">
                             <a href="event/detail.htm?id=${relatedVar.lastEvent.id}">
-                                <onms:datetime date="${alarm.lastEventTime}" />
+                                <onms:datetime date="${relatedVar.lastEventTime}" />
                             </a>
                         </span>
                     </c:if>

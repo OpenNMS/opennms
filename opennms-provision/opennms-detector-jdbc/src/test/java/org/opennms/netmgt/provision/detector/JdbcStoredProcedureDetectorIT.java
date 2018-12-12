@@ -36,6 +36,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 
 import javax.sql.DataSource;
 
@@ -84,7 +85,7 @@ public class JdbcStoredProcedureDetectorIT implements InitializingBean {
     @Before
     public void setUp() throws SQLException{
         MockLogAppender.setupLogging();
-        m_detector = m_detectorFactory.createDetector();
+        m_detector = m_detectorFactory.createDetector(new HashMap<>());
         String createSchema = "CREATE SCHEMA test";
         String createProcedure = "CREATE FUNCTION test.isRunning () RETURNS bit AS 'BEGIN RETURN 1; END;' LANGUAGE 'plpgsql';";
 
