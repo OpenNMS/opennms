@@ -30,11 +30,13 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.MacCloud;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
@@ -54,24 +56,24 @@ public class LinkdVertex extends SimpleLeafVertex {
         s_nodeStatusMap.put(OnmsNode.NodeType.DELETED, "Deleted");
     }
 
-    public static LinkdVertex create(MacPort port) {
-        LinkdVertex vertex = new LinkdVertex(Topology.getId(port));
-        vertex.setLabel(Topology.getId(port));
+    public static LinkdVertex create(MacCloud cloud, List<MacPort> ports, BridgePort designated) {
+        StringBuffer id = new StringBuffer();
+        id.append("macs:on:");
+        id.append(Topology.getId(designated));
+
+        StringBuffer ip = new StringBuffer();
+        if (cloud!= null) {
+            ip.append(cloud.getMacCloudInfo());
+        }
+        for (MacPort port :ports) {
+            ip.append(port.getPortMacInfo());
+        }
+        LinkdVertex vertex = new LinkdVertex(id.toString());
+        vertex.setLabel("Macs on Segment with no Onms node");
         vertex.setNodeType(s_nodeStatusMap.get(OnmsNode.NodeType.UNKNOWN));
-        vertex.setIpAddress(port.getPortMacInfo());
+        vertex.setIpAddress(ip.toString());
         vertex.setManaged("Not an OpenNMS Node");
         vertex.setIconKey("system");
-        return vertex;
-        
-    }
-
-    public static LinkdVertex create(MacCloud port) {
-        LinkdVertex vertex = new LinkdVertex(Topology.getId(port));
-        vertex.setLabel(Topology.getId(port));
-        vertex.setNodeType(s_nodeStatusMap.get(OnmsNode.NodeType.UNKNOWN));
-        vertex.setIpAddress("no ip address");
-        vertex.setManaged("Not an OpenNMS Node");
-        vertex.setIconKey("cloud");
         return vertex;
         
     }
