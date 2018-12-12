@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
-    <artifactId>org.opennms.features.topology.themes</artifactId>
-    <groupId>org.opennms.features.topology</groupId>
-    <version>24.0.0-SNAPSHOT</version>
-  </parent>
-
+        <artifactId>org.opennms.features.topology.themes</artifactId>
+        <groupId>org.opennms.features.topology</groupId>
+        <version>24.0.0-SNAPSHOT</version>
+    </parent>
     <groupId>org.opennms.features.topology.themes</groupId>
     <artifactId>org.opennms.features.topology.themes.default-theme</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS :: Features :: Topology :: Default  Theme</name>
+    <name>OpenNMS :: Features :: Topology :: Default Theme</name>
     <properties>
         <bundle.symbolicname>org.opennms.features.topology.themes.default-theme</bundle.symbolicname>
     </properties>
@@ -21,10 +18,9 @@
         <resources>
             <resource>
                 <directory>src/main/filtered</directory>
-		<filtering>true</filtering>
+                <filtering>true</filtering>
             </resource>
         </resources>
-        
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -56,8 +52,8 @@
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Fragment-Host>com.vaadin.themes;bundle-version=${vaadinVersion}</Fragment-Host>
                         <Include-Resource>
-                          {maven-resources},
-                          {maven-dependencies}
+                            {maven-resources},
+                            {maven-dependencies}
                         </Include-Resource>
                     </instructions>
                 </configuration>

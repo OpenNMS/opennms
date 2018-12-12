@@ -28,8 +28,8 @@
 
 package org.opennms.features.topology.api.support;
 
-import com.vaadin.data.Container;
-import com.vaadin.data.util.BeanContainer;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.util.BeanContainer;
 
 public abstract class HierarchicalBeanContainer<K, T> extends BeanContainer<K,T> implements Container.Hierarchical {
 

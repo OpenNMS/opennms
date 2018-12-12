@@ -35,9 +35,9 @@ import java.util.TreeSet;
 import org.opennms.netmgt.config.datacollection.Collect;
 
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomField;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.TwinColSelect;
+import com.vaadin.v7.ui.CustomField;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.TwinColSelect;
 
 /**
  * The Collect Field.

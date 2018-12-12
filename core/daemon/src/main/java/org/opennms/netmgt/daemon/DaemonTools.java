@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.daemon;
 
+import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -55,13 +56,17 @@ public class DaemonTools {
             EventBuilder ebldr = null;
             try {
                 handleConfigurationChanged.accept(e);
+
+                LOG.info("Reload successful.");
+
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, daemonName);
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
-                LOG.info("Reload successful.");
+
             } catch (Exception t) {
-                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, daemonName);
-                ebldr.addParam(EventConstants.PARM_REASON, t.getLocalizedMessage().substring(0, 128));
                 LOG.error("Reload failed.", t);
+
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, daemonName);
+                ebldr.addParam(EventConstants.PARM_REASON, StringUtils.abbreviate(t.getLocalizedMessage(), 128));
             }
 
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);

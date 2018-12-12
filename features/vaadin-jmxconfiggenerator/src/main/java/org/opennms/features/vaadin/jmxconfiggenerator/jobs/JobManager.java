@@ -28,6 +28,7 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.jobs;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -54,94 +55,52 @@ public class JobManager {
         private final Task taskToRun;
 
         private TaskRunnable(Task taskToRun) {
-            this.taskToRun = taskToRun;
+            this.taskToRun = Objects.requireNonNull(taskToRun);
         }
 
         @Override
         public void run() {
+            final JmxConfigGeneratorUI ui = taskToRun.getUI();
             try {
                 final Object result = taskToRun.execute();
-
-                UI.getCurrent().access(new Runnable() {
-                    @Override
-                    public void run() {
-                        UIHelper.getCurrent(JmxConfigGeneratorUI.class).hideProgressWindow();
-                        taskToRun.onSuccess(result);
-                    }
+                ui.access(() -> {
+                    ui.hideProgressWindow();
+                    taskToRun.onSuccess(result);
                 });
             } catch (TaskRunException trex) {
-                handleError(trex);
+                handleError(ui, trex);
             } catch (Exception ex) {
-                handleError(ex);
+                handleError(ui, ex);
             } finally {
-               UI.getCurrent().access(new Runnable() {
-                   @Override
-                   public void run() {
-                       UIHelper.getCurrent(JmxConfigGeneratorUI.class).hideProgressWindow();
-                   }
-               });
+               ui.access(ui::hideProgressWindow);
             }
         }
 
-        private void handleError(final TaskRunException trex) {
-            UI.getCurrent().access(new Runnable() {
-                @Override
-                public void run() {
-                    LOG.error(trex.getMessage(), trex.getCause());
+        private void handleError(final UI ui, final TaskRunException trex) {
+            ui.access(() -> {
+                LOG.error(trex.getMessage(), trex.getCause());
 
-                    final StringBuilder errorMessage = new StringBuilder(100);
-                    errorMessage.append(trex.getMessage());
-                    if (trex.getCause() != null) {
-                        errorMessage.append("<br/><br/>").append(trex.getCause().getMessage());
-                    }
-
-                    UIHelper.showNotification(trex.getShortDescription() != null ? trex.getShortDescription() : "Error",
-                            errorMessage.toString().trim(),
-                            Notification.Type.ERROR_MESSAGE,
-                            5000);
-                    taskToRun.onError();
+                final StringBuilder errorMessage = new StringBuilder(100);
+                errorMessage.append(trex.getMessage());
+                if (trex.getCause() != null) {
+                    errorMessage.append("<br/><br/>").append(trex.getCause().getMessage());
                 }
+
+                UIHelper.showNotification(trex.getShortDescription() != null ? trex.getShortDescription() : "Error",
+                        errorMessage.toString().trim(),
+                        Notification.Type.ERROR_MESSAGE,
+                        5000);
+                taskToRun.onError();
             });
         }
 
-        private void handleError(final Exception ex) {
-           UI.getCurrent().access(new Runnable() {
-               @Override
-               public void run() {
-                   LOG.error("Unknown Error occurred", ex);
-                   UIHelper.showNotification("Unknown Error", ex.getMessage(), Notification.Type.ERROR_MESSAGE);
-                   taskToRun.onError();
-               }
-           });
+        private void handleError(final UI ui, final Exception ex) {
+          ui.access(() -> {
+              LOG.error("Unknown Error occurred", ex);
+              UIHelper.showNotification("Unknown Error", ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+              taskToRun.onError();
+          });
         }
-
-    }
-
-    public static class TaskRunException extends Exception {
-
-        private String shortDescription;
-
-        public TaskRunException(String shortDescription, String message, Throwable cause) {
-            super(message, cause);
-            this.shortDescription = shortDescription;
-        }
-
-        public String getShortDescription() {
-            return shortDescription;
-        }
-
-        public TaskRunException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
-    public interface Task<T> {
-
-        T execute() throws TaskRunException;
-
-        void onSuccess(T result);
-
-        void onError();
 
     }
 

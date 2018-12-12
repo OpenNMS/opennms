@@ -26,6 +26,7 @@
       <cm:property name="nodeIdToCriteriaMaxCacheSize" value="10000"/>
       <cm:property name="suppressIncrementalAlarms" value="true"/>
       <cm:property name="kafkaSendQueueCapacity" value="1000"/>
+      <cm:property name="startAlarmSyncWithCleanState" value="false"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -82,6 +83,7 @@
     <property name="alarmTopic" value="${alarmTopic}"/>
     <property name="alarmSync" value="${alarmSync}"/>
     <property name="suppressIncrementalAlarms" value="${suppressIncrementalAlarms}"/>
+    <property name="startWithCleanState" value="${startAlarmSyncWithCleanState}"/>
   </bean>
 
   <bean factory-ref="kafkaProducer" factory-method="setDataSync">

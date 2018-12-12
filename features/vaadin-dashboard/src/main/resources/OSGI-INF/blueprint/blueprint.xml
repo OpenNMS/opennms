@@ -43,6 +43,7 @@
     <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="wallboardConfigUIFactory">
         <service-properties>
             <entry key="alias" value="/admin/wallboard-config"/>
+            <entry key="init.widgetset" value="org.opennms.features.vaadin.dashboard.DashboardWidgetSet"/>
         </service-properties>
     </service>
 

@@ -29,17 +29,18 @@
 package org.opennms.vaadin.user;
 
 import java.time.ZoneId;
-import java.util.Optional;
 
 import org.opennms.core.time.CentralizedDateTimeFormat;
 
-import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.UI;
 
 public final class UserTimeZoneExtractor {
 
-    public static ZoneId extractUserTimeZoneIdOrNull(){
-        if(VaadinSession.getCurrent() != null && VaadinSession.getCurrent().getSession() !=null){
-            return (ZoneId) VaadinSession.getCurrent().getSession().getAttribute(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID);
+    public static ZoneId extractUserTimeZoneIdOrNull(final UI ui) {
+        // Verify if a ui is provided, still attached and has a session
+        if (ui != null && ui.isAttached() && ui.getSession() != null && ui.getSession().getSession() != null) {
+            // Only the wrapped session has the attribute set, the VaadinSession does not!
+            return (ZoneId) ui.getSession().getSession().getAttribute(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID);
         }
         return null;
     }

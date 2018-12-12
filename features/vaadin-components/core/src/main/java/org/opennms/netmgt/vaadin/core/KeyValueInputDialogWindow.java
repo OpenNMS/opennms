@@ -28,17 +28,17 @@
 
 package org.opennms.netmgt.vaadin.core;
 
-import com.vaadin.data.Validator;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.TextField;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * Vaadin dialog window to query for a single String value.
@@ -178,14 +178,11 @@ public class KeyValueInputDialogWindow extends Window implements Window.CloseLis
         formLayout.addComponent(horizontalLayout);
         verticalLayout.addComponent(formLayout);
 
-        addFocusListener(new FieldEvents.FocusListener() {
-            @Override
-            public void focus(FieldEvents.FocusEvent event) {
-                if (m_focusKey) {
-                    m_keyInputField.focus();
-                } else {
-                    m_valueInputField.focus();
-                }
+        addFocusListener((FieldEvents.FocusListener) focusEvent -> {
+            if (m_focusKey) {
+                m_keyInputField.focus();
+            } else {
+                m_valueInputField.focus();
             }
         });
 

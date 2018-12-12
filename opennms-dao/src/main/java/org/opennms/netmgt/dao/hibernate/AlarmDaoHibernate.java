@@ -127,7 +127,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
                         "  LEFT JOIN alarms a2 ON s1.related_alarm_id = a2.alarmid " +
                         "  LEFT JOIN node n2 ON a2.nodeid = n2.nodeid " +
                         "WHERE " +
-                        "  a1.alarmAckTime IS NULL " +
+                        "  a1.alarmAckTime IS NULL AND a1.severity>3 " +
                         "GROUP BY " +
                         "  a1.alarmid " +
                         "ORDER BY " +

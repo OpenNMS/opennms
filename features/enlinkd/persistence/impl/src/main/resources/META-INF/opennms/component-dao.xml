@@ -78,4 +78,14 @@
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.BridgeElementDao" ref="bridgeElementDao" />
 
+    <bean id="topologyEntityDao" class="org.opennms.netmgt.enlinkd.persistence.impl.TopologyEntityDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityDao" ref="topologyEntityDao" />
+
+    <bean id="topologyEntityCache" class="org.opennms.netmgt.enlinkd.persistence.impl.TopologyEntityCacheImpl">
+        <property name="topologyEntityDao" ref="topologyEntityDao" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache" ref="topologyEntityCache" />
+
 </beans>

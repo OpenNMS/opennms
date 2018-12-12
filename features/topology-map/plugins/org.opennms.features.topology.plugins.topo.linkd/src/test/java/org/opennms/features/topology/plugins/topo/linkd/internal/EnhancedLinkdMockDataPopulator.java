@@ -50,6 +50,7 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
@@ -70,6 +71,7 @@ import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -103,6 +105,9 @@ public class EnhancedLinkdMockDataPopulator {
 
     @Autowired
     private NodeDao m_nodeDao;
+
+    @Autowired
+    private TopologyEntityCache m_topologyEntityCache;
 
     @Autowired
     private SnmpInterfaceDao m_snmpInterfaceDao;
@@ -411,6 +416,8 @@ public class EnhancedLinkdMockDataPopulator {
         EasyMock.expect(m_lldpElementDao.findAll()).andReturn(getLldpElements()).anyTimes();
         EasyMock.expect(m_lldpLinkDao.findAll()).andReturn(getLinks()).anyTimes();
         EasyMock.expect(m_ospfLinkDao.findAll()).andReturn(getOspfLinks()).anyTimes();
+        EasyMock.expect(m_topologyEntityCache.getNodeTopolgyEntities()).andReturn(getVertices()).anyTimes();
+        EasyMock.expect(m_topologyEntityCache.getCdpLinkTopologyEntities()).andReturn(new ArrayList<>()).anyTimes();
         EasyMock.expect(m_nodeDao.getAllLabelsById());
         EasyMock.expectLastCall().andReturn(getNodeLabelsById()).anyTimes();
         
@@ -428,6 +435,7 @@ public class EnhancedLinkdMockDataPopulator {
         EasyMock.replay(m_isisElementDao);
         EasyMock.replay(m_ospfLinkDao);
         EasyMock.replay(m_nodeDao);
+        EasyMock.replay(m_topologyEntityCache);
         EasyMock.replay(m_snmpInterfaceDao);
         EasyMock.replay(m_ipInterfaceDao);
         EasyMock.replay(m_ipNetToMediaDao);
@@ -441,6 +449,7 @@ public class EnhancedLinkdMockDataPopulator {
         EasyMock.reset(m_lldpLinkDao);
         EasyMock.reset(m_ospfLinkDao);
         EasyMock.reset(m_nodeDao);
+        EasyMock.reset(m_topologyEntityCache);
         EasyMock.reset(m_snmpInterfaceDao);
         EasyMock.reset(m_ipInterfaceDao);
         EasyMock.reset(m_ipNetToMediaDao);
@@ -663,6 +672,14 @@ public class EnhancedLinkdMockDataPopulator {
 
     public List<OnmsNode> getNodes() {
         return m_nodes;
+    }
+
+    public List<NodeTopologyEntity> getVertices() {
+        List<NodeTopologyEntity> vertices = new ArrayList();
+        for(OnmsNode node : m_nodes){
+            vertices.add(NodeTopologyEntity.toVertexInfo(node));
+        }
+        return vertices;
     }
 
     public List<LldpElement> getLldpElements() {

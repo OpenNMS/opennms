@@ -28,8 +28,8 @@
 
 package org.opennms.features.topology.api.topo;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItem;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.BeanItem;
 
 public class AbstractVertex extends DefaultVertexRef implements Vertex {
 

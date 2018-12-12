@@ -29,11 +29,11 @@
 package org.opennms.netmgt.telemetry.distributed.sentinel;
 
 import org.opennms.core.health.api.SimpleHealthCheck;
-import org.opennms.netmgt.telemetry.config.api.Adapter;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 
 public class AdapterHealthCheck extends SimpleHealthCheck {
 
-    public AdapterHealthCheck(Adapter adapterDef) {
+    public AdapterHealthCheck(AdapterDefinition adapterDef) {
         this(adapterDef.getName(), adapterDef.getClassName());
     }
 

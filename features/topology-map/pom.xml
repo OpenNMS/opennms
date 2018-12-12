@@ -37,7 +37,6 @@
     <module>org.opennms.features.topology.link</module>
     <module>org.opennms.features.topology.persistence</module>
     <module>org.opennms.features.topology.shell</module>
-    <module>org.opennms.features.topology.widgetset</module>
     <module>plugins</module>
     <module>features</module>
     <module>themes</module>

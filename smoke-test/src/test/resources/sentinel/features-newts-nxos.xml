@@ -11,7 +11,7 @@
         <!-- Configure an NXOS Adapter to persist samples -->
         <config name="org.opennms.features.telemetry.adapters-nxos">
             name = NXOS
-            class-name = org.opennms.netmgt.telemetry.adapters.nxos.NxosGpbAdapter
+            class-name = org.opennms.netmgt.telemetry.protocols.nxos.adapter.NxosGpbAdapter
             parameters.script = /opt/sentinel/etc/cisco-nxos-telemetry-interface.groovy
         </config>
         <!-- Point sentinel to the correct elastic endpoint -->

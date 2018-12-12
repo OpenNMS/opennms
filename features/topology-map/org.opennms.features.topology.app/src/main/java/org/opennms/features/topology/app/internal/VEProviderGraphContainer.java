@@ -73,7 +73,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
-import com.vaadin.data.Property;
+import com.vaadin.v7.data.Property;
 
 public class VEProviderGraphContainer implements GraphContainer, VertexListener, EdgeListener, ServiceListener {
 
@@ -243,11 +243,19 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     @Override
     public void redoLayout() {
         s_log.debug("redoLayout()");
+        long graphHashOld = hash(m_graph);
         getGraph();
-        if(m_layoutAlgorithm != null) {
+        long graphHashNew = hash(m_graph);
+        if(m_layoutAlgorithm != null  && graphHashOld != graphHashNew) {
             m_layoutAlgorithm.updateLayout(m_graph);
             fireGraphChanged();
         }
+    }
+
+    private long hash(Graph graph){
+        // we create a hash for the attributes that will require a redo of the layout, the rest of the
+        // attributes can be ignored.
+        return Objects.hash(graph.getDisplayVertices(), graph.getDisplayEdges(), graph.getLayout());
     }
 
     @Override

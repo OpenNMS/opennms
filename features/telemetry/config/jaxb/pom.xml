@@ -83,17 +83,10 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.telemetry.listeners</groupId>
-      <artifactId>org.opennms.features.telemetry.listeners.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <!--
-    <dependency>
       <groupId>org.opennms.features.telemetry</groupId>
-      <artifactId>org.opennms.features.telemetry.common</artifactId>
+      <artifactId>org.opennms.features.telemetry.api</artifactId>
       <version>${project.version}</version>
     </dependency>
-    -->
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.xml</artifactId>

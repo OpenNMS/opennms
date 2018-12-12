@@ -46,6 +46,7 @@ import org.opennms.features.topology.app.internal.service.DefaultTopologyService
 import org.opennms.features.topology.app.internal.service.SimpleServiceLocator;
 import org.opennms.features.topology.app.internal.ui.SearchBox;
 import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 import org.opennms.osgi.OnmsServiceManager;
 
 public class GraphMLSearchProviderTest {
@@ -77,6 +78,7 @@ public class GraphMLSearchProviderTest {
 
         DefaultTopologyService defaultTopologyService = new DefaultTopologyService();
         defaultTopologyService.setServiceLocator(new SimpleServiceLocator(metaTopologyProvider));
+        defaultTopologyService.setTopologyEntityCache(EasyMock.niceMock(TopologyEntityCache.class));
         VEProviderGraphContainer graphContainer = new VEProviderGraphContainer();
         graphContainer.setTopologyService(defaultTopologyService);
         graphContainer.setMetaTopologyId(metaTopologyProvider.getId());

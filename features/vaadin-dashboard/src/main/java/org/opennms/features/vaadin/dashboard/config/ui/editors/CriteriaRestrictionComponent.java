@@ -28,12 +28,16 @@
 
 package org.opennms.features.vaadin.dashboard.config.ui.editors;
 
-import com.vaadin.server.Page;
-import com.vaadin.ui.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Alignment;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.ui.AbstractField;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.NativeSelect;
 
 /**
  * This class represents a component for editing a single restriction of a criteria.
@@ -85,7 +89,12 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
         setSpacing(true);
         setMargin(true);
 
-        Page.getCurrent().getStyles().add(".criteriaBackground { background:#dddddd; }");
+        addAttachListener(new AttachListener() {
+            @Override
+            public void attach(AttachEvent attachEvent) {
+                getUI().getPage().getStyles().add(".criteriaBackground { background:#dddddd; }");
+            }
+        });
 
         addStyleName("criteriaBackground");
 
@@ -113,12 +122,9 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
 
         m_restrictionSelect.select(criteriaRestriction.toString());
 
-        m_restrictionSelect.addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
-            @Override
-            public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
-                CriteriaRestriction newCriteriaRestriction = CriteriaRestriction.valueOf(String.valueOf(valueChangeEvent.getProperty().getValue()));
-                refreshComponents(newCriteriaRestriction); //, Arrays.copyOfRange(arr, 1, arr.length));
-            }
+        m_restrictionSelect.addValueChangeListener((Property.ValueChangeListener) valueChangeEvent -> {
+            CriteriaRestriction newCriteriaRestriction = CriteriaRestriction.valueOf(String.valueOf(valueChangeEvent.getProperty().getValue()));
+            refreshComponents(newCriteriaRestriction); //, Arrays.copyOfRange(arr, 1, arr.length));
         });
 
         setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);

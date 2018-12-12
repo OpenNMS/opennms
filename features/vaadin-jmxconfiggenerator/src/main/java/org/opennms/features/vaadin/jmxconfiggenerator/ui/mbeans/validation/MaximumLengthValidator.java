@@ -30,7 +30,7 @@ package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation;
 
 import org.opennms.features.vaadin.jmxconfiggenerator.Config;
 
-import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.v7.data.validator.StringLengthValidator;
 
 public class MaximumLengthValidator extends StringLengthValidator {
 

@@ -56,14 +56,14 @@
                                 <feature>sentinel-persistence</feature>
                                 <feature>sentinel-jms</feature>
                                 <feature>sentinel-telemetry</feature>
+                                <feature>sentinel-telemetry-jti</feature>
+                                <feature>sentinel-telemetry-nxos</feature>
                                 <feature>sentinel-flows</feature>
                                 <feature>sentinel-coordination-api</feature>
                                 <feature>sentinel-coordination-common</feature>
                                 <feature>sentinel-coordination-zookeeper</feature>
                                 <feature>sentinel-coordination-shell</feature>
                                 <feature>sentinel-newts</feature>
-                                <feature>sentinel-telemetry-nxos</feature>
-                                <feature>sentinel-telemetry-jti</feature>
 
                                 <!-- Other features -->
                                 <feature>hawtio-offline</feature>
@@ -293,18 +293,23 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.telemetry.adapters</groupId>
-            <artifactId>org.opennms.features.telemetry.adapters.jti</artifactId>
+            <groupId>org.opennms.features.telemetry.protocols.netflow</groupId>
+            <artifactId>org.opennms.features.telemetry.protocols.netflow.adapter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.telemetry.adapters</groupId>
-            <artifactId>org.opennms.features.telemetry.adapters.netflow</artifactId>
+            <groupId>org.opennms.features.telemetry.protocols.sflow</groupId>
+            <artifactId>org.opennms.features.telemetry.protocols.sflow.adapter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.telemetry.adapters</groupId>
-            <artifactId>org.opennms.features.telemetry.adapters.nxos</artifactId>
+            <groupId>org.opennms.features.telemetry.protocols.jti</groupId>
+            <artifactId>org.opennms.features.telemetry.protocols.jti.adapter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.telemetry.protocols.nxos</groupId>
+            <artifactId>org.opennms.features.telemetry.protocols.nxos.adapter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
