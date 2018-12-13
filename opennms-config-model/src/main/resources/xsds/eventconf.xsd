@@ -70,6 +70,12 @@
           </annotation>
         </element>
 
+        <element maxOccurs="1" minOccurs="0" name="priority" type="int">
+          <annotation>
+            <documentation>The Priority of the Event Definition.</documentation>
+          </annotation>
+        </element>
+
         <element maxOccurs="1" minOccurs="1" name="event-label" type="string">
           <annotation>
             <documentation>A human readable name used to identify an event in

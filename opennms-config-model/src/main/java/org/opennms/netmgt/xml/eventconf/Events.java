@@ -39,6 +39,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -265,9 +266,11 @@ public class Events implements Serializable {
                         m_partitionedEvents.put(key, events);
                     }
                     events.add(event);
+                    events.sort(Comparator.reverseOrder());
                 }
             }
         }
+        m_nullPartitionedEvents.sort(Comparator.reverseOrder());
     }
 
 
@@ -293,14 +296,13 @@ public class Events implements Serializable {
             }
         }
 
-        for(final Event event : potentialMatches) {
+        for (final Event event : potentialMatches) {
             if (event.matches(matchingEvent)) {
                 return event;
             }
         }
 
-        for(Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
-            final Events subEvents = loadedEvents.getValue();
+        for (Events subEvents : m_loadedEventFiles.values()) {
             final Event event = subEvents.findFirstMatchingEvent(matchingEvent);
             if (event != null) {
                 return event;
@@ -354,8 +356,7 @@ public class Events implements Serializable {
 
         partitionEvents(partition);
 
-        for(final Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
-            final Events events = loadedEvents.getValue();
+        for (final Events events : m_loadedEventFiles.values()) {
             events.initialize(partition, m_ordering.subsequence());
         }
 
@@ -376,8 +377,17 @@ public class Events implements Serializable {
             }
 
             if (m_eventsByUei.putIfAbsent(uei, e) != null) {
-                // Keep trap of the UEIs that have many event definitions
-                ueisWithManyEventDefinitions.add(uei);
+                // Keep track of the UEIs that have many unprioritized event definitions
+                int existingPriority = m_eventsByUei.get(uei).getPriority();
+                int currentPriority = e.getPriority();
+                if (existingPriority == 0 && currentPriority == 0) {
+                    ueisWithManyEventDefinitions.add(uei);
+                } else {
+                    // use the event definition with the highest priority
+                    if (currentPriority > existingPriority) {
+                        m_eventsByUei.put(uei, e);
+                    }
+                }
             }
         });
 

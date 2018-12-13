@@ -288,12 +288,15 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
             if (extEvents != null) {
                 // Events exposed via the registry currently take priority over the events defined
                 // in the configuration files. This behavior may change with HZN-1419.
-                List<Event> prioritizedEvents = new ArrayList<>(events.getEvents());
+                // Prioritize events loaded from the registry along with any loaded from the root config
+                events.getEvents().addAll(0, extEvents.getEvents());
+//
+ /*               List<Event> prioritizedEvents = new ArrayList<>(events.getEvents());
                 // TODO - do we need to explicitly raise priority for the plugin configs where priority is unset?
                 prioritizedEvents.addAll(extEvents.getEvents());
-                prioritizedEvents.sort(Comparator.comparing(Event::getPriority));
+                prioritizedEvents.sort(Comparator.comparing(Event::getPriority).reversed());
                 events.setEvents(prioritizedEvents);
-                if (LOG.isDebugEnabled()) {
+ */               if (LOG.isDebugEnabled()) {
                     LOG.debug("Events with the following UEIs are contributed by one or more extensions: {}", extEvents.getEvents().stream()
                         .map(Event::getUei)
                         .collect(Collectors.joining(",")));
