@@ -30,11 +30,13 @@ package org.opennms.features.situationfeedback.api;
 
 import java.util.Objects;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Enums;
 
 /**
  * Expresses Feedback on the Correlation of an Alarm.
  */
+@JsonDeserialize(builder = AlarmFeedback.Builder.class)
 public final class AlarmFeedback {
 
     public enum FeedbackType {
@@ -84,7 +86,8 @@ public final class AlarmFeedback {
         private String user;
         private Long timestamp;
 
-        private Builder() {
+        // This constructor is public for the purposes of JSON deserialization
+        public Builder() {
             timestamp = System.currentTimeMillis();
         }
 

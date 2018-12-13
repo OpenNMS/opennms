@@ -29,12 +29,16 @@
 package org.opennms.features.apilayer.dao;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
+import org.opennms.core.soa.lookup.ServiceLookup;
+import org.opennms.core.soa.lookup.ServiceLookupBuilder;
+import org.opennms.core.soa.lookup.ServiceRegistryLookup;
+import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.features.apilayer.utils.ModelMappers;
 import org.opennms.features.situationfeedback.api.AlarmFeedbackListener;
 import org.opennms.features.situationfeedback.api.FeedbackException;
@@ -44,26 +48,29 @@ import org.opennms.integration.api.v1.model.AlarmFeedback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The implementation for the integration API {@link AlarmFeedbackDao}. Used to get/submit feedback.
+ */
 public class AlarmFeedbackDaoImpl implements AlarmFeedbackDao {
     private static final Logger LOG = LoggerFactory.getLogger(AlarmFeedbackDaoImpl.class);
 
     /**
-     * The repository interface used to persist/retrieve feedback.
+     * Used to look up a reference to a {@link FeedbackRepository feedback repository} at runtime.
      */
-    private final FeedbackRepository feedbackRepository;
+    @SuppressWarnings("unchecked")
+    private final ServiceLookup<Class<?>, String> SERVICE_LOOKUP =
+            new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
+                    .blocking(5000, 1000, 1000)
+                    .build();
 
     /**
      * The collection of listeners interested in alarm feedback, populated via runtime binding.
      */
-    private static final Collection<AlarmFeedbackListener> alarmFeedbackListeners = new CopyOnWriteArrayList<>();
+    private final Collection<AlarmFeedbackListener> alarmFeedbackListeners = new CopyOnWriteArrayList<>();
 
     /**
-     * @param feedbackRepository the repository for persisting/retrieving feedback
+     * Add listeners to {@link #alarmFeedbackListeners} during runtime as they become available.
      */
-    public AlarmFeedbackDaoImpl(FeedbackRepository feedbackRepository) {
-        this.feedbackRepository = Objects.requireNonNull(feedbackRepository);
-    }
-
     public synchronized void onBind(AlarmFeedbackListener alarmFeedbackListener, Map properties) {
         LOG.debug("bind called with {}: {}", alarmFeedbackListener, properties);
 
@@ -72,6 +79,9 @@ public class AlarmFeedbackDaoImpl implements AlarmFeedbackDao {
         }
     }
 
+    /**
+     * Remove listeners from {@link #alarmFeedbackListeners} during runtime as they become unavailable.
+     */
     public synchronized void onUnbind(AlarmFeedbackListener alarmFeedbackListener, Map properties) {
         LOG.debug("Unbind called with {}: {}", alarmFeedbackListener, properties);
 
@@ -80,8 +90,24 @@ public class AlarmFeedbackDaoImpl implements AlarmFeedbackDao {
         }
     }
 
+    /**
+     * Gets a reference to the {@link FeedbackRepository feedback repository} if it can be found.
+     *
+     * @return the feedback repository or null if none found
+     */
+    private FeedbackRepository getRepository() {
+        return SERVICE_LOOKUP.lookup(FeedbackRepository.class, null);
+    }
+
     @Override
     public List<AlarmFeedback> getFeedback() {
+        FeedbackRepository feedbackRepository = getRepository();
+
+        // If no feedback repository is available we will just return an empty result
+        if (feedbackRepository == null) {
+            return Collections.emptyList();
+        }
+
         try {
             return feedbackRepository.getAllFeedback()
                     .stream()
@@ -94,6 +120,13 @@ public class AlarmFeedbackDaoImpl implements AlarmFeedbackDao {
 
     @Override
     public void submitFeedback(List<AlarmFeedback> alarmFeedback) {
+        FeedbackRepository feedbackRepository = getRepository();
+
+        // If no feedback repository is available that is an error case as we are unable to complete this request
+        if (feedbackRepository == null) {
+            throw new RuntimeException("Could not find a feedback repository");
+        }
+
         List<org.opennms.features.situationfeedback.api.AlarmFeedback> mappedFeedback = alarmFeedback.stream()
                 .map(ModelMappers::fromFeedback)
                 .collect(Collectors.toList());

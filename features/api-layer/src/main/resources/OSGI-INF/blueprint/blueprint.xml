@@ -13,7 +13,6 @@
   <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
   <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
   <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
-  <reference id="feedbackRepository" interface="org.opennms.features.situationfeedback.api.FeedbackRepository" availability="optional"/>
 
   <service interface="org.opennms.integration.api.v1.dao.NodeDao" >
     <bean class="org.opennms.features.apilayer.dao.NodeDaoImpl">
@@ -37,7 +36,6 @@
   </service>
 
   <bean id="alarmFeedbackDaoImpl" class="org.opennms.features.apilayer.dao.AlarmFeedbackDaoImpl">
-    <argument ref="feedbackRepository"/>
   </bean>
   <service interface="org.opennms.integration.api.v1.dao.AlarmFeedbackDao" ref="alarmFeedbackDaoImpl"/>
   <reference-list interface="org.opennms.features.situationfeedback.api.AlarmFeedbackListener"
