@@ -1046,9 +1046,9 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         BridgeOnmsTopologyUpdater topologyUpdater = m_linkd.getBridgeTopologyUpdater();
         assertNotNull(topologyUpdater);
         OnmsTopology topology = topologyUpdater.buildTopology();
-        topology.getVertices().stream().forEach(v -> System.err.println(v.getLabel()));
-        topology.getEdges().stream().forEach(e -> System.err.println(e.getId()));
-        assertEquals(29, topology.getVertices().size());
+        topology.getVertices().stream().forEach(v -> System.err.println("vertex"+v.getId()));
+        topology.getEdges().stream().forEach(e -> System.err.println("edge"+e.getId()));
+        assertEquals(12, topology.getVertices().size());
         assertEquals(7, topology.getEdges().size());
 
     }

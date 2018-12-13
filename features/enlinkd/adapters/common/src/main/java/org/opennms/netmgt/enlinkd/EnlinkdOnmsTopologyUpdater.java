@@ -28,11 +28,13 @@
 
 package org.opennms.netmgt.enlinkd;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.MacCloud;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
@@ -52,19 +54,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements OnmsTopologyUpdater {
-
-    public static OnmsTopologyVertex create(MacPort macPort) throws OnmsTopologyException {
-        OnmsTopologyVertex vertex = OnmsTopologyVertex.create(Topology.getId(macPort),
-                                         macPort.printTopology(), 
-                                         Topology.getAddress(macPort), 
-                                         Topology.getDefaultIconKey());
-        return vertex;
-    }
     
-    public static OnmsTopologyVertex create(MacCloud macCloud) throws OnmsTopologyException {
-        return OnmsTopologyVertex.create(Topology.getId(macCloud), 
-                                         macCloud.printTopology(), 
-                                         Topology.getAddress(macCloud), 
+    public static OnmsTopologyVertex create(MacCloud macCloud, List<MacPort> ports, BridgePort designated ) throws OnmsTopologyException {
+        return OnmsTopologyVertex.create(Topology.getId(designated), 
+                                         Topology.getSharedSegmentLabel(), 
+                                         Topology.getAddress(macCloud,ports), 
                                          Topology.getDefaultIconKey());
     }
     public static OnmsTopologyVertex create(NodeTopologyEntity node) throws OnmsTopologyException {
