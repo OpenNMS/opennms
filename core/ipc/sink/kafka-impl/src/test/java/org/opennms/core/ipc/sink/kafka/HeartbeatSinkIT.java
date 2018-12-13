@@ -174,6 +174,7 @@ public class HeartbeatSinkIT {
     }
 
     @Test(timeout = 60000)
+    @org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
     public void testSinkMessagesBeingNotDropped() throws Exception {
         kafkaServer.stopKafkaServer();
         HeartbeatModule module = new HeartbeatModule();
