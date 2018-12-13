@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
 public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements OnmsTopologyUpdater {
     
     public static OnmsTopologyVertex create(MacCloud macCloud, List<MacPort> ports, BridgePort designated ) throws OnmsTopologyException {
-        return OnmsTopologyVertex.create(Topology.getId(designated), 
+        return OnmsTopologyVertex.create(Topology.getSharedSegmentId(designated), 
                                          Topology.getSharedSegmentLabel(), 
                                          Topology.getAddress(macCloud,ports), 
                                          Topology.getDefaultIconKey());
