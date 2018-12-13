@@ -29,11 +29,13 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
+import org.opennms.netmgt.enlinkd.service.api.MacCloud;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
@@ -42,22 +44,21 @@ public class LinkdVertex extends SimpleLeafVertex {
 
     public static LinkdVertex create(BridgePort designated) {
         LinkdVertex cloudVertex = new LinkdVertex(Topology.getId(designated));
-        cloudVertex.setLabel("Shared Segment");
-        cloudVertex.setIconKey("cloud");
-        cloudVertex.setTooltipText("'Shared Segment' designated port: " +designated.printTopology());
-        return cloudVertex;
-        
+        cloudVertex.setLabel(Topology.getCloudLabel());
+        cloudVertex.setIconKey(Topology.getCloudIconKey());
+        cloudVertex.setTooltipText(Topology.getCloudToolTip(designated));
+        return cloudVertex;        
     }
 
-    public static LinkdVertex create(MacPort port) {
-        LinkdVertex vertex = new LinkdVertex(Topology.getId(port));
-        vertex.setLabel(Topology.getId(port));
-        vertex.setIconKey(Topology.getIconKey(port));
-        vertex.setTooltipText(Topology.getToolTipText(port));
+    public static LinkdVertex create(MacCloud cloud, List<MacPort> ports, BridgePort designated) {
+        LinkdVertex vertex = new LinkdVertex(Topology.getSharedSegmentId(designated));
+        vertex.setLabel(Topology.getSharedSegmentLabel());
+        vertex.setIconKey(Topology.getDefaultIconKey());
+        vertex.setTooltipText(Topology.getToolTipText(cloud, ports));
         return vertex;
         
     }
-    
+
     public static LinkdVertex create(NodeTopologyEntity node) {
         LinkdVertex vertex = new LinkdVertex(node.getId());
         vertex.setNodeID(node.getNodeId());

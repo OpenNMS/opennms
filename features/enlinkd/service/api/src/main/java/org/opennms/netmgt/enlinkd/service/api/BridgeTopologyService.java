@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
 
@@ -77,7 +76,7 @@ public interface BridgeTopologyService extends TopologyService {
     
     Set<BridgeForwardingTableEntry> useBridgeTopologyUpdateBFT(int nodeid);
     
-    List<ImmutableTriple<List<BridgePort>, List<MacPort>, BridgePort>> matchBridgeLinks();
+    List<TopologyShared> match();
     
     List<MacPort> getMacPorts(); 
     

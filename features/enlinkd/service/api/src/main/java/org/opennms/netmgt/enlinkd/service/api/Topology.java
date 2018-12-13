@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
+import java.util.List;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.model.OnmsNode;
@@ -62,24 +64,60 @@ public interface Topology {
         return tooltipText.toString();
     }
     
-    public static String getToolTipText(MacPort port) {
+    public static String getSharedSegmentId(BridgePort designated) {
+        StringBuffer id = new StringBuffer();
+        id.append("macs:on:");
+        id.append(Topology.getId(designated));
+        return id.toString();
+    }
+    
+    public static String getSharedSegmentLabel() {
+        return "Macs on Segment with no Onms node";
+    }
+
+    public static String getCloudLabel() {
+        return "Segment";
+    }
+    
+    public static String getCloudToolTip(BridgePort designated) {
+        return String.format("'Shared Segment': designated bridge: %s" ,
+                designated.printTopology());
+    }
+    
+    public static String getAddress(MacPort port ) {
+        return port.getPortMacInfo();
+    }
+    public static String getAddress(MacCloud cloud ) {
+        return cloud.getMacsInfo();
+    }
+    
+    public static String getAddress(BridgePort bp) {
+        return bp.printTopology();
+    }
+    
+    public static String getAddress(MacCloud cloud, List<MacPort> ports) {
+        StringBuffer ip = new StringBuffer();
+        if (cloud!= null) {
+            ip.append(cloud.getMacsInfo());
+        }
+        for (MacPort port :ports) {
+            ip.append(port.getPortMacInfo());
+        }
+        return ip.toString();
+    }
+
+    public static String getToolTipText(MacCloud cloud, List<MacPort> ports) {
         final StringBuilder tooltipText = new StringBuilder();
-        tooltipText.append(getId(port));
+        tooltipText.append(getId(cloud));
         tooltipText.append(": ");
         tooltipText.append("(");
-        if (port.hasInetAddresses()) {
-            tooltipText.append(port.getIpMacInfo());
-        } else {
-            tooltipText.append("no ip address");
-        }
+        tooltipText.append(getAddress(cloud, ports));
         tooltipText.append(")");
         tooltipText.append("(");
         tooltipText.append(getNodeStatus(OnmsNode.NodeType.UNKNOWN));
         tooltipText.append("/");
         tooltipText.append("Not an OpenNMS Node");
-        tooltipText.append(")");
-        
-        
+        tooltipText.append(")");        
         return tooltipText.toString();
     
     }
@@ -104,7 +142,6 @@ public interface Topology {
         return tooltipText.toString();
     
     }
-    
     public static String getIsManaged(boolean isManaged) {
         if (isManaged) {
             return "Managed";
@@ -112,9 +149,13 @@ public interface Topology {
         return "Unmanaged";
 
     }
-    
-    public static String getIconKey(MacPort macPort) {
+
+    public static String getDefaultIconKey() {
         return "linkd.system";        
+    }
+
+    public static String getCloudIconKey() {
+        return "cloud";
     }
     public static String getIconKey(NodeTopologyEntity node) {
         if (node.getSysoid() == null) {
@@ -155,6 +196,10 @@ public interface Topology {
     public static String getId(BridgePort designated) {
         return  designated.getNodeId()+":"+designated.getBridgePort();
     }
+    
+    public static String getId(MacCloud macCloud) {
+        return macCloud.getMacs().toString();
+    }
     public static String getId(MacPort macPort) {
         if (macPort.getNodeId() == null) {
             return macPort.getMacPortMap().keySet().toString();
@@ -163,6 +208,9 @@ public interface Topology {
     }
     public static String getEdgeId(BridgePort bp, MacPort macport ) {
             return getId(bp)+"|"+getId(macport);
+    }
+    public static String getEdgeId(BridgePort bp, MacCloud macport ) {
+        return getId(bp)+"|"+getId(macport);
     }
     public static String getEdgeId(BridgePort sourcebp, BridgePort targetbp ) {
         if (sourcebp.getNodeId().intValue() < targetbp.getNodeId().intValue()) {
@@ -176,6 +224,7 @@ public interface Topology {
     public static String getEdgeId(String id, BridgePort bp) {
         return id + "|" + bp.getNodeId() + ":" + bp.getBridgePort();
     }
-    
-    
+    static String getDefaultEdgeId(String id, String id2) {
+        return id+"|"+id2;
+    }
 }

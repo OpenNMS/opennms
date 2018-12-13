@@ -30,7 +30,6 @@ package org.opennms.netmgt.enlinkd;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
@@ -38,6 +37,7 @@ import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
+import org.opennms.netmgt.enlinkd.service.api.TopologyConnection;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
@@ -70,7 +70,7 @@ public class LldpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
             topology.getVertices().add(create(nodeMap.get(element.getNode().getId())));
         }
         
-        for (ImmutablePair<LldpLink, LldpLink> pair : m_lldpTopologyService.matchLldpLinks()) {
+        for (TopologyConnection<LldpLink, LldpLink> pair : m_lldpTopologyService.match()) {
             LldpLink sourceLink = pair.getLeft();
             LldpLink targetLink = pair.getRight();
             OnmsTopologyVertex source = topology.getVertex(sourceLink.getNode().getId().toString());

@@ -51,7 +51,7 @@ public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
         if (m_updatersMap.containsKey(protocolSupported)) {
             return m_updatersMap.get(protocolSupported).getTopology();
         }
-        throw new OnmsTopologyException(protocolSupported + " protocol not supported");
+        throw new OnmsTopologyException(String.format("%s protocol not supported",protocolSupported));
     }
 
     @Override
@@ -101,11 +101,11 @@ public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
     public void update(OnmsTopologyUpdater updater,
             OnmsTopologyMessage message) throws OnmsTopologyException {
         if (!m_updatersMap.containsKey(updater.getProtocol())) {
-            throw new OnmsTopologyException("cannot update message with id: " + message.getMessagebody().getId() + ". Protocol not supported", updater.getProtocol(), message.getMessagestatus());
+            throw new OnmsTopologyException(String.format("cannot update message with id: %s. Protocol not supported", message.getMessagebody().getId()), updater.getProtocol(), message.getMessagestatus());
         }
         if ( m_updatersMap.get(updater.getProtocol()) != updater
                            ) {
-            throw new OnmsTopologyException("cannot update message with id: " + message.getMessagebody().getId() + ". updater not supported", updater.getProtocol(), message.getMessagestatus());
+            throw new OnmsTopologyException(String.format("cannot update message with id: %s. Protocol not supported", message.getMessagebody().getId()), updater.getProtocol(), message.getMessagestatus());
         }
         synchronized (m_consumers) {
             m_consumers.stream().

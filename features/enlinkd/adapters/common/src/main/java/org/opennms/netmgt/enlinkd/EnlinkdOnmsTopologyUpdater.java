@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.service.api.MacCloud;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
@@ -54,21 +55,23 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
 
     public static OnmsTopologyVertex create(MacPort macPort) throws OnmsTopologyException {
         OnmsTopologyVertex vertex = OnmsTopologyVertex.create(Topology.getId(macPort),
-                                         Topology.getId(macPort), 
-                                         macPort.getIpMacInfo(), 
-                                         null);
-        vertex.setToolTipText(Topology.getToolTipText(macPort));
+                                         macPort.printTopology(), 
+                                         Topology.getAddress(macPort), 
+                                         Topology.getDefaultIconKey());
         return vertex;
     }
     
+    public static OnmsTopologyVertex create(MacCloud macCloud) throws OnmsTopologyException {
+        return OnmsTopologyVertex.create(Topology.getId(macCloud), 
+                                         macCloud.printTopology(), 
+                                         Topology.getAddress(macCloud), 
+                                         Topology.getDefaultIconKey());
+    }
     public static OnmsTopologyVertex create(NodeTopologyEntity node) throws OnmsTopologyException {
-        OnmsTopologyVertex vertex  = OnmsTopologyVertex.create(node.getId(), 
+        return OnmsTopologyVertex.create(node.getId(), 
                                          node.getLabel(), 
                                          InetAddressUtils.str(node.getPrimaryIpAddr()), 
                                          node.getSysoid());
-        vertex.setToolTipText(Topology.getToolTipText(node));
-        vertex.setNodeid(node.getNodeId());
-        return vertex;
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(EnlinkdOnmsTopologyUpdater.class);

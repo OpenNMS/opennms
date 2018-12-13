@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,20 +28,37 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
+import java.util.Set;
 
-import java.util.Date;
-import java.util.List;
+public class MacCloud implements Topology {
 
-import org.opennms.netmgt.enlinkd.model.IsIsElement;
-import org.opennms.netmgt.enlinkd.model.IsIsLink;
-
-public interface IsisTopologyService extends TopologyService {
+    public static MacCloud create(Set<String> macs) {
         
-    void delete(int nodeid);
-    void reconcile(int nodeId, Date now);
-    void store(int nodeId, IsIsLink link);
-    void store(int nodeId, IsIsElement element);
+        if (macs != null && macs.size() > 0)
+            return new MacCloud(macs);
+        return null;
+        
+    }
 
-    List<IsIsElement> findAllIsIsElements();
-    List<TopologyConnection<IsIsLink, IsIsLink>> match();
+    private final Set<String> m_macs;
+
+    public Set<String> getMacs() {
+        return m_macs;
+    }
+
+
+    private MacCloud(Set<String> macs) {
+        super();
+        m_macs = macs;
+    }
+
+    public String getMacsInfo() {
+        return m_macs.toString();
+    }
+    
+    public String printTopology() {
+        return m_macs.toString();
+    }
+
+    
 }

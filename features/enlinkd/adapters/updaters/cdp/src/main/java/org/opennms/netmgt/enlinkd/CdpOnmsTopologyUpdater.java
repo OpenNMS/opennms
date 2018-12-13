@@ -30,7 +30,6 @@ package org.opennms.netmgt.enlinkd;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
@@ -38,6 +37,7 @@ import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
+import org.opennms.netmgt.enlinkd.service.api.TopologyConnection;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
@@ -70,7 +70,7 @@ public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
             topology.getVertices().add(create(nodeMap.get(element.getNode().getId())));
         }
         
-        for(ImmutablePair<CdpLinkTopologyEntity, CdpLinkTopologyEntity> pair : m_cdpTopologyService.matchCdpLinks()) {
+        for(TopologyConnection<CdpLinkTopologyEntity, CdpLinkTopologyEntity> pair : m_cdpTopologyService.match()) {
             CdpLinkTopologyEntity sourceLink = pair.getLeft();
             CdpLinkTopologyEntity targetLink = pair.getRight();
 

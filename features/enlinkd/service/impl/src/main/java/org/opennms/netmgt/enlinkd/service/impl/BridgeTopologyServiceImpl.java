@@ -38,8 +38,6 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
@@ -59,6 +57,7 @@ import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
+import org.opennms.netmgt.enlinkd.service.api.TopologyShared;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -785,44 +784,16 @@ SEG:        for (SharedSegment segment : bmlsegments) {
     }
 
     @Override
-    public List<ImmutableTriple<List<BridgePort>, List<MacPort>, BridgePort>> matchBridgeLinks() {
-        final List<ImmutableTriple<List<BridgePort>, List<MacPort>, BridgePort>> links = new ArrayList<>();
+    public List<TopologyShared> match() {
+        final List<TopologyShared> links = new ArrayList<>();
         final List<MacPort> macPortMap = getMacPorts();
         
         m_domains.stream().forEach(dm ->{
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("matchBridgeLinks:\n {}", dm.printTopology());
-            }
-
             dm.getSharedSegments().stream().forEach( shs -> {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("matchBridgeLinks: \n{}", shs.printTopology());
-                }
-                Set<String> macs = new HashSet<String>();
-                List<MacPort> macPorts = new ArrayList<MacPort>();
-                macPortMap.stream().filter( mp -> 
-                    shs.getMacsOnSegment().containsAll(mp.getMacPortMap().keySet())).
-                    forEach(mp -> {
-                        macPorts.add(mp);
-                        macs.addAll(mp.getMacPortMap().keySet());
-                });
-                Set<String>  noMacPortMacs = new HashSet<String>(shs.getMacsOnSegment());
-                noMacPortMacs.removeAll(macs);
-                if (noMacPortMacs.size() >0) {
-                    macPorts.add(MacPort.create(noMacPortMacs));
-                }
-                
-                macPorts.stream().forEach(mp -> {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("matchBridgeLinks: \n{}", mp.printTopology());
-                    }
-                });
                 try {
-                   Triple<List<BridgePort>, List<MacPort>, BridgePort> triple = 
-                    Triple.of(new ArrayList<BridgePort>(shs.getBridgePortsOnSegment()), macPorts, shs.getDesignatedPort());
-                   links.add((ImmutableTriple<List<BridgePort>, List<MacPort>, BridgePort>) triple);
+                    links.add(TopologyShared.of(shs, macPortMap));
                 } catch (BridgeTopologyException e) {
-                    LOG.error("{}, cannot add segment {} ",e.getMessage(), e.printTopology());
+                    LOG.error("{} Cannot add shared segment to topology: {}", e.getMessage(), e.printTopology(),e);
                 }
             });
         });

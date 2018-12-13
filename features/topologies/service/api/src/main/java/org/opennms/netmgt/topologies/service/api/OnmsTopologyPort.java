@@ -32,7 +32,7 @@ public class OnmsTopologyPort extends OnmsTopologyAbstractRef implements OnmsTop
 
     public static OnmsTopologyPort create(OnmsTopologyVertex vertex, Integer index) throws OnmsTopologyException {
         if (vertex == null) {
-            throw new OnmsTopologyException("Canno create port, vertex is null");
+            throw new OnmsTopologyException("Cannot create port, vertex is null");
         }
         if (index != null) {
             return new OnmsTopologyPort(vertex.getId()+":"+index,vertex,index);

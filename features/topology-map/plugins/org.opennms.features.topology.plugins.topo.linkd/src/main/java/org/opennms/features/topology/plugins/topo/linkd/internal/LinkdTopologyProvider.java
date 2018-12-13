@@ -28,13 +28,11 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAware;
@@ -61,6 +59,7 @@ import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
+import org.opennms.netmgt.enlinkd.service.api.TopologyConnection;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -203,7 +202,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private void getLldpLinks() {
 
-        for (ImmutablePair<LldpLink, LldpLink> pair : m_lldpTopologyService.matchLldpLinks()) {
+        for (TopologyConnection<LldpLink, LldpLink> pair : m_lldpTopologyService.match()) {
             LldpLink sourceLink = pair.getLeft();
             LldpLink targetLink = pair.getRight();
             LinkdVertex source = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
@@ -222,7 +221,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private void getOspfLinks() {
 
-        for (ImmutablePair<OspfLink, OspfLink> pair : m_ospfTopologyService.matchOspfLinks()) {
+        for (TopologyConnection<OspfLink, OspfLink> pair : m_ospfTopologyService.match()) {
             OspfLink sourceLink = pair.getLeft();
             OspfLink targetLink = pair.getRight();
 
@@ -242,7 +241,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     private void getCdpLinks() {
-        for(ImmutablePair<CdpLinkTopologyEntity, CdpLinkTopologyEntity> pair : m_cdpTopologyService.matchCdpLinks()) {
+        for(TopologyConnection<CdpLinkTopologyEntity, CdpLinkTopologyEntity> pair : m_cdpTopologyService.match()) {
             CdpLinkTopologyEntity sourceLink = pair.getLeft();
             CdpLinkTopologyEntity targetLink = pair.getRight();
             LinkdVertex source = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNodeIdAsString());
@@ -262,7 +261,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private void getIsIsLinks() {
 
-        for(ImmutablePair<IsIsLink, IsIsLink> pair : m_isisTopologyService.matchIsIsLinks()) {
+        for(TopologyConnection<IsIsLink, IsIsLink> pair : m_isisTopologyService.match()) {
             IsIsLink sourceLink = pair.getLeft();
             IsIsLink targetLink = pair.getRight();
             LinkdVertex source = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
@@ -282,36 +281,41 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     
     private void getBridgeLinks() throws BridgeTopologyException {
-        for (ImmutableTriple<List<BridgePort>, List<MacPort>, BridgePort> topologylink: m_bridgeTopologyService.matchBridgeLinks()) {
-            Map<BridgePort,LinkdVertex> portToNodeVertexMap = new HashMap<BridgePort, LinkdVertex>();
-            for (BridgePort bp : topologylink.getLeft()) {
-                LinkdVertex vertex = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, bp.getNodeId().toString());
-                vertex.getProtocolSupported().add(ProtocolSupported.BRIDGE);
-                portToNodeVertexMap.put(bp,vertex);
-            }
+        m_bridgeTopologyService.match().stream().forEach(topologylink ->
+        {
+            Map<BridgePort,LinkdVertex> portToNodeVertexMap =  topologylink.getBridgePorts().
+                    stream().
+                    collect(Collectors.toMap(bp -> bp, bp -> (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, bp.getNodeId().toString())));
+
+            portToNodeVertexMap.values().stream().forEach(vertex ->        
+                vertex.getProtocolSupported().add(ProtocolSupported.BRIDGE));
             
-            Map<MacPort,LinkdVertex> macPortToNodeVertexMap = new HashMap<MacPort, LinkdVertex>();
-            for (MacPort port : topologylink.getMiddle()) {
-                LinkdVertex vertex;
-                if (port.getNodeId() != null) {
-                    vertex = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, port.getNodeId().toString());
-                    vertex.getProtocolSupported().add(ProtocolSupported.BRIDGE);
-                    continue;
-                } else {
-                    vertex = LinkdVertex.create(port);
-                    addVertices(vertex);
-                }
-                macPortToNodeVertexMap.put(port,vertex);
-            }
-        
+            Map<MacPort,LinkdVertex> macPortToNodeVertexMap = topologylink.getMacPorts().
+                    stream().
+                    filter( port -> port.getNodeId() != null).
+                    collect(Collectors.toMap(mp -> mp, mp -> (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, mp.getNodeId().toString())));
+            
+            macPortToNodeVertexMap.values().stream().forEach(vertex ->        
+                vertex.getProtocolSupported().add(ProtocolSupported.BRIDGE));
+
+            List<MacPort> macportswithoutnodeid = topologylink.getMacPorts().
+                    stream().
+                    filter( port -> port.getNodeId() == null).collect(Collectors.toList());
+
+            LinkdVertex macsVertex = null;
+            if (topologylink.getCloud() != null || macportswithoutnodeid.size() > 0) {
+                macsVertex = LinkdVertex.create(topologylink.getCloud(),macportswithoutnodeid,topologylink.getUpPort());
+                addVertices(macsVertex);
+            } 
+            
             if (portToNodeVertexMap.size() == 2 && 
-                    macPortToNodeVertexMap.size() == 0) {
+                    macPortToNodeVertexMap.size() == 0 && macsVertex == null ) {
                 LinkdVertex source = null;
                 LinkdVertex target = null;
                 BridgePort sourcebp = null;
                 BridgePort targetbp = null;
                 for (BridgePort bp: portToNodeVertexMap.keySet()) {
-                    if (bp.getNodeId() == topologylink.getRight().getNodeId()) {
+                    if (bp.getNodeId() == topologylink.getUpPort().getNodeId()) {
                         source = portToNodeVertexMap.get(bp);
                         sourcebp = bp;
                         continue;
@@ -324,13 +328,11 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 connectVertices(Topology.getEdgeId(sourcebp,targetbp),
                                 source,target,
                                 sourceSnmpInterface,targetSnmpInterface,
-                                "bp: "+sourcebp.getBridgePort(),
-                                "bp: "+targetbp.getBridgePort(),
+                                Topology.getAddress(sourcebp),
+                                Topology.getAddress(targetbp),
                                 ProtocolSupported.BRIDGE);
-                return;
-            }
-            if (portToNodeVertexMap.size() == 1 && 
-                macPortToNodeVertexMap.size() == 1 ) {
+            } else if (portToNodeVertexMap.size() == 1 && 
+                macPortToNodeVertexMap.size() == 1 && macsVertex == null ) {
                 LinkdVertex sourceVertex = portToNodeVertexMap.values().iterator().next();
                 LinkdVertex targetVertex = macPortToNodeVertexMap.values().iterator().next();
                 BridgePort sourceBridgePort = portToNodeVertexMap.keySet().iterator().next();
@@ -338,37 +340,72 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 
                 OnmsSnmpInterface sourceinterface = getSnmpInterface(sourceBridgePort.getNodeId(), sourceBridgePort.getBridgePortIfIndex());
                 OnmsSnmpInterface targetinterface = getSnmpInterface(targetMacPort.getNodeId(),targetMacPort.getMacPortIfIndex());
-                connectVertices(Topology.getEdgeId(sourceBridgePort, targetMacPort), sourceVertex, targetVertex,sourceinterface,targetinterface,
-                                "bp: "+sourceBridgePort.getBridgePort(),
-                                targetMacPort.toString(),
-                                ProtocolSupported.BRIDGE);
-                return;
-            }
-        
-            LinkdVertex topVertex = portToNodeVertexMap.get(topologylink.getRight());
-            LinkdVertex cloudVertex = LinkdVertex.create(topologylink.getRight());
-            addVertices(cloudVertex);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("parseSegment: adding cloud: id: '{}', {}", cloudVertex.getId(), topologylink.getRight().printTopology());
-            }
-            for (BridgePort bp: portToNodeVertexMap.keySet()) {
-                LinkdVertex bpportvertex = portToNodeVertexMap.get(bp);
-                OnmsSnmpInterface targetinterface = getSnmpInterface(bp.getNodeId(), bp.getBridgePortIfIndex());
-                connectVertices(Topology.getEdgeId(cloudVertex.getId(), bp), cloudVertex, bpportvertex, null, targetinterface, 
-                                "shared segment: up bridge " + topVertex.getLabel() + " bp:" +topologylink.getRight().getBridgePort(),
-                                "bp: "+bp.getBridgePort(), ProtocolSupported.BRIDGE);
-                
-            }
-            for (MacPort targetMacPort: macPortToNodeVertexMap.keySet()) {
-                LinkdVertex target = macPortToNodeVertexMap.get(targetMacPort);
-                OnmsSnmpInterface targetinterface = getSnmpInterface(targetMacPort.getNodeId(),targetMacPort.getMacPortIfIndex());
-                connectVertices(Topology.getEdgeId(cloudVertex.getId(), targetMacPort), cloudVertex,target, null, 
+                connectVertices(Topology.getEdgeId(sourceBridgePort, targetMacPort), 
+                                sourceVertex, 
+                                targetVertex,
+                                sourceinterface,
                                 targetinterface,
-                                "shared segment: up bridge " + topVertex.getLabel() + " bp:" + topologylink.getRight().getBridgePort(),
-                                targetMacPort.printTopology(), ProtocolSupported.BRIDGE);
+                                Topology.getAddress(sourceBridgePort),
+                                Topology.getAddress(targetMacPort),
+                                ProtocolSupported.BRIDGE);
+            } else  if (portToNodeVertexMap.size() == 1 && 
+                    macPortToNodeVertexMap.size() == 0 && macsVertex != null ) {
+                    LinkdVertex sourceVertex = portToNodeVertexMap.values().iterator().next();
+                    BridgePort sourceBridgePort = portToNodeVertexMap.keySet().iterator().next();
+                    
+                    OnmsSnmpInterface sourceinterface = getSnmpInterface(sourceBridgePort.getNodeId(), sourceBridgePort.getBridgePortIfIndex());
+                    connectVertices(Topology.getEdgeId(sourceBridgePort, topologylink.getCloud()), 
+                                    sourceVertex, 
+                                    macsVertex,
+                                    sourceinterface,
+                                    null,
+                                    Topology.getAddress(sourceBridgePort),
+                                    Topology.getAddress(topologylink.getCloud()),
+                                    ProtocolSupported.BRIDGE);
+            } else {
+                LinkdVertex cloudVertex = LinkdVertex.create(topologylink.getUpPort());
+                addVertices(cloudVertex);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("parseSegment: adding cloud: id: '{}', {}", cloudVertex.getId(), topologylink.getUpPort().printTopology());
+                }
+                for (BridgePort bp: portToNodeVertexMap.keySet()) {
+                    LinkdVertex bpportvertex = portToNodeVertexMap.get(bp);
+                    OnmsSnmpInterface targetinterface = getSnmpInterface(bp.getNodeId(), bp.getBridgePortIfIndex());
+                    connectVertices(Topology.getEdgeId(cloudVertex.getId(), bp), 
+                                    cloudVertex, 
+                                    bpportvertex, 
+                                    null, 
+                                    targetinterface, 
+                                    Topology.getAddress(topologylink.getUpPort()),
+                                    Topology.getAddress(bp), ProtocolSupported.BRIDGE);
+                    
+                }
+                for (MacPort targetMacPort: macPortToNodeVertexMap.keySet()) {
+                    LinkdVertex target = macPortToNodeVertexMap.get(targetMacPort);
+                    OnmsSnmpInterface targetinterface = getSnmpInterface(targetMacPort.getNodeId(),targetMacPort.getMacPortIfIndex());
+                    connectVertices(Topology.getEdgeId(cloudVertex.getId(), targetMacPort), 
+                                    cloudVertex,
+                                    target, 
+                                    null, 
+                                    targetinterface,
+                                    Topology.getAddress(topologylink.getUpPort()),
+                                    Topology.getAddress(targetMacPort),
+                                    ProtocolSupported.BRIDGE);
+                }
+                
+                if (macsVertex != null) {
+                    connectVertices(Topology.getDefaultEdgeId(cloudVertex.getId(), macsVertex.getId()), 
+                                    cloudVertex,
+                                    macsVertex, 
+                                    null, 
+                                    null,
+                                    Topology.getAddress(topologylink.getUpPort()),
+                                    topologylink.getCloud().getMacsInfo(), 
+                                    ProtocolSupported.BRIDGE);
+                    
+                }
             }
-        
-        }
+        });
     }
         
     @Override

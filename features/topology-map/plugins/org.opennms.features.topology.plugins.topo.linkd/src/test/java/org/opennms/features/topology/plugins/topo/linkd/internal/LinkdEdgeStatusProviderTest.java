@@ -33,10 +33,8 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.easymock.EasyMock;
 import org.junit.After;
@@ -57,7 +55,6 @@ import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
-import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -174,13 +171,13 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         add(Topology.getEdgeId(cloud.getId(), bpnode2port24), 
                                      cloud, node2Vertex, null, sourceinterfacenode2port24, null, null, ProtocolSupported.BRIDGE);
 
-        Set<String> macs =  new HashSet<>();
-        macs.add("a8d0e5a0a467");
-        MacPort mac = MacPort.create(macs);
-        add(Topology.getEdgeId(cloud.getId(), mac), 
+        add(
+            Topology.getDefaultEdgeId(cloud.getId(), "[a8d0e5a0a467]"), 
                                      cloud, node3Vertex, 
-                                     null, null, 
-                                     null, mac.printTopology(), ProtocolSupported.BRIDGE);
+                                     null, 
+                                     null,
+                                     null,
+                                     "[a8d0e5a0a467]", ProtocolSupported.BRIDGE);
         
         // isis link
         IsIsLink link1 = createIsIsLink(m_node4, 599, 599, 1, 1, "001f12accbf1", "000110255062");

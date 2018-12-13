@@ -348,9 +348,9 @@ public class EnhancedLinkdMockDataPopulator {
     public void setUpMock() {
         EasyMock.expect(m_nodeTopologyService.findAll()).andReturn(getNodes()).anyTimes();
         EasyMock.expect(m_snmpInterfaceDao.findAll()).andReturn(getOnmsSnmpInterfaces()).anyTimes();
-        EasyMock.expect(m_bridgeTopologyService.matchBridgeLinks()).andReturn(new ArrayList<>()).anyTimes();
-        EasyMock.expect(m_cdpTopologyService.matchCdpLinks()).andReturn(new ArrayList<>()).anyTimes();
-        EasyMock.expect(m_isisTopologyService.matchIsIsLinks()).andReturn(new ArrayList<>()).anyTimes();
+        EasyMock.expect(m_bridgeTopologyService.match()).andReturn(new ArrayList<>()).anyTimes();
+        EasyMock.expect(m_cdpTopologyService.match()).andReturn(new ArrayList<>()).anyTimes();
+        EasyMock.expect(m_isisTopologyService.match()).andReturn(new ArrayList<>()).anyTimes();
         EasyMock.expect(m_lldpElementDao.findAll()).andReturn(getLldpElements()).anyTimes();
         EasyMock.expect(m_lldpLinkDao.findAll()).andReturn(getLinks()).anyTimes();
         EasyMock.expect(m_ospfLinkDao.findAll()).andReturn(getOspfLinks()).anyTimes();

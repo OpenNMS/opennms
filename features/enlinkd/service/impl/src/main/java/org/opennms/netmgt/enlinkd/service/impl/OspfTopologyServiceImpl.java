@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
@@ -45,6 +43,7 @@ import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.TopologyConnection;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,9 +178,9 @@ public class OspfTopologyServiceImpl extends TopologyServiceImpl implements Ospf
     }
 
     @Override
-    public List<ImmutablePair<OspfLink, OspfLink>> matchOspfLinks() {
+    public List<TopologyConnection<OspfLink, OspfLink>> match() {
         List<OspfLink> allLinks = m_ospfLinkDao.findAll();
-        List<ImmutablePair<OspfLink, OspfLink>> results = new ArrayList<>();
+        List<TopologyConnection<OspfLink, OspfLink>> results = new ArrayList<>();
         Set<Integer> parsed = new HashSet<Integer>();
 
         // build mapping:
@@ -210,7 +209,7 @@ public class OspfTopologyServiceImpl extends TopologyServiceImpl implements Ospf
 
             LOG.debug("getOspfLinks: target: {}", targetLink);
             parsed.add(targetLink.getId());
-       results.add( (ImmutablePair<OspfLink, OspfLink>) Pair.of(sourceLink, targetLink));
+            results.add(TopologyConnection.of(sourceLink, targetLink));
         }
         return results;
 

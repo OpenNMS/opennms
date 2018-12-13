@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
@@ -45,6 +43,7 @@ import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.TopologyConnection;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -175,12 +174,7 @@ public class IsisTopologyServiceImpl extends TopologyServiceImpl implements Isis
     }
 
     @Override
-    public List<IsIsLink> findAllIsIsLinks() {
-        return m_isisLinkDao.findAll();
-    }
-
-    @Override
-    public List<ImmutablePair<IsIsLink, IsIsLink>> matchIsIsLinks() {
+    public List<TopologyConnection<IsIsLink, IsIsLink>> match() {
         List<IsIsElement> elements = m_isisElementDao.findAll();
         List<IsIsLink> allLinks = m_isisLinkDao.findAll();
         // 1.) create lookupMaps
@@ -199,7 +193,7 @@ public class IsisTopologyServiceImpl extends TopologyServiceImpl implements Isis
 
         // 2. iterate
         Set<Integer> parsed = new HashSet<Integer>();
-        List<ImmutablePair<IsIsLink, IsIsLink>> results = new ArrayList<>();
+        List<TopologyConnection<IsIsLink, IsIsLink>> results = new ArrayList<>();
 
         for (IsIsLink sourceLink : allLinks) {
             if (parsed.contains(sourceLink.getId())) {
@@ -223,7 +217,7 @@ public class IsisTopologyServiceImpl extends TopologyServiceImpl implements Isis
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getIsIsLinks: target: {}", targetLink);
             }
-            results.add((ImmutablePair<IsIsLink, IsIsLink>) Pair.of(sourceLink, targetLink));
+            results.add(TopologyConnection.of(sourceLink, targetLink));
             parsed.add(sourceLink.getId());
             parsed.add(targetLink.getId());
         }
