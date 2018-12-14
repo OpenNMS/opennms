@@ -31,7 +31,11 @@ package org.opennms.netmgt.enlinkd.service.api;
 import java.util.List;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.IsIsLink;
+import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.model.OnmsNode;
 
 public interface Topology {
@@ -92,9 +96,25 @@ public interface Topology {
     }
     
     public static String getAddress(BridgePort bp) {
-        return bp.printTopology();
+        return bp.getBridgePort().toString();
     }
     
+    public static String getAddress(CdpLinkTopologyEntity cdplink) {
+        return cdplink.getCdpCacheAddress();
+    }
+
+    public static String getAddress(LldpLink lldplink) {
+        return lldplink.getLldpPortDescr();
+    }
+
+    public static String getRemoteAddress(OspfLink ospflink) {
+        return InetAddressUtils.str(ospflink.getOspfRemIpAddr());
+    }
+
+    public static String getRemoteAddress(IsIsLink isislink) {
+        return isislink.getIsisISAdjNeighSNPAAddress();
+    }
+
     public static String getAddress(MacCloud cloud, List<MacPort> ports) {
         StringBuffer ip = new StringBuffer();
         if (cloud!= null) {
