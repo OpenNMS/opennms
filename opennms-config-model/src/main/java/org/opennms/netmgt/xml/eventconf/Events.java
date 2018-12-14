@@ -51,6 +51,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -354,6 +355,10 @@ public class Events implements Serializable {
             event.initialize(m_ordering.next());
         }
 
+        // roll up all prioritized events and sort all events by priority
+        m_events.addAll(getPrioritizedEvents());
+        m_events.sort(Comparator.reverseOrder());
+
         partitionEvents(partition);
 
         for (final Events events : m_loadedEventFiles.values()) {
@@ -361,6 +366,17 @@ public class Events implements Serializable {
         }
 
         indexEventsByUei();
+    }
+
+    // Recurse through the configuration and return Event Definitions with
+    // priority > 0
+    private Collection<Event> getPrioritizedEvents() {
+        List<Event> prioritizedEvents = new ArrayList<Event>();
+        prioritizedEvents.addAll(m_events.stream().filter(e -> e.getPriority() > 0).collect(Collectors.toList()));
+        for (final Events eventsFile : m_loadedEventFiles.values()) {
+            prioritizedEvents.addAll(eventsFile.getPrioritizedEvents());
+        }
+        return prioritizedEvents;
     }
 
     private void indexEventsByUei() {
@@ -377,17 +393,8 @@ public class Events implements Serializable {
             }
 
             if (m_eventsByUei.putIfAbsent(uei, e) != null) {
-                // Keep track of the UEIs that have many unprioritized event definitions
-                int existingPriority = m_eventsByUei.get(uei).getPriority();
-                int currentPriority = e.getPriority();
-                if (existingPriority == 0 && currentPriority == 0) {
-                    ueisWithManyEventDefinitions.add(uei);
-                } else {
-                    // use the event definition with the highest priority
-                    if (currentPriority > existingPriority) {
-                        m_eventsByUei.put(uei, e);
-                    }
-                }
+                // Keep trap of the UEIs that have many event definitions
+                ueisWithManyEventDefinitions.add(uei);
             }
         });
 
