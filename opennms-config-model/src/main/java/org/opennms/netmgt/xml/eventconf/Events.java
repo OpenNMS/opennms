@@ -39,6 +39,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -261,17 +262,14 @@ public class Events implements Serializable {
                 m_nullPartitionedEvents.add(event);
             } else {
                 for(final String key : keys) {
-                    List<Event> events = m_partitionedEvents.get(key);
-                    if (events == null) {
-                        events = new ArrayList<Event>(1);
-                        m_partitionedEvents.put(key, events);
-                    }
+                    List<Event> events = m_partitionedEvents.computeIfAbsent(key, k -> new ArrayList<Event>());
                     events.add(event);
-                    events.sort(Comparator.reverseOrder());
                 }
             }
         }
-        m_nullPartitionedEvents.sort(Comparator.reverseOrder());
+        // Place all the partitioned and nullPartitioned event definitions in priority order.
+        m_partitionedEvents.values().stream().forEach(l -> Collections.sort(l));
+        Collections.sort(m_nullPartitionedEvents);
     }
 
 
@@ -355,15 +353,16 @@ public class Events implements Serializable {
             event.initialize(m_ordering.next());
         }
 
-        // roll up all prioritized events and sort all events by priority
-        m_events.addAll(getPrioritizedEvents());
-        m_events.sort(Comparator.reverseOrder());
-
         partitionEvents(partition);
 
         for (final Events events : m_loadedEventFiles.values()) {
             events.initialize(partition, m_ordering.subsequence());
         }
+
+        // roll up all prioritized events and sort all events by priority
+        // must be done after event.initialize() haas been called to set the event.index
+        m_events.addAll(getPrioritizedEvents());
+        m_events.sort(Comparator.naturalOrder());
 
         indexEventsByUei();
     }

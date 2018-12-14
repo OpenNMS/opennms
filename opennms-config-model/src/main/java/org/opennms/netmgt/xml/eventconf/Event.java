@@ -548,7 +548,7 @@ public class Event implements Serializable, Comparable<Event> {
 
     @Override
     public int compareTo(final Event o) {
-        // Order based on priority
+        // Order based on priority with Highest Priority first
         int priorityOrder = getPriority().compareTo(o.getPriority());
         if (priorityOrder != 0) {
             return -priorityOrder;
@@ -558,7 +558,7 @@ public class Event implements Serializable, Comparable<Event> {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("uei", m_uei).add("priority", m_priority).add("mask", m_mask).add("msg", m_logmsg).toString();
+        return MoreObjects.toStringHelper(this).add("uei", m_uei).add("priority", getPriority()).add("mask", m_mask).toString();
     }
 
 }

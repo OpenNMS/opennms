@@ -30,8 +30,6 @@ package org.opennms.netmgt.config;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -166,7 +164,8 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 				accum.add(event);
 				return accum;
 			}
-		});
+            // remove duplicates
+        }).stream().distinct().collect(Collectors.toList());
 	}
 
 	@Override
