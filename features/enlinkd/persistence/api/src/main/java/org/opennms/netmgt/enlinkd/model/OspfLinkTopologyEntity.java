@@ -28,70 +28,71 @@
 
 package org.opennms.netmgt.enlinkd.model;
 
-import java.io.Serializable;
+import java.net.InetAddress;
 
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ReadOnlyEntity;
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 import com.google.common.base.MoreObjects;
 
 @ReadOnlyEntity
-public class NodeTopologyEntity implements Serializable {
+public class OspfLinkTopologyEntity {
+    private final Integer id;
+    private final Integer nodeId;
+    private final InetAddress ospfIpAddr;
+    private final InetAddress ospfRemIpAddr;
+    private final Integer ospfIfIndex;
 
-    private Integer id;
-    private OnmsNode.NodeType type;
-    private String sysObjectId;
-    private String label;
-    private String location;
-
-    public NodeTopologyEntity(Integer nodeid, OnmsNode.NodeType nodetype, String nodesysoid, String nodelabel, String location){
-        this.id = nodeid;
-        this.type = nodetype;
-        this.sysObjectId = nodesysoid;
-        this.label = nodelabel;
-        this.location = location;
+    public OspfLinkTopologyEntity(Integer id, Integer nodeId, InetAddress ospfIpAddr, InetAddress ospfRemIpAddr, Integer ospfIfIndex) {
+        this.id = id;
+        this.nodeId = nodeId;
+        this.ospfIpAddr = ospfIpAddr;
+        this.ospfRemIpAddr = ospfRemIpAddr;
+        this.ospfIfIndex = ospfIfIndex;
     }
 
-    public NodeTopologyEntity(Integer id, OnmsNode.NodeType type, String sysObjectId, String label, OnmsMonitoringLocation location){
-        this(id, type, sysObjectId, label, location.getLocationName());
-    }
-
-    public static NodeTopologyEntity toVertexInfo(OnmsNode node){
-        return new NodeTopologyEntity(node.getId(), node.getType(), node.getSysObjectId(), node.getLabel(), node.getLocation().getLocationName());
+    public OspfLinkTopologyEntity(OspfLink link) {
+        this(link.getId()
+                , link.getNode().getId()
+                , link.getOspfIpAddr()
+                , link.getOspfRemIpAddr()
+                , link.getOspfIfIndex());
     }
 
     public Integer getId() {
         return id;
     }
 
-    public OnmsNode.NodeType getType() {
-        return type;
+    public Integer getNodeId() {
+        return nodeId;
     }
 
-
-    public String getSysObjectId() {
-        return sysObjectId;
+    public String getNodeIdAsString() {
+        if (getNodeId() != null) {
+            return getNodeId().toString();
+        }
+        return null;
     }
 
-
-    public String getLabel() {
-        return label;
+    public InetAddress getOspfIpAddr() {
+        return ospfIpAddr;
     }
 
+    public InetAddress getOspfRemIpAddr() {
+        return ospfRemIpAddr;
+    }
 
-    public String getLocation() {
-        return location;
+    public Integer getOspfIfIndex() {
+        return ospfIfIndex;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("id", id)
-                .add("type", type)
-                .add("sysObjectId", sysObjectId)
-                .add("label", label)
-                .add("location", location)
+                .add("nodeId", nodeId)
+                .add("ospfIpAddr", ospfIpAddr)
+                .add("ospfRemIpAddr", ospfRemIpAddr)
+                .add("ospfIfIndex", ospfIfIndex)
                 .toString();
     }
 }

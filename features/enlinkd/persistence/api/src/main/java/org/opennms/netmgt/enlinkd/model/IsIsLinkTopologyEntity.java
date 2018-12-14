@@ -28,70 +28,70 @@
 
 package org.opennms.netmgt.enlinkd.model;
 
-import java.io.Serializable;
-
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ReadOnlyEntity;
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 import com.google.common.base.MoreObjects;
 
 @ReadOnlyEntity
-public class NodeTopologyEntity implements Serializable {
+public class IsIsLinkTopologyEntity {
+    private final Integer id;
+    private final Integer nodeId;
+    private final Integer isisISAdjIndex;
+    private final Integer isisCircIfIndex;
+    private final String isisISAdjNeighSysID;
+    private final String isisISAdjNeighSNPAAddress;
 
-    private Integer id;
-    private OnmsNode.NodeType type;
-    private String sysObjectId;
-    private String label;
-    private String location;
 
-    public NodeTopologyEntity(Integer nodeid, OnmsNode.NodeType nodetype, String nodesysoid, String nodelabel, String location){
-        this.id = nodeid;
-        this.type = nodetype;
-        this.sysObjectId = nodesysoid;
-        this.label = nodelabel;
-        this.location = location;
-    }
-
-    public NodeTopologyEntity(Integer id, OnmsNode.NodeType type, String sysObjectId, String label, OnmsMonitoringLocation location){
-        this(id, type, sysObjectId, label, location.getLocationName());
-    }
-
-    public static NodeTopologyEntity toVertexInfo(OnmsNode node){
-        return new NodeTopologyEntity(node.getId(), node.getType(), node.getSysObjectId(), node.getLabel(), node.getLocation().getLocationName());
+    public IsIsLinkTopologyEntity(Integer id, Integer nodeId, Integer isisISAdjIndex, Integer isisCircIfIndex, String isisISAdjNeighSysID,
+                                  String isisISAdjNeighSNPAAddress){
+        this.id = id;
+        this.nodeId = nodeId;
+        this.isisISAdjIndex = isisISAdjIndex;
+        this.isisCircIfIndex = isisCircIfIndex;
+        this.isisISAdjNeighSysID = isisISAdjNeighSysID;
+        this.isisISAdjNeighSNPAAddress = isisISAdjNeighSNPAAddress;
     }
 
     public Integer getId() {
         return id;
     }
 
-    public OnmsNode.NodeType getType() {
-        return type;
+    public Integer getNodeId() {
+        return nodeId;
     }
 
-
-    public String getSysObjectId() {
-        return sysObjectId;
+    public String getNodeIdAsString() {
+        if (getNodeId() != null) {
+            return getNodeId().toString();
+        }
+        return null;
     }
 
-
-    public String getLabel() {
-        return label;
+    public Integer getIsisISAdjIndex() {
+        return isisISAdjIndex;
     }
 
+    public Integer getIsisCircIfIndex() {
+        return isisCircIfIndex;
+    }
 
-    public String getLocation() {
-        return location;
+    public String getIsisISAdjNeighSysID() {
+        return isisISAdjNeighSysID;
+    }
+
+    public String getIsisISAdjNeighSNPAAddress() {
+        return isisISAdjNeighSNPAAddress;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("id", id)
-                .add("type", type)
-                .add("sysObjectId", sysObjectId)
-                .add("label", label)
-                .add("location", location)
+                .add("nodeId", nodeId)
+                .add("isisISAdjIndex", isisISAdjIndex)
+                .add("isisCircIfIndex", isisCircIfIndex)
+                .add("isisISAdjNeighSysID", isisISAdjNeighSysID)
+                .add("isisISAdjNeighSNPAAddress", isisISAdjNeighSNPAAddress)
                 .toString();
     }
 }

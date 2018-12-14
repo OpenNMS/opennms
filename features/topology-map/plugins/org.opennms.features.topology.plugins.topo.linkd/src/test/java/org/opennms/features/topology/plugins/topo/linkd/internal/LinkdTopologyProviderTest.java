@@ -46,13 +46,13 @@ import org.mockito.Mockito;
 import org.opennms.core.test.MockLogger;
 import org.opennms.core.utils.LldpUtils;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
-import org.opennms.netmgt.enlinkd.model.IsIsElement;
-import org.opennms.netmgt.enlinkd.model.IsIsLink;
-import org.opennms.netmgt.enlinkd.model.LldpElement;
-import org.opennms.netmgt.enlinkd.model.LldpLink;
-import org.opennms.netmgt.enlinkd.model.OspfLink;
-import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.IsIsElement;
+import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.LldpElement;
+import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +95,7 @@ public class LinkdTopologyProviderTest {
                 createIsIsElement(nodes.get(5), "2.2")
             );
 
-        List<IsIsLink> allLinks = Arrays.asList(
+        List<IsIsLinkTopologyEntity> allLinks = Arrays.asList(
                 createIsIsLink(0, "nomatch2", 100, nodes.get(0)),
                 createIsIsLink(1, "1.2", 11, nodes.get(1)),
                 createIsIsLink(2, "nomatch3", 101, nodes.get(2)),
@@ -104,7 +104,7 @@ public class LinkdTopologyProviderTest {
                 createIsIsLink(5, "2.3", 22, nodes.get(5))
         );
 
-        List<Pair<IsIsLink, IsIsLink>> matchedLinks = provider.matchIsIsLinks(elements, allLinks);
+        List<Pair<IsIsLinkTopologyEntity, IsIsLinkTopologyEntity>> matchedLinks = provider.matchIsIsLinks(elements, allLinks);
 
         assertMatching(allLinks, matchedLinks);
     }
@@ -149,7 +149,7 @@ public class LinkdTopologyProviderTest {
         List<OnmsNode> nodes = createNodes(6);
         List<InetAddress> addresses = createInetAddresses(6);
 
-        List<OspfLink> allLinks = Arrays.asList(
+        List<OspfLinkTopologyEntity> allLinks = Arrays.asList(
                 createOspfLink(0, nodes.get(0), addresses.get(0), addresses.get(5)),
                 createOspfLink(1, nodes.get(1), addresses.get(1), addresses.get(3)),
                 createOspfLink(2, nodes.get(2), addresses.get(2), addresses.get(3)),
@@ -158,7 +158,7 @@ public class LinkdTopologyProviderTest {
                 createOspfLink(5, nodes.get(5), addresses.get(5), addresses.get(4))
         );
 
-        List<Pair<OspfLink, OspfLink>> matchedLinks = provider.matchOspfLinks(allLinks);
+        List<Pair<OspfLinkTopologyEntity, OspfLinkTopologyEntity>> matchedLinks = provider.matchOspfLinks(allLinks);
         assertMatching(allLinks, matchedLinks);
     }
 
@@ -177,7 +177,7 @@ public class LinkdTopologyProviderTest {
         elements.put(4, createLldpElement(nodes.get(4), "match2.1"));
         elements.put(5, createLldpElement(nodes.get(5), "match2.2"));
 
-        List<LldpLink> allLinks = Arrays.asList(
+        List<LldpLinkTopologyEntity> allLinks = Arrays.asList(
            createLldpLink(0, nodes.get(0), "nomatch1", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT,  "nomatch2", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT, "nomatch3"),
                 createLldpLink(1, nodes.get(1), "match1.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,  "match1.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS, "match1.2"),
                 createLldpLink(2, nodes.get(2), "nomatch4", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT,  "nomatch5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT, "nomatch6"),
@@ -185,7 +185,7 @@ public class LinkdTopologyProviderTest {
                 createLldpLink(4, nodes.get(4), "match2.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID,  "match2.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, "match2.2"),
                 createLldpLink(5, nodes.get(5), "match2.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS,  "match2.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID, "match2.1")
         );
-        List<Pair<LldpLink, LldpLink>> matchedLinks = provider.matchLldpLinks(elements, allLinks);
+        List<Pair<LldpLinkTopologyEntity, LldpLinkTopologyEntity>> matchedLinks = provider.matchLldpLinks(elements, allLinks);
         assertMatching(allLinks, matchedLinks);
     }
 
@@ -224,26 +224,23 @@ public class LinkdTopologyProviderTest {
         return element;
     }
 
-    private LldpLink createLldpLink(int id, OnmsNode node, String portId, LldpUtils.LldpPortIdSubType portIdSubType
+    private LldpLinkTopologyEntity createLldpLink(int id, OnmsNode node, String portId, LldpUtils.LldpPortIdSubType portIdSubType
             , String remotePortId, LldpUtils.LldpPortIdSubType remotePortIdSubType, String remoteChassisId) {
-          LldpLink link = new LldpLink();
-            link.setId(id);
-            link.setLldpPortId(portId);
-            link.setLldpPortIdSubType(portIdSubType);
-            link.setLldpRemPortId(remotePortId);
-            link.setLldpRemPortIdSubType(remotePortIdSubType);
-            link.setLldpRemChassisId(remoteChassisId);
-            link.setLldpRemChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_CHASSISCOMPONENT); // shouldn't be relevant for match => set it fixed
-            link.setNode(node);
+          LldpLinkTopologyEntity link = new LldpLinkTopologyEntity(
+                  id,
+                  node.getId(),
+                  remoteChassisId,
+                  remotePortId,
+                  remotePortIdSubType,
+                  portId,
+                  portIdSubType,
+                  "portDescription",
+                  3);
         return link;
     }
 
-    private OspfLink createOspfLink(int id, OnmsNode node, InetAddress ipAddress, InetAddress remoteAddress) {
-        OspfLink link = new OspfLink();
-        link.setId(id);
-        link.setNode(node);
-        link.setOspfIpAddr(ipAddress);
-        link.setOspfRemIpAddr(remoteAddress);
+    private OspfLinkTopologyEntity createOspfLink(int id, OnmsNode node, InetAddress ipAddress, InetAddress remoteAddress) {
+        OspfLinkTopologyEntity link = new OspfLinkTopologyEntity(id, node.getId(), ipAddress, remoteAddress, 3);
         return link;
     }
 
@@ -288,15 +285,10 @@ public class LinkdTopologyProviderTest {
         return element;
     }
 
-    private IsIsLink createIsIsLink(int id, String isisISAdjNeighSysID, int isisISAdjIndex, OnmsNode node) {
-        IsIsLink link = new IsIsLink();
-        link.setId(id);
-        link.setIsisCircAdminState(IsIsElement.IsisAdminState.off);
-        link.setIsisISAdjState(IsIsLink.IsisISAdjState.up);
-        link.setIsisISAdjNeighSysID(isisISAdjNeighSysID);
-        link.setIsisISAdjNeighSysType(IsIsLink.IsisISAdjNeighSysType.unknown);
-        link.setIsisISAdjIndex(isisISAdjIndex);
-        link.setNode(node);
+    private IsIsLinkTopologyEntity createIsIsLink(int id, String isisISAdjNeighSysID, Integer isisISAdjIndex, OnmsNode node) {
+        Integer isisCircIfIndex = 3;
+        String isisISAdjNeighSNPAddress = "abcdef";
+        IsIsLinkTopologyEntity link = new IsIsLinkTopologyEntity(id, node.getId(), isisISAdjIndex, isisCircIfIndex, isisISAdjNeighSysID, isisISAdjNeighSNPAddress);
         return link;
     }
 
