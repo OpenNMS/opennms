@@ -103,8 +103,8 @@ public interface Topology {
         return cdplink.getCdpCacheAddress();
     }
 
-    public static String getAddress(LldpLink lldplink) {
-        return lldplink.getLldpPortDescr();
+    public static String getRemoteAddress(LldpLink lldplink) {
+        return String.format("%s %s", lldplink.getLldpRemPortIdSubType().name(),lldplink.getLldpRemPortIdSubType());
     }
 
     public static String getRemoteAddress(OspfLink ospflink) {
