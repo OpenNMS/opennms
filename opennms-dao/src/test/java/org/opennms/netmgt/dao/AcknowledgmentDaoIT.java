@@ -28,13 +28,23 @@
 
 package org.opennms.netmgt.dao;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -233,5 +243,95 @@ public class AcknowledgmentDaoIT implements InitializingBean {
         OnmsAlarm retrieved2 = m_alarmDao.get(situation.getId());
         assertThat(retrieved2.getSeverity(), equalTo(OnmsSeverity.CLEARED));
 
+    }
+
+    @Test
+    @Transactional
+    public void testFindLatestAcks() {
+        assertThat(m_acknowledgmentDao.findLatestAcks(), hasSize(0));
+
+        int numAcks = 100;
+        Map<Integer, Integer> dbIdsByRefId = new HashMap<>();
+        dbIdsByRefId.put(1, generateAcks(1, numAcks));
+        dbIdsByRefId.put(2, generateAcks(2, numAcks));
+        dbIdsByRefId.put(3, generateAcks(3, numAcks));
+        assertThat(m_acknowledgmentDao.findAll(), hasSize(greaterThan(3)));
+
+        List<OnmsAcknowledgment> acks = m_acknowledgmentDao.findLatestAcks();        
+        assertThat(acks, hasSize(3));
+        // Check that we got an ack back for each of the refIds we expect
+        assertThat(acks.stream()
+                .map(OnmsAcknowledgment::getRefId)
+                .collect(Collectors.toList()), containsInAnyOrder(1, 2, 3));
+
+        // Check that the ackTimes are the latest ones
+        for (OnmsAcknowledgment ack : acks) {
+            assertThat(ack.getAckTime(), equalTo(new Date(numAcks)));
+        }
+        
+        // Check that the Ids are the latest ones given that we had ties for ackTime
+        for (OnmsAcknowledgment ack : acks) {
+            assertThat(ack.getId(), equalTo(dbIdsByRefId.get(ack.getRefId())));
+        }
+        
+        // Check that we get consistent results with finding the acks the hard way with separate queries
+        List<OnmsAcknowledgment> acksTheHardWay = findAcksTheHardWay(Arrays.asList(1, 2, 3));
+        assertThat(acks, equalTo(acksTheHardWay));
+    }
+    
+    @Test
+    @Transactional
+    public void testFindLatestAckForRefId() {
+        int numAcks = 100;
+        Integer latestIdFor1 = generateAcks(1, 100);
+        generateAcks(2, 100);
+        assertThat(m_acknowledgmentDao.findAll(), hasSize(greaterThan(3)));
+
+        //noinspection OptionalGetWithoutIsPresent
+        OnmsAcknowledgment ack = m_acknowledgmentDao.findLatestAckForRefId(1).get();
+        // Check to make sure the ack has the latest time and the right Id since we purposely created a tie
+        assertThat(ack.getAckTime(), equalTo(new Date(numAcks)));
+        assertThat(ack.getId(), equalTo(latestIdFor1));
+    }
+
+    /**
+     * Generate acks where some of the acks share the same ackTime.
+     */
+    private Integer generateAcks(Integer refId, int numAcks) {        
+        OnmsAcknowledgment sameTimeAck = new OnmsAcknowledgment();
+        sameTimeAck.setRefId(refId);
+        sameTimeAck.setAckTime(new Date(numAcks));
+        m_acknowledgmentDao.save(sameTimeAck);
+        
+        IntStream.range(3, numAcks + 1).forEach(i -> {
+            OnmsAcknowledgment ack = new OnmsAcknowledgment();
+            ack.setRefId(refId);
+            ack.setAckTime(new Date(i));
+            m_acknowledgmentDao.save(ack);
+        });
+
+        sameTimeAck = new OnmsAcknowledgment();
+        sameTimeAck.setRefId(refId);
+        sameTimeAck.setAckTime(new Date(numAcks));
+        int id = m_acknowledgmentDao.save(sameTimeAck);
+        
+
+        m_acknowledgmentDao.flush();
+        
+        return id;
+    }
+
+    /**
+     * Find acks one by one with separate queries.
+     */
+    private List<OnmsAcknowledgment> findAcksTheHardWay(List<Integer> refIds){
+        List<OnmsAcknowledgment> foundAcks = new ArrayList<>();
+
+        for (Integer refId : refIds) {
+            //noinspection OptionalGetWithoutIsPresent
+            foundAcks.add(m_acknowledgmentDao.findLatestAckForRefId(refId).get());
+        }
+
+        return foundAcks;
     }
 }

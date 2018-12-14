@@ -33,19 +33,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.opennms.netmgt.alarmd.AlarmMatchers.hasSeverity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -58,6 +60,8 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.support.AlarmEntityNotifierImpl;
+import org.opennms.netmgt.model.AckAction;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsServiceType;
@@ -100,6 +104,7 @@ public class DroolsAlarmContextIT {
         alarmDao = mock(AlarmDao.class);
         alarmService.setAlarmDao(alarmDao);
         acknowledgmentDao = mock(AcknowledgmentDao.class);
+        when(acknowledgmentDao.findLatestAckForRefId(any(Integer.class))).thenReturn(Optional.empty());
         alarmService.setAcknowledgmentDao(acknowledgmentDao);
 
         AlarmEntityNotifierImpl alarmEntityNotifier = mock(AlarmEntityNotifierImpl.class);
@@ -546,6 +551,59 @@ public class DroolsAlarmContextIT {
         dac.handleNewOrUpdatedAlarm(situation);
         dac.tick();
 
+    }
+
+    private OnmsAlarm generateAlarm(int id) {
+        OnmsAlarm alarm = new OnmsAlarm();
+        alarm.setId(id);
+        alarm.setAlarmType(1);
+        alarm.setSeverity(OnmsSeverity.WARNING);
+        alarm.setReductionKey("n" + id + ":oops");
+        alarm.setFirstEventTime(new Date(id));
+        alarm.setLastEventTime(new Date(id + 1));
+        return alarm;
+    }
+
+    /**
+     * Tests that the ack cache is updated with default acks when it can't find an ack in the db.
+     */
+    @Test
+    public void testAckCachingNoDBHit() {
+        OnmsAlarm alarm1 = generateAlarm(1);
+        dac.handleNewOrUpdatedAlarm(alarm1);
+        verify(acknowledgmentDao, times(1)).findLatestAckForRefId(alarm1.getId());
+        assertThat(dac.getAckByAlarmId(alarm1.getId()).getAckAction(), equalTo(AckAction.UNACKNOWLEDGE));
+
+        OnmsAlarm alarm2 = generateAlarm(2);
+        dac.handleAlarmSnapshot(Arrays.asList(alarm1, alarm2));
+        verify(acknowledgmentDao, times(1)).findLatestAcks();
+        assertThat(dac.getAckByAlarmId(alarm1.getId()).getAckAction(), equalTo(AckAction.UNACKNOWLEDGE));
+        assertThat(dac.getAckByAlarmId(alarm2.getId()).getAckAction(), equalTo(AckAction.UNACKNOWLEDGE));
+    }
+
+    /**
+     * Tests that the ack cache is updated with the result acks from the db when present.
+     */
+    @Test
+    public void testAckCachingWithDBHit() {
+        OnmsAlarm alarm1 = generateAlarm(1);
+        OnmsAcknowledgment ack1 = new OnmsAcknowledgment(alarm1, DefaultAlarmService.DEFAULT_USER,
+                alarm1.getFirstEventTime());
+        ack1.setAckAction(AckAction.ACKNOWLEDGE);
+        when(acknowledgmentDao.findLatestAckForRefId(alarm1.getId())).thenReturn(Optional.of(ack1));
+        dac.handleNewOrUpdatedAlarm(alarm1);
+        verify(acknowledgmentDao, times(1)).findLatestAckForRefId(alarm1.getId());
+        assertThat(dac.getAckByAlarmId(alarm1.getId()).getAckAction(), equalTo(ack1.getAckAction()));
+
+        OnmsAlarm alarm2 = generateAlarm(2);
+        OnmsAcknowledgment ack2 = new OnmsAcknowledgment(alarm2, DefaultAlarmService.DEFAULT_USER,
+                alarm2.getFirstEventTime());
+        ack2.setAckAction(AckAction.ESCALATE);
+        when(acknowledgmentDao.findLatestAcks()).thenReturn(Arrays.asList(ack1, ack2));
+        dac.handleAlarmSnapshot(Arrays.asList(alarm1, alarm2));
+        verify(acknowledgmentDao, times(1)).findLatestAcks();
+        assertThat(dac.getAckByAlarmId(alarm1.getId()).getAckAction(), equalTo(ack1.getAckAction()));
+        assertThat(dac.getAckByAlarmId(alarm2.getId()).getAckAction(), equalTo(ack2.getAckAction()));
     }
 
     private void printAlarmDetails(OnmsAlarm alarm) {
