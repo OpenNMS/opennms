@@ -132,7 +132,6 @@ public class LinkdTopologyProviderTest {
         List<Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> matchedLinks = provider.matchCdpLinks(elements, allLinks);
 
         assertMatching(allLinks, matchedLinks);
-
     }
 
     @Test
