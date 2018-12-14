@@ -388,7 +388,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
                 .until(() -> kafkaProducer.getDataSync().isReady());
         
         // Force an alarm sync
-        kafkaProducer.handleAlarmSnapshot(Collections.singletonList(alarm));
+        kafkaProducer.handleAlarmSnapshot(Collections.singletonList(alarm), System.currentTimeMillis());
 
         // Only the alarm explicitly sent should be consumed, there should not have been any alarms sync'd        
         try {            

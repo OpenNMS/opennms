@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,7 +43,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -55,6 +53,7 @@ import org.joda.time.Duration;
 import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
+import org.opennms.netmgt.alarmd.api.AlarmCallbackStateTracker;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
@@ -107,6 +106,8 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private final Map<String, OpennmsModelProtos.Alarm> outstandingAlarms = new ConcurrentHashMap<>();
     private final AlarmEqualityChecker alarmEqualityChecker =
             AlarmEqualityChecker.with(AlarmEqualityChecker.Exclusions::defaultExclusions);
+
+    private final AlarmCallbackStateTracker alarmCallbackStateTracker = new AlarmCallbackStateTracker();
 
     private int kafkaSendQueueCapacity;
     private BlockingQueue<KafkaRecord> kafkaSendQueue;
@@ -365,19 +366,17 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     }
 
     @Override
-    public void handleAlarmSnapshot(List<OnmsAlarm> alarms) {
+    public void handleAlarmSnapshot(List<OnmsAlarm> alarms, long systemMillisBeforeSnapshot) {
         if (!forwardAlarms || dataSync == null) {
             // Ignore
             return;
         }
-        
-        // Remove any outstanding alarms that are not present in the snapshot
-        Set<String> reductionKeysInSnapshot = alarms.stream()
-                .map(OnmsAlarm::getReductionKey)
-                .collect(Collectors.toSet());
-        outstandingAlarms.keySet().removeIf(reductionKey -> !reductionKeysInSnapshot.contains(reductionKey));
+        dataSync.handleAlarmSnapshot(alarms, systemMillisBeforeSnapshot);
+    }
 
-        dataSync.handleAlarmSnapshot(alarms);
+    @Override
+    public void postHandleAlarmSnapshot(long systemMillisBeforeSnapshot) {
+        // nothing to do here
     }
 
     @Override
@@ -387,6 +386,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             return;
         }
         updateAlarm(alarm.getReductionKey(), alarm);
+        alarmCallbackStateTracker.trackNewOrUpdatedAlarm(alarm.getId(), alarm.getReductionKey());
     }
 
     @Override
@@ -396,9 +396,10 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             return;
         }
         handleDeletedAlarm(reductionKey);
+        alarmCallbackStateTracker.trackDeletedAlarm(alarmId, reductionKey);
     }
 
-    public void handleDeletedAlarm(String reductionKey) {
+    private void handleDeletedAlarm(String reductionKey) {
         updateAlarm(reductionKey, null);
     }
 
@@ -471,6 +472,10 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     @VisibleForTesting
     KafkaAlarmDataSync getDataSync() {
         return dataSync;
+    }
+
+    public AlarmCallbackStateTracker getAlarmCallbackStateTracker() {
+        return alarmCallbackStateTracker;
     }
 
     public void setKafkaSendQueueCapacity(int kafkaSendQueueCapacity) {

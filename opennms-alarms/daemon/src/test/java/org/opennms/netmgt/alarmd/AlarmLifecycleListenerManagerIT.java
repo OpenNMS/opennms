@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.junit.After;
 import org.junit.Before;
@@ -278,7 +279,7 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
         return () -> m_alarmsByReductionKey.get(reductionKeyForNodeUp(nodeId));
     }
     @Override
-    public synchronized void handleAlarmSnapshot(List<OnmsAlarm> alarms) {
+    public synchronized void handleAlarmSnapshot(List<OnmsAlarm> alarms, long systemMillisBeforeSnasphot) {
         m_snapshots.add(alarms);
         /* Don't actually update the map since we want to make sure that the
            values are updated through the other callbacks.
@@ -288,6 +289,11 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
                 alarms.stream().map(OnmsAlarm::getReductionKey).collect(Collectors.toSet())))
                 .forEach(r -> m_alarmsByReductionKey.remove(r));
        */
+    }
+
+    @Override
+    public void postHandleAlarmSnapshot(long systemMillisBeforeSnasphot) {
+        // pass
     }
 
     @Override

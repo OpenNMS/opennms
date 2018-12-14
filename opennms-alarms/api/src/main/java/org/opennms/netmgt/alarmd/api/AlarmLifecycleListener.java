@@ -40,10 +40,66 @@ import org.opennms.netmgt.model.OnmsAlarm;
  */
 public interface AlarmLifecycleListener {
 
-    void handleAlarmSnapshot(List<OnmsAlarm> alarms);
+    /**
+     * Called periodically with a complete set of alarms as present in the database
+     * at the given timestamp.
+     *
+     * This should be used to synchronize any state to ensure it matches what is currently
+     * in the database.
+     *
+     * Note that it is possible that the *current* state of alarms is different from the state
+     * at the time at which the snapshot was taken. For this reason, we include the timestamp
+     * of the system before the transaction to enumerate the alarms was open. Implementations
+     * should take this in consideration when performing any state synchronization.
+     *
+     * This method will be called while the related session & transaction that created
+     * the alarm are still open.
+     *
+     * All of the listeners are invoked serially, so the implementors should avoid
+     * blocking when possible.
+     *
+     * @param alarms canonical set of alarms in the database
+     * @param systemMillisBeforeSnapshot time at which the set of alarms were read from the database
+     */
+    void handleAlarmSnapshot(List<OnmsAlarm> alarms, long systemMillisBeforeSnapshot);
 
+    /**
+     * Called after {@link #handleAlarmSnapshot} has been called on all the listeners, and
+     * after the session & transaction used to perform the snapshot has been closed.
+     *
+     * This can be used to trigger any necessary post-processing of the results one
+     * the related session has been closed.
+     *
+     * @param systemMillisBeforeSnapshot time at which the set of alarms from the last snapshot
+     *                                   were read from the database
+     */
+    void postHandleAlarmSnapshot(long systemMillisBeforeSnapshot);
+
+    /**
+     * Called when an alarm has been created or updated.
+     *
+     * This method will be called while the related session & transaction that created
+     * the alarm are still open.
+     *
+     * All of the listeners are invoked serially, so the implementors should avoid
+     * blocking when possible.
+     *
+     * @param alarm a newly created or updated alarm
+     */
     void handleNewOrUpdatedAlarm(OnmsAlarm alarm);
 
+    /**
+     * Called when an alarm has been deleted.
+     *
+     * This method will be called while the related session & transaction that created
+     * the alarm are still open.
+     *
+     * All of the listeners are invoked serially, so the implementors should avoid
+     * blocking when possible.
+     *
+     * @param alarmId id of the alarm that was deleted
+     * @param reductionKey reduction key of the alarm that was deleted
+     */
     void handleDeletedAlarm(int alarmId, String reductionKey);
 
 }

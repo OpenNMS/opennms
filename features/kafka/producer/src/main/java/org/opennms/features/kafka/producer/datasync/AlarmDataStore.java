@@ -54,7 +54,7 @@ public interface AlarmDataStore {
 
     OpennmsModelProtos.Alarm getAlarm(String reductionKey);
 
-    AlarmSyncResults handleAlarmSnapshot(List<OnmsAlarm> alarms);
+    AlarmSyncResults handleAlarmSnapshot(List<OnmsAlarm> alarms, long systemMillisBeforeSnapshot);
 
     void setStartWithCleanState(boolean startWithCleanState);
 

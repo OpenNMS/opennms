@@ -251,7 +251,7 @@ public class BsmdIT {
         template.execute(new TransactionCallbackWithoutResult() {
              @Override
              protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                 m_bsmd.handleAlarmSnapshot(m_alarmDao.findAll());
+                 m_bsmd.handleAlarmSnapshot(m_alarmDao.findAll(), System.currentTimeMillis());
              }
          });
 
@@ -271,7 +271,7 @@ public class BsmdIT {
         template.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                m_bsmd.handleAlarmSnapshot(m_alarmDao.findAll());
+                m_bsmd.handleAlarmSnapshot(m_alarmDao.findAll(), System.currentTimeMillis());
             }
         });
 

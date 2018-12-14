@@ -50,7 +50,7 @@ import com.google.common.collect.Maps;
 public class AlarmLifecycleListenerManagerSnapshotTest {
 
     /**
-     * Verifies that the {@link AlarmLifecycleListener} does not invoke
+     * Verifies that the {@link AlarmLifecycleListener} does invoke
      * the {@link AlarmLifecycleListener#handleNewOrUpdatedAlarm(OnmsAlarm)} or
      * {@link AlarmLifecycleListener#handleDeletedAlarm(int, String)} callbacks while
      * processing a snapshot.
@@ -58,17 +58,19 @@ public class AlarmLifecycleListenerManagerSnapshotTest {
      * @throws InterruptedException
      */
     @Test
-    public void canBlockCallbacksWhileSnapshotIsProcessing() throws InterruptedException {
+    public void canIssueCallbacksWhileSnapshotIsProcessing() throws InterruptedException {
         // Triggered when the snapshot is called in our handler
         CountDownLatch isProcessingSnapshot = new CountDownLatch(1);
         // Set when the snapshot is complete
         AtomicBoolean doneSnapshot = new AtomicBoolean(false);
         // Keeps track of the number of callbacks we received *after* the snapshot is complete
         AtomicInteger newUpdateOrDeleteAfterSnapshot = new AtomicInteger(0);
+        // Keeps track of the number of callbacks we received while processing the snapshot
+        AtomicInteger newUpdateOrDeleteDuringSnapshot = new AtomicInteger(0);
 
         AlarmLifecycleListener listener = new AlarmLifecycleListener() {
             @Override
-            public void handleAlarmSnapshot(List<OnmsAlarm> alarms) {
+            public void handleAlarmSnapshot(List<OnmsAlarm> alarms, long systemMillisBeforeSnasphot) {
                 isProcessingSnapshot.countDown();
                 try {
                     // Sleep for some arbitrary amount of time, sufficient to invoke the callbacks
@@ -80,9 +82,16 @@ public class AlarmLifecycleListenerManagerSnapshotTest {
             }
 
             @Override
+            public void postHandleAlarmSnapshot(long systemMillisBeforeSnasphot) {
+                // pass
+            }
+
+            @Override
             public void handleNewOrUpdatedAlarm(OnmsAlarm alarm) {
                 if (doneSnapshot.get()) {
                     newUpdateOrDeleteAfterSnapshot.incrementAndGet();
+                } else {
+                    newUpdateOrDeleteDuringSnapshot.incrementAndGet();
                 }
             }
 
@@ -90,6 +99,8 @@ public class AlarmLifecycleListenerManagerSnapshotTest {
             public void handleDeletedAlarm(int alarmId, String reductionKey) {
                 if (doneSnapshot.get()) {
                     newUpdateOrDeleteAfterSnapshot.incrementAndGet();
+                } else {
+                    newUpdateOrDeleteDuringSnapshot.incrementAndGet();
                 }
             }
         };
@@ -113,13 +124,14 @@ public class AlarmLifecycleListenerManagerSnapshotTest {
 
         // (the handler was invoked, and is sleeping)
 
-        // Let's attempt to trigger some callbacks - we expect these to block until
-        // the snapshot is completed
+        // Let's attempt to trigger some callbacks - we expect these *not* to block
+        // even though the snapshot has not yet completed
         OnmsAlarm alarm = mock(OnmsAlarm.class);
         alm.onAlarmCreated(alarm);
         alm.onAlarmDeleted(alarm);
 
-        // We should have received the callbacks, but only *after* the snapshot was compelete
-        assertThat(newUpdateOrDeleteAfterSnapshot.get(), equalTo(2));
+        // We should have received the callbacks while the snapshot was still in progress
+        assertThat(newUpdateOrDeleteAfterSnapshot.get(), equalTo(0));
+        assertThat(newUpdateOrDeleteDuringSnapshot.get(), equalTo(2));
     }
 }
