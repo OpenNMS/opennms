@@ -361,15 +361,19 @@ public class Events implements Serializable {
 
         // roll up all prioritized events and sort all events by priority
         // must be done after event.initialize() haas been called to set the event.index
-        m_events.addAll(getPrioritizedEvents());
+        List<Event> prioritizedEvents = getPrioritizedEvents();
+        m_events.addAll(prioritizedEvents);
         m_events.sort(Comparator.naturalOrder());
+        // Also add to unpartitioned events for first crack when not using an UEI match
+        m_nullPartitionedEvents.addAll(prioritizedEvents);
+        m_nullPartitionedEvents.sort(Comparator.naturalOrder());
 
         indexEventsByUei();
     }
 
     // Recurse through the configuration and return Event Definitions with
     // priority > 0
-    private Collection<Event> getPrioritizedEvents() {
+    private List<Event> getPrioritizedEvents() {
         List<Event> prioritizedEvents = new ArrayList<Event>();
         prioritizedEvents.addAll(m_events.stream().filter(e -> e.getPriority() > 0).collect(Collectors.toList()));
         for (final Events eventsFile : m_loadedEventFiles.values()) {
