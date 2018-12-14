@@ -319,8 +319,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourcebp.getNodeId(), sourcebp.getBridgePortIfIndex());
                 OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetbp.getNodeId(), targetbp.getBridgePortIfIndex());
                 connectVertices(Topology.getEdgeId(sourcebp,targetbp),
-                                source,target,
-                                sourceSnmpInterface,targetSnmpInterface,
+                                source,
+                                target,
+                                sourceSnmpInterface,
+                                targetSnmpInterface,
                                 "bp: "+sourcebp.getBridgePort(),
                                 "bp: "+targetbp.getBridgePort(),
                                 ProtocolSupported.BRIDGE);
@@ -343,9 +345,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                     BridgePort sourceBridgePort = portToNodeVertexMap.keySet().iterator().next();
                     
                     OnmsSnmpInterface sourceinterface = getSnmpInterface(sourceBridgePort.getNodeId(), sourceBridgePort.getBridgePortIfIndex());
-                    connectVertices(Topology.getEdgeId(sourceBridgePort, topologylink.getCloud()), sourceVertex, macCloudVertex,sourceinterface,null,
+                    connectVertices(Topology.getEdgeId(macCloudVertex.getId(),sourceBridgePort ), sourceVertex, macCloudVertex,sourceinterface,null,
                                     "bp: "+sourceBridgePort.getBridgePort(),
-                                    topologylink.getCloud().getMacCloudInfo(),
+                                    macCloudVertex.getIpAddress(),
                                     ProtocolSupported.BRIDGE);
             } else {
 
