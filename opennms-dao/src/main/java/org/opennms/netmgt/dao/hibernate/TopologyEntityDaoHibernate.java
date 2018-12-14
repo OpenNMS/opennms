@@ -33,6 +33,9 @@ import java.util.List;
 import org.opennms.netmgt.dao.api.TopologyEntityDao;
 import org.opennms.netmgt.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.model.NodeTopologyEntity;
+import org.opennms.netmgt.model.IsIsLinkTopologyEntity;
+import org.opennms.netmgt.model.LldpLinkTopologyEntity;
+import org.opennms.netmgt.model.OspfLinkTopologyEntity;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements TopologyEntityDao {
@@ -49,4 +52,24 @@ public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements T
                 "select new org.opennms.netmgt.model.CdpLinkTopologyEntity(l.id, l.node.id, l.cdpCacheIfIndex, " +
                         "l.cdpInterfaceName, l.cdpCacheAddress, l.cdpCacheDeviceId, l.cdpCacheDevicePort) from org.opennms.netmgt.model.CdpLink l");
     }
+
+    @Override
+    public List<IsIsLinkTopologyEntity> getIsIsLinkTopologyEntities() {
+        return (List<IsIsLinkTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.model.IsIsLinkTopologyEntity(l.id, l.node.id, l.isisISAdjIndex, l.isisCircIfIndex, l.isisISAdjNeighSysID, " +
+                        "l.isisISAdjNeighSNPAAddress) from org.opennms.netmgt.model.IsIsLink l");
+    }
+
+    @Override
+    public List<LldpLinkTopologyEntity> getLldpLinkTopologyEntities() {
+        return (List<LldpLinkTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.model.LldpLinkTopologyEntity(l.id, l.node.id, l.lldpRemChassisId, l.lldpRemPortId, l.lldpRemPortIdSubType, l.lldpPortId, l.lldpPortIdSubType, l.lldpPortDescr, l.lldpPortIfindex) from org.opennms.netmgt.model.LldpLink l");
+    }
+
+    @Override
+    public List<OspfLinkTopologyEntity> getOspfLinkTopologyEntities() {
+        return (List<OspfLinkTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.model.OspfLinkTopologyEntity(l.id, l.node.id, l.ospfIpAddr, l.ospfRemIpAddr, l.ospfIfIndex) from org.opennms.netmgt.model.OspfLink l");
+    }
+
 }

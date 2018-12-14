@@ -26,33 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
-
-import java.util.List;
-
-import org.opennms.netmgt.model.CdpLinkTopologyEntity;
-import org.opennms.netmgt.model.IsIsLinkTopologyEntity;
-import org.opennms.netmgt.model.LldpLinkTopologyEntity;
-import org.opennms.netmgt.model.NodeTopologyEntity;
-import org.opennms.netmgt.model.OspfLinkTopologyEntity;
+package org.opennms.netmgt.model;
 
 /**
- * Caches TopologyEmtities. This is a cache wrapper around @{@link TopologyEntityDao}. See there for an explanation of
- * TopologyEntrities.
- * We use the cache to improve the displaying speed of topologies.
+ * Marker Annotation:
+ * We are NOT a Hibernate/JPA entity but a view on the database created for a specific use case.
  */
-public interface TopologyEntityCache {
-
-    List<NodeTopologyEntity> getNodeTopolgyEntities();
-
-    List<CdpLinkTopologyEntity> getCdpLinkTopologyEntities();
-
-    List<OspfLinkTopologyEntity> getOspfLinkTopologyEntities();
-
-    List<IsIsLinkTopologyEntity> getIsIsLinkTopologyEntities();
-
-    List<LldpLinkTopologyEntity> getLldpLinkTopologyEntities();
-
-    void refresh();
-
+public @interface ReadOnlyEntity {
 }
