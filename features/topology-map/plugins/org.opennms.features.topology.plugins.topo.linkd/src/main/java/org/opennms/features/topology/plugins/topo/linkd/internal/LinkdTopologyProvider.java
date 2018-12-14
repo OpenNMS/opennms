@@ -326,8 +326,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourcebp.getNodeId(), sourcebp.getBridgePortIfIndex());
                 OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetbp.getNodeId(), targetbp.getBridgePortIfIndex());
                 connectVertices(Topology.getEdgeId(sourcebp,targetbp),
-                                source,target,
-                                sourceSnmpInterface,targetSnmpInterface,
+                                source,
+                                target,
+                                sourceSnmpInterface,
+                                targetSnmpInterface,
                                 Topology.getAddress(sourcebp),
                                 Topology.getAddress(targetbp),
                                 ProtocolSupported.BRIDGE);
@@ -354,13 +356,13 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                     BridgePort sourceBridgePort = portToNodeVertexMap.keySet().iterator().next();
                     
                     OnmsSnmpInterface sourceinterface = getSnmpInterface(sourceBridgePort.getNodeId(), sourceBridgePort.getBridgePortIfIndex());
-                    connectVertices(Topology.getEdgeId(sourceBridgePort, topologylink.getCloud()), 
+                    connectVertices(Topology.getEdgeId(macsVertex.getId(),sourceBridgePort), 
                                     sourceVertex, 
                                     macsVertex,
                                     sourceinterface,
                                     null,
                                     Topology.getAddress(sourceBridgePort),
-                                    Topology.getAddress(topologylink.getCloud()),
+                                    macsVertex.getIpAddress(),
                                     ProtocolSupported.BRIDGE);
             } else {
                 LinkdVertex cloudVertex = LinkdVertex.create(topologylink.getUpPort());
