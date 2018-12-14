@@ -47,25 +47,20 @@ import org.opennms.core.test.MockLogger;
 import org.opennms.core.utils.LldpUtils;
 import org.opennms.netmgt.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.model.CdpLinkTopologyEntity;
-import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsElementTopologyEntity;
-import org.opennms.netmgt.model.LldpElement;
+import org.opennms.netmgt.model.IsIsLinkTopologyEntity;
 import org.opennms.netmgt.model.LldpElementTopologyEntity;
+import org.opennms.netmgt.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.model.topology.Topology;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.net.InetAddresses;
 
 public class LinkdTopologyProviderTest {
 
-    private final static int AMOUNT_ELEMENTS = 20;
     private final static int AMOUNT_NODES = 5;
-
-    private final static Logger LOG = LoggerFactory.getLogger(LinkdTopologyProviderTest.class);
 
     private Random random;
     private LinkdTopologyProvider provider;

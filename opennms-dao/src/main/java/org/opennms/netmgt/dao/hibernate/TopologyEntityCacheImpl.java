@@ -37,13 +37,13 @@ import org.opennms.netmgt.dao.api.TopologyEntityDao;
 import org.opennms.netmgt.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.model.IpInterfaceTopologyEntity;
+import org.opennms.netmgt.model.IsIsElementTopologyEntity;
 import org.opennms.netmgt.model.IsIsLinkTopologyEntity;
+import org.opennms.netmgt.model.LldpElementTopologyEntity;
 import org.opennms.netmgt.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.model.NodeTopologyEntity;
 import org.opennms.netmgt.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.model.OspfLinkTopologyEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -127,17 +127,17 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
 
     @Override
     public List<CdpElementTopologyEntity> getCdpElementTopologyEntities() {
-        return this.cdpElementTopologyEntities.getUnchecked(CACHE_KEY));
+        return this.cdpElementTopologyEntities.getUnchecked(CACHE_KEY);
     }
 
     @Override
     public List<IsIsElementTopologyEntity> getIsIsElementTopologyEntities() {
-        return this.isIsElementTopologyEntities.getUnchecked(CACHE_KEY));
+        return this.isIsElementTopologyEntities.getUnchecked(CACHE_KEY);
     }
 
     @Override
     public List<LldpElementTopologyEntity> getLldpElementTopologyEntities() {
-        return this.lldpElementTopologyEntities.getUnchecked(CACHE_KEY));
+        return this.lldpElementTopologyEntities.getUnchecked(CACHE_KEY);
     }
 
     @Override
