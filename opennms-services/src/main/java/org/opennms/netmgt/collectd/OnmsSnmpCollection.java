@@ -560,5 +560,8 @@ public class OnmsSnmpCollection {
         return m_aliasAttributeTypes;
     }
 
+    LocationAwareSnmpClient getClient(){
+       return m_client;
+    }
 
 }
