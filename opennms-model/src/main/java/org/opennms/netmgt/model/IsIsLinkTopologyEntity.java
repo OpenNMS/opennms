@@ -31,25 +31,23 @@ package org.opennms.netmgt.model;
 import com.google.common.base.MoreObjects;
 
 @ReadOnlyEntity
-public class CdpLinkTopologyEntity {
-
+public class IsIsLinkTopologyEntity {
     private final Integer id;
     private final Integer nodeId;
-    private final Integer cdpCacheIfIndex;
-    private final String cdpInterfaceName;
-    private final String cdpCacheAddress;
-    private final String cdpCacheDeviceId;
-    private final String cdpCacheDevicePort;
+    private final Integer isisISAdjIndex;
+    private final Integer isisCircIfIndex;
+    private final String isisISAdjNeighSysID;
+    private final String isisISAdjNeighSNPAAddress;
 
-    public CdpLinkTopologyEntity(Integer id, Integer nodeId, Integer cdpCacheIfIndex, String cdpInterfaceName, String cdpCacheAddress,
-                                 String cdpCacheDeviceId, String cdpCacheDevicePort){
+
+    public IsIsLinkTopologyEntity(Integer id, Integer nodeId, Integer isisISAdjIndex, Integer isisCircIfIndex, String isisISAdjNeighSysID,
+                                  String isisISAdjNeighSNPAAddress){
         this.id = id;
         this.nodeId = nodeId;
-        this.cdpCacheIfIndex = cdpCacheIfIndex;
-        this.cdpInterfaceName = cdpInterfaceName;
-        this.cdpCacheAddress = cdpCacheAddress;
-        this.cdpCacheDeviceId = cdpCacheDeviceId;
-        this.cdpCacheDevicePort = cdpCacheDevicePort;
+        this.isisISAdjIndex = isisISAdjIndex;
+        this.isisCircIfIndex = isisCircIfIndex;
+        this.isisISAdjNeighSysID = isisISAdjNeighSysID;
+        this.isisISAdjNeighSNPAAddress = isisISAdjNeighSNPAAddress;
     }
 
     public Integer getId() {
@@ -67,24 +65,20 @@ public class CdpLinkTopologyEntity {
         return null;
     }
 
-    public Integer getCdpCacheIfIndex() {
-        return cdpCacheIfIndex;
+    public Integer getIsisISAdjIndex() {
+        return isisISAdjIndex;
     }
 
-    public String getCdpInterfaceName() {
-        return cdpInterfaceName;
+    public Integer getIsisCircIfIndex() {
+        return isisCircIfIndex;
     }
 
-    public String getCdpCacheAddress() {
-        return cdpCacheAddress;
+    public String getIsisISAdjNeighSysID() {
+        return isisISAdjNeighSysID;
     }
 
-    public String getCdpCacheDevicePort() {
-        return cdpCacheDevicePort;
-    }
-
-    public String getCdpCacheDeviceId() {
-        return cdpCacheDeviceId;
+    public String getIsisISAdjNeighSNPAAddress() {
+        return isisISAdjNeighSNPAAddress;
     }
 
     @Override
@@ -92,11 +86,10 @@ public class CdpLinkTopologyEntity {
         return MoreObjects.toStringHelper(this)
                 .add("id", id)
                 .add("nodeId", nodeId)
-                .add("cdpCacheIfIndex", cdpCacheIfIndex)
-                .add("cdpInterfaceName", cdpInterfaceName)
-                .add("cdpCacheAddress", cdpCacheAddress)
-                .add("cdpCacheDeviceId", cdpCacheDeviceId)
-                .add("cdpCacheDevicePort", cdpCacheDevicePort)
+                .add("isisISAdjIndex", isisISAdjIndex)
+                .add("isisCircIfIndex", isisCircIfIndex)
+                .add("isisISAdjNeighSysID", isisISAdjNeighSysID)
+                .add("isisISAdjNeighSNPAAddress", isisISAdjNeighSNPAAddress)
                 .toString();
     }
 }
