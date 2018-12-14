@@ -46,17 +46,10 @@ import org.opennms.netmgt.model.OspfLinkTopologyEntity;
 public interface TopologyEntityCache {
 
     List<NodeTopologyEntity> getNodeTopolgyEntities();
-
     List<CdpLinkTopologyEntity> getCdpLinkTopologyEntities();
-
     List<OspfLinkTopologyEntity> getOspfLinkTopologyEntities();
-
     List<IsIsLinkTopologyEntity> getIsIsLinkTopologyEntities();
-
     List<LldpLinkTopologyEntity> getLldpLinkTopologyEntities();
-
-    List<SnmpInterfaceTopologyEntity> getSnmpTopologyEntities();
-    List<IpInterfaceTopologyEntity> getIpTopologyEntities();
     List<SnmpInterfaceTopologyEntity> getSnmpInterfaceTopologyEntities();
     List<IpInterfaceTopologyEntity> getIpInterfaceTopologyEntities();
     void refresh();

@@ -53,6 +53,6 @@ public interface TopologyEntityDao {
     List<IsIsLinkTopologyEntity> getIsIsLinkTopologyEntities();
     List<LldpLinkTopologyEntity> getLldpLinkTopologyEntities();
     List<OspfLinkTopologyEntity> getOspfLinkTopologyEntities();
-  List<SnmpInterfaceTopologyEntity> getSnmpTopologyEntities();
-  List<IpInterfaceTopologyEntity> getIpTopologyEntities();
+    List<SnmpInterfaceTopologyEntity> getSnmpTopologyEntities();
+    List<IpInterfaceTopologyEntity> getIpTopologyEntities();
 }

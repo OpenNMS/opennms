@@ -50,8 +50,7 @@ import com.google.common.cache.LoadingCache;
 
 
 public class TopologyEntityCacheImpl implements TopologyEntityCache {
-
-    private final static Logger LOG = LoggerFactory.getLogger(TopologyEntityCacheImpl.class);
+    
     private final static String CACHE_KEY = "CACHE_KEY";
     private final static String SYSTEM_PROPERTY_CACHE_DURATION = "org.opennms.ui.topology-entity-cache-duration";
 
@@ -76,7 +75,7 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
             () -> topologyEntityDao.getSnmpTopologyEntities());
 
     private LoadingCache<String, List<IpInterfaceTopologyEntity>> ipInterfaceTopologyEntities = createCache(
-            () ->  topologyEntityDao.getIpTopologyEntities();
+            () ->  topologyEntityDao.getIpTopologyEntities());
 
       private <KEY, VALUE> LoadingCache<KEY, VALUE> createCache(Supplier<VALUE> entitySupplier) {
         CacheLoader<KEY, VALUE> loader = new CacheLoader<KEY, VALUE>() {
@@ -118,12 +117,12 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
 
     @Override
     public List<SnmpInterfaceTopologyEntity> getSnmpInterfaceTopologyEntities(){
-        return this.snmpInterfaceTopologyEntities.getUnchecked(KEY);
+        return this.snmpInterfaceTopologyEntities.getUnchecked(CACHE_KEY);
     }
 
     @Override
     public List<IpInterfaceTopologyEntity> getIpInterfaceTopologyEntities(){
-        return this.ipInterfaceTopologyEntities.getUnchecked(KEY);
+        return this.ipInterfaceTopologyEntities.getUnchecked(CACHE_KEY);
     }
 
     @Override
