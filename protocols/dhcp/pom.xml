@@ -49,11 +49,10 @@
     </plugins>
   </build>
   <dependencies>
-    <!-- NOTE: JDHCP is licensed as GPL and should be kept separate from other libraries -->
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>jdhcp</artifactId>
-      <version>1.2.0</version>
+      <groupId>com.helger</groupId>
+      <artifactId>dhcp4java</artifactId>
+      <version>1.1.0</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
