@@ -30,16 +30,19 @@ package org.opennms.netmgt.topologies.service.api;
 
 public class OnmsTopologyPort extends OnmsTopologyAbstractRef implements OnmsTopologyRef {
 
-    public static OnmsTopologyPort create(OnmsTopologyVertex vertex, Integer index) throws OnmsTopologyException {
+    public static OnmsTopologyPort create(String id, OnmsTopologyVertex vertex, Integer index) throws OnmsTopologyException {
+        if (id == null) {
+            throw new OnmsTopologyException("Cannot create port, id is null");
+        }
         if (vertex == null) {
             throw new OnmsTopologyException("Cannot create port, vertex is null");
         }
         if (index != null) {
-            return new OnmsTopologyPort(vertex.getId()+":"+index,vertex,index);
+            return new OnmsTopologyPort(id,vertex,index);
         }
-        return new OnmsTopologyPort(vertex.getId()+":-1",vertex,-1);
+        return new OnmsTopologyPort(id,vertex,-1);
     }
-        
+
     private final OnmsTopologyVertex m_vertex;
     private final Integer m_index;
     
