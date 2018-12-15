@@ -30,7 +30,6 @@ package org.opennms.netmgt.enlinkd;
 
 import java.util.Map;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
@@ -48,6 +47,14 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
+
+    public static OnmsTopologyPort create(OnmsTopologyVertex source,OspfLink sourcelink, OspfLink targetlink ) throws OnmsTopologyException {
+        OnmsTopologyPort port = OnmsTopologyPort.create(sourcelink.getId().toString(),source, sourcelink.getOspfIfIndex());
+        port.setPort(Topology.getAddress(sourcelink));
+        port.setAddr(Topology.getRemoteAddress(targetlink));
+        port.setToolTipText(Topology.getToolTipText(source.getLabel(), port.getIndex(), port.getPort(), port.getAddr(), null));
+        return port;
+    }
 
     protected final OspfTopologyService m_ospfTopologyService;
 
@@ -72,18 +79,20 @@ public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
         }
         
         for(TopologyConnection<OspfLink, OspfLink> pair : m_ospfTopologyService.match()) {
-            OspfLink sourceLink = pair.getLeft();
-            OspfLink targetLink = pair.getRight();
-            OnmsTopologyVertex source = topology.getVertex(sourceLink.getNode().getId().toString());
-            OnmsTopologyVertex target = topology.getVertex(targetLink.getNode().getId().toString());
-            OnmsTopologyPort sourcePort = OnmsTopologyPort.create(source, sourceLink.getOspfIfIndex());
-            sourcePort.setPort(InetAddressUtils.str(sourceLink.getOspfIpAddr()));
-            sourcePort.setAddr(InetAddressUtils.str(targetLink.getOspfRemIpAddr()));
-            OnmsTopologyPort targetPort = OnmsTopologyPort.create(target, targetLink.getOspfIfIndex());
-            targetPort.setPort(InetAddressUtils.str(targetLink.getOspfIpAddr()));
-            targetPort.setAddr(InetAddressUtils.str(sourceLink.getOspfRemIpAddr()));
-            String id = Topology.getDefaultEdgeId(sourceLink.getId(), targetLink.getId());
-            topology.getEdges().add(OnmsTopologyEdge.create(id,sourcePort, targetPort));
+            topology.getEdges().add(OnmsTopologyEdge.create(
+                                                            Topology.getDefaultEdgeId(pair.getLeft().getId(), pair.getRight().getId()),
+                                                            create(
+                                                                   topology.getVertex(pair.getLeft().getNode().getId().toString()), 
+                                                                   pair.getLeft(), 
+                                                                   pair.getRight()
+                                                                   ), 
+                                                            create(
+                                                                   topology.getVertex(pair.getRight().getNode().getId().toString()), 
+                                                                   pair.getRight(), 
+                                                                   pair.getLeft()
+                                                                   )
+                                                            )
+                                    );
        }
         
         return topology;

@@ -48,6 +48,14 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 public class IsisOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
+    public static OnmsTopologyPort create(OnmsTopologyVertex source,IsIsLink sourceLink,IsIsLink targetLink ) throws OnmsTopologyException {
+        OnmsTopologyPort port= OnmsTopologyPort.create(sourceLink.getId().toString(),source, sourceLink.getIsisCircIfIndex());
+        port.setPort(sourceLink.getIsisCircIndex().toString());
+        port.setAddr(Topology.getRemoteAddress(targetLink));
+        port.setToolTipText(Topology.getToolTipText(source.getLabel(), port.getIndex(), port.getPort(), port.getAddr(), null));
+        return port;
+    }
+
 
     private final IsisTopologyService m_isisTopologyService;
 
@@ -72,19 +80,15 @@ public class IsisOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
         }
         
         for(TopologyConnection<IsIsLink, IsIsLink> pair : m_isisTopologyService.match()){
-            IsIsLink sourceLink = pair.getLeft();
-            IsIsLink targetLink = pair.getRight();
-
-            OnmsTopologyVertex source = topology.getVertex(sourceLink.getNode().getId().toString());
-            OnmsTopologyVertex target = topology.getVertex(targetLink.getNode().getId().toString());
-            OnmsTopologyPort sourcePort= OnmsTopologyPort.create(source, sourceLink.getIsisCircIfIndex());
-            sourcePort.setPort(targetLink.getIsisISAdjNeighSNPAAddress());
-            sourcePort.setAddr(targetLink.getIsisISAdjNeighSNPAAddress());
-            OnmsTopologyPort targetPort= OnmsTopologyPort.create(target, targetLink.getIsisCircIfIndex());
-            targetPort.setPort(sourceLink.getIsisISAdjNeighSNPAAddress());
-            targetPort.setAddr(sourceLink.getIsisISAdjNeighSNPAAddress());
-            String id = Topology.getDefaultEdgeId(sourceLink.getId(), targetLink.getId());
-            OnmsTopologyEdge edge = OnmsTopologyEdge.create(id,sourcePort, targetPort);
+            OnmsTopologyEdge edge = OnmsTopologyEdge.create(
+                                                            Topology.getDefaultEdgeId(pair.getLeft().getId(), pair.getRight().getId()),
+                                                            create(topology.getVertex(pair.getLeft().getNode().getId().toString()), 
+                                                                   pair.getLeft(), 
+                                                                   pair.getRight()), 
+                                                            create(topology.getVertex(pair.getRight().getNode().getId().toString()), 
+                                                                   pair.getRight(), 
+                                                                   pair.getLeft())
+                                                            );
             topology.getEdges().add(edge);
        }
         

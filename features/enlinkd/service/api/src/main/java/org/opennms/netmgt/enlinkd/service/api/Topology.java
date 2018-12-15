@@ -96,7 +96,7 @@ public interface Topology {
     }
     
     public static String getAddress(BridgePort bp) {
-        return bp.getBridgePort().toString();
+        return String.format("bridge port %d vlan %d",bp.getBridgePort(),bp.getVlan());
     }
     
     public static String getAddress(CdpLinkTopologyEntity cdplink) {
@@ -104,11 +104,15 @@ public interface Topology {
     }
 
     public static String getRemoteAddress(LldpLink lldplink) {
-        return String.format("%s %s", lldplink.getLldpRemPortIdSubType().name(),lldplink.getLldpRemPortIdSubType());
+        return String.format("%s type %s", lldplink.getLldpRemPortId(),lldplink.getLldpRemPortIdSubType().name());
     }
 
     public static String getRemoteAddress(OspfLink ospflink) {
         return InetAddressUtils.str(ospflink.getOspfRemIpAddr());
+    }
+
+    public static String getAddress(OspfLink ospflink) {
+        return String.format("%s mask %s", InetAddressUtils.str(ospflink.getOspfIpAddr()), InetAddressUtils.str(ospflink.getOspfIpMask()));
     }
 
     public static String getRemoteAddress(IsIsLink isislink) {

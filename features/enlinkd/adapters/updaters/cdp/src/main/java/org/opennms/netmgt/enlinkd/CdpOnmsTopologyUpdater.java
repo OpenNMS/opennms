@@ -48,6 +48,14 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
+    public static OnmsTopologyPort create(OnmsTopologyVertex vertex,CdpLinkTopologyEntity cdpLink ) throws OnmsTopologyException {
+        OnmsTopologyPort port = OnmsTopologyPort.create(cdpLink.getId().toString(),vertex, cdpLink.getCdpCacheIfIndex());
+        port.setPort(cdpLink.getCdpInterfaceName());
+        port.setAddr(Topology.getAddress(cdpLink));
+        port.setToolTipText(Topology.getToolTipText(vertex.getLabel(), port.getIndex(), port.getPort(), port.getAddr(), null));
+        return port;
+    }
+    
     private final CdpTopologyService m_cdpTopologyService;
 
     public CdpOnmsTopologyUpdater(EventForwarder eventforwarder,
@@ -71,20 +79,13 @@ public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
         }
         
         for(TopologyConnection<CdpLinkTopologyEntity, CdpLinkTopologyEntity> pair : m_cdpTopologyService.match()) {
-            CdpLinkTopologyEntity sourceLink = pair.getLeft();
-            CdpLinkTopologyEntity targetLink = pair.getRight();
-
-            OnmsTopologyVertex source = topology.getVertex(sourceLink.getNodeId().toString());
-            OnmsTopologyVertex target = topology.getVertex(targetLink.getNodeId().toString());
-            OnmsTopologyPort sourcePort= OnmsTopologyPort.create(source, sourceLink.getCdpCacheIfIndex());
-            sourcePort.setPort(sourceLink.getCdpInterfaceName());
-            sourcePort.setAddr(targetLink.getCdpCacheAddress());
-            OnmsTopologyPort targetPort= OnmsTopologyPort.create(target, targetLink.getCdpCacheIfIndex());
-            targetPort.setPort(targetLink.getCdpInterfaceName());
-            targetPort.setAddr(sourceLink.getCdpCacheAddress());
-            String id = Topology.getDefaultEdgeId(sourceLink.getId(), targetLink.getId());
-            OnmsTopologyEdge edge = OnmsTopologyEdge.create(id,sourcePort, targetPort);
-            topology.getEdges().add(edge);
+            topology.getEdges().add(
+                OnmsTopologyEdge.create(
+                        Topology.getDefaultEdgeId(pair.getLeft().getId().intValue(), pair.getRight().getId().intValue()),
+                        create(topology.getVertex(pair.getLeft().getNodeIdAsString()),pair.getLeft()),
+                        create(topology.getVertex(pair.getRight().getNodeIdAsString()),pair.getRight())
+                        )
+                );
        }
         
         return topology;

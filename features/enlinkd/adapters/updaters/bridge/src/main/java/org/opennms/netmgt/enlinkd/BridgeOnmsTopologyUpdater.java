@@ -37,6 +37,7 @@ import java.util.Set;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.MacCloud;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
@@ -52,7 +53,31 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
+public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater  {
+
+    public static OnmsTopologyPort create(OnmsTopologyVertex cloud, MacCloud mc) throws OnmsTopologyException{
+        OnmsTopologyPort   port = OnmsTopologyPort.create(Topology.getId(mc),cloud,-1);
+        port.setAddr(Topology.getAddress(mc));
+        port.setPort(mc.getMacsInfo());
+        port.setToolTipText(Topology.getToolTipText(cloud.getLabel(), port.getIndex(), port.getPort(), port.getAddr(), null));
+        return port;
+    }
+
+    public static OnmsTopologyPort create(OnmsTopologyVertex source, BridgePort bp) throws OnmsTopologyException {
+        OnmsTopologyPort port = OnmsTopologyPort.create(Topology.getId(bp),source, bp.getBridgePortIfIndex());
+        port.setAddr(Topology.getAddress(bp));
+        port.setPort(bp.getBridgePort().toString());
+        port.setToolTipText(Topology.getToolTipText(source.getLabel(), port.getIndex(), port.getPort(), port.getAddr(), null));
+        return port;
+    }
+
+    public static OnmsTopologyPort create(OnmsTopologyVertex source, MacPort mp) throws OnmsTopologyException {
+        OnmsTopologyPort port = OnmsTopologyPort.create(Topology.getId(mp),source, mp.getMacPortIfIndex());
+        port.setAddr(Topology.getAddress(mp));
+        port.setPort(mp.getMacPortName());
+        port.setToolTipText(Topology.getToolTipText(source.getLabel(), port.getIndex(), port.getPort(), port.getAddr(), null));
+        return port;
+    }
 
     private static final Logger LOG = LoggerFactory.getLogger(BridgeOnmsTopologyUpdater.class);
 
@@ -77,7 +102,7 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
         for (TopologyShared shared : m_bridgeTopologyService.match()){
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getTopology: parsing shared dsesignated: {}", shared.getUpPort().printTopology());
+                LOG.debug("getTopology: parsing shared designated: {}", shared.getUpPort().printTopology());
             }
             Set<OnmsTopologyPort> ports = new HashSet<>();
             for(BridgePort bp :shared.getBridgePorts()) {
@@ -85,11 +110,7 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
                 if (topology.getVertex(node.getId()) == null) {
                     topology.getVertices().add(create(node));
                 }
-                OnmsTopologyVertex vertex = topology.getVertex(node.getId());
-                OnmsTopologyPort port = OnmsTopologyPort.create(vertex, bp.getBridgePortIfIndex());
-                port.setAddr(Topology.getAddress(bp));
-                port.setPort(bp.printTopology());
-                ports.add(port);
+                ports.add(create(topology.getVertex(node.getId()), bp));
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("getTopology: added port: {}", bp.printTopology());
                 }
@@ -103,36 +124,26 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
                     if (topology.getVertex(node.getId()) ==  null) {
                         topology.getVertices().add(create(node));
                     }
-                    OnmsTopologyVertex vertex = topology.getVertex(node.getId());
-                    OnmsTopologyPort port = OnmsTopologyPort.create(vertex, mp.getMacPortIfIndex());
-                    port.setAddr(Topology.getAddress(mp));
-                    port.setPort(mp.printTopology());
-                    ports.add(port);
+                    ports.add(create(topology.getVertex(node.getId()), mp));
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("getTopology: added port: {}", mp.printTopology());
                     }
                 }
             }
             if (shared.getCloud() != null || portsWithoutNode.size() > 0) {
-                OnmsTopologyVertex cloudMacVertex = create(shared.getCloud(),portsWithoutNode, shared.getUpPort()) ;
-                topology.getVertices().add(cloudMacVertex);
+                OnmsTopologyVertex macVertex = create(shared.getCloud(),portsWithoutNode, shared.getUpPort()) ;
+                topology.getVertices().add(macVertex);
                 if (shared.getCloud() != null ) {
-                    OnmsTopologyPort   cloudMacPort = OnmsTopologyPort.create(cloudMacVertex, -1);
-                    cloudMacPort.setAddr(Topology.getAddress(shared.getCloud()));
-                    cloudMacPort.setPort("Cloud representing mac addresses");
-                    ports.add(cloudMacPort);
+                    ports.add( create(macVertex,shared.getCloud()));
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("getTopology: added port: {}", shared.getCloud().getMacsInfo());
                     }
                 }
                 for (MacPort mp: portsWithoutNode) {
-                    OnmsTopologyPort   macPort = OnmsTopologyPort.create(cloudMacVertex, -1);
-                    macPort.setAddr(Topology.getAddress(mp));
-                    macPort.setPort(mp.printTopology());
+                    ports.add(create(macVertex, mp));
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("getTopology: added port: {}", mp.getPortMacInfo());
                     }
-                    ports.add(macPort);
                 }
             }
             OnmsTopologyShared edge = OnmsTopologyShared.create(
