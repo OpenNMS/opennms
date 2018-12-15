@@ -248,7 +248,7 @@ public class NodeMapsApplication extends UI {
         Assert.notNull(m_nodeTable);
 
         final String searchString = vaadinRequest.getParameter("search");
-        final Integer maxClusterRadius = Integer.getInteger("gwt.maxClusterRadius", 350);
+        final Integer maxClusterRadius = SystemProperties.getInteger("gwt.maxClusterRadius", 350);
         LOG.info("Starting search string: {}, max cluster radius: {}", searchString, maxClusterRadius);
 
         m_alarmTable.setVaadinApplicationContext(context);
