@@ -33,6 +33,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.utils.SystemProperties;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.springframework.beans.factory.InitializingBean;
@@ -55,7 +56,7 @@ public class AlarmBoxController extends AbstractController implements Initializi
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        int rows = Integer.getInteger("opennms.nodesWithProblems.count", ROWS);
+        int rows = SystemProperties.getInteger("opennms.nodesWithProblems.count", ROWS);
         final String parm = request.getParameter("alarmCount");
         if (parm != null) {
             try {

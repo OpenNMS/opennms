@@ -62,7 +62,7 @@ public class JexlIndexStorageStrategy extends IndexStorageStrategy {
     private final Map<String, String> m_parameters;
 
     static {
-        final int cacheSize = Integer.getInteger("org.opennms.netmgt.dao.support.JEXLIndexStorageStrategy.cacheSize", DEFAULT_JEXLENGINE_CACHESIZE);
+        final int cacheSize = SystemProperties.getInteger("org.opennms.netmgt.dao.support.JEXLIndexStorageStrategy.cacheSize", DEFAULT_JEXLENGINE_CACHESIZE);
         JEXL_ENGINE = new JexlEngine();
         JEXL_ENGINE.setCache(cacheSize);
         JEXL_ENGINE.setLenient(false);

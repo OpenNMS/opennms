@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.concurrent.locks.Lock;
 
 import org.hibernate.Hibernate;
+import org.opennms.core.utils.SystemProperties;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.eventd.EventUtil;
@@ -63,7 +64,7 @@ import com.google.common.util.concurrent.Striped;
 public class AlarmPersisterImpl implements AlarmPersister {
     private static final Logger LOG = LoggerFactory.getLogger(AlarmPersisterImpl.class);
 
-    protected static final Integer NUM_STRIPE_LOCKS = Integer.getInteger("org.opennms.alarmd.stripe.locks", Alarmd.THREADS * 4);
+    protected static final Integer NUM_STRIPE_LOCKS = SystemProperties.getInteger("org.opennms.alarmd.stripe.locks", Alarmd.THREADS * 4);
 
     private AlarmDao m_alarmDao;
     private EventDao m_eventDao;
