@@ -30,6 +30,7 @@ package org.opennms.netmgt.model;
 
 import java.util.Optional;
 
+@ReadOnlyEntity
 public class CdpElementTopologyEntity {
     private final Integer id;
     private final String cdpGlobalDeviceId;

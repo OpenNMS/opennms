@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.model;
 
+@ReadOnlyEntity
 public class LldpElementTopologyEntity {
     private final Integer id;
     private final String lldpChassisId;

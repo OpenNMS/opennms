@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.model;
 
+@ReadOnlyEntity
 public class IsIsElementTopologyEntity {
     private final Integer id;
     private final String isisSysID;
