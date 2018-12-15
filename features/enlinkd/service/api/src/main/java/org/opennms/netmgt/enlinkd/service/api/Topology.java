@@ -132,8 +132,7 @@ public interface Topology {
 
     public static String getToolTipText(MacCloud cloud, List<MacPort> ports) {
         final StringBuilder tooltipText = new StringBuilder();
-        tooltipText.append(getId(cloud));
-        tooltipText.append(": ");
+        tooltipText.append("shared addresses: ");
         tooltipText.append("(");
         tooltipText.append(getAddress(cloud, ports));
         tooltipText.append(")");

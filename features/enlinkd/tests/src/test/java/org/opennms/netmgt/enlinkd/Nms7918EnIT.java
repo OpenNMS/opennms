@@ -52,6 +52,7 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.STCASW01_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.STCASW01_SNMP_RESOURCE;
 
 import java.net.InetAddress;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -66,9 +67,11 @@ import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
+import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms7918NetworkBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
+import org.opennms.netmgt.topologies.service.impl.OnmsTopologyLogger;
 /*
  * 
  * 
@@ -1050,6 +1053,21 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         topology.getEdges().stream().forEach(e -> System.err.println("edge"+e.getId()));
         assertEquals(12, topology.getVertices().size());
         assertEquals(7, topology.getEdges().size());
+        
+        Set<String> protocols= new HashSet<>();
+        protocols.add(ProtocolSupported.BRIDGE.name());
+        OnmsTopologyLogger tl = createAndSubscribe(
+                  ProtocolSupported.BRIDGE.name(),m_linkd);
+        assertEquals(protocols+":Consumer:Logger", tl.getName());
+                
+        System.err.println("--------Printing new start----------");
+        m_linkd.runTopologyUpdater(ProtocolSupported.BRIDGE);
+        System.err.println("--------Printing new end----------");
+
+        OnmsTopology lldptopo2 = m_topologyDao.getTopology(ProtocolSupported.BRIDGE.name());
+        assertEquals(12, lldptopo2.getVertices().size());
+        assertEquals(7, lldptopo2.getEdges().size());
+
 
     }
 

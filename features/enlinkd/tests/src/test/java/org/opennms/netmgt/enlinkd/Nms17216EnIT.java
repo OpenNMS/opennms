@@ -105,13 +105,7 @@ import org.opennms.netmgt.topologies.service.impl.OnmsTopologyLogger;
 
 public class Nms17216EnIT extends EnLinkdBuilderITCase {
         
-    public static OnmsTopologyLogger createAndSubscribe(String protocol, EnhancedLinkd linkd) {
-        OnmsTopologyLogger tl = new OnmsTopologyLogger(protocol);
-        linkd.getOnmsTopologyDao().subscribe(tl);
-        return tl;
-    }
-
-	Nms17216NetworkBuilder builder = new Nms17216NetworkBuilder();    
+    Nms17216NetworkBuilder builder = new Nms17216NetworkBuilder();    
     /*
      * These are the links among the following nodes discovered using 
      * only the lldp protocol
@@ -791,7 +785,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         
         Set<String> protocols= new HashSet<>();
         protocols.add(ProtocolSupported.CDP.name());
-        OnmsTopologyLogger tl = createAndSubscribe(
+        OnmsTopologyLogger tl = EnLinkdBuilderITCase.createAndSubscribe(
                   ProtocolSupported.CDP.name(),m_linkd);
         assertEquals(protocols+":Consumer:Logger", tl.getName());
                 
@@ -866,7 +860,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         
         Set<String> protocols= new HashSet<>();
         protocols.add(ProtocolSupported.LLDP.name());
-        OnmsTopologyLogger tl = createAndSubscribe(
+        OnmsTopologyLogger tl = EnLinkdBuilderITCase.createAndSubscribe(
                   ProtocolSupported.LLDP.name(),m_linkd);
         assertEquals(protocols+":Consumer:Logger", tl.getName());
                 
