@@ -145,6 +145,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
     /** {@inheritDoc} */
     @Override
     public void onEvent(Event e) {
+        final String eventString = LOG.isDebugEnabled() ? EventUtils.toString(e) : e.getUuid();
 
         if (isReloadConfigEvent(e)) {
             handleReloadEvent(e);
@@ -158,19 +159,19 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
 
         List<Event> translated = m_config.translateEvent(e);
         if (translated != null) {
-            if (translated.isEmpty()) {
-                LOG.debug("onEvent: received event that matches no translations: \n", EventUtils.toString(e));
+            if (translated.isEmpty() && LOG.isDebugEnabled()) {
+                LOG.debug("onEvent: received event that matches no translations: {}", eventString);
                 return;
             }
-
-            LOG.debug("onEvent: received valid registered translation event: \n", EventUtils.toString(e));
+            if (LOG.isDebugEnabled())
+            LOG.debug("onEvent: received valid registered translation event: {}", eventString);
 
             Log log = new Log();
             Events events = new Events();
             for (Iterator<Event> iter = translated.iterator(); iter.hasNext();) {
                 Event event = iter.next();
                 events.addEvent(event);
-                LOG.debug("onEvent: sended translated event: \n", EventUtils.toString(event));
+                LOG.debug("onEvent: sended translated event: {}", eventString);
             }
             log.setEvents(events);
             getEventManager().sendNow(log);
