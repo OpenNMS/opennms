@@ -1234,6 +1234,11 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         m_situation = !m_associatedAlarms.isEmpty();
     }
 
+    public void removeRelatedAlarmWithId(Integer relatedAlarmId) {
+        m_associatedAlarms.removeIf(associatedAlarm -> associatedAlarm.getRelatedAlarm().getId().equals(relatedAlarmId));
+        m_situation = !m_associatedAlarms.isEmpty();
+    }
+
     @XmlTransient
     @Formula(value = "(SELECT COUNT(*)>0 FROM ALARM_SITUATIONS S WHERE S.SITUATION_ID=ALARMID)")
     public boolean isSituation() {
