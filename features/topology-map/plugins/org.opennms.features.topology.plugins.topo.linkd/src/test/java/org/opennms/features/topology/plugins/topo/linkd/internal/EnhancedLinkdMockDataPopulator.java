@@ -725,7 +725,7 @@ public class EnhancedLinkdMockDataPopulator {
     public List<IpInterfaceTopologyEntity> getIpInterfaceTopologyEntities() {
         List<IpInterfaceTopologyEntity> elements = new ArrayList<>();
         for (OnmsIpInterface ipInterface : getOnmsIpInterfaces()) {
-            elements.add(IpInterfaceTopologyEntity.toIpInterfaceTopologyEntity(ipInterface));
+            elements.add(IpInterfaceTopologyEntity.create(ipInterface));
         }
         return elements;
     }
@@ -741,7 +741,7 @@ public class EnhancedLinkdMockDataPopulator {
     private List<SnmpInterfaceTopologyEntity> getSnmpInterfaceTopologyEntities(){
         List<SnmpInterfaceTopologyEntity> elements = new ArrayList<>();
         for (OnmsSnmpInterface ipInterface : getOnmsSnmpInterfaces()) {
-            elements.add(SnmpInterfaceTopologyEntity.toSnmpInterfaceTopologyEntity(ipInterface));
+            elements.add(SnmpInterfaceTopologyEntity.create(ipInterface));
         }
         return elements;
     }

@@ -51,15 +51,12 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.dao.api.CdpElementDao;
 import org.opennms.netmgt.dao.api.TopologyEntityCache;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.IpNetToMediaDao;
 import org.opennms.netmgt.dao.api.IsIsElementDao;
 import org.opennms.netmgt.dao.api.IsIsLinkDao;
 import org.opennms.netmgt.dao.api.LldpElementDao;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLinkTopologyEntity;
@@ -70,9 +67,7 @@ import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsLinkTopologyEntity;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLinkTopologyEntity;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.NodeTopologyEntity;
@@ -120,10 +115,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private static Logger LOG = LoggerFactory.getLogger(LinkdTopologyProvider.class);
 
     private TransactionOperations m_transactionOperations;
-    private NodeDao m_nodeDao;
     private TopologyEntityCache m_topologyEntityCache;
-    private SnmpInterfaceDao m_snmpInterfaceDao;
-    private IpInterfaceDao m_ipInterfaceDao;
     private TopologyDao m_topologyDao;
     private FilterManager m_filterManager;
 
@@ -725,32 +717,12 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         m_transactionOperations = transactionOperations;
     }
 
-    public SnmpInterfaceDao getSnmpInterfaceDao() {
-        return m_snmpInterfaceDao;
-    }
-
-    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
-        m_snmpInterfaceDao = snmpInterfaceDao;
-    }
-
-    public NodeDao getNodeDao() {
-        return m_nodeDao;
-    }
-
-    public void setNodeDao(NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
-    }
-
     public TopologyEntityCache getTopologyEntityCache() {
         return m_topologyEntityCache;
     }
 
     public void setTopologyEntityCache(TopologyEntityCache topologyEntityCache) {
         m_topologyEntityCache = topologyEntityCache;
-    }
-
-    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
-        m_ipInterfaceDao = ipInterfaceDao;
     }
 
     public void setTopologyDao(TopologyDao topologyDao) {
@@ -763,10 +735,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     public FilterManager getFilterManager() {
         return m_filterManager;
-    }
-
-    public IpInterfaceDao getIpInterfaceDao() {
-        return m_ipInterfaceDao;
     }
 
     public void setLldpLinkDao(LldpLinkDao lldpLinkDao) {

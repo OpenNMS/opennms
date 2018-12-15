@@ -31,10 +31,7 @@ package org.opennms.netmgt.model;
 import java.net.InetAddress;
 import java.util.Optional;
 
-/**
- * This is NOT a Hibernate/JPA entity but rather a lightweight model without less attributes than CdpLink and no lazy
- * loading. We use it to retrieve interface information from the database fast.
- */
+@ReadOnlyEntity
 public class IpInterfaceTopologyEntity {
     private final Integer id;
     private final InetAddress ipAddress;
@@ -54,7 +51,7 @@ public class IpInterfaceTopologyEntity {
         this.snmpInterfaceId = snmpInterfaceId;
     }
 
-    public static IpInterfaceTopologyEntity toIpInterfaceTopologyEntity(OnmsIpInterface ipInterface) {
+    public static IpInterfaceTopologyEntity create(OnmsIpInterface ipInterface) {
         return new IpInterfaceTopologyEntity(
                 ipInterface.getId(),
                 ipInterface.getIpAddress(),
