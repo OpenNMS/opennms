@@ -43,16 +43,20 @@ import org.opennms.features.graphml.model.GraphMLNode;
 import org.opennms.features.graphml.model.GraphMLWriter;
 import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 @Path("topologies")
 public class TopologiesRestService {
-    
+
+    private static final Logger LOG = LoggerFactory.getLogger(TopologiesRestService.class);
+
     @Autowired
     private OnmsTopologyDao m_topologyDao;
 
@@ -72,13 +76,19 @@ public class TopologiesRestService {
     @GET
     @Path("{supported-protocol}")
     @Produces({MediaType.APPLICATION_XML})
-    public Response getGraph(@PathParam("supported-protocol") String supportedProtocol) throws InvalidGraphException,OnmsTopologyException {
+    public Response getGraph(@PathParam("supported-protocol") String supportedProtocol) {
         if (!m_topologyDao.getSupportedProtocols().contains(supportedProtocol)) {
             return Response
                     .status(Response.Status.NOT_FOUND)
                     .build();                
         }
-        return Response.ok(getGraphMl(supportedProtocol)).build();
+        try {
+            return Response.ok(getGraphMl(supportedProtocol)).build();
+        } catch (InvalidGraphException | OnmsTopologyException e) {
+            LOG.error("Failed to get graphML",e);
+        }
+        
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 
     // FIXME enrich the tooltip with address speed and attributes
@@ -112,8 +122,7 @@ public class TopologiesRestService {
                 gedge.setId(edge.getId());
                 gedge.setSource(graph.getNodeById(edge.getSource().getVertex().getId()));
                 gedge.setTarget(graph.getNodeById(edge.getTarget().getVertex().getId()));
-                gedge.setProperty(OnmsTopology.TOOLTIP_TEXT, edge.getSource().getPort()
-                        + edge.getTarget().getPort());
+                gedge.setProperty(OnmsTopology.TOOLTIP_TEXT, edge.getSource().getToolTipText() + "\n" + edge.getTarget().getToolTipText());
                 gedge.setProperty(OnmsTopology.SOURCE_IFINDEX,
                                   edge.getSource().getIndex());
                 gedge.setProperty(OnmsTopology.TARGET_IFINDEX,
@@ -126,14 +135,14 @@ public class TopologiesRestService {
                 gcloud.setProperty(OnmsTopology.NODE_ID, -1);
                 gcloud.setProperty(OnmsTopology.ICON_KEY, "cloud");
                 gcloud.setProperty(OnmsTopology.TOOLTIP_TEXT,
-                                   "shared segment ->" + shared.getId());
+                                   "shared segment: " + shared.getId());
                 shared.getSources().stream().forEach(port -> {
                     GraphMLEdge gedge = new GraphMLEdge();
                     gedge.setId(gcloud.getId() + "|" + port.getId());
                     gedge.setSource(gcloud);
                     gedge.setTarget(graph.getNodeById(port.getVertex().getId()));
                     gedge.setProperty(OnmsTopology.TOOLTIP_TEXT,
-                                      "connection to: " + port.getPort());
+                                      port.getToolTipText());
                     gedge.setProperty(OnmsTopology.SOURCE_IFINDEX, -1);
                     gedge.setProperty(OnmsTopology.TARGET_IFINDEX, port.getIndex());
                     graph.addEdge(gedge);

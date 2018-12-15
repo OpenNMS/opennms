@@ -82,15 +82,27 @@ public class TopologiesRestServiceIT extends AbstractSpringJerseyRestTestCase {
         if (topology == null) {
               topology= new OnmsTopology();
               try {
-                topology.getVertices().add(OnmsTopologyVertex.create("A", "vertexA", "addressA", "system"));
-                topology.getVertices().add(OnmsTopologyVertex.create("B", "vertexB", "addressB", "system"));
-                OnmsTopologyPort portA10 = OnmsTopologyPort.create(topology.getVertex("A"), 10);
-                portA10.setPort("Port A10");
+                topology.getVertices().add(OnmsTopologyVertex.create("1", "vertexA", "10.1.1.1", "system"));
+                OnmsTopologyVertex vertex1 = topology.getVertex("1");
+                vertex1.setNodeid(1);
+                vertex1.setToolTipText("prova tooltip nodo 1");
+
+                topology.getVertices().add(OnmsTopologyVertex.create("2", "vertexB", "10.1.1.2", "system"));
+                OnmsTopologyVertex vertex2 = topology.getVertex("2");
+                vertex2.setNodeid(2);
+                vertex2.setToolTipText("prova tooltip nodo 2");
+                
+                OnmsTopologyPort portA10 = OnmsTopologyPort.create("101",vertex1, 10);
+                portA10.setPort("Port10");
                 portA10.setAddr("ab00000010");
-                OnmsTopologyPort portB49 = OnmsTopologyPort.create(topology.getVertex("B"), 49);
-                portB49.setPort("Port B49");
+                portA10.setToolTipText("prova tooltip porta 10 nodo 1");
+                
+                OnmsTopologyPort portB49 = OnmsTopologyPort.create("102",vertex2, 49);
+                portB49.setPort("Port49");
                 portB49.setAddr("abc0000049");
-                topology.getEdges().add(OnmsTopologyEdge.create("A:B",portA10,portB49 ));
+                portB49.setToolTipText("prova tooltip porta 49 nodo 2");
+                
+                topology.getEdges().add(OnmsTopologyEdge.create("101|102",portA10,portB49 ));
                
             } catch (OnmsTopologyException e) {
                 e.printStackTrace();
@@ -133,7 +145,40 @@ public class TopologiesRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml.equals("1"));
         
         xml = sendRequest(GET, "/topologies/TESTREST",200);
-        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" xmlns:ns0=\"http://www.w3.org/1999/xlink\"><key id=\"namespace\" for=\"graph\" attr.name=\"namespace\" attr.type=\"string\"/><key id=\"label\" for=\"graph\" attr.name=\"label\" attr.type=\"string\"/><key id=\"label\" for=\"node\" attr.name=\"label\" attr.type=\"string\"/><key id=\"iconKey\" for=\"node\" attr.name=\"iconKey\" attr.type=\"string\"/><key id=\"sourceifindex\" for=\"edge\" attr.name=\"sourceifindex\" attr.type=\"int\"/><key id=\"tooltipText\" for=\"edge\" attr.name=\"tooltipText\" attr.type=\"string\"/><key id=\"targetifindex\" for=\"edge\" attr.name=\"targetifindex\" attr.type=\"int\"/><graph id=\"TESTREST\"><data key=\"namespace\">TESTREST</data><data key=\"label\">TESTREST Topology</data><node id=\"A\"><data key=\"label\">vertexA</data><data key=\"iconKey\">system</data></node><node id=\"B\"><data key=\"label\">vertexB</data><data key=\"iconKey\">system</data></node><edge id=\"A:B\" source=\"A\" target=\"B\"><data key=\"sourceifindex\">10</data><data key=\"tooltipText\">Port A10Port B49</data><data key=\"targetifindex\">49</data></edge></graph></graphml>", xml);
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" xmlns:ns0=\"http://www.w3.org/1999/xlink\">"
+                + "<key id=\"namespace\" for=\"graph\" attr.name=\"namespace\" attr.type=\"string\"/>"
+                + "<key id=\"label\" for=\"graph\" attr.name=\"label\" attr.type=\"string\"/>"
+                + "<key id=\"label\" for=\"node\" attr.name=\"label\" attr.type=\"string\"/>"
+                + "<key id=\"iconKey\" for=\"node\" attr.name=\"iconKey\" attr.type=\"string\"/>"
+                + "<key id=\"tooltipText\" for=\"node\" attr.name=\"tooltipText\" attr.type=\"string\"/>"
+                + "<key id=\"nodeID\" for=\"node\" attr.name=\"nodeID\" attr.type=\"int\"/>"
+                + "<key id=\"sourceifindex\" for=\"edge\" attr.name=\"sourceifindex\" attr.type=\"int\"/>"
+                + "<key id=\"tooltipText\" for=\"edge\" attr.name=\"tooltipText\" attr.type=\"string\"/>"
+                + "<key id=\"targetifindex\" for=\"edge\" attr.name=\"targetifindex\" attr.type=\"int\"/>"
+                + "<graph id=\"TESTREST\">"
+                    + "<data key=\"namespace\">TESTREST</data>"
+                    + "<data key=\"label\">TESTREST Topology</data>"
+                    + "<node id=\"1\">"
+                    +  "<data key=\"label\">vertexA</data>"
+                    +  "<data key=\"iconKey\">system</data>"
+                    +  "<data key=\"tooltipText\">prova tooltip nodo 1</data>"
+                    +  "<data key=\"nodeID\">1</data>"
+                    + "</node>"
+                    + "<node id=\"2\">"
+                    +  "<data key=\"label\">vertexB</data>"
+                    +  "<data key=\"iconKey\">system</data>"
+                    +  "<data key=\"tooltipText\">prova tooltip nodo 2</data>"
+                    +  "<data key=\"nodeID\">2</data>"
+                    + "</node>"
+                    + "<edge id=\"101|102\" source=\"1\" target=\"2\">"
+                    +  "<data key=\"sourceifindex\">10</data>"
+                    +  "<data key=\"tooltipText\">prova tooltip porta 10 nodo 1\nprova tooltip porta 49 nodo 2</data>"
+                    +  "<data key=\"targetifindex\">49</data>"
+                    + "</edge>"
+               + "</graph>"
+               + "</graphml>"
+               ,xml);
     }
 
 
