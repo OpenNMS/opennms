@@ -31,10 +31,12 @@ package org.opennms.netmgt.enlinkd.persistence.impl;
 import java.util.List;
 
 import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityDao;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -72,4 +74,19 @@ public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements T
                 "select new org.opennms.netmgt.model.OspfLinkTopologyEntity(l.id, l.node.id, l.ospfIpAddr, l.ospfRemIpAddr, l.ospfIfIndex) from org.opennms.netmgt.model.OspfLink l");
     }
 
+
+    @Override
+    public List<SnmpInterfaceTopologyEntity> getSnmpTopologyEntities() {
+        return (List<SnmpInterfaceTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.model.SnmpInterfaceTopologyEntity(" +
+                        "i.id, i.ifIndex, i.ifName, i.ifSpeed, i.node.id) from org.opennms.netmgt.model.OnmsSnmpInterface i");
+    }
+
+    @Override
+    public List<IpInterfaceTopologyEntity> getIpTopologyEntities() {
+        return (List<IpInterfaceTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.model.IpInterfaceTopologyEntity(" +
+                        "i.id, i.ipAddress, i.isManaged, i.isSnmpPrimary, i.node.id, i.snmpInterface.id) " +
+                        "from org.opennms.netmgt.model.OnmsIpInterface i");
+    }
 }

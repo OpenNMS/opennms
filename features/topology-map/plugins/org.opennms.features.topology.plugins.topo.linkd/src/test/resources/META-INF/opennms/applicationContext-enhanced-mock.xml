@@ -77,10 +77,7 @@
         <property name="lldpLinkDao" ref="lldpLinkDao" />
         <property name="lldpElementDao" ref="lldpElementDao" />
         <property name="ospfLinkDao" ref="ospfLinkDao" />
-        <property name="nodeDao" ref="nodeDao" />
         <property name="topologyEntityCache" ref="topologyEntityCache" />
-        <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
-        <property name="ipInterfaceDao" ref="ipInterfaceDao" />
         <property name="ipNetToMediaDao" ref="ipNetToMediaDao" />
     </bean>
 </beans>
