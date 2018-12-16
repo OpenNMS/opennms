@@ -51,9 +51,6 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.dao.api.TopologyEntityCache;
 import org.opennms.netmgt.dao.api.IpNetToMediaDao;
-import org.opennms.netmgt.dao.api.IsIsLinkDao;
-import org.opennms.netmgt.dao.api.LldpLinkDao;
-import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.model.CdpLinkTopologyEntity;
@@ -64,7 +61,6 @@ import org.opennms.netmgt.model.IsIsLinkTopologyEntity;
 import org.opennms.netmgt.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.model.IsIsElementTopologyEntity;
 import org.opennms.netmgt.model.LldpElementTopologyEntity;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.model.PrimaryType;
@@ -117,9 +113,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private TopologyDao m_topologyDao;
     private FilterManager m_filterManager;
 
-    private LldpLinkDao m_lldpLinkDao;
-    private OspfLinkDao m_ospfLinkDao;
-    private IsIsLinkDao m_isisLinkDao;
     private BridgeTopologyDao m_bridgeTopologyDao;
     private IpNetToMediaDao m_ipNetToMediaDao;
 
@@ -731,30 +724,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     public FilterManager getFilterManager() {
         return m_filterManager;
-    }
-
-    public void setLldpLinkDao(LldpLinkDao lldpLinkDao) {
-        m_lldpLinkDao = lldpLinkDao;
-    }
-
-    public LldpLinkDao getLldpLinkDao() {
-        return m_lldpLinkDao;
-    }
-
-    public void setOspfLinkDao(OspfLinkDao ospfLinkDao) {
-        m_ospfLinkDao = ospfLinkDao;
-    }
-
-    public OspfLinkDao getOspfLinkDao(){
-        return m_ospfLinkDao;
-    }
-
-    public IsIsLinkDao getIsisLinkDao() {
-        return m_isisLinkDao;
-    }
-
-    public void setIsisLinkDao(IsIsLinkDao isisLinkDao) {
-        m_isisLinkDao = isisLinkDao;
     }
 
     public BridgeTopologyDao getBridgeTopologyDao() {
