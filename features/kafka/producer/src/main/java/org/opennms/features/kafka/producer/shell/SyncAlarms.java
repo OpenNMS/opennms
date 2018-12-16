@@ -72,7 +72,6 @@ public class SyncAlarms implements Action {
             return null;
         }
 
-        final long systemMillisBeforeSnapshot = System.currentTimeMillis();
         return transactionOperations.execute(status -> {
             // Retrieve all of the alarms from the database
             final List<OnmsAlarm> alarmsInDb = alarmDao.findAll();
