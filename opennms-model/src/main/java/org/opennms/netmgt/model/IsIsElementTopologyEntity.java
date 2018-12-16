@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.model;
 
+import java.util.Optional;
+
 @ReadOnlyEntity
 public class IsIsElementTopologyEntity {
     private final Integer id;
@@ -38,6 +40,13 @@ public class IsIsElementTopologyEntity {
         this.id = id;
         this.isisSysID = isisSysID;
         this.nodeId = nodeId;
+    }
+
+    public static IsIsElementTopologyEntity create(IsIsElement element){
+        return new IsIsElementTopologyEntity(
+                element.getId(),
+                element.getIsisSysID(),
+                Optional.ofNullable(element.getNode()).map(OnmsNode::getId).orElse(null));
     }
 
     public Integer getId() {

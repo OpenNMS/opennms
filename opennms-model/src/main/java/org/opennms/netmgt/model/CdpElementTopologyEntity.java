@@ -42,7 +42,7 @@ public class CdpElementTopologyEntity {
         this.nodeId = nodeId;
     }
 
-    public static CdpElementTopologyEntity toCdpElementTopologyEntity(CdpElement element){
+    public static CdpElementTopologyEntity create(CdpElement element){
         return new CdpElementTopologyEntity(
                 element.getId(),
                 element.getCdpGlobalDeviceId(),
