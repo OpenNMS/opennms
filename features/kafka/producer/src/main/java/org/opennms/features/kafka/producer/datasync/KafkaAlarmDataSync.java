@@ -193,7 +193,7 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
     }
 
     @Override
-    public synchronized AlarmSyncResults handleAlarmSnapshot(List<OnmsAlarm> alarms, long systemMillisBeforeSnapshot) {
+    public synchronized AlarmSyncResults handleAlarmSnapshot(List<OnmsAlarm> alarms) {
         if (!isReady()) {
             LOG.debug("Alarm store is not ready yet. Skipping synchronization.");
             return null;
@@ -219,20 +219,18 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
 
             // Grab a reference to the state tracker
             final AlarmCallbackStateTracker stateTracker = kafkaProducer.getAlarmCallbackStateTracker();
-            // Remove entries from state tracking that happened before the snapshot
-            stateTracker.expireEntriesBefore(systemMillisBeforeSnapshot);
 
             // Push deletes for keys that are in the ktable, but not in the database
             final Set<String> reductionKeysNotInDb = Sets.difference(reductionKeysInKtable, reductionKeysInDb).stream()
                     // Only remove it if the alarm we have dates before the snapshot
-                    .filter(reductionKey -> !stateTracker.wasAlarmWithReductionKeyUpdatedOnOrAfter(reductionKey, systemMillisBeforeSnapshot))
+                    .filter(reductionKey -> !stateTracker.wasAlarmWithReductionKeyUpdated(reductionKey))
                     .collect(Collectors.toSet());
             reductionKeysNotInDb.forEach(rkey -> kafkaProducer.handleDeletedAlarm((int)alarmsInKtableByReductionKey.get(rkey).getId(), rkey));
 
             // Push new entries for keys that are in the database, but not in the ktable
             final Set<String> reductionKeysNotInKtable = Sets.difference(reductionKeysInDb, reductionKeysInKtable).stream()
                     // Unless we've deleted the alarm after the snapshot time
-                    .filter(reductionKey -> !stateTracker.wasAlarmWithReductionKeyDeletedOnOrAfter(reductionKey, systemMillisBeforeSnapshot))
+                    .filter(reductionKey -> !stateTracker.wasAlarmWithReductionKeyDeleted(reductionKey))
                     .collect(Collectors.toSet());
             reductionKeysNotInKtable.forEach(rkey -> kafkaProducer.handleNewOrUpdatedAlarm(alarmsInDbByReductionKey.get(rkey)));
 
@@ -241,7 +239,7 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
             final Set<String> commonReductionKeys = Sets.intersection(reductionKeysInKtable, reductionKeysInDb);
             commonReductionKeys.forEach(rkey -> {
                 // Don't bother updating the alarm if the one we we have is more recent than the snapshot
-                if (stateTracker.wasAlarmWithReductionKeyUpdatedOnOrAfter(rkey, systemMillisBeforeSnapshot)) {
+                if (stateTracker.wasAlarmWithReductionKeyUpdated(rkey)) {
                     return;
                 }
 

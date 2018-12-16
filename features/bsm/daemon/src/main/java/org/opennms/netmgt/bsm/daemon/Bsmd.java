@@ -115,7 +115,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     }
 
     @Override
-    public void handleAlarmSnapshot(List<OnmsAlarm> alarms, long systemMillisBeforeSnapshot) {
+    public void handleAlarmSnapshot(List<OnmsAlarm> alarms) {
         final List<AlarmWrapper> wrappedAlarms = alarms.stream()
                 .map(AlarmWrapperImpl::new)
                 .collect(Collectors.toList());
@@ -127,7 +127,12 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     }
 
     @Override
-    public void postHandleAlarmSnapshot(long systemMillisBeforeSnapshot) {
+    public void preHandleAlarmSnapshot() {
+        // pass, nothing to do here
+    }
+
+    @Override
+    public void postHandleAlarmSnapshot() {
         // pass, nothing to do here
     }
 

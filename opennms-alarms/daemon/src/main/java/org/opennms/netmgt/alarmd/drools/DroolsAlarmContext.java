@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
@@ -104,13 +105,15 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 
     @Override
     public void onStart() {
-        final Thread t = new Thread(() -> {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final Thread seedThread = new Thread(() -> {
             // Seed the engine with the current set of alarms asynchronously
             // We do this async since we don't want to block the whole system from starting up
             // while we wait on the database (particularly for systems with large amounts of alarms)
-            final long now = System.currentTimeMillis();
             getLock().lock();
+            latch.countDown();
             try {
+                preHandleAlarmSnapshot();
                 template.execute(new TransactionCallbackWithoutResult() {
                     @Override
                     protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -118,20 +121,40 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                         final List<OnmsAlarm> allAlarms = alarmDao.findAll();
                         LOG.info("Done loading {} alarms.", allAlarms.size());
                         // Leverage the existing snapshot processing function to see the engine
-                        handleAlarmSnapshot(allAlarms, now);
+                        handleAlarmSnapshot(allAlarms);
                     }
                 });
             } finally {
-                postHandleAlarmSnapshot(now);
+                postHandleAlarmSnapshot();
                 getLock().unlock();
             }
         });
-        t.setName("DroolAlarmContext-InitialSeed");
-        t.start();
+        seedThread.setName("DroolAlarmContext-InitialSeed");
+        seedThread.start();
+
+        try {
+            // Wait until the seed thread has acquired the session lock before returning
+            latch.await();
+        } catch (InterruptedException e) {
+            LOG.warn("Interrupted while waiting for seed thread to acquire session lock. "
+                    + "The engine may not have a complete view of the state on startup.");
+        }
     }
 
     @Override
-    public void handleAlarmSnapshot(List<OnmsAlarm> alarms, long systemMillisBeforeSnapshot) {
+    public void preHandleAlarmSnapshot() {
+        getLock().lock();
+        try {
+            // Start tracking alarm callbacks via the state tracker
+            // Do this while holding on a lock to make sure that we don't miss a callback that's in flight
+            stateTracker.startTrackingAlarms();
+        } finally {
+            getLock().unlock();
+        }
+    }
+
+    @Override
+    public void handleAlarmSnapshot(List<OnmsAlarm> alarms) {
         if (!isStarted()) {
             LOG.debug("Ignoring alarm snapshot. Drools session is stopped.");
             return;
@@ -149,20 +172,17 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         final Set<Integer> alarmIdsInDb = alarmsInDbById.keySet();
         final Set<Integer> alarmIdsInWorkingMem = alarmsById.keySet();
 
-        // Remove deleted alarm entries that happened before the snapshot
-        stateTracker.expireEntriesBefore(systemMillisBeforeSnapshot);
-
         final Set<Integer> alarmIdsToAdd = Sets.difference(alarmIdsInDb, alarmIdsInWorkingMem).stream()
                 // The snapshot contains an alarm which we don't have in working memory.
                 // It is possible that the alarm was in fact deleted some time after the
                 // snapshot was processed. We should only add it, if we did not explicitly
                 // delete the alarm after the snapshot was taken.
-                .filter(alarmId -> !stateTracker.wasAlarmWithIdDeletedOnOrAfter(alarmId, systemMillisBeforeSnapshot))
+                .filter(alarmId -> !stateTracker.wasAlarmWithIdDeleted(alarmId))
                 .collect(Collectors.toSet());
         final Set<Integer> alarmIdsToRemove = Sets.difference(alarmIdsInWorkingMem, alarmIdsInDb).stream()
                 // We have an alarm in working memory that is not contained in the snapshot.
                 // Only remove it from memory if the fact we have dates before the snapshot.
-                .filter(alarmId -> !stateTracker.wasAlarmWithIdUpdatedOnOrAfter(alarmId, systemMillisBeforeSnapshot))
+                .filter(alarmId -> !stateTracker.wasAlarmWithIdUpdated(alarmId))
                 .collect(Collectors.toSet());
         final Set<Integer> alarmIdsToUpdate = Sets.intersection(alarmIdsInWorkingMem, alarmIdsInDb).stream()
                 // This stream contains the set of all alarms which are both in the snapshot
@@ -170,7 +190,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                 .filter(alarmId -> {
                     final AlarmAndFact alarmAndFact = alarmsById.get(alarmId);
                     // Don't bother updating the alarm in memory if the fact we have is more recent than the snapshot
-                    if (stateTracker.wasAlarmWithIdUpdatedOnOrAfter(alarmId, systemMillisBeforeSnapshot)) {
+                    if (stateTracker.wasAlarmWithIdUpdated(alarmId)) {
                         return false;
                     }
                     final OnmsAlarm alarmInMem = alarmAndFact.getAlarm();
@@ -214,7 +234,8 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     }
 
     @Override
-    public void postHandleAlarmSnapshot(long systemMillisBeforeSnapshot) {
+    public void postHandleAlarmSnapshot() {
+        stateTracker.resetStateAndStopTrackingAlarms();
         final ReentrantLock lock = getLock();
         if (lock.isHeldByCurrentThread()) {
             lock.unlock();

@@ -107,7 +107,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private final AlarmEqualityChecker alarmEqualityChecker =
             AlarmEqualityChecker.with(AlarmEqualityChecker.Exclusions::defaultExclusions);
 
-    private final AlarmCallbackStateTracker alarmCallbackStateTracker = new AlarmCallbackStateTracker();
+    private final AlarmCallbackStateTracker stateTracker = new AlarmCallbackStateTracker();
 
     private int kafkaSendQueueCapacity;
     private BlockingQueue<KafkaRecord> kafkaSendQueue;
@@ -366,17 +366,22 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     }
 
     @Override
-    public void handleAlarmSnapshot(List<OnmsAlarm> alarms, long systemMillisBeforeSnapshot) {
+    public void handleAlarmSnapshot(List<OnmsAlarm> alarms) {
         if (!forwardAlarms || dataSync == null) {
             // Ignore
             return;
         }
-        dataSync.handleAlarmSnapshot(alarms, systemMillisBeforeSnapshot);
+        dataSync.handleAlarmSnapshot(alarms);
     }
 
     @Override
-    public void postHandleAlarmSnapshot(long systemMillisBeforeSnapshot) {
-        // nothing to do here
+    public void preHandleAlarmSnapshot() {
+        stateTracker.startTrackingAlarms();
+    }
+
+    @Override
+    public void postHandleAlarmSnapshot() {
+        stateTracker.resetStateAndStopTrackingAlarms();
     }
 
     @Override
@@ -386,7 +391,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             return;
         }
         updateAlarm(alarm.getReductionKey(), alarm);
-        alarmCallbackStateTracker.trackNewOrUpdatedAlarm(alarm.getId(), alarm.getReductionKey());
+        stateTracker.trackNewOrUpdatedAlarm(alarm.getId(), alarm.getReductionKey());
     }
 
     @Override
@@ -396,7 +401,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             return;
         }
         handleDeletedAlarm(reductionKey);
-        alarmCallbackStateTracker.trackDeletedAlarm(alarmId, reductionKey);
+        stateTracker.trackDeletedAlarm(alarmId, reductionKey);
     }
 
     private void handleDeletedAlarm(String reductionKey) {
@@ -475,7 +480,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     }
 
     public AlarmCallbackStateTracker getAlarmCallbackStateTracker() {
-        return alarmCallbackStateTracker;
+        return stateTracker;
     }
 
     public void setKafkaSendQueueCapacity(int kafkaSendQueueCapacity) {

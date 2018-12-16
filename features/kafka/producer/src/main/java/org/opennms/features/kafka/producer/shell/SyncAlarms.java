@@ -78,7 +78,7 @@ public class SyncAlarms implements Action {
             final List<OnmsAlarm> alarmsInDb = alarmDao.findAll();
             System.out.println("Performing synchronization of alarms from the database with those in the ktable.");
             final long start = System.currentTimeMillis();
-            final AlarmSyncResults results = alarmDataStore.handleAlarmSnapshot(alarmsInDb, systemMillisBeforeSnapshot);
+            final AlarmSyncResults results = alarmDataStore.handleAlarmSnapshot(alarmsInDb);
             final long delay = System.currentTimeMillis() - start;
             System.out.printf("Executed %d updates in %dms.\n\n", results.getNumUpdates(), delay);
 

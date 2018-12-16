@@ -106,6 +106,12 @@ public class DroolsAlarmContextIT {
         dac.setAlarmService(alarmService);
 
         dac.start();
+
+        // Wait until the seed thread has completed - it will hold the session lock
+        // after start returns, so it is sufficient to wait until we can acquire
+        // that same lock ourselves
+        dac.getLock().lock();
+        dac.getLock().unlock();
     }
 
     @After

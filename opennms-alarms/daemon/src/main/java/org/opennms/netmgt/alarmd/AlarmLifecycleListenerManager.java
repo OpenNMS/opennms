@@ -104,6 +104,7 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
         final long systemMillisBeforeSnasphot = System.currentTimeMillis();
         final AtomicLong systemMillisAfterLoad = new AtomicLong(-1);
         try {
+            forEachListener(AlarmLifecycleListener::preHandleAlarmSnapshot);
             template.execute(new TransactionCallbackWithoutResult() {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -114,7 +115,7 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
                     systemMillisAfterLoad.set(System.currentTimeMillis());
                     forEachListener(l -> {
                         LOG.debug("Calling handleAlarmSnapshot on listener: {}", l);
-                        l.handleAlarmSnapshot(allAlarms, systemMillisBeforeSnasphot);
+                        l.handleAlarmSnapshot(allAlarms);
                         LOG.debug("Done calling listener.");
                     });
                 }
@@ -128,7 +129,7 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
                         systemMillisAfterLoad.get() - systemMillisBeforeSnasphot,
                         now - systemMillisBeforeSnasphot);
             }
-            forEachListener(l -> l.postHandleAlarmSnapshot(systemMillisBeforeSnasphot));
+            forEachListener(AlarmLifecycleListener::postHandleAlarmSnapshot);
         }
     }
 

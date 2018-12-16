@@ -48,9 +48,8 @@ public interface AlarmLifecycleListener {
      * in the database.
      *
      * Note that it is possible that the *current* state of alarms is different from the state
-     * at the time at which the snapshot was taken. For this reason, we include the timestamp
-     * of the system before the transaction to enumerate the alarms was open. Implementations
-     * should take this in consideration when performing any state synchronization.
+     * at the time at which the snapshot was taken. Implementations should take this in consideration
+     * when performing any state synchronization.
      *
      * This method will be called while the related session & transaction that created
      * the alarm are still open.
@@ -59,9 +58,17 @@ public interface AlarmLifecycleListener {
      * blocking when possible.
      *
      * @param alarms canonical set of alarms in the database
-     * @param systemMillisBeforeSnapshot time at which the set of alarms were read from the database
      */
-    void handleAlarmSnapshot(List<OnmsAlarm> alarms, long systemMillisBeforeSnapshot);
+    void handleAlarmSnapshot(List<OnmsAlarm> alarms);
+
+    /**
+     * Called before the transaction is opened and the alarms are read for subsequent
+     * calls to {@link #handleAlarmSnapshot}.
+     *
+     * This can be used to trigger any necessary state tracking to accurately handle
+     * the snapshot results.
+     */
+    void preHandleAlarmSnapshot();
 
     /**
      * Called after {@link #handleAlarmSnapshot} has been called on all the listeners, and
@@ -69,11 +76,8 @@ public interface AlarmLifecycleListener {
      *
      * This can be used to trigger any necessary post-processing of the results one
      * the related session has been closed.
-     *
-     * @param systemMillisBeforeSnapshot time at which the set of alarms from the last snapshot
-     *                                   were read from the database
      */
-    void postHandleAlarmSnapshot(long systemMillisBeforeSnapshot);
+    void postHandleAlarmSnapshot();
 
     /**
      * Called when an alarm has been created or updated.

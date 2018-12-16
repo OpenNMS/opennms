@@ -70,7 +70,7 @@ public class AlarmLifecycleListenerManagerSnapshotTest {
 
         AlarmLifecycleListener listener = new AlarmLifecycleListener() {
             @Override
-            public void handleAlarmSnapshot(List<OnmsAlarm> alarms, long systemMillisBeforeSnasphot) {
+            public void handleAlarmSnapshot(List<OnmsAlarm> alarms) {
                 isProcessingSnapshot.countDown();
                 try {
                     // Sleep for some arbitrary amount of time, sufficient to invoke the callbacks
@@ -82,7 +82,12 @@ public class AlarmLifecycleListenerManagerSnapshotTest {
             }
 
             @Override
-            public void postHandleAlarmSnapshot(long systemMillisBeforeSnasphot) {
+            public void preHandleAlarmSnapshot() {
+                // pass
+            }
+
+            @Override
+            public void postHandleAlarmSnapshot() {
                 // pass
             }
 

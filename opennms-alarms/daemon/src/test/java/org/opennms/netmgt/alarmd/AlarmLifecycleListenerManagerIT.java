@@ -45,7 +45,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.junit.After;
 import org.junit.Before;
@@ -112,7 +111,7 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
 
     @Autowired
     private AlarmDao m_alarmDao;
-    
+
     @Autowired
     private AlarmPersisterImpl m_alarmPersisterImpl;
 
@@ -279,7 +278,7 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
         return () -> m_alarmsByReductionKey.get(reductionKeyForNodeUp(nodeId));
     }
     @Override
-    public synchronized void handleAlarmSnapshot(List<OnmsAlarm> alarms, long systemMillisBeforeSnasphot) {
+    public synchronized void handleAlarmSnapshot(List<OnmsAlarm> alarms) {
         m_snapshots.add(alarms);
         /* Don't actually update the map since we want to make sure that the
            values are updated through the other callbacks.
@@ -292,7 +291,12 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
     }
 
     @Override
-    public void postHandleAlarmSnapshot(long systemMillisBeforeSnasphot) {
+    public void preHandleAlarmSnapshot() {
+        // pass
+    }
+
+    @Override
+    public void postHandleAlarmSnapshot() {
         // pass
     }
 

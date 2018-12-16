@@ -29,71 +29,72 @@
 package org.opennms.netmgt.alarmd.api;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
 /**
  * This class can be used to help track callbacks issued via the {@link AlarmLifecycleListener}
- * in order to help simplify possible synchronization logic in {@link AlarmLifecycleListener#handleAlarmSnapshot(List, long)}.
- *
- * Calls to updates and deletes should be tracked using the track* methods.
- * expireEntriesBefore should be called when handling a snapshot to evict older state.
- * The was* methods can then be used to determine whehter or not a particular callback occured
- * since the snapshot was taken.
+ * in order to help simplify possible synchronization logic in {@link AlarmLifecycleListener#handleAlarmSnapshot(List)}.
  *
  * @author jwhite
  */
 public class AlarmCallbackStateTracker {
 
-    private final Map<Integer, Long> alarmsUpdatesById = new ConcurrentHashMap<>();
-    private final Map<String, Long> alarmsUpdatesByReductionKey = new ConcurrentHashMap<>();
+    private final Set<Integer> alarmsUpdatesById = new HashSet<>();
+    private final Set<String> alarmsUpdatesByReductionKey = new HashSet<>();
 
-    private final Map<Integer, Long> deletedAlarmsByAlarmId = new ConcurrentHashMap<>();
-    private final Map<String, Long> deletedAlarmsByReductionKey = new ConcurrentHashMap<>();
+    private final Set<Integer> deletedAlarmsByAlarmId = new HashSet<>();
+    private final Set<String> deletedAlarmsByReductionKey = new HashSet<>();
 
-    private final List<Map<?, Long>> maps = Arrays.asList(alarmsUpdatesById, alarmsUpdatesByReductionKey,
+    private final List<Set<?>> sets = Arrays.asList(alarmsUpdatesById, alarmsUpdatesByReductionKey,
             deletedAlarmsByAlarmId, deletedAlarmsByReductionKey);
 
-    public void trackNewOrUpdatedAlarm(int alarmId, String reductionKey) {
-        final long now = System.currentTimeMillis();
-        alarmsUpdatesById.put(alarmId, now);
-        alarmsUpdatesByReductionKey.put(reductionKey, now);
+    private boolean trackAlarms = false;
+
+    public synchronized void startTrackingAlarms() {
+        trackAlarms = true;
     }
 
-    public void trackDeletedAlarm(int alarmId, String reductionKey) {
-        final long now = System.currentTimeMillis();
-        deletedAlarmsByAlarmId.put(alarmId, now);
-        deletedAlarmsByReductionKey.put(reductionKey, now);
+    public synchronized void trackNewOrUpdatedAlarm(int alarmId, String reductionKey) {
+        if (!trackAlarms) {
+            return;
+        }
+        alarmsUpdatesById.add(alarmId);
+        alarmsUpdatesByReductionKey.add(reductionKey);
     }
 
-    public void expireEntriesBefore(long systemMillis) {
-        // Remove any entries from all of the maps that happened before the given time
-        maps.forEach(map -> map.values().removeIf(deletedAlarmAt -> deletedAlarmAt < systemMillis));
+    public synchronized void trackDeletedAlarm(int alarmId, String reductionKey) {
+        if (!trackAlarms) {
+            return;
+        }
+        deletedAlarmsByAlarmId.add(alarmId);
+        deletedAlarmsByReductionKey.add(reductionKey);
+    }
+
+    public synchronized void resetStateAndStopTrackingAlarms() {
+        trackAlarms = false;
+        sets.forEach(Set::clear);
     }
 
     // By ID
 
-    public boolean wasAlarmWithIdUpdatedOnOrAfter(int alarmId, long systemMillis) {
-        return isOnOrAfter(alarmsUpdatesById.get(alarmId), systemMillis);
+    public synchronized boolean wasAlarmWithIdUpdated(int alarmId) {
+        return alarmsUpdatesById.contains(alarmId);
     }
 
-    public boolean wasAlarmWithIdDeletedOnOrAfter(int alarmId, long systemMillis) {
-        return isOnOrAfter(deletedAlarmsByAlarmId.get(alarmId), systemMillis);
+    public synchronized boolean wasAlarmWithIdDeleted(int alarmId) {
+        return deletedAlarmsByAlarmId.contains(alarmId);
     }
 
     // By reduction key
 
-    public boolean wasAlarmWithReductionKeyUpdatedOnOrAfter(String reductionKey, long systemMillis) {
-        return isOnOrAfter(alarmsUpdatesByReductionKey.get(reductionKey), systemMillis);
+    public synchronized boolean wasAlarmWithReductionKeyUpdated(String reductionKey) {
+        return alarmsUpdatesByReductionKey.contains(reductionKey);
     }
 
-    public boolean wasAlarmWithReductionKeyDeletedOnOrAfter(String reductionKey, long systemMillis) {
-        return isOnOrAfter(deletedAlarmsByReductionKey.get(reductionKey), systemMillis);
-    }
-
-    private boolean isOnOrAfter(Long t1, long t2) {
-        return t1 != null && t1 > t2;
+    public synchronized boolean wasAlarmWithReductionKeyDeleted(String reductionKey) {
+        return deletedAlarmsByReductionKey.contains(reductionKey);
     }
 
 }
