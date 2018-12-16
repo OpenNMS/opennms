@@ -191,6 +191,7 @@ public class AcknowledgmentDaoIT implements InitializingBean {
     }
 
     @Test
+    @Transactional
     public void clearingSituationClearsRelatedAlarms() {
 
         OnmsAlarm alarm1 = new OnmsAlarm();

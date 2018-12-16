@@ -570,15 +570,15 @@ public class DroolsAlarmContextIT {
     @Test
     public void testAckCachingNoDBHit() {
         OnmsAlarm alarm1 = generateAlarm(1);
-        dac.handleNewOrUpdatedAlarm(alarm1);
-        verify(acknowledgmentDao, times(1)).findLatestAckForRefId(alarm1.getId());
-        assertThat(dac.getAckByAlarmId(alarm1.getId()).getAckAction(), equalTo(AckAction.UNACKNOWLEDGE));
-
         OnmsAlarm alarm2 = generateAlarm(2);
         dac.handleAlarmSnapshot(Arrays.asList(alarm1, alarm2));
         verify(acknowledgmentDao, times(1)).findLatestAcks();
         assertThat(dac.getAckByAlarmId(alarm1.getId()).getAckAction(), equalTo(AckAction.UNACKNOWLEDGE));
         assertThat(dac.getAckByAlarmId(alarm2.getId()).getAckAction(), equalTo(AckAction.UNACKNOWLEDGE));
+
+        dac.handleNewOrUpdatedAlarm(alarm1);
+        verify(acknowledgmentDao, times(1)).findLatestAckForRefId(alarm1.getId());
+        assertThat(dac.getAckByAlarmId(alarm1.getId()).getAckAction(), equalTo(AckAction.UNACKNOWLEDGE));
     }
 
     /**
@@ -590,20 +590,21 @@ public class DroolsAlarmContextIT {
         OnmsAcknowledgment ack1 = new OnmsAcknowledgment(alarm1, DefaultAlarmService.DEFAULT_USER,
                 alarm1.getFirstEventTime());
         ack1.setAckAction(AckAction.ACKNOWLEDGE);
-        when(acknowledgmentDao.findLatestAckForRefId(alarm1.getId())).thenReturn(Optional.of(ack1));
-        dac.handleNewOrUpdatedAlarm(alarm1);
-        verify(acknowledgmentDao, times(1)).findLatestAckForRefId(alarm1.getId());
-        assertThat(dac.getAckByAlarmId(alarm1.getId()).getAckAction(), equalTo(ack1.getAckAction()));
-
         OnmsAlarm alarm2 = generateAlarm(2);
         OnmsAcknowledgment ack2 = new OnmsAcknowledgment(alarm2, DefaultAlarmService.DEFAULT_USER,
                 alarm2.getFirstEventTime());
         ack2.setAckAction(AckAction.ESCALATE);
+
         when(acknowledgmentDao.findLatestAcks()).thenReturn(Arrays.asList(ack1, ack2));
         dac.handleAlarmSnapshot(Arrays.asList(alarm1, alarm2));
         verify(acknowledgmentDao, times(1)).findLatestAcks();
         assertThat(dac.getAckByAlarmId(alarm1.getId()).getAckAction(), equalTo(ack1.getAckAction()));
         assertThat(dac.getAckByAlarmId(alarm2.getId()).getAckAction(), equalTo(ack2.getAckAction()));
+
+        when(acknowledgmentDao.findLatestAckForRefId(alarm1.getId())).thenReturn(Optional.of(ack1));
+        dac.handleNewOrUpdatedAlarm(alarm1);
+        verify(acknowledgmentDao, times(1)).findLatestAckForRefId(alarm1.getId());
+        assertThat(dac.getAckByAlarmId(alarm1.getId()).getAckAction(), equalTo(ack1.getAckAction()));
     }
 
     private void printAlarmDetails(OnmsAlarm alarm) {
