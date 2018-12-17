@@ -28,7 +28,9 @@
 
 package org.opennms.mock.snmp;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.IOException;

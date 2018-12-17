@@ -28,7 +28,8 @@
 
 package org.opennms.netmgt.ticketd;
 
-import org.opennms.api.integration.ticketing.*;
+import org.opennms.api.integration.ticketing.Plugin;
+import org.opennms.api.integration.ticketing.Ticket;
 
 /**
  * OpenNMS Trouble Ticket Plugin API implementation used as a no-op when not custom

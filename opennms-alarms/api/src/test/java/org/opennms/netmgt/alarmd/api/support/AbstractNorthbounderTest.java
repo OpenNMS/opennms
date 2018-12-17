@@ -28,7 +28,10 @@
 
 package org.opennms.netmgt.alarmd.api.support;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -37,7 +40,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
-import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
 import org.opennms.netmgt.model.OnmsAlarm;
 
 /**

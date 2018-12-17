@@ -37,5 +37,12 @@
             <property name="option" value="top" />
             <property name="sortStaticImportsAlphabetically" value="true" />
         </module>
+
+        <!-- We avoid * imports from now on -->
+        <module name="AvoidStarImport">
+            <property name="excludes" value="java.io,java.net,java.lang.Math"/>
+            <property name="allowClassImports" value="false"/>
+            <property name="allowStaticMemberImports" value="false"/>
+        </module>
     </module>
 </module>

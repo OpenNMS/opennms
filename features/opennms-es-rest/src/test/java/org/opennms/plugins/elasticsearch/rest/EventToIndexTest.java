@@ -29,7 +29,7 @@ package org.opennms.plugins.elasticsearch.rest;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.opennms.plugins.elasticsearch.rest.EventToIndex.*;
+import static org.opennms.plugins.elasticsearch.rest.EventToIndex.isOID;
 
 import org.junit.Test;
 

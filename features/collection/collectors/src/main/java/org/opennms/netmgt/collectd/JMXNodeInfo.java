@@ -28,7 +28,10 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
