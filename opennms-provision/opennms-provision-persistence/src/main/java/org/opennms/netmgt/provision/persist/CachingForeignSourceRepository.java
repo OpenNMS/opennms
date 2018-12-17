@@ -42,7 +42,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
-import org.opennms.core.utils.SystemProperties;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.slf4j.Logger;
@@ -70,7 +69,7 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
     private ScheduledExecutorService m_executor;
 
     public CachingForeignSourceRepository() {
-        long refreshInterval = SystemProperties.getLong("org.opennms.netmgt.provision.persist.cacheRefreshInterval", 300000);
+        long refreshInterval = Long.getLong("org.opennms.netmgt.provision.persist.cacheRefreshInterval", 300000);
 
         final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
         executor.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);

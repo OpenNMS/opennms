@@ -34,7 +34,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.lang.StringUtils;
-import org.opennms.core.utils.SystemProperties;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -100,7 +99,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
 
         String levelString = System.getProperty("importer.adapter.dns.level");
         if (levelString != null) {
-        	Integer level = SystemProperties.getInteger(levelString);
+        	Integer level = Integer.getInteger(levelString);
         	if (level != null && level.intValue() > 0)
         		m_level = level;
         }

@@ -61,7 +61,6 @@ import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
-import org.opennms.core.utils.SystemProperties;
 import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
@@ -289,7 +288,7 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
         reverseLink.setLldpPortDescr(link.getLldpRemPortDescr());
         if (link.getLldpRemPortIdSubType() == LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL) {
             try {
-                reverseLink.setLldpPortIfindex(SystemProperties.getInteger(link.getLldpRemPortId()));
+                reverseLink.setLldpPortIfindex(Integer.getInteger(link.getLldpRemPortId()));
             } catch (Exception e) {
             }
         }

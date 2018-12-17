@@ -42,7 +42,6 @@ import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.SystemProperties;
 import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.mock.JdbcEventdServiceManager;
@@ -82,7 +81,7 @@ public class OpenNMSITCase {
 
     protected static boolean m_allowWarnings = false;
     protected static boolean m_runSupers = true;
-    public static int PROXY_PORT = SystemProperties.getInteger("proxy.port", 5837);
+    public static int PROXY_PORT = Integer.getInteger("proxy.port", 5837);
 
 
     /**
