@@ -45,27 +45,22 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.core.test.MockLogger;
 import org.opennms.core.utils.LldpUtils;
-import org.opennms.netmgt.model.CdpElement;
+import org.opennms.netmgt.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.model.CdpLinkTopologyEntity;
-import org.opennms.netmgt.model.IsIsElement;
+import org.opennms.netmgt.model.IsIsElementTopologyEntity;
 import org.opennms.netmgt.model.IsIsLinkTopologyEntity;
-import org.opennms.netmgt.model.LldpElement;
+import org.opennms.netmgt.model.LldpElementTopologyEntity;
 import org.opennms.netmgt.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.model.topology.Topology;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.net.InetAddresses;
 
 public class LinkdTopologyProviderTest {
 
-    private final static int AMOUNT_ELEMENTS = 20;
     private final static int AMOUNT_NODES = 5;
-
-    private final static Logger LOG = LoggerFactory.getLogger(LinkdTopologyProviderTest.class);
 
     private Random random;
     private LinkdTopologyProvider provider;
@@ -86,7 +81,7 @@ public class LinkdTopologyProviderTest {
         // 4 and 5 will match
 
         List<OnmsNode> nodes = createNodes(6);
-        List<IsIsElement> elements = Arrays.asList(
+        List<IsIsElementTopologyEntity> elements = Arrays.asList(
                 createIsIsElement(nodes.get(0), "nomatch0"),
                 createIsIsElement(nodes.get(1), "1.3"),
                 createIsIsElement(nodes.get(2), "nomatch1"),
@@ -116,7 +111,7 @@ public class LinkdTopologyProviderTest {
         // 4 and 5 will match
 
         List<OnmsNode> nodes = createNodes(6);
-        List<CdpElement> elements = Arrays.asList(
+        List<CdpElementTopologyEntity> elements = Arrays.asList(
                 createCdpElement(nodes.get(0), "Element0"),
                 createCdpElement(nodes.get(1), "match1.4"),
                 createCdpElement(nodes.get(2), "Element2"),
@@ -137,7 +132,6 @@ public class LinkdTopologyProviderTest {
         List<Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> matchedLinks = provider.matchCdpLinks(elements, allLinks);
 
         assertMatching(allLinks, matchedLinks);
-
     }
 
     @Test
@@ -169,7 +163,7 @@ public class LinkdTopologyProviderTest {
         // 4 and 5 will match
 
         List<OnmsNode> nodes = createNodes(6);
-        Map<Integer, LldpElement> elements = new HashMap<>();
+        Map<Integer, LldpElementTopologyEntity> elements = new HashMap<>();
         elements.put(0, createLldpElement(nodes.get(0), "Element0"));
         elements.put(1, createLldpElement(nodes.get(1), "match1.1"));
         elements.put(2, createLldpElement(nodes.get(2), "Element2"));
@@ -207,21 +201,8 @@ public class LinkdTopologyProviderTest {
         assertEquals(allLinks.get(5), matchedLinks.get(1).getRight());
     }
 
-    private Map<Integer, LldpElement> createLldpElements(List<OnmsNode> nodes) {
-        Map<Integer, LldpElement> elements = new HashMap<>();
-        for (int i = 0; i < AMOUNT_ELEMENTS; i++) {
-            LldpElement element = createLldpElement(getRandom(nodes), "Element"+i);
-            elements.put(element.getNode().getId(), element);
-        }
-        return elements;
-    }
-
-    private LldpElement createLldpElement(OnmsNode node, String lLdpChassisId) {
-        LldpElement element = new LldpElement();
-        element.setNode(node);
-        element.setLldpChassisId(lLdpChassisId);
-        element.setLldpChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_CHASSISCOMPONENT);
-        return element;
+    private LldpElementTopologyEntity createLldpElement(OnmsNode node, String lLdpChassisId) {
+        return new LldpElementTopologyEntity(0, lLdpChassisId, node.getId());
     }
 
     private LldpLinkTopologyEntity createLldpLink(int id, OnmsNode node, String portId, LldpUtils.LldpPortIdSubType portIdSubType
@@ -269,20 +250,8 @@ public class LinkdTopologyProviderTest {
         return nodes;
     }
 
-    private List<IsIsElement> createIsIsElements(List<OnmsNode> nodes) {
-        ArrayList<IsIsElement> elements = new ArrayList<>();
-        for (int i = 0; i < AMOUNT_ELEMENTS; i++) {
-            IsIsElement element = createIsIsElement(getRandom(nodes), "Element"+i);
-            elements.add(element);
-        }
-        return elements;
-    }
-
-    private IsIsElement createIsIsElement(OnmsNode node, String isisSysID) {
-        IsIsElement element = new IsIsElement();
-        element.setNode(node);
-        element.setIsisSysID(isisSysID);
-        return element;
+    private IsIsElementTopologyEntity createIsIsElement(OnmsNode node, String isisSysID) {
+        return new IsIsElementTopologyEntity(33, isisSysID, node.getId());
     }
 
     private IsIsLinkTopologyEntity createIsIsLink(int id, String isisISAdjNeighSysID, Integer isisISAdjIndex, OnmsNode node) {
@@ -292,11 +261,8 @@ public class LinkdTopologyProviderTest {
         return link;
     }
 
-    private CdpElement createCdpElement(OnmsNode node, String globalDeviceId) {
-        CdpElement cdpElement = new CdpElement();
-        cdpElement.setNode(node);
-        cdpElement.setCdpGlobalDeviceId(globalDeviceId);
-        return cdpElement;
+    private CdpElementTopologyEntity createCdpElement(OnmsNode node, String globalDeviceId) {
+        return new CdpElementTopologyEntity(null, globalDeviceId, node.getId());
     }
 
     private CdpLinkTopologyEntity createCdpLinkTopologyEntity(int id, OnmsNode node, String cdpCacheDeviceId, String cdpInterfaceName,

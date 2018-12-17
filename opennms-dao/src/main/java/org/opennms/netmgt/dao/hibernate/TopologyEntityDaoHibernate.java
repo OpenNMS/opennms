@@ -31,8 +31,11 @@ package org.opennms.netmgt.dao.hibernate;
 import java.util.List;
 
 import org.opennms.netmgt.dao.api.TopologyEntityDao;
+import org.opennms.netmgt.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.model.IpInterfaceTopologyEntity;
+import org.opennms.netmgt.model.IsIsElementTopologyEntity;
+import org.opennms.netmgt.model.LldpElementTopologyEntity;
 import org.opennms.netmgt.model.NodeTopologyEntity;
 import org.opennms.netmgt.model.IsIsLinkTopologyEntity;
 import org.opennms.netmgt.model.LldpLinkTopologyEntity;
@@ -88,5 +91,26 @@ public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements T
                 "select new org.opennms.netmgt.model.IpInterfaceTopologyEntity(" +
                         "i.id, i.ipAddress, i.isManaged, i.isSnmpPrimary, i.node.id, i.snmpInterface.id) " +
                         "from org.opennms.netmgt.model.OnmsIpInterface i");
+    }
+
+    @Override
+    public List<CdpElementTopologyEntity> getCdpElementTopologyEntities() {
+        return (List<CdpElementTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.model.CdpElementTopologyEntity(e.id, e.cdpGlobalDeviceId, e.node.id)" +
+                        "from org.opennms.netmgt.model.CdpElement e");
+    }
+
+    @Override
+    public List<LldpElementTopologyEntity> getLldpElementTopologyEntities() {
+        return (List<LldpElementTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.model.LldpElementTopologyEntity(e.id, e.lldpChassisId, e.node.id)" +
+                        "from org.opennms.netmgt.model.LldpElement e");
+    }
+
+    @Override
+    public List<IsIsElementTopologyEntity> getIsIsElementTopologyEntities() {
+        return (List<IsIsElementTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.model.IsIsElementTopologyEntity(e.id, e.isisSysID, e.node.id)" +
+                        "from org.opennms.netmgt.model.IsIsElement e");
     }
 }

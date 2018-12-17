@@ -28,37 +28,33 @@
 
 package org.opennms.netmgt.model;
 
-import java.net.InetAddress;
-import java.util.Objects;
-
-import com.google.common.base.MoreObjects;
+import java.util.Optional;
 
 @ReadOnlyEntity
-public class OspfLinkTopologyEntity {
+public class LldpElementTopologyEntity {
     private final Integer id;
+    private final String lldpChassisId;
     private final Integer nodeId;
-    private final InetAddress ospfIpAddr;
-    private final InetAddress ospfRemIpAddr;
-    private final Integer ospfIfIndex;
 
-    public OspfLinkTopologyEntity(Integer id, Integer nodeId, InetAddress ospfIpAddr, InetAddress ospfRemIpAddr, Integer ospfIfIndex) {
+    public LldpElementTopologyEntity(Integer id, String lldpChassisId, Integer nodeId) {
         this.id = id;
+        this.lldpChassisId = lldpChassisId;
         this.nodeId = nodeId;
-        this.ospfIpAddr = ospfIpAddr;
-        this.ospfRemIpAddr = ospfRemIpAddr;
-        this.ospfIfIndex = ospfIfIndex;
     }
 
-    public static OspfLinkTopologyEntity create (OspfLink link) {
-        return new OspfLinkTopologyEntity(link.getId()
-                , link.getNode().getId()
-                , link.getOspfIpAddr()
-                , link.getOspfRemIpAddr()
-                , link.getOspfIfIndex());
+    public static LldpElementTopologyEntity create(LldpElement element){
+        return new LldpElementTopologyEntity(
+                element.getId(),
+                element.getLldpChassisId(),
+                Optional.ofNullable(element.getNode()).map(OnmsNode::getId).orElse(null));
     }
 
     public Integer getId() {
         return id;
+    }
+
+    public String getLldpChassisId() {
+        return lldpChassisId;
     }
 
     public Integer getNodeId() {
@@ -70,28 +66,5 @@ public class OspfLinkTopologyEntity {
             return getNodeId().toString();
         }
         return null;
-    }
-
-    public InetAddress getOspfIpAddr() {
-        return ospfIpAddr;
-    }
-
-    public InetAddress getOspfRemIpAddr() {
-        return ospfRemIpAddr;
-    }
-
-    public Integer getOspfIfIndex() {
-        return ospfIfIndex;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("id", id)
-                .add("nodeId", nodeId)
-                .add("ospfIpAddr", ospfIpAddr)
-                .add("ospfRemIpAddr", ospfRemIpAddr)
-                .add("ospfIfIndex", ospfIfIndex)
-                .toString();
     }
 }
