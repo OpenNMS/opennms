@@ -181,31 +181,33 @@ public class ManagedDroolsContext {
         final ReleaseId releaseId = buildKieModule();
 
         // The rules we're successfully built and deployed
+        // Let's lock the current engine, grab the facts, and stop it
+        final List<Object> factObjects;
         lock.lock();
         try {
             // Capture the current set of facts
-            final List<Object> factObjects = kieSession.getFactHandles().stream()
+            factObjects  = kieSession.getFactHandles().stream()
                     .map(fact -> kieSession.getObject(fact))
                     .collect(Collectors.toList());
 
             // Stop the engine
             stop();
-
-            // Remove the previous module
-            if (releaseIdForContainerUsedByKieSession != null) {
-                if (KieServices.Factory.get().getRepository().removeKieModule(releaseIdForContainerUsedByKieSession) != null) {
-                    LOG.info("Successfully removed previous KIE module with ID: {}.", releaseIdForContainerUsedByKieSession);
-                } else {
-                    LOG.info("Previous KIE module was with ID: {} was already removed.", releaseIdForContainerUsedByKieSession);
-                }
-                releaseIdForContainerUsedByKieSession = null;
-            }
-
-            // Restart the engine
-            startWithModuleAndFacts(releaseId, factObjects);
         } finally {
             lock.unlock();
         }
+
+        // Remove the previous module
+        if (releaseIdForContainerUsedByKieSession != null) {
+            if (KieServices.Factory.get().getRepository().removeKieModule(releaseIdForContainerUsedByKieSession) != null) {
+                LOG.info("Successfully removed previous KIE module with ID: {}.", releaseIdForContainerUsedByKieSession);
+            } else {
+                LOG.info("Previous KIE module was with ID: {} was already removed.", releaseIdForContainerUsedByKieSession);
+            }
+            releaseIdForContainerUsedByKieSession = null;
+        }
+
+        // Restart the engine
+        startWithModuleAndFacts(releaseId, factObjects);
     }
 
     private ReleaseId buildKieModule() {
