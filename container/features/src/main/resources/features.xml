@@ -1181,6 +1181,8 @@
     <feature name="opennms-alarm-history-rest" description="OpenNMS :: Features :: Alarms :: History :: REST" version="${project.version}">
       <feature>opennms-osgi-core-rest</feature>
       <feature>opennms-alarm-history-api</feature>
+      <bundle>mvn:org.opennms.features.alarms.history.rest/org.opennms.features.alarms.history.rest.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.alarms.history.rest/org.opennms.features.alarms.history.rest.impl/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-alarm-history-elastic" description="OpenNMS :: Features :: Situation-Feedback" version="${project.version}">

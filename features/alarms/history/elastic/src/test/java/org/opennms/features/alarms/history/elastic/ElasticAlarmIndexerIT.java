@@ -56,7 +56,6 @@ import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.core.time.PseudoClock;
 import org.opennms.features.alarms.history.api.AlarmHistoryRepository;
 import org.opennms.features.alarms.history.api.AlarmState;
-import org.opennms.features.alarms.history.elastic.dto.AlarmDocumentDTO;
 import org.opennms.netmgt.alarmd.AlarmLifecycleListenerManager;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -205,7 +204,7 @@ public class ElasticAlarmIndexerIT {
     }
 
     @Test
-    public void canIndexSituationsInElasticsearch() throws InterruptedException {
+    public void canIndexSituationsInElasticsearch() {
         Scenario scenario = Scenario.builder()
                 .withLegacyAlarmBehavior()
                 // Create some node down alarms
@@ -216,7 +215,7 @@ public class ElasticAlarmIndexerIT {
                 // Create another another node down alarm
                 .withNodeDownEvent(4, 3)
                 // Add the new nodeDown alarm to the situation
-                .withSituationForNodeDownAlarms(5, "situation#1", 3)
+                .withSituationForNodeDownAlarms(5, "situation#1", 1, 2, 3)
                 // Clear the nodeDown alarms
                 .withNodeUpEvent(6, 1)
                 .withNodeUpEvent(6, 2)

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package io.searchbox.core.search.aggregation;
+package org.opennms.features.alarms.history.elastic;
 
 import static io.searchbox.core.search.aggregation.AggregationField.BUCKETS;
 import static io.searchbox.core.search.aggregation.AggregationField.DOC_COUNT;
@@ -40,7 +40,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public class CompositeAggregation extends BucketAggregation {
+import io.searchbox.core.search.aggregation.Aggregation;
+import io.searchbox.core.search.aggregation.Bucket;
+
+public class CompositeAggregation extends Aggregation {
     private List<Entry> buckets = new LinkedList<>();
 
     public CompositeAggregation(String name, JsonObject compositeAggregation) {

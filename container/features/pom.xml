@@ -827,6 +827,12 @@
       <type>pom</type>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.alarms.history.rest</groupId>
+      <artifactId>org.opennms.features.alarms.history.rest.impl</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.alarms.history</groupId>
       <artifactId>org.opennms.features.alarms.history.elastic</artifactId>
       <version>${project.version}</version>

@@ -294,6 +294,13 @@ public class ElasticAlarmHistoryRepositoryIT {
         // can get all state changes for a given alarm
         // can get number of alarms at some given time
 
+        // todo: ensure we can page through the results from the composite query
+        // since the size in composite query - applies to deleted alarms too
+    }
+
+    @Test
+    public void canSync() {
+        // todo;validate sync - should delete an alarm, but not delete an excluded alarm
     }
 
     private static OnmsAlarm createAlarm(int id, long firstEventTime) {

@@ -28,7 +28,8 @@
 	  "composite" : {
         "sources" : [
           { "alarms_by_id": { "terms" : { "field": "id" } } }
-	    ]
+	    ],
+        "size": 10000
        },
       "aggs": {
         "latest_alarm": {

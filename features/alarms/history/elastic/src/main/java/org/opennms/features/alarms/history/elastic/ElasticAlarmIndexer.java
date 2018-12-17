@@ -83,6 +83,7 @@ import io.searchbox.core.Bulk;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
+import io.searchbox.core.search.aggregation.TopHitsAggregation;
 
 public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(ElasticAlarmIndexer.class);
@@ -118,7 +119,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
     // TODO: Make limit configurable
     private final LinkedBlockingDeque<Task> taskQueue = new LinkedBlockingDeque<>(10000);
     private final ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
-            .setNameFormat("alarms-to-es")
+            .setNameFormat("ElasticAlarmIndexer")
             .build());
     private final AtomicBoolean stopped = new AtomicBoolean(false);
     private java.util.Timer timer;
@@ -151,7 +152,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
             throw new IllegalStateException("Already destroyed.");
         }
         executor.execute(this);
-        timer = new java.util.Timer("alarms-to-es");
+        timer = new java.util.Timer("ElasticAlarmIndexer");
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -216,12 +217,19 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
                                 LOG.error("Querying for active alarms failed with: {}", result.getErrorMessage());
                             }
 
-                            final List<SearchResult.Hit<AlarmDocumentDTO, Void>> hits = result.getHits(AlarmDocumentDTO.class);
-                            final List<AlarmDocumentDTO> docs = hits.stream().map(h -> h.source).collect(Collectors.toList());
+                            final List<AlarmDocumentDTO> alarms = new LinkedList<>();
+                            final CompositeAggregation alarmsById = result.getAggregations().getAggregation("alarms_by_id", CompositeAggregation.class);
+                            if (alarmsById != null) {
+                                for (CompositeAggregation.Entry entry : alarmsById.getBuckets()) {
+                                    final TopHitsAggregation topHitsAggregation = entry.getTopHitsAggregation("latest_alarm");
+                                    final List<SearchResult.Hit<AlarmDocumentDTO, Void>> hits = topHitsAggregation.getHits(AlarmDocumentDTO.class);
+                                    hits.stream().map(h -> h.source).forEach(alarms::add);
+                                }
+                            }
 
-                            if (!docs.isEmpty()) {
-                                final List<AlarmDocumentDTO> deletes = docs.stream()
-                                        .map(d -> documentMapper.createAlarmDocumentForDelete(d.getId(), d.getReductionKey()))
+                            if (!alarms.isEmpty()) {
+                                final List<AlarmDocumentDTO> deletes = alarms.stream()
+                                        .map(a -> documentMapper.createAlarmDocumentForDelete(a.getId(), a.getReductionKey()))
                                         .collect(Collectors.toList());
                                 if (LOG.isDebugEnabled()) {
                                     LOG.debug("Deleting alarms with IDs: {}", deletes.stream().map(a -> Integer.toString(a.getId()))

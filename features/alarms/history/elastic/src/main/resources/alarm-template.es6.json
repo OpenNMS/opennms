@@ -36,6 +36,9 @@
         "type": {
           "type": "integer"
         },
+        "counter": {
+          "type": "integer"
+        },
         "severity-id": {
           "type": "integer"
         },

@@ -41,7 +41,6 @@ import org.opennms.features.alarms.history.elastic.dto.AlarmDocumentDTO;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
-import io.searchbox.core.search.aggregation.CompositeAggregation;
 import io.searchbox.core.search.aggregation.TopHitsAggregation;
 
 public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {

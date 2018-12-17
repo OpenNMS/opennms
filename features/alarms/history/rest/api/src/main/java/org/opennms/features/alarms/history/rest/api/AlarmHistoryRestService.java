@@ -26,10 +26,39 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.alarms.history.api;
+package org.opennms.features.alarms.history.rest.api;
 
-/**
- * Used to represent the state of a related alarm at some particular point in time.
- */
-public interface RelatedAlarmState {
+import java.util.Collection;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import org.opennms.features.alarms.history.api.AlarmState;
+
+@Path("alarm-history")
+public interface AlarmHistoryRestService {
+
+    @GET
+    @Path("/states/by-alarm-id/{alarmId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    Collection<AlarmState> getStatesForAlarmWithDbId(@PathParam("alarmId") int alarmId);
+
+    @GET
+    @Path("/states/by-reduction-key/{reductionKey}")
+    @Produces(MediaType.APPLICATION_JSON)
+    Collection<AlarmState> getStatesForAlarmWithReductionKey(@PathParam("reductionKey") String reductionKey);
+
+    @GET
+    @Path("/states/at/{timestampInMillis}")
+    @Produces(MediaType.APPLICATION_JSON)
+    Collection<AlarmState> getActiveAlarmsAt(@PathParam("timestampInMillis") long timestampInMillis);
+
+    @GET
+    @Path("/states")
+    @Produces(MediaType.APPLICATION_JSON)
+    Collection<AlarmState> getActiveAlarmsNow();
+
 }
