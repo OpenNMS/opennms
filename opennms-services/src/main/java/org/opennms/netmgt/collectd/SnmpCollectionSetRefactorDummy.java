@@ -32,7 +32,10 @@ import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.PersistenceSelectorStrategy;
+import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
@@ -65,33 +68,51 @@ public class SnmpCollectionSetRefactorDummy extends SnmpCollectionSet implements
                 NodeInfo nodeInfo = (NodeInfo) collectionResource;
                 NodeLevelResource resource = new NodeLevelResource(nodeInfo.getNodeId());
                 addGroupsToBuilder(builder, resource, nodeInfo.getGroups());
-            }
-
-            if(collectionResource instanceof IfInfo) {
+            } else if(collectionResource instanceof IfInfo) {
                 IfInfo ifInfo = (IfInfo) collectionResource;
                 InterfaceLevelResource resource = new InterfaceLevelResource(new NodeLevelResource(ifInfo.getNodeId()), ifInfo.getAttributesMap().get("snmpifname"));
                 addGroupsToBuilder(builder, resource, ifInfo.getGroups());
-            }
-
-            if(collectionResource instanceof AliasedResource) {
+            } else if(collectionResource instanceof AliasedResource) {
                 AliasedResource aliasedResource = (AliasedResource) collectionResource;
                 Resource resource = null; // TODO: Patrick there is no AliasedResource in the CollectionSetBuilder world, what shall we do?
                 addGroupsToBuilder(builder, resource, aliasedResource.getGroups());
-            }
-
-            if(collectionResource instanceof GenericIndexResource) {
+            } else if(collectionResource instanceof GenericIndexResource) {
                 GenericIndexResource genericResource = (GenericIndexResource) collectionResource;
+                PersistenceSelectorStrategy persistenceSelectorStrategy = ((GenericIndexResourceType)genericResource.getResourceType()).getPersistenceSelectorStrategy();
+                StorageStrategy storageStrategy = ((GenericIndexResourceType)genericResource.getResourceType()).getStorageStrategy();
                 org.opennms.netmgt.config.datacollection.ResourceType resourceType = new org.opennms.netmgt.config.datacollection.ResourceType();
                 resourceType.setName(genericResource.getResourceTypeName());
                 resourceType.setLabel(genericResource.getResourceTypeName());
-                // TODO Patrick what shall we set here? resourceType.setPersistenceSelectorStrategy();
+                resourceType.setPersistenceSelectorStrategy(convert(persistenceSelectorStrategy));
                 // TODO Patrick what shall we set here?  resourceType.setResourceLabel();
-                // TODO Patrick what shall we set here?  resourceType.setStorageStrategy(nodeInfo.getResourceType().);
+                resourceType.setStorageStrategy(convert(storageStrategy));
+
+
+//                DeferredGenericTypeResource resource = new DeferredGenericTypeResource(
+//                        new NodeLevelResource(genericResource.getCollectionAgent().getNodeId()),
+//                        genericResource.getResourceTypeName(),
+//                        genericResource.getInstance());
                 GenericTypeResource resource = new GenericTypeResource(new NodeLevelResource(genericResource.getCollectionAgent().getNodeId()),resourceType,genericResource.getInstance());
                 addGroupsToBuilder(builder, resource, genericResource.getGroups());
+            } else {
+                throw new IllegalArgumentException("Unknown Resource: " + collectionResource.getClass().getName());
             }
         }
         return builder.build();
+    }
+
+    org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy convert(PersistenceSelectorStrategy strategy) {
+        org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy persistenceSelectorStrategy = new org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy();
+        persistenceSelectorStrategy.setClazz(strategy.getClass().getName());
+        // TODO: patrick persistenceSelectorStrategy.setParameters(strategy.);
+        return persistenceSelectorStrategy;
+    }
+
+    org.opennms.netmgt.config.datacollection.StorageStrategy convert(StorageStrategy strategy) {
+        org.opennms.netmgt.config.datacollection.StorageStrategy storageStrategy = new org.opennms.netmgt.config.datacollection.StorageStrategy();
+        storageStrategy.setClazz(strategy.getClass().getName());
+        // TODO: patrick persistenceSelectorStrategy.setParameters(strategy.);
+        return storageStrategy;
     }
 
     private void addGroupsToBuilder(CollectionSetBuilder builder, Resource resource, Collection<AttributeGroup> groups){
