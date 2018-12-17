@@ -29,18 +29,18 @@
 package org.opennms.netmgt.alarmd.drools;
 
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.hibernate.Hibernate;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.alarmd.Alarmd;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
@@ -53,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
 
 /**
@@ -153,13 +154,10 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             for (Integer alarmIdToRemove : alarmIdsToRemove) {
                 handleDeletedAlarmNoLock(alarmIdToRemove);
             }
-            for (Integer alarmIdToAdd : alarmIdsToAdd) {
-                handleNewOrUpdatedAlarmNoLock(alarmsInDbById.get(alarmIdToAdd));
-            }
-            for (Integer alarmIdToUpdate : alarmIdsToUpdate) {
-                handleNewOrUpdatedAlarmNoLock(alarmsInDbById.get(alarmIdToUpdate));
-            }
 
+            handleNewOrUpdatedAlarms(Sets.union(alarmIdsToAdd, alarmIdsToUpdate).stream()
+                    .map(alarmsInDbById::get)
+                    .collect(Collectors.toSet()));
             LOG.debug("Done handling snapshot.");
         } finally {
             unlockIfNotFiring();
@@ -187,9 +185,59 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         }
         lockIfNotFiring();
         try {
-            handleNewOrUpdatedAlarmNoLock(alarm);
+            handleNewOrUpdatedAlarms(Collections.singleton(alarm));
         } finally {
             unlockIfNotFiring();
+        }
+    }
+
+    /**
+     * Fetches an {@link OnmsAcknowledgment ack} via the {@link #acknowledgmentDao ack DAO} for all the given alarms.
+     * For any alarm for which an ack does not exist, a default ack is generated.
+     */
+    private Map<Integer, OnmsAcknowledgment> fetchAcks(Set<OnmsAlarm> alarms) {
+        Set<OnmsAcknowledgment> acks = new HashSet<>();
+
+        // Update acks depending on if we are interested in one or many alarms
+        if (alarms.size() == 1) {
+            acknowledgmentDao.findLatestAckForRefId(alarms.iterator()
+                    .next()
+                    .getId())
+                    .ifPresent(acks::add);
+        } else {
+            acks.addAll(acknowledgmentDao.findLatestAcks());
+        }
+
+        // Handle all the alarms for which an ack could be found
+        Map<Integer, OnmsAcknowledgment> acksById =
+                acks.stream().collect(Collectors.toMap(OnmsAcknowledgment::getRefId, ack -> ack));
+
+        // Handle all the alarms that no ack could be found for by generating a default ack
+        acksById.putAll(alarms.stream()
+                .filter(alarm -> !acksById.containsKey(alarm.getId()))
+                .collect(Collectors.toMap(OnmsAlarm::getId, alarm -> {
+                    // For the purpose of making rule writing easier, we fake an
+                    // Un-Acknowledgment for Alarms that have never been Acknowledged.
+                    OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, DefaultAlarmService.DEFAULT_USER,
+                            alarm.getFirstEventTime());
+                    ack.setAckAction(AckAction.UNACKNOWLEDGE);
+                    ack.setId(0);
+                    return ack;
+                })));
+
+        return acksById;
+    }
+
+    private void handleNewOrUpdatedAlarms(Set<OnmsAlarm> alarms) {
+        if (alarms.isEmpty()) {
+            return;
+        }
+
+        Map<Integer, OnmsAcknowledgment> acksByRefId = fetchAcks(alarms);
+
+        for (OnmsAlarm alarm : alarms) {
+            handleNewOrUpdatedAlarmNoLock(alarm);
+            handleAlarmAcknowledgements(alarm, acksByRefId.get(alarm.getId()));
         }
     }
 
@@ -213,7 +261,6 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             alarmsById.put(alarm.getId(), new AlarmAndFact(alarm, fact));
         }
         handleRelatedAlarms(alarm);
-        handleAlarmAcknowledgements(alarm);
     }
 
     @Override
@@ -264,38 +311,17 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         });
     }
 
-    private void handleAlarmAcknowledgements(OnmsAlarm alarm) {
+    private void handleAlarmAcknowledgements(OnmsAlarm alarm, OnmsAcknowledgment ack) {
         final AlarmAcknowledgementAndFact acknowledgmentFact = acknowledgementsByAlarmId.get(alarm.getId());
         if (acknowledgmentFact == null) {
-            OnmsAcknowledgment ack = getLatestAcknowledgement(alarm);
             LOG.debug("Inserting first alarm acknowledgement into session: {}", ack);
             final FactHandle fact = getKieSession().insert(ack);
             acknowledgementsByAlarmId.put(alarm.getId(), new AlarmAcknowledgementAndFact(ack, fact));
         } else {
             FactHandle fact = acknowledgmentFact.getFact();
-            OnmsAcknowledgment ack = getLatestAcknowledgement(alarm);
             LOG.trace("Updating acknowledgment in session: {}", ack);
             getKieSession().update(fact, ack);
             acknowledgementsByAlarmId.put(alarm.getId(), new AlarmAcknowledgementAndFact(ack, fact));
-        }
-    }
-
-    private OnmsAcknowledgment getLatestAcknowledgement(OnmsAlarm alarm) {
-        final CriteriaBuilder builder = new CriteriaBuilder(OnmsAcknowledgment.class)
-                .eq("refId", alarm.getId())
-                .limit(1)
-                .orderBy("ackTime").desc()
-                .orderBy("id").desc();
-        List<OnmsAcknowledgment> acks = acknowledgmentDao.findMatching(builder.toCriteria());
-        if (acks.isEmpty()) {
-            // For the purpose of making rule writing easier, we fake an
-            // Un-Acknowledgment for Alarms that have never been Acknowledged.
-            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, DefaultAlarmService.DEFAULT_USER, alarm.getFirstEventTime());
-            ack.setAckAction(AckAction.UNACKNOWLEDGE);
-            ack.setId(0);
-            return ack;
-        } else {
-            return acks.get(0);
         }
     }
 
@@ -343,4 +369,8 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         this.alarmTicketerService = alarmTicketerService;
     }
 
+    @VisibleForTesting
+    OnmsAcknowledgment getAckByAlarmId(Integer id) {
+        return acknowledgementsByAlarmId.get(id).getAcknowledgement();
+    }
 }
