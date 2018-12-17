@@ -53,6 +53,16 @@ public class AlarmListener implements AlarmLifecycleListener {
     }
 
     @Override
+    public synchronized void preHandleAlarmSnapshot() {
+        // pass
+    }
+
+    @Override
+    public synchronized void postHandleAlarmSnapshot() {
+        // pass
+    }
+
+    @Override
     public synchronized void handleNewOrUpdatedAlarm(OnmsAlarm alarm) {
         allObservedAlarmIds.add(alarm.getId());
     }

@@ -43,6 +43,7 @@ import static org.opennms.netmgt.alarmd.AlarmMatchers.hasSeverity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -59,6 +60,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.dao.support.AlarmEntityNotifierImpl;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -100,8 +102,15 @@ public class DroolsAlarmContextIT {
         dac.setUseManualTick(true);
         dac.setAlarmTicketerService(ticketer);
 
-        DefaultAlarmService alarmService = new DefaultAlarmService();
+        MockTransactionTemplate transactionTemplate = new MockTransactionTemplate();
+        transactionTemplate.afterPropertiesSet();
+        dac.setTransactionTemplate(transactionTemplate);
+
         alarmDao = mock(AlarmDao.class);
+        when(alarmDao.findAll()).thenReturn(Collections.emptyList());
+        dac.setAlarmDao(alarmDao);
+
+        DefaultAlarmService alarmService = new DefaultAlarmService();
         alarmService.setAlarmDao(alarmDao);
         acknowledgmentDao = mock(AcknowledgmentDao.class);
         when(acknowledgmentDao.findLatestAckForRefId(any(Integer.class))).thenReturn(Optional.empty());
@@ -113,6 +122,12 @@ public class DroolsAlarmContextIT {
         dac.setAcknowledgmentDao(acknowledgmentDao);
 
         dac.start();
+
+        // Wait until the seed thread has completed - it will hold the session lock
+        // after start returns, so it is sufficient to wait until we can acquire
+        // that same lock ourselves
+        dac.getLock().lock();
+        dac.getLock().unlock();
     }
 
     @After
@@ -139,6 +154,7 @@ public class DroolsAlarmContextIT {
         clear.setId(2);
         clear.setAlarmType(2);
         clear.setSeverity(OnmsSeverity.CLEARED);
+        clear.setReductionKey("clear:n1:oops");
         clear.setClearKey("n1:oops");
         clear.setLastEventTime(new Date(101));
         when(alarmDao.get(clear.getId())).thenReturn(clear);
@@ -155,6 +171,7 @@ public class DroolsAlarmContextIT {
         toDelete.setId(2);
         toDelete.setAlarmType(2);
         toDelete.setSeverity(OnmsSeverity.CLEARED);
+        toDelete.setReductionKey("clear:n1:oops");
         toDelete.setClearKey("n1:oops");
         toDelete.setLastEventTime(new Date(101));
         when(alarmDao.get(toDelete.getId())).thenReturn(toDelete);
@@ -185,6 +202,7 @@ public class DroolsAlarmContextIT {
         toDelete.setId(2);
         toDelete.setAlarmType(2);
         toDelete.setSeverity(OnmsSeverity.CLEARED);
+        toDelete.setReductionKey("clear:n1:oops");
         toDelete.setClearKey("n1:oops");
         toDelete.setLastEventTime(new Date(101));
         // "Ack" the alarm
@@ -471,6 +489,7 @@ public class DroolsAlarmContextIT {
         clear.setId(2);
         clear.setAlarmType(2);
         clear.setSeverity(OnmsSeverity.CLEARED);
+        clear.setReductionKey("clear:n1:oops");
         clear.setClearKey("n1:oops");
         clear.setLastEventTime(new Date(101));
         dac.getClock().advanceTime( 1, TimeUnit.MILLISECONDS );
