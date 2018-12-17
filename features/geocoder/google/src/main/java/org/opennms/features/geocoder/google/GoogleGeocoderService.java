@@ -46,7 +46,6 @@ import com.google.code.geocoder.AdvancedGeoCoder;
 import com.google.code.geocoder.GeocoderRequestBuilder;
 import com.google.code.geocoder.model.GeocodeResponse;
 import com.google.code.geocoder.model.GeocoderRequest;
-import org.opennms.core.utils.SystemProperties;
 
 public class GoogleGeocoderService implements GeocoderService {
     private static final Logger LOG = LoggerFactory.getLogger(GoogleGeocoderService.class);
@@ -88,7 +87,7 @@ public class GoogleGeocoderService implements GeocoderService {
 
             /* Configure proxying, if necessary... */
             final String httpProxyHost = System.getProperty("http.proxyHost");
-            final Integer httpProxyPort = SystemProperties.getInteger("http.proxyPort");
+            final Integer httpProxyPort = Integer.getInteger("http.proxyPort");
             if (httpProxyHost != null && httpProxyPort != null) {
                 LOG.info("Proxy configuration found, using {}:{} as HTTP proxy.", httpProxyHost, httpProxyPort);
                 httpClient.getHostConfiguration().setProxy(httpProxyHost, httpProxyPort);

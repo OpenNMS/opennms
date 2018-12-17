@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.core.utils.SystemProperties;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.ApplicationStatus;
 import org.opennms.netmgt.model.OnmsApplication;
@@ -71,7 +70,7 @@ public class ApplicationBoxController extends AbstractController implements Init
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final int numberOfRows = SystemProperties.getInteger("opennms.applicationsWithProblems.count", DEFAULT_ROW_COUNT);
+        final int numberOfRows = Integer.getInteger("opennms.applicationsWithProblems.count", DEFAULT_ROW_COUNT);
         final boolean all = "true".equalsIgnoreCase(request.getParameter("all"));
 
         // Get application status, but only consider everything > NORMAL
