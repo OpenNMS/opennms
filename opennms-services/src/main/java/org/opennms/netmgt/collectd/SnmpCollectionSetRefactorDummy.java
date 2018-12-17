@@ -74,7 +74,10 @@ public class SnmpCollectionSetRefactorDummy extends SnmpCollectionSet implements
                 addGroupsToBuilder(builder, resource, ifInfo.getGroups());
             } else if(collectionResource instanceof AliasedResource) {
                 AliasedResource aliasedResource = (AliasedResource) collectionResource;
-                Resource resource = null; // TODO: Patrick there is no AliasedResource in the CollectionSetBuilder world, what shall we do?
+                InterfaceLevelResource resource = new InterfaceLevelResource(
+                        new NodeLevelResource(aliasedResource.getIfInfo().getNodeId()),
+                        aliasedResource.getIfInfo().getAttributesMap().get("snmpifname"));
+                resource.setTimestamp(getCollectionTimestamp());
                 addGroupsToBuilder(builder, resource, aliasedResource.getGroups());
             } else if(collectionResource instanceof GenericIndexResource) {
                 GenericIndexResource genericResource = (GenericIndexResource) collectionResource;
@@ -98,6 +101,7 @@ public class SnmpCollectionSetRefactorDummy extends SnmpCollectionSet implements
                 throw new IllegalArgumentException("Unknown Resource: " + collectionResource.getClass().getName());
             }
         }
+        builder.withTimestamp(getCollectionTimestamp());
         return builder.build();
     }
 
