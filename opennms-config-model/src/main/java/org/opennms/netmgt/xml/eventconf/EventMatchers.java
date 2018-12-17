@@ -42,6 +42,7 @@ import static org.opennms.netmgt.xml.eventconf.Maskelement.TAG_UEI;
 
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
@@ -174,6 +175,24 @@ public abstract class EventMatchers  {
 			}
 		};
 	}
+
+/*    public static Field parameter(final String parameterName) {
+        if (parameterName == null || parameterName.isEmpty()) {
+            throw new IllegalArgumentException("Invalid parameter name must contain a String value.");
+        }
+
+        return new Field() {
+            public String get(Event event) {
+                List<Parm> parms = event.getParmCollection().stream().filter(p -> p.getParmName().equals(parameterName)).collect(Collectors.toList());
+                return vbnumber > parms.size() ? null : EventConstants.getValueAsString(parms.get(vbnumber - 1).getValue());
+            }
+
+            @Override
+            public String toString() {
+                return "event.parameter#" + parameterName;
+            }
+        };
+    }*/
 	
 	private static abstract class EventField implements Field {
 		private String m_name;
@@ -191,6 +210,16 @@ public abstract class EventMatchers  {
 	}
 	
 	public static Field field(String name) {
+
+        if (name.startsWith("parm[") && name.endsWith("]")) {
+            return new EventField(name) {
+                public String get(Event event) {
+                    String parmName = name.substring(name.indexOf("parm[" + 1), name.indexOf(']'));
+                    return event.getParm(parmName).getValue().toString();
+                }
+            };
+        }
+
 		if (name.equals(TAG_UEI)) {
 			return new EventField(name) { public String get(Event event) { return event.getUei(); } };
 		} else if (name.equals(TAG_SOURCE)) {
