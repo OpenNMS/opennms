@@ -64,12 +64,6 @@ public class Mask implements Serializable {
     @XmlElement(name="varbind")
     private List<Varbind> m_varbinds = new ArrayList<>();
 
-    /**
-     * The varbind element
-     */
-    @XmlElement(name = "parameters")
-    private List<Parameter> m_parameters = new ArrayList<>();
-
     public List<Maskelement> getMaskelements() {
         return m_maskElements;
     }
@@ -106,31 +100,9 @@ public class Mask implements Serializable {
         return m_varbinds.remove(varbind);
     }
 
-    public List<Parameter> getParameters() {
-        return m_parameters;
-    }
-
-    public void setParameters(final List<Parameter> parameters) {
-        if (m_parameters == parameters) {
-            return;
-        }
-        m_parameters.clear();
-        if (parameters != null) {
-            m_parameters.addAll(parameters);
-        }
-    }
-
-    public void addParameter(final Parameter varbind) {
-        m_parameters.add(varbind);
-    }
-
-    public boolean removeParameter(final Parameter parameter) {
-        return m_parameters.remove(parameter);
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(m_maskElements, m_varbinds, m_parameters);
+        return Objects.hash(m_maskElements, m_varbinds);
     }
 
     @Override
@@ -141,8 +113,7 @@ public class Mask implements Serializable {
         if (obj instanceof Mask) {
             final Mask that = (Mask) obj;
             return Objects.equals(this.m_maskElements, that.m_maskElements) &&
-                    Objects.equals(this.m_varbinds, that.m_varbinds) &&
-                    Objects.equals(this.m_parameters, that.m_parameters);
+                    Objects.equals(this.m_varbinds, that.m_varbinds);
         }
         return false;
     }
@@ -157,11 +128,6 @@ public class Mask implements Serializable {
 
         for(final Varbind varbind : m_varbinds) {
             matchers[index] = varbind.constructMatcher();
-            index++;
-        }
-
-        for (final Parameter parameter : m_parameters) {
-            matchers[index] = parameter.constructMatcher();
             index++;
         }
 

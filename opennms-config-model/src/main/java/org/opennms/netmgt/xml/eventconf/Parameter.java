@@ -28,14 +28,7 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
-import static org.opennms.netmgt.xml.eventconf.EventMatchers.valueEqualsMatcher;
-import static org.opennms.netmgt.xml.eventconf.EventMatchers.valueMatchesRegexMatcher;
-import static org.opennms.netmgt.xml.eventconf.EventMatchers.valueStartsWithMatcher;
-import static org.opennms.netmgt.xml.eventconf.EventMatchers.varbind;
-
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -109,32 +102,5 @@ public class Parameter implements Serializable {
         }
         return false;
     }
-
-/*    public EventMatcher constructMatcher() {
-        if (m_name == null || m_value == null) {
-            return EventMatchers.trueMatcher();
-        }
-
-        List<EventMatcher> valueMatchers = new ArrayList<EventMatcher>(m_values.size());
-        for (final String value : m_value) {
-            if (value == null)
-                continue;
-            if (value.startsWith("~")) {
-                valueMatchers.add(valueMatchesRegexMatcher(parameter(m_name), value));
-            } else if (value.endsWith("%")) {
-                valueMatchers.add(valueStartsWithMatcher(varbind(m_name), value));
-            } else {
-                valueMatchers.add(valueEqualsMatcher(varbind(m_name), value));
-            }
-        }
-
-        if (valueMatchers.size() == 1) {
-            return valueMatchers.get(0);
-        } else {
-            EventMatcher[] matchers = valueMatchers.toArray(new EventMatcher[valueMatchers.size()]);
-            return EventMatchers.or(matchers);
-        }
-
-    }*/
 
 }
