@@ -114,6 +114,12 @@ public class BusinessServicesStatusProvider implements StatusProvider, EdgeStatu
                 graphVertex.set(graph.getVertexByReductionKey(vertex.getReductionKey()));
                 return null;
             }
+
+            @Override
+            public Void visit(ApplicationVertex vertex) {
+                graphVertex.set(graph.getVertexByApplicationId(vertex.getApplicationId()));
+                return null;
+            }
         });
         return graphVertex.get();
     }

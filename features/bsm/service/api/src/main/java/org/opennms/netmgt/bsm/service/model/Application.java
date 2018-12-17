@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,15 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model.edge;
+package org.opennms.netmgt.bsm.service.model;
 
-public interface EdgeVisitor<T> {
+import java.util.Set;
 
-    T visit(IpServiceEdge edge);
+public interface Application {
+    int getId();
 
-    T visit(ReductionKeyEdge edge);
+    String getApplicationName();
 
-    T visit(ChildEdge edge);
+    Set<String> getReductionKeys();
 
-    T visit(ApplicationEdge edge);
+    Set<IpService> getIpServices();
+
+    Set<Integer> getNodeIds();
 }

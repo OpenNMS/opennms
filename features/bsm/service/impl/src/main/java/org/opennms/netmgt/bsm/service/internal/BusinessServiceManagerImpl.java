@@ -34,7 +34,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.hibernate.Hibernate;
 import org.opennms.core.criteria.Criteria;
+import org.opennms.netmgt.bsm.persistence.api.ApplicationEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
@@ -51,13 +53,16 @@ import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteria;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.internal.edge.AbstractEdge;
+import org.opennms.netmgt.bsm.service.internal.edge.ApplicationEdgeImpl;
 import org.opennms.netmgt.bsm.service.internal.edge.ChildEdgeImpl;
 import org.opennms.netmgt.bsm.service.internal.edge.IpServiceEdgeImpl;
 import org.opennms.netmgt.bsm.service.internal.edge.ReductionKeyEdgeImpl;
+import org.opennms.netmgt.bsm.service.model.Application;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Node;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.ApplicationEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
@@ -66,10 +71,12 @@ import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.bsm.service.model.graph.internal.BusinessServiceGraphImpl;
+import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -99,6 +106,9 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
     @Autowired
     private EventForwarder eventForwarder;
+
+    @Autowired
+    private ApplicationDao applicationDao;
 
     @Override
     public List<BusinessService> getAllBusinessServices() {
@@ -146,6 +156,9 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         if (type == ReductionKeyEdge.class) {
             edge = (T) new ReductionKeyEdgeImpl(this, new SingleReductionKeyEdgeEntity());
         }
+        if (type == ApplicationEdge.class) {
+            edge = (T) new ApplicationEdgeImpl(this, new ApplicationEdgeEntity());
+        }
         if (edge != null) {
             edge.setSource(source);
             edge.setMapFunction(mapFunction);
@@ -173,6 +186,11 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
             @Override
             public Edge visit(IPServiceEdgeEntity edge) {
                 return new IpServiceEdgeImpl(BusinessServiceManagerImpl.this, edge);
+            }
+
+            @Override
+            public Edge visit(ApplicationEdgeEntity edge) {
+                return new ApplicationEdgeImpl(BusinessServiceManagerImpl.this, edge);
             }
         });
     }
@@ -295,6 +313,33 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
+    public void setApplicationEdges(BusinessService businessService, Set<ApplicationEdge> applicationEdges) {
+        final BusinessServiceEntity entity = getBusinessServiceEntity(businessService);
+        for (final ApplicationEdgeEntity e : entity.getApplicationEdges()) {
+            entity.removeEdge(e);
+        }
+        applicationEdges.forEach(e -> entity.addEdge(((ApplicationEdgeImpl) e).getEntity()));
+    }
+
+    @Override
+    public boolean addApplicationEdge(BusinessService businessService, Application application, MapFunction mapFunction, int weight) {
+        final BusinessServiceEntity parentEntity = getBusinessServiceEntity(businessService);
+
+        // Create the edge
+        final ApplicationEdge edge = createEdge(ApplicationEdge.class, businessService, mapFunction, weight);
+        edge.setApplication(application);
+
+        // if already exists, no update
+        final ApplicationEdgeEntity edgeEntity = getBusinessServiceEdgeEntity(edge);
+        long count = parentEntity.getApplicationEdges().stream().filter(e -> e.equalsDefinition(edgeEntity)).count();
+        if (count > 0) {
+            return false;
+        }
+        parentEntity.addEdge(((ApplicationEdgeImpl)edge).getEntity());
+        return true;
+    }
+
+    @Override
     public void setChildEdges(BusinessService parentService, Set<ChildEdge> childEdges) {
         final BusinessServiceEntity parentEntity = getBusinessServiceEntity(parentService);
         for (final BusinessServiceChildEdgeEntity e : parentEntity.getChildEdges()) {
@@ -390,9 +435,26 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
+    public List<Application> getAllApplications() {
+        return applicationDao.findAll().stream()
+                .map(s -> {
+                    Hibernate.initialize(s.getMonitoredServices());
+                    return new ApplicationImpl(this, s);
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public IpService getIpServiceById(Integer id) {
         OnmsMonitoredService entity = getMonitoredServiceEntity(id);
         return new IpServiceImpl(this, entity);
+    }
+
+    @Override
+    public Application getApplicationById(Integer id) {
+        OnmsApplication onmsApplication = getApplicationEntity(id);
+        Hibernate.initialize(onmsApplication.getMonitoredServices());
+        return new ApplicationImpl(this, onmsApplication);
     }
 
     @Override
@@ -485,6 +547,10 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         return ((IpServiceEdgeImpl) ipServiceEdge).getEntity();
     }
 
+    private ApplicationEdgeEntity getBusinessServiceEdgeEntity(ApplicationEdge applicationEdge) {
+        return ((ApplicationEdgeImpl) applicationEdge).getEntity();
+    }
+
     private BusinessServiceChildEdgeEntity getBusinessServiceEdgeEntity(ChildEdge childEdge) {
         return ((ChildEdgeImpl) childEdge).getEntity();
     }
@@ -513,6 +579,15 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
             throw new NoSuchElementException("OnmsMonitoredService with id " + serviceId);
         }
         return monitoredService;
+    }
+
+    private OnmsApplication getApplicationEntity(Integer applicationId) throws NoSuchElementException {
+        Objects.requireNonNull(applicationId);
+        final OnmsApplication application = applicationDao.get(applicationId);
+        if (application == null) {
+            throw new NoSuchElementException("OnmsApplication with id " + applicationId);
+        }
+        return application;
     }
 
     /**
