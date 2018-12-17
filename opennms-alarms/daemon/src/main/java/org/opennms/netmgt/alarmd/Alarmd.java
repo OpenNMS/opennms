@@ -38,6 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.opennms.core.utils.SystemProperties;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
@@ -73,7 +74,7 @@ public class Alarmd implements SpringServiceDaemon, ThreadAwareEventListener {
     /** Constant <code>NAME="Alarmd"</code> */
     public static final String NAME = "Alarmd";
 
-    protected static final Integer THREADS = Integer.getInteger("org.opennms.alarmd.threads", 4);
+    protected static final Integer THREADS = SystemProperties.getInteger("org.opennms.alarmd.threads", 4);
 
     private List<Northbounder> m_northboundInterfaces = new ArrayList<>();
 

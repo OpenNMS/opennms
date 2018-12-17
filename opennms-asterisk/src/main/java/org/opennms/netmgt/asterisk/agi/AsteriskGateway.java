@@ -31,6 +31,7 @@ package org.opennms.netmgt.asterisk.agi;
 import org.asteriskjava.fastagi.AgiServerThread;
 import org.asteriskjava.fastagi.ClassNameMappingStrategy;
 import org.asteriskjava.fastagi.DefaultAgiServer;
+import org.opennms.core.utils.SystemProperties;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 
 /**
@@ -58,8 +59,8 @@ public class AsteriskGateway extends AbstractServiceDaemon {
     /** {@inheritDoc} */
     @Override
     protected void onInit() {
-        int port = Integer.getInteger("org.opennms.netmgt.asterisk.agi.listenPort", m_port);
-        int maxPoolSize = Integer.getInteger("org.opennms.netmgt.asterisk.agi.maxPoolSize", m_maxPoolSize);
+        int port = SystemProperties.getInteger("org.opennms.netmgt.asterisk.agi.listenPort", m_port);
+        int maxPoolSize = SystemProperties.getInteger("org.opennms.netmgt.asterisk.agi.maxPoolSize", m_maxPoolSize);
         
         DefaultAgiServer agiServer = new DefaultAgiServer(new ClassNameMappingStrategy(false));
         

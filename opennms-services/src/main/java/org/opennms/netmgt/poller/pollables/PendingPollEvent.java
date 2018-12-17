@@ -33,6 +33,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.opennms.core.utils.SystemProperties;
 import org.opennms.netmgt.poller.DefaultPollContext;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -47,7 +48,7 @@ public class PendingPollEvent extends PollEvent {
     private static final Logger LOG = LoggerFactory.getLogger(PendingPollEvent.class);
 
     // how long to wait, in milliseconds, before giving up on waiting for a poll event to get an event ID, defaults to 10 minutes
-    private static final long PENDING_EVENT_TIMEOUT = Long.getLong("org.opennms.netmgt.poller.pendingEventTimeout", 1000L * 60L * 10L);
+    private static final long PENDING_EVENT_TIMEOUT = SystemProperties.getLong("org.opennms.netmgt.poller.pendingEventTimeout", 1000L * 60L * 10L);
 
     private final Event m_event;
     private final Date m_date;

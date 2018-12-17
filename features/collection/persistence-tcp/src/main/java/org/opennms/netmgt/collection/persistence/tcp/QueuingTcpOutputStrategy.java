@@ -35,6 +35,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.utils.SystemProperties;
 import org.opennms.netmgt.rrd.tcp.RrdOutputSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,10 +49,10 @@ import org.slf4j.LoggerFactory;
  * </p>
  */
 public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
-    private static final long SLEEP_TIME = Long.getLong("org.opennms.netmgt.persistence.tcp.queuingTcpSleepTime", 1000);
-    private static final long OFFER_WAIT_TIME = Long.getLong("org.opennms.netmgt.persistence.tcp.queuingTcpOfferWaitTime", 500);
+    private static final long SLEEP_TIME = SystemProperties.getLong("org.opennms.netmgt.persistence.tcp.queuingTcpSleepTime", 1000);
+    private static final long OFFER_WAIT_TIME = SystemProperties.getLong("org.opennms.netmgt.persistence.tcp.queuingTcpOfferWaitTime", 500);
     private static final boolean LOGGING = Boolean.getBoolean("org.opennms.netmgt.persistence.tcp.queuingTcpLogging");
-    private static final long LOGGING_INTERVAL = Long.getLong("org.opennms.netmgt.persistence.tcp.queuingTcpLoggingInterval", 300000);
+    private static final long LOGGING_INTERVAL = SystemProperties.getLong("org.opennms.netmgt.persistence.tcp.queuingTcpLoggingInterval", 300000);
     private static final Logger LOG = LoggerFactory.getLogger(QueuingTcpOutputStrategy.class);
 
     private final BlockingQueue<PerformanceDataReading> m_queue;
