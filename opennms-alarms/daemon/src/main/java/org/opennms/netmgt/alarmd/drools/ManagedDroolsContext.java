@@ -278,7 +278,7 @@ public class ManagedDroolsContext {
         }
     }
 
-    public ReentrantLock getLock() {
+    ReentrantLock getLock() {
         return lock;
     }
 

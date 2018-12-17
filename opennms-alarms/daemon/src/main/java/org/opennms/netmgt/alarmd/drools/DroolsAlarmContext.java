@@ -236,6 +236,10 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     @Override
     public void postHandleAlarmSnapshot() {
         stateTracker.resetStateAndStopTrackingAlarms();
+        // If an error occurred while preparing the snapshot, it is possible that
+        // this post function is called  without having handled the snapshot.
+        // To avoid an IllegalMonitorStateException in this case, we only
+        // unlock the session if it was locked.
         final ReentrantLock lock = getLock();
         if (lock.isHeldByCurrentThread()) {
             lock.unlock();

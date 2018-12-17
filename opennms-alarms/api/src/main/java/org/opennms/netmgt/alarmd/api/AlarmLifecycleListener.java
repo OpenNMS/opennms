@@ -74,8 +74,11 @@ public interface AlarmLifecycleListener {
      * Called after {@link #handleAlarmSnapshot} has been called on all the listeners, and
      * after the session & transaction used to perform the snapshot has been closed.
      *
-     * This can be used to trigger any necessary post-processing of the results one
+     * This can be used to trigger any necessary post-processing of the results once
      * the related session has been closed.
+     *
+     * This function may be called immediately after a call to {@link #preHandleAlarmSnapshot} if
+     * an error occurred while preparing the snapshot i.e. when opening the transaction.
      */
     void postHandleAlarmSnapshot();
 

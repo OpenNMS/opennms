@@ -144,9 +144,7 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
 
     @Override
     public void onAlarmDeleted(OnmsAlarm alarm) {
-        final Integer alarmId = alarm.getId();
-        final String reductionKey = alarm.getReductionKey();
-        forEachListener(l -> l.handleDeletedAlarm(alarmId, reductionKey));
+        forEachListener(l -> l.handleDeletedAlarm(alarm.getId(), alarm.getReductionKey()));
     }
 
     @Override
