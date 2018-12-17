@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.opennms.core.utils.SystemProperties;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.MetricType;
@@ -59,9 +60,9 @@ public abstract class NewtsUtils {
 
     public static final boolean DISABLE_INDEXING = Boolean.getBoolean("org.opennms.newts.disable.indexing");
 
-    public static final int MAX_BATCH_SIZE = Integer.getInteger("org.opennms.newts.config.max_batch_size", 16);
+    public static final int MAX_BATCH_SIZE = SystemProperties.getInteger("org.opennms.newts.config.max_batch_size", 16);
 
-    public static final int TTL = Integer.getInteger("org.opennms.newts.config.ttl", 31536000);
+    public static final int TTL = SystemProperties.getInteger("org.opennms.newts.config.ttl", 31536000);
 
     public static final String HOSTNAME_PROPERTY = "org.opennms.newts.config.hostname";
 

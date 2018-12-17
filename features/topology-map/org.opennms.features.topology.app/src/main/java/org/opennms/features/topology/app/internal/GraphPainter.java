@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 
+import org.opennms.core.utils.SystemProperties;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.GraphVisitor;
@@ -61,7 +62,7 @@ import com.vaadin.server.PaintException;
 
 public class GraphPainter implements GraphVisitor {
 
-    public static final int DEFAULT_EDGE_PATH_OFFSET = Integer.getInteger("org.opennms.features.topology.api.topo.defaultEdgePathOffset", 20);
+    public static final int DEFAULT_EDGE_PATH_OFFSET = SystemProperties.getInteger("org.opennms.features.topology.api.topo.defaultEdgePathOffset", 20);
 
 	private final GraphContainer m_graphContainer;
 	private final IconRepositoryManager m_iconRepoManager;

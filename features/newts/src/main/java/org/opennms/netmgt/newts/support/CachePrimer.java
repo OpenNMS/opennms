@@ -30,6 +30,7 @@ package org.opennms.netmgt.newts.support;
 
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.utils.SystemProperties;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.cassandra.CassandraSession;
 import org.opennms.newts.cassandra.search.CassandraCachePrimer;
@@ -52,9 +53,9 @@ public class CachePrimer implements InitializingBean, Runnable {
     private Context context;
 
     private static final boolean primingDisabled = Boolean.getBoolean("org.opennms.newts.config.cache.priming.disable");
-    private static final long blockWhilePrimingMs = Long.getLong("org.opennms.newts.config.cache.priming.block_ms", TimeUnit.MINUTES.toMillis(2));
-    private static final int fetchSize = Integer.getInteger("org.opennms.newts.config.cache.priming.fetch_size", CassandraCachePrimer.DEFAULT_FETCH_SIZE);
-    private static final int fetchMoreThreshold = Integer.getInteger("org.opennms.newts.config.cache.priming.fetch_more_threshold", CassandraCachePrimer.DEFAULT_FETCH_MORE_THRESHOLD);
+    private static final long blockWhilePrimingMs = SystemProperties.getLong("org.opennms.newts.config.cache.priming.block_ms", TimeUnit.MINUTES.toMillis(2));
+    private static final int fetchSize = SystemProperties.getInteger("org.opennms.newts.config.cache.priming.fetch_size", CassandraCachePrimer.DEFAULT_FETCH_SIZE);
+    private static final int fetchMoreThreshold = SystemProperties.getInteger("org.opennms.newts.config.cache.priming.fetch_more_threshold", CassandraCachePrimer.DEFAULT_FETCH_MORE_THRESHOLD);
 
     @Override
     public void afterPropertiesSet() {

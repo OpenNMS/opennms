@@ -38,6 +38,7 @@ import javax.security.auth.login.AppConfigurationEntry.LoginModuleControlFlag;
 import javax.security.auth.login.Configuration;
 
 import org.opennms.bootstrap.OpenNMSProxyLoginModule;
+import org.opennms.core.utils.SystemProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +67,7 @@ public class OpenNMSConfiguration extends Configuration {
         new Thread(new Runnable() {
             @Override public void run() {
                 // wait up to 2 minutes for Karaf's JAAS Configuration to become active so we can put a facade on top of it.
-                final long giveUp = System.currentTimeMillis() + Long.getLong(JAAS_TIMEOUT_SYS_PROP, DEFAULT_JAAS_TIMEOUT_MS);
+                final long giveUp = System.currentTimeMillis() + SystemProperties.getLong(JAAS_TIMEOUT_SYS_PROP, DEFAULT_JAAS_TIMEOUT_MS);
                 do {
                     final Configuration c = Configuration.getConfiguration();
                     if (c != null) {

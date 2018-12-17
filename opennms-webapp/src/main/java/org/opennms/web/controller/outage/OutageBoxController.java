@@ -31,6 +31,7 @@ package org.opennms.web.controller.outage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.utils.SystemProperties;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.web.outage.WebOutageRepository;
 import org.springframework.beans.factory.InitializingBean;
@@ -58,7 +59,7 @@ public class OutageBoxController extends AbstractController implements Initializ
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        int rows = Integer.getInteger("opennms.nodesWithOutages.count", ROWS);
+        int rows = SystemProperties.getInteger("opennms.nodesWithOutages.count", ROWS);
         final String parm = request.getParameter("outageCount");
         if (parm != null) {
             try {
