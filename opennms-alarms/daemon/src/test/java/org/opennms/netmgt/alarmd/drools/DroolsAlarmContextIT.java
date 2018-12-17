@@ -39,6 +39,7 @@ import static org.mockito.Mockito.when;
 import static org.opennms.netmgt.alarmd.driver.AlarmMatchers.hasSeverity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -509,6 +510,44 @@ public class DroolsAlarmContextIT {
         dac.tick();
 
         // The trigger should be cleared
+        assertThat(trigger, hasSeverity(OnmsSeverity.CLEARED));
+    }
+
+    @Test
+    public void canReloadEngine() {
+        // Create a trigger alarm
+        OnmsAlarm trigger = new OnmsAlarm();
+        trigger.setId(1);
+        trigger.setAlarmType(1);
+        trigger.setSeverity(OnmsSeverity.WARNING);
+        trigger.setReductionKey("n1:oops");
+        trigger.setLastEventTime(new Date(100));
+        when(alarmDao.get(trigger.getId())).thenReturn(trigger);
+        dac.getClock().advanceTime( 100, TimeUnit.MILLISECONDS );
+        dac.handleNewOrUpdatedAlarm(trigger);
+        dac.tick();
+
+        // Update the mock to return the alarm we just created, so that the initial
+        // seed includes it
+        when(alarmDao.findAll()).thenReturn(Arrays.asList(trigger));
+
+        // Reload the context
+        dac.reload();
+
+        // Create a clear alarm
+        OnmsAlarm clear = new OnmsAlarm();
+        clear.setId(2);
+        clear.setAlarmType(2);
+        clear.setSeverity(OnmsSeverity.CLEARED);
+        clear.setReductionKey("clear:n1:oops");
+        clear.setClearKey("n1:oops");
+        clear.setLastEventTime(new Date(101));
+        when(alarmDao.get(clear.getId())).thenReturn(clear);
+        dac.getClock().advanceTime( 101, TimeUnit.MILLISECONDS );
+        dac.handleNewOrUpdatedAlarm(clear);
+        dac.tick();
+
+        // The trigger should have been cleared
         assertThat(trigger, hasSeverity(OnmsSeverity.CLEARED));
     }
 
