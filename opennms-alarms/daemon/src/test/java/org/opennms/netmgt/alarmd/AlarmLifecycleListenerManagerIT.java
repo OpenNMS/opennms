@@ -111,7 +111,7 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
 
     @Autowired
     private AlarmDao m_alarmDao;
-    
+
     @Autowired
     private AlarmPersisterImpl m_alarmPersisterImpl;
 
@@ -288,6 +288,16 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
                 alarms.stream().map(OnmsAlarm::getReductionKey).collect(Collectors.toSet())))
                 .forEach(r -> m_alarmsByReductionKey.remove(r));
        */
+    }
+
+    @Override
+    public void preHandleAlarmSnapshot() {
+        // pass
+    }
+
+    @Override
+    public void postHandleAlarmSnapshot() {
+        // pass
     }
 
     @Override
