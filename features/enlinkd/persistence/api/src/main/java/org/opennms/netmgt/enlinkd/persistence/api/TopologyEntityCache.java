@@ -30,9 +30,12 @@ package org.opennms.netmgt.enlinkd.persistence.api;
 
 import java.util.List;
 
+import org.opennms.netmgt.enlinkd.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.IsIsElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
@@ -44,12 +47,14 @@ import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
  * We use the cache to improve the displaying speed of topologies.
  */
 public interface TopologyEntityCache {
-
     List<NodeTopologyEntity> getNodeTopolgyEntities();
     List<CdpLinkTopologyEntity> getCdpLinkTopologyEntities();
     List<OspfLinkTopologyEntity> getOspfLinkTopologyEntities();
     List<IsIsLinkTopologyEntity> getIsIsLinkTopologyEntities();
     List<LldpLinkTopologyEntity> getLldpLinkTopologyEntities();
+    List<CdpElementTopologyEntity> getCdpElementTopologyEntities();
+    List<IsIsElementTopologyEntity> getIsIsElementTopologyEntities();
+    List<LldpElementTopologyEntity> getLldpElementTopologyEntities();
     List<SnmpInterfaceTopologyEntity> getSnmpInterfaceTopologyEntities();
     List<IpInterfaceTopologyEntity> getIpInterfaceTopologyEntities();
     void refresh();

@@ -32,9 +32,12 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import org.opennms.netmgt.enlinkd.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.IsIsElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
@@ -47,31 +50,40 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 public class TopologyEntityCacheImpl implements TopologyEntityCache {
-    
+
     private final static String CACHE_KEY = "CACHE_KEY";
     private final static String SYSTEM_PROPERTY_CACHE_DURATION = "org.opennms.ui.topology-entity-cache-duration";
 
     private TopologyEntityDao topologyEntityDao;
 
-    private LoadingCache<String, List<NodeTopologyEntity>> nodeTopologyEntities = createCache(
+    private final LoadingCache<String, List<NodeTopologyEntity>> nodeTopologyEntities = createCache(
             () -> topologyEntityDao.getNodeTopologyEntities());
 
-    private LoadingCache<String, List<CdpLinkTopologyEntity>> cdpLinkTopologyEntities = createCache(
+    private final LoadingCache<String, List<CdpLinkTopologyEntity>> cdpLinkTopologyEntities = createCache(
             () -> topologyEntityDao.getCdpLinkTopologyEntities());
 
-    private LoadingCache<String, List<IsIsLinkTopologyEntity>> isIsLinkTopologyEntities = createCache(
+    private final LoadingCache<String, List<IsIsLinkTopologyEntity>> isIsLinkTopologyEntities = createCache(
             ()-> topologyEntityDao.getIsIsLinkTopologyEntities());
 
-    private LoadingCache<String, List<OspfLinkTopologyEntity>> ospfLinkTopologyEntities = createCache (
+    private final LoadingCache<String, List<OspfLinkTopologyEntity>> ospfLinkTopologyEntities = createCache (
             () -> topologyEntityDao.getOspfLinkTopologyEntities());
 
-    private LoadingCache<String, List<LldpLinkTopologyEntity>> lldpLinkTopologyEntities = createCache (
+    private final LoadingCache<String, List<LldpLinkTopologyEntity>> lldpLinkTopologyEntities = createCache (
             () -> topologyEntityDao.getLldpLinkTopologyEntities());
 
-    private LoadingCache<String, List<SnmpInterfaceTopologyEntity>> snmpInterfaceTopologyEntities = createCache(
+    private final LoadingCache<String, List<CdpElementTopologyEntity>> cdpElementTopologyEntities = createCache(
+            () ->  topologyEntityDao.getCdpElementTopologyEntities());
+
+    private final LoadingCache<String, List<IsIsElementTopologyEntity>> isIsElementTopologyEntities = createCache(
+            () -> topologyEntityDao.getIsIsElementTopologyEntities());
+
+    private final LoadingCache<String, List<LldpElementTopologyEntity>> lldpElementTopologyEntities = createCache(
+            () -> topologyEntityDao.getLldpElementTopologyEntities());
+
+    private final LoadingCache<String, List<SnmpInterfaceTopologyEntity>> snmpInterfaceTopologyEntities = createCache(
             () -> topologyEntityDao.getSnmpTopologyEntities());
 
-    private LoadingCache<String, List<IpInterfaceTopologyEntity>> ipInterfaceTopologyEntities = createCache(
+    private final LoadingCache<String, List<IpInterfaceTopologyEntity>> ipInterfaceTopologyEntities = createCache(
             () ->  topologyEntityDao.getIpTopologyEntities());
 
       private <KEY, VALUE> LoadingCache<KEY, VALUE> createCache(Supplier<VALUE> entitySupplier) {
@@ -113,6 +125,21 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
     }
 
     @Override
+    public List<CdpElementTopologyEntity> getCdpElementTopologyEntities() {
+        return this.cdpElementTopologyEntities.getUnchecked(CACHE_KEY);
+    }
+
+    @Override
+    public List<IsIsElementTopologyEntity> getIsIsElementTopologyEntities() {
+        return this.isIsElementTopologyEntities.getUnchecked(CACHE_KEY);
+    }
+
+    @Override
+    public List<LldpElementTopologyEntity> getLldpElementTopologyEntities() {
+        return this.lldpElementTopologyEntities.getUnchecked(CACHE_KEY);
+    }
+
+    @Override
     public List<SnmpInterfaceTopologyEntity> getSnmpInterfaceTopologyEntities(){
         return this.snmpInterfaceTopologyEntities.getUnchecked(CACHE_KEY);
     }
@@ -126,11 +153,11 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
     public void refresh(){
         nodeTopologyEntities.refresh(CACHE_KEY);
         cdpLinkTopologyEntities.refresh(CACHE_KEY);
-        nodeTopologyEntities.refresh(CACHE_KEY);
-        cdpLinkTopologyEntities.refresh(CACHE_KEY);
-        nodeTopologyEntities.refresh(CACHE_KEY);
         isIsLinkTopologyEntities.refresh(CACHE_KEY);
         lldpLinkTopologyEntities.refresh(CACHE_KEY);
+        cdpElementTopologyEntities.refresh(CACHE_KEY);
+        isIsElementTopologyEntities.refresh(CACHE_KEY);
+        lldpElementTopologyEntities.refresh(CACHE_KEY);
         snmpInterfaceTopologyEntities.refresh(CACHE_KEY);
         ipInterfaceTopologyEntities.refresh(CACHE_KEY);
     }

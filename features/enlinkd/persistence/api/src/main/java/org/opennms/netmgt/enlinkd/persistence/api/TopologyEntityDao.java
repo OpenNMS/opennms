@@ -30,9 +30,12 @@ package org.opennms.netmgt.enlinkd.persistence.api;
 
 import java.util.List;
 
+import org.opennms.netmgt.enlinkd.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.IsIsElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
@@ -54,4 +57,7 @@ public interface TopologyEntityDao {
     List<OspfLinkTopologyEntity> getOspfLinkTopologyEntities();
     List<SnmpInterfaceTopologyEntity> getSnmpTopologyEntities();
     List<IpInterfaceTopologyEntity> getIpTopologyEntities();
+    List<CdpElementTopologyEntity> getCdpElementTopologyEntities();
+    List<IsIsElementTopologyEntity> getIsIsElementTopologyEntities();
+    List<LldpElementTopologyEntity> getLldpElementTopologyEntities();
 }

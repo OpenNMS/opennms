@@ -30,9 +30,12 @@ package org.opennms.netmgt.enlinkd.persistence.impl;
 
 import java.util.List;
 
+import org.opennms.netmgt.enlinkd.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.IsIsElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
@@ -88,5 +91,26 @@ public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements T
                 "select new org.opennms.netmgt.model.IpInterfaceTopologyEntity(" +
                         "i.id, i.ipAddress, i.isManaged, i.isSnmpPrimary, i.node.id, i.snmpInterface.id) " +
                         "from org.opennms.netmgt.model.OnmsIpInterface i");
+    }
+
+    @Override
+    public List<CdpElementTopologyEntity> getCdpElementTopologyEntities() {
+        return (List<CdpElementTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.model.CdpElementTopologyEntity(e.id, e.cdpGlobalDeviceId, e.node.id)" +
+                        "from org.opennms.netmgt.model.CdpElement e");
+    }
+
+    @Override
+    public List<LldpElementTopologyEntity> getLldpElementTopologyEntities() {
+        return (List<LldpElementTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.model.LldpElementTopologyEntity(e.id, e.lldpChassisId, e.node.id)" +
+                        "from org.opennms.netmgt.model.LldpElement e");
+    }
+
+    @Override
+    public List<IsIsElementTopologyEntity> getIsIsElementTopologyEntities() {
+        return (List<IsIsElementTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.model.IsIsElementTopologyEntity(e.id, e.isisSysID, e.node.id)" +
+                        "from org.opennms.netmgt.model.IsIsElement e");
     }
 }

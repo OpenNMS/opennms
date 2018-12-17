@@ -58,6 +58,7 @@ import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
+import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
@@ -426,6 +427,9 @@ public class EnhancedLinkdMockDataPopulator {
         EasyMock.expect(m_topologyEntityCache.getOspfLinkTopologyEntities()).andReturn(convertToOspf(getOspfLinks())).anyTimes();
         EasyMock.expect(m_topologyEntityCache.getLldpLinkTopologyEntities()).andReturn(convertToLldp(getLinks())).anyTimes();
         EasyMock.expect(m_topologyEntityCache.getIsIsLinkTopologyEntities()).andReturn(new ArrayList<>()).anyTimes();
+        EasyMock.expect(m_topologyEntityCache.getCdpElementTopologyEntities()).andReturn(new ArrayList<>()).anyTimes();
+        EasyMock.expect(m_topologyEntityCache.getIsIsElementTopologyEntities()).andReturn(new ArrayList<>()).anyTimes();
+        EasyMock.expect(m_topologyEntityCache.getLldpElementTopologyEntities()).andReturn(convertToLldpElements(getLldpElements())).anyTimes();
         EasyMock.expect(m_topologyEntityCache.getSnmpInterfaceTopologyEntities()).andReturn(getSnmpInterfaceTopologyEntities()).anyTimes();
         EasyMock.expect(m_topologyEntityCache.getIpInterfaceTopologyEntities()).andReturn(getIpInterfaceTopologyEntities()).anyTimes();
         EasyMock.expect(m_nodeDao.getAllLabelsById());
@@ -451,12 +455,16 @@ public class EnhancedLinkdMockDataPopulator {
         EasyMock.replay(m_ipNetToMediaDao);
     }
 
+    private List<LldpElementTopologyEntity> convertToLldpElements(List<LldpElement> lldpElements) {
+        return lldpElements.stream().map(LldpElementTopologyEntity::create).collect(Collectors.toList());
+    }
+
     private List<OspfLinkTopologyEntity> convertToOspf(List<OspfLink> links) {
-        return links.stream().map(link -> new OspfLinkTopologyEntity(link)).collect(Collectors.toList());
+        return links.stream().map(OspfLinkTopologyEntity::create).collect(Collectors.toList());
     }
 
     private List<LldpLinkTopologyEntity> convertToLldp(List<LldpLink> links) {
-        return links.stream().map(link -> new LldpLinkTopologyEntity(link)).collect(Collectors.toList());
+        return links.stream().map(LldpLinkTopologyEntity::create).collect(Collectors.toList());
     }
 
     public void tearDown() {

@@ -393,7 +393,6 @@ public class EnhancedLinkdTopologyProviderTest {
         m_databasePopulator.tearDown();
         if(m_topologyProvider != null) {
             m_topologyProvider.resetContainer();
-            m_topologyProvider.setLldpLinkDao(m_databasePopulator.getLldpLinkDao());
         }
     }
 }

@@ -48,43 +48,29 @@ import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.enlinkd.model.CdpElementTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
+import org.opennms.netmgt.enlinkd.model.IsIsElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
-import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
-import org.opennms.netmgt.enlinkd.model.CdpElement;
-import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
-import org.opennms.netmgt.enlinkd.model.IsIsElement;
-import org.opennms.netmgt.enlinkd.model.IsIsLink;
-import org.opennms.netmgt.enlinkd.model.LldpElement;
-import org.opennms.netmgt.enlinkd.model.LldpLink;
-import org.opennms.netmgt.enlinkd.model.OspfLink;
-import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
-import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
-import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
-import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
-import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
-import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
-import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.model.FilterManager;
-import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionOperations;
@@ -128,12 +114,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private TopologyEntityCache m_topologyEntityCache;
     private FilterManager m_filterManager;
 
-    private LldpLinkDao m_lldpLinkDao;
-    private LldpElementDao m_lldpElementDao;
-    private CdpElementDao m_cdpElementDao;
-    private OspfLinkDao m_ospfLinkDao;
-    private IsIsLinkDao m_isisLinkDao;
-    private IsIsElementDao m_isisElementDao;
     private BridgeTopologyService m_bridgeTopologyService;
     private IpNetToMediaDao m_ipNetToMediaDao;
 
@@ -268,13 +248,13 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
         List<LldpLinkTopologyEntity> allLinks = m_topologyEntityCache.getLldpLinkTopologyEntities();
         // Index the LLDP elements by node id
-        Map<Integer, LldpElement> nodelldpelementidMap = new HashMap<Integer, LldpElement>();
+        Map<Integer, LldpElementTopologyEntity> nodelldpelementidMap = new HashMap<>();
         Map<Integer, LinkdVertex> nodeVertexMap = new HashMap<Integer, LinkdVertex>();
-        for (LldpElement lldpelement: m_lldpElementDao.findAll()) {
-            nodelldpelementidMap.put(lldpelement.getNode().getId(), lldpelement);
-            LinkdVertex vertex = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, lldpelement.getNode().getNodeId());
+        for (LldpElementTopologyEntity lldpelement: m_topologyEntityCache.getLldpElementTopologyEntities()) {
+            nodelldpelementidMap.put(lldpelement.getNodeId(), lldpelement);
+            LinkdVertex vertex = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, lldpelement.getNodeIdAsString());
             vertex.getProtocolSupported().add(ProtocolSupported.LLDP);
-            nodeVertexMap.put(lldpelement.getNode().getId(), vertex);
+            nodeVertexMap.put(lldpelement.getNodeId(), vertex);
             System.err.println(vertex.getId());
         }
 
@@ -295,7 +275,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         }
     }
 
-    List<Pair<LldpLinkTopologyEntity, LldpLinkTopologyEntity>> matchLldpLinks(Map<Integer, LldpElement> nodelldpelementidMap, List<LldpLinkTopologyEntity> allLinks) {
+    List<Pair<LldpLinkTopologyEntity, LldpLinkTopologyEntity>> matchLldpLinks(Map<Integer, LldpElementTopologyEntity> nodelldpelementidMap, List<LldpLinkTopologyEntity> allLinks) {
         List<Pair<LldpLinkTopologyEntity, LldpLinkTopologyEntity>> results = new ArrayList<>();
 
         // 1.) create mapping
@@ -418,12 +398,13 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
 
     private void getCdpLinks() {
-        List<CdpElement> cdpElements = m_cdpElementDao.findAll();
+        List<CdpElementTopologyEntity> cdpElements = m_topologyEntityCache.getCdpElementTopologyEntities();
         List<CdpLinkTopologyEntity> allLinks = m_topologyEntityCache.getCdpLinkTopologyEntities();
         List<Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> matchedCdpLinks = matchCdpLinks(cdpElements, allLinks);
         for (Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity> pair : matchedCdpLinks) {
             connectCdpLinkPair(pair);
         }
+
     }
 
     private void connectCdpLinkPair(Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity> pair){
@@ -443,12 +424,12 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 ProtocolSupported.CDP);
     }
 
-    List<Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> matchCdpLinks(final List<CdpElement> cdpElements, final List<CdpLinkTopologyEntity> allLinks) {
+    List<Pair<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> matchCdpLinks(final List<CdpElementTopologyEntity> cdpElements, final List<CdpLinkTopologyEntity> allLinks) {
 
         // 1. create lookup maps:
-        Map<Integer, CdpElement> cdpelementmap = new HashMap<Integer, CdpElement>();
-        for (CdpElement cdpelement: cdpElements) {
-            cdpelementmap.put(cdpelement.getNode().getId(), cdpelement);
+        Map<Integer, CdpElementTopologyEntity> cdpelementmap = new HashMap<>();
+        for (CdpElementTopologyEntity cdpelement: cdpElements) {
+            cdpelementmap.put(cdpelement.getNodeId(), cdpelement);
         }
         Map<CompositeKey, CdpLinkTopologyEntity> targetLinkMap = new HashMap<>();
         for (CdpLinkTopologyEntity targetLink : allLinks) {
@@ -469,7 +450,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getCdpLinks: source: {} ", sourceLink);
             }
-            CdpElement sourceCdpElement = cdpelementmap.get(sourceLink.getNodeId());
+            CdpElementTopologyEntity sourceCdpElement = cdpelementmap.get(sourceLink.getNodeId());
 
             CdpLinkTopologyEntity targetLink = targetLinkMap.get(new CompositeKey(sourceLink.getCdpInterfaceName(),
                     sourceLink.getCdpCacheDevicePort(),
@@ -498,7 +479,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private void getIsIsLinks() {
 
-        List<IsIsElement> elements = m_isisElementDao.findAll();
+        List<IsIsElementTopologyEntity> elements = m_topologyEntityCache.getIsIsElementTopologyEntities();
         List<IsIsLinkTopologyEntity> allLinks = m_topologyEntityCache.getIsIsLinkTopologyEntities();
 
         List<Pair<IsIsLinkTopologyEntity, IsIsLinkTopologyEntity>> results = matchIsIsLinks(elements, allLinks);
@@ -521,17 +502,17 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         }
     }
 
-    List<Pair<IsIsLinkTopologyEntity, IsIsLinkTopologyEntity>> matchIsIsLinks(final List<IsIsElement> elements, final List<IsIsLinkTopologyEntity> allLinks) {
+    List<Pair<IsIsLinkTopologyEntity, IsIsLinkTopologyEntity>> matchIsIsLinks(final List<IsIsElementTopologyEntity> elements, final List<IsIsLinkTopologyEntity> allLinks) {
 
         // 1.) create lookupMaps
-        Map<Integer, IsIsElement> elementmap = new HashMap<Integer, IsIsElement>();
-        for (IsIsElement element: elements) {
-            elementmap.put(element.getNode().getId(), element);
+        Map<Integer, IsIsElementTopologyEntity> elementmap = new HashMap<>();
+        for (IsIsElementTopologyEntity element: elements) {
+            elementmap.put(element.getNodeId(), element);
         }
 
         Map<CompositeKey, IsIsLinkTopologyEntity> targetLinkMap = new HashMap<>();
         for (IsIsLinkTopologyEntity targetLink : allLinks) {
-            IsIsElement targetElement = elementmap.get(targetLink.getNodeId());
+          IsIsElementTopologyEntity targetElement = elementmap.get(targetLink.getNodeId());
             targetLinkMap.put(new CompositeKey(targetLink.getIsisISAdjIndex(),
                       targetElement.getIsisSysID(),
                       targetLink.getIsisISAdjNeighSysID()), targetLink);
@@ -548,7 +529,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getIsIsLinks: source: {}", sourceLink);
             }
-            IsIsElement sourceElement = elementmap.get(sourceLink.getNodeId());
+            IsIsElementTopologyEntity sourceElement = elementmap.get(sourceLink.getNodeId());
             IsIsLinkTopologyEntity targetLink = targetLinkMap.get(new CompositeKey(sourceLink.getIsisISAdjIndex(),
                     sourceLink.getIsisISAdjNeighSysID(),
                     sourceElement.getIsisSysID()));
@@ -742,46 +723,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         return m_filterManager;
     }
 
-    public void setLldpLinkDao(LldpLinkDao lldpLinkDao) {
-        m_lldpLinkDao = lldpLinkDao;
-    }
-
-    public LldpLinkDao getLldpLinkDao() {
-        return m_lldpLinkDao;
-    }
-
-    public void setLldpElementDao(LldpElementDao lldpElementDao) {
-        m_lldpElementDao = lldpElementDao;
-    }
-
-    public LldpElementDao getLldpElementDao() {
-        return m_lldpElementDao;
-    }
-
-    public void setOspfLinkDao(OspfLinkDao ospfLinkDao) {
-        m_ospfLinkDao = ospfLinkDao;
-    }
-
-    public OspfLinkDao getOspfLinkDao(){
-        return m_ospfLinkDao;
-    }
-
-    public IsIsLinkDao getIsisLinkDao() {
-        return m_isisLinkDao;
-    }
-
-    public void setIsisLinkDao(IsIsLinkDao isisLinkDao) {
-        m_isisLinkDao = isisLinkDao;
-    }
-
-    public IsIsElementDao getIsisElementDao() {
-        return m_isisElementDao;
-    }
-
-    public void setIsisElementDao(IsIsElementDao isisElementDao) {
-        m_isisElementDao = isisElementDao;
-    }
-
     public BridgeTopologyService getBridgeTopologyService() {
         return m_bridgeTopologyService;
     }
@@ -796,14 +737,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     
     public void setIpNetToMediaDao(IpNetToMediaDao ipNetToMediaDao) {
         m_ipNetToMediaDao = ipNetToMediaDao;
-    }
-
-    public CdpElementDao getCdpElementDao() {
-        return m_cdpElementDao;
-    }
-
-    public void setCdpElementDao(CdpElementDao cdpElementDao) {
-        m_cdpElementDao = cdpElementDao;
     }
         
     @Override
