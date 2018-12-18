@@ -54,7 +54,7 @@ public class EventConfMatcherTest {
         eventConfDao = new DefaultEventConfDao();
         eventConfDao.setConfigResource(new FileSystemResource(new File("src/test/resources/matcher-test.events.xml")));
         eventConfDao.afterPropertiesSet();
-        Assert.assertEquals(5, eventConfDao.getAllEvents().size());
+        Assert.assertEquals(7, eventConfDao.getAllEvents().size());
     }
 
     @After

@@ -193,10 +193,13 @@ public abstract class EventMatchers  {
 	public static Field field(String name) {
 
         if (name.startsWith("parm[") && name.endsWith("]")) {
+            String parmName = name.substring(5, name.length() - 1);
             return new EventField(name) {
                 public String get(Event event) {
-                    String parmName = name.substring(name.indexOf("parm[" + 1), name.indexOf(']'));
-                    return event.getParm(parmName).getValue().toString();
+                    if (event != null && event.getParm(parmName) != null && event.getParm(parmName).getValue() != null) {
+                        return event.getParm(parmName).getValue().getContent();
+                    }
+                    return null;
                 }
             };
         }
