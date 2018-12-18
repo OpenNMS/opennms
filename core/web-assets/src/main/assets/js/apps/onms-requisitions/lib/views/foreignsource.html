@@ -43,10 +43,11 @@
     </div>
   </div>
   <div class="col-md-6">
-    <div class="form-group" ng-class="{ 'has-error' : fsForm.scanInterval.$invalid }">
+    <div class="form-group">
       <label class="col-form-label" for="scanInterval">Scan Interval</label>
-      <input class="form-control" type="text" id="scanInterval" name="scanInterval" placeholder="Scan Interval" ng-model="foreignSourceDef['scan-interval']" required></input>
-      <div ng-show="fsForm.scanInterval.$invalid" class="form-text text-muted">Scan Interval is required.</div>
+      <input class="form-control" type="text" id="scanInterval" name="scanInterval" placeholder="Scan Interval" ng-model="foreignSourceDef['scan-interval']" required
+             ng-class="{ 'is-invalid' : fsForm.scanInterval.$invalid }">
+      <div ng-show="fsForm.scanInterval.$invalid" class="invalid-feedback">Scan Interval is required.</div>
     </div>
   </div>
 </form>
