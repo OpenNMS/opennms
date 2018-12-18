@@ -48,68 +48,68 @@ import org.slf4j.LoggerFactory;
 public class WsManAssetAdapterConfigFactory {
     private static final Logger LOG = LoggerFactory.getLogger(WsManAssetAdapterConfigFactory.class);
 
-	/**
-	 * Singleton instance of configuration that this factory provides.
-	 */
-	private final WsManAssetAdapterConfigManager m_config;
+    /**
+     * Singleton instance of configuration that this factory provides.
+     */
+    private final WsManAssetAdapterConfigManager m_config;
 
-	public WsManAssetAdapterConfigFactory() throws IOException {
-	    final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.WSMAN_ASSET_ADAPTER_CONFIG_FILE_NAME);
-		LOG.debug("init: config file path: {}", cfgFile.getPath());
-		final InputStream reader = new FileInputStream(cfgFile);
-		m_config = new WsManAssetAdapterConfigManager(cfgFile.lastModified(), reader);
-		IOUtils.closeQuietly(reader);
-	}
+    public WsManAssetAdapterConfigFactory() throws IOException {
+        final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.WSMAN_ASSET_ADAPTER_CONFIG_FILE_NAME);
+        LOG.debug("init: config file path: {}", cfgFile.getPath());
+        final InputStream reader = new FileInputStream(cfgFile);
+        m_config = new WsManAssetAdapterConfigManager(cfgFile.lastModified(), reader);
+        IOUtils.closeQuietly(reader);
+    }
 
-	/**
-	 * Reload the config from the default config file
-	 *
-	 * @exception java.io.IOException
-	 *                Thrown if the specified config file cannot be read/loaded
-	 * @throws java.io.IOException if any.
-	 */
-	public void reload() throws IOException {
-		m_config.update();
-	}
+    /**
+     * Reload the config from the default config file
+     *
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read/loaded
+     * @throws java.io.IOException if any.
+     */
+    public void reload() throws IOException {
+        m_config.update();
+    }
 
-	/**
-	 * <p>saveXml</p>
-	 *
-	 * @param xml a {@link java.lang.String} object.
-	 * @throws java.io.IOException if any.
-	 */
-	protected void save(final String xml) throws IOException {
-	    m_config.getWriteLock().lock();
-	    try {
-    		if (xml != null) {
-    		    final long timestamp = System.currentTimeMillis();
-    			final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.WSMAN_ASSET_ADAPTER_CONFIG_FILE_NAME);
-    			LOG.debug("saveXml: saving config file at {}: {}", timestamp, cfgFile.getPath());
-    			final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), StandardCharsets.UTF_8);
-    			fileWriter.write(xml);
-    			fileWriter.flush();
-    			fileWriter.close();
-    			LOG.debug("saveXml: finished saving config file: {}", cfgFile.getPath());
-    		}
-	    } finally {
-	        m_config.getWriteLock().unlock();
-	    }
-	}
+    /**
+     * <p>saveXml</p>
+     *
+     * @param xml a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     */
+    protected void save(final String xml) throws IOException {
+        m_config.getWriteLock().lock();
+        try {
+            if (xml != null) {
+                final long timestamp = System.currentTimeMillis();
+                final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.WSMAN_ASSET_ADAPTER_CONFIG_FILE_NAME);
+                LOG.debug("saveXml: saving config file at {}: {}", timestamp, cfgFile.getPath());
+                final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), StandardCharsets.UTF_8);
+                fileWriter.write(xml);
+                fileWriter.flush();
+                fileWriter.close();
+                LOG.debug("saveXml: finished saving config file: {}", cfgFile.getPath());
+            }
+        } finally {
+            m_config.getWriteLock().unlock();
+        }
+    }
 
-	/**
-	 * Return the singleton instance of this factory.
-	 *
-	 * @return The current factory instance.
-	 * @throws IOException 
-	 * @throws java.lang.IllegalStateException
-	 *             Thrown if the factory has not yet been initialized.
-	 */
-	public WsManAssetAdapterConfig getInstance() {
-	    m_config.getReadLock().lock();
-	    try {
-	        return m_config;
-	    } finally {
-	        m_config.getReadLock().unlock();
-	    }
-	}
+    /**
+     * Return the singleton instance of this factory.
+     *
+     * @return The current factory instance.
+     * @throws IOException 
+     * @throws java.lang.IllegalStateException
+     *             Thrown if the factory has not yet been initialized.
+     */
+    public WsManAssetAdapterConfig getInstance() {
+        m_config.getReadLock().lock();
+        try {
+            return m_config;
+        } finally {
+            m_config.getReadLock().unlock();
+        }
+    }
 }

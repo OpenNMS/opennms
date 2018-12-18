@@ -40,8 +40,8 @@ import java.io.IOException;
  * This class holds all OpenNMS related config filenames
  */
 public abstract class ConfigFileConstants {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(ConfigFileConstants.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigFileConstants.class);
 
     private static final String[] FILE_ID_TO_NAME;
 

@@ -37,11 +37,9 @@ import org.opennms.netmgt.config.wsmanAsset.adapter.AssetField;
  */
 public interface WsManAssetAdapterConfig {
 
-	public AssetField[] getAssetFieldsForAddress(InetAddress address, String vendor);
+    public AssetField[] getAssetFieldsForAddress(InetAddress address, String vendor);
 
-	/**
-	 */
-	void update() throws Exception;
+    void update() throws Exception;
 
     public Lock getReadLock();
 

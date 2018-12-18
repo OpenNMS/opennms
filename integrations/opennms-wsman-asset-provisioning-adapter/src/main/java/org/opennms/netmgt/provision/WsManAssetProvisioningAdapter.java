@@ -84,7 +84,7 @@ import com.google.common.collect.Lists;
 
 @EventListener(name="WsManAssetProvisioningAdapter")
 public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
-    private static final Logger LOG = LoggerFactory.getLogger(WsManAssetProvisioningAdapter.class);
+        private static final Logger LOG = LoggerFactory.getLogger(WsManAssetProvisioningAdapter.class);
 
         private NodeDao m_nodeDao;
         private EventForwarder m_eventForwarder;
@@ -186,9 +186,9 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
                     m_config.getReadLock().unlock();
                 }
                                                                      
-        node.setAssetRecord(asset);
-        m_nodeDao.saveOrUpdate(node);
-                m_nodeDao.flush();
+                node.setAssetRecord(asset);
+                m_nodeDao.saveOrUpdate(node);
+                        m_nodeDao.flush();
         }
 
         private static String fetchWsManAssetString(final WSManClient client, final WSManEndpoint endpoint, final List<WqlObj> wqlObjs, final String formatString) {
@@ -274,7 +274,7 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
                 String vendor = m_template.execute(new TransactionCallback<String>() {
                         @Override
                         public String doInTransaction(TransactionStatus arg0) {
-				 LOG.debug("doUpdate: Fetching vendor asset string");
+				LOG.debug("doUpdate: Fetching vendor asset string");
                                 return node.getAssetRecord().getVendor();
                         }
                 });
