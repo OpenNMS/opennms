@@ -28,141 +28,70 @@
 
 package org.opennms.netmgt.enlinkd.model;
 
-import static org.opennms.core.utils.InetAddressUtils.str;
+import java.io.Serializable;
 
-import java.net.InetAddress;
-import java.util.Objects;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.ReadOnlyEntity;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
-public class NodeTopologyEntity {
+import com.google.common.base.MoreObjects;
 
-    public static NodeTopologyEntity create(OnmsNode node) {
-        if (node == null) {
-            return null;
-        }
-        if (node.getPrimaryInterface() != null) {
-            return new NodeTopologyEntity(node.getId(), 
-                               node.getLabel(),
-                               node.getPrimaryInterface().getIpAddress(),
-                               node.getSysObjectId(), 
-                               node.getSysName(),
-                               node.getLocation() == null ? null : node.getLocation().getLocationName(),
-                               node.getType(),
-                               node.getPrimaryInterface().isManaged());
-        }
-        OnmsIpInterface elected = null;
-        for (OnmsIpInterface ipinterface: node.getIpInterfaces()) {
-            if (elected == null) {
-                elected = ipinterface;
-                continue;
-            }
-            if (!elected.isManaged() && ipinterface.isManaged()) {
-                elected = ipinterface;
-                continue;
-            }
-        }
-        if (elected != null) {
-            return new NodeTopologyEntity(node.getId(), 
-                               node.getLabel(),
-                               elected.getIpAddress(),
-                               node.getSysObjectId(), node.getSysName(),node.getLocation() == null ? null : node.getLocation().getLocationName(),
-                               node.getType(),
-                               elected.isManaged());
-        }
-        return new NodeTopologyEntity(node.getId(), 
-                           node.getLabel(),
-                           null,
-                           node.getSysObjectId(), 
-                           node.getSysName(),
-                           node.getLocation() == null ? null : node.getLocation().getLocationName(),
-                           node.getType(),
-                           false);
+@ReadOnlyEntity
+public class NodeTopologyEntity implements Serializable {
 
-    }
-    private final int m_nodeId;
-    private final InetAddress m_primaryAddr;
-    private final String m_sysoid;
-    private final String m_sysname;
-    private final String m_label;
-    private final String m_location;
-    private final OnmsNode.NodeType m_type;
-    private final boolean m_isManaged;
+    private Integer id;
+    private OnmsNode.NodeType type;
+    private String sysObjectId;
+    private String label;
+    private String location;
 
-    public String getLocation() {
-        return m_location;
+    public NodeTopologyEntity(Integer nodeid, OnmsNode.NodeType nodetype, String nodesysoid, String nodelabel, String location){
+        this.id = nodeid;
+        this.type = nodetype;
+        this.sysObjectId = nodesysoid;
+        this.label = nodelabel;
+        this.location = location;
     }
 
-    private NodeTopologyEntity(final int nodeId, final String label,
-            final InetAddress snmpPrimaryAddr, final String sysoid, final String sysname, final String location, final OnmsNode.NodeType type, final boolean isManaged) {
-        m_nodeId = nodeId;
-        m_label=label;
-        m_primaryAddr = snmpPrimaryAddr;
-        m_sysoid = sysoid;
-        m_sysname = sysname;
-        m_location = location;
-        m_type = type;
-        m_isManaged = isManaged;
+    public NodeTopologyEntity(Integer id, OnmsNode.NodeType type, String sysObjectId, String label, OnmsMonitoringLocation location){
+        this(id, type, sysObjectId, label, location.getLocationName());
     }
 
-    public String getId() {
-        return Integer.toString(m_nodeId);
+    public static NodeTopologyEntity toNodeTopologyInfo(OnmsNode node){
+        return new NodeTopologyEntity(node.getId(), node.getType(), node.getSysObjectId(), node.getLabel(), node.getLocation().getLocationName());
     }
 
-
-    public int getNodeId() {
-        return m_nodeId;
-    }
-
-    public InetAddress getPrimaryIpAddr() {
-        return m_primaryAddr;
-    }
-
-    public String getSysoid() {
-        return m_sysoid;
-    }
-
-    public String getSysname() {
-        return m_sysname;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        NodeTopologyEntity node = (NodeTopologyEntity) o;
-        return Objects.equals(m_nodeId, node.m_nodeId) &&
-                Objects.equals(m_primaryAddr, node.m_primaryAddr);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(m_nodeId, m_primaryAddr);
-    }
-
-    public String getLabel() {
-        return m_label;
+    public Integer getId() {
+        return id;
     }
 
     public OnmsNode.NodeType getType() {
-        return m_type;
+        return type;
     }
 
-    public boolean isManaged() {
-        return m_isManaged;
+
+    public String getSysObjectId() {
+        return sysObjectId;
+    }
+
+
+    public String getLabel() {
+        return label;
+    }
+
+
+    public String getLocation() {
+        return location;
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-                .append("nodeId", m_nodeId)
-                .append("label",m_label)
-                .append("type",m_type)
-                .append("primaryAddr", str(m_primaryAddr))
-                .append("sysOid", m_sysoid)
-                .append("location", m_location).toString();
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("type", type)
+                .add("sysObjectId", sysObjectId)
+                .add("label", label)
+                .add("location", location)
+                .toString();
     }
-
 }

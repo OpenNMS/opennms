@@ -39,7 +39,9 @@ import java.util.stream.Collectors;
 
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
+import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
@@ -166,32 +168,26 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
     }
 
     @Override
-    public List<LldpElement> findAllLldpElements() {
-        return m_lldpElementDao.findAll();
+    public List<LldpElementTopologyEntity> findAllLldpElements() {
+        return getTopologyEntityCache().getLldpElementTopologyEntities();
     }
 
     @Override
-    public List<LldpLink> findAllLldpLinks() {
-        return m_lldpLinkDao.findAll();
-    }
-
-    @Override
-    public List<TopologyConnection<LldpLink, LldpLink>> match() {
+    public List<TopologyConnection<LldpLinkTopologyEntity, LldpLinkTopologyEntity>> match() {
         
-            List<TopologyConnection<LldpLink, LldpLink>> results = new ArrayList<>();
+            List<TopologyConnection<LldpLinkTopologyEntity, LldpLinkTopologyEntity>> results = new ArrayList<>();
 
-            Map<Integer, LldpElement> nodelldpelementidMap = m_lldpElementDao.findAll().
-                    stream().
-                    collect(Collectors.toMap(lldpelem -> lldpelem.getNode().getId(), lldpelem -> lldpelem));
+            Map<Integer, LldpElementTopologyEntity> nodelldpelementidMap = getTopologyEntityCache().getLldpElementTopologyEntities().stream()
+                    .collect(Collectors.toMap(lldpelem -> lldpelem.getNodeId(), lldpelem -> lldpelem));
             
-            List<LldpLink> allLinks = m_lldpLinkDao.findAll();
+            List<LldpLinkTopologyEntity> allLinks = getTopologyEntityCache().getLldpLinkTopologyEntities();
             // 1.) create mapping
-            Map<CompositeKey, LldpLink> targetLinkMap = new HashMap<>();
-            for(LldpLink targetLink : allLinks){
+            Map<CompositeKey, LldpLinkTopologyEntity> targetLinkMap = new HashMap<>();
+            for(LldpLinkTopologyEntity targetLink : allLinks){
 
                 CompositeKey key = new CompositeKey(
                         targetLink.getLldpRemChassisId(),
-                        nodelldpelementidMap.get(targetLink.getNode().getId()).getLldpChassisId(),
+                        nodelldpelementidMap.get(targetLink.getNodeId()).getLldpChassisId(),
                         targetLink.getLldpPortId(),
                         targetLink.getLldpPortIdSubType(),
                         targetLink.getLldpRemPortId(),
@@ -201,11 +197,11 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
 
             // 2.) iterate
             Set<Integer> parsed = new HashSet<Integer>();
-            for (LldpLink sourceLink : allLinks) {
+            for (LldpLinkTopologyEntity sourceLink : allLinks) {
                 if (parsed.contains(sourceLink.getId())) {
                     continue;
                 }
-                String sourceLldpChassisId = nodelldpelementidMap.get(sourceLink.getNode().getId()).getLldpChassisId();
+                String sourceLldpChassisId = nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpChassisId();
                 if (sourceLldpChassisId.equals(sourceLink.getLldpRemChassisId())) {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("getLldpLinks: self link not adding source: {}",sourceLink);
@@ -218,13 +214,13 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
                 }
 
                 CompositeKey key = new CompositeKey(
-                        nodelldpelementidMap.get(sourceLink.getNode().getId()).getLldpChassisId(),
+                        nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpChassisId(),
                         sourceLink.getLldpRemChassisId(),
                         sourceLink.getLldpRemPortId(),
                         sourceLink.getLldpRemPortIdSubType(),
                         sourceLink.getLldpPortId(),
                         sourceLink.getLldpPortIdSubType());
-                LldpLink targetLink = targetLinkMap.get(key);
+                LldpLinkTopologyEntity targetLink = targetLinkMap.get(key);
 
                 if (targetLink == null) {
                     LOG.debug("getLldpLinks: cannot found target for source: '{}'", sourceLink.getId());
@@ -243,5 +239,4 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
        // }
 
     }
-
 }

@@ -30,8 +30,9 @@ package org.opennms.netmgt.enlinkd;
 
 import java.util.Map;
 
-import org.opennms.netmgt.enlinkd.model.LldpElement;
-import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
@@ -65,16 +66,17 @@ public class LldpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     @Override
     public OnmsTopology buildTopology() throws OnmsTopologyException {
         Map<Integer, NodeTopologyEntity> nodeMap= getNodeMap();
+        Map<Integer, IpInterfaceTopologyEntity> ipMap= getIpPrimaryMap();
         OnmsTopology topology = new OnmsTopology();
-        for (LldpElement element: m_lldpTopologyService.findAllLldpElements()) {
-            topology.getVertices().add(create(nodeMap.get(element.getNode().getId())));
+        for (LldpElementTopologyEntity element: m_lldpTopologyService.findAllLldpElements()) {
+            topology.getVertices().add(create(nodeMap.get(element.getNodeId()),ipMap.get(element.getNodeId()).getIpAddress()));
         }
         
-        for (TopologyConnection<LldpLink, LldpLink> pair : m_lldpTopologyService.match()) {
-            LldpLink sourceLink = pair.getLeft();
-            LldpLink targetLink = pair.getRight();
-            OnmsTopologyVertex source = topology.getVertex(sourceLink.getNode().getId().toString());
-            OnmsTopologyVertex target = topology.getVertex(targetLink.getNode().getId().toString());
+        for (TopologyConnection<LldpLinkTopologyEntity, LldpLinkTopologyEntity> pair : m_lldpTopologyService.match()) {
+            LldpLinkTopologyEntity sourceLink = pair.getLeft();
+            LldpLinkTopologyEntity targetLink = pair.getRight();
+            OnmsTopologyVertex source = topology.getVertex(sourceLink.getNodeId().toString());
+            OnmsTopologyVertex target = topology.getVertex(targetLink.getNodeId().toString());
             OnmsTopologyPort sourcePort = OnmsTopologyPort.create(source, sourceLink.getLldpPortIfindex());
             OnmsTopologyPort targetPort = OnmsTopologyPort.create(target, targetLink.getLldpPortIfindex());
             sourcePort.setPort(sourceLink.getLldpPortDescr());

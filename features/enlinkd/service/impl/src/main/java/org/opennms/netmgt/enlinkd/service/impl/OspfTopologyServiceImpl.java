@@ -39,6 +39,7 @@ import java.util.Set;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
@@ -173,23 +174,18 @@ public class OspfTopologyServiceImpl extends TopologyServiceImpl implements Ospf
     }
 
     @Override
-    public List<OspfLink> findAllOspfLinks() {
-        return m_ospfLinkDao.findAll();
-    }
-
-    @Override
-    public List<TopologyConnection<OspfLink, OspfLink>> match() {
-        List<OspfLink> allLinks = m_ospfLinkDao.findAll();
-        List<TopologyConnection<OspfLink, OspfLink>> results = new ArrayList<>();
+    public List<TopologyConnection<OspfLinkTopologyEntity, OspfLinkTopologyEntity>> match() {
+        List<OspfLinkTopologyEntity> allLinks = getTopologyEntityCache().getOspfLinkTopologyEntities();
+        List<TopologyConnection<OspfLinkTopologyEntity, OspfLinkTopologyEntity>> results = new ArrayList<>();
         Set<Integer> parsed = new HashSet<Integer>();
 
         // build mapping:
-        Map<CompositeKey, OspfLink> targetLinks = new HashMap<>();
-        for(OspfLink targetLink : allLinks){
+        Map<CompositeKey, OspfLinkTopologyEntity> targetLinks = new HashMap<>();
+        for(OspfLinkTopologyEntity targetLink : allLinks){
             targetLinks.put(new CompositeKey(targetLink.getOspfIpAddr(), targetLink.getOspfRemIpAddr()) , targetLink);
         }
 
-        for(OspfLink sourceLink : allLinks) {
+        for(OspfLinkTopologyEntity sourceLink : allLinks) {
             if (parsed.contains(sourceLink.getId())) {
                 continue;
             }
@@ -197,7 +193,7 @@ public class OspfTopologyServiceImpl extends TopologyServiceImpl implements Ospf
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getOspfLinks: source: {}", sourceLink);
             }
-            OspfLink targetLink = targetLinks.get(new CompositeKey(sourceLink.getOspfRemIpAddr() , sourceLink.getOspfIpAddr()));
+            OspfLinkTopologyEntity targetLink = targetLinks.get(new CompositeKey(sourceLink.getOspfRemIpAddr() , sourceLink.getOspfIpAddr()));
             if(targetLink == null) {
                 LOG.debug("getOspfLinks: cannot find target for source: '{}'", sourceLink.getId());
                 continue;
@@ -214,5 +210,4 @@ public class OspfTopologyServiceImpl extends TopologyServiceImpl implements Ospf
         return results;
 
     }
-
 }

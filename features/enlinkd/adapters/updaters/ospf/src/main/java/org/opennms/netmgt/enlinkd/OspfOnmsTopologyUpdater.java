@@ -31,9 +31,10 @@ package org.opennms.netmgt.enlinkd;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
-import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
@@ -66,16 +67,17 @@ public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     @Override
     public OnmsTopology buildTopology() throws OnmsTopologyException {
         Map<Integer, NodeTopologyEntity> nodeMap=getNodeMap();
+        Map<Integer, IpInterfaceTopologyEntity> ipMap= getIpPrimaryMap();
         OnmsTopology topology = new OnmsTopology();
         for (OspfElement element: m_ospfTopologyService.findAllOspfElements()) {
-            topology.getVertices().add(create(nodeMap.get(element.getNode().getId())));
+            topology.getVertices().add(create(nodeMap.get(element.getNode().getId()),ipMap.get(element.getNode().getId()).getIpAddress()));
         }
         
-        for(TopologyConnection<OspfLink, OspfLink> pair : m_ospfTopologyService.match()) {
-            OspfLink sourceLink = pair.getLeft();
-            OspfLink targetLink = pair.getRight();
-            OnmsTopologyVertex source = topology.getVertex(sourceLink.getNode().getId().toString());
-            OnmsTopologyVertex target = topology.getVertex(targetLink.getNode().getId().toString());
+        for(TopologyConnection<OspfLinkTopologyEntity, OspfLinkTopologyEntity> pair : m_ospfTopologyService.match()) {
+            OspfLinkTopologyEntity sourceLink = pair.getLeft();
+            OspfLinkTopologyEntity targetLink = pair.getRight();
+            OnmsTopologyVertex source = topology.getVertex(sourceLink.getNodeId().toString());
+            OnmsTopologyVertex target = topology.getVertex(targetLink.getNodeId().toString());
             OnmsTopologyPort sourcePort = OnmsTopologyPort.create(source, sourceLink.getOspfIfIndex());
             sourcePort.setPort(InetAddressUtils.str(sourceLink.getOspfIpAddr()));
             sourcePort.setAddr(InetAddressUtils.str(targetLink.getOspfRemIpAddr()));

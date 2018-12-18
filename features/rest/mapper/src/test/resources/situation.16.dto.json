@@ -59,6 +59,7 @@
       "severity" : "MAJOR",
       "reductionKey" : "ALARM2",
       "label" : "OpenNMS-defined node event: interfaceDown",
+      "nodeLabel": "n2",
       "logMessage" : "logit again"
     }, {
       "id" : 34,
@@ -67,6 +68,7 @@
       "reductionKey" : "ALARM1",
       "description" : "ALARM1-DESC",
       "label" : "OpenNMS-defined node event: interfaceDown",
+      "nodeLabel": "n1",
       "logMessage" : "logit"
     } ],
   "affectedNodeCount" : 2

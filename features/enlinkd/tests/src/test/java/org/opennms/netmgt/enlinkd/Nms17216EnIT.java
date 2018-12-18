@@ -773,16 +773,23 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
 
         m_cdpTopologyService.updatesAvailable();
         assertEquals(2, m_nodeTopologyService.findAllSnmpNode().size());
-        assertEquals(2, m_nodeTopologyService.findAll().size());
+        assertEquals(2, m_nodeTopologyService.findAllNode().size());
+        assertEquals(6, m_nodeTopologyService.findAllIp().size());
         
-        m_nodeTopologyService.findAll().stream().forEach( node -> {
+        m_nodeTopologyService.findAllNode().stream().forEach( node -> {
             System.err.println(node);
             assertNotNull(node.getId());
             assertNotNull(node.getLabel());
-            assertNotNull(node.getPrimaryIpAddr());
-            assertTrue(node.isManaged());
         });
-        
+
+        m_nodeTopologyService.findAllIp().stream().forEach( ip -> {
+            System.err.println(ip);
+            assertNotNull(ip.getId());
+            assertNotNull(ip.getIpAddress());
+            assertNotNull(ip.getIsSnmpPrimary());
+            assertTrue(ip.isManaged());
+        });
+
         CdpOnmsTopologyUpdater cdptopology = m_linkd.getCdpTopologyUpdater();
         assertNotNull(cdptopology);
         OnmsTopology topology = cdptopology.buildTopology();
@@ -879,6 +886,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertEquals(4, lldptopo2.getEdges().size());
 
         assertTrue(m_linkd.runSingleSnmpCollection(switch3.getId()));
+        assertEquals(3, m_lldpElementDao.countAll());
         assertEquals(12, m_lldpLinkDao.countAll());
         assertTrue(m_lldpTopologyService.hasUpdates());
         System.err.println("-------- updates start----------");

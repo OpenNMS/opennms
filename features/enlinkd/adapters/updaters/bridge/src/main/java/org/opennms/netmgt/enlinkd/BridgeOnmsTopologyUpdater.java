@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
@@ -71,15 +72,16 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     @Override
     public OnmsTopology buildTopology() throws OnmsTopologyException {
         Map<Integer, NodeTopologyEntity> nodeMap= getNodeMap();
+        Map<Integer, IpInterfaceTopologyEntity> ipMap= getIpPrimaryMap();
         OnmsTopology topology = new OnmsTopology();
         for (TopologyShared shared: m_bridgeTopologyService.match()) {
             Set<OnmsTopologyPort> ports = new HashSet<>();
             for (BridgePort bp: shared.getBridgePorts()) {
                 NodeTopologyEntity node = nodeMap.get(bp.getNodeId());
-                if (topology.getVertex(node.getId()) == null) {
-                    topology.getVertices().add(create(node));
+                if (topology.getVertex(node.getId().toString()) == null) {
+                    topology.getVertices().add(create(node,ipMap.get(node.getId()).getIpAddress()));
                 }
-                OnmsTopologyVertex vertex = topology.getVertex(node.getId());
+                OnmsTopologyVertex vertex = topology.getVertex(node.getId().toString());
                 OnmsTopologyPort port = OnmsTopologyPort.create(vertex, bp.getBridgePortIfIndex());
                 port.setAddr(Integer.toString(bp.getBridgePort()));
                 port.setPort(bp.printTopology());
@@ -93,8 +95,8 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
                 if (topology.getVertex(id) ==  null) {
                     if (macPort.getNodeId() != null) {
                         NodeTopologyEntity node = nodeMap.get(macPort.getNodeId());
-                        if (topology.getVertex(node.getId()) == null) {
-                            topology.getVertices().add(create(node));
+                        if (topology.getVertex(node.getId().toString()) == null) {
+                            topology.getVertices().add(create(node,ipMap.get(node.getId()).getIpAddress()));
                         }
                     } else {
                         topology.getVertices().add(create(macPort));

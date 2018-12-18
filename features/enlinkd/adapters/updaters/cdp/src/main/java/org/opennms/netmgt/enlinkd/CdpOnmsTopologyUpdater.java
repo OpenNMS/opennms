@@ -30,8 +30,9 @@ package org.opennms.netmgt.enlinkd;
 
 import java.util.Map;
 
-import org.opennms.netmgt.enlinkd.model.CdpElement;
+import org.opennms.netmgt.enlinkd.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
@@ -65,9 +66,10 @@ public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     @Override
     public OnmsTopology buildTopology() throws OnmsTopologyException {
         Map<Integer, NodeTopologyEntity> nodeMap= getNodeMap();
+        Map<Integer, IpInterfaceTopologyEntity> ipMap= getIpPrimaryMap();
         OnmsTopology topology = new OnmsTopology();
-        for (CdpElement element: m_cdpTopologyService.findAllCdpElements()) {
-            topology.getVertices().add(create(nodeMap.get(element.getNode().getId())));
+        for (CdpElementTopologyEntity element: m_cdpTopologyService.findAllCdpElements()) {
+            topology.getVertices().add(create(nodeMap.get(element.getNodeId()),ipMap.get(element.getNodeId()).getIpAddress()));
         }
         
         for(TopologyConnection<CdpLinkTopologyEntity, CdpLinkTopologyEntity> pair : m_cdpTopologyService.match()) {

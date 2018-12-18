@@ -34,6 +34,7 @@ import java.util.List;
 
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
 
 public interface OspfTopologyService extends TopologyService {
         
@@ -42,9 +43,7 @@ public interface OspfTopologyService extends TopologyService {
     void store(int nodeId, OspfElement cdp);
     void store(int nodeId, OspfLink link);
 
-    List<OspfElement> findAllOspfElements(); 
-    List<OspfLink> findAllOspfLinks(); 
-    
-    List<TopologyConnection<OspfLink, OspfLink>> match();
+    List<OspfElement> findAllOspfElements();     
+    List<TopologyConnection<OspfLinkTopologyEntity, OspfLinkTopologyEntity>> match();
 
 }

@@ -28,10 +28,12 @@
 
 package org.opennms.netmgt.enlinkd.service.impl;
 
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 import org.opennms.netmgt.enlinkd.service.api.TopologyService;
 
 public class TopologyServiceImpl implements TopologyService {
 
+    private TopologyEntityCache m_topologyEntityCache;
     private Boolean m_updates = false;
 
     @Override
@@ -61,7 +63,19 @@ public class TopologyServiceImpl implements TopologyService {
         }
         return false;
     }
-    
-    
+
+    @Override
+    public void refresh() {
+        m_topologyEntityCache.refresh();
+    }
+
+    public TopologyEntityCache getTopologyEntityCache() {
+        return m_topologyEntityCache;
+    }
+
+    public void setTopologyEntityCache(TopologyEntityCache topologyEntityCache) {
+        m_topologyEntityCache = topologyEntityCache;
+    }
+
 
 }

@@ -38,8 +38,10 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.StringTokenizer;
 
+import org.dhcp4java.DHCPConstants;
+import org.dhcp4java.DHCPOption;
+import org.dhcp4java.DHCPPacket;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.jdhcp.DHCPMessage;
 import org.opennms.netmgt.config.dhcpd.DhcpdConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,16 +96,6 @@ final class Poller {
     static final long DEFAULT_TIMEOUT = 3000L;
 
     /**
-     * The message type option for the DHCP request.
-     */
-    private static final int MESSAGE_TYPE = 53;
-
-    /**
-     * The requested ip option for the DHCP request.
-     */
-    private static final int REQUESTED_IP = 50;
-
-    /**
      * Holds the value for the next identifier sent to the DHCP server.
      */
     private static int m_nextXid = (new java.util.Random(System.currentTimeMillis())).nextInt();
@@ -129,7 +121,7 @@ final class Poller {
      * @return A disconnection message.
      */
     private static Message getDisconnectRequest() throws UnknownHostException {
-        return new Message(InetAddressUtils.addr("0.0.0.0"), new DHCPMessage());
+        return new Message(InetAddressUtils.addr("0.0.0.0"), new DHCPPacket());
     }
 
     /**
@@ -147,7 +139,7 @@ final class Poller {
         synchronized (Poller.class) {
             xid = ++m_nextXid;
         }
-        DHCPMessage messageOut = new DHCPMessage();
+        DHCPPacket messageOut = new DHCPPacket();
         byte[] rawIp = addr.getAddress();
         // if targetOffset = true, we don't want to REQUEST the DHCP server's
         // own IP, so change it by 1, trying to avoid the subnet address
@@ -169,25 +161,25 @@ final class Poller {
         messageOut.setChaddr(s_hwAddress); // set hardware address
         if (relayMode) {
             messageOut.setHops((byte) 1);
-            messageOut.setGiaddr(s_myIpAddress); // set relay address for replies
+            messageOut.setGiaddr(InetAddressUtils.getInetAddress(s_myIpAddress)); // set relay address for replies
         } else {
             messageOut.setHops((byte) 0);
             messageOut.setFlags(BROADCAST_FLAG);
         }
 
-        messageOut.setOption(MESSAGE_TYPE, new byte[] { mType });
-        if (mType == DHCPMessage.REQUEST) {
+        messageOut.setOption(DHCPOption.newOptionAsByte(DHCPConstants.DHO_DHCP_MESSAGE_TYPE, mType));
+        if (mType == DHCPConstants.DHCPREQUEST) {
             if (reqTargetIp) {
-                messageOut.setOption(REQUESTED_IP, rawIp);
-                messageOut.setCiaddr(rawIp);
+                messageOut.setOption(DHCPOption.newOptionAsInetAddress((byte)DHCPConstants.DHO_DHCP_REQUESTED_ADDRESS, InetAddressUtils.getInetAddress(rawIp)));
+                messageOut.setCiaddrRaw(rawIp);
             } else {
-                messageOut.setOption(REQUESTED_IP, s_requestIpAddress);
-                messageOut.setCiaddr(s_requestIpAddress);
+                messageOut.setOption(DHCPOption.newOptionAsInetAddress(DHCPConstants.DHO_DHCP_REQUESTED_ADDRESS, InetAddressUtils.getInetAddress(s_requestIpAddress)));
+                messageOut.setCiaddrRaw(s_requestIpAddress);
             }
         }
-        if (mType == DHCPMessage.INFORM) {
-            messageOut.setOption(REQUESTED_IP, s_myIpAddress);
-            messageOut.setCiaddr(s_myIpAddress);
+        if (mType == DHCPConstants.DHCPINFORM) {
+            messageOut.setOption(DHCPOption.newOptionAsInetAddress(DHCPConstants.DHO_DHCP_REQUESTED_ADDRESS, InetAddressUtils.getInetAddress(s_myIpAddress)));
+            messageOut.setCiaddrRaw(s_myIpAddress);
         }
 
         return new Message(addr, messageOut);
@@ -309,7 +301,7 @@ final class Poller {
         boolean isDhcpServer = false;
         // List of DHCP queries to try. The default when extended
         // mode = false must be listed first. (DISCOVER)
-        byte[] typeList = { (byte) DHCPMessage.DISCOVER, (byte) DHCPMessage.INFORM, (byte) DHCPMessage.REQUEST };
+        byte[] typeList = { DHCPConstants.DHCPDISCOVER, DHCPConstants.DHCPINFORM, DHCPConstants.DHCPREQUEST };
         String[] typeName = { "DISCOVER", "INFORM", "REQUEST" };
         DhcpdConfigFactory dcf = DhcpdConfigFactory.getInstance();
         if (!paramsChecked) {
@@ -401,17 +393,17 @@ final class Poller {
 
                             if (host.equals(resp.getAddress()) && ping.getMessage().getXid() == resp.getMessage().getXid()) {
                                 // Inspect response message to see if it is a valid DHCP response
-                                byte[] type = resp.getMessage().getOption(MESSAGE_TYPE);
-                                    if (type[0] == DHCPMessage.OFFER) {
+                                byte type = resp.getMessage().getOption(DHCPConstants.DHO_DHCP_MESSAGE_TYPE).getValueAsByte();
+                                    if (type == DHCPConstants.DHCPOFFER) {
                                         LOG.debug("isServer: got a DHCP OFFER response, validating...");
-                                    } else if (type[0] == DHCPMessage.ACK) {
+                                    } else if (type == DHCPConstants.DHCPACK) {
                                         LOG.debug("isServer: got a DHCP ACK response, validating...");
-                                    } else if (type[0] == DHCPMessage.NAK) {
+                                    } else if (type == DHCPConstants.DHCPNAK) {
                                         LOG.debug("isServer: got a DHCP NAK response, validating...");
                                     }
 
                                 // accept offer or ACK or NAK
-                                if (type[0] == DHCPMessage.OFFER || (extendedMode == true && (type[0] == DHCPMessage.ACK || type[0] == DHCPMessage.NAK))) {
+                                if (type == DHCPConstants.DHCPOFFER || (extendedMode == true && (type == DHCPConstants.DHCPACK || type == DHCPConstants.DHCPNAK))) {
                                         LOG.debug("isServer: got a valid DHCP response. responseTime= {}ms", responseTime);
                                     
                                     isDhcpServer = true;

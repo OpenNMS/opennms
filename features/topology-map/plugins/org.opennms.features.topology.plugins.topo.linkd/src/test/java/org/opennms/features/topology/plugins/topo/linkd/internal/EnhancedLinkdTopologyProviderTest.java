@@ -83,23 +83,23 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @Test
     public void testDataCorrectness(){
-        List<LldpLink> links = m_databasePopulator.findAllLldpLinks();
+        List<LldpLink> links = m_databasePopulator.getLinks();
         assertEquals(16, links.size());
 
-        List<OspfLink> ospfLinks = m_databasePopulator.findAllOspfLinks();
+        List<OspfLink> ospfLinks = m_databasePopulator.getOspfLinks();
         assertEquals(2, ospfLinks.size());
     }
 
     @Test
     public void testGetIcon() {
-        LinkdVertex vertex1 = LinkdVertex.create(m_databasePopulator.getNode(1));
-        LinkdVertex vertex2 = LinkdVertex.create(m_databasePopulator.getNode(2));
-        LinkdVertex vertex3 = LinkdVertex.create(m_databasePopulator.getNode(3));
-        LinkdVertex vertex4 = LinkdVertex.create(m_databasePopulator.getNode(4));
-        LinkdVertex vertex5 = LinkdVertex.create(m_databasePopulator.getNode(5));
-        LinkdVertex vertex6 = LinkdVertex.create(m_databasePopulator.getNode(6));
-        LinkdVertex vertex7 = LinkdVertex.create(m_databasePopulator.getNode(7));
-        LinkdVertex vertex8 = LinkdVertex.create(m_databasePopulator.getNode(8));
+        LinkdVertex vertex1 = LinkdVertex.create(m_databasePopulator.getNode(1),null);
+        LinkdVertex vertex2 = LinkdVertex.create(m_databasePopulator.getNode(2),null);
+        LinkdVertex vertex3 = LinkdVertex.create(m_databasePopulator.getNode(3),null);
+        LinkdVertex vertex4 = LinkdVertex.create(m_databasePopulator.getNode(4),null);
+        LinkdVertex vertex5 = LinkdVertex.create(m_databasePopulator.getNode(5),null);
+        LinkdVertex vertex6 = LinkdVertex.create(m_databasePopulator.getNode(6),null);
+        LinkdVertex vertex7 = LinkdVertex.create(m_databasePopulator.getNode(7),null);
+        LinkdVertex vertex8 = LinkdVertex.create(m_databasePopulator.getNode(8),null);
         Assert.assertTrue("linkd.system.snmp.1.3.6.1.4.1.5813.1.25".equals(vertex1.getIconKey()));
         Assert.assertTrue("linkd.system".equals(vertex2.getIconKey()));
         Assert.assertTrue("linkd.system".equals(vertex3.getIconKey()));

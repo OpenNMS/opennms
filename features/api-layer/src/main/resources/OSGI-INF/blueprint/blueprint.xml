@@ -99,4 +99,19 @@
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="healthCheckManager" />
   </reference-list>
 
+  <!-- Detectors -->
+  <bean id="detectorManager" class="org.opennms.features.apilayer.detectors.DetectorManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.detectors.ServiceDetectorFactory" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="detectorManager" />
+  </reference-list>
+
+  <reference id="locationAwareDetectorClient" interface="org.opennms.netmgt.provision.LocationAwareDetectorClient"/>
+  <service ref="detectorClient" interface="org.opennms.integration.api.v1.detectors.DetectorClient" >
+  </service>
+  <bean id="detectorClient" class="org.opennms.features.apilayer.detectors.DetectorClientImpl">
+    <argument ref="locationAwareDetectorClient"/>
+  </bean>
+
 </blueprint>

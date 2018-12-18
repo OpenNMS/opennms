@@ -32,4 +32,5 @@ public interface TopologyService {
     boolean parseUpdates();    
     void updatesAvailable();
     boolean hasUpdates();
+    void refresh();
 }

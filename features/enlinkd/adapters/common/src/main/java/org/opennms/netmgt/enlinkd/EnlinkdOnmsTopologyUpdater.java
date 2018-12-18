@@ -28,10 +28,12 @@
 
 package org.opennms.netmgt.enlinkd;
 
+import java.net.InetAddress;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.MacCloud;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
@@ -39,6 +41,7 @@ import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.enlinkd.service.api.TopologyService;
 import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
@@ -66,11 +69,11 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
                                          macCloud.getMacCloudInfo(), 
                                          "cloud");
     }
-    public static OnmsTopologyVertex create(NodeTopologyEntity node) throws OnmsTopologyException {
-        return OnmsTopologyVertex.create(node.getId(), 
+    public static OnmsTopologyVertex create(NodeTopologyEntity node, InetAddress addr) throws OnmsTopologyException {
+        return OnmsTopologyVertex.create(node.getId().toString(), 
                                          node.getLabel(), 
-                                         InetAddressUtils.str(node.getPrimaryIpAddr()), 
-                                         node.getSysoid());
+                                         InetAddressUtils.str(addr), 
+                                         node.getSysObjectId());
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(EnlinkdOnmsTopologyUpdater.class);
@@ -135,6 +138,7 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
                 }
             }
         } else if (m_topologyService.parseUpdates()) {
+            m_topologyService.refresh();
             LOG.debug("run: updates {}, recalculating topology ", getName());
             OnmsTopology topo;
             try {
@@ -184,9 +188,29 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
     }
 
     public Map<Integer, NodeTopologyEntity> getNodeMap() {
-        return m_nodeTopologyService.findAll().stream().collect(Collectors.toMap(node -> node.getNodeId(), node -> node, (n1,n2) ->n1));
+        return m_nodeTopologyService.findAllNode().stream().collect(Collectors.toMap(node -> node.getId(), node -> node, (n1,n2) ->n1));
     }
     
+    public Map<Integer, IpInterfaceTopologyEntity> getIpPrimaryMap() {
+        return m_nodeTopologyService.findAllIp().
+                stream().
+                collect
+                (
+                      Collectors.toMap
+                      (
+                           ip -> ip.getNodeId(), 
+                           ip -> ip, 
+                           (ip1,ip2) -> getPrimary(ip1, ip2)
+                      )
+                );
+    }
+    
+    private static IpInterfaceTopologyEntity getPrimary(IpInterfaceTopologyEntity n1, IpInterfaceTopologyEntity n2) {
+        if (PrimaryType.PRIMARY.equals(n2.getIsSnmpPrimary()) ) {
+            return n2;
+        }
+        return n1;
+    }
     public abstract OnmsTopology buildTopology() throws OnmsTopologyException;
     
     @Override

@@ -32,6 +32,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
+import java.util.HashMap;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -63,7 +64,7 @@ public class NrpeDetectorTest {
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-        m_detector = m_detectorFactory.createDetector();
+        m_detector = m_detectorFactory.createDetector(new HashMap<>());
         m_detector.setPort(5666);
         m_detector.init();
     }

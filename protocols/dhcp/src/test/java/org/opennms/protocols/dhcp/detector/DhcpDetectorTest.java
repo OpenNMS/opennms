@@ -34,11 +34,16 @@ import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.dhcp4java.DHCPConstants;
+import org.dhcp4java.DHCPOption;
+import org.dhcp4java.DHCPPacket;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,8 +53,6 @@ import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.jdhcp.DHCPMessage;
-import org.opennms.jdhcp.DHCPSocket;
 import org.opennms.netmgt.config.dhcpd.DhcpdConfigFactory;
 import org.opennms.netmgt.dhcpd.Dhcpd;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -109,7 +112,7 @@ public class DhcpDetectorTest implements InitializingBean {
                 "</DhcpdConfiguration>");
 
         DhcpdConfigFactory.init();
-        m_detector = m_detectorFactory.createDetector();
+        m_detector = m_detectorFactory.createDetector(new HashMap<>());
         m_dhcpd = Dhcpd.getInstance();
         m_dhcpd.init();
 
@@ -132,7 +135,7 @@ public class DhcpDetectorTest implements InitializingBean {
     }
 
     @Test(timeout=90000)
-    public void testDetectorSuccess() throws  IOException {
+    public void testDetectorSuccess() {
         assumeTrue(m_extendedTests);
         m_detector.setTimeout(5000);
         m_detector.init();
@@ -140,12 +143,13 @@ public class DhcpDetectorTest implements InitializingBean {
     }
 
     @Test(timeout=90000)
-    public void testJdhcp() throws IOException{
+    public void testJdhcp() throws IOException {
         assumeTrue(m_extendedTests);
-        DHCPSocket mySocket = new DHCPSocket(68);
+
+        final DatagramSocket mySocket = new DatagramSocket(DHCPConstants.BOOTP_REPLY_PORT);
 
         try {
-            DHCPMessage messageOut = new DHCPMessage(InetAddressUtils.addr(DHCP_SERVER_IP)); 
+            DHCPPacket messageOut = new DHCPPacket();
     
             // fill DHCPMessage object 
             messageOut.setOp((byte) 1);    
@@ -166,23 +170,28 @@ public class DhcpDetectorTest implements InitializingBean {
             messageOut.setChaddr(hw);
     
             // set message type option to DHCPDISCOVER
-            byte[] opt = new byte[1];
-            opt[0] = (byte) DHCPMessage.DISCOVER;
-            messageOut.setOption(53,  opt);
-    
-            mySocket.send(messageOut);
-    
-            DHCPMessage messageIn = new DHCPMessage();
-            mySocket.receive(messageIn);
-    
-            messageIn.printMessage();
-            System.out.println("Destination Address:  " + messageIn.getDestination());
+            messageOut.setOption(DHCPOption.newOptionAsByte((byte) 53, DHCPConstants.DHCPDISCOVER));
+
+            final byte[] buf = messageOut.serialize();
+
+            final DatagramPacket packetOut = new DatagramPacket(buf, buf.length);
+            packetOut.setAddress(InetAddressUtils.addr(DHCP_SERVER_IP));
+            packetOut.setPort(DHCPConstants.BOOTP_REQUEST_PORT);
+
+            mySocket.send(packetOut);
+
+            final DatagramPacket packetIn = new DatagramPacket(new byte[1500], 1500);
+            mySocket.receive(packetIn);
+            DHCPPacket messageIn = DHCPPacket.getPacket(packetIn);
+
+            System.out.println(messageIn);
+            System.out.println("Destination Address:  " + DHCP_SERVER_IP);
             System.out.println("Ch Address:  " + Arrays.toString(messageIn.getChaddr()));
-            System.out.println("Siaddr:  " + Arrays.toString(messageIn.getSiaddr()));
-            System.out.println("Ciaddr: " + Arrays.toString(messageIn.getCiaddr()));
+            System.out.println("Siaddr:  " + Arrays.toString(messageIn.getSiaddrRaw()));
+            System.out.println("Ciaddr: " + Arrays.toString(messageIn.getCiaddrRaw()));
     
-            System.out.println("Option54: " + Arrays.toString(messageIn.getOption(54)));
-            System.out.println(InetAddress.getByAddress(messageIn.getOption(54)));
+            System.out.println("Option54: " + messageIn.getOption((byte)54));
+            System.out.println(messageIn.getOption((byte)54).getValueAsInetAddr());
         } finally {
             IOUtils.closeQuietly(mySocket);
         }
