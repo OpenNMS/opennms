@@ -28,41 +28,42 @@
 
 package org.opennms.netmgt.model;
 
-import java.net.InetAddress;
-import java.util.Objects;
-
-import com.google.common.base.MoreObjects;
+import java.util.Optional;
 
 @ReadOnlyEntity
-public class OspfLinkTopologyEntity {
-    private final Integer id;
-    private final Integer nodeId;
-    private final InetAddress ospfIpAddr;
-    private final InetAddress ospfRemIpAddr;
-    private final Integer ospfIfIndex;
+public class SnmpInterfaceTopologyEntity {
 
-    public OspfLinkTopologyEntity(Integer id, Integer nodeId, InetAddress ospfIpAddr, InetAddress ospfRemIpAddr, Integer ospfIfIndex) {
-        this.id = id;
-        this.nodeId = nodeId;
-        this.ospfIpAddr = ospfIpAddr;
-        this.ospfRemIpAddr = ospfRemIpAddr;
-        this.ospfIfIndex = ospfIfIndex;
+    private final Integer id;
+    private final Integer ifIndex;
+    private final String ifName;
+    private final Long ifSpeed;
+    private final Integer nodeId;
+
+    public SnmpInterfaceTopologyEntity(
+            Integer id,
+            Integer ifIndex,
+            String ifName,
+            Long ifSpeed,
+            Integer nodeId){
+        this.id=id;
+        this.ifIndex=ifIndex;
+        this.ifName=ifName;
+        this.ifSpeed = ifSpeed;
+        this.nodeId= nodeId;
     }
 
-    public static OspfLinkTopologyEntity create (OspfLink link) {
-        return new OspfLinkTopologyEntity(link.getId()
-                , link.getNode().getId()
-                , link.getOspfIpAddr()
-                , link.getOspfRemIpAddr()
-                , link.getOspfIfIndex());
+    public static SnmpInterfaceTopologyEntity create(OnmsSnmpInterface snmpInterface) {
+        return new SnmpInterfaceTopologyEntity(
+                snmpInterface.getId(),
+                snmpInterface.getIfIndex(),
+                snmpInterface.getIfName(),
+                snmpInterface.getIfSpeed(),
+                Optional.ofNullable(snmpInterface.getNode()).map(OnmsNode::getId).orElse(null)
+        );
     }
 
     public Integer getId() {
         return id;
-    }
-
-    public Integer getNodeId() {
-        return nodeId;
     }
 
     public String getNodeIdAsString() {
@@ -72,26 +73,30 @@ public class OspfLinkTopologyEntity {
         return null;
     }
 
-    public InetAddress getOspfIpAddr() {
-        return ospfIpAddr;
+    public Integer getIfIndex() {
+        return ifIndex;
     }
 
-    public InetAddress getOspfRemIpAddr() {
-        return ospfRemIpAddr;
+    public String getIfName() {
+        return ifName;
     }
 
-    public Integer getOspfIfIndex() {
-        return ospfIfIndex;
+    public Long getIfSpeed() {
+        return ifSpeed;
+    }
+
+    public Integer getNodeId() {
+        return nodeId;
     }
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("id", id)
-                .add("nodeId", nodeId)
-                .add("ospfIpAddr", ospfIpAddr)
-                .add("ospfRemIpAddr", ospfRemIpAddr)
-                .add("ospfIfIndex", ospfIfIndex)
-                .toString();
+        return "SnmpInterfaceTopologyEntity{" +
+                "id=" + id +
+                ", ifIndex=" + ifIndex +
+                ", ifName='" + ifName + '\'' +
+                ", ifSpeed='" + ifSpeed + '\'' +
+                ", nodeId=" + nodeId +
+                '}';
     }
 }
