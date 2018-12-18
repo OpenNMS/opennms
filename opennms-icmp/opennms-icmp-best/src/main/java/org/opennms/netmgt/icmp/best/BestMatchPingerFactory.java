@@ -85,7 +85,7 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
 
         try {
             final long timeout = Long.valueOf(System.getProperty("org.opennms.netmgt.icmp.best.timeout", "500"), 10);
-            final Number result = pinger.ping(InetAddressUtils.getLocalHostAddress(), timeout, 0);
+            final Number result = pinger.ping(InetAddressUtils.getLocalLoopbackAddress(), timeout, 0);
             if (result == null) {
                 throw new IllegalStateException("No result pinging localhost.");
             }

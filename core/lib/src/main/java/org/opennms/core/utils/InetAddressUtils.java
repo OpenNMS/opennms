@@ -32,9 +32,11 @@ import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -118,6 +120,27 @@ public abstract class InetAddressUtils {
     public static String getLocalHostAddressAsString() {
         final String localhost = str(getLocalHostAddress());
         return localhost == null? "127.0.0.1" : localhost;
+    }
+
+    public static InetAddress getLocalLoopbackAddress() {
+        try {
+            final Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
+            while (ifaces.hasMoreElements()) {
+                final NetworkInterface iface = ifaces.nextElement();
+                if (iface.isLoopback() && iface.isUp() && !iface.isVirtual()) {
+                    final Enumeration<InetAddress> addrs = iface.getInetAddresses();
+                    while (addrs.hasMoreElements()) {
+                        final InetAddress addr = addrs.nextElement();
+                        if (addr instanceof Inet4Address && !addr.isMulticastAddress() && (addr.isLinkLocalAddress() || addr.isLoopbackAddress() || addr.isAnyLocalAddress())) {
+                            return addr;
+                        }
+                    }
+                }
+            }
+        } catch (final Exception e) {
+            LOG.warn("getLocalLoopbackAddress: an exception occurred while attempting to determine the local loopback address.",e);
+        }
+        return null;
     }
 
     public static String getLocalHostName() {
