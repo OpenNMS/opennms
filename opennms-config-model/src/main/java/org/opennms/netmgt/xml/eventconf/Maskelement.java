@@ -216,7 +216,10 @@ public class Maskelement implements Serializable {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("name", m_name).add("values", m_values).toString();
+        return MoreObjects.toStringHelper(this)
+                .add("name", m_name)
+                .add("values", m_values)
+                .toString();
     }
 
 }

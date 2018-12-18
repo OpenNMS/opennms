@@ -558,7 +558,11 @@ public class Event implements Serializable, Comparable<Event> {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("uei", m_uei).add("priority", getPriority()).add("mask", m_mask).toString();
+        return MoreObjects.toStringHelper(this)
+                .add("uei", m_uei)
+                .add("priority", getPriority())
+                .add("mask", m_mask)
+                .toString();
     }
 
 }

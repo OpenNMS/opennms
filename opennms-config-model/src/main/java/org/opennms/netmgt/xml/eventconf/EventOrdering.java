@@ -119,7 +119,10 @@ public class EventOrdering implements Comparable<EventOrdering>{
     
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("parent", m_parent).add("idx", m_sequenceIndex).toString();
+        return MoreObjects.toStringHelper(this)
+                .add("parent", m_parent)
+                .add("idx", m_sequenceIndex)
+                .toString();
     }
 
 }

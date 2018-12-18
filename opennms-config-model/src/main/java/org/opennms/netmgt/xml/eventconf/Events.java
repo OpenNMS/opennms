@@ -371,8 +371,7 @@ public class Events implements Serializable {
         indexEventsByUei();
     }
 
-    // Recurse through the configuration and return Event Definitions with
-    // priority > 0
+    // Recurse through the configuration and return Event Definitions with priority > 0
     private List<Event> getPrioritizedEvents() {
         List<Event> prioritizedEvents = new ArrayList<Event>();
         prioritizedEvents.addAll(m_events.stream().filter(e -> e.getPriority() > 0).collect(Collectors.toList()));

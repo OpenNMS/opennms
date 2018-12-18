@@ -153,6 +153,9 @@ public class Mask implements Serializable {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("mask", m_maskElements).add("varbinds", m_varbinds).toString();
+        return MoreObjects.toStringHelper(this)
+                .add("mask", m_maskElements)
+                .add("varbinds", m_varbinds)
+                .toString();
     }
 }

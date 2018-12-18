@@ -18,7 +18,6 @@
       <priority>5</priority>
       <uei>uei.opennms.org/vendor/3Com/traps/a3ComFddiMACNeighborChangeEvent</uei>
       <event-label>FILE1 CONFIG</event-label>
-      <logmsg dest="logndisplay">&lt;p>3Com Event: ---- HIGH PRIORITY DISK EVENT CONFIG  ----.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
 
