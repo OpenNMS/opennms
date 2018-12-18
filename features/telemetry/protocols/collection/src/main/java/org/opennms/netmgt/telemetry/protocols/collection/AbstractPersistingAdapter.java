@@ -126,7 +126,7 @@ public abstract class AbstractPersistingAdapter implements Adapter {
     private final LoadingCache<CacheKey, Optional<PackageDefinition>> cache = CacheBuilder.newBuilder()
             .maximumSize(SystemProperties.getLong("org.opennms.features.telemetry.cache.ipAddressFilter.maximumSize", 1000))
             .expireAfterWrite(
-                    Long.getLong("org.opennms.features.telemetry.cache.ipAddressFilter.expireAfterWrite", 120),
+                    SystemProperties.getLong("org.opennms.features.telemetry.cache.ipAddressFilter.expireAfterWrite", 120),
                     TimeUnit.SECONDS)
             .build(new CacheLoader<CacheKey, Optional<PackageDefinition>>() {
                 @Override

@@ -52,6 +52,7 @@ import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.LtRestriction;
 import org.opennms.core.criteria.restrictions.NotNullRestriction;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.SystemProperties;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.CollectionStatus;
