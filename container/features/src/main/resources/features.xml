@@ -1161,7 +1161,7 @@
     </feature>
 
     <feature name="opennms-situation-feedback-api" description="OpenNMS :: Features :: Situation-Feedback :: API" version="${project.version}">
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
         <bundle>mvn:org.opennms.features.situation-feedback/org.opennms.features.situation-feedback.api/${project.version}</bundle>
     </feature>
     
