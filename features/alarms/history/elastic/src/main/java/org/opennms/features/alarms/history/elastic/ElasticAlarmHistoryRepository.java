@@ -99,7 +99,7 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
 
     @Override
     public long getNumActiveAlarmsAt(long time) {
-        // We could improve this to only retrieve the count, instead of
+        // TODO: Only retrieve the count, instead of
         // actually retrieving and mapping all the documents back
         return getActiveAlarmsAt(time).size();
     }

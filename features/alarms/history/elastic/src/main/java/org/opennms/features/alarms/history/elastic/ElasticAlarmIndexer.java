@@ -31,7 +31,6 @@ package org.opennms.features.alarms.history.elastic;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -59,6 +58,7 @@ import org.opennms.features.alarms.history.elastic.tasks.BulkDeleteTask;
 import org.opennms.features.alarms.history.elastic.tasks.IndexAlarmsTask;
 import org.opennms.features.alarms.history.elastic.tasks.Task;
 import org.opennms.features.alarms.history.elastic.tasks.TaskVisitor;
+import org.opennms.netmgt.alarmd.api.AlarmCallbackStateTracker;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkException;
@@ -88,6 +88,8 @@ import io.searchbox.core.search.aggregation.TopHitsAggregation;
 public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(ElasticAlarmIndexer.class);
     private static final Gson gson = new Gson();
+
+    private final AlarmCallbackStateTracker stateTracker = new AlarmCallbackStateTracker();
 
     private final JestClient client;
     private final TemplateInitializer templateInitializer;
@@ -291,6 +293,11 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
         }
     }
 
+    @Override
+    public synchronized void preHandleAlarmSnapshot() {
+        stateTracker.startTrackingAlarms();
+    }
+
     // TODO: Remove synchronized safely?
     @Override
     public synchronized void handleAlarmSnapshot(List<OnmsAlarm> alarms) {
@@ -298,6 +305,8 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
         flushDocumentsToIndexToTaskQueue();
         // Index/update documents as necessary
         final List<AlarmDocumentDTO> alarmDocuments = alarms.stream()
+                // Only consider updating, if we haven't already updated the alarm since the snapshot was taken
+                .filter(a -> !stateTracker.wasAlarmWithIdUpdated(a.getId()))
                 .map(this::getDocumentIfNeedsIndexing)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -309,10 +318,16 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
         }
 
         // Bulk delete alarms that are not yet marked as deleted in ES, and are not present in the given list
-        final Set<Integer> alarmIds = alarms.stream().map(OnmsAlarm::getId)
-                .collect(Collectors.toSet());
-        taskQueue.add(new BulkDeleteTask(alarmIds, getCurrentTimeMillis()));
-        alarmDocumentsById.keySet().removeIf(alarmId -> !alarmIds.contains(alarmId));
+        final Set<Integer> alarmIdsToKeep = new HashSet<>();
+        alarmIdsToKeep.addAll(stateTracker.getUpdatedAlarmIds());
+        alarms.stream().map(OnmsAlarm::getId).forEach(id -> alarmIdsToKeep.add(id));
+        taskQueue.add(new BulkDeleteTask(alarmIdsToKeep, getCurrentTimeMillis()));
+        alarmDocumentsById.keySet().removeIf(alarmId -> !alarmIdsToKeep.contains(alarmId));
+    }
+
+    @Override
+    public synchronized void postHandleAlarmSnapshot() {
+        stateTracker.resetStateAndStopTrackingAlarms();
     }
 
     @Override
@@ -325,6 +340,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
             if (alarmDocumentsToIndex.size() >= batchSize) {
                 flushDocumentsToIndexToTaskQueue();
             }
+            stateTracker.trackNewOrUpdatedAlarm(alarm.getId(), alarm.getReductionKey());
         }
     }
 
@@ -337,6 +353,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
         if (alarmDocumentsToIndex.size() >= batchSize) {
             flushDocumentsToIndexToTaskQueue();
         }
+        stateTracker.trackDeletedAlarm(alarmId, reductionKey);
     }
 
     private synchronized void flushDocumentsToIndexToTaskQueue() {
@@ -362,8 +379,10 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
                 || !Objects.equals(existingAlarmDocument.getAckTime(), alarm.getAckTime() != null ? alarm.getAckTime().getTime() : null)
                 || !Objects.equals(existingAlarmDocument.getSeverityId(), alarm.getSeverity().getId())
                 || !Objects.equals(new HashSet<>(existingAlarmDocument.getRelatedAlarmIds()), alarm.getRelatedAlarmIds())) {
-            // TODO: Update list of "interesting" fields
+            // TODO: Update list of "interesting" fields to include:
             // sticky + journal memos
+            // ticket state
+            // is in a situation?
             needsIndexing = true;
         }
 

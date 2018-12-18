@@ -30,6 +30,9 @@ package org.opennms.features.alarms.history.api;
 
 import java.util.List;
 
+/**
+ * Provides methods for querying the alarm history.
+ */
 public interface AlarmHistoryRepository {
 
     /**

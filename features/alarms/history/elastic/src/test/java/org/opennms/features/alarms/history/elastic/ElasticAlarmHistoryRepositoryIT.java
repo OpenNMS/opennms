@@ -299,7 +299,10 @@ public class ElasticAlarmHistoryRepositoryIT {
     }
 
     @Test
-    public void canSync() {
+    public void canHandleAlarmSnapshot() {
+
+
+
         // todo;validate sync - should delete an alarm, but not delete an excluded alarm
     }
 

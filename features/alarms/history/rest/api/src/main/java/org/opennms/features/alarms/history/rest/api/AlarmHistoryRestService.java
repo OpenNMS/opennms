@@ -38,6 +38,18 @@ import javax.ws.rs.core.MediaType;
 
 import org.opennms.features.alarms.history.api.AlarmState;
 
+/**
+ * * Full journal of an alarm, given it's ID or reduction key
+ * * Set of alarms at some point in time, now or given timestamp
+ *
+ *
+ * /alarm/history    -> all as of now
+ * /alarm/history/9  -> specific alarm now
+ * /alarm/history/9/journal -> journal history of alarm #9
+ *
+ * ?match-type=alarm-id   (default to =reduction-key)
+ * ?at=3423842384834      (default to =$now)
+ */
 @Path("alarm-history")
 public interface AlarmHistoryRestService {
 
