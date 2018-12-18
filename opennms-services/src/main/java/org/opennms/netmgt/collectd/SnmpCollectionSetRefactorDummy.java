@@ -28,14 +28,16 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.util.Collection;
+
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.PersistenceSelectorStrategy;
 import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
-import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
@@ -44,7 +46,6 @@ import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.Collection;
 
 /**
  * Extension to SnmpCollectionSet to create a CollectionSet with the CollectionsetBuilder. This is an immediate step
@@ -122,7 +123,15 @@ public class SnmpCollectionSetRefactorDummy extends SnmpCollectionSet implements
     private void addGroupsToBuilder(CollectionSetBuilder builder, Resource resource, Collection<AttributeGroup> groups){
         for(AttributeGroup group : groups){
             for(CollectionAttribute attribute : group.getAttributes()){
-                builder.withAttribute(resource, group.getName(), attribute.getName(), attribute.getStringValue(), attribute.getType());
+
+                String value;
+                // TODO: Patrick Not sure if we should convert while reading or if we should add a HexString type to the builder world?
+                if(attribute.getAttributeType() instanceof HexStringAttributeType){
+                    value = ((SnmpAttribute)attribute).getValue().toHexString();
+                } else {
+                    value = attribute.getStringValue();
+                }
+                builder.withAttribute(resource, group.getName(), attribute.getName(), value, attribute.getType());
             }
         }
     }
