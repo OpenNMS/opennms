@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-wsman-asset-provisioning-adapter</artifactId>
-  <name>OpenNMS :: Integrations :: Provisioning Adapter :: WsMan Asset</name>
+  <name>OpenNMS :: Integrations :: Provisioning Adapter :: WS-Man Asset</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
