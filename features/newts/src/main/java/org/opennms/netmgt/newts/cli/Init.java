@@ -32,6 +32,7 @@ import java.util.ServiceLoader;
 
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.opennms.core.utils.SystemProperties;
 import org.opennms.newts.cassandra.Schema;
 import org.opennms.newts.cassandra.SchemaManager;
 
@@ -59,7 +60,7 @@ public class Init implements Command {
 
         String keyspace = System.getProperty("org.opennms.newts.config.keyspace", "newts");
         String hostname = System.getProperty("org.opennms.newts.config.hostname", "localhost");
-        int port = Integer.getInteger("org.opennms.newts.config.port", 9042);
+        int port = SystemProperties.getInteger("org.opennms.newts.config.port", 9042);
         String username = System.getProperty("org.opennms.newts.config.username");
         String password = System.getProperty("org.opennms.newts.config.password");
         boolean ssl = Boolean.getBoolean("org.opennms.newts.config.ssl");

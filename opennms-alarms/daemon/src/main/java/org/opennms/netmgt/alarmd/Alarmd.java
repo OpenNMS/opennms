@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.alarmd;
 
+import org.opennms.core.utils.SystemProperties;
 import org.opennms.netmgt.alarmd.drools.DroolsAlarmContext;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.daemon.DaemonTools;
@@ -52,7 +53,7 @@ public class Alarmd extends AbstractServiceDaemon implements ThreadAwareEventLis
     /** Constant <code>NAME="alarmd"</code> */
     public static final String NAME = "alarmd";
 
-    protected static final Integer THREADS = Integer.getInteger("org.opennms.alarmd.threads", 4);
+    protected static final Integer THREADS = SystemProperties.getInteger("org.opennms.alarmd.threads", 4);
 
     private AlarmPersister m_persister;
 

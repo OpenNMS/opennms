@@ -49,6 +49,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
+import org.opennms.core.utils.SystemProperties;
 import org.opennms.netmgt.enlinkd.persistence.api.BridgeElementDao;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
@@ -482,7 +483,7 @@ public class EnLinkdElementFactory implements InitializingBean,
             linknode.setLldpRemChassisIdUrl(getNodeUrl(remNode.getId()));
             if (link.getLldpRemPortIdSubType() == LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL) {
                 try {
-                    Integer remIfIndex = Integer.getInteger(link.getLldpRemPortId());
+                    Integer remIfIndex = SystemProperties.getInteger(link.getLldpRemPortId());
                     linknode.setLldpRemPortUrl(getSnmpInterfaceUrl(Integer.valueOf(remNode.getId()),
                                                                    remIfIndex));
                 } catch (Exception e) {

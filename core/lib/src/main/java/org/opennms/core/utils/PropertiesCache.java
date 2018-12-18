@@ -228,7 +228,7 @@ public class PropertiesCache {
 
     protected PropertiesCache(final CacheBuilder<Object, Object> cacheBuilder) {
         m_cache = cacheBuilder
-                .expireAfterAccess(Integer.getInteger(CACHE_TIMEOUT, DEFAULT_CACHE_TIMEOUT), TimeUnit.SECONDS)
+                .expireAfterAccess(SystemProperties.getInteger(CACHE_TIMEOUT, DEFAULT_CACHE_TIMEOUT), TimeUnit.SECONDS)
                 .build();
     }
 

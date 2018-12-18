@@ -92,6 +92,9 @@ import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
+import org.opennms.core.utils.SystemProperties;
+
+
 public class Snmp4JStrategy implements SnmpStrategy {
     private static final transient Logger LOG = LoggerFactory.getLogger(Snmp4JStrategy.class);
 
@@ -113,8 +116,8 @@ public class Snmp4JStrategy implements SnmpStrategy {
     private static ScheduledExecutorService s_sessionStatsExecutor;
     private static ConcurrentHashMap<Snmp, SessionInfo> s_sessions;
     private static boolean s_trackSessions = Boolean.getBoolean("org.opennms.core.snmp.trackSessions");
-    private static long s_trackSummaryDelay = Long.getLong("org.opennms.core.snmp.trackSummaryDelay", 60);
-    private static long s_trackSummaryLimit = Long.getLong("org.opennms.core.snmp.trackSummaryLimit", 10);
+    private static long s_trackSummaryDelay = SystemProperties.getLong("org.opennms.core.snmp.trackSummaryDelay", 60);
+    private static long s_trackSummaryLimit = SystemProperties.getLong("org.opennms.core.snmp.trackSummaryLimit", 10);
 
     /**
      * Initialize for v3 communications

@@ -215,7 +215,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         Assert.state(m_disconnectedTimeout > 0, "the disconnectedTimeout property must be set");
         Assert.notNull(m_persisterFactory, "The persisterFactory must be set");
 
-        m_minimumConfigurationReloadInterval = Long.getLong("opennms.pollerBackend.minimumConfigurationReloadInterval", 300000L).longValue();
+        m_minimumConfigurationReloadInterval = SystemProperties.getLong("opennms.pollerBackend.minimumConfigurationReloadInterval", 300000L).longValue();
 
         configurationUpdated();
     }

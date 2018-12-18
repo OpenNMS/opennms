@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import org.opennms.core.utils.SystemProperties;
 import org.opennms.netmgt.enlinkd.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
@@ -163,7 +164,7 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
     }
 
     private int getCacheDuration(){
-        return Integer.getInteger(SYSTEM_PROPERTY_CACHE_DURATION, 300);
+        return SystemProperties.getInteger(SYSTEM_PROPERTY_CACHE_DURATION, 300);
     }
 
     public void setTopologyEntityDao(TopologyEntityDao topologyEntityDao){

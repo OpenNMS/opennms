@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
+import org.opennms.core.utils.SystemProperties;
 import org.opennms.netmgt.alarmd.api.AlarmPersisterExtension;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
@@ -72,7 +73,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     public static final String RELATED_REDUCTION_KEY_PREFIX = "related-reductionKey";
 
-    protected static final Integer NUM_STRIPE_LOCKS = Integer.getInteger("org.opennms.alarmd.stripe.locks", Alarmd.THREADS * 4);
+    protected static final Integer NUM_STRIPE_LOCKS = SystemProperties.getInteger("org.opennms.alarmd.stripe.locks", Alarmd.THREADS * 4);
     protected static boolean NEW_IF_CLEARED = Boolean.getBoolean("org.opennms.alarmd.newIfClearedAlarmExists");
     protected static boolean LEGACY_ALARM_STATE = Boolean.getBoolean("org.opennms.alarmd.legacyAlarmState");
 

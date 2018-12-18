@@ -34,6 +34,7 @@ import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.utils.SystemProperties;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteriaBuilder;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
@@ -50,7 +51,7 @@ public class BusinessServicesBoxController extends AbstractController implements
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        int numberOfRows = Integer.getInteger("opennms.businessServicesWithProblems.count", DEFAULT_ROW_COUNT);
+        int numberOfRows = SystemProperties.getInteger("opennms.businessServicesWithProblems.count", DEFAULT_ROW_COUNT);
         boolean all = "true".equalsIgnoreCase(request.getParameter("all"));
 
         BusinessServiceSearchCriteriaBuilder criteriaBuilder = new BusinessServiceSearchCriteriaBuilder()

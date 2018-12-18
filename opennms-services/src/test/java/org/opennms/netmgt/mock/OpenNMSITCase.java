@@ -81,7 +81,7 @@ public class OpenNMSITCase {
 
     protected static boolean m_allowWarnings = false;
     protected static boolean m_runSupers = true;
-    public static int PROXY_PORT = Integer.getInteger("proxy.port", 5837);
+    public static int PROXY_PORT = SystemProperties.getInteger("proxy.port", 5837);
 
 
     /**

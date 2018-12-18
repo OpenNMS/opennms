@@ -35,6 +35,7 @@
     <module>health</module>
     <module>icmp-jna</module>
     <module>ipc</module>
+    <module>javautils</module>
     <module>jmx</module>
     <module>jstl-support</module>
     <module>lib</module>

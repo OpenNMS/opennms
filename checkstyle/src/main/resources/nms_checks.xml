@@ -25,5 +25,15 @@
             <property name="format" value="^UTF-8$"/>
             <message key="forbid.UTF8.string.literal" value="Use ''java.nio.charset.StandardCharsets.UTF_8.name()'' instead of ''{0}''" />
         </module>
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="Long\.getLong"/>
+            <property name="ignoreComments" value="true"/>
+            <property name="message" value="Please don't use Long.getLong but use SystemProperties instead, see there for an explanantion"/>
+        </module>
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="Integer\.getInteger"/>
+            <property name="ignoreComments" value="true"/>
+            <property name="message" value="Please don't use SystemProperties.getInteger but use SystemProperties instead, see there for an explanantion"/>
+        </module>
     </module>
 </module>

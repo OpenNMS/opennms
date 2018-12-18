@@ -55,6 +55,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.StringUtils;
+import org.opennms.core.utils.SystemProperties;
 import org.opennms.web.assets.api.AssetLocator;
 import org.opennms.web.assets.api.AssetResource;
 import org.slf4j.Logger;
@@ -91,7 +92,7 @@ public class AssetLocatorImpl extends AbstractResourceResolver implements AssetL
     public AssetLocatorImpl() {
         m_filesystemPath = System.getProperty("org.opennms.web.assets.path");
         m_useMinified = Boolean.parseBoolean(System.getProperty("org.opennms.web.assets.minified", "true"));
-        m_reload = Long.getLong("org.opennms.web.assets.reload", 5l);
+        m_reload = SystemProperties.getLong("org.opennms.web.assets.reload", 5l);
     }
 
     @Override

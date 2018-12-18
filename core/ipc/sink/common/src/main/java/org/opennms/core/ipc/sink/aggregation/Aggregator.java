@@ -72,7 +72,7 @@ public class Aggregator<S, T> implements AutoCloseable, Runnable {
      * Increasing this number will reduce the chance of collisions, but will cost
      * more in terms of memory.
      */
-    private static final int NUM_STRIPE_LOCKS = Integer.getInteger(NUM_STRIPE_LOCKS_SYS_PROP, DEFAULT_NUM_STRIPE_LOCKS);
+    private static final int NUM_STRIPE_LOCKS = SystemProperties.getInteger(NUM_STRIPE_LOCKS_SYS_PROP, DEFAULT_NUM_STRIPE_LOCKS);
 
     private final AggregationPolicy<S,T,Object> aggregationPolicy;
 
