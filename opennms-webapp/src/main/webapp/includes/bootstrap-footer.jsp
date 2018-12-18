@@ -82,44 +82,8 @@
             </p>
         </footer>
 
-        <c:if test="${!empty pageContext.request.remoteUser}">
-            <script type="text/javascript">
-                if ("Notification" in window) {
-                    var notificationSocket = null;
-
-                    function connect() {
-                        notificationSocket = new WebSocket("<%= Util.calculateUrlBase(request, "notification/stream").replaceAll("^http", "ws") %>");
-                        notificationSocket.onclose = function () {
-                            setTimeout(connect, 1000);
-                        };
-                        notificationSocket.onerror = function () {
-                            setTimeout(connect, 2000);
-                        };
-                        notificationSocket.onmessage = function (event) {
-                            let message = JSON.parse(event.data);
-                            console.log("Notification", message);
-
-                            new Notification(message.head, {
-                                body: message.body,
-                                icon: "<%= Util.calculateUrlBase(request, "/images/o-512.png") %>",
-                                badge: "<%= Util.calculateUrlBase(request, "/favicon.ico") %>",
-                                tag: "opennms:notification:" + message.id,
-                            });
-                        };
-                    }
-
-                    if (Notification.permission === "granted") {
-                        connect();
-                    } else if (Notification.permission !== 'denied') {
-                        Notification.requestPermission(function () {
-                            if (permission === "granted") {
-                                connect();
-                            }
-                        });
-                    }
-                }
-            </script>
-        </c:if>
+        <!-- Browser notification support -->
+        <jsp:include page="notifications.jsp"/>
     </c:otherwise>
 </c:choose>
 
