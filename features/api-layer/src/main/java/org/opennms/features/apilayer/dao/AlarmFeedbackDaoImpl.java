@@ -28,11 +28,8 @@
 
 package org.opennms.features.apilayer.dao;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import org.opennms.core.soa.lookup.ServiceLookup;
@@ -40,7 +37,6 @@ import org.opennms.core.soa.lookup.ServiceLookupBuilder;
 import org.opennms.core.soa.lookup.ServiceRegistryLookup;
 import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.features.apilayer.utils.ModelMappers;
-import org.opennms.features.situationfeedback.api.AlarmFeedbackListener;
 import org.opennms.features.situationfeedback.api.FeedbackException;
 import org.opennms.features.situationfeedback.api.FeedbackRepository;
 import org.opennms.integration.api.v1.dao.AlarmFeedbackDao;
@@ -57,37 +53,18 @@ public class AlarmFeedbackDaoImpl implements AlarmFeedbackDao {
     /**
      * Used to look up a reference to a {@link FeedbackRepository feedback repository} at runtime.
      */
+    private final ServiceLookup<Class<?>, String> SERVICE_LOOKUP;
+
+    /**
+     * @param gracePeriodInMs a grace period of time to allow the implementation to show up on initial startup
+     * @param sleepTimeInMs how long to sleep in between attempts to find an implementation of the service
+     * @param waitTimeMs how long to block waiting for an implementation of the service
+     */
     @SuppressWarnings("unchecked")
-    private final ServiceLookup<Class<?>, String> SERVICE_LOOKUP =
-            new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
-                    .blocking(5000, 1000, 1000)
-                    .build();
-
-    /**
-     * The collection of listeners interested in alarm feedback, populated via runtime binding.
-     */
-    private final Collection<AlarmFeedbackListener> alarmFeedbackListeners = new CopyOnWriteArrayList<>();
-
-    /**
-     * Add listeners to {@link #alarmFeedbackListeners} during runtime as they become available.
-     */
-    public synchronized void onBind(AlarmFeedbackListener alarmFeedbackListener, Map properties) {
-        LOG.debug("bind called with {}: {}", alarmFeedbackListener, properties);
-
-        if (alarmFeedbackListener != null) {
-            alarmFeedbackListeners.add(alarmFeedbackListener);
-        }
-    }
-
-    /**
-     * Remove listeners from {@link #alarmFeedbackListeners} during runtime as they become unavailable.
-     */
-    public synchronized void onUnbind(AlarmFeedbackListener alarmFeedbackListener, Map properties) {
-        LOG.debug("Unbind called with {}: {}", alarmFeedbackListener, properties);
-
-        if (alarmFeedbackListener != null) {
-            alarmFeedbackListeners.remove(alarmFeedbackListener);
-        }
+    public AlarmFeedbackDaoImpl(long gracePeriodInMs, long sleepTimeInMs, long waitTimeMs) {
+        SERVICE_LOOKUP = new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
+                .blocking(gracePeriodInMs, sleepTimeInMs, waitTimeMs)
+                .build();
     }
 
     /**
@@ -136,13 +113,5 @@ public class AlarmFeedbackDaoImpl implements AlarmFeedbackDao {
         } catch (Exception e) {
             throw new RuntimeException("Failed to execute query: " + e.getMessage(), e);
         }
-
-        alarmFeedbackListeners.forEach(listener -> {
-            try {
-                listener.handleAlarmFeedback(mappedFeedback);
-            } catch (Exception e) {
-                LOG.warn("Failed to notify listener of alarm feedback", e);
-            }
-        });
     }
 }

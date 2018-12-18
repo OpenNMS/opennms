@@ -30,14 +30,11 @@ package org.opennms.features.situationfeedback.rest;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.ws.rs.WebApplicationException;
 
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
-import org.opennms.features.situationfeedback.api.AlarmFeedbackListener;
 import org.opennms.features.situationfeedback.api.FeedbackException;
 import org.opennms.features.situationfeedback.api.FeedbackRepository;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -59,33 +56,12 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
 
     private final TransactionOperations transactionTemplate;
 
-    /**
-     * The collection of listeners interested in alarm feedback, populated via runtime binding.
-     */
-    private static final Collection<AlarmFeedbackListener> alarmFeedbackListeners = new CopyOnWriteArrayList<>();
-
     public SituationFeedbackRestServiceImpl(AlarmDao alarmDao, AlarmEntityNotifier alarmEntityNotifier, FeedbackRepository feedbackRepository, TransactionOperations transactionOperations) {
         this.alarmDao = Objects.requireNonNull(alarmDao);
         this.alarmEntityNotifier = Objects.requireNonNull(alarmEntityNotifier);
         this.repository = Objects.requireNonNull(feedbackRepository);
         this.transactionTemplate = Objects.requireNonNull(transactionOperations);
     }
-
-    public synchronized void onBind(AlarmFeedbackListener alarmFeedbackListener, Map properties) {
-        LOG.debug("bind called with {}: {}", alarmFeedbackListener, properties);
-
-        if (alarmFeedbackListener != null) {
-            alarmFeedbackListeners.add(alarmFeedbackListener);
-        }
-    }
-
-    public synchronized void onUnbind(AlarmFeedbackListener alarmFeedbackListener, Map properties) {
-        LOG.debug("Unbind called with {}: {}", alarmFeedbackListener, properties);
-
-        if (alarmFeedbackListener != null) {
-            alarmFeedbackListeners.remove(alarmFeedbackListener);
-        }
-    }    
 
     @Override
     public Collection<AlarmFeedback> getFeedback(int situationId) {
@@ -112,13 +88,5 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
         } catch (Exception e) {
             throw new WebApplicationException("Failed to execute query: " + e.getMessage(), e);
         }
-
-        alarmFeedbackListeners.forEach(listener -> {
-            try {
-                listener.handleAlarmFeedback(feedback);
-            } catch (Exception e) {
-                LOG.warn("Failed to notify listener of alarm feedback", e);
-            }
-        });
     }
 }

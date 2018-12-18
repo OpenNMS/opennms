@@ -32,9 +32,12 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
+import org.opennms.features.situationfeedback.api.AlarmFeedbackListener;
 import org.opennms.features.situationfeedback.api.FeedbackException;
 import org.opennms.features.situationfeedback.api.FeedbackRepository;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
@@ -68,6 +71,11 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
 
     private IndexStrategy indexStrategy;
 
+    /**
+     * The collection of listeners interested in alarm feedback, populated via runtime binding.
+     */
+    private final Collection<AlarmFeedbackListener> alarmFeedbackListeners = new CopyOnWriteArrayList<>();
+
     public ElasticFeedbackRepository(JestClient jestClient, IndexStrategy indexStrategy, int bulkRetryCount, ElasticFeedbackRepositoryInitializer initializer) {
         this.client = jestClient;
         this.indexStrategy = indexStrategy;
@@ -76,11 +84,11 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
     }
 
     @Override
-    public void persist(Collection<AlarmFeedback> feedback) throws FeedbackException {
+    public void persist(List<AlarmFeedback> feedback) throws FeedbackException {
         ensureInitialized();
         if (LOG.isDebugEnabled()) {
             for (AlarmFeedback fb : feedback) {
-                LOG.debug("Persiting {} feedback.", fb);
+                LOG.debug("Persisting {} feedback.", fb);
             }
         }
 
@@ -101,6 +109,8 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
             LOG.error("Failed to persist feedback [{}]: {}", feedback, e.getMessage());
             throw new FeedbackException("Failed to persist feedback", e);
         }
+
+        notifyListeners(feedback);
     }
 
     @Override
@@ -113,6 +123,40 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
     public List<AlarmFeedback> getAllFeedback() throws FeedbackException {
         String query = "{\n" + "\t\"query\": {\"match_all\": {}},\n\t\"sort\": [{\"@timestamp\": {\"order\" : \"asc\"}}]\n" + "}";
         return search(query);
+    }
+
+    /**
+     * Add listeners to {@link #alarmFeedbackListeners} during runtime as they become available.
+     */
+    public synchronized void onBind(AlarmFeedbackListener alarmFeedbackListener, Map properties) {
+        LOG.debug("bind called with {}: {}", alarmFeedbackListener, properties);
+
+        if (alarmFeedbackListener != null) {
+            alarmFeedbackListeners.add(alarmFeedbackListener);
+        }
+    }
+
+    /**
+     * Remove listeners from {@link #alarmFeedbackListeners} during runtime as they become unavailable.
+     */
+    public synchronized void onUnbind(AlarmFeedbackListener alarmFeedbackListener, Map properties) {
+        LOG.debug("Unbind called with {}: {}", alarmFeedbackListener, properties);
+
+        if (alarmFeedbackListener != null) {
+            alarmFeedbackListeners.remove(alarmFeedbackListener);
+        }
+    }
+
+    private void notifyListeners(List<AlarmFeedback> feedback) {
+        LOG.debug("Notifying listeners {} of feedback {}", alarmFeedbackListeners, feedback);
+        alarmFeedbackListeners.forEach(listener -> {
+            try {
+                LOG.trace("Notifying listener {}", listener);
+                listener.handleAlarmFeedback(feedback);
+            } catch (Exception e) {
+                LOG.warn("Failed to notify listener of alarm feedback", e);
+            }
+        });
     }
 
     private List<AlarmFeedback> search(String query) throws FeedbackException {

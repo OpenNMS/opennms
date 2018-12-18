@@ -31,9 +31,20 @@ package org.opennms.features.situationfeedback.api;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * This interface provides an abstraction over storing/retrieving {@link AlarmFeedback feedback} to some persistent
+ * storage provider.
+ */
 public interface FeedbackRepository {
 
-    void persist(Collection<AlarmFeedback> feedback) throws FeedbackException;
+    /**
+     * Persists the given collection of {@link AlarmFeedback feedback} and notifies any
+     * {@link AlarmFeedbackListener listeners}.
+     *
+     * @param feedback the feedback to persist
+     * @throws FeedbackException if the feedback could not be persisted
+     */
+    void persist(List<AlarmFeedback> feedback) throws FeedbackException;
 
     /**
      * @param situationKey the reduction key of the situation to get feedback for
