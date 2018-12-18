@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
+import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.MacCloud;
@@ -59,13 +60,15 @@ public class LinkdVertex extends SimpleLeafVertex {
         
     }
 
-    public static LinkdVertex create(NodeTopologyEntity node) {
-        LinkdVertex vertex = new LinkdVertex(node.getId());
-        vertex.setNodeID(node.getNodeId());
+    public static LinkdVertex create(NodeTopologyEntity node, IpInterfaceTopologyEntity primary) {
+        LinkdVertex vertex = new LinkdVertex(node.getId().toString());
+        vertex.setNodeID(node.getId());
         vertex.setLabel(node.getLabel());
-        vertex.setIpAddress(node.getAddress());
+        if (primary != null) {
+            vertex.setIpAddress(Topology.getAddress(primary.getIpAddress()));
+        }
         vertex.setIconKey(Topology.getIconKey(node));
-        vertex.setTooltipText(Topology.getToolTipText(node));
+        vertex.setTooltipText(Topology.getToolTipText(node,primary));
         return vertex;
     }
     private Set<ProtocolSupported> m_protocolSupported = EnumSet.noneOf(ProtocolSupported.class);

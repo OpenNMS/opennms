@@ -28,8 +28,8 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 
 public class LinkdPort {
 
@@ -39,7 +39,7 @@ public class LinkdPort {
         return port;
     }
     
-    public static LinkdPort create(LinkdVertex vertex, OnmsSnmpInterface iface, String addr) {
+    public static LinkdPort create(LinkdVertex vertex, SnmpInterfaceTopologyEntity iface, String addr) {
         if (iface == null ) {
             return create(vertex,addr);
         }

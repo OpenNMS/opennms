@@ -33,7 +33,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
+import org.opennms.netmgt.enlinkd.model.IsIsElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
+import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
 
 public interface IsisTopologyService extends TopologyService {
         
@@ -42,6 +44,6 @@ public interface IsisTopologyService extends TopologyService {
     void store(int nodeId, IsIsLink link);
     void store(int nodeId, IsIsElement element);
 
-    List<IsIsElement> findAllIsIsElements();
-    List<TopologyConnection<IsIsLink, IsIsLink>> match();
+    List<IsIsElementTopologyEntity> findAllIsIsElements();
+    List<TopologyConnection<IsIsLinkTopologyEntity, IsIsLinkTopologyEntity>> match();
 }

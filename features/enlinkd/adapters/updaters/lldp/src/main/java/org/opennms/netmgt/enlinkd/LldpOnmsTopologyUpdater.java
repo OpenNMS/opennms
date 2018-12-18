@@ -30,8 +30,9 @@ package org.opennms.netmgt.enlinkd;
 
 import java.util.Map;
 
-import org.opennms.netmgt.enlinkd.model.LldpElement;
-import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
@@ -48,7 +49,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 public class LldpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
-    public static OnmsTopologyPort create(OnmsTopologyVertex source,LldpLink sourceLink, LldpLink targetlink ) throws OnmsTopologyException {
+    public static OnmsTopologyPort create(OnmsTopologyVertex source,LldpLinkTopologyEntity sourceLink, LldpLinkTopologyEntity targetlink ) throws OnmsTopologyException {
         OnmsTopologyPort port = OnmsTopologyPort.create(sourceLink.getId().toString(),source, sourceLink.getLldpPortIfindex());
         port.setPort(sourceLink.getLldpPortDescr());
         port.setAddr(Topology.getRemoteAddress(targetlink));
@@ -73,22 +74,23 @@ public class LldpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     @Override
     public OnmsTopology buildTopology() throws OnmsTopologyException {
         Map<Integer, NodeTopologyEntity> nodeMap= getNodeMap();
+        Map<Integer, IpInterfaceTopologyEntity> ipMap= getIpPrimaryMap();
         OnmsTopology topology = new OnmsTopology();
-        for (LldpElement element: m_lldpTopologyService.findAllLldpElements()) {
-            topology.getVertices().add(create(nodeMap.get(element.getNode().getId())));
+        for (LldpElementTopologyEntity element: m_lldpTopologyService.findAllLldpElements()) {
+            topology.getVertices().add(create(nodeMap.get(element.getNodeId()),ipMap.get(element.getNodeId()).getIpAddress()));
         }
         
-        for (TopologyConnection<LldpLink, LldpLink> pair : m_lldpTopologyService.match()) {
+    for (TopologyConnection<LldpLinkTopologyEntity, LldpLinkTopologyEntity> pair : m_lldpTopologyService.match()) {
             topology.getEdges().add(
                                     OnmsTopologyEdge.create(
                                                             Topology.getDefaultEdgeId(pair.getLeft().getId(), pair.getRight().getId()),
                                                             create(
-                                                                   topology.getVertex(pair.getLeft().getNode().getId().toString()), 
+                                                                   topology.getVertex(pair.getLeft().getNodeIdAsString()), 
                                                                    pair.getLeft(),
                                                                    pair.getRight()
                                                                    ), 
                                                             create(
-                                                                   topology.getVertex(pair.getRight().getNode().getId().toString()), 
+                                                                   topology.getVertex(pair.getRight().getNodeIdAsString()), 
                                                                    pair.getRight(),
                                                                    pair.getLeft()
                                                                    )

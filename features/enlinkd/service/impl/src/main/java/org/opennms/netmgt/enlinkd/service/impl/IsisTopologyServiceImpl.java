@@ -38,7 +38,9 @@ import java.util.Set;
 
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
+import org.opennms.netmgt.enlinkd.model.IsIsElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
+import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
@@ -169,23 +171,23 @@ public class IsisTopologyServiceImpl extends TopologyServiceImpl implements Isis
     }
 
     @Override
-    public List<IsIsElement> findAllIsIsElements() {
-        return m_isisElementDao.findAll();
+    public List<IsIsElementTopologyEntity> findAllIsIsElements() {
+        return getTopologyEntityCache().getIsIsElementTopologyEntities();
     }
 
     @Override
-    public List<TopologyConnection<IsIsLink, IsIsLink>> match() {
-        List<IsIsElement> elements = m_isisElementDao.findAll();
-        List<IsIsLink> allLinks = m_isisLinkDao.findAll();
+    public List<TopologyConnection<IsIsLinkTopologyEntity, IsIsLinkTopologyEntity>> match() {
+        List<IsIsElementTopologyEntity> elements = getTopologyEntityCache().getIsIsElementTopologyEntities();
+        List<IsIsLinkTopologyEntity> allLinks = getTopologyEntityCache().getIsIsLinkTopologyEntities();
         // 1.) create lookupMaps
-        Map<Integer, IsIsElement> elementmap = new HashMap<Integer, IsIsElement>();
-        for (IsIsElement element: elements) {
-            elementmap.put(element.getNode().getId(), element);
+        Map<Integer, IsIsElementTopologyEntity> elementmap = new HashMap<Integer, IsIsElementTopologyEntity>();
+        for (IsIsElementTopologyEntity element: elements) {
+            elementmap.put(element.getNodeId(), element);
         }
 
-        Map<CompositeKey, IsIsLink> targetLinkMap = new HashMap<>();
-        for (IsIsLink targetLink : allLinks) {
-            IsIsElement targetElement = elementmap.get(targetLink.getNode().getId());
+        Map<CompositeKey, IsIsLinkTopologyEntity> targetLinkMap = new HashMap<>();
+        for (IsIsLinkTopologyEntity targetLink : allLinks) {
+            IsIsElementTopologyEntity targetElement = elementmap.get(targetLink.getNodeId());
             targetLinkMap.put(new CompositeKey(targetLink.getIsisISAdjIndex(),
                       targetElement.getIsisSysID(),
                       targetLink.getIsisISAdjNeighSysID()), targetLink);
@@ -193,17 +195,17 @@ public class IsisTopologyServiceImpl extends TopologyServiceImpl implements Isis
 
         // 2. iterate
         Set<Integer> parsed = new HashSet<Integer>();
-        List<TopologyConnection<IsIsLink, IsIsLink>> results = new ArrayList<>();
+        List<TopologyConnection<IsIsLinkTopologyEntity, IsIsLinkTopologyEntity>> results = new ArrayList<>();
 
-        for (IsIsLink sourceLink : allLinks) {
+        for (IsIsLinkTopologyEntity sourceLink : allLinks) {
             if (parsed.contains(sourceLink.getId())) {
                 continue;
             }
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getIsIsLinks: source: {}", sourceLink);
             }
-            IsIsElement sourceElement = elementmap.get(sourceLink.getNode().getId());
-            IsIsLink targetLink = targetLinkMap.get(new CompositeKey(sourceLink.getIsisISAdjIndex(),
+            IsIsElementTopologyEntity sourceElement = elementmap.get(sourceLink.getNodeId());
+            IsIsLinkTopologyEntity targetLink = targetLinkMap.get(new CompositeKey(sourceLink.getIsisISAdjIndex(),
                     sourceLink.getIsisISAdjNeighSysID(),
                     sourceElement.getIsisSysID()));
 

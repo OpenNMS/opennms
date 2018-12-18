@@ -50,7 +50,7 @@ public class LinkdEdge extends AbstractEdge implements Edge {
         
         return edge;
     }
-
+    
     private final LinkdPort m_sourcePort;
     private final LinkdPort m_targetPort;
     private final ProtocolSupported m_discoveredBy;

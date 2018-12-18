@@ -30,9 +30,10 @@ package org.opennms.netmgt.enlinkd;
 
 import java.util.Map;
 
+import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
-import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
@@ -48,7 +49,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
-    public static OnmsTopologyPort create(OnmsTopologyVertex source,OspfLink sourcelink, OspfLink targetlink ) throws OnmsTopologyException {
+    public static OnmsTopologyPort create(OnmsTopologyVertex source,OspfLinkTopologyEntity sourcelink, OspfLinkTopologyEntity targetlink ) throws OnmsTopologyException {
         OnmsTopologyPort port = OnmsTopologyPort.create(sourcelink.getId().toString(),source, sourcelink.getOspfIfIndex());
         port.setPort(Topology.getAddress(sourcelink));
         port.setAddr(Topology.getRemoteAddress(targetlink));
@@ -73,27 +74,28 @@ public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     @Override
     public OnmsTopology buildTopology() throws OnmsTopologyException {
         Map<Integer, NodeTopologyEntity> nodeMap=getNodeMap();
+        Map<Integer, IpInterfaceTopologyEntity> ipMap= getIpPrimaryMap();
         OnmsTopology topology = new OnmsTopology();
         for (OspfElement element: m_ospfTopologyService.findAllOspfElements()) {
-            topology.getVertices().add(create(nodeMap.get(element.getNode().getId())));
+            topology.getVertices().add(create(nodeMap.get(element.getNode().getId()),ipMap.get(element.getNode().getId()).getIpAddress()));
         }
         
-        for(TopologyConnection<OspfLink, OspfLink> pair : m_ospfTopologyService.match()) {
+        for(TopologyConnection<OspfLinkTopologyEntity, OspfLinkTopologyEntity> pair : m_ospfTopologyService.match()) {
             topology.getEdges().add(OnmsTopologyEdge.create(
                                                             Topology.getDefaultEdgeId(pair.getLeft().getId(), pair.getRight().getId()),
                                                             create(
-                                                                   topology.getVertex(pair.getLeft().getNode().getId().toString()), 
+                                                                   topology.getVertex(pair.getLeft().getNodeIdAsString()), 
                                                                    pair.getLeft(), 
                                                                    pair.getRight()
                                                                    ), 
                                                             create(
-                                                                   topology.getVertex(pair.getRight().getNode().getId().toString()), 
+                                                                   topology.getVertex(pair.getRight().getNodeIdAsString()), 
                                                                    pair.getRight(), 
                                                                    pair.getLeft()
                                                                    )
                                                             )
                                     );
-       }
+        }
         
         return topology;
     }

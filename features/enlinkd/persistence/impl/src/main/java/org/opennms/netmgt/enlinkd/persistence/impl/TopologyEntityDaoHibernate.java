@@ -28,45 +28,27 @@
 
 package org.opennms.netmgt.enlinkd.persistence.impl;
 
-import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityDao;
-import org.opennms.netmgt.model.OnmsCriteria;
-import org.opennms.netmgt.model.OnmsNode;
-import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.criterion.CriteriaSpecification;
-import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.enlinkd.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.IsIsElementTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityDao;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements TopologyEntityDao {
 
     @Override
     public List<NodeTopologyEntity> getNodeTopologyEntities() {
-        /* FIXME  do not use OnmsCriteria
         return (List<NodeTopologyEntity>)getHibernateTemplate().find(
                 "select new org.opennms.netmgt.enlinkd.model.NodeTopologyEntity(n.id, n.type, n.sysObjectId, n.label, n.location) from org.opennms.netmgt.model.OnmsNode n");
-                */
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
-        criteria.createAlias("ipInterfaces","iface", OnmsCriteria.LEFT_JOIN);
-        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-        criteria.resultsOfType(OnmsNode.class); 
-        final HibernateCallback<List<OnmsNode>> callback = new HibernateCallback<List<OnmsNode>>() {
-            @Override
-            public List<OnmsNode> doInHibernate(final Session session) throws HibernateException, SQLException {
-                final Criteria attachedCrit = criteria.getDetachedCriteria().getExecutableCriteria(session);
-                if (criteria.getFirstResult() != null) attachedCrit.setFirstResult(criteria.getFirstResult());
-                if (criteria.getMaxResults() != null) attachedCrit.setMaxResults(criteria.getMaxResults());
-                return (List<OnmsNode>)attachedCrit.list();
-            }
-        };
-        return getHibernateTemplate().execute(callback).stream().map(NodeTopologyEntity::create).collect(Collectors.toList());
     }
 
     @Override
@@ -76,4 +58,59 @@ public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements T
                         "l.cdpInterfaceName, l.cdpCacheAddress, l.cdpCacheDeviceId, l.cdpCacheDevicePort) from org.opennms.netmgt.enlinkd.model.CdpLink l");
     }
 
+    @Override
+    public List<IsIsLinkTopologyEntity> getIsIsLinkTopologyEntities() {
+        return (List<IsIsLinkTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity(l.id, l.node.id, l.isisISAdjIndex, l.isisCircIfIndex, l.isisISAdjNeighSysID, " +
+                        "l.isisISAdjNeighSNPAAddress) from org.opennms.netmgt.enlinkd.model.IsIsLink l");
+    }
+
+    @Override
+    public List<LldpLinkTopologyEntity> getLldpLinkTopologyEntities() {
+        return (List<LldpLinkTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity(l.id, l.node.id, l.lldpRemChassisId, l.lldpRemPortId, l.lldpRemPortIdSubType, l.lldpPortId, l.lldpPortIdSubType, l.lldpPortDescr, l.lldpPortIfindex) from org.opennms.netmgt.enlinkd.model.LldpLink l");
+    }
+
+    @Override
+    public List<OspfLinkTopologyEntity> getOspfLinkTopologyEntities() {
+        return (List<OspfLinkTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity(l.id, l.node.id, l.ospfIpAddr, l.ospfIpMask, l.ospfRemIpAddr, l.ospfIfIndex) from org.opennms.netmgt.model.enlinkd.OspfLink l");
+    }
+
+
+    @Override
+    public List<SnmpInterfaceTopologyEntity> getSnmpTopologyEntities() {
+        return (List<SnmpInterfaceTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity(" +
+                        "i.id, i.ifIndex, i.ifName, i.ifSpeed, i.node.id) from org.opennms.netmgt.model.OnmsSnmpInterface i");
+    }
+
+    @Override
+    public List<IpInterfaceTopologyEntity> getIpTopologyEntities() {
+        return (List<IpInterfaceTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity(" +
+                        "i.id, i.ipAddress, i.isManaged, i.isSnmpPrimary, i.node.id, i.snmpInterface.id) " +
+                        "from org.opennms.netmgt.model.OnmsIpInterface i");
+    }
+
+    @Override
+    public List<CdpElementTopologyEntity> getCdpElementTopologyEntities() {
+        return (List<CdpElementTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.enlinkd.model.CdpElementTopologyEntity(e.id, e.cdpGlobalDeviceId, e.node.id)" +
+                        "from org.opennms.netmgt.enlinkd.model.CdpElement e");
+    }
+
+    @Override
+    public List<LldpElementTopologyEntity> getLldpElementTopologyEntities() {
+        return (List<LldpElementTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity(e.id, e.lldpChassisId, e.node.id)" +
+                        "from org.opennms.netmgt.enlinkd.model.LldpElement e");
+    }
+
+    @Override
+    public List<IsIsElementTopologyEntity> getIsIsElementTopologyEntities() {
+        return (List<IsIsElementTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.enlinkd,model.IsIsElementTopologyEntity(e.id, e.isisSysID, e.node.id)" +
+                        "from org.opennms.netmgt.enlinkd.model.IsIsElement e");
+    }
 }

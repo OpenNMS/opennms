@@ -28,14 +28,16 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
+import java.net.InetAddress;
 import java.util.List;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
-import org.opennms.netmgt.enlinkd.model.IsIsLink;
-import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
-import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.model.OnmsNode;
 
 public interface Topology {
@@ -87,6 +89,9 @@ public interface Topology {
         return String.format("'Shared Segment': designated bridge: %s" ,
                 designated.printTopology());
     }
+    public static String getAddress(InetAddress address) {
+        return InetAddressUtils.str(address);
+    }
     
     public static String getAddress(MacPort port ) {
         return port.getPortMacInfo();
@@ -103,19 +108,19 @@ public interface Topology {
         return cdplink.getCdpCacheAddress();
     }
 
-    public static String getRemoteAddress(LldpLink lldplink) {
+    public static String getRemoteAddress(LldpLinkTopologyEntity lldplink) {
         return String.format("%s type %s", lldplink.getLldpRemPortId(),lldplink.getLldpRemPortIdSubType().name());
     }
 
-    public static String getRemoteAddress(OspfLink ospflink) {
+    public static String getRemoteAddress(OspfLinkTopologyEntity ospflink) {
         return InetAddressUtils.str(ospflink.getOspfRemIpAddr());
     }
 
-    public static String getAddress(OspfLink ospflink) {
+    public static String getAddress(OspfLinkTopologyEntity ospflink) {
         return String.format("%s mask %s", InetAddressUtils.str(ospflink.getOspfIpAddr()), InetAddressUtils.str(ospflink.getOspfIpMask()));
     }
 
-    public static String getRemoteAddress(IsIsLink isislink) {
+    public static String getRemoteAddress(IsIsLinkTopologyEntity isislink) {
         return isislink.getIsisISAdjNeighSNPAAddress();
     }
 
@@ -145,17 +150,21 @@ public interface Topology {
     
     }
 
-    public static String getToolTipText(NodeTopologyEntity node) {
+    public static String getToolTipText(NodeTopologyEntity node, IpInterfaceTopologyEntity primary) {
         final StringBuilder tooltipText = new StringBuilder();
         tooltipText.append(node.getLabel());
         tooltipText.append(": ");
-        tooltipText.append("(");
-        tooltipText.append(node.getAddress());
-        tooltipText.append(")");
+        if (primary != null) {
+            tooltipText.append("(");
+            tooltipText.append(InetAddressUtils.str(primary.getIpAddress()));
+            tooltipText.append(")");
+        }
         tooltipText.append("(");
         tooltipText.append(getNodeStatus(node.getType()));
-        tooltipText.append("/");
-        tooltipText.append(getIsManaged(node.isManaged()));
+        if (primary != null) {
+            tooltipText.append("/");
+           tooltipText.append(getIsManaged(primary.isManaged()));
+        }
         tooltipText.append(")");
         
         if (node.getLocation() != null && node.getLocation().trim().length() > 0) {
@@ -181,13 +190,13 @@ public interface Topology {
         return "cloud";
     }
     public static String getIconKey(NodeTopologyEntity node) {
-        if (node.getSysoid() == null) {
+        if (node.getSysObjectId() == null) {
             return "linkd.system";
         }
-        if (node.getSysoid().startsWith(".")) {
-            return "linkd.system.snmp" +node.getSysoid();
+        if (node.getSysObjectId().startsWith(".")) {
+            return "linkd.system.snmp" +node.getSysObjectId();
         }
-        return "linkd.system.snmp." + node.getSysoid();
+        return "linkd.system.snmp." + node.getSysObjectId();
         
     }
     public static String getNodeStatus(OnmsNode.NodeType nodeType) {

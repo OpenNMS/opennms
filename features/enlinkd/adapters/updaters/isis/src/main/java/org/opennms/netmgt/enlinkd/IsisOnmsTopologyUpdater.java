@@ -30,8 +30,9 @@ package org.opennms.netmgt.enlinkd;
 
 import java.util.Map;
 
-import org.opennms.netmgt.enlinkd.model.IsIsElement;
-import org.opennms.netmgt.enlinkd.model.IsIsLink;
+import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.IsIsElementTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
@@ -48,9 +49,9 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 public class IsisOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
-    public static OnmsTopologyPort create(OnmsTopologyVertex source,IsIsLink sourceLink,IsIsLink targetLink ) throws OnmsTopologyException {
+    public static OnmsTopologyPort create(OnmsTopologyVertex source,IsIsLinkTopologyEntity sourceLink,IsIsLinkTopologyEntity targetLink ) throws OnmsTopologyException {
         OnmsTopologyPort port= OnmsTopologyPort.create(sourceLink.getId().toString(),source, sourceLink.getIsisCircIfIndex());
-        port.setPort(sourceLink.getIsisCircIndex().toString());
+        port.setPort(sourceLink.getIsisCircIfIndex().toString());
         port.setAddr(Topology.getRemoteAddress(targetLink));
         port.setToolTipText(Topology.getToolTipText(source.getLabel(), port.getIndex(), port.getPort(), port.getAddr(), null));
         return port;
@@ -74,22 +75,24 @@ public class IsisOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     @Override
     public OnmsTopology buildTopology() throws OnmsTopologyException {
         Map<Integer, NodeTopologyEntity> nodeMap= getNodeMap();
+        Map<Integer, IpInterfaceTopologyEntity> ipMap= getIpPrimaryMap();
         OnmsTopology topology = new OnmsTopology();
-        for ( IsIsElement element: m_isisTopologyService.findAllIsIsElements()) {
-            topology.getVertices().add(create(nodeMap.get(element.getNode().getId())));
+        for ( IsIsElementTopologyEntity element: m_isisTopologyService.findAllIsIsElements()) {
+            topology.getVertices().add(create(nodeMap.get(element.getNodeId()),ipMap.get(element.getNodeId()).getIpAddress()));
         }
         
-        for(TopologyConnection<IsIsLink, IsIsLink> pair : m_isisTopologyService.match()){
-            OnmsTopologyEdge edge = OnmsTopologyEdge.create(
+    for(TopologyConnection<IsIsLinkTopologyEntity, IsIsLinkTopologyEntity> pair : m_isisTopologyService.match()){
+        topology.getEdges().add(
+                                OnmsTopologyEdge.create(
                                                             Topology.getDefaultEdgeId(pair.getLeft().getId(), pair.getRight().getId()),
-                                                            create(topology.getVertex(pair.getLeft().getNode().getId().toString()), 
+                                                            create(topology.getVertex(pair.getLeft().getNodeIdAsString()), 
                                                                    pair.getLeft(), 
                                                                    pair.getRight()), 
-                                                            create(topology.getVertex(pair.getRight().getNode().getId().toString()), 
+                                                            create(topology.getVertex(pair.getRight().getNodeIdAsString()), 
                                                                    pair.getRight(), 
                                                                    pair.getLeft())
-                                                            );
-            topology.getEdges().add(edge);
+                                                            )
+                                );
        }
         
         return topology;

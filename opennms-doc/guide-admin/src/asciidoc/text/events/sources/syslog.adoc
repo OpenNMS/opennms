@@ -45,6 +45,7 @@ The patterns should be arranged in the file from most specific to least specific
 | `MONTH`       | 3-character English month abbreviation.
 | `NOSPACE`     | String that contains no whitespace.
 | `STRING`      | String. Because this matches any character, it must be followed by a delimiter in the pattern string.
+| `WHITESPACE`  | String that contains only whitespace (spaces and or tabs).
 |===
 
 [options="header, autowidth"]

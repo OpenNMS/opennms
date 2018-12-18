@@ -33,7 +33,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.netmgt.enlinkd.model.LldpElement;
+import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 
 public interface LldpTopologyService extends TopologyService {
         
@@ -42,10 +44,8 @@ public interface LldpTopologyService extends TopologyService {
     void store(int nodeId, LldpLink link);
     void store(int nodeId, LldpElement element);
     
-    List<LldpElement> findAllLldpElements();
-    List<LldpLink> findAllLldpLinks();
-    
-    List<TopologyConnection<LldpLink, LldpLink>> match();
+    List<LldpElementTopologyEntity> findAllLldpElements();
+    List<TopologyConnection<LldpLinkTopologyEntity, LldpLinkTopologyEntity>> match();
 
     
 }

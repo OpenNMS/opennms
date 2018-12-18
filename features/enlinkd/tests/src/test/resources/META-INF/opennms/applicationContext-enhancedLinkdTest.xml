@@ -138,6 +138,7 @@
         <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
         <property name="bridgeStpLinkDao" ref="bridgeStpLinkDao" />
         <property name="ipNetToMediaDao" ref="ipNetToMediaDao" />
+        <property name="topologyEntityCache" ref="topologyEntityCache" />
     </bean>
 
     <bean id="ipNetToMediaTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.IpNetToMediaTopologyServiceImpl">
@@ -154,16 +155,19 @@
    <bean id="isisTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.IsisTopologyServiceImpl">
       <property name="isisLinkDao" ref="isisLinkDao" />
       <property name="isisElementDao" ref="isisElementDao" />
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
    </bean>
 
    <bean id="lldpTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.LldpTopologyServiceImpl">
       <property name="lldpLinkDao" ref="lldpLinkDao" />
       <property name="lldpElementDao" ref="lldpElementDao" />
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
    </bean>
    
    <bean id="ospfTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.OspfTopologyServiceImpl">
       <property name="ospfLinkDao" ref="ospfLinkDao" />
       <property name="ospfElementDao" ref="ospfElementDao" />
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
    </bean>
    
     <bean id="linkdConfig" class="org.opennms.netmgt.config.EnhancedLinkdConfigFactory" lazy-init="true"/>

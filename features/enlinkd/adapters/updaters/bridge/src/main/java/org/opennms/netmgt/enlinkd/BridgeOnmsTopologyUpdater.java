@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
@@ -98,6 +99,7 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater  {
     @Override
     public OnmsTopology buildTopology() throws OnmsTopologyException {
         Map<Integer, NodeTopologyEntity> nodeMap= getNodeMap();
+        Map<Integer, IpInterfaceTopologyEntity> ipMap= getIpPrimaryMap();
         OnmsTopology topology = new OnmsTopology();
 
         for (TopologyShared shared : m_bridgeTopologyService.match()){
@@ -107,24 +109,26 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater  {
             Set<OnmsTopologyPort> ports = new HashSet<>();
             for(BridgePort bp :shared.getBridgePorts()) {
                 NodeTopologyEntity node = nodeMap.get(bp.getNodeId());
-                if (topology.getVertex(node.getId()) == null) {
-                    topology.getVertices().add(create(node));
+                if (topology.getVertex(node.getId().toString()) == null) {
+                    topology.getVertices().add(create(node,ipMap.get(node.getId()).getIpAddress()));
                 }
-                ports.add(create(topology.getVertex(node.getId()), bp));
+                ports.add(create(topology.getVertex(node.getId().toString()), bp));
+
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("getTopology: added port: {}", bp.printTopology());
                 }
             }
+
             List<MacPort> portsWithoutNode = new ArrayList<>();
             for (MacPort mp :shared.getMacPorts()) {
                 if (mp.getNodeId() == null) {
                     portsWithoutNode.add(mp);
                 } else {
                     NodeTopologyEntity node = nodeMap.get(mp.getNodeId());
-                    if (topology.getVertex(node.getId()) ==  null) {
-                        topology.getVertices().add(create(node));
+                    if (topology.getVertex(node.getId().toString()) ==  null) {
+                        topology.getVertices().add(create(node,ipMap.get(node.getId()).getIpAddress()));
                     }
-                    ports.add(create(topology.getVertex(node.getId()), mp));
+                    ports.add(create(topology.getVertex(node.getId().toString()), mp));
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("getTopology: added port: {}", mp.printTopology());
                     }

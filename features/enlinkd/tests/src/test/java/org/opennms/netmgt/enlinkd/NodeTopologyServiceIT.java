@@ -34,6 +34,7 @@ import static org.junit.Assert.assertThat;
 import java.util.List;
 
 import org.junit.Test;
+import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
@@ -50,7 +51,10 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         m_nodeDao.save(builder.getSwitch1());
         m_nodeDao.save(builder.getSwitch2());
 
-        final List<NodeTopologyEntity> nodes = nodeTopologyService.findAll();
+        final List<NodeTopologyEntity> nodes = nodeTopologyService.findAllNode();
         assertThat(nodes, hasSize(2));
+        
+        final List<IpInterfaceTopologyEntity> ips = nodeTopologyService.findAllIp();
+        assertThat(ips, hasSize(2));
     }
 }

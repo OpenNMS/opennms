@@ -34,8 +34,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
-import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisSysObjectGroupTracker;
@@ -69,7 +69,7 @@ public final class NodeDiscoveryIsis extends NodeDiscovery {
             final IsisTopologyService isisTopologyService,
             final LocationAwareSnmpClient locationAwareSnmpClient,
             final long interval,final long initial,
-            final NodeTopologyEntity node) {
+            final Node node) {
         super(eventForwarder, locationAwareSnmpClient, interval, initial,node);
     	m_isisTopologyService = isisTopologyService;
     }

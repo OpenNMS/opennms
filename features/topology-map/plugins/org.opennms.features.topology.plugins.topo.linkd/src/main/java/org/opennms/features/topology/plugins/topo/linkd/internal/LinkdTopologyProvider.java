@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -41,12 +42,13 @@ import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
-import org.opennms.netmgt.enlinkd.model.IsIsLink;
-import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
-import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
@@ -59,7 +61,7 @@ import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.enlinkd.service.api.TopologyConnection;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.PrimaryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,8 +75,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private static Logger LOG = LoggerFactory.getLogger(LinkdTopologyProvider.class);
 
-    private SnmpInterfaceDao m_snmpInterfaceDao;
-
     private NodeTopologyService m_nodeTopologyService;
     private BridgeTopologyService m_bridgeTopologyService;
     private CdpTopologyService m_cdpTopologyService;
@@ -82,9 +82,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private OspfTopologyService m_ospfTopologyService;
     private IsisTopologyService m_isisTopologyService;
 
-    private Table<Integer, Integer,OnmsSnmpInterface> m_nodeToOnmsSnmpTable = HashBasedTable.create();
+    private Table<Integer, Integer,SnmpInterfaceTopologyEntity> m_nodeToOnmsSnmpTable = HashBasedTable.create();
 
     private final Timer m_loadFullTimer;
+    private final Timer m_loadIpInterfacesTimer;
     private final Timer m_loadSnmpInterfacesTimer;
     private final Timer m_loadLldpLinksTimer;
     private final Timer m_loadOspfLinksTimer;
@@ -102,6 +103,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         super(TOPOLOGY_NAMESPACE_LINKD);
         Objects.requireNonNull(registry);
         m_loadFullTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "full"));
+        m_loadIpInterfacesTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "ipinterfaces"));
         m_loadSnmpInterfacesTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "snmpinterfaces"));
         m_loadLldpLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "lldp"));
         m_loadOspfLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "ospf"));
@@ -112,11 +114,11 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         m_loadEdgesTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "edges", "none"));
     }
 
-    private OnmsSnmpInterface getSnmpInterface(Integer nodeid, Integer ifindex) {
+    private SnmpInterfaceTopologyEntity getSnmpInterface(Integer nodeid, Integer ifindex) {
         if(m_nodeToOnmsSnmpTable.contains(nodeid,ifindex) ) {
                 return m_nodeToOnmsSnmpTable.get(nodeid,ifindex);
         }
-        return null;
+        return new SnmpInterfaceTopologyEntity(null, ifindex, "No Interface Found", 0l, nodeid);
     }
     
     @Override
@@ -184,46 +186,47 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
 
     private void getLldpLinks() {
-        for (TopologyConnection<LldpLink, LldpLink> pair : m_lldpTopologyService.match()) {
-            LinkdVertex source = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, pair.getLeft().getNode().getNodeId());
+        for (TopologyConnection<LldpLinkTopologyEntity, LldpLinkTopologyEntity> pair : m_lldpTopologyService.match()) {
+            LinkdVertex source = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, pair.getLeft().getNodeIdAsString());
             source.getProtocolSupported().add(ProtocolSupported.LLDP);
-            LinkdVertex target = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, pair.getRight().getNode().getNodeId());
+            LinkdVertex target = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, pair.getRight().getNodeIdAsString());
             target.getProtocolSupported().add(ProtocolSupported.LLDP);
             addEdges(
                      LinkdEdge.create(
                                       Topology.getDefaultEdgeId(pair.getLeft().getId(), pair.getRight().getId()),
                                       LinkdPort.create(
                                                        source,
-                                                       getSnmpInterface(pair.getLeft().getNode().getId(), pair.getLeft().getLldpPortIfindex()), 
+                                                       getSnmpInterface(pair.getLeft().getNodeId(), pair.getLeft().getLldpPortIfindex()), 
                                                        Topology.getRemoteAddress(pair.getRight())
                                                        ),
                                       LinkdPort.create(
                                                        target, 
-                                                       getSnmpInterface(pair.getRight().getNode().getId(), pair.getRight().getLldpPortIfindex()), 
+                                                       getSnmpInterface(pair.getRight().getNodeId(), pair.getRight().getLldpPortIfindex()), 
                                                        Topology.getRemoteAddress(pair.getLeft())
                                                        ),
                                       ProtocolSupported.LLDP)
                      );
         }
+
     }
 
     private void getOspfLinks() {
-        for (TopologyConnection<OspfLink, OspfLink> pair : m_ospfTopologyService.match()) {
-            LinkdVertex source = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, pair.getLeft().getNode().getNodeId());
+        for (TopologyConnection<OspfLinkTopologyEntity, OspfLinkTopologyEntity> pair : m_ospfTopologyService.match()) {
+            LinkdVertex source = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, pair.getLeft().getNodeIdAsString());
             source.getProtocolSupported().add(ProtocolSupported.OSPF);
-            LinkdVertex target = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, pair.getRight().getNode().getNodeId());
+            LinkdVertex target = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, pair.getRight().getNodeIdAsString());
             target.getProtocolSupported().add(ProtocolSupported.OSPF);
             addEdges(
                      LinkdEdge.create(
                                       Topology.getDefaultEdgeId(pair.getLeft().getId(), pair.getRight().getId()),
                                       LinkdPort.create(
                                                        source,
-                                                       getSnmpInterface(pair.getLeft().getNode().getId(), pair.getLeft().getOspfIfIndex()), 
+                                                       getSnmpInterface(pair.getLeft().getNodeId(), pair.getLeft().getOspfIfIndex()), 
                                                        Topology.getRemoteAddress(pair.getRight())
                                                        ),
                                       LinkdPort.create(
                                                        target, 
-                                                       getSnmpInterface(pair.getRight().getNode().getId(), pair.getRight().getOspfIfIndex()), 
+                                                       getSnmpInterface(pair.getRight().getNodeId(), pair.getRight().getOspfIfIndex()), 
                                                        Topology.getRemoteAddress(pair.getLeft())
                                                        ),
                                       ProtocolSupported.OSPF)
@@ -258,22 +261,22 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private void getIsIsLinks() {
 
-        for(TopologyConnection<IsIsLink, IsIsLink> pair : m_isisTopologyService.match()) {
-            LinkdVertex source = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, pair.getLeft().getNode().getNodeId());
+        for(TopologyConnection<IsIsLinkTopologyEntity, IsIsLinkTopologyEntity> pair : m_isisTopologyService.match()) {
+            LinkdVertex source = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, pair.getLeft().getNodeIdAsString());
             source.getProtocolSupported().add(ProtocolSupported.ISIS);
-            LinkdVertex target = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, pair.getRight().getNode().getNodeId());
+            LinkdVertex target = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, pair.getRight().getNodeIdAsString());
             target.getProtocolSupported().add(ProtocolSupported.ISIS);
             addEdges(
                      LinkdEdge.create(
                                       Topology.getDefaultEdgeId(pair.getLeft().getId(), pair.getRight().getId()), 
                                       LinkdPort.create(
                                                        source,
-                                                       getSnmpInterface(pair.getLeft().getNode().getId(), pair.getLeft().getIsisCircIfIndex()), 
+                                                       getSnmpInterface(pair.getLeft().getNodeId(), pair.getLeft().getIsisCircIfIndex()), 
                                                        Topology.getRemoteAddress(pair.getRight())
                                                        ),
                                       LinkdPort.create(
                                                        target, 
-                                                       getSnmpInterface(pair.getRight().getNode().getId(), pair.getRight().getIsisCircIfIndex()), 
+                                                       getSnmpInterface(pair.getRight().getNodeId(), pair.getRight().getIsisCircIfIndex()), 
                                                        Topology.getRemoteAddress(pair.getLeft())
                                                        ),
                                       ProtocolSupported.ISIS)
@@ -450,9 +453,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                     final NodeTopologyEntity node = m_nodeTopologyService.getDefaultFocusPoint();
 
                     if (node != null) {
-                        final Vertex defaultVertex = getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getId());
+                        final Vertex defaultVertex = getVertex(TOPOLOGY_NAMESPACE_LINKD, Integer.toString(node.getId()));
                         if (defaultVertex != null) {
-                            return Lists.newArrayList(LinkdHopCriteria.createCriteria(node.getId(), node.getLabel()));
+                            return Lists.newArrayList(LinkdHopCriteria.createCriteria(Integer.toString(node.getId()), node.getLabel()));
                         }
                     }
                     return Lists.newArrayList();
@@ -460,11 +463,28 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
     
     private void doRefresh() {        
-        Timer.Context vcontext = m_loadSnmpInterfacesTimer.time();
+        Timer.Context vcontext = m_loadIpInterfacesTimer.time();
+        Map<Integer, IpInterfaceTopologyEntity> nodeToOnmsIpPrimaryMap =new HashMap<>();
         try {
-            for (OnmsSnmpInterface snmp: m_snmpInterfaceDao.findAll()) {
-                if (!m_nodeToOnmsSnmpTable.contains(snmp.getNode().getId(),snmp.getIfIndex())) {
-                    m_nodeToOnmsSnmpTable.put(snmp.getNode().getId(),snmp.getIfIndex(),snmp);
+            for (IpInterfaceTopologyEntity ip: m_nodeTopologyService.findAllIp()) {
+                if (ip.getIsSnmpPrimary().equals(PrimaryType.PRIMARY)) {
+                    nodeToOnmsIpPrimaryMap.put(ip.getNodeId(), ip);
+                } else {
+                    nodeToOnmsIpPrimaryMap.putIfAbsent(ip.getNodeId(), ip);
+                }
+            }
+            LOG.info("refresh: Ip Interface loaded");
+        } catch (Exception e){
+            LOG.error("Loading Ip Interface failed: {}", e.getMessage(), e);
+        } finally {
+            vcontext.stop();
+        }
+        
+        vcontext = m_loadSnmpInterfacesTimer.time();
+        try {
+            for (SnmpInterfaceTopologyEntity snmp: m_nodeTopologyService.findAllSnmp()) {
+                if (!m_nodeToOnmsSnmpTable.contains(snmp.getNodeId(),snmp.getIfIndex())) {
+                    m_nodeToOnmsSnmpTable.put(snmp.getNodeId(),snmp.getIfIndex(),snmp);
                 }
             }
             LOG.info("refresh: Snmp Interface loaded");
@@ -474,11 +494,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             vcontext.stop();
         }
 
-
         vcontext = m_loadVerticesTimer.time();
         try {
-            for (NodeTopologyEntity node : m_nodeTopologyService.findAll()) {
-                addVertices(LinkdVertex.create(node));
+            for (NodeTopologyEntity node : m_nodeTopologyService.findAllNode()) {
+                addVertices(LinkdVertex.create(node, nodeToOnmsIpPrimaryMap.get(node.getId())));
             }
             LOG.info("refresh: Loaded Vertices");
         } catch (Exception e){
@@ -548,11 +567,5 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
     public void setBridgeTopologyService(BridgeTopologyService bridgeTopologyService) {
         m_bridgeTopologyService = bridgeTopologyService;
-    }
-    public SnmpInterfaceDao getSnmpInterfaceDao() {
-        return m_snmpInterfaceDao;
-    }
-    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
-        m_snmpInterfaceDao = snmpInterfaceDao;
     }
 }

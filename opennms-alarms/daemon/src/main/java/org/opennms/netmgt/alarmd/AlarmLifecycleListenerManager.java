@@ -112,6 +112,7 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
 
         final AtomicLong numAlarms = new AtomicLong(-1);
         final long systemMillisBefore = System.currentTimeMillis();
+        final AtomicLong systemMillisAfterLoad = new AtomicLong(-1);
         snapshotRwLock.writeLock().lock();
         try {
             template.execute(new TransactionCallbackWithoutResult() {
@@ -119,14 +120,21 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
                     final List<OnmsAlarm> allAlarms = alarmDao.findAll();
                     numAlarms.set(allAlarms.size());
+                    // Save the timestamp after the load, so we can differentiate between how long it took
+                    // to load the alarms and how long it took to invoke the callbacks
+                    systemMillisAfterLoad.set(System.currentTimeMillis());
                     forEachListener(l -> l.handleAlarmSnapshot(allAlarms));
                 }
             });
         } finally {
             snapshotRwLock.writeLock().unlock();
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Alarm snapshot for {} alarms completed. Other callbacks were blocked for a total of {}ms.",
-                        numAlarms.get(), System.currentTimeMillis() - systemMillisBefore);
+                final long now = System.currentTimeMillis();
+                LOG.debug("Alarm snapshot for {} alarms completed. Spent {}ms loading the alarms. " +
+                                "Other callbacks were blocked for a total of {}ms.",
+                        numAlarms.get(),
+                        now - systemMillisAfterLoad.get(),
+                        now - systemMillisBefore);
             }
         }
     }
