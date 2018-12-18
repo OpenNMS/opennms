@@ -33,7 +33,7 @@
         <module name="RegexpSinglelineJava">
             <property name="format" value="Integer\.getInteger"/>
             <property name="ignoreComments" value="true"/>
-            <property name="message" value="Please don't use SystemProperties.getInteger but use SystemProperties instead, see there for an explanantion"/>
+             <property name="message" value="Please don't use Integer.getInteger but use SystemProperties instead, see there for an explanantion"/>
         </module>
     </module>
 </module>
