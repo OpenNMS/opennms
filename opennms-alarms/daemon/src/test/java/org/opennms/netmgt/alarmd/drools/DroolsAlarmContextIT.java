@@ -62,6 +62,7 @@ import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.dao.support.AlarmEntityNotifierImpl;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -112,9 +113,13 @@ public class DroolsAlarmContextIT {
 
         DefaultAlarmService alarmService = new DefaultAlarmService();
         alarmService.setAlarmDao(alarmDao);
+
         acknowledgmentDao = mock(AcknowledgmentDao.class);
         when(acknowledgmentDao.findLatestAckForRefId(any(Integer.class))).thenReturn(Optional.empty());
         alarmService.setAcknowledgmentDao(acknowledgmentDao);
+
+        EventForwarder eventForwarder = mock(EventForwarder.class);
+        alarmService.setEventForwarder(eventForwarder);
 
         AlarmEntityNotifierImpl alarmEntityNotifier = mock(AlarmEntityNotifierImpl.class);
         alarmService.setAlarmEntityNotifier(alarmEntityNotifier);
