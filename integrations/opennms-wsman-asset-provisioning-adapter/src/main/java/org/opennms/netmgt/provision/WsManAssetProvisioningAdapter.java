@@ -54,6 +54,7 @@ import org.opennms.netmgt.config.wsmanAsset.adapter.AssetField;
 import org.opennms.netmgt.config.wsmanAsset.adapter.WqlObj;
 import org.opennms.netmgt.config.wsman.WsmanAgentConfig;
 import org.opennms.netmgt.config.WsManAssetAdapterConfig;
+import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -75,7 +76,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.util.Assert;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -90,7 +90,6 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
         private EventForwarder m_eventForwarder;
         private WsManAssetAdapterConfig m_config;
         private WSManClientFactory m_factory = new CXFWSManClientFactory();
-       // private WSManClientFactory m_factory;
         private WSManConfigDao m_wsManConfigDao;
 
         /**
@@ -137,7 +136,7 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
                 LOG.debug("doAdd: adding nodeid: {}", nodeId);
 
                 final OnmsNode node = m_nodeDao.get(nodeId);
-                Assert.notNull(node, "doAdd: failed to return node for given nodeId:"+nodeId);
+                Objects.requireNonNull(node, "doAdd: failed to return node for given nodeId: "+nodeId);
 
                 InetAddress ipaddress = m_template.execute(new TransactionCallback<InetAddress>() {
                         @Override
@@ -152,7 +151,7 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
                                 return node.getAssetRecord().getVendor();
                         }
                 });
-                LOG.debug("doAdd: Fetched asset string: " + vendor);
+                LOG.debug("doAdd: Fetched asset string: {}", vendor);
 
                 if (m_wsManConfigDao == null) {
                         m_wsManConfigDao = BeanUtils.getBean("daoContext", "wsManConfigDao", WSManConfigDao.class);
@@ -160,7 +159,7 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
                 final WsmanAgentConfig config = m_wsManConfigDao.getAgentConfig(ipaddress);
                 final WSManEndpoint endpoint = WSManConfigDao.getEndpoint(config, ipaddress);
                 final WSManClient client = m_factory.getClient(endpoint);
-                LOG.debug("doAdd: m_config: " + m_config);
+                LOG.debug("doAdd: m_config: {} ", m_config);
 
                 final OnmsAssetRecord asset = node.getAssetRecord();
                 m_config.getReadLock().lock();
@@ -203,7 +202,11 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
                         wqls.add(wqlobj.getWql());
                         resourceUris.add(wqlobj.getResourceUri());
 			client.enumerateAndPullUsingFilter(wqlobj.getResourceUri(), WSManConstants.XML_NS_WQL_DIALECT, wqlobj.getWql(), nodes, true);
-                 	values.add(nodes.get(0).getTextContent());
+                        if (!nodes.IsEmpty()) {
+                        	values.add(nodes.get(0).getTextContent());
+                        } else {
+				values.add(null);
+			}
                 }
                 if (values.size() == aliases.size() && values.size() == resourceUris.size() && values.size() == wqls.size()) {
                         final Properties substitutions = new Properties();
@@ -263,7 +266,7 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
             LOG.debug("doUpdate: updating nodeid: {}", nodeId);
 
                 final OnmsNode node = m_nodeDao.get(nodeId);
-                Assert.notNull(node, "doUpdate: failed to return node for given nodeId:"+nodeId);
+                Objects.requireNonNull(node, "doAdd: failed to return node for given nodeId: "+nodeId);
 
                 final InetAddress ipaddress = m_template.execute(new TransactionCallback<InetAddress>() {
                         @Override
@@ -278,7 +281,7 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
                                 return node.getAssetRecord().getVendor();
                         }
                 });
-	        LOG.debug("doUpdate: Fetched asset string: \"i{}\"", vendor);
+	        LOG.debug("doUpdate: Fetched asset string: \"{}\"", vendor);
 
                 if (m_wsManConfigDao == null) {
                         m_wsManConfigDao = BeanUtils.getBean("daoContext", "wsManConfigDao", WSManConfigDao.class);
@@ -421,43 +424,9 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
                 return ipaddr;
         }
 
-        /**
-         * <p>handleReloadConfigEvent</p>
-         *
-         * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-         */
         @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-        public void handleReloadConfigEvent(final Event event) {
-                if (isReloadConfigEventTarget(event)) {
-                        EventBuilder ebldr = null;
-                        LOG.debug("Reloading the WsMan asset adapter configuration");
-                        try {
-                                m_config.update();
-                                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Provisiond." + NAME);
-                                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond." + NAME);
-                        } catch (Throwable e) {
-                                LOG.info("Unable to reload WsMan asset adapter configuration", e);
-                                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Provisiond." + NAME);
-                                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond." + NAME);
-                                ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(1, 128));
-                        }
-                        if (ebldr != null) {
-                                getEventForwarder().sendNow(ebldr.getEvent());
-                        }
-                }
+        public void handleReloadEvent(Event e) {
+            DaemonTools.handleReloadEvent(e, Provisiond.NAME, (event) -> handleConfigurationChanged());
         }
 
-        private boolean isReloadConfigEventTarget(final Event event) {
-                boolean isTarget = false;
-
-                for (final Parm parm : event.getParmCollection()) {
-                        if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && ("Provisiond." + NAME).equalsIgnoreCase(parm.getValue().getContent())) {
-                                isTarget = true;
-                                break;
-                        }
-                }
-
-                LOG.debug("isReloadConfigEventTarget: Provisiond. {} was target of reload event: {}", isTarget, NAME);
-                return isTarget;
-        }
 }
