@@ -111,7 +111,11 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
 
     @Override
     public NodeTopologyEntity getDefaultFocusPoint() {
-        return NodeTopologyEntity.toNodeTopologyInfo(m_nodeDao.getDefaultFocusPoint());
+        OnmsNode node = m_nodeDao.getDefaultFocusPoint();
+        if ( node != null) {
+            return NodeTopologyEntity.toNodeTopologyInfo(node);
+        }
+        return null;
     }
 
     public NodeDao getNodeDao() {
