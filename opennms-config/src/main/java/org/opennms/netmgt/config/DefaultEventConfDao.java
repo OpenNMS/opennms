@@ -154,8 +154,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		m_events.save(m_configResource);
 	}
 
-
-
 	public List<Event> getAllEvents() {
 		return m_events.forEachEvent(new ArrayList<Event>(), new EventCallback<List<Event>>() {
 
@@ -164,7 +162,9 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 				accum.add(event);
 				return accum;
 			}
-            // remove duplicates
+            // remove duplicates:
+            // event definitions with priority > 0 are copied up the configuration tree.
+            // if they do not match we do not want to re-compare them when matching events to definitions.
         }).stream().distinct().collect(Collectors.toList());
 	}
 

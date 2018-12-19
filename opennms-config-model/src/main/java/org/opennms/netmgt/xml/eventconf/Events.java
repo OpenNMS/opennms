@@ -360,11 +360,11 @@ public class Events implements Serializable {
         }
 
         // roll up all prioritized events and sort all events by priority
-        // must be done after event.initialize() haas been called to set the event.index
+        // must be done after event.initialize() has been called to set the event.index
         List<Event> prioritizedEvents = getPrioritizedEvents();
         m_events.addAll(prioritizedEvents);
         m_events.sort(Comparator.naturalOrder());
-        // Also add to unpartitioned events for first crack when not using an UEI match
+        // Also add to unpartitioned events for first crack when not using a UEI match
         m_nullPartitionedEvents.addAll(prioritizedEvents);
         m_nullPartitionedEvents.sort(Comparator.naturalOrder());
 

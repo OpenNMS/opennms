@@ -72,7 +72,6 @@ public class EventConfDaoReloadTest {
         eventConfDao.setConfigResource(getResourceForRelativePath("reloaded/eventconf.xml"));
         eventConfDao.afterPropertiesSet();
         assertEquals(3, eventConfDao.getAllEvents().size());
-        assertEquals(20, eventConfDao.getAllEvents().get(0).getPriority().intValue());
 
         // Reload
         eventConfDao.reload();

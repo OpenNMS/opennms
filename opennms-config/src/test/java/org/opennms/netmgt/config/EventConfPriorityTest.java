@@ -74,6 +74,23 @@ public class EventConfPriorityTest {
     }
 
     @Test
+    public void canFindHigherpriorityInLaterFile() throws Exception {
+        eventConfDao.setConfigResource(new FileSystemResource(new File("src/test/resources/priority/eventconf2.xml")));
+        eventConfDao.afterPropertiesSet();
+        Assert.assertEquals(4, eventConfDao.getAllEvents().size());
+
+        EventBuilder eb = new EventBuilder("uei.opennms.org/vendor/3Com/traps/a3ComFddiMACNeighborChangeEvent", "JUnit");
+        eb.setEnterpriseId(".1.3.6.1.4.1.43.29.10");
+        eb.setGeneric(6);
+        eb.setSpecific(6);
+
+        Event event = eventConfDao.findByEvent(eb.getEvent());
+        Assert.assertNotNull(event);
+        assertThat(event.getPriority(), is(200));
+        Assert.assertEquals("FILE2 CONFIG", event.getEventLabel());
+    }
+
+    @Test
     public void canUseHighestPriorityDefnWhenInRoot() throws Exception {
         eventConfDao.setConfigResource(new FileSystemResource(new File("src/test/resources/priority/eventconf3.xml")));
         eventConfDao.afterPropertiesSet();
