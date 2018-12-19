@@ -72,7 +72,9 @@
 
         <element maxOccurs="1" minOccurs="0" name="priority" type="nonNegativeInteger">
           <annotation>
-            <documentation>The Priority of the Event Definition. Events with a higher priority value are evaluated for matching before events with lower priority.</documentation>
+            <documentation>The Priority of the Event Definition.
+                Events with a higher priority value are evaluated for matching before events with lower priority.
+                Events without a priority are assigned a working priority of 0.</documentation>
           </annotation>
         </element>
 
