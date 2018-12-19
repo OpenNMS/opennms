@@ -99,6 +99,7 @@
                 </div>
                 <div class="card-body">
                   <div class="form-horizontal" ng-repeat="field in panel.fields">
+                    <!-- TODO: SEG Think of something to do with has-warning -->
                     <div class="form-group" ng-class="{ 'has-error': assetForm[field.model].$invalid && !assetForm[field.model].$pristine, 'has-warning': assetForm[field.model].$dirty }">
                       <label class="col-form-label col-md-3" for="{{ field.model }}" uib-tooltip="{{ field.tooltip  }}">{{ field.label }}</label>
                       <div class="col-md-9">
@@ -107,20 +108,26 @@
                         <%-- Standard fields with typeahead suggestions --%>
                         <input type="text" class="form-control" id="{{ field.model }}" name="{{ field.model }}" ng-model="asset[field.model]" ng-if="field.type=='text'"
                           typeahead-editable="true" typeahead-min-length="0" ng-pattern="field.pattern"
-                          uib-typeahead="suggestion for suggestion in getSuggestions(field.model) | filter:$viewValue"></input>
+                          uib-typeahead="suggestion for suggestion in getSuggestions(field.model) | filter:$viewValue"
+                          ng-class="{ 'is-invalid': assetForm[field.model].$invalid && !assetForm[field.model].$pristine }">
                         <%-- Password fields --%>
-                        <input type="password" class="form-control" ng-model="asset[field.model]" ng-if="field.type=='password'"></input>
+                        <input type="password" class="form-control" ng-model="asset[field.model]" ng-if="field.type=='password'"
+                               ng-class="{ 'is-invalid': assetForm[field.model].$invalid && !assetForm[field.model].$pristine}">
                         <%-- Textarea fields --%>
-                        <textarea class="form-control" style="height: 20em;" ng-model="asset[field.model]" ng-if="field.type=='textarea'"></textarea>
+                        <textarea class="form-control" style="height: 20em;" ng-model="asset[field.model]" ng-if="field.type=='textarea'"
+                                  ng-class="{ 'is-invalid': assetForm[field.model].$invalid && !assetForm[field.model].$pristine}"></textarea>
                         <%-- Date fields with Popup Picker --%>
                         <div class="input-group" ng-if="field.type=='date'">
-                          <input type="text" class="form-control" uib-datepicker-popup="{{ dateFormat }}" is-open="field.open" ng-model="asset[field.model]" placeholder="Specify date using this format: {{ dateFormat }}" />
+                          <input type="text" class="form-control" uib-datepicker-popup="{{ dateFormat }}" is-open="field.open"
+                                 ng-model="asset[field.model]" placeholder="Specify date using this format: {{ dateFormat }}"
+                                 ng-class="{ 'is-invalid': assetForm[field.model].$invalid && !assetForm[field.model].$pristine}" />
                           <div class="input-group-append">
                             <button type="button" class="btn btn-secondary" ng-click="field.open=true"><i class="fa fa-calendar"></i></button>
                           </div>
                         </div>
                         <%-- List/Select fields --%>
-                        <select class="form-control custom-select" ng-model="asset[field.model]" ng-if="field.type=='select'">
+                        <select class="form-control custom-select" ng-model="asset[field.model]" ng-if="field.type=='select'"
+                                ng-class="{ 'is-invalid': assetForm[field.model].$invalid && !assetForm[field.model].$pristine}">
                           <option ng-repeat="value in field.options">{{value}}</option>
                         </select>
                       </div>

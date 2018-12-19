@@ -69,9 +69,9 @@
         <form role="form" method="post" name="goForm" onSubmit="verifyGoForm()">
           <input type="hidden" name="currentPassword" value="">
           <input type="hidden" name="newPassword" value="">
-          <div class="form-group <% if ("redo".equals(request.getParameter("action"))) { %>has-error<% } %>">
+          <div class="form-group">
             <label class="col-form-label" for="input_oldpass">Current Password</label>
-            <input type="password" class="form-control" id="input_oldpass" name="oldpass">
+            <input type="password" class="form-control <% if ("redo".equals(request.getParameter("action"))) { %>is-invalid<% } %>" id="input_oldpass" name="oldpass">
           </div>
           <div class="form-group">
             <label class="col-form-label" for="input_pass1">New Password</label>
