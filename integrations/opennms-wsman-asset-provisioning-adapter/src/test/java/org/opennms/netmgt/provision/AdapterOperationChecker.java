@@ -40,9 +40,9 @@ import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOpera
 
 class AdapterOperationChecker implements AdapterOperationQueueListener {
 
-	public final CountDownLatch enqueueLatch;
-	public final CountDownLatch dequeueLatch;
-	public final CountDownLatch executeLatch;
+	private final CountDownLatch enqueueLatch;
+	private final CountDownLatch dequeueLatch;
+	private final CountDownLatch executeLatch;
 
 	public AdapterOperationChecker(int numberOfOperations) {
 		enqueueLatch = new CountDownLatch(numberOfOperations);

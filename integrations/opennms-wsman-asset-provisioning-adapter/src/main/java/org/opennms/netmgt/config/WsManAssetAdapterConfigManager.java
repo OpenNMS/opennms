@@ -62,14 +62,6 @@ public class WsManAssetAdapterConfigManager implements WsManAssetAdapterConfig {
     public WsManAssetAdapterConfigManager() {
     }
 
-    /**
-     * <p>Constructor for WsManAssetAdapterConfigManager.</p>
-     *
-     * @param reader a {@link java.io.InputStream} object.
-     * @param verifyServer a boolean.
-     * @throws java.io.IOException if any.
-     * @param serverName a {@link java.lang.String} object.
-     */
     public WsManAssetAdapterConfigManager(final long lastModified, final InputStream reader) throws IOException {
         reloadXML(lastModified, reader);
     }
@@ -87,9 +79,6 @@ public class WsManAssetAdapterConfigManager implements WsManAssetAdapterConfig {
     /**
      * Synchronized so that we update the timestamp of the file and the contents
      * simultaneously.
-     *
-     * @param reader a {@link java.io.InputStream} object.
-     * @throws java.io.IOException if any.
      */
     protected void reloadXML(final long lastModified, final InputStream stream) throws IOException {
         getWriteLock().lock();
@@ -160,10 +149,10 @@ public class WsManAssetAdapterConfigManager implements WsManAssetAdapterConfig {
                     }
                 }
             }
-            if (retval.size() == 0) {
+            if (retval.IsEmpty()) {
                 LOG.debug("getAssetFieldsForAddress: Zero AssetField matches returned for {} with vendor: {}", InetAddressUtils.str(address), vendor);
             }
-            return retval.toArray(new AssetField[0]);
+            return retval.toArray();
         } finally {
             getReadLock().unlock();
         }

@@ -98,18 +98,8 @@ public class WsManAssetAdapterConfigFactory {
 
     /**
      * Return the singleton instance of this factory.
-     *
-     * @return The current factory instance.
-     * @throws IOException 
-     * @throws java.lang.IllegalStateException
-     *             Thrown if the factory has not yet been initialized.
      */
     public WsManAssetAdapterConfig getInstance() {
-        m_config.getReadLock().lock();
-        try {
-            return m_config;
-        } finally {
-            m_config.getReadLock().unlock();
-        }
+        return m_config;
     }
 }
