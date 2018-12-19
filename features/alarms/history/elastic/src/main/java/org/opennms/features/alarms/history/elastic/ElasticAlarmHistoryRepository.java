@@ -29,14 +29,18 @@
 package org.opennms.features.alarms.history.elastic;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.features.alarms.history.api.AlarmHistoryRepository;
 import org.opennms.features.alarms.history.api.AlarmState;
 import org.opennms.features.alarms.history.elastic.dto.AlarmDocumentDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Search;
@@ -44,6 +48,8 @@ import io.searchbox.core.SearchResult;
 import io.searchbox.core.search.aggregation.TopHitsAggregation;
 
 public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ElasticAlarmHistoryRepository.class);
 
     private final JestClient client;
 
@@ -55,21 +61,21 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
 
     @Override
     public AlarmState getAlarmWithDbIdAt(long id, long time) {
-        return findAlarms(queryProvider.getAlarmByDbIdAt(id, time), false)
+        return findAlarms(queryProvider.getAlarmByDbIdAt(id, time))
                 .stream().findFirst()
                 .orElse(null);
     }
 
     @Override
     public AlarmState getAlarmWithReductionKeyIdAt(String reductionKey, long time) {
-        return findAlarms(queryProvider.getAlarmByReductionKeyAt(reductionKey, time), false)
+        return findAlarms(queryProvider.getAlarmByReductionKeyAt(reductionKey, time))
                 .stream().findFirst()
                 .orElse(null);
     }
 
     @Override
     public List<AlarmState> getStatesForAlarmWithDbId(long id) {
-        return findAlarms(queryProvider.getAlarmStatesByDbId(id), false)
+        return findAlarms(queryProvider.getAlarmStatesByDbId(id))
                 .stream()
                 .map(a -> (AlarmState)a)
                 .collect(Collectors.toList());
@@ -77,7 +83,7 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
 
     @Override
     public List<AlarmState> getStatesForAlarmWithReductionKey(String reductionKey) {
-        return findAlarms(queryProvider.getAlarmStatesByReductionKey(reductionKey), false)
+        return findAlarms(queryProvider.getAlarmStatesByReductionKey(reductionKey))
                 .stream()
                 .map(a -> (AlarmState)a)
                 .collect(Collectors.toList());
@@ -85,14 +91,14 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
 
     @Override
     public List<AlarmState> getActiveAlarmsAt(long time) {
-        return findAlarms(queryProvider.getActiveAlarmsAt(time), true).stream()
+        return findAlarmsWithCompositeAggregation((afterAlarmWithId) -> queryProvider.getActiveAlarmsAt(time, afterAlarmWithId)).stream()
                 .map(a -> (AlarmState)a)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<AlarmState> getLastStateOfAllAlarms(long start, long end) {
-        return findAlarms(queryProvider.getAllAlarms(), true).stream()
+        return findAlarmsWithCompositeAggregation(queryProvider::getAllAlarms).stream()
                 .map(a -> (AlarmState)a)
                 .collect(Collectors.toList());
     }
@@ -101,7 +107,9 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
     public long getNumActiveAlarmsAt(long time) {
         // TODO: Only retrieve the count, instead of
         // actually retrieving and mapping all the documents back
-        return getActiveAlarmsAt(time).size();
+        long numActiveAlarms = getActiveAlarmsAt(time).size();
+        LOG.debug("Found {} active alarms at {}.", numActiveAlarms, time);
+        return numActiveAlarms;
     }
 
     @Override
@@ -114,7 +122,52 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
         return getNumActiveAlarmsAt(System.currentTimeMillis());
     }
 
-    private List<AlarmDocumentDTO> findAlarms(String query, boolean inAggregation) {
+    private List<AlarmDocumentDTO> findAlarmsWithCompositeAggregation(Function<Integer,String> getNextQuery) {
+        final List<AlarmDocumentDTO> alarms = new LinkedList<>();
+        Integer afterAlarmWithId = null;
+        while (true) {
+            final String query = getNextQuery.apply(afterAlarmWithId);
+            final Search search = new Search.Builder(query)
+                    // TODO: Smarter indexing
+                    .addIndex("opennms-alarms-*")
+                    .addType(AlarmDocumentDTO.TYPE)
+                    .build();
+            final SearchResult result;
+            try {
+                result = client.execute(search);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            if (!result.isSucceeded()) {
+                throw new RuntimeException(result.getErrorMessage());
+            }
+
+            final CompositeAggregation alarmsById = result.getAggregations().getAggregation("alarms_by_id", CompositeAggregation.class);
+            if (alarmsById == null) {
+                // No results, we're done
+                break;
+            } else {
+                for (CompositeAggregation.Entry entry : alarmsById.getBuckets()) {
+                    final TopHitsAggregation topHitsAggregation = entry.getTopHitsAggregation("latest_alarm");
+                    final List<SearchResult.Hit<AlarmDocumentDTO, Void>> hits = topHitsAggregation.getHits(AlarmDocumentDTO.class);
+                    hits.stream().map(h -> h.source).forEach(alarms::add);
+                }
+
+                if (alarmsById.hasAfterKey()) {
+                    // There are more results to page through
+                    afterAlarmWithId = alarmsById.getAfterKey().get("alarm_id").getAsInt();
+                } else {
+                    // There are no more results to page through
+                    break;
+                }
+            } {
+
+            }
+        }
+        return alarms;
+    }
+
+    private List<AlarmDocumentDTO> findAlarms(String query) {
         final Search search = new Search.Builder(query)
                 // TODO: Smarter indexing
                 .addIndex("opennms-alarms-*")
@@ -129,25 +182,9 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
         if (!result.isSucceeded()) {
             throw new RuntimeException(result.getErrorMessage());
         }
-        return getAlarmsFromSearchResult(result, inAggregation);
-    }
 
-    protected static List<AlarmDocumentDTO> getAlarmsFromSearchResult(SearchResult result, boolean inAggregation) {
-        if (!inAggregation) {
-            final List<SearchResult.Hit<AlarmDocumentDTO, Void>> hits = result.getHits(AlarmDocumentDTO.class);
-            return hits.stream().map(h -> h.source).collect(Collectors.toList());
-        } else {
-            final List<AlarmDocumentDTO> alarms = new LinkedList<>();
-            final CompositeAggregation alarmsById = result.getAggregations().getAggregation("alarms_by_id", CompositeAggregation.class);
-            if (alarmsById != null) {
-                for (CompositeAggregation.Entry entry : alarmsById.getBuckets()) {
-                    final TopHitsAggregation topHitsAggregation = entry.getTopHitsAggregation("latest_alarm");
-                    final List<SearchResult.Hit<AlarmDocumentDTO, Void>> hits = topHitsAggregation.getHits(AlarmDocumentDTO.class);
-                    hits.stream().map(h -> h.source).forEach(alarms::add);
-                }
-            }
-            return alarms;
-        }
+        final List<SearchResult.Hit<AlarmDocumentDTO, Void>> hits = result.getHits(AlarmDocumentDTO.class);
+        return hits.stream().map(h -> h.source).collect(Collectors.toList());
     }
 
 }

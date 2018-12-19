@@ -3,3 +3,5 @@ By default, these are deleted sometime after they are cleared, or if they remain
 
 The _Alarm History API_ was developed to help retain the history and state of the alarms at various points in the past.
 The historical data is stored in _Elasticsearch_.
+
+* Requires Elasticsearch 6.3.x+ for after_key support in composite aggregations

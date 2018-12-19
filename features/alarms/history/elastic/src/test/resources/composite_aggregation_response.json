@@ -14,9 +14,12 @@
   },
   "aggregations": {
     "alarms_by_id": {
+      "after_key": {
+        "alarm_id": 1
+      },
       "buckets": [{
         "key": {
-          "alarms_by_id": 1
+          "alarm_id": 1
         },
         "doc_count": 1,
         "latest_alarm": {

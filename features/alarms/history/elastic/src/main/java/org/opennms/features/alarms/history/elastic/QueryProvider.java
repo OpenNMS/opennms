@@ -90,24 +90,34 @@ public class QueryProvider {
                 .build());
     }
 
-    public String getActiveAlarmsAt(long time) {
-        return render("get_alarms_at.ftl", ImmutableMap.builder()
+    public String getActiveAlarmsAt(long time, Integer afterAlarmWithId) {
+        ImmutableMap.Builder<Object,Object> builder = ImmutableMap.builder()
                 .put("time", time)
-                .put("idOnly", false)
-                .build());
+                .put("idOnly", false);
+        if (afterAlarmWithId != null) {
+            builder.put("afterAlarmWithId", afterAlarmWithId);
+        }
+        return render("get_alarms_at.ftl", builder.build());
     }
 
-    public String getActiveAlarmsAtTimeAndExclude(long time, Set<Integer> alarmIdsToKeep) {
-        return render("get_alarms_at.ftl", ImmutableMap.builder()
+    public String getActiveAlarmsAtTimeAndExclude(long time, Set<Integer> alarmIdsToKeep, Integer afterAlarmWithId) {
+
+        ImmutableMap.Builder<Object,Object> builder = ImmutableMap.builder()
                 .put("time", time)
                 .put("alarmIdsToExclude", alarmIdsToKeep)
-                .put("idOnly", true)
-                .build());
+                .put("idOnly", true);
+        if (afterAlarmWithId != null) {
+            builder.put("afterAlarmWithId", afterAlarmWithId);
+        }
+        return render("get_alarms_at.ftl", builder.build());
     }
 
-    public String getAllAlarms() {
-        return render("get_all_alarms.ftl", ImmutableMap.builder()
-                .build());
+    public String getAllAlarms(Integer afterAlarmWithId) {
+        ImmutableMap.Builder<Object,Object> builder = ImmutableMap.builder();
+        if (afterAlarmWithId != null) {
+            builder.put("afterAlarmWithId", afterAlarmWithId);
+        }
+        return render("get_all_alarms.ftl", builder.build());
     }
 
     private String render(String templateName, Map<Object, Object> context) {

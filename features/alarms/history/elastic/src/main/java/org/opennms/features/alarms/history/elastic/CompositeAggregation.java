@@ -44,10 +44,13 @@ import io.searchbox.core.search.aggregation.Aggregation;
 import io.searchbox.core.search.aggregation.Bucket;
 
 public class CompositeAggregation extends Aggregation {
+    private static final String AFTER_KEY = "after_key";
+    private JsonObject after_key;
     private List<Entry> buckets = new LinkedList<>();
 
     public CompositeAggregation(String name, JsonObject compositeAggregation) {
         super(name, compositeAggregation);
+        after_key = compositeAggregation.getAsJsonObject(AFTER_KEY);
         parseBuckets(compositeAggregation.get(String.valueOf(BUCKETS)).getAsJsonArray());
     }
 
@@ -56,6 +59,14 @@ public class CompositeAggregation extends Aggregation {
             JsonObject bucket = (JsonObject) bucketElement;
             buckets.add(new Entry(bucket, bucket.get(String.valueOf(KEY)), bucket.get(String.valueOf(DOC_COUNT)).getAsLong()));
         }
+    }
+
+    public boolean hasAfterKey() {
+        return after_key != null;
+    }
+
+    public JsonObject getAfterKey() {
+        return after_key;
     }
 
     public List<Entry> getBuckets() {

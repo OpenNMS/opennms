@@ -44,7 +44,6 @@ import org.elasticsearch.index.reindex.ReindexPlugin;
 import org.elasticsearch.painless.PainlessPlugin;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
@@ -82,15 +81,13 @@ public class ElasticAlarmIndexerIT {
 
     @BeforeClass
     public static void classSetUp() {
-        MockLogAppender.setupLogging(true, "DEBUG");
+        //MockLogAppender.setupLogging(true, "DEBUG");
         Awaitility.setDefaultPollDelay(1, TimeUnit.SECONDS);
         Awaitility.setDefaultPollInterval(5, TimeUnit.SECONDS);
     }
 
     @Before
     public void setUp() throws IOException {
-        PseudoClock.getInstance().reset();
-
         RestClientFactory restClientFactory = new RestClientFactory("http://localhost:" + HTTP_PORT);
         jestClient = restClientFactory.createClient();
         alarmHistoryRepo = new ElasticAlarmHistoryRepository(jestClient);
@@ -98,7 +95,6 @@ public class ElasticAlarmIndexerIT {
         MetricRegistry metrics = new MetricRegistry();
         TemplateInitializerForAlarms templateInitializerForAlarms = new TemplateInitializerForAlarms(jestClient);
         elasticAlarmIndexer = new ElasticAlarmIndexer(metrics, jestClient, templateInitializerForAlarms);
-        elasticAlarmIndexer.setUsePseudoClock(true);
         elasticAlarmIndexer.init();
 
         // Wait until ES is up and running - initially there should be no documents
@@ -106,10 +102,11 @@ public class ElasticAlarmIndexerIT {
                 .until(alarmHistoryRepo::getActiveAlarmsNow, hasSize(equalTo(0)));
     }
 
-    @Ignore
     @Test
     public void canHandleAlarmSnapshots() {
-        final int N = 100;
+        // Use some value N that is greater than the the size used for the composite aggregations in the query
+        // in order to verify that the pagination is working properly
+        final int N = 2000;
         final long now = PseudoClock.getInstance().getTime();
         final List<OnmsAlarm> alarms = IntStream.range(0, N)
                 .mapToObj(i -> createAlarm(i, now))
@@ -119,15 +116,13 @@ public class ElasticAlarmIndexerIT {
         issueSnapshotWithPreAndPostCalls(alarms);
 
         // Wait for the alarms to be indexed
-        await().atMost(1, TimeUnit.MINUTES).until(() ->
-                alarmHistoryRepo.getNumActiveAlarmsNow(), equalTo(N));
+        await().atMost(1, TimeUnit.MINUTES).until(() -> alarmHistoryRepo.getNumActiveAlarmsNow(), equalTo((long)N));
 
         // Now trigger another snapshot with an empty list of alarms
         issueSnapshotWithPreAndPostCalls(Collections.emptyList());
 
         // Wait for the deletes to be indexed
-        await().atMost(1, TimeUnit.MINUTES).until(() ->
-                alarmHistoryRepo.getNumActiveAlarmsNow(), equalTo(0));
+        await().atMost(1, TimeUnit.MINUTES).until(() -> alarmHistoryRepo.getNumActiveAlarmsNow(), equalTo(0L));
     }
 
     private void issueSnapshotWithPreAndPostCalls(List<OnmsAlarm> alarms) {

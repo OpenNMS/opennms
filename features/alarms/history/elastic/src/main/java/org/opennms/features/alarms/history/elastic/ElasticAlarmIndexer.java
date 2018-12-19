@@ -202,30 +202,44 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
                         LOG.debug("Marking documents without ids in: {} as deleted for time: {}", alarmIdsToKeep, time);
                         try (final Timer.Context ctx = alarmsToESMetrics.getBulkDeleteTimer().time()) {
                             // Find all of the alarms at time X, excluding ids in Y - handle deletes for each of those
-                            final String query = queryProvider.getActiveAlarmsAtTimeAndExclude(time, alarmIdsToKeep);
-                            final Search search = new Search.Builder(query)
-                                    .addIndex("opennms-alarms-*") // TODO: Be smarter about which indices to query
-                                    .addType(AlarmDocumentDTO.TYPE)
-                                    .build();
-
-                            final SearchResult result;
-                            try {
-                                result = client.execute(search);
-                            } catch (IOException e) {
-                                LOG.error("Querying for active alarms failed.", e);
-                                return;
-                            }
-                            if (!result.isSucceeded()) {
-                                LOG.error("Querying for active alarms failed with: {}", result.getErrorMessage());
-                            }
-
                             final List<AlarmDocumentDTO> alarms = new LinkedList<>();
-                            final CompositeAggregation alarmsById = result.getAggregations().getAggregation("alarms_by_id", CompositeAggregation.class);
-                            if (alarmsById != null) {
-                                for (CompositeAggregation.Entry entry : alarmsById.getBuckets()) {
-                                    final TopHitsAggregation topHitsAggregation = entry.getTopHitsAggregation("latest_alarm");
-                                    final List<SearchResult.Hit<AlarmDocumentDTO, Void>> hits = topHitsAggregation.getHits(AlarmDocumentDTO.class);
-                                    hits.stream().map(h -> h.source).forEach(alarms::add);
+                            Integer afterAlarmWithId = null;
+                            while (true) {
+                                final String query = queryProvider.getActiveAlarmsAtTimeAndExclude(time, alarmIdsToKeep, afterAlarmWithId);
+                                final Search search = new Search.Builder(query)
+                                        // TODO: Smarter indexing
+                                        .addIndex("opennms-alarms-*")
+                                        .addType(AlarmDocumentDTO.TYPE)
+                                        .build();
+                                final SearchResult result;
+                                try {
+                                    result = client.execute(search);
+                                } catch (IOException e) {
+                                    LOG.error("Querying for active alarms failed.", e);
+                                    return;
+                                }
+                                if (!result.isSucceeded()) {
+                                    LOG.error("Querying for active alarms failed with: {}", result.getErrorMessage());
+                                }
+
+                                final CompositeAggregation alarmsById = result.getAggregations().getAggregation("alarms_by_id", CompositeAggregation.class);
+                                if (alarmsById == null) {
+                                    // No results, we're done
+                                    break;
+                                } else {
+                                    for (CompositeAggregation.Entry entry : alarmsById.getBuckets()) {
+                                        final TopHitsAggregation topHitsAggregation = entry.getTopHitsAggregation("latest_alarm");
+                                        final List<SearchResult.Hit<AlarmDocumentDTO, Void>> hits = topHitsAggregation.getHits(AlarmDocumentDTO.class);
+                                        hits.stream().map(h -> h.source).forEach(alarms::add);
+                                    }
+
+                                    if (alarmsById.hasAfterKey()) {
+                                        // There are more results to page through
+                                        afterAlarmWithId = alarmsById.getAfterKey().get("alarm_id").getAsInt();
+                                    } else {
+                                        // There are no more results to page through
+                                        break;
+                                    }
                                 }
                             }
 

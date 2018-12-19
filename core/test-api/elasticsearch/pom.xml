@@ -12,7 +12,8 @@
   <packaging>jar</packaging>
 
   <properties>
-    <elasticsearchVersion>6.1.1</elasticsearchVersion>
+    <elasticsearchVersion>6.5.2</elasticsearchVersion>
+    <elasticsearchNettyVersion>4.1.30.Final</elasticsearchNettyVersion>
   </properties>
 
    <dependencies>
@@ -54,7 +55,42 @@
      <dependency>
        <groupId>io.netty</groupId>
        <artifactId>netty-all</artifactId>
-       <version>4.1.17.Final</version>
+       <version>${elasticsearchNettyVersion}</version>
+     </dependency>
+     <dependency>
+       <groupId>io.netty</groupId>
+       <artifactId>netty-codec</artifactId>
+       <version>${elasticsearchNettyVersion}</version>
+     </dependency>
+     <dependency>
+       <groupId>io.netty</groupId>
+       <artifactId>netty-codec-http</artifactId>
+       <version>${elasticsearchNettyVersion}</version>
+     </dependency>
+     <dependency>
+       <groupId>io.netty</groupId>
+       <artifactId>netty-transport</artifactId>
+       <version>${elasticsearchNettyVersion}</version>
+     </dependency>
+     <dependency>
+       <groupId>io.netty</groupId>
+       <artifactId>netty-resolver</artifactId>
+       <version>${elasticsearchNettyVersion}</version>
+     </dependency>
+     <dependency>
+       <groupId>io.netty</groupId>
+       <artifactId>netty-handler</artifactId>
+       <version>${elasticsearchNettyVersion}</version>
+     </dependency>
+     <dependency>
+       <groupId>io.netty</groupId>
+       <artifactId>netty-buffer</artifactId>
+       <version>${elasticsearchNettyVersion}</version>
+     </dependency>
+     <dependency>
+       <groupId>io.netty</groupId>
+       <artifactId>netty-common</artifactId>
+       <version>${elasticsearchNettyVersion}</version>
      </dependency>
      <dependency>
        <groupId>org.apache.logging.log4j</groupId>
