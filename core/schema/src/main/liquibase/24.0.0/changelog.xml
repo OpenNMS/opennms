@@ -288,5 +288,19 @@
                              referencedTableName="applications" referencedColumnNames="id" onDelete="CASCADE"/>
   </changeSet>
 
+  <changeSet author="fooker" id="24.0.0-classification-add-omnidirectional">
+    <addColumn tableName="classification_rules">
+      <column name="omnidirectional"
+              type="BOOLEAN"
+              defaultValue="FALSE">
+        <constraints nullable="false"></constraints>
+      </column>
+    </addColumn>
+    <sql>
+        UPDATE classification_rules
+        SET omnidirectional = TRUE
+        WHERE groupid = 1;
+    </sql>
+  </changeSet>
 </databaseChangeLog>
 

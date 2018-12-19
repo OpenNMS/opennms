@@ -66,6 +66,11 @@ public class RuleDTOBuilder {
         return this;
     }
 
+    public RuleDTOBuilder withOmnidirectional(boolean omnidirectional) {
+        this.ruleDTO.setOmnidirectional(omnidirectional);
+        return this;
+    }
+
     public RuleDTO build() {
         return ruleDTO;
     }

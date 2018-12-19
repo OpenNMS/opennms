@@ -80,10 +80,15 @@
                     <i ng-show="query.orderBy === 'dstPort' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
                     <i ng-show="query.orderBy === 'dstPort' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
                 </th>
-                <th ng-class="{'col-md-2': group.readOnly === false, 'col-md-3': group.readOnly === true}" class="text-nowrap">
+                <th ng-class="{'col-md-1': group.readOnly === false, 'col-md-2': group.readOnly === true}" class="text-nowrap">
                     <a ng-click="changeOrderBy('exporterFilter')">Exporter Filter</a>
                     <i ng-show="query.orderBy === 'exporterFilter' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
                     <i ng-show="query.orderBy === 'exporterFilter' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+                </th>
+                <th class="col-md-1 text-nowrap">
+                    <a ng-click="changeOrderBy('omnidirectional')">Omnidirectional</a>
+                    <i ng-show="query.orderBy === 'omnidirectional' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+                    <i ng-show="query.orderBy === 'omnidirectional' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
                 </th>
                 <th class="col-md-1" ng-if="group.readOnly === false">
                     Actions
@@ -103,6 +108,7 @@
                 <td>{{rule['dstAddress']}}</td>
                 <td>{{rule['dstPort']}}</td>
                 <td>{{rule['exporterFilter']}}</td>
+                <td><span class="glyphicon glyphicon-transfer" ng-if="rule['omnidirectional'] === true" aria-hidden="true"></span></td>
                 <td ng-if="group.readOnly === false">
                     <div class="pull-right">
                         <button id="action.{{rule.position}}.edit" class="btn btn-sm btn-default" ng-click="editRule(rule)" title="edit rule"><i class="fa fa-edit"></i></button>

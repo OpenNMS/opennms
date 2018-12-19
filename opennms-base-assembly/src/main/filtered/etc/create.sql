@@ -2659,6 +2659,7 @@ CREATE TABLE classification_rules (
   src_port TEXT,
   exporter_filter TEXT,
   protocol TEXT,
+  omnidirectional BOOLEAN NOT NULL DEFAULT false,
   position integer not null,
   groupid integer NOT NULL,
   CONSTRAINT classification_rules_pkey PRIMARY KEY (id),

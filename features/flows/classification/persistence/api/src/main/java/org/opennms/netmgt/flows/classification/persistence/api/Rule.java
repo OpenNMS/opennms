@@ -112,6 +112,9 @@ public class Rule implements RuleDefinition {
     @Column(name="position", nullable = false)
     private int position;
 
+    @Column(name="omnidirectional")
+    private boolean omnidirectional;
+
     public Rule() {
         
     }
@@ -188,6 +191,14 @@ public class Rule implements RuleDefinition {
         this.protocol = protocol;
     }
 
+    public boolean isOmnidirectional() {
+        return this.omnidirectional;
+    }
+
+    public void setOmnidirectional(final boolean omnidirectional) {
+        this.omnidirectional = omnidirectional;
+    }
+
     public void setPosition(int position) {
         this.position = position;
     }
@@ -228,6 +239,7 @@ public class Rule implements RuleDefinition {
             .add("srcPort", srcPort)
             .add("exporterFilter", exporterFilter)
             .add("protocol", protocol)
+            .add("omnidirectional", omnidirectional)
             .add("position", position)
             .add("group", group)
             .toString();

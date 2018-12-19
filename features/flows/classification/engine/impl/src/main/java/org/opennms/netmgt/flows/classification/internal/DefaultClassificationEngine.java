@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
@@ -46,8 +47,8 @@ import org.opennms.netmgt.flows.classification.internal.classifier.CombinedClass
 import org.opennms.netmgt.flows.classification.internal.value.PortValue;
 import org.opennms.netmgt.flows.classification.persistence.api.DefaultRuleDefinition;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
-import org.opennms.netmgt.flows.classification.persistence.api.RulePriorityComparator;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleDefinition;
+import org.opennms.netmgt.flows.classification.persistence.api.RulePriorityComparator;
 
 public class DefaultClassificationEngine implements ClassificationEngine {
 
@@ -68,19 +69,36 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         }
     }
 
+    private static RuleDefinition reverseRule(final RuleDefinition rule) {
+        final DefaultRuleDefinition result = new DefaultRuleDefinition();
+        result.setName(rule.getName());
+        result.setDstAddress(rule.getSrcAddress());
+        result.setDstPort(rule.getSrcPort());
+        result.setSrcAddress(rule.getDstAddress());
+        result.setSrcPort(rule.getDstPort());
+        result.setProtocol(rule.getProtocol());
+        result.setExporterFilter(rule.getExporterFilter());
+        result.setGroupPriority(rule.getGroupPriority());
+        return result;
+    }
+
     @Override
     public void reload() {
         // Reset existing data
         classifierPortList.clear();
 
-        // Load rules
-        final List<Rule> rules = ruleProvider.getRules();
+        // Load rules and expand omnidirectional rules to reversed ones
+        final List<RuleDefinition> rules = ruleProvider.getRules().stream()
+                .flatMap(rule -> rule.isOmnidirectional() && (rule.hasSrcPortDefinition() || rule.hasSrcAddressDefinition() || rule.hasDstPortDefinition() || rule.hasDstAddressDefinition())
+                        ? Stream.of(rule, reverseRule(rule))
+                        : Stream.of(rule))
+                .collect(Collectors.toList());
 
         // (port) -> rule mapping
-        final List<List<Rule>> rulePortList = new ArrayList<>(Rule.MAX_PORT_VALUE);
+        final List<List<RuleDefinition>> rulePortList = new ArrayList<>(Rule.MAX_PORT_VALUE);
 
         // Rules which are not bound to a src OR dst port are stored here temporarily
-        final List<Rule> anyPortRules = new ArrayList<>();
+        final List<RuleDefinition> anyPortRules = new ArrayList<>();
 
         // Initialize each element
         for (int i=Rule.MIN_PORT_VALUE; i<Rule.MAX_PORT_VALUE; i++) {
@@ -93,11 +111,11 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         // In case only src OR dst port is defined, the rule is sorted in the according port.
         // In case src AND dst port are defined, the rule is only sorted by dst port.
         // In case neither src NOR dst port are defined, the rule is applied to ALL ports.
-        for (Rule eachRule : rules) {
+        for (RuleDefinition eachRule : rules) {
             // src AND dst port are defined, only map rule to dst port
             if (eachRule.hasSrcPortDefinition() && eachRule.hasDstPortDefinition()) {
                 for (Integer eachPort : new PortValue(eachRule.getDstPort()).getPorts()) {
-                    final List<Rule> portRules = rulePortList.get(eachPort);
+                    final List<RuleDefinition> portRules = rulePortList.get(eachPort);
                     if (!portRules.contains(eachRule)) {
                         portRules.add(eachRule);
                     }
@@ -116,20 +134,20 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         }
 
         // Add rules with no port mapping to ALL ports, if not already added
-        for (final List<Rule> theRules : rulePortList) {
+        for (final List<RuleDefinition> theRules : rulePortList) {
             theRules.addAll(anyPortRules);
         }
 
         // Sort rules by priority
         for (int i=0; i<rulePortList.size(); i++) {
-            final List<Rule> portRules = rulePortList.get(i);
+            final List<RuleDefinition> portRules = rulePortList.get(i);
             Collections.sort(portRules, ruleComparator);
         }
 
         // Finally create classifiers
         for (int i = 0; i < rulePortList.size(); i++) {
             final int port = i;
-            final List<Rule> portRules = rulePortList.get(port);
+            final List<RuleDefinition> portRules = rulePortList.get(port);
 
             // Convert rule to classifier
             final List<Classifier> classifiers = portRules.stream().map(rule -> {
