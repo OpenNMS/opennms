@@ -57,6 +57,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.dao.support.AlarmEntityNotifierImpl;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsServiceType;
@@ -101,6 +102,8 @@ public class DroolsAlarmContextIT {
 
         DefaultAlarmService alarmService = new DefaultAlarmService();
         alarmService.setAlarmDao(alarmDao);
+        EventForwarder eventForwarder = mock(EventForwarder.class);
+        alarmService.setEventForwarder(eventForwarder);
 
         AlarmEntityNotifierImpl alarmEntityNotifier = mock(AlarmEntityNotifierImpl.class);
         alarmService.setAlarmEntityNotifier(alarmEntityNotifier);

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.alarmd.drools;
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
@@ -86,7 +87,11 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     private final Map<Integer, AlarmAndFact> alarmsById = new HashMap<>();
 
     public DroolsAlarmContext() {
-        super(Paths.get(ConfigFileConstants.getHome(), "etc", "alarmd", "drools-rules.d").toFile(), Alarmd.NAME, "DroolsAlarmContext");
+        this(getDefaultRulesFolder());
+    }
+
+    public DroolsAlarmContext(File rulesFolder) {
+        super(rulesFolder, Alarmd.NAME, "DroolsAlarmContext");
         setOnNewKiewSessionCallback(kieSession -> {
             kieSession.setGlobal("alarmService", alarmService);
             kieSession.insert(alarmTicketerService);
@@ -101,6 +106,10 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                 }
             }
         });
+    }
+
+    public static File getDefaultRulesFolder() {
+        return Paths.get(ConfigFileConstants.getHome(), "etc", "alarmd", "drools-rules.d").toFile();
     }
 
     @Override
@@ -277,6 +286,10 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         final KieSession kieSession = getKieSession();
         // Initialize any related objects that are needed for rule execution
         Hibernate.initialize(alarm.getRelatedAlarms());
+        if (alarm.getLastEvent() != null) {
+            // The last event may be null in unit tests
+            Hibernate.initialize(alarm.getLastEvent().getEventParameters());
+        }
         final AlarmAndFact alarmAndFact = alarmsById.get(alarm.getId());
         if (alarmAndFact == null) {
             LOG.debug("Inserting alarm into session: {}", alarm);

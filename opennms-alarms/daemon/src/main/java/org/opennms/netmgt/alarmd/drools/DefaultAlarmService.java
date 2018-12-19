@@ -32,8 +32,10 @@ import java.util.Date;
 
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,9 @@ public class DefaultAlarmService implements AlarmService {
 
     @Autowired
     private AlarmEntityNotifier alarmEntityNotifier;
+
+    @Autowired
+    private EventForwarder eventForwarder;
 
     @Override
     @Transactional
@@ -144,6 +149,11 @@ public class DefaultAlarmService implements AlarmService {
         alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
     }
 
+    @Override
+    public void sendEvent(Event e) {
+        eventForwarder.sendNow(e);
+    }
+
     private static void updateAutomationTime(OnmsAlarm alarm, Date now) {
         if (alarm.getFirstAutomationTime() == null) {
             alarm.setFirstAutomationTime(now);
@@ -157,5 +167,9 @@ public class DefaultAlarmService implements AlarmService {
 
     public void setAlarmEntityNotifier(AlarmEntityNotifier alarmEntityNotifier) {
         this.alarmEntityNotifier = alarmEntityNotifier;
+    }
+
+    public void setEventForwarder(EventForwarder eventForwarder) {
+        this.eventForwarder = eventForwarder;
     }
 }
