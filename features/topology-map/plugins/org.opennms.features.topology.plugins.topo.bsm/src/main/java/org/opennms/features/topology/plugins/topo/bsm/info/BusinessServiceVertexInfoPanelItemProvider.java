@@ -42,6 +42,7 @@ import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
 import org.opennms.features.topology.api.info.item.InfoPanelItem;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.bsm.AbstractBusinessServiceVertex;
+import org.opennms.features.topology.plugins.topo.bsm.ApplicationVertex;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertex;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertexVisitor;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServicesTopologyProvider;
@@ -50,6 +51,7 @@ import org.opennms.features.topology.plugins.topo.bsm.IpServiceVertex;
 import org.opennms.features.topology.plugins.topo.bsm.ReductionKeyVertex;
 import org.opennms.features.topology.plugins.topo.bsm.simulate.SimulationAwareStateMachineFactory;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.bsm.service.model.Application;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
@@ -71,11 +73,11 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.Table;
-import com.vaadin.ui.UI;
 import com.vaadin.v7.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.v7.ui.themes.BaseTheme;
 
 public class BusinessServiceVertexInfoPanelItemProvider extends VertexInfoPanelItemProvider {
@@ -174,6 +176,16 @@ public class BusinessServiceVertexInfoPanelItemProvider extends VertexInfoPanelI
                 }
                 return null;
             }
+
+            @Override
+            public Void visit(ApplicationVertex vertex) {
+                Application application = businessServiceManager.getApplicationById(vertex.getApplicationId());
+                formLayout.addComponent(createLabel("Application", application.getApplicationName()));
+                if (!application.getApplicationName().equals(vertex.getLabel())) {
+                    formLayout.addComponent(createLabel("Friendly Name", vertex.getLabel()));
+                }
+                return null;
+            }
         });
 
         return formLayout;
@@ -194,6 +206,11 @@ public class BusinessServiceVertexInfoPanelItemProvider extends VertexInfoPanelI
             @Override
             public String visit(ReductionKeyVertex vertex) {
                 return "Reduction Key Details";
+            }
+
+            @Override
+            public String visit(ApplicationVertex vertex) {
+                return "Application Details";
             }
         });
     }

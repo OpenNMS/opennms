@@ -1,0 +1,181 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
+package org.opennms.netmgt.alarmd.usecases;
+
+import java.util.Date;
+import org.kie.api.time.SessionClock;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.TroubleTicketState
+import org.opennms.netmgt.model.events.EventBuilder;
+
+global org.opennms.netmgt.alarmd.drools.AlarmService alarmService;
+
+/**
+This ruleset can be used to generate "nagging notification" or recurring events
+while alarms remain triggered.
+
+In order to enable nagging for an alarm, add the 'nagUei' event parameter to event
+definition for the trigger. i.e.:
+
+<event>
+  <uei>uei.opennms.org/nag/alarm/trigger</uei>
+  <event-label>Nag: Generic Trigger</event-label>
+  <descr>A problem to nag has been triggered.</descr>
+  <logmsg dest="logndisplay">A problem to nag has been triggered on %parm[node]%/%parm[ip]%/%parm[service]%.</logmsg>
+  <severity>Warning</severity>
+  <alarm-data reduction-key="%uei%:%parm[node]%:%parm[ip]%:%parm[service]%" alarm-type="1" auto-clean="false">
+     <update-field field-name="severity" update-on-reduction="true"/>
+  </alarm-data>
+  <parameter name="nagUei" value="uei.opennms.org/nag/notification" expand="false"/>
+</event>
+
+By default, the rules will send nag events at a 30 second interval. If you need to adjust this
+rate, you must do so at three(3) different places.
+ 1) Update the @expires time on the LastNag declaring to be 2X the new interval
+ 2) Update the nagIntervalInMs constant in the "schedule nag" rule to match the new interval
+ 3) Update the window since in the window:time(*) statement to match the new interval
+*/
+
+declare org.opennms.netmgt.model.OnmsAlarm
+    @role(event)
+    @timestamp(lastUpdateTime)
+end
+
+declare Nag
+   alarm : OnmsAlarm
+   nagUei : String
+   interval : long
+end
+
+declare LastNag
+   @role(event)
+   @expires(1m) // Some time greater than the interval, recommended to be 2x the interval duration
+   @timestamp(lastNaggedAt)
+   nag : Nag
+   lastNaggedAt : Date
+end
+
+function Date getLastNagTimeWith(Date now, Date firstEventTime, long intervalInMs) {
+    long nowTs = now.getTime();
+    long firstEventTimeTs = firstEventTime.getTime();
+
+    long msElapsed = (nowTs - firstEventTimeTs);
+    long msInLastInterval = msElapsed % intervalInMs;
+    long shouldveNaggedAtTimestamp =  nowTs - msInLastInterval;
+
+    return new Date(shouldveNaggedAtTimestamp);
+}
+
+function Date getLastNagTime(Date now, Nag nag) {
+   return getLastNagTimeWith(now, nag.getAlarm().getFirstEventTime(), nag.getInterval());
+}
+
+function void copyEventParameters(OnmsEvent sourceEvent, EventBuilder targetEventBuilder) {
+    if (sourceEvent == null) {
+        return;
+    }
+    for (OnmsEventParameter p : sourceEvent.getEventParameters()) {
+        targetEventBuilder.setParam(p.getName(), p.getValue());
+    }
+}
+
+/**
+   Find alarms that we're interesting in nagging on
+   Add a nag fact, and schedule the first nag.
+*/
+rule "schedule nag"
+  when
+    $alarm : OnmsAlarm(alarmType == OnmsAlarm.PROBLEM_TYPE,
+                       lastEvent != null,
+                       severity.isGreaterThan(OnmsSeverity.CLEARED))
+    $nagUeiParm : OnmsEventParameter( name == "nagUei", value != null ) from $alarm.getLastEvent().getEventParameters()
+    not(Nag( alarm == $alarm ))
+  then
+      long nagIntervalInMs = 30 * 1000;
+      Date now = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
+
+      Nag nag = new Nag();
+      nag.setAlarm($alarm);
+      nag.setNagUei($nagUeiParm.getValue());
+      nag.setInterval(nagIntervalInMs);
+      insert(nag);
+
+      LastNag lastNag = new LastNag();
+      lastNag.setNag(nag);
+      lastNag.setLastNaggedAt(getLastNagTime(now, nag));
+      insert(lastNag);
+end
+
+rule "retract nag when alarm is deleted"
+  when
+    $nag : Nag()
+    not( OnmsAlarm( this == $nag.alarm ) )
+  then
+     retract($nag)
+end
+
+rule "retract nag when alarm is cleared"
+  when
+    $nag : Nag()
+    $alarm : OnmsAlarm(this == $nag.alarm, severity.isLessThanOrEqual(OnmsSeverity.CLEARED))
+  then
+     retract($nag)
+end
+
+rule "trigger nag"
+  when
+    $nag : Nag()
+    not( LastNag( nag == $nag ) over window:time( 30s ) ) // Window duration should match interval
+  then
+    Date now = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
+    // Build the nag notification
+    EventBuilder eb = new EventBuilder($nag.getNagUei(), "nagger");
+    // Use the time from the session clock on the event
+    eb.setTime(now);
+    // Copy the node id if set
+    if ($nag.getAlarm().getNodeId() != null) {
+        eb.setNodeid($nag.getAlarm().getNodeId());
+    }
+    // Copy all of the parameters from the last event on the alarm to the nag
+    copyEventParameters($nag.getAlarm().getLastEvent(), eb);
+    // Include the reduction key of the alarm that we're nagging for
+    eb.setParam("nagReductionKey", $nag.getAlarm().getReductionKey());
+    // Asynchronously send the event
+    alarmService.sendEvent(eb.getEvent());
+
+    // Re-insert the nag fact using the time at which we should have sent the last nag,
+    // which may differ from the current time
+    LastNag lastNag = new LastNag();
+    lastNag.setNag($nag);
+    lastNag.setLastNaggedAt(getLastNagTime(now, $nag));
+    insert(lastNag);
+end

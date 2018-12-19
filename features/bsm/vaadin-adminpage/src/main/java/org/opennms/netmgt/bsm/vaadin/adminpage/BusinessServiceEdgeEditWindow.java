@@ -32,9 +32,11 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.bsm.service.model.Application;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.ApplicationEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
@@ -74,7 +76,7 @@ import com.vaadin.ui.Window;
 public class BusinessServiceEdgeEditWindow extends Window {
 
     private enum EdgeType {
-        IP_SERVICE, REDUCTION_KEY, CHILD_SERVICE
+        IP_SERVICE, REDUCTION_KEY, CHILD_SERVICE, APPLICATION
     }
 
     private static final long serialVersionUID = -5780075265758041282L;
@@ -90,6 +92,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
     private final NativeSelect m_typeSelect;
     private final ComboBox m_childServiceComponent;
     private final ComboBox m_ipServiceComponent;
+    private final ComboBox m_applicationComponent;
     private final TextField m_reductionKeyComponent;
     private final NativeSelect m_mapFunctionSelect;
     private final NativeSelect m_mapFunctionSeveritySelect;
@@ -146,6 +149,8 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_typeSelect.setItemCaption(EdgeType.IP_SERVICE, "IP Service");
         m_typeSelect.addItem(EdgeType.REDUCTION_KEY);
         m_typeSelect.setItemCaption(EdgeType.REDUCTION_KEY, "Reduction Key");
+        m_typeSelect.addItem(EdgeType.APPLICATION);
+        m_typeSelect.setItemCaption(EdgeType.APPLICATION, "Application");
         m_typeSelect.setWidth(100.0f, Unit.PERCENTAGE);
         formLayout.addComponent(m_typeSelect);
 
@@ -185,6 +190,24 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_ipServiceComponent.getItemIds().forEach(item -> m_ipServiceComponent.setItemCaption(item, BusinessServiceEditWindow.describeIpService((IpService) item)));
         formLayout.addComponent(m_ipServiceComponent);
 
+        // List of Applications
+        m_applicationComponent = new ComboBox("Application");
+        m_applicationComponent.setId("applicationList");
+        m_applicationComponent.setInputPrompt("No Application selected");
+        m_applicationComponent.setNewItemsAllowed(false);
+        m_applicationComponent.setNullSelectionAllowed(false);
+        m_applicationComponent.setWidth(100.0f, Unit.PERCENTAGE);
+        m_applicationComponent.setVisible(false);
+        m_applicationComponent.setImmediate(true);
+        m_applicationComponent.setValidationVisible(true);
+        m_applicationComponent.setFilteringMode(FilteringMode.CONTAINS);
+        m_applicationComponent.addItems(businessServiceManager.getAllApplications().stream()
+                .sorted(Ordering.natural()
+                        .onResultOf(BusinessServiceEditWindow::describeApplication))
+                .collect(Collectors.toList()));
+        m_applicationComponent.getItemIds().forEach(item -> m_applicationComponent.setItemCaption(item, BusinessServiceEditWindow.describeApplication((Application) item)));
+        formLayout.addComponent(m_applicationComponent);
+
         /**
          * reduction key input field
          */
@@ -221,6 +244,8 @@ public class BusinessServiceEdgeEditWindow extends Window {
             m_ipServiceComponent.setRequired(m_typeSelect.getValue() == EdgeType.IP_SERVICE);
             m_reductionKeyComponent.setVisible(m_typeSelect.getValue() == EdgeType.REDUCTION_KEY);
             m_reductionKeyComponent.setRequired(m_typeSelect.getValue() == EdgeType.REDUCTION_KEY);
+            m_applicationComponent.setVisible(m_typeSelect.getValue() == EdgeType.APPLICATION);
+            m_applicationComponent.setRequired(m_typeSelect.getValue() == EdgeType.APPLICATION);
             m_friendlyNameField.setVisible(m_typeSelect.getValue() == EdgeType.REDUCTION_KEY || m_typeSelect.getValue() == EdgeType.IP_SERVICE);
         });
 
@@ -353,6 +378,9 @@ public class BusinessServiceEdgeEditWindow extends Window {
                 case REDUCTION_KEY:
                     businessService.addReductionKeyEdge(m_reductionKeyComponent.getValue(), mapFunction, weight, m_friendlyNameField.getValue());
                     break;
+                case APPLICATION:
+                    businessService.addApplicationEdge((Application) m_applicationComponent.getValue(), mapFunction, weight);
+                    break;
             }
 
             close();
@@ -401,6 +429,14 @@ public class BusinessServiceEdgeEditWindow extends Window {
                     m_typeSelect.setValue(EdgeType.CHILD_SERVICE);
                     m_childServiceComponent.setValue(edge.getChild());
                     m_childServiceComponent.setEnabled(false);
+                    return null;
+                }
+
+                @Override
+                public Void visit(ApplicationEdge edge) {
+                    m_typeSelect.setValue(EdgeType.APPLICATION);
+                    m_friendlyNameField.setValue(edge.getFriendlyName());
+                    m_ipServiceComponent.setEnabled(false);
                     return null;
                 }
             });

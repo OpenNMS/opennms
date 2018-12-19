@@ -31,9 +31,11 @@ package org.opennms.netmgt.bsm.mock;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.netmgt.bsm.service.model.Application;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.ApplicationEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
@@ -130,6 +132,16 @@ public class MockBusinessService implements BusinessService {
     }
 
     @Override
+    public void addApplicationEdge(Application application, MapFunction mapFunction, int weight) {
+
+    }
+
+    @Override
+    public void setApplicationEdges(Set<ApplicationEdge> applicationEdges) {
+
+    }
+
+    @Override
     public void setReductionKeyEdges(Set<ReductionKeyEdge> reductionKeyEdges) {
 
     }
@@ -161,6 +173,11 @@ public class MockBusinessService implements BusinessService {
 
     @Override
     public Set<IpServiceEdge> getIpServiceEdges() {
+        return null;
+    }
+
+    @Override
+    public Set<ApplicationEdge> getApplicationEdges() {
         return null;
     }
 
