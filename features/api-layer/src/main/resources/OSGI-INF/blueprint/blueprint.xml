@@ -51,7 +51,7 @@
     <bean class="org.opennms.features.apilayer.dao.AlarmFeedbackDaoImpl">
       <argument value="${gracePeriodInMs}"/>
       <argument value="${sleepTimeInMs}"/>
-      <argument value="${waitTimeMs]"/>
+      <argument value="${waitTimeMs}"/>
     </bean>
   </service>
 
