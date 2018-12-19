@@ -26,9 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/**
- * 
- */
 package org.opennms.netmgt.provision;
 
 import static org.junit.Assert.fail;

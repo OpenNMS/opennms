@@ -33,8 +33,6 @@ import java.util.concurrent.locks.Lock;
 
 import org.opennms.netmgt.config.wsmanAsset.adapter.AssetField;
 
-/**
- */
 public interface WsManAssetAdapterConfig {
 
     public AssetField[] getAssetFieldsForAddress(InetAddress address, String vendor);
