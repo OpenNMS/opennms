@@ -65,7 +65,6 @@ import org.opennms.plugins.elasticsearch.rest.bulk.BulkException;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
 import org.opennms.plugins.elasticsearch.rest.bulk.FailedItem;
-import org.opennms.plugins.elasticsearch.rest.executors.LimitedRetriesRequestExecutor;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 import org.opennms.plugins.elasticsearch.rest.template.TemplateInitializer;
 import org.slf4j.Logger;
@@ -89,10 +88,15 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(ElasticAlarmIndexer.class);
     private static final Gson gson = new Gson();
 
+    public static final int DEFAULT_TASK_QUEUE_CAPACITY = 5000;
+
     private final AlarmCallbackStateTracker stateTracker = new AlarmCallbackStateTracker();
+    private final QueryProvider queryProvider = new QueryProvider();
 
     private final JestClient client;
     private final TemplateInitializer templateInitializer;
+    private final LinkedBlockingDeque<Task> taskQueue;
+
     private IndexStrategy indexStrategy = IndexStrategy.MONTHLY;
     private int bulkRetryCount = 3;
     private int batchSize = 200;
@@ -107,19 +111,12 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
      *
      * This allows the documents to reflect the actual state, even if no "interesting"
      * fields have changed.
-     *
-     * TODO: Make configurable
      **/
     private long alarmReindexDurationMs = TimeUnit.HOURS.toMillis(1);
-
-    private final QueryProvider queryProvider = new QueryProvider();
-    private LimitedRetriesRequestExecutor limitedRetriesRequestExecutor;
 
     private final List<AlarmDocumentDTO> alarmDocumentsToIndex = new LinkedList<>();
 
     private Map<Integer, AlarmDocumentDTO> alarmDocumentsById = new LinkedHashMap<>();
-    // TODO: Make limit configurable
-    private final LinkedBlockingDeque<Task> taskQueue = new LinkedBlockingDeque<>(10000);
     private final ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
             .setNameFormat("ElasticAlarmIndexer")
             .build());
@@ -131,10 +128,10 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
     private final ElasticAlarmMetrics alarmsToESMetrics;
 
     public ElasticAlarmIndexer(MetricRegistry metrics, JestClient client, TemplateInitializer templateInitializer) {
-        this(metrics, client, templateInitializer, new CacheConfig("nodes-for-alarms-in-es"));
+        this(metrics, client, templateInitializer, new CacheConfig("nodes-for-alarms-in-es"), DEFAULT_TASK_QUEUE_CAPACITY);
     }
 
-    public ElasticAlarmIndexer(MetricRegistry metrics, JestClient client, TemplateInitializer templateInitializer, CacheConfig nodeCacheConfig) {
+    public ElasticAlarmIndexer(MetricRegistry metrics, JestClient client, TemplateInitializer templateInitializer, CacheConfig nodeCacheConfig, int taskQueueCapacity) {
         this.client = Objects.requireNonNull(client);
         this.templateInitializer = Objects.requireNonNull(templateInitializer);
         nodeInfoCache = new CacheBuilder<>()
@@ -145,6 +142,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
                         return Optional.empty();
                     }
                 }).build();
+        taskQueue = new LinkedBlockingDeque<>(taskQueueCapacity);
         alarmsToESMetrics = new ElasticAlarmMetrics(metrics, taskQueue);
         documentMapper = new DocumentMapper(nodeInfoCache, this::getCurrentTimeMillis);
     }
@@ -164,9 +162,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
                     LOG.error("Flush failed.", e);
                 }
             }
-        }, 500, 500); // TODO: Make period configurable
-        // TODO: Make timeout configurable
-        limitedRetriesRequestExecutor = new LimitedRetriesRequestExecutor(5000,  bulkRetryCount);
+        }, 500, 500); // Automatically flush the tasks every 500ms
     }
 
     public void destroy() {
@@ -423,6 +419,10 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
 
     public void setBatchSize(int batchSize) {
         this.batchSize = batchSize;
+    }
+
+    public void setAlarmReindexDurationMs(long alarmReindexDurationMs) {
+        this.alarmReindexDurationMs = alarmReindexDurationMs;
     }
 
     public void setIndexStrategy(IndexStrategy indexStrategy) {

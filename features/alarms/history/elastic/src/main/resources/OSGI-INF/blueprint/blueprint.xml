@@ -12,7 +12,7 @@
 ">
 
     <!-- Configuration properties -->
-    <cm:property-placeholder id="alarmInElasticProperties" persistent-id="org.opennms.features.alarm-in-es" update-strategy="reload">
+    <cm:property-placeholder id="alarmHistoryElastic" persistent-id="org.opennms.features.alarms.history.elastic" update-strategy="reload">
         <cm:default-properties>
             <!-- Elastic Connection Settings -->
             <cm:property name="elasticUrl" value="http://localhost:9200" />
@@ -33,15 +33,18 @@
             <cm:property name="nodeCache.expireAfterWrite" value="300"/> <!-- in seconds. Set to 0 to never evict elements -->
             <cm:property name="nodeCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
 
-            <!-- Bulk Action Retry settings -->
-            <cm:property name="bulkRetryCount" value="5" /> <!-- Number of retries until a bulk operation is considered failed -->
-
             <!-- Index settings -->
             <!-- https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-settings -->
             <cm:property name="settings.index.number_of_shards" value="" />
             <cm:property name="settings.index.number_of_replicas" value="" />
             <cm:property name="settings.index.refresh_interval" value="" />
             <cm:property name="settings.index.routing_partition_size" value="" />
+
+            <!-- Alarm History settings -->
+            <cm:property name="batchIndexSize" value="200" /> <!-- Maximum number of records inserted in a single batch insert -->
+            <cm:property name="bulkRetryCount" value="3" /> <!-- Number of retries until a bulk operation is considered failed -->
+            <cm:property name="alarmReindexDurationMs" value="3600000" /> <!-- Number of milliseconds to wait before re-indexing an alarm if nothing "interesting" has changed -->
+            <cm:property name="taskQueueCapacity" value="5000" />
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -127,8 +130,11 @@
         <argument ref="jestClient"/>
         <argument ref="templateInitializer" />
         <argument ref="nodeCacheConfig" />
+        <argument value="${taskQueueCapacity}"/>
         <property name="indexStrategy" ref="indexStrategy"/>
         <property name="bulkRetryCount" value="${bulkRetryCount}" />
+        <property name="batchSize" value="${batchIndexSize}" />
+        <property name="alarmReindexDurationMs" value="${alarmReindexDurationMs}"/>
     </bean>
     <!-- Register for alarm callbacks -->
     <service ref="elasticAlarmIndexer" interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener">
