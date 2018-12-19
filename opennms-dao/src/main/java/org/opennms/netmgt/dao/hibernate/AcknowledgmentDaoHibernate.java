@@ -33,9 +33,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.hibernate.ObjectNotFoundException;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
 import org.opennms.netmgt.model.AckAction;
@@ -261,5 +263,29 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
         OnmsAcknowledgment clear = new OnmsAcknowledgment(alarm);
         clear.setAckAction(AckAction.CLEAR);
         processAck(clear);
+    }
+
+    @Override
+    @Transactional
+    @SuppressWarnings("unchecked")
+    public List<OnmsAcknowledgment> findLatestAcks() {
+        String hqlQuery = "SELECT acks FROM OnmsAcknowledgment acks WHERE " +
+                "acks.ackTime = (SELECT MAX(filteredAcks.ackTime) FROM OnmsAcknowledgment filteredAcks WHERE " +
+                "filteredAcks.refId = acks.refId) AND acks.id = (SELECT MAX(filteredAcks.id) FROM " +
+                "OnmsAcknowledgment filteredAcks WHERE filteredAcks.refId = acks.refId)";
+        return (List<OnmsAcknowledgment>) getHibernateTemplate().find(hqlQuery);
+    }
+
+    @Override
+    @Transactional
+    public Optional<OnmsAcknowledgment> findLatestAckForRefId(Integer refId) {
+        CriteriaBuilder builder = new CriteriaBuilder(OnmsAcknowledgment.class)
+                .eq("refId", refId)
+                .limit(1)
+                .orderBy("ackTime").desc()
+                .orderBy("id").desc();
+        List<OnmsAcknowledgment> acks = findMatching(builder.toCriteria());
+
+        return acks.size() == 1 ? Optional.of(acks.get(0)) : Optional.empty();
     }
 }

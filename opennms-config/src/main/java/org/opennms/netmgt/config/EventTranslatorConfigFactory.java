@@ -44,7 +44,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -282,16 +281,6 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 
     /** {@inheritDoc} */
     @Override
-    public boolean isTranslationEvent(Event e) {
-        for (TranslationSpec spec : getTranslationSpecs()) {
-            if (spec.matches(e))
-                return true;
-        }
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public List<Event> translateEvent(Event e) {
         ArrayList<Event> events = new ArrayList<>();
         for (TranslationSpec spec : getTranslationSpecs()) {
@@ -358,29 +347,12 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
                 m_translationMappings = constructTranslationMappings();
             return Collections.unmodifiableList(m_translationMappings);
         }
-        boolean matches(Event e) {
-            // short circuit if the eui doesn't match
-            if (!ueiMatches(e)) {
-                LOG.debug("TransSpec.matches: No match comparing spec UEI: {} with event UEI: {}", e.getUei(), m_spec.getUei());
-                return false;
-            }
-
-            // uei matches to go thru the mappings
-            LOG.debug("TransSpec.matches: checking mappings for spec.");
-            for (TranslationMapping transMap : getTranslationMappings()) {
-                if (transMap.matches(e)) 
-                    return true;
-            }
-            return false;
-        }
 
         private boolean ueiMatches(Event e) {
             return e.getUei().equals(m_spec.getUei())
                     || m_spec.getUei().endsWith("/")
                     && e.getUei().startsWith(m_spec.getUei());
         }
-
-
     }
 
     class TranslationMapping {
@@ -392,12 +364,18 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
         }
 
         public Event translate(Event srcEvent) {
-            // if the event doesn't match the mapping then don't apply the translation
-            if (!matches(srcEvent)) return null;
-
             Event targetEvent = cloneEvent(srcEvent);
+
             for (AssignmentSpec assignSpec : getAssignmentSpecs()) {
-                assignSpec.apply(srcEvent, targetEvent);
+                if (assignSpec.matches(srcEvent)) {
+                    assignSpec.apply(srcEvent, targetEvent);
+                } else {
+                    if (assignSpec.getAssignment().hasDefault()) {
+                        assignSpec.setValue(targetEvent, assignSpec.getAssignment().getDefault());
+                    } else {
+                        return null;
+                    }
+                }
             }
 
             targetEvent.setSource(TRANSLATOR_NAME);
@@ -443,22 +421,6 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
             }
             return assignments;
         }
-
-        private boolean assignmentsMatch(Event e) {
-            AssignmentSpec assignSpec = null;
-            for (Iterator<AssignmentSpec> it = getAssignmentSpecs().iterator(); it.hasNext();) {
-                assignSpec = it.next();
-                if (!assignSpec.matches(e)) {
-                    LOG.debug("TranslationMapping.assignmentsMatch: assignmentSpec: {} doesn't match.", assignSpec.getAttributeName());
-                    return false;
-                }
-            }
-            LOG.debug("TranslationMapping.assignmentsMatch: assignmentSpec: {} matches!", assignSpec.getAttributeName());
-            return true;
-        }
-        boolean matches(Event e) {
-            return assignmentsMatch(e);
-        }
     }
 
     abstract class AssignmentSpec {
@@ -479,7 +441,6 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 
         private ValueSpec constructValueSpec() {
             Value val = getAssignment().getValue();
-
 
             return EventTranslatorConfigFactory.this.getValueSpec(val);
         }

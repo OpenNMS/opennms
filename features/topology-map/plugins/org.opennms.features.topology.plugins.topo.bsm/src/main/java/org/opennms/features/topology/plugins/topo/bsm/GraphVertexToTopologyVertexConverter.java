@@ -42,6 +42,9 @@ public class GraphVertexToTopologyVertexConverter {
         if (graphVertex.getReductionKey() != null) {
             return new ReductionKeyVertex(graphVertex);
         }
+        if (graphVertex.getApplication() != null) {
+            return new ApplicationVertex(graphVertex);
+        }
         throw new IllegalArgumentException("Cannot convert GraphVertex to BusinessServiceVertex: " + graphVertex);
     }
 }
