@@ -38,6 +38,8 @@ import org.opennms.netmgt.provision.persist.RequisitionProviderRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableSet;
+
 /**
  * A registry of all available {@link RequisitionProviderRegistry} implementations
  * exposed in the OSGi registry.
@@ -87,7 +89,7 @@ public class DefaultRequisitionProviderRegistry implements RequisitionProviderRe
 
     @Override
     public Set<String> getTypes() {
-        return m_providersByType.keySet();
+        return ImmutableSet.copyOf(m_providersByType.keySet());
     }
 
     private static String getType(Map<?, ?> properties) {
