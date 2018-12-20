@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.icmp.best;
 
+import java.net.InetAddress;
 import java.util.Arrays;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -85,7 +86,8 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
 
         try {
             final long timeout = Long.valueOf(System.getProperty("org.opennms.netmgt.icmp.best.timeout", "500"), 10);
-            final Number result = pinger.ping(InetAddressUtils.getLocalLoopbackAddress(), timeout, 0);
+            final InetAddress addr = InetAddressUtils.getLocalLoopbackAddress().orElseThrow(() -> new IllegalStateException("No pingable address found."));
+            final Number result = pinger.ping(addr, timeout, 0);
             if (result == null) {
                 throw new IllegalStateException("No result pinging localhost.");
             }
