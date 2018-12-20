@@ -86,7 +86,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(dirtiesContext=false)
+@JUnitTemporaryDatabase
 public class NodeDaoIT implements InitializingBean {
 
     @Autowired
@@ -373,7 +373,6 @@ public class NodeDaoIT implements InitializingBean {
 
 
     @Test
-    @JUnitTemporaryDatabase // This test manages its own transactions so use a fresh database
     public void testDeleteObsoleteInterfaces() {
         try {
 

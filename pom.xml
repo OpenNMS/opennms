@@ -1351,7 +1351,7 @@
     <paxWebVersion>4.3.0</paxWebVersion>
     <protobufVersion>2.6.1</protobufVersion>
     <protobuf3Version>3.5.1</protobuf3Version>
-    <postgresqlVersion>9.4.1211</postgresqlVersion>
+    <postgresqlVersion>42.2.5</postgresqlVersion>
     <powermockVersion>1.6.4</powermockVersion>
     <!-- TODO: Update to release artifact before tagging 24.0.0 -->
     <opennmsApiVersion>1.0.0-alpha4-SNAPSHOT</opennmsApiVersion>

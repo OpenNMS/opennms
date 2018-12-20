@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,6 +39,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -67,21 +68,25 @@ public class ReportingSqlViewTestIT {
     }
 
     @Test
+    @Transactional
     public void verifyNodeOutagesViewExist() {
         Assert.assertNotNull(jdbcTemplate.queryForList("SELECT outageid,nodelabel FROM node_outages;"));
     }
 
     @Test
+    @Transactional
     public void verifyNodeCategoriesViewExist() {
         Assert.assertNotNull(jdbcTemplate.queryForList("SELECT nodelabel,categoryname FROM node_categories;"));
     }
 
     @Test
+    @Transactional
     public void verifyNodeAlarmsViewExist() {
         Assert.assertNotNull(jdbcTemplate.queryForList("SELECT alarmid,nodelabel FROM node_alarms;"));
     }
 
     @Test
+    @Transactional
     public void verifyNodeIpServicesViewExist() {
         Assert.assertNotNull(jdbcTemplate.queryForList("SELECT nodelabel,ipaddr,servicename FROM node_ip_services;"));
     }

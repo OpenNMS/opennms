@@ -28,10 +28,11 @@
 
 package org.opennms.netmgt.dao;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao;
@@ -41,12 +42,9 @@ import org.opennms.netmgt.model.HwEntityAttributeType;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.transaction.AfterTransaction;
-import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -64,7 +62,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(dirtiesContext=false)
+@JUnitTemporaryDatabase
 public class HwEntityDaoIT implements InitializingBean {
 
     /** The node DAO. */
@@ -94,7 +92,7 @@ public class HwEntityDaoIT implements InitializingBean {
     /**
      * Sets the up.
      */
-    @BeforeTransaction
+    @Before
     public void setUp() {
         m_populator.populateDatabase();
     }
@@ -102,7 +100,7 @@ public class HwEntityDaoIT implements InitializingBean {
     /**
      * Tear down.
      */
-    @AfterTransaction
+    @After
     public void tearDown() {
         m_populator.resetDatabase();
     }
