@@ -30,22 +30,22 @@ package org.opennms.netmgt.topologies.service.api;
 
 public class OnmsTopologyMessage {
 
-    public static OnmsTopologyMessage  create(OnmsTopologyRef messagebody, String protocol) throws OnmsTopologyException {
+    public static OnmsTopologyMessage  create(OnmsTopologyRef messagebody, OnmsTopologyProtocol protocol) throws OnmsTopologyException {
         checkOnmsTopologyMessage(messagebody, protocol, TopologyMessageStatus.NEW);
         return new OnmsTopologyMessage(messagebody, protocol,TopologyMessageStatus.NEW);
     }
     
-    public static OnmsTopologyMessage  update(OnmsTopologyRef messagebody,String protocol) throws OnmsTopologyException {
+    public static OnmsTopologyMessage  update(OnmsTopologyRef messagebody,OnmsTopologyProtocol protocol) throws OnmsTopologyException {
         checkOnmsTopologyMessage(messagebody, protocol, TopologyMessageStatus.UPDATE);
         return new OnmsTopologyMessage(messagebody, protocol,TopologyMessageStatus.UPDATE);
     }
     
-    public static OnmsTopologyMessage  delete(OnmsTopologyRef messagebody,String protocol) throws OnmsTopologyException {
+    public static OnmsTopologyMessage  delete(OnmsTopologyRef messagebody,OnmsTopologyProtocol protocol) throws OnmsTopologyException {
         checkOnmsTopologyMessage(messagebody, protocol, TopologyMessageStatus.DELETE);
         return new OnmsTopologyMessage(messagebody, protocol,TopologyMessageStatus.DELETE);        
     }
 
-    private static void checkOnmsTopologyMessage(OnmsTopologyRef messagebody, String protocol, TopologyMessageStatus messagestatus) throws OnmsTopologyException {
+    private static void checkOnmsTopologyMessage(OnmsTopologyRef messagebody, OnmsTopologyProtocol protocol, TopologyMessageStatus messagestatus) throws OnmsTopologyException {
         if (messagebody == null && protocol == null) {
             throw new OnmsTopologyException("Protocol and Ref null, cannot create message", messagestatus);
         }
@@ -66,9 +66,9 @@ public class OnmsTopologyMessage {
 
     private final OnmsTopologyRef m_messagebody;
     private final TopologyMessageStatus m_messagestatus;
-    private final String m_protocol;
+    private final OnmsTopologyProtocol m_protocol;
     
-    private <T extends OnmsTopologyRef>OnmsTopologyMessage(T messagebody, String protocol, TopologyMessageStatus messagestatus) {
+    private <T extends OnmsTopologyRef>OnmsTopologyMessage(T messagebody, OnmsTopologyProtocol protocol, TopologyMessageStatus messagestatus) {
         m_messagebody=messagebody;
         m_messagestatus=messagestatus;
         m_protocol = protocol;
@@ -82,7 +82,7 @@ public class OnmsTopologyMessage {
         return m_messagestatus;
     }
 
-    public String getProtocol() {
+    public OnmsTopologyProtocol getProtocol() {
         return m_protocol;
     }
 

@@ -61,6 +61,7 @@ import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.impl.OnmsTopologyLogger;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -180,7 +181,7 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
         m_nodeDao.flush();
     }
 
-    public static OnmsTopologyLogger createAndSubscribe(String protocol, EnhancedLinkd linkd) {
+    public static OnmsTopologyLogger createAndSubscribe(String protocol, EnhancedLinkd linkd) throws OnmsTopologyException {
         OnmsTopologyLogger tl = new OnmsTopologyLogger(protocol);
         linkd.getOnmsTopologyDao().subscribe(tl);
         return tl;

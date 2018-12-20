@@ -28,13 +28,50 @@
 
 package org.opennms.netmgt.topologies.service.api;
 
-import java.util.Set;
+public class OnmsTopologyProtocol {
 
-public interface OnmsTopologyConsumer {
-    
-    String getName();
-    Set<OnmsTopologyProtocol> getProtocols();
 
-    void consume(OnmsTopologyMessage message);
+    public static OnmsTopologyProtocol create(String id) throws OnmsTopologyException {
+        if (id == null) {
+            throw new OnmsTopologyException("id is null, cannot create protocol");
+        }
+        return new OnmsTopologyProtocol(id.toUpperCase());
+    }
     
+    final private String m_id;
+
+    private OnmsTopologyProtocol(String id) {
+        m_id=id;
+    }
+
+    public String getId() {
+        return m_id;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_id == null) ? 0 : m_id.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        OnmsTopologyProtocol other = (OnmsTopologyProtocol) obj;
+        if (m_id == null) {
+            if (other.m_id != null)
+                return false;
+        } else if (!m_id.equals(other.m_id))
+            return false;
+        return true;
+    }
+    
+
 }

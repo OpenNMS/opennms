@@ -38,7 +38,7 @@ public class OnmsTopologyException extends Exception {
     private static final long serialVersionUID = -6913989384724814658L;
 
     OnmsTopologyRef m_ref;
-    String m_protocol;
+    OnmsTopologyProtocol m_protocol;
     TopologyMessageStatus m_messageStatus;
 
     public OnmsTopologyException(String message) {
@@ -49,35 +49,35 @@ public class OnmsTopologyException extends Exception {
         super(message, throwable);
     }
 
-    public OnmsTopologyException(String message, String protocol) {
+    public OnmsTopologyException(String message, OnmsTopologyProtocol protocol) {
         super(message);
         m_protocol =protocol;
     }
 
-    public OnmsTopologyException(String message,String protocol, Throwable throwable) {
+    public OnmsTopologyException(String message,OnmsTopologyProtocol protocol, Throwable throwable) {
         super(message, throwable);
         m_protocol=protocol;
     }
 
-    public OnmsTopologyException(String message, String protocol, TopologyMessageStatus status) {
+    public OnmsTopologyException(String message, OnmsTopologyProtocol protocol, TopologyMessageStatus status) {
         super(message);
         m_protocol =protocol;
         m_messageStatus=status;
     }
 
-    public OnmsTopologyException(String message, OnmsTopologyRef ref, String protocol) {
+    public OnmsTopologyException(String message, OnmsTopologyRef ref, OnmsTopologyProtocol protocol) {
         super(message);
         m_ref=ref;
         m_protocol =protocol;
     }
 
-    public OnmsTopologyException(String message,OnmsTopologyRef ref, String protocol, Throwable throwable) {
+    public OnmsTopologyException(String message,OnmsTopologyRef ref, OnmsTopologyProtocol protocol, Throwable throwable) {
         super(message, throwable);
         m_ref=ref;
         m_protocol=protocol;
     }
 
-    public OnmsTopologyException(String message, OnmsTopologyRef ref, String protocol, TopologyMessageStatus status) {
+    public OnmsTopologyException(String message, OnmsTopologyRef ref, OnmsTopologyProtocol protocol, TopologyMessageStatus status) {
         super(message);
         m_ref=ref;
         m_protocol =protocol;
@@ -90,7 +90,7 @@ public class OnmsTopologyException extends Exception {
         m_messageStatus=status;
     }
 
-    public OnmsTopologyException(String message,OnmsTopologyRef ref, String protocol, TopologyMessageStatus status,Throwable throwable) {
+    public OnmsTopologyException(String message,OnmsTopologyRef ref, OnmsTopologyProtocol protocol, TopologyMessageStatus status,Throwable throwable) {
         super(message, throwable);
         m_ref=ref;
         m_protocol=protocol;
@@ -109,7 +109,7 @@ public class OnmsTopologyException extends Exception {
         return m_ref.getId();
     }
     
-    public String getProtocol() {
+    public OnmsTopologyProtocol getProtocol() {
         return m_protocol;
     }
     

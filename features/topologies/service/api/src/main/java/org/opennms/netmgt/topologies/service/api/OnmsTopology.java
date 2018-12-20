@@ -83,7 +83,7 @@ public class OnmsTopology {
     public OnmsTopology clone() {
         OnmsTopology topo = new OnmsTopology();
         topo.setVertices(new HashSet<>(m_vertices));
-        topo.setConnections(new HashSet<>(getEdges()));
+        topo.setConnections(new HashSet<>(m_edges));
         return topo;
     }
 }

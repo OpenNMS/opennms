@@ -40,6 +40,7 @@ import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.MacCloud;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.enlinkd.service.api.TopologyService;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -49,6 +50,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyRef;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyShared;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyUpdater;
@@ -57,6 +59,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements OnmsTopologyUpdater {
+    public static OnmsTopologyProtocol create(ProtocolSupported protocol) throws OnmsTopologyException {
+            return OnmsTopologyProtocol.create(protocol.name());
+    }
     
     public static OnmsTopologyVertex create(MacCloud macCloud, List<MacPort> ports, BridgePort designated ) throws OnmsTopologyException {
         OnmsTopologyVertex vertex = OnmsTopologyVertex.create(Topology.getSharedSegmentId(designated), 

@@ -32,7 +32,7 @@ public interface OnmsTopologyUpdater {
     
     OnmsTopology getTopology();
     
-    String getProtocol();
+    OnmsTopologyProtocol getProtocol() throws OnmsTopologyException;
     
     String getName();
 

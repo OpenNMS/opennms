@@ -82,9 +82,6 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH5_LLDP_CHASSISID;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH5_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH5_SNMP_RESOURCE;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
@@ -93,9 +90,9 @@ import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
-import org.opennms.netmgt.enlinkd.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsNode;
@@ -790,11 +787,9 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertEquals(2, topology.getVertices().size());
         assertEquals(4, topology.getEdges().size());
         
-        Set<String> protocols= new HashSet<>();
-        protocols.add(ProtocolSupported.CDP.name());
         OnmsTopologyLogger tl = EnLinkdBuilderITCase.createAndSubscribe(
                   ProtocolSupported.CDP.name(),m_linkd);
-        assertEquals(protocols+":Consumer:Logger", tl.getName());
+        assertEquals("CDP:Consumer:Logger", tl.getName());
                 
         assertTrue(m_cdpTopologyService.hasUpdates());
         System.err.println("--------Printing new start----------");
@@ -865,11 +860,9 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertEquals(2, topology.getVertices().size());
         assertEquals(4, topology.getEdges().size());
         
-        Set<String> protocols= new HashSet<>();
-        protocols.add(ProtocolSupported.LLDP.name());
         OnmsTopologyLogger tl = EnLinkdBuilderITCase.createAndSubscribe(
                   ProtocolSupported.LLDP.name(),m_linkd);
-        assertEquals(protocols+":Consumer:Logger", tl.getName());
+        assertEquals("LLDP:Consumer:Logger", tl.getName());
                 
         System.err.println("--------Printing new start----------");
         m_linkd.runTopologyUpdater(ProtocolSupported.LLDP);

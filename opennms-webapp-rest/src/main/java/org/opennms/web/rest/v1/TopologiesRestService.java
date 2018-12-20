@@ -91,7 +91,6 @@ public class TopologiesRestService {
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 
-    // FIXME enrich the tooltip with address speed and attributes
     private GraphmlType getGraphMl(String protocolSupported)
             throws InvalidGraphException, OnmsTopologyException {
         OnmsTopology topology = m_topologyDao.getTopology(protocolSupported);

@@ -42,6 +42,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyUpdater;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -113,8 +114,8 @@ public class TopologiesRestServiceIT extends AbstractSpringJerseyRestTestCase {
         }
 
         @Override
-        public String getProtocol() {
-            return "TESTREST";
+        public OnmsTopologyProtocol getProtocol() throws OnmsTopologyException {
+            return OnmsTopologyProtocol.create("TESTREST");
         }
 
         @Override

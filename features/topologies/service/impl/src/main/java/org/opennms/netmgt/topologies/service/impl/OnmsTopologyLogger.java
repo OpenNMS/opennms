@@ -33,8 +33,10 @@ import java.util.Set;
 
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyShared;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
@@ -44,20 +46,22 @@ public class OnmsTopologyLogger implements OnmsTopologyConsumer {
     
     private final static Logger LOG = LoggerFactory.getLogger(OnmsTopologyLogger.class);
 
-    private Set<String> m_protocols;
-    public OnmsTopologyLogger(String protocol) {
-        m_protocols = new HashSet<String>();
-        m_protocols.add(protocol);
+    private final OnmsTopologyProtocol m_protocol;
+    
+    public OnmsTopologyLogger(String protocol) throws OnmsTopologyException {
+        m_protocol =OnmsTopologyProtocol.create(protocol);
     }
 
     @Override
     public String getName() {
-        return m_protocols+":Consumer:Logger";
+        return m_protocol.getId()+":Consumer:Logger";
     }
 
     @Override
-    public Set<String> getProtocols() {
-        return m_protocols;
+    public Set<OnmsTopologyProtocol> getProtocols() {
+        Set<OnmsTopologyProtocol> protocols = new HashSet<>();
+        protocols.add(m_protocol);
+        return protocols;
     }
 
     @Override
@@ -65,7 +69,7 @@ public class OnmsTopologyLogger implements OnmsTopologyConsumer {
         LOG.debug("-------Start receiving message--------");
         LOG.debug("received message type: {}" ,  message.getMessagestatus());
         LOG.debug("ref: {}",message.getMessagebody().getId());
-        LOG.debug("protocol: {}",message.getProtocol());
+        LOG.debug("protocol: {}",message.getProtocol().getId());
         if (message.getMessagebody() instanceof OnmsTopologyVertex) {
             LOG.debug("vertex: {}", ((OnmsTopologyVertex)message.getMessagebody()).getLabel());
         }

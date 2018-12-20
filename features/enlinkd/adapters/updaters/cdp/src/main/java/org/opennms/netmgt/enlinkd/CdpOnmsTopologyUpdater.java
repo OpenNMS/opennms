@@ -45,6 +45,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
@@ -94,8 +95,8 @@ public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     }
 
     @Override
-    public String getProtocol() {
-        return ProtocolSupported.CDP.name();
+    public OnmsTopologyProtocol getProtocol() throws OnmsTopologyException {
+        return create(ProtocolSupported.CDP);
     }
             
 }

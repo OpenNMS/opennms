@@ -37,19 +37,21 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyUpdater;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 
 public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
 
 
-    private Map<String,OnmsTopologyUpdater> m_updatersMap = new HashMap<String, OnmsTopologyUpdater>();
+    private Map<OnmsTopologyProtocol,OnmsTopologyUpdater> m_updatersMap = new HashMap<OnmsTopologyProtocol, OnmsTopologyUpdater>();
     Set<OnmsTopologyConsumer> m_consumers = new HashSet<OnmsTopologyConsumer>();
 
     @Override
     public OnmsTopology getTopology(String protocolSupported) throws OnmsTopologyException {
-        if (m_updatersMap.containsKey(protocolSupported)) {
-            return m_updatersMap.get(protocolSupported).getTopology();
+        OnmsTopologyProtocol protocol = OnmsTopologyProtocol.create(protocolSupported);
+        if (m_updatersMap.containsKey(protocol)) {
+            return m_updatersMap.get(protocol).getTopology();
         }
         throw new OnmsTopologyException(String.format("%s protocol not supported",protocolSupported));
     }
@@ -90,9 +92,9 @@ public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
 
     @Override
     public Set<String> getSupportedProtocols() {
-        Set<String> protocols = new HashSet<String>();
+        final Set<String> protocols = new HashSet<String>();
         synchronized (m_updatersMap) {
-            protocols.addAll(m_updatersMap.keySet());
+            m_updatersMap.keySet().stream().forEach(p -> protocols.add(p.getId()));
         }
         return protocols;
     }
@@ -100,17 +102,24 @@ public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
     @Override
     public void update(OnmsTopologyUpdater updater,
             OnmsTopologyMessage message) throws OnmsTopologyException {
-        if (!m_updatersMap.containsKey(updater.getProtocol())) {
-            throw new OnmsTopologyException(String.format("cannot update message with id: %s. Protocol not supported", message.getMessagebody().getId()), updater.getProtocol(), message.getMessagestatus());
+        final OnmsTopologyProtocol protocol = updater.getProtocol();
+        if (!m_updatersMap.containsKey(protocol)) {
+            throw new OnmsTopologyException(String.format("cannot update message with id: %s. Protocol not supported",
+                                                          message.getMessagebody().getId()),
+                                            protocol,
+                                            message.getMessagestatus());
         }
-        if ( m_updatersMap.get(updater.getProtocol()) != updater
-                           ) {
-            throw new OnmsTopologyException(String.format("cannot update message with id: %s. Protocol not supported", message.getMessagebody().getId()), updater.getProtocol(), message.getMessagestatus());
+        if (m_updatersMap.get(protocol) != updater) {
+            throw new OnmsTopologyException(String.format("cannot update message with id: %s. Updater not registered",
+                                                          message.getMessagebody().getId()),
+                                            protocol,
+                                            message.getMessagestatus());
         }
         synchronized (m_consumers) {
-            m_consumers.stream().
-            filter(consumer -> consumer.getProtocols().contains(updater.getProtocol())).
-            forEach(consumer -> consumer.consume(message));            
+            m_consumers
+                .stream()
+                .filter(consumer ->  consumer.getProtocols().contains(protocol))
+                .forEach(consumer -> consumer.consume(message));            
         }
     }
 }

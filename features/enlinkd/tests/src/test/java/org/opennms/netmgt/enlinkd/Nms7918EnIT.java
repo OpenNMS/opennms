@@ -1058,7 +1058,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         protocols.add(ProtocolSupported.BRIDGE.name());
         OnmsTopologyLogger tl = createAndSubscribe(
                   ProtocolSupported.BRIDGE.name(),m_linkd);
-        assertEquals(protocols+":Consumer:Logger", tl.getName());
+        assertEquals("BRIDGE:Consumer:Logger", tl.getName());
                 
         System.err.println("--------Printing new start----------");
         m_linkd.runTopologyUpdater(ProtocolSupported.BRIDGE);

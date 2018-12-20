@@ -49,6 +49,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyShared;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
@@ -160,8 +161,8 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater  {
     }
 
     @Override
-    public String getProtocol() {
-        return ProtocolSupported.BRIDGE.name();
+    public OnmsTopologyProtocol getProtocol() throws OnmsTopologyException {
+        return create(ProtocolSupported.BRIDGE);
     }
             
 }
