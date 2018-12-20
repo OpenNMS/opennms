@@ -393,7 +393,7 @@ doStart(){
 		APP_VM_PARMS=("-Dorg.apache.jasper.compiler.disablejsr199=true" "${APP_VM_PARMS[@]}")
 	fi
 
-	CMD=("${JAVA_CMD[@]}" "-Djava.endorsed.dirs=$OPENNMS_HOME/lib/endorsed" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}")
+	CMD=("${JAVA_CMD[@]}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}")
 	if [ "$BACKGROUND" = 1 ]; then
 		# shellcheck disable=SC2129
 		echo "------------------------------------------------------------------------------" >> "$REDIRECT"
@@ -643,6 +643,52 @@ MANAGER_OPTIONS+=("-Dopennms.home=$OPENNMS_HOME")
 #MANAGER_OPTIONS+=("-Djcifs.properties=$OPENNMS_HOME/etc/jcifs.properties")
 MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}m")
 MANAGER_OPTIONS+=("-XX:+HeapDumpOnOutOfMemoryError")
+JAVA_VERSION="$("$OPENNMS_HOME/bin/runjava" -p)"
+JAVA_SHORT_VERSION="$(echo "$JAVA_VERSION" | cut -d. -f1)"
+
+JAVA_MODULES=(
+	java.activation \
+	java.base \
+	java.compiler \
+	java.corba \
+	java.datatransfer \
+	java.desktop \
+	java.instrument \
+	java.logging \
+	java.management \
+	java.management.rmi \
+	java.naming \
+	java.prefs \
+	java.rmi \
+	java.scripting \
+	java.security.jgss \
+	java.security.sasl \
+	java.sql \
+	java.sql.rowset \
+	java.transaction \
+	java.xml \
+	java.xml.bind \
+	java.xml.ws \
+	java.xml.ws.annotation \
+	jdk.attach \
+	jdk.httpserver \
+	jdk.jdi \
+	jdk.sctp \
+	jdk.security.auth \
+	jdk.xml.dom \
+)
+
+if [ "$JAVA_SHORT_VERSION" -lt 9 ]; then
+	# Java 8, use the endorsed directory
+	JAVA_CMD=("${JAVA_CMD[@]}" "-Djava.endorsed.dirs=$OPENNMS_HOME/lib/endorsed")
+else
+	# Java 9+, add required modules
+	OIFS="$IFS"
+	IFS=","
+	ADD_MODULES="--add-modules=${JAVA_MODULES[*]}"
+	IFS="$OIFS"
+	JAVA_CMD=("${JAVA_CMD[@]}" "$ADD_MODULES")
+fi
 
 if [ -n "$USE_INCGC" ] && [ "$USE_INCGC" = true ] ; then
 	MANAGER_OPTIONS+=("-Xincgc")
