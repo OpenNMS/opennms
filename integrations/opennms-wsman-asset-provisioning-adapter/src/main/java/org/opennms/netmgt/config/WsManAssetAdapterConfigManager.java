@@ -152,7 +152,7 @@ public class WsManAssetAdapterConfigManager implements WsManAssetAdapterConfig {
             if (retval.IsEmpty()) {
                 LOG.debug("getAssetFieldsForAddress: Zero AssetField matches returned for {} with vendor: {}", InetAddressUtils.str(address), vendor);
             }
-            return retval.toArray();
+            return retval.toArray(new AssetField[0]);
         } finally {
             getReadLock().unlock();
         }
