@@ -66,7 +66,6 @@ public class Mask implements Serializable {
     @XmlElement(name="varbind")
     private List<Varbind> m_varbinds = new ArrayList<>();
 
-
     public List<Maskelement> getMaskelements() {
         return m_maskElements;
     }

@@ -221,7 +221,6 @@
     <complexType>
       <sequence>
         <element maxOccurs="unbounded" minOccurs="1" ref="this:maskelement"/>
-
         <element maxOccurs="unbounded" minOccurs="0" ref="this:varbind"/>
       </sequence>
     </complexType>
