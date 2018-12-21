@@ -609,7 +609,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             LinkdVertex target = null;
             BridgePort sourcebp = null;
             BridgePort targetbp = null;
+            LOG.debug("point to point bridge link: segment {}", segment.printTopology());
             for (BridgePort bp: portToVertexMap.keySet()) {
+                LOG.debug("point to point bridge link: parsinf {}", bp.printTopology());
                 if (bp.getNodeId() == segment.getDesignatedBridge()) {
                     source = portToVertexMap.get(bp);
                     sourcebp = bp;
