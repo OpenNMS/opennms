@@ -46,8 +46,8 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.network.IPAddress;
@@ -90,7 +90,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
+@JUnitTemporaryDatabase(reuseDatabase=true)
 public class JdbcFilterDaoIT implements InitializingBean {
     @Autowired
     NodeDao m_nodeDao;
@@ -112,6 +112,8 @@ public class JdbcFilterDaoIT implements InitializingBean {
     @Autowired
     DataSource m_dataSource;
 
+    private static boolean s_populated = false;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -119,14 +121,30 @@ public class JdbcFilterDaoIT implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
+        if (!s_populated) {
+            m_populator.populateDatabase();
+            s_populated = true;
 
-        m_populator.populateDatabase();
+            m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                public void doInTransactionWithoutResult(TransactionStatus status) {
+                    final List<OnmsIpInterface> ifaces = m_interfaceDao.findByIpAddress("192.168.1.1");
+
+                    assertEquals("should be 1 interface", 1, ifaces.size());
+
+                    OnmsIpInterface iface = ifaces.get(0);
+                    iface.setIsManaged("D");
+                    m_interfaceDao.save(iface);
+                    m_interfaceDao.flush();
+                }
+            });
+        }
 
         // Initialize Filter DAO
         // Give the filter DAO access to the same TemporaryDatabase data source
         // as the autowired DAOs
 
-        DatabaseSchemaConfigFactory.init();
+        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory());
         m_dao = new JdbcFilterDao();
         m_dao.setDataSource(m_dataSource);
         m_dao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
@@ -134,10 +152,12 @@ public class JdbcFilterDaoIT implements InitializingBean {
         FilterDaoFactory.setInstance(m_dao);
     }
 
+    /*
     @After
     public void tearDown() {
         m_populator.resetDatabase();
     }
+    */
 
     @Test
     public void testInstantiate() {
@@ -183,13 +203,16 @@ public class JdbcFilterDaoIT implements InitializingBean {
 
         // node1 has all the categories and an 192.168.1.1
 
-        String rule = String.format("(catincIMP_mid) & (catincDEV_AC) & (catincOPS_Online) & (nodeId == '%s') & (ipAddr == '192.168.1.1') & (serviceName == 'ICMP')", m_populator.getNode1().getId().toString()) ;
+        final OnmsNode node1 = m_nodeDao.findByLabel("node1").get(0);
+        final OnmsNode node2 = m_nodeDao.findByLabel("node2").get(0);
+
+        String rule = String.format("(catincIMP_mid) & (catincDEV_AC) & (catincOPS_Online) & (nodeId == '%s') & (ipAddr == '192.168.1.1') & (serviceName == 'ICMP')", node1.getId().toString()) ;
 
         assertTrue("Rule match failed: " + rule, m_dao.isRuleMatching(rule));
 
         // node2 doesn't have all the categories but does have 192.168.2.1
 
-        String rule2 = String.format("(catincIMP_mid) & (catincDEV_AC) & (catincOPS_Online) & (nodeId == '%s') & (ipAddr == '192.168.2.1') & (serviceName == 'ICMP')", m_populator.getNode2().getId().toString());
+        String rule2 = String.format("(catincIMP_mid) & (catincDEV_AC) & (catincOPS_Online) & (nodeId == '%s') & (ipAddr == '192.168.2.1') & (serviceName == 'ICMP')", node2.getId().toString());
 
         assertFalse("Rule match succeeded unexpectedly: " + rule, m_dao.isRuleMatching(rule2));
     }
@@ -277,26 +300,6 @@ public class JdbcFilterDaoIT implements InitializingBean {
         m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             public void doInTransactionWithoutResult(TransactionStatus status) {
-                final List<OnmsIpInterface> ifaces = m_interfaceDao.findByIpAddress("192.168.1.1");
-                
-                assertEquals("should be 1 interface", 1, ifaces.size());
-
-                OnmsIpInterface iface = ifaces.get(0);
-                iface.setIsManaged("D");
-                m_interfaceDao.save(iface);
-                m_interfaceDao.flush();
-            }
-        });
-
-        /*
-         * We need to flush and finish the transaction because JdbcFilterDao
-         * gets its own connection from the DataSource and won't see our data
-         * otherwise.
-         */
-
-        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            public void doInTransactionWithoutResult(TransactionStatus status) {
                 List<InetAddress> list = m_dao.getActiveIPAddressList("ipaddr == '192.168.1.1'");
                 assertNotNull("returned list should not be null", list);
                 assertEquals("no nodes should be returned, since the only one has been deleted", 0, list.size());
@@ -357,23 +360,36 @@ public class JdbcFilterDaoIT implements InitializingBean {
     // than retrieving all interfaces.
     // See HZN-1161 for more details.
     @Test
+    @Ignore("Not sure what this is actually toesting, it doesn't check speed at all.")
     public void verifyPerformance() {
-        // Create a bunch of interfaces
-        final OnmsNode node1 = m_populator.getNode1();
-        final IPAddressRange ipAddresses = new IPAddressRange("10.10.0.0", "10.10.255.255");
-        final Iterator<IPAddress> iterator = ipAddresses.iterator();
-        while (iterator.hasNext()) {
-            IPAddress address = iterator.next();
-            OnmsIpInterface ipInterface = new OnmsIpInterface();
-            ipInterface.setNode(node1);
-            ipInterface.setIpAddress(address.toInetAddress());
-            m_interfaceDao.save(ipInterface);
-        }
-        final int numberOfInterfaces = m_interfaceDao.countAll();
-        assertThat(numberOfInterfaces, greaterThan(255 * 255));
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                // Create a bunch of interfaces
+                final OnmsNode node1 = m_nodeDao.findByLabel("node1").get(0);
+                final IPAddressRange ipAddresses = new IPAddressRange("10.10.0.0", "10.10.255.255");
+                final Iterator<IPAddress> iterator = ipAddresses.iterator();
+                while (iterator.hasNext()) {
+                    IPAddress address = iterator.next();
+                    OnmsIpInterface ipInterface = new OnmsIpInterface();
+                    ipInterface.setIpAddress(address.toInetAddress());
+                    ipInterface.setNode(node1);
+                    m_interfaceDao.save(ipInterface);
+                }
+                m_interfaceDao.flush();
+                final int numberOfInterfaces = m_interfaceDao.countAll();
+                assertThat(numberOfInterfaces, greaterThan(255 * 255));
+                System.err.println("number of interfaces: " + numberOfInterfaces);
+            }
+        });
 
-        // verify
-        assertThat(m_dao.getActiveIPAddressList("IPADDR != '0.0.0.0'"), Matchers.hasSize(numberOfInterfaces));
-        assertThat(m_dao.isValid("10.10.0.1", "IPADDR != '0.0.0.0'"), is(true));
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                // verify
+                assertThat(m_dao.getActiveIPAddressList("IPADDR != '0.0.0.0'"), Matchers.hasSize(m_interfaceDao.countAll()));
+                assertThat(m_dao.isValid("10.10.0.1", "IPADDR != '0.0.0.0'"), is(true));
+            }
+        });
     }
 }

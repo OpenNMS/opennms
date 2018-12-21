@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -63,7 +63,6 @@ import org.opennms.core.db.DataSourceConfigurationFactory;
 import org.opennms.core.db.install.InstallerDb;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.logging.Logging;
-import org.opennms.core.schema.ExistingResourceAccessor;
 import org.opennms.core.schema.Migration;
 import org.opennms.core.schema.Migrator;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -190,7 +189,7 @@ public class Installer {
             m_migration.setAdminPassword(adminDsConfig.getPassword());
             m_migration.setDatabaseUser(dsConfig.getUserName());
             m_migration.setDatabasePassword(dsConfig.getPassword());
-            m_migration.setChangeLog("changelog.xml");
+            m_migration.setChangeLog("classpath*:/changelog.xml");
         }
 
         checkIPv6();
@@ -271,7 +270,7 @@ public class Installer {
 
             for (final Resource resource : context.getResources("classpath*:/changelog.xml")) {
                 System.out.println("- Running migration for changelog: " + resource.getDescription());
-                m_migration.setAccessor(new ExistingResourceAccessor(resource));
+                m_migration.setChangeLog(resource);
                 m_migrator.migrate(m_migration);
             }
         }
@@ -605,7 +604,7 @@ public class Installer {
         m_webappdir = m_commandLine.getOptionValue("w", m_webappdir);
         m_installerDb.setDebug(m_commandLine.hasOption("x"));
         if (m_commandLine.hasOption("x")) {
-        	m_migrator.enableDebug();
+            m_migrator.enableDebug();
         }
         m_fix_constraint_remove_rows = m_commandLine.hasOption("X");
         m_install_webapp = m_commandLine.hasOption("y");

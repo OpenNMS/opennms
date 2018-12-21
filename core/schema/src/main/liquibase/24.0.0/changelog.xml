@@ -248,6 +248,7 @@
   </changeSet>
 
   <changeSet author="cgorantla" id="24.0.0-add-mapped-time-to-alarm-situations">
+    <validCheckSum>3:e01c4288c19444d61c6bd149ecf6bde7</validCheckSum>
     <createTable tableName="alarm_situations">
       <column name="id" type="integer">
         <constraints primaryKey="true" nullable="false" />
@@ -258,7 +259,7 @@
       <column name="related_alarm_id" type="integer">
         <constraints nullable="false" />
       </column>
-      <column name="mapped_time" type="DATETIME">
+      <column name="mapped_time" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
     </createTable>

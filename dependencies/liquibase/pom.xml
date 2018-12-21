@@ -26,6 +26,12 @@
       <groupId>org.liquibase</groupId>
       <artifactId>liquibase-core</artifactId>
       <version>${liquibaseVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logdback-classic</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
   <repositories>

@@ -5,6 +5,7 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
 
   <changeSet author="mvrueden" id="22.0.0-classification-tables">
+    <validCheckSum>3:c31e401e1349c4383e1a955ca56270aa</validCheckSum>
     <createTable tableName="classification_rules">
       <column name="id" type="integer">
         <constraints nullable="false"/>
@@ -47,7 +48,7 @@
     <addForeignKeyConstraint constraintName="fk_classification_rules_groupid"
                              baseTableName="classification_rules" baseColumnNames="groupid"
                              referencedTableName="classification_groups" referencedColumnNames="id"
-                             deleteCascade="true"/>
+                             onDelete="CASCADE"/>
   </changeSet>
 
   <changeSet runOnChange="false" author="mvrueden" id="22.0.0-ruleNxtId">

@@ -22,30 +22,26 @@
 		<tableExists tableName="linkstate" />
 		<tableExists tableName="location_monitors" />
 		<tableExists tableName="location_specific_status_changes" />
-		<tableExists tableName="map" />
 		<tableExists tableName="resourcereference" />
 		<tableExists tableName="snmpinterface" />
 		<tableExists tableName="statisticsreport" />
 		<tableExists tableName="statisticsreportdata" />
 	</preConditions>
-	<opennms:setSequence sequenceName="opennmsnxtid">
-		<opennms:table column="id"    name="acks" />
-		<opennms:table column="id"    name="assets" />
-		<opennms:table column="id"    name="applications" />
-		<opennms:table column="id"    name="atinterface" />
-		<opennms:table column="id"    name="datalinkinterface" />
-		<opennms:table column="id"    name="element" />
-		<opennms:table column="id"    name="ifservices" />
-		<opennms:table column="id"    name="ipinterface" />
-		<opennms:table column="id"    name="linkstate" />
-		<opennms:table column="id"    name="location_monitors" />
-		<opennms:table column="id"    name="location_specific_status_changes" />
-		<opennms:table column="mapid" name="map" />
-		<opennms:table column="id"    name="resourcereference" />
-		<opennms:table column="id"    name="snmpinterface" />
-		<opennms:table column="id"    name="statisticsreport" />
-		<opennms:table column="id"    name="statisticsreportdata" />
-	</opennms:setSequence>
+	<opennms:setSequence tableName="acks" column="id" sequenceName="opennmsnxtid" />
+	<opennms:setSequence tableName="assets" column="id" sequenceName="opennmsnxtid" />
+	<opennms:setSequence tableName="applications" column="id" sequenceName="opennmsnxtid" />
+	<opennms:setSequence tableName="atinterface" column="id" sequenceName="opennmsnxtid" />
+	<opennms:setSequence tableName="datalinkinterface" column="id" sequenceName="opennmsnxtid" />
+	<opennms:setSequence tableName="element" column="id" sequenceName="opennmsnxtid" />
+	<opennms:setSequence tableName="ifservices" column="id" sequenceName="opennmsnxtid" />
+	<opennms:setSequence tableName="ipinterface" column="id" sequenceName="opennmsnxtid" />
+	<opennms:setSequence tableName="linkstate" column="id" sequenceName="opennmsnxtid" />
+	<opennms:setSequence tableName="location_monitors" column="id" sequenceName="opennmsnxtid" />
+	<opennms:setSequence tableName="location_specific_status_changes" column="id" sequenceName="opennmsnxtid" />
+	<opennms:setSequence tableName="resourcereference" column="id" sequenceName="opennmsnxtid" />
+	<opennms:setSequence tableName="snmpinterface" column="id" sequenceName="opennmsnxtid" />
+	<opennms:setSequence tableName="statisticsreport" column="id" sequenceName="opennmsnxtid" />
+	<opennms:setSequence tableName="statisticsreportdata" column="id" sequenceName="opennmsnxtid" />
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-nodenxtid-fo-shizzle" runAlways="true" context="repair">
@@ -53,9 +49,7 @@
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="node" />
 	</preConditions>
-	<opennms:setSequence sequenceName="nodenxtid">
-		<opennms:table name="node" column="nodeid" />
-	</opennms:setSequence>
+	<opennms:setSequence tableName="node" column="nodeid" sequenceName="nodenxtid" />
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-servicenxtid-fo-shizzle" runAlways="true" context="repair">
@@ -63,9 +57,7 @@
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="service" />
 	</preConditions>
-	<opennms:setSequence sequenceName="servicenxtid">
-		<opennms:table name="service" column="serviceid" />
-	</opennms:setSequence>
+	<opennms:setSequence tableName="service" column="serviceid" sequenceName="servicenxtid" />
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-eventsnxtid-fo-shizzle" runAlways="true" context="repair">
@@ -73,9 +65,7 @@
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="events" />
 	</preConditions>
-	<opennms:setSequence sequenceName="eventsnxtid">
-		<opennms:table name="events" column="eventid" />
-	</opennms:setSequence>
+	<opennms:setSequence tableName="events" column="eventid" sequenceName="eventsnxtid" />
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-alarmsnxtid-fo-shizzle" runAlways="true" context="repair">
@@ -83,9 +73,7 @@
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="alarms" />
 	</preConditions>
-	<opennms:setSequence sequenceName="alarmsnxtid">
-		<opennms:table name="alarms" column="alarmid" />
-	</opennms:setSequence>
+	<opennms:setSequence tableName="alarms" column="alarmid" sequenceName="alarmsnxtid" />
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-outagenxtid-fo-shizzle" runAlways="true" context="repair">
@@ -93,9 +81,7 @@
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="outages" />
 	</preConditions>
-	<opennms:setSequence sequenceName="outagenxtid">
-		<opennms:table name="outages" column="outageid" />
-	</opennms:setSequence>
+	<opennms:setSequence tableName="outages" column="outageid" sequenceName="outagenxtid" />
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-notifynxtid-fo-shizzle" runAlways="true" context="repair">
@@ -103,9 +89,7 @@
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="notifications" />
 	</preConditions>
-	<opennms:setSequence sequenceName="notifynxtid">
-		<opennms:table name="notifications" column="notifyid" />
-	</opennms:setSequence>
+	<opennms:setSequence tableName="notifications" column="notifyid" sequenceName="notifynxtid" />
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-vulnnxtid-fo-shizzle" runAlways="true" context="repair">
@@ -113,9 +97,7 @@
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="vulnerabilities" />
 	</preConditions>
-	<opennms:setSequence sequenceName="vulnnxtid">
-		<opennms:table name="vulnerabilities" column="vulnerabilityid" />
-	</opennms:setSequence>
+	<opennms:setSequence tableName="vulnerabilities" column="vulnerabilityid" sequenceName="vulnnxtid" />
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-catnxtid-fo-shizzle" runAlways="true" context="repair">
@@ -123,9 +105,7 @@
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="categories" />
 	</preConditions>
-	<opennms:setSequence sequenceName="catnxtid">
-		<opennms:table name="categories" column="categoryid" />
-	</opennms:setSequence>
+	<opennms:setSequence tableName="categories" column="categoryid" sequenceName="catnxtid" />
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-usernotifnxtid-fo-shizzle" runAlways="true" context="repair">
@@ -133,9 +113,7 @@
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="usersnotified" />
 	</preConditions>
-	<opennms:setSequence sequenceName="usernotifnxtid">
-		<opennms:table name="usersnotified" column="id" />
-	</opennms:setSequence>
+	<opennms:setSequence tableName="usersnotified" column="id" sequenceName="usernotifnxtid" />
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-demandpollnxtid-fo-shizzle" runAlways="true" context="repair">
@@ -143,9 +121,7 @@
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="demandpolls" />
 	</preConditions>
-	<opennms:setSequence sequenceName="demandpollnxtid">
-		<opennms:table name="demandpolls" column="id" />
-	</opennms:setSequence>
+	<opennms:setSequence tableName="demandpolls" column="id" sequenceName="demandpollnxtid" />
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-pollresultnxtid-fo-shizzle" runAlways="true" context="repair">
@@ -153,9 +129,7 @@
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="pollresults" />
 	</preConditions>
-	<opennms:setSequence sequenceName="pollresultnxtid">
-		<opennms:table name="pollresults" column="id" />
-	</opennms:setSequence>
+	<opennms:setSequence tableName="pollresults" column="id" sequenceName="pollresultnxtid" />
 </changeSet>
 
 <changeSet author="rangerrick" id="1.7.92-repair-mapnxtid-fo-shizzle" runAlways="true" context="repair">
@@ -163,9 +137,7 @@
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="map" />
 	</preConditions>
-	<opennms:setSequence sequenceName="mapnxtid">
-		<opennms:table name="map" column="mapid" />
-	</opennms:setSequence>
+	<opennms:setSequence tableName="map" column="mapid" sequenceName="mapnxtid" />
 </changeSet>
 
 

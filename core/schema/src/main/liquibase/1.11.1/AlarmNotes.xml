@@ -9,6 +9,7 @@
 
     <!-- Add fields to alarms table to add sticky notes -->
     <changeSet author="derTak" id="1.10.3-alarm-note-feature">
+        <validCheckSum>3:52c60bdb7502ab02f74d96e1709cbe27</validCheckSum>
         <preConditions onFail="MARK_RAN">
           <not><changeSetExecuted author="derTak" id="1.10.3-alarm-note-feature" changeLogFile="1.11.1-SNAPSHOT/AlarmNotes.xml" /></not>
         </preConditions>
@@ -16,8 +17,8 @@
         <createSequence sequenceName="memonxtid"/>
         <createTable tableName="memos">
             <column name="id" type="integer"/>
-            <column name="created" type="DATETIME"/>
-            <column name="updated" type="DATETIME"/>
+            <column name="created" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="updated" type="TIMESTAMP WITH TIME ZONE"/>
             <column name="author" type="varchar(256)"/>
             <column name="body" type="text"/>
             <column name="reductionkey" type="varchar(256)"/>
@@ -28,7 +29,7 @@
             <column name="stickymemo" type="integer"/>
         </addColumn>        
         
-        <addForeignKeyConstraint baseTableName="alarms" baseColumnNames="stickymemo" constraintName="fk_stickyMemo" referencedTableName="memos" referencedColumnNames="id" deleteCascade="true"/>
+        <addForeignKeyConstraint baseTableName="alarms" baseColumnNames="stickymemo" constraintName="fk_stickyMemo" referencedTableName="memos" referencedColumnNames="id" onDelete="CASCADE"/>
          
         <rollback>
             <dropSequence sequenceName="memonxtid"/>
