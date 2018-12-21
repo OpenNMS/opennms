@@ -32,10 +32,12 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -61,6 +63,11 @@ import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.xml.event.Event;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -73,7 +80,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
-public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListener, AlarmFeedbackListener {
+public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListener, AlarmFeedbackListener, OnmsTopologyConsumer {
     private static final Logger LOG = LoggerFactory.getLogger(OpennmsKafkaProducer.class);
     private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
@@ -89,6 +96,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private final EventSubscriptionService eventSubscriptionService;
     private KafkaAlarmDataSync dataSync;
 
+    private String topologyMessageTopic;
     private String eventTopic;
     private String alarmTopic;
     private String nodeTopic;
@@ -99,6 +107,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private boolean forwardAlarmFeedback;
     private boolean suppressIncrementalAlarms;
     private boolean forwardNodes;
+    private boolean forwardTopologyMessages;
     private Expression eventFilterExpression;
     private Expression alarmFilterExpression;
 
@@ -106,6 +115,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private final CountDownLatch forwardedAlarm = new CountDownLatch(1);
     private final CountDownLatch forwardedNode = new CountDownLatch(1);
     private final CountDownLatch forwardedAlarmFeedback = new CountDownLatch(1);
+    private final CountDownLatch forwardedTopologyMessage = new CountDownLatch(1);
 
     private KafkaProducer<String, byte[]> producer;
     
@@ -114,21 +124,25 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             AlarmEqualityChecker.with(AlarmEqualityChecker.Exclusions::defaultExclusions);
 
     private final AlarmCallbackStateTracker stateTracker = new AlarmCallbackStateTracker();
-
+    private final OnmsTopologyDao topologyDao;
     private int kafkaSendQueueCapacity;
     private BlockingQueue<KafkaRecord> kafkaSendQueue;
     private final ExecutorService kafkaSendQueueExecutor =
             Executors.newSingleThreadExecutor(runnable -> new Thread(runnable, "KafkaSendQueueProcessor"));
 
+    private Set<OnmsTopologyProtocol> topologyProtocols = new HashSet<>();
+
     public OpennmsKafkaProducer(ProtobufMapper protobufMapper, NodeCache nodeCache,
-                                ConfigurationAdmin configAdmin, EventSubscriptionService eventSubscriptionService) {
+                                ConfigurationAdmin configAdmin, EventSubscriptionService eventSubscriptionService,
+                                OnmsTopologyDao topologyDao) {
         this.protobufMapper = Objects.requireNonNull(protobufMapper);
         this.nodeCache = Objects.requireNonNull(nodeCache);
         this.configAdmin = Objects.requireNonNull(configAdmin);
         this.eventSubscriptionService = Objects.requireNonNull(eventSubscriptionService);
+        this.topologyDao=Objects.requireNonNull(topologyDao);
     }
 
-    public void init() throws IOException {
+    public void init() throws IOException, OnmsTopologyException {
         // Create the Kafka producer
         final Properties producerConfig = new Properties();
         final Dictionary<String, Object> properties = configAdmin.getConfiguration(KAFKA_CLIENT_PID).getProperties();
@@ -156,6 +170,12 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         if (forwardEvents) {
             eventSubscriptionService.addEventListener(this);
         }
+        
+        if (forwardTopologyMessages) {
+            topologyDao.subscribe(this);
+        }
+        
+        
     }
 
     public void destroy() {
@@ -169,8 +189,26 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         if (forwardEvents) {
             eventSubscriptionService.removeEventListener(this);
         }
+        
+        if (forwardTopologyMessages) {
+            topologyDao.unsubscribe(this);
+        }
+
     }
 
+    private void forwardTopologyMessage(OnmsTopologyMessage message) {
+        sendRecord(() -> {
+            final OpennmsModelProtos.TopologyMessage mappedTopologyMessage = protobufMapper.toTopologyMessage(message).build();
+            LOG.debug("Sending topologyMessage: {}", mappedTopologyMessage.getProtocol());
+            return new ProducerRecord<>(mappedTopologyMessage.getProtocol(), mappedTopologyMessage.getMessageType(), mappedTopologyMessage.toByteArray());
+        }, recordMetadata -> {
+            // We've got an ACK from the server that the event was forwarded
+            // Let other threads know when we've successfully forwarded an event
+            forwardedTopologyMessage.countDown();
+        });
+        
+    }
+    
     private void forwardEvent(Event event) {
         boolean shouldForwardEvent = true;
         // Filtering
@@ -424,6 +462,24 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         forwardEvent(event);
     }
 
+    @Override
+    public Set<OnmsTopologyProtocol> getProtocols() {
+        return topologyProtocols;
+    }
+
+    @Override
+    public void consume(OnmsTopologyMessage message) {
+        forwardTopologyMessage(message);
+    }
+
+    public void setTopologyMessageTopic(String topologyMessageTopic) {
+        this.topologyMessageTopic=topologyMessageTopic;
+        for (String protocol: topologyMessageTopic.split(",")) {
+            topologyProtocols.add(OnmsTopologyProtocol.create(protocol));
+        }
+        forwardTopologyMessages=!Strings.isNullOrEmpty(eventTopic);
+    }
+    
     public void setEventTopic(String eventTopic) {
         this.eventTopic = eventTopic;
         forwardEvents = !Strings.isNullOrEmpty(eventTopic);
@@ -504,6 +560,10 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         return forwardedAlarmFeedback;
     }
 
+    public CountDownLatch getTopologyMessageFeedbackForwardedLatch() {
+        return forwardedTopologyMessage;
+    }
+
     public void setSuppressIncrementalAlarms(boolean suppressIncrementalAlarms) {
         this.suppressIncrementalAlarms = suppressIncrementalAlarms;
     }
@@ -538,4 +598,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             return consumer;
         }
     }
+
+    
 }

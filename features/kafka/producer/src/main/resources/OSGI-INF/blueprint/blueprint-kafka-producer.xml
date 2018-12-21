@@ -16,6 +16,7 @@
       <cm:property name="eventTopic" value="events"/>
       <cm:property name="alarmTopic" value="alarms"/>
       <cm:property name="nodeTopic" value="nodes"/>
+      <cm:property name="topologyMessageTopic" value="bridge,cdp,isis,lldp,ospf"/>
       <cm:property name="alarmFeedbackTopic" value="alarmFeedback"/>
       <cm:property name="metricTopic" value="metrics"/>
       <cm:property name="forward.metrics" value="true"/>

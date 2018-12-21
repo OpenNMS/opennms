@@ -115,6 +115,11 @@
       <artifactId>org.opennms.features.situation-feedback.api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topologies</groupId>
+      <artifactId>org.opennms.features.topologies.service.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- Test -->
     <dependency>
