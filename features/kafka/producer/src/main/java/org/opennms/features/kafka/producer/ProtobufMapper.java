@@ -35,6 +35,8 @@ import java.util.function.Consumer;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
+import org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.MessageStatus;
+import org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex;
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
@@ -50,6 +52,9 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage.TopologyMessageStatus;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +63,7 @@ import org.springframework.transaction.support.TransactionOperations;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.swrve.ratelimitedlogger.RateLimitedLogBuilder;
 
 public class ProtobufMapper {
     private static final Logger LOG = LoggerFactory.getLogger(ProtobufMapper.class);
@@ -465,4 +471,75 @@ public class ProtobufMapper {
             setter.accept(date.getTime());
         }
     }
+
+    private OpennmsModelProtos.OnmsTopologyMessage.Builder getOnmsTopologyMessage(OnmsTopologyProtocol protocol, TopologyMessageStatus status, String refid) {
+        final OpennmsModelProtos.OnmsTopologyMessage.Builder builder = OpennmsModelProtos.OnmsTopologyMessage.newBuilder()
+                .setId(refid)
+                .setProtocol(protocol.getId()
+                );
+        switch (status) {
+            case NEW:
+                builder.setStatus(MessageStatus.NEW);
+                break;
+        
+            case UPDATE:
+                builder.setStatus(MessageStatus.UPDATE);
+                break;
+            
+            case DELETE:
+                builder.setStatus(MessageStatus.DELETE);
+                break;
+
+            default:
+                builder.setStatus(MessageStatus.UNRECOGNIZED);
+                break;
+        }
+        return builder;
+    }
+    
+    public OpennmsModelProtos.OnmsTopologyVertex.Builder toVertexTopologyMessage(OnmsTopologyProtocol protocol,
+            TopologyMessageStatus status, 
+            org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex vertex) {
+        if (protocol == null || status == null || vertex == null || vertex.getId() == null) {
+            return null;
+        }
+        
+        final OpennmsModelProtos.OnmsTopologyVertex.Builder builder = OpennmsModelProtos.OnmsTopologyVertex.newBuilder()
+                .setRefId(getOnmsTopologyMessage(protocol, status, vertex.getId()))
+                .setLabel(vertex.getLabel());
+                
+                if (vertex.getNodeid() != null) {
+                    try {
+                        builder.setNodeCriteria(nodeIdToCriteriaCache.get(Integer.toUnsignedLong(vertex.getNodeid())));
+                    } catch (ExecutionException e) {
+                        LOG.warn("An error occurred when building node criteria for node with id: {}." +
+                                " The node foreign source and foreign id (if set) will be missing from the vertex with id: {}.",
+                                vertex.getNodeid(), vertex.getId(), e);
+                        builder.setNodeCriteria(OpennmsModelProtos.NodeCriteria.newBuilder()
+                                .setId(vertex.getNodeid()));
+                    }
+                }
+                return builder;
+    }
+    
+    public OpennmsModelProtos.OnmsTopologyPort.Builder toPortTopologyMessage(
+            OnmsTopologyMessage message) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    public OpennmsModelProtos.OnmsTopologyEdge.Builder toEdgeTopologyMessage(
+            OnmsTopologyMessage message) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    public OpennmsModelProtos.OnmsTopologyShared.Builder toSharedTopologyMessage(
+            OnmsTopologyMessage message) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+
 }

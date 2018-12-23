@@ -147,3 +147,46 @@ message Node {
   repeated SnmpInterface snmp_interface = 12;
   HwEntity hw_inventory = 13;
 }
+
+enum OnmsTopologyMessageStatus {
+  NEW = 0;
+  UPDATE=1;
+  DELETE=2;
+}
+
+
+message OnmsTopologyMessage {
+  string id = 1;
+  string protocol = 2;
+  enum MessageStatus {
+    NEW = 0;
+    UPDATE=1;
+    DELETE=2;
+  }
+  MessageStatus status = 3;
+}
+
+message OnmsTopologyVertex {
+  OnmsTopologyMessage ref_id = 1;
+  NodeCriteria node_criteria = 2;
+  string label = 3;
+}
+
+message OnmsTopologyPort {
+  OnmsTopologyMessage ref_id = 1;
+  OnmsTopologyVertex vtx_id = 2;
+  uint64 index = 3; 
+  string port = 4; 
+  string address = 5; 
+}
+
+message OnmsTopologyEdge {
+  OnmsTopologyMessage ref_id = 1;
+  OnmsTopologyPort source = 2;
+  OnmsTopologyPort target = 3;
+}
+
+message OnmsTopologyShared {
+  OnmsTopologyMessage ref_id = 1;
+  repeated OnmsTopologyPort sources = 2;
+}

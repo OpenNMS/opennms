@@ -65,9 +65,13 @@ import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyShared;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.opennms.netmgt.xml.event.Event;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -96,7 +100,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private final EventSubscriptionService eventSubscriptionService;
     private KafkaAlarmDataSync dataSync;
 
-    private String topologyMessageTopic;
     private String eventTopic;
     private String alarmTopic;
     private String nodeTopic;
@@ -197,10 +200,42 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     }
 
     private void forwardTopologyMessage(OnmsTopologyMessage message) {
+        if (message.getMessagebody() instanceof OnmsTopologyVertex) {
+            OnmsTopologyVertex vertex = (OnmsTopologyVertex) message.getMessagebody();
+            final OpennmsModelProtos.OnmsTopologyVertex mappedTopoMsg = 
+                    protobufMapper.toVertexTopologyMessage(message.getProtocol(),message.getMessagestatus(),vertex).build();
+            forwardTopologyMessage(mappedTopoMsg.getRefId().getProtocol(),
+                                   mappedTopoMsg.getRefId().getId(),
+                                   mappedTopoMsg.toByteArray());
+            return;
+        }
+        if (message.getMessagebody() instanceof OnmsTopologyPort) {
+            final OpennmsModelProtos.OnmsTopologyPort mappedTopoMsg = protobufMapper.toPortTopologyMessage(message).build();
+            forwardTopologyMessage(mappedTopoMsg.getRefId().getProtocol(),
+                                   mappedTopoMsg.getRefId().getId(),
+                                   mappedTopoMsg.toByteArray());
+            return;
+        }
+        if (message.getMessagebody() instanceof OnmsTopologyEdge) {
+            final OpennmsModelProtos.OnmsTopologyEdge mappedTopoMsg = protobufMapper.toEdgeTopologyMessage(message).build();
+            forwardTopologyMessage(mappedTopoMsg.getRefId().getProtocol(),
+                                   mappedTopoMsg.getRefId().getId(),
+                                   mappedTopoMsg.toByteArray());
+            return;
+        }
+        if (message.getMessagebody() instanceof OnmsTopologyShared) {
+            final OpennmsModelProtos.OnmsTopologyShared mappedTopoMsg = protobufMapper.toSharedTopologyMessage(message).build();
+            forwardTopologyMessage(mappedTopoMsg.getRefId().getProtocol(),
+                                   mappedTopoMsg.getRefId().getId(),
+                                   mappedTopoMsg.toByteArray());
+            return;
+        }
+    }
+ 
+    private void forwardTopologyMessage(String protocol, String refid, byte[] message) {
         sendRecord(() -> {
-            final OpennmsModelProtos.TopologyMessage mappedTopologyMessage = protobufMapper.toTopologyMessage(message).build();
-            LOG.debug("Sending topologyMessage: {}", mappedTopologyMessage.getProtocol());
-            return new ProducerRecord<>(mappedTopologyMessage.getProtocol(), mappedTopologyMessage.getMessageType(), mappedTopologyMessage.toByteArray());
+            LOG.debug("Sending topologyMessage: {}:{}", protocol, refid);
+            return new ProducerRecord<>(protocol, refid, message);
         }, recordMetadata -> {
             // We've got an ACK from the server that the event was forwarded
             // Let other threads know when we've successfully forwarded an event
@@ -208,7 +243,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         });
         
     }
-    
+ 
     private void forwardEvent(Event event) {
         boolean shouldForwardEvent = true;
         // Filtering
@@ -473,9 +508,12 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     }
 
     public void setTopologyMessageTopic(String topologyMessageTopic) {
-        this.topologyMessageTopic=topologyMessageTopic;
         for (String protocol: topologyMessageTopic.split(",")) {
-            topologyProtocols.add(OnmsTopologyProtocol.create(protocol));
+            try {
+                topologyProtocols.add(OnmsTopologyProtocol.create(protocol));
+            } catch (OnmsTopologyException e) {
+                LOG.error("Cannot add protocol: {}", e.getMessage());
+            }
         }
         forwardTopologyMessages=!Strings.isNullOrEmpty(eventTopic);
     }
