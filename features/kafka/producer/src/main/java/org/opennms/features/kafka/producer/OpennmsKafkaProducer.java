@@ -202,31 +202,37 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private void forwardTopologyMessage(OnmsTopologyMessage message) {
         if (message.getMessagebody() instanceof OnmsTopologyVertex) {
             OnmsTopologyVertex vertex = (OnmsTopologyVertex) message.getMessagebody();
-            final OpennmsModelProtos.OnmsTopologyVertex mappedTopoMsg = 
+            final OpennmsModelProtos.OnmsTopologyVertexMessage mappedTopoMsg = 
                     protobufMapper.toVertexTopologyMessage(message.getProtocol(),message.getMessagestatus(),vertex).build();
-            forwardTopologyMessage(mappedTopoMsg.getRefId().getProtocol(),
-                                   mappedTopoMsg.getRefId().getId(),
+            forwardTopologyMessage(mappedTopoMsg.getMessage().getProtocol(),
+                                   mappedTopoMsg.getVertex().getRefId().getId(),
                                    mappedTopoMsg.toByteArray());
             return;
         }
         if (message.getMessagebody() instanceof OnmsTopologyPort) {
-            final OpennmsModelProtos.OnmsTopologyPort mappedTopoMsg = protobufMapper.toPortTopologyMessage(message).build();
-            forwardTopologyMessage(mappedTopoMsg.getRefId().getProtocol(),
-                                   mappedTopoMsg.getRefId().getId(),
+            OnmsTopologyPort port = (OnmsTopologyPort) message.getMessagebody();
+            final OpennmsModelProtos.OnmsTopologyPortMessage mappedTopoMsg = 
+                    protobufMapper.toPortTopologyMessage(message.getProtocol(),message.getMessagestatus(),port).build();
+            forwardTopologyMessage(mappedTopoMsg.getMessage().getProtocol(),
+                                   mappedTopoMsg.getPort().getRefId().getId(),
                                    mappedTopoMsg.toByteArray());
             return;
         }
         if (message.getMessagebody() instanceof OnmsTopologyEdge) {
-            final OpennmsModelProtos.OnmsTopologyEdge mappedTopoMsg = protobufMapper.toEdgeTopologyMessage(message).build();
-            forwardTopologyMessage(mappedTopoMsg.getRefId().getProtocol(),
-                                   mappedTopoMsg.getRefId().getId(),
+            OnmsTopologyEdge edge = (OnmsTopologyEdge) message.getMessagebody();
+            final OpennmsModelProtos.OnmsTopologyEdgeMessage mappedTopoMsg = 
+                    protobufMapper.toEdgeTopologyMessage(message.getProtocol(),message.getMessagestatus(),edge).build();
+            forwardTopologyMessage(mappedTopoMsg.getMessage().getProtocol(),
+                                   mappedTopoMsg.getEdge().getRefId().getId(),
                                    mappedTopoMsg.toByteArray());
             return;
         }
         if (message.getMessagebody() instanceof OnmsTopologyShared) {
-            final OpennmsModelProtos.OnmsTopologyShared mappedTopoMsg = protobufMapper.toSharedTopologyMessage(message).build();
-            forwardTopologyMessage(mappedTopoMsg.getRefId().getProtocol(),
-                                   mappedTopoMsg.getRefId().getId(),
+            OnmsTopologyShared edge = (OnmsTopologyShared) message.getMessagebody();
+            final OpennmsModelProtos.OnmsTopologySharedMessage mappedTopoMsg = 
+                    protobufMapper.toSharedTopologyMessage(message.getProtocol(),message.getMessagestatus(),edge).build();
+            forwardTopologyMessage(mappedTopoMsg.getMessage().getProtocol(),
+                                   mappedTopoMsg.getEdge().getRefId().getId(),
                                    mappedTopoMsg.toByteArray());
             return;
         }

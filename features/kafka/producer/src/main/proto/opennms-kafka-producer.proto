@@ -154,39 +154,61 @@ enum OnmsTopologyMessageStatus {
   DELETE=2;
 }
 
+message OnmsTopologyRef {
+  string id = 1;
+}
 
 message OnmsTopologyMessage {
-  string id = 1;
-  string protocol = 2;
+  string protocol = 1;
   enum MessageStatus {
     NEW = 0;
     UPDATE=1;
     DELETE=2;
   }
-  MessageStatus status = 3;
+  MessageStatus status = 2;
 }
 
 message OnmsTopologyVertex {
-  OnmsTopologyMessage ref_id = 1;
+  OnmsTopologyRef ref_id = 1;
   NodeCriteria node_criteria = 2;
   string label = 3;
 }
 
 message OnmsTopologyPort {
-  OnmsTopologyMessage ref_id = 1;
-  OnmsTopologyVertex vtx_id = 2;
+  OnmsTopologyRef ref_id = 1;
+  OnmsTopologyVertex vertex = 2;
   uint64 index = 3; 
   string port = 4; 
   string address = 5; 
 }
 
 message OnmsTopologyEdge {
-  OnmsTopologyMessage ref_id = 1;
+  OnmsTopologyRef ref_id = 1;
   OnmsTopologyPort source = 2;
   OnmsTopologyPort target = 3;
 }
 
 message OnmsTopologyShared {
-  OnmsTopologyMessage ref_id = 1;
+  OnmsTopologyRef ref_id = 1;
   repeated OnmsTopologyPort sources = 2;
+}
+
+message OnmsTopologyVertexMessage {
+	OnmsTopologyMessage message = 1;
+	OnmsTopologyVertex vertex = 2;
+}
+
+message OnmsTopologyPortMessage {
+	OnmsTopologyMessage message = 1;
+	OnmsTopologyPort port = 2;
+}
+
+message OnmsTopologyEdgeMessage {
+	OnmsTopologyMessage message = 1;
+	OnmsTopologyEdge edge = 2;
+}
+
+message OnmsTopologySharedMessage {
+	OnmsTopologyMessage message = 1;
+	OnmsTopologyShared edge = 2;
 }

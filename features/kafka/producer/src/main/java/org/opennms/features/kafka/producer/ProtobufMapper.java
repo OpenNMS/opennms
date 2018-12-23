@@ -472,9 +472,8 @@ public class ProtobufMapper {
         }
     }
 
-    private OpennmsModelProtos.OnmsTopologyMessage.Builder getOnmsTopologyMessage(OnmsTopologyProtocol protocol, TopologyMessageStatus status, String refid) {
+    private OpennmsModelProtos.OnmsTopologyMessage getOnmsTopologyMessage(OnmsTopologyProtocol protocol, TopologyMessageStatus status) {
         final OpennmsModelProtos.OnmsTopologyMessage.Builder builder = OpennmsModelProtos.OnmsTopologyMessage.newBuilder()
-                .setId(refid)
                 .setProtocol(protocol.getId()
                 );
         switch (status) {
@@ -494,50 +493,107 @@ public class ProtobufMapper {
                 builder.setStatus(MessageStatus.UNRECOGNIZED);
                 break;
         }
-        return builder;
+        return builder.build();
     }
     
-    public OpennmsModelProtos.OnmsTopologyVertex.Builder toVertexTopologyMessage(OnmsTopologyProtocol protocol,
+    private OpennmsModelProtos.OnmsTopologyRef getOnmsTopologyRef(String id) {
+        final OpennmsModelProtos.OnmsTopologyRef.Builder builder = OpennmsModelProtos.OnmsTopologyRef.newBuilder().setId(id);
+        return builder.build();
+        
+    }
+    
+    private OpennmsModelProtos.OnmsTopologyVertex getOnmsTopologyVertex(org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex vertex) {
+        final OpennmsModelProtos.OnmsTopologyVertex.Builder builder = OpennmsModelProtos.OnmsTopologyVertex.newBuilder()
+                .setRefId(getOnmsTopologyRef(vertex.getId()))
+                .setLabel(vertex.getLabel());
+        
+        if (vertex.getNodeid() != null) {
+            try {
+                builder.setNodeCriteria(nodeIdToCriteriaCache.get(Integer.toUnsignedLong(vertex.getNodeid())));
+            } catch (ExecutionException e) {
+                LOG.warn("An error occurred when building node criteria for node with id: {}." +
+                        " The node foreign source and foreign id (if set) will be missing from the vertex with id: {}.",
+                        vertex.getNodeid(), vertex.getId(), e);
+                builder.setNodeCriteria(OpennmsModelProtos.NodeCriteria.newBuilder()
+                        .setId(vertex.getNodeid()));
+            }
+        }
+
+        return builder.build();
+        
+    }
+
+    public OpennmsModelProtos.OnmsTopologyVertexMessage.Builder toVertexTopologyMessage(OnmsTopologyProtocol protocol,
             TopologyMessageStatus status, 
             org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex vertex) {
         if (protocol == null || status == null || vertex == null || vertex.getId() == null) {
             return null;
         }
         
-        final OpennmsModelProtos.OnmsTopologyVertex.Builder builder = OpennmsModelProtos.OnmsTopologyVertex.newBuilder()
-                .setRefId(getOnmsTopologyMessage(protocol, status, vertex.getId()))
-                .setLabel(vertex.getLabel());
-                
-                if (vertex.getNodeid() != null) {
-                    try {
-                        builder.setNodeCriteria(nodeIdToCriteriaCache.get(Integer.toUnsignedLong(vertex.getNodeid())));
-                    } catch (ExecutionException e) {
-                        LOG.warn("An error occurred when building node criteria for node with id: {}." +
-                                " The node foreign source and foreign id (if set) will be missing from the vertex with id: {}.",
-                                vertex.getNodeid(), vertex.getId(), e);
-                        builder.setNodeCriteria(OpennmsModelProtos.NodeCriteria.newBuilder()
-                                .setId(vertex.getNodeid()));
-                    }
-                }
+        final OpennmsModelProtos.OnmsTopologyVertexMessage.Builder builder = OpennmsModelProtos.OnmsTopologyVertexMessage.newBuilder()
+                .setVertex(getOnmsTopologyVertex(vertex))
+                .setMessage(getOnmsTopologyMessage(protocol, status));
                 return builder;
     }
     
-    public OpennmsModelProtos.OnmsTopologyPort.Builder toPortTopologyMessage(
-            OnmsTopologyMessage message) {
-        // TODO Auto-generated method stub
-        return null;
+    private OpennmsModelProtos.OnmsTopologyPort getOnmsTopologyPort(org.opennms.netmgt.topologies.service.api.OnmsTopologyPort port) {
+        final OpennmsModelProtos.OnmsTopologyPort.Builder builder = OpennmsModelProtos.OnmsTopologyPort.newBuilder()
+                .setRefId(getOnmsTopologyRef(port.getId()))
+                .setIndex(port.getIndex())
+                .setPort(port.getPort())
+                .setAddress(port.getAddr());
+        return builder.build();
+    }
+
+    public OpennmsModelProtos.OnmsTopologyPortMessage.Builder toPortTopologyMessage(OnmsTopologyProtocol protocol,
+            TopologyMessageStatus status, 
+            org.opennms.netmgt.topologies.service.api.OnmsTopologyPort port) {
+        if (protocol == null || status == null || port == null || port.getId() == null) {
+            return null;
+        }
+        final OpennmsModelProtos.OnmsTopologyPortMessage.Builder builder = OpennmsModelProtos.OnmsTopologyPortMessage.newBuilder()
+                .setPort(getOnmsTopologyPort(port))
+                .setMessage(getOnmsTopologyMessage(protocol, status));
+        return builder;
     }
     
-    public OpennmsModelProtos.OnmsTopologyEdge.Builder toEdgeTopologyMessage(
-            OnmsTopologyMessage message) {
-        // TODO Auto-generated method stub
-        return null;
+    private OpennmsModelProtos.OnmsTopologyEdge getOnmsTopologyEdge(org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge edge) {
+        final OpennmsModelProtos.OnmsTopologyEdge.Builder builder = OpennmsModelProtos.OnmsTopologyEdge.newBuilder()
+                .setRefId(getOnmsTopologyRef(edge.getId()))
+                .setSource(getOnmsTopologyPort(edge.getSource()))
+                .setTarget(getOnmsTopologyPort(edge.getTarget()));
+        return builder.build();
     }
-    
-    public OpennmsModelProtos.OnmsTopologyShared.Builder toSharedTopologyMessage(
-            OnmsTopologyMessage message) {
-        // TODO Auto-generated method stub
-        return null;
+
+    public OpennmsModelProtos.OnmsTopologyEdgeMessage.Builder toEdgeTopologyMessage(OnmsTopologyProtocol protocol,
+            TopologyMessageStatus status, 
+            org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge edge) {
+        if (protocol == null || status == null || edge == null || edge.getId() == null) {
+            return null;
+        }
+        final OpennmsModelProtos.OnmsTopologyEdgeMessage.Builder builder = OpennmsModelProtos.OnmsTopologyEdgeMessage.newBuilder()
+                .setEdge(getOnmsTopologyEdge(edge))
+                .setMessage(getOnmsTopologyMessage(protocol, status));
+        return builder;
+    }
+
+    private OpennmsModelProtos.OnmsTopologyShared getOnmsTopologyShared(org.opennms.netmgt.topologies.service.api.OnmsTopologyShared shared) {
+        final OpennmsModelProtos.OnmsTopologyShared.Builder builder = OpennmsModelProtos.OnmsTopologyShared.newBuilder()
+                .setRefId(getOnmsTopologyRef(shared.getId()));
+        shared.getSources().stream().forEach(source -> builder.addSources(getOnmsTopologyPort(source)));
+        return builder.build();
+    }
+
+    public OpennmsModelProtos.OnmsTopologySharedMessage.Builder toSharedTopologyMessage(OnmsTopologyProtocol protocol,
+            TopologyMessageStatus status, 
+            org.opennms.netmgt.topologies.service.api.OnmsTopologyShared shared) {
+        if (protocol == null || status == null || shared == null || shared.getId() == null) {
+            return null;
+        }
+        final OpennmsModelProtos.OnmsTopologySharedMessage.Builder builder = OpennmsModelProtos.OnmsTopologySharedMessage.newBuilder()
+                .setEdge(getOnmsTopologyShared(shared))
+                .setMessage(getOnmsTopologyMessage(protocol, status));
+        return builder;
     }
 
 

@@ -16095,8 +16095,8 @@ public final class OpennmsModelProtos {
 
   }
 
-  public interface OnmsTopologyMessageOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:OnmsTopologyMessage)
+  public interface OnmsTopologyRefOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:OnmsTopologyRef)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -16108,23 +16108,538 @@ public final class OpennmsModelProtos {
      */
     com.google.protobuf.ByteString
         getIdBytes();
+  }
+  /**
+   * Protobuf type {@code OnmsTopologyRef}
+   */
+  public  static final class OnmsTopologyRef extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:OnmsTopologyRef)
+      OnmsTopologyRefOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use OnmsTopologyRef.newBuilder() to construct.
+    private OnmsTopologyRef(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private OnmsTopologyRef() {
+      id_ = "";
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private OnmsTopologyRef(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              id_ = s;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologyRef_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologyRef_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.class, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder.class);
+    }
+
+    public static final int ID_FIELD_NUMBER = 1;
+    private volatile java.lang.Object id_;
+    /**
+     * <code>string id = 1;</code>
+     */
+    public java.lang.String getId() {
+      java.lang.Object ref = id_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        id_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string id = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getIdBytes() {
+      java.lang.Object ref = id_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        id_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!getIdBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, id_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!getIdBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, id_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef)) {
+        return super.equals(obj);
+      }
+      org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef other = (org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef) obj;
+
+      boolean result = true;
+      result = result && getId()
+          .equals(other.getId());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + ID_FIELD_NUMBER;
+      hash = (53 * hash) + getId().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code OnmsTopologyRef}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:OnmsTopologyRef)
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologyRef_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologyRef_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.class, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder.class);
+      }
+
+      // Construct using org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        id_ = "";
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologyRef_descriptor;
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef getDefaultInstanceForType() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.getDefaultInstance();
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef build() {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef buildPartial() {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef result = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef(this);
+        result.id_ = id_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef) {
+          return mergeFrom((org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef other) {
+        if (other == org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.getDefaultInstance()) return this;
+        if (!other.getId().isEmpty()) {
+          id_ = other.id_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private java.lang.Object id_ = "";
+      /**
+       * <code>string id = 1;</code>
+       */
+      public java.lang.String getId() {
+        java.lang.Object ref = id_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          id_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string id = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getIdBytes() {
+        java.lang.Object ref = id_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          id_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string id = 1;</code>
+       */
+      public Builder setId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        id_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string id = 1;</code>
+       */
+      public Builder clearId() {
+        
+        id_ = getDefaultInstance().getId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string id = 1;</code>
+       */
+      public Builder setIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        id_ = value;
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:OnmsTopologyRef)
+    }
+
+    // @@protoc_insertion_point(class_scope:OnmsTopologyRef)
+    private static final org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef();
+    }
+
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<OnmsTopologyRef>
+        PARSER = new com.google.protobuf.AbstractParser<OnmsTopologyRef>() {
+      public OnmsTopologyRef parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new OnmsTopologyRef(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<OnmsTopologyRef> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<OnmsTopologyRef> getParserForType() {
+      return PARSER;
+    }
+
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface OnmsTopologyMessageOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:OnmsTopologyMessage)
+      com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>string protocol = 2;</code>
+     * <code>string protocol = 1;</code>
      */
     java.lang.String getProtocol();
     /**
-     * <code>string protocol = 2;</code>
+     * <code>string protocol = 1;</code>
      */
     com.google.protobuf.ByteString
         getProtocolBytes();
 
     /**
-     * <code>.OnmsTopologyMessage.MessageStatus status = 3;</code>
+     * <code>.OnmsTopologyMessage.MessageStatus status = 2;</code>
      */
     int getStatusValue();
     /**
-     * <code>.OnmsTopologyMessage.MessageStatus status = 3;</code>
+     * <code>.OnmsTopologyMessage.MessageStatus status = 2;</code>
      */
     org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.MessageStatus getStatus();
   }
@@ -16141,7 +16656,6 @@ public final class OpennmsModelProtos {
       super(builder);
     }
     private OnmsTopologyMessage() {
-      id_ = "";
       protocol_ = "";
       status_ = 0;
     }
@@ -16180,16 +16694,10 @@ public final class OpennmsModelProtos {
             case 10: {
               java.lang.String s = input.readStringRequireUtf8();
 
-              id_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
               protocol_ = s;
               break;
             }
-            case 24: {
+            case 16: {
               int rawValue = input.readEnum();
 
               status_ = rawValue;
@@ -16326,44 +16834,10 @@ public final class OpennmsModelProtos {
       // @@protoc_insertion_point(enum_scope:OnmsTopologyMessage.MessageStatus)
     }
 
-    public static final int ID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object id_;
-    /**
-     * <code>string id = 1;</code>
-     */
-    public java.lang.String getId() {
-      java.lang.Object ref = id_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        id_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string id = 1;</code>
-     */
-    public com.google.protobuf.ByteString
-        getIdBytes() {
-      java.lang.Object ref = id_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        id_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int PROTOCOL_FIELD_NUMBER = 2;
+    public static final int PROTOCOL_FIELD_NUMBER = 1;
     private volatile java.lang.Object protocol_;
     /**
-     * <code>string protocol = 2;</code>
+     * <code>string protocol = 1;</code>
      */
     public java.lang.String getProtocol() {
       java.lang.Object ref = protocol_;
@@ -16378,7 +16852,7 @@ public final class OpennmsModelProtos {
       }
     }
     /**
-     * <code>string protocol = 2;</code>
+     * <code>string protocol = 1;</code>
      */
     public com.google.protobuf.ByteString
         getProtocolBytes() {
@@ -16394,16 +16868,16 @@ public final class OpennmsModelProtos {
       }
     }
 
-    public static final int STATUS_FIELD_NUMBER = 3;
+    public static final int STATUS_FIELD_NUMBER = 2;
     private int status_;
     /**
-     * <code>.OnmsTopologyMessage.MessageStatus status = 3;</code>
+     * <code>.OnmsTopologyMessage.MessageStatus status = 2;</code>
      */
     public int getStatusValue() {
       return status_;
     }
     /**
-     * <code>.OnmsTopologyMessage.MessageStatus status = 3;</code>
+     * <code>.OnmsTopologyMessage.MessageStatus status = 2;</code>
      */
     public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.MessageStatus getStatus() {
       org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.MessageStatus result = org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.MessageStatus.valueOf(status_);
@@ -16422,14 +16896,11 @@ public final class OpennmsModelProtos {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getIdBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, id_);
-      }
       if (!getProtocolBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, protocol_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, protocol_);
       }
       if (status_ != org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.MessageStatus.NEW.getNumber()) {
-        output.writeEnum(3, status_);
+        output.writeEnum(2, status_);
       }
       unknownFields.writeTo(output);
     }
@@ -16439,15 +16910,12 @@ public final class OpennmsModelProtos {
       if (size != -1) return size;
 
       size = 0;
-      if (!getIdBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, id_);
-      }
       if (!getProtocolBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, protocol_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, protocol_);
       }
       if (status_ != org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.MessageStatus.NEW.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(3, status_);
+          .computeEnumSize(2, status_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -16465,8 +16933,6 @@ public final class OpennmsModelProtos {
       org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage other = (org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage) obj;
 
       boolean result = true;
-      result = result && getId()
-          .equals(other.getId());
       result = result && getProtocol()
           .equals(other.getProtocol());
       result = result && status_ == other.status_;
@@ -16481,8 +16947,6 @@ public final class OpennmsModelProtos {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + ID_FIELD_NUMBER;
-      hash = (53 * hash) + getId().hashCode();
       hash = (37 * hash) + PROTOCOL_FIELD_NUMBER;
       hash = (53 * hash) + getProtocol().hashCode();
       hash = (37 * hash) + STATUS_FIELD_NUMBER;
@@ -16616,8 +17080,6 @@ public final class OpennmsModelProtos {
       }
       public Builder clear() {
         super.clear();
-        id_ = "";
-
         protocol_ = "";
 
         status_ = 0;
@@ -16644,7 +17106,6 @@ public final class OpennmsModelProtos {
 
       public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage buildPartial() {
         org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage result = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage(this);
-        result.id_ = id_;
         result.protocol_ = protocol_;
         result.status_ = status_;
         onBuilt();
@@ -16688,10 +17149,6 @@ public final class OpennmsModelProtos {
 
       public Builder mergeFrom(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage other) {
         if (other == org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance()) return this;
-        if (!other.getId().isEmpty()) {
-          id_ = other.id_;
-          onChanged();
-        }
         if (!other.getProtocol().isEmpty()) {
           protocol_ = other.protocol_;
           onChanged();
@@ -16726,78 +17183,9 @@ public final class OpennmsModelProtos {
         return this;
       }
 
-      private java.lang.Object id_ = "";
-      /**
-       * <code>string id = 1;</code>
-       */
-      public java.lang.String getId() {
-        java.lang.Object ref = id_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          id_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string id = 1;</code>
-       */
-      public com.google.protobuf.ByteString
-          getIdBytes() {
-        java.lang.Object ref = id_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          id_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string id = 1;</code>
-       */
-      public Builder setId(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        id_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string id = 1;</code>
-       */
-      public Builder clearId() {
-        
-        id_ = getDefaultInstance().getId();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string id = 1;</code>
-       */
-      public Builder setIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        id_ = value;
-        onChanged();
-        return this;
-      }
-
       private java.lang.Object protocol_ = "";
       /**
-       * <code>string protocol = 2;</code>
+       * <code>string protocol = 1;</code>
        */
       public java.lang.String getProtocol() {
         java.lang.Object ref = protocol_;
@@ -16812,7 +17200,7 @@ public final class OpennmsModelProtos {
         }
       }
       /**
-       * <code>string protocol = 2;</code>
+       * <code>string protocol = 1;</code>
        */
       public com.google.protobuf.ByteString
           getProtocolBytes() {
@@ -16828,7 +17216,7 @@ public final class OpennmsModelProtos {
         }
       }
       /**
-       * <code>string protocol = 2;</code>
+       * <code>string protocol = 1;</code>
        */
       public Builder setProtocol(
           java.lang.String value) {
@@ -16841,7 +17229,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>string protocol = 2;</code>
+       * <code>string protocol = 1;</code>
        */
       public Builder clearProtocol() {
         
@@ -16850,7 +17238,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>string protocol = 2;</code>
+       * <code>string protocol = 1;</code>
        */
       public Builder setProtocolBytes(
           com.google.protobuf.ByteString value) {
@@ -16866,13 +17254,13 @@ public final class OpennmsModelProtos {
 
       private int status_ = 0;
       /**
-       * <code>.OnmsTopologyMessage.MessageStatus status = 3;</code>
+       * <code>.OnmsTopologyMessage.MessageStatus status = 2;</code>
        */
       public int getStatusValue() {
         return status_;
       }
       /**
-       * <code>.OnmsTopologyMessage.MessageStatus status = 3;</code>
+       * <code>.OnmsTopologyMessage.MessageStatus status = 2;</code>
        */
       public Builder setStatusValue(int value) {
         status_ = value;
@@ -16880,14 +17268,14 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.OnmsTopologyMessage.MessageStatus status = 3;</code>
+       * <code>.OnmsTopologyMessage.MessageStatus status = 2;</code>
        */
       public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.MessageStatus getStatus() {
         org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.MessageStatus result = org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.MessageStatus.valueOf(status_);
         return result == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.MessageStatus.UNRECOGNIZED : result;
       }
       /**
-       * <code>.OnmsTopologyMessage.MessageStatus status = 3;</code>
+       * <code>.OnmsTopologyMessage.MessageStatus status = 2;</code>
        */
       public Builder setStatus(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.MessageStatus value) {
         if (value == null) {
@@ -16899,7 +17287,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.OnmsTopologyMessage.MessageStatus status = 3;</code>
+       * <code>.OnmsTopologyMessage.MessageStatus status = 2;</code>
        */
       public Builder clearStatus() {
         
@@ -16961,17 +17349,17 @@ public final class OpennmsModelProtos {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
     boolean hasRefId();
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
-    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getRefId();
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef getRefId();
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
-    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getRefIdOrBuilder();
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder getRefIdOrBuilder();
 
     /**
      * <code>.NodeCriteria node_criteria = 2;</code>
@@ -17044,11 +17432,11 @@ public final class OpennmsModelProtos {
               break;
             }
             case 10: {
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder subBuilder = null;
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder subBuilder = null;
               if (refId_ != null) {
                 subBuilder = refId_.toBuilder();
               }
-              refId_ = input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.parser(), extensionRegistry);
+              refId_ = input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.parser(), extensionRegistry);
               if (subBuilder != null) {
                 subBuilder.mergeFrom(refId_);
                 refId_ = subBuilder.buildPartial();
@@ -17100,23 +17488,23 @@ public final class OpennmsModelProtos {
     }
 
     public static final int REF_ID_FIELD_NUMBER = 1;
-    private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage refId_;
+    private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef refId_;
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
     public boolean hasRefId() {
       return refId_ != null;
     }
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
-    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getRefId() {
-      return refId_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : refId_;
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef getRefId() {
+      return refId_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.getDefaultInstance() : refId_;
     }
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
-    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getRefIdOrBuilder() {
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder getRefIdOrBuilder() {
       return getRefId();
     }
 
@@ -17518,29 +17906,29 @@ public final class OpennmsModelProtos {
         return this;
       }
 
-      private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage refId_ = null;
+      private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef refId_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder> refIdBuilder_;
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder> refIdBuilder_;
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
       public boolean hasRefId() {
         return refIdBuilder_ != null || refId_ != null;
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
-      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getRefId() {
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef getRefId() {
         if (refIdBuilder_ == null) {
-          return refId_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : refId_;
+          return refId_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.getDefaultInstance() : refId_;
         } else {
           return refIdBuilder_.getMessage();
         }
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
-      public Builder setRefId(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage value) {
+      public Builder setRefId(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef value) {
         if (refIdBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -17554,10 +17942,10 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
       public Builder setRefId(
-          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder builderForValue) {
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder builderForValue) {
         if (refIdBuilder_ == null) {
           refId_ = builderForValue.build();
           onChanged();
@@ -17568,13 +17956,13 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
-      public Builder mergeRefId(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage value) {
+      public Builder mergeRefId(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef value) {
         if (refIdBuilder_ == null) {
           if (refId_ != null) {
             refId_ =
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.newBuilder(refId_).mergeFrom(value).buildPartial();
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.newBuilder(refId_).mergeFrom(value).buildPartial();
           } else {
             refId_ = value;
           }
@@ -17586,7 +17974,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
       public Builder clearRefId() {
         if (refIdBuilder_ == null) {
@@ -17600,33 +17988,33 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
-      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder getRefIdBuilder() {
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder getRefIdBuilder() {
         
         onChanged();
         return getRefIdFieldBuilder().getBuilder();
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
-      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getRefIdOrBuilder() {
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder getRefIdOrBuilder() {
         if (refIdBuilder_ != null) {
           return refIdBuilder_.getMessageOrBuilder();
         } else {
           return refId_ == null ?
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : refId_;
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.getDefaultInstance() : refId_;
         }
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder> 
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder> 
           getRefIdFieldBuilder() {
         if (refIdBuilder_ == null) {
           refIdBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder>(
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder>(
                   getRefId(),
                   getParentForChildren(),
                   isClean());
@@ -17874,30 +18262,30 @@ public final class OpennmsModelProtos {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
     boolean hasRefId();
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
-    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getRefId();
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef getRefId();
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
-    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getRefIdOrBuilder();
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder getRefIdOrBuilder();
 
     /**
-     * <code>.OnmsTopologyVertex vtx_id = 2;</code>
+     * <code>.OnmsTopologyVertex vertex = 2;</code>
      */
-    boolean hasVtxId();
+    boolean hasVertex();
     /**
-     * <code>.OnmsTopologyVertex vtx_id = 2;</code>
+     * <code>.OnmsTopologyVertex vertex = 2;</code>
      */
-    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex getVtxId();
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex getVertex();
     /**
-     * <code>.OnmsTopologyVertex vtx_id = 2;</code>
+     * <code>.OnmsTopologyVertex vertex = 2;</code>
      */
-    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexOrBuilder getVtxIdOrBuilder();
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexOrBuilder getVertexOrBuilder();
 
     /**
      * <code>uint64 index = 3;</code>
@@ -17974,11 +18362,11 @@ public final class OpennmsModelProtos {
               break;
             }
             case 10: {
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder subBuilder = null;
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder subBuilder = null;
               if (refId_ != null) {
                 subBuilder = refId_.toBuilder();
               }
-              refId_ = input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.parser(), extensionRegistry);
+              refId_ = input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.parser(), extensionRegistry);
               if (subBuilder != null) {
                 subBuilder.mergeFrom(refId_);
                 refId_ = subBuilder.buildPartial();
@@ -17988,13 +18376,13 @@ public final class OpennmsModelProtos {
             }
             case 18: {
               org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.Builder subBuilder = null;
-              if (vtxId_ != null) {
-                subBuilder = vtxId_.toBuilder();
+              if (vertex_ != null) {
+                subBuilder = vertex_.toBuilder();
               }
-              vtxId_ = input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.parser(), extensionRegistry);
+              vertex_ = input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.parser(), extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(vtxId_);
-                vtxId_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(vertex_);
+                vertex_ = subBuilder.buildPartial();
               }
 
               break;
@@ -18041,45 +18429,45 @@ public final class OpennmsModelProtos {
     }
 
     public static final int REF_ID_FIELD_NUMBER = 1;
-    private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage refId_;
+    private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef refId_;
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
     public boolean hasRefId() {
       return refId_ != null;
     }
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
-    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getRefId() {
-      return refId_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : refId_;
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef getRefId() {
+      return refId_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.getDefaultInstance() : refId_;
     }
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
-    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getRefIdOrBuilder() {
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder getRefIdOrBuilder() {
       return getRefId();
     }
 
-    public static final int VTX_ID_FIELD_NUMBER = 2;
-    private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex vtxId_;
+    public static final int VERTEX_FIELD_NUMBER = 2;
+    private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex vertex_;
     /**
-     * <code>.OnmsTopologyVertex vtx_id = 2;</code>
+     * <code>.OnmsTopologyVertex vertex = 2;</code>
      */
-    public boolean hasVtxId() {
-      return vtxId_ != null;
+    public boolean hasVertex() {
+      return vertex_ != null;
     }
     /**
-     * <code>.OnmsTopologyVertex vtx_id = 2;</code>
+     * <code>.OnmsTopologyVertex vertex = 2;</code>
      */
-    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex getVtxId() {
-      return vtxId_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.getDefaultInstance() : vtxId_;
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex getVertex() {
+      return vertex_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.getDefaultInstance() : vertex_;
     }
     /**
-     * <code>.OnmsTopologyVertex vtx_id = 2;</code>
+     * <code>.OnmsTopologyVertex vertex = 2;</code>
      */
-    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexOrBuilder getVtxIdOrBuilder() {
-      return getVtxId();
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexOrBuilder getVertexOrBuilder() {
+      return getVertex();
     }
 
     public static final int INDEX_FIELD_NUMBER = 3;
@@ -18174,8 +18562,8 @@ public final class OpennmsModelProtos {
       if (refId_ != null) {
         output.writeMessage(1, getRefId());
       }
-      if (vtxId_ != null) {
-        output.writeMessage(2, getVtxId());
+      if (vertex_ != null) {
+        output.writeMessage(2, getVertex());
       }
       if (index_ != 0L) {
         output.writeUInt64(3, index_);
@@ -18198,9 +18586,9 @@ public final class OpennmsModelProtos {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, getRefId());
       }
-      if (vtxId_ != null) {
+      if (vertex_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, getVtxId());
+          .computeMessageSize(2, getVertex());
       }
       if (index_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
@@ -18233,10 +18621,10 @@ public final class OpennmsModelProtos {
         result = result && getRefId()
             .equals(other.getRefId());
       }
-      result = result && (hasVtxId() == other.hasVtxId());
-      if (hasVtxId()) {
-        result = result && getVtxId()
-            .equals(other.getVtxId());
+      result = result && (hasVertex() == other.hasVertex());
+      if (hasVertex()) {
+        result = result && getVertex()
+            .equals(other.getVertex());
       }
       result = result && (getIndex()
           == other.getIndex());
@@ -18259,9 +18647,9 @@ public final class OpennmsModelProtos {
         hash = (37 * hash) + REF_ID_FIELD_NUMBER;
         hash = (53 * hash) + getRefId().hashCode();
       }
-      if (hasVtxId()) {
-        hash = (37 * hash) + VTX_ID_FIELD_NUMBER;
-        hash = (53 * hash) + getVtxId().hashCode();
+      if (hasVertex()) {
+        hash = (37 * hash) + VERTEX_FIELD_NUMBER;
+        hash = (53 * hash) + getVertex().hashCode();
       }
       hash = (37 * hash) + INDEX_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
@@ -18405,11 +18793,11 @@ public final class OpennmsModelProtos {
           refId_ = null;
           refIdBuilder_ = null;
         }
-        if (vtxIdBuilder_ == null) {
-          vtxId_ = null;
+        if (vertexBuilder_ == null) {
+          vertex_ = null;
         } else {
-          vtxId_ = null;
-          vtxIdBuilder_ = null;
+          vertex_ = null;
+          vertexBuilder_ = null;
         }
         index_ = 0L;
 
@@ -18444,10 +18832,10 @@ public final class OpennmsModelProtos {
         } else {
           result.refId_ = refIdBuilder_.build();
         }
-        if (vtxIdBuilder_ == null) {
-          result.vtxId_ = vtxId_;
+        if (vertexBuilder_ == null) {
+          result.vertex_ = vertex_;
         } else {
-          result.vtxId_ = vtxIdBuilder_.build();
+          result.vertex_ = vertexBuilder_.build();
         }
         result.index_ = index_;
         result.port_ = port_;
@@ -18496,8 +18884,8 @@ public final class OpennmsModelProtos {
         if (other.hasRefId()) {
           mergeRefId(other.getRefId());
         }
-        if (other.hasVtxId()) {
-          mergeVtxId(other.getVtxId());
+        if (other.hasVertex()) {
+          mergeVertex(other.getVertex());
         }
         if (other.getIndex() != 0L) {
           setIndex(other.getIndex());
@@ -18537,29 +18925,29 @@ public final class OpennmsModelProtos {
         return this;
       }
 
-      private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage refId_ = null;
+      private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef refId_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder> refIdBuilder_;
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder> refIdBuilder_;
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
       public boolean hasRefId() {
         return refIdBuilder_ != null || refId_ != null;
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
-      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getRefId() {
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef getRefId() {
         if (refIdBuilder_ == null) {
-          return refId_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : refId_;
+          return refId_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.getDefaultInstance() : refId_;
         } else {
           return refIdBuilder_.getMessage();
         }
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
-      public Builder setRefId(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage value) {
+      public Builder setRefId(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef value) {
         if (refIdBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -18573,10 +18961,10 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
       public Builder setRefId(
-          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder builderForValue) {
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder builderForValue) {
         if (refIdBuilder_ == null) {
           refId_ = builderForValue.build();
           onChanged();
@@ -18587,13 +18975,13 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
-      public Builder mergeRefId(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage value) {
+      public Builder mergeRefId(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef value) {
         if (refIdBuilder_ == null) {
           if (refId_ != null) {
             refId_ =
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.newBuilder(refId_).mergeFrom(value).buildPartial();
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.newBuilder(refId_).mergeFrom(value).buildPartial();
           } else {
             refId_ = value;
           }
@@ -18605,7 +18993,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
       public Builder clearRefId() {
         if (refIdBuilder_ == null) {
@@ -18619,33 +19007,33 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
-      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder getRefIdBuilder() {
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder getRefIdBuilder() {
         
         onChanged();
         return getRefIdFieldBuilder().getBuilder();
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
-      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getRefIdOrBuilder() {
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder getRefIdOrBuilder() {
         if (refIdBuilder_ != null) {
           return refIdBuilder_.getMessageOrBuilder();
         } else {
           return refId_ == null ?
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : refId_;
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.getDefaultInstance() : refId_;
         }
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder> 
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder> 
           getRefIdFieldBuilder() {
         if (refIdBuilder_ == null) {
           refIdBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder>(
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder>(
                   getRefId(),
                   getParentForChildren(),
                   isClean());
@@ -18654,121 +19042,121 @@ public final class OpennmsModelProtos {
         return refIdBuilder_;
       }
 
-      private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex vtxId_ = null;
+      private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex vertex_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexOrBuilder> vtxIdBuilder_;
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexOrBuilder> vertexBuilder_;
       /**
-       * <code>.OnmsTopologyVertex vtx_id = 2;</code>
+       * <code>.OnmsTopologyVertex vertex = 2;</code>
        */
-      public boolean hasVtxId() {
-        return vtxIdBuilder_ != null || vtxId_ != null;
+      public boolean hasVertex() {
+        return vertexBuilder_ != null || vertex_ != null;
       }
       /**
-       * <code>.OnmsTopologyVertex vtx_id = 2;</code>
+       * <code>.OnmsTopologyVertex vertex = 2;</code>
        */
-      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex getVtxId() {
-        if (vtxIdBuilder_ == null) {
-          return vtxId_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.getDefaultInstance() : vtxId_;
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex getVertex() {
+        if (vertexBuilder_ == null) {
+          return vertex_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.getDefaultInstance() : vertex_;
         } else {
-          return vtxIdBuilder_.getMessage();
+          return vertexBuilder_.getMessage();
         }
       }
       /**
-       * <code>.OnmsTopologyVertex vtx_id = 2;</code>
+       * <code>.OnmsTopologyVertex vertex = 2;</code>
        */
-      public Builder setVtxId(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex value) {
-        if (vtxIdBuilder_ == null) {
+      public Builder setVertex(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex value) {
+        if (vertexBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          vtxId_ = value;
+          vertex_ = value;
           onChanged();
         } else {
-          vtxIdBuilder_.setMessage(value);
+          vertexBuilder_.setMessage(value);
         }
 
         return this;
       }
       /**
-       * <code>.OnmsTopologyVertex vtx_id = 2;</code>
+       * <code>.OnmsTopologyVertex vertex = 2;</code>
        */
-      public Builder setVtxId(
+      public Builder setVertex(
           org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.Builder builderForValue) {
-        if (vtxIdBuilder_ == null) {
-          vtxId_ = builderForValue.build();
+        if (vertexBuilder_ == null) {
+          vertex_ = builderForValue.build();
           onChanged();
         } else {
-          vtxIdBuilder_.setMessage(builderForValue.build());
+          vertexBuilder_.setMessage(builderForValue.build());
         }
 
         return this;
       }
       /**
-       * <code>.OnmsTopologyVertex vtx_id = 2;</code>
+       * <code>.OnmsTopologyVertex vertex = 2;</code>
        */
-      public Builder mergeVtxId(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex value) {
-        if (vtxIdBuilder_ == null) {
-          if (vtxId_ != null) {
-            vtxId_ =
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.newBuilder(vtxId_).mergeFrom(value).buildPartial();
+      public Builder mergeVertex(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex value) {
+        if (vertexBuilder_ == null) {
+          if (vertex_ != null) {
+            vertex_ =
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.newBuilder(vertex_).mergeFrom(value).buildPartial();
           } else {
-            vtxId_ = value;
+            vertex_ = value;
           }
           onChanged();
         } else {
-          vtxIdBuilder_.mergeFrom(value);
+          vertexBuilder_.mergeFrom(value);
         }
 
         return this;
       }
       /**
-       * <code>.OnmsTopologyVertex vtx_id = 2;</code>
+       * <code>.OnmsTopologyVertex vertex = 2;</code>
        */
-      public Builder clearVtxId() {
-        if (vtxIdBuilder_ == null) {
-          vtxId_ = null;
+      public Builder clearVertex() {
+        if (vertexBuilder_ == null) {
+          vertex_ = null;
           onChanged();
         } else {
-          vtxId_ = null;
-          vtxIdBuilder_ = null;
+          vertex_ = null;
+          vertexBuilder_ = null;
         }
 
         return this;
       }
       /**
-       * <code>.OnmsTopologyVertex vtx_id = 2;</code>
+       * <code>.OnmsTopologyVertex vertex = 2;</code>
        */
-      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.Builder getVtxIdBuilder() {
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.Builder getVertexBuilder() {
         
         onChanged();
-        return getVtxIdFieldBuilder().getBuilder();
+        return getVertexFieldBuilder().getBuilder();
       }
       /**
-       * <code>.OnmsTopologyVertex vtx_id = 2;</code>
+       * <code>.OnmsTopologyVertex vertex = 2;</code>
        */
-      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexOrBuilder getVtxIdOrBuilder() {
-        if (vtxIdBuilder_ != null) {
-          return vtxIdBuilder_.getMessageOrBuilder();
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexOrBuilder getVertexOrBuilder() {
+        if (vertexBuilder_ != null) {
+          return vertexBuilder_.getMessageOrBuilder();
         } else {
-          return vtxId_ == null ?
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.getDefaultInstance() : vtxId_;
+          return vertex_ == null ?
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.getDefaultInstance() : vertex_;
         }
       }
       /**
-       * <code>.OnmsTopologyVertex vtx_id = 2;</code>
+       * <code>.OnmsTopologyVertex vertex = 2;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexOrBuilder> 
-          getVtxIdFieldBuilder() {
-        if (vtxIdBuilder_ == null) {
-          vtxIdBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+          getVertexFieldBuilder() {
+        if (vertexBuilder_ == null) {
+          vertexBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexOrBuilder>(
-                  getVtxId(),
+                  getVertex(),
                   getParentForChildren(),
                   isClean());
-          vtxId_ = null;
+          vertex_ = null;
         }
-        return vtxIdBuilder_;
+        return vertexBuilder_;
       }
 
       private long index_ ;
@@ -18988,17 +19376,17 @@ public final class OpennmsModelProtos {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
     boolean hasRefId();
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
-    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getRefId();
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef getRefId();
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
-    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getRefIdOrBuilder();
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder getRefIdOrBuilder();
 
     /**
      * <code>.OnmsTopologyPort source = 2;</code>
@@ -19073,11 +19461,11 @@ public final class OpennmsModelProtos {
               break;
             }
             case 10: {
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder subBuilder = null;
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder subBuilder = null;
               if (refId_ != null) {
                 subBuilder = refId_.toBuilder();
               }
-              refId_ = input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.parser(), extensionRegistry);
+              refId_ = input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.parser(), extensionRegistry);
               if (subBuilder != null) {
                 subBuilder.mergeFrom(refId_);
                 refId_ = subBuilder.buildPartial();
@@ -19136,23 +19524,23 @@ public final class OpennmsModelProtos {
     }
 
     public static final int REF_ID_FIELD_NUMBER = 1;
-    private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage refId_;
+    private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef refId_;
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
     public boolean hasRefId() {
       return refId_ != null;
     }
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
-    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getRefId() {
-      return refId_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : refId_;
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef getRefId() {
+      return refId_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.getDefaultInstance() : refId_;
     }
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
-    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getRefIdOrBuilder() {
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder getRefIdOrBuilder() {
       return getRefId();
     }
 
@@ -19554,29 +19942,29 @@ public final class OpennmsModelProtos {
         return this;
       }
 
-      private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage refId_ = null;
+      private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef refId_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder> refIdBuilder_;
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder> refIdBuilder_;
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
       public boolean hasRefId() {
         return refIdBuilder_ != null || refId_ != null;
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
-      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getRefId() {
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef getRefId() {
         if (refIdBuilder_ == null) {
-          return refId_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : refId_;
+          return refId_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.getDefaultInstance() : refId_;
         } else {
           return refIdBuilder_.getMessage();
         }
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
-      public Builder setRefId(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage value) {
+      public Builder setRefId(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef value) {
         if (refIdBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -19590,10 +19978,10 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
       public Builder setRefId(
-          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder builderForValue) {
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder builderForValue) {
         if (refIdBuilder_ == null) {
           refId_ = builderForValue.build();
           onChanged();
@@ -19604,13 +19992,13 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
-      public Builder mergeRefId(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage value) {
+      public Builder mergeRefId(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef value) {
         if (refIdBuilder_ == null) {
           if (refId_ != null) {
             refId_ =
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.newBuilder(refId_).mergeFrom(value).buildPartial();
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.newBuilder(refId_).mergeFrom(value).buildPartial();
           } else {
             refId_ = value;
           }
@@ -19622,7 +20010,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
       public Builder clearRefId() {
         if (refIdBuilder_ == null) {
@@ -19636,33 +20024,33 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
-      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder getRefIdBuilder() {
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder getRefIdBuilder() {
         
         onChanged();
         return getRefIdFieldBuilder().getBuilder();
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
-      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getRefIdOrBuilder() {
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder getRefIdOrBuilder() {
         if (refIdBuilder_ != null) {
           return refIdBuilder_.getMessageOrBuilder();
         } else {
           return refId_ == null ?
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : refId_;
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.getDefaultInstance() : refId_;
         }
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder> 
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder> 
           getRefIdFieldBuilder() {
         if (refIdBuilder_ == null) {
           refIdBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder>(
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder>(
                   getRefId(),
                   getParentForChildren(),
                   isClean());
@@ -19958,17 +20346,17 @@ public final class OpennmsModelProtos {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
     boolean hasRefId();
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
-    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getRefId();
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef getRefId();
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
-    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getRefIdOrBuilder();
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder getRefIdOrBuilder();
 
     /**
      * <code>repeated .OnmsTopologyPort sources = 2;</code>
@@ -20042,11 +20430,11 @@ public final class OpennmsModelProtos {
               break;
             }
             case 10: {
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder subBuilder = null;
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder subBuilder = null;
               if (refId_ != null) {
                 subBuilder = refId_.toBuilder();
               }
-              refId_ = input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.parser(), extensionRegistry);
+              refId_ = input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.parser(), extensionRegistry);
               if (subBuilder != null) {
                 subBuilder.mergeFrom(refId_);
                 refId_ = subBuilder.buildPartial();
@@ -20092,23 +20480,23 @@ public final class OpennmsModelProtos {
 
     private int bitField0_;
     public static final int REF_ID_FIELD_NUMBER = 1;
-    private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage refId_;
+    private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef refId_;
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
     public boolean hasRefId() {
       return refId_ != null;
     }
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
-    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getRefId() {
-      return refId_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : refId_;
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef getRefId() {
+      return refId_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.getDefaultInstance() : refId_;
     }
     /**
-     * <code>.OnmsTopologyMessage ref_id = 1;</code>
+     * <code>.OnmsTopologyRef ref_id = 1;</code>
      */
-    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getRefIdOrBuilder() {
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder getRefIdOrBuilder() {
       return getRefId();
     }
 
@@ -20502,29 +20890,29 @@ public final class OpennmsModelProtos {
       }
       private int bitField0_;
 
-      private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage refId_ = null;
+      private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef refId_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder> refIdBuilder_;
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder> refIdBuilder_;
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
       public boolean hasRefId() {
         return refIdBuilder_ != null || refId_ != null;
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
-      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getRefId() {
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef getRefId() {
         if (refIdBuilder_ == null) {
-          return refId_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : refId_;
+          return refId_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.getDefaultInstance() : refId_;
         } else {
           return refIdBuilder_.getMessage();
         }
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
-      public Builder setRefId(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage value) {
+      public Builder setRefId(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef value) {
         if (refIdBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -20538,10 +20926,10 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
       public Builder setRefId(
-          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder builderForValue) {
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder builderForValue) {
         if (refIdBuilder_ == null) {
           refId_ = builderForValue.build();
           onChanged();
@@ -20552,13 +20940,13 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
-      public Builder mergeRefId(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage value) {
+      public Builder mergeRefId(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef value) {
         if (refIdBuilder_ == null) {
           if (refId_ != null) {
             refId_ =
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.newBuilder(refId_).mergeFrom(value).buildPartial();
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.newBuilder(refId_).mergeFrom(value).buildPartial();
           } else {
             refId_ = value;
           }
@@ -20570,7 +20958,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
       public Builder clearRefId() {
         if (refIdBuilder_ == null) {
@@ -20584,33 +20972,33 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
-      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder getRefIdBuilder() {
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder getRefIdBuilder() {
         
         onChanged();
         return getRefIdFieldBuilder().getBuilder();
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
-      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getRefIdOrBuilder() {
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder getRefIdOrBuilder() {
         if (refIdBuilder_ != null) {
           return refIdBuilder_.getMessageOrBuilder();
         } else {
           return refId_ == null ?
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : refId_;
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.getDefaultInstance() : refId_;
         }
       }
       /**
-       * <code>.OnmsTopologyMessage ref_id = 1;</code>
+       * <code>.OnmsTopologyRef ref_id = 1;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder> 
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder> 
           getRefIdFieldBuilder() {
         if (refIdBuilder_ == null) {
           refIdBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder>(
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRef.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyRefOrBuilder>(
                   getRefId(),
                   getParentForChildren(),
                   isClean());
@@ -20907,6 +21295,3110 @@ public final class OpennmsModelProtos {
 
   }
 
+  public interface OnmsTopologyVertexMessageOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:OnmsTopologyVertexMessage)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    boolean hasMessage();
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getMessage();
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getMessageOrBuilder();
+
+    /**
+     * <code>.OnmsTopologyVertex vertex = 2;</code>
+     */
+    boolean hasVertex();
+    /**
+     * <code>.OnmsTopologyVertex vertex = 2;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex getVertex();
+    /**
+     * <code>.OnmsTopologyVertex vertex = 2;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexOrBuilder getVertexOrBuilder();
+  }
+  /**
+   * Protobuf type {@code OnmsTopologyVertexMessage}
+   */
+  public  static final class OnmsTopologyVertexMessage extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:OnmsTopologyVertexMessage)
+      OnmsTopologyVertexMessageOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use OnmsTopologyVertexMessage.newBuilder() to construct.
+    private OnmsTopologyVertexMessage(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private OnmsTopologyVertexMessage() {
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private OnmsTopologyVertexMessage(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder subBuilder = null;
+              if (message_ != null) {
+                subBuilder = message_.toBuilder();
+              }
+              message_ = input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(message_);
+                message_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 18: {
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.Builder subBuilder = null;
+              if (vertex_ != null) {
+                subBuilder = vertex_.toBuilder();
+              }
+              vertex_ = input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(vertex_);
+                vertex_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologyVertexMessage_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologyVertexMessage_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage.class, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage.Builder.class);
+    }
+
+    public static final int MESSAGE_FIELD_NUMBER = 1;
+    private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage message_;
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    public boolean hasMessage() {
+      return message_ != null;
+    }
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getMessage() {
+      return message_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : message_;
+    }
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getMessageOrBuilder() {
+      return getMessage();
+    }
+
+    public static final int VERTEX_FIELD_NUMBER = 2;
+    private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex vertex_;
+    /**
+     * <code>.OnmsTopologyVertex vertex = 2;</code>
+     */
+    public boolean hasVertex() {
+      return vertex_ != null;
+    }
+    /**
+     * <code>.OnmsTopologyVertex vertex = 2;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex getVertex() {
+      return vertex_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.getDefaultInstance() : vertex_;
+    }
+    /**
+     * <code>.OnmsTopologyVertex vertex = 2;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexOrBuilder getVertexOrBuilder() {
+      return getVertex();
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (message_ != null) {
+        output.writeMessage(1, getMessage());
+      }
+      if (vertex_ != null) {
+        output.writeMessage(2, getVertex());
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (message_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, getMessage());
+      }
+      if (vertex_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, getVertex());
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage)) {
+        return super.equals(obj);
+      }
+      org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage other = (org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage) obj;
+
+      boolean result = true;
+      result = result && (hasMessage() == other.hasMessage());
+      if (hasMessage()) {
+        result = result && getMessage()
+            .equals(other.getMessage());
+      }
+      result = result && (hasVertex() == other.hasVertex());
+      if (hasVertex()) {
+        result = result && getVertex()
+            .equals(other.getVertex());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasMessage()) {
+        hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
+        hash = (53 * hash) + getMessage().hashCode();
+      }
+      if (hasVertex()) {
+        hash = (37 * hash) + VERTEX_FIELD_NUMBER;
+        hash = (53 * hash) + getVertex().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code OnmsTopologyVertexMessage}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:OnmsTopologyVertexMessage)
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessageOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologyVertexMessage_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologyVertexMessage_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage.class, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage.Builder.class);
+      }
+
+      // Construct using org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        if (messageBuilder_ == null) {
+          message_ = null;
+        } else {
+          message_ = null;
+          messageBuilder_ = null;
+        }
+        if (vertexBuilder_ == null) {
+          vertex_ = null;
+        } else {
+          vertex_ = null;
+          vertexBuilder_ = null;
+        }
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologyVertexMessage_descriptor;
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage getDefaultInstanceForType() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage.getDefaultInstance();
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage build() {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage buildPartial() {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage result = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage(this);
+        if (messageBuilder_ == null) {
+          result.message_ = message_;
+        } else {
+          result.message_ = messageBuilder_.build();
+        }
+        if (vertexBuilder_ == null) {
+          result.vertex_ = vertex_;
+        } else {
+          result.vertex_ = vertexBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage) {
+          return mergeFrom((org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage other) {
+        if (other == org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage.getDefaultInstance()) return this;
+        if (other.hasMessage()) {
+          mergeMessage(other.getMessage());
+        }
+        if (other.hasVertex()) {
+          mergeVertex(other.getVertex());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage message_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder> messageBuilder_;
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public boolean hasMessage() {
+        return messageBuilder_ != null || message_ != null;
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getMessage() {
+        if (messageBuilder_ == null) {
+          return message_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : message_;
+        } else {
+          return messageBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public Builder setMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage value) {
+        if (messageBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          message_ = value;
+          onChanged();
+        } else {
+          messageBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public Builder setMessage(
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder builderForValue) {
+        if (messageBuilder_ == null) {
+          message_ = builderForValue.build();
+          onChanged();
+        } else {
+          messageBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public Builder mergeMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage value) {
+        if (messageBuilder_ == null) {
+          if (message_ != null) {
+            message_ =
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.newBuilder(message_).mergeFrom(value).buildPartial();
+          } else {
+            message_ = value;
+          }
+          onChanged();
+        } else {
+          messageBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public Builder clearMessage() {
+        if (messageBuilder_ == null) {
+          message_ = null;
+          onChanged();
+        } else {
+          message_ = null;
+          messageBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder getMessageBuilder() {
+        
+        onChanged();
+        return getMessageFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getMessageOrBuilder() {
+        if (messageBuilder_ != null) {
+          return messageBuilder_.getMessageOrBuilder();
+        } else {
+          return message_ == null ?
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : message_;
+        }
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder> 
+          getMessageFieldBuilder() {
+        if (messageBuilder_ == null) {
+          messageBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder>(
+                  getMessage(),
+                  getParentForChildren(),
+                  isClean());
+          message_ = null;
+        }
+        return messageBuilder_;
+      }
+
+      private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex vertex_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexOrBuilder> vertexBuilder_;
+      /**
+       * <code>.OnmsTopologyVertex vertex = 2;</code>
+       */
+      public boolean hasVertex() {
+        return vertexBuilder_ != null || vertex_ != null;
+      }
+      /**
+       * <code>.OnmsTopologyVertex vertex = 2;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex getVertex() {
+        if (vertexBuilder_ == null) {
+          return vertex_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.getDefaultInstance() : vertex_;
+        } else {
+          return vertexBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.OnmsTopologyVertex vertex = 2;</code>
+       */
+      public Builder setVertex(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex value) {
+        if (vertexBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          vertex_ = value;
+          onChanged();
+        } else {
+          vertexBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyVertex vertex = 2;</code>
+       */
+      public Builder setVertex(
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.Builder builderForValue) {
+        if (vertexBuilder_ == null) {
+          vertex_ = builderForValue.build();
+          onChanged();
+        } else {
+          vertexBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyVertex vertex = 2;</code>
+       */
+      public Builder mergeVertex(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex value) {
+        if (vertexBuilder_ == null) {
+          if (vertex_ != null) {
+            vertex_ =
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.newBuilder(vertex_).mergeFrom(value).buildPartial();
+          } else {
+            vertex_ = value;
+          }
+          onChanged();
+        } else {
+          vertexBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyVertex vertex = 2;</code>
+       */
+      public Builder clearVertex() {
+        if (vertexBuilder_ == null) {
+          vertex_ = null;
+          onChanged();
+        } else {
+          vertex_ = null;
+          vertexBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyVertex vertex = 2;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.Builder getVertexBuilder() {
+        
+        onChanged();
+        return getVertexFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.OnmsTopologyVertex vertex = 2;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexOrBuilder getVertexOrBuilder() {
+        if (vertexBuilder_ != null) {
+          return vertexBuilder_.getMessageOrBuilder();
+        } else {
+          return vertex_ == null ?
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.getDefaultInstance() : vertex_;
+        }
+      }
+      /**
+       * <code>.OnmsTopologyVertex vertex = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexOrBuilder> 
+          getVertexFieldBuilder() {
+        if (vertexBuilder_ == null) {
+          vertexBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertex.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexOrBuilder>(
+                  getVertex(),
+                  getParentForChildren(),
+                  isClean());
+          vertex_ = null;
+        }
+        return vertexBuilder_;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:OnmsTopologyVertexMessage)
+    }
+
+    // @@protoc_insertion_point(class_scope:OnmsTopologyVertexMessage)
+    private static final org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage();
+    }
+
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<OnmsTopologyVertexMessage>
+        PARSER = new com.google.protobuf.AbstractParser<OnmsTopologyVertexMessage>() {
+      public OnmsTopologyVertexMessage parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new OnmsTopologyVertexMessage(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<OnmsTopologyVertexMessage> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<OnmsTopologyVertexMessage> getParserForType() {
+      return PARSER;
+    }
+
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyVertexMessage getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface OnmsTopologyPortMessageOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:OnmsTopologyPortMessage)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    boolean hasMessage();
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getMessage();
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getMessageOrBuilder();
+
+    /**
+     * <code>.OnmsTopologyPort port = 2;</code>
+     */
+    boolean hasPort();
+    /**
+     * <code>.OnmsTopologyPort port = 2;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort getPort();
+    /**
+     * <code>.OnmsTopologyPort port = 2;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortOrBuilder getPortOrBuilder();
+  }
+  /**
+   * Protobuf type {@code OnmsTopologyPortMessage}
+   */
+  public  static final class OnmsTopologyPortMessage extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:OnmsTopologyPortMessage)
+      OnmsTopologyPortMessageOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use OnmsTopologyPortMessage.newBuilder() to construct.
+    private OnmsTopologyPortMessage(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private OnmsTopologyPortMessage() {
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private OnmsTopologyPortMessage(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder subBuilder = null;
+              if (message_ != null) {
+                subBuilder = message_.toBuilder();
+              }
+              message_ = input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(message_);
+                message_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 18: {
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort.Builder subBuilder = null;
+              if (port_ != null) {
+                subBuilder = port_.toBuilder();
+              }
+              port_ = input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(port_);
+                port_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologyPortMessage_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologyPortMessage_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage.class, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage.Builder.class);
+    }
+
+    public static final int MESSAGE_FIELD_NUMBER = 1;
+    private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage message_;
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    public boolean hasMessage() {
+      return message_ != null;
+    }
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getMessage() {
+      return message_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : message_;
+    }
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getMessageOrBuilder() {
+      return getMessage();
+    }
+
+    public static final int PORT_FIELD_NUMBER = 2;
+    private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort port_;
+    /**
+     * <code>.OnmsTopologyPort port = 2;</code>
+     */
+    public boolean hasPort() {
+      return port_ != null;
+    }
+    /**
+     * <code>.OnmsTopologyPort port = 2;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort getPort() {
+      return port_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort.getDefaultInstance() : port_;
+    }
+    /**
+     * <code>.OnmsTopologyPort port = 2;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortOrBuilder getPortOrBuilder() {
+      return getPort();
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (message_ != null) {
+        output.writeMessage(1, getMessage());
+      }
+      if (port_ != null) {
+        output.writeMessage(2, getPort());
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (message_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, getMessage());
+      }
+      if (port_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, getPort());
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage)) {
+        return super.equals(obj);
+      }
+      org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage other = (org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage) obj;
+
+      boolean result = true;
+      result = result && (hasMessage() == other.hasMessage());
+      if (hasMessage()) {
+        result = result && getMessage()
+            .equals(other.getMessage());
+      }
+      result = result && (hasPort() == other.hasPort());
+      if (hasPort()) {
+        result = result && getPort()
+            .equals(other.getPort());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasMessage()) {
+        hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
+        hash = (53 * hash) + getMessage().hashCode();
+      }
+      if (hasPort()) {
+        hash = (37 * hash) + PORT_FIELD_NUMBER;
+        hash = (53 * hash) + getPort().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code OnmsTopologyPortMessage}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:OnmsTopologyPortMessage)
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessageOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologyPortMessage_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologyPortMessage_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage.class, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage.Builder.class);
+      }
+
+      // Construct using org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        if (messageBuilder_ == null) {
+          message_ = null;
+        } else {
+          message_ = null;
+          messageBuilder_ = null;
+        }
+        if (portBuilder_ == null) {
+          port_ = null;
+        } else {
+          port_ = null;
+          portBuilder_ = null;
+        }
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologyPortMessage_descriptor;
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage getDefaultInstanceForType() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage.getDefaultInstance();
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage build() {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage buildPartial() {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage result = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage(this);
+        if (messageBuilder_ == null) {
+          result.message_ = message_;
+        } else {
+          result.message_ = messageBuilder_.build();
+        }
+        if (portBuilder_ == null) {
+          result.port_ = port_;
+        } else {
+          result.port_ = portBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage) {
+          return mergeFrom((org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage other) {
+        if (other == org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage.getDefaultInstance()) return this;
+        if (other.hasMessage()) {
+          mergeMessage(other.getMessage());
+        }
+        if (other.hasPort()) {
+          mergePort(other.getPort());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage message_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder> messageBuilder_;
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public boolean hasMessage() {
+        return messageBuilder_ != null || message_ != null;
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getMessage() {
+        if (messageBuilder_ == null) {
+          return message_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : message_;
+        } else {
+          return messageBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public Builder setMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage value) {
+        if (messageBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          message_ = value;
+          onChanged();
+        } else {
+          messageBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public Builder setMessage(
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder builderForValue) {
+        if (messageBuilder_ == null) {
+          message_ = builderForValue.build();
+          onChanged();
+        } else {
+          messageBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public Builder mergeMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage value) {
+        if (messageBuilder_ == null) {
+          if (message_ != null) {
+            message_ =
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.newBuilder(message_).mergeFrom(value).buildPartial();
+          } else {
+            message_ = value;
+          }
+          onChanged();
+        } else {
+          messageBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public Builder clearMessage() {
+        if (messageBuilder_ == null) {
+          message_ = null;
+          onChanged();
+        } else {
+          message_ = null;
+          messageBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder getMessageBuilder() {
+        
+        onChanged();
+        return getMessageFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getMessageOrBuilder() {
+        if (messageBuilder_ != null) {
+          return messageBuilder_.getMessageOrBuilder();
+        } else {
+          return message_ == null ?
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : message_;
+        }
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder> 
+          getMessageFieldBuilder() {
+        if (messageBuilder_ == null) {
+          messageBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder>(
+                  getMessage(),
+                  getParentForChildren(),
+                  isClean());
+          message_ = null;
+        }
+        return messageBuilder_;
+      }
+
+      private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort port_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortOrBuilder> portBuilder_;
+      /**
+       * <code>.OnmsTopologyPort port = 2;</code>
+       */
+      public boolean hasPort() {
+        return portBuilder_ != null || port_ != null;
+      }
+      /**
+       * <code>.OnmsTopologyPort port = 2;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort getPort() {
+        if (portBuilder_ == null) {
+          return port_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort.getDefaultInstance() : port_;
+        } else {
+          return portBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.OnmsTopologyPort port = 2;</code>
+       */
+      public Builder setPort(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort value) {
+        if (portBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          port_ = value;
+          onChanged();
+        } else {
+          portBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyPort port = 2;</code>
+       */
+      public Builder setPort(
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort.Builder builderForValue) {
+        if (portBuilder_ == null) {
+          port_ = builderForValue.build();
+          onChanged();
+        } else {
+          portBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyPort port = 2;</code>
+       */
+      public Builder mergePort(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort value) {
+        if (portBuilder_ == null) {
+          if (port_ != null) {
+            port_ =
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort.newBuilder(port_).mergeFrom(value).buildPartial();
+          } else {
+            port_ = value;
+          }
+          onChanged();
+        } else {
+          portBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyPort port = 2;</code>
+       */
+      public Builder clearPort() {
+        if (portBuilder_ == null) {
+          port_ = null;
+          onChanged();
+        } else {
+          port_ = null;
+          portBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyPort port = 2;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort.Builder getPortBuilder() {
+        
+        onChanged();
+        return getPortFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.OnmsTopologyPort port = 2;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortOrBuilder getPortOrBuilder() {
+        if (portBuilder_ != null) {
+          return portBuilder_.getMessageOrBuilder();
+        } else {
+          return port_ == null ?
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort.getDefaultInstance() : port_;
+        }
+      }
+      /**
+       * <code>.OnmsTopologyPort port = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortOrBuilder> 
+          getPortFieldBuilder() {
+        if (portBuilder_ == null) {
+          portBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPort.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortOrBuilder>(
+                  getPort(),
+                  getParentForChildren(),
+                  isClean());
+          port_ = null;
+        }
+        return portBuilder_;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:OnmsTopologyPortMessage)
+    }
+
+    // @@protoc_insertion_point(class_scope:OnmsTopologyPortMessage)
+    private static final org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage();
+    }
+
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<OnmsTopologyPortMessage>
+        PARSER = new com.google.protobuf.AbstractParser<OnmsTopologyPortMessage>() {
+      public OnmsTopologyPortMessage parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new OnmsTopologyPortMessage(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<OnmsTopologyPortMessage> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<OnmsTopologyPortMessage> getParserForType() {
+      return PARSER;
+    }
+
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyPortMessage getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface OnmsTopologyEdgeMessageOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:OnmsTopologyEdgeMessage)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    boolean hasMessage();
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getMessage();
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getMessageOrBuilder();
+
+    /**
+     * <code>.OnmsTopologyEdge edge = 2;</code>
+     */
+    boolean hasEdge();
+    /**
+     * <code>.OnmsTopologyEdge edge = 2;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge getEdge();
+    /**
+     * <code>.OnmsTopologyEdge edge = 2;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeOrBuilder getEdgeOrBuilder();
+  }
+  /**
+   * Protobuf type {@code OnmsTopologyEdgeMessage}
+   */
+  public  static final class OnmsTopologyEdgeMessage extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:OnmsTopologyEdgeMessage)
+      OnmsTopologyEdgeMessageOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use OnmsTopologyEdgeMessage.newBuilder() to construct.
+    private OnmsTopologyEdgeMessage(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private OnmsTopologyEdgeMessage() {
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private OnmsTopologyEdgeMessage(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder subBuilder = null;
+              if (message_ != null) {
+                subBuilder = message_.toBuilder();
+              }
+              message_ = input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(message_);
+                message_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 18: {
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge.Builder subBuilder = null;
+              if (edge_ != null) {
+                subBuilder = edge_.toBuilder();
+              }
+              edge_ = input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(edge_);
+                edge_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologyEdgeMessage_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologyEdgeMessage_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage.class, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage.Builder.class);
+    }
+
+    public static final int MESSAGE_FIELD_NUMBER = 1;
+    private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage message_;
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    public boolean hasMessage() {
+      return message_ != null;
+    }
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getMessage() {
+      return message_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : message_;
+    }
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getMessageOrBuilder() {
+      return getMessage();
+    }
+
+    public static final int EDGE_FIELD_NUMBER = 2;
+    private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge edge_;
+    /**
+     * <code>.OnmsTopologyEdge edge = 2;</code>
+     */
+    public boolean hasEdge() {
+      return edge_ != null;
+    }
+    /**
+     * <code>.OnmsTopologyEdge edge = 2;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge getEdge() {
+      return edge_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge.getDefaultInstance() : edge_;
+    }
+    /**
+     * <code>.OnmsTopologyEdge edge = 2;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeOrBuilder getEdgeOrBuilder() {
+      return getEdge();
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (message_ != null) {
+        output.writeMessage(1, getMessage());
+      }
+      if (edge_ != null) {
+        output.writeMessage(2, getEdge());
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (message_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, getMessage());
+      }
+      if (edge_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, getEdge());
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage)) {
+        return super.equals(obj);
+      }
+      org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage other = (org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage) obj;
+
+      boolean result = true;
+      result = result && (hasMessage() == other.hasMessage());
+      if (hasMessage()) {
+        result = result && getMessage()
+            .equals(other.getMessage());
+      }
+      result = result && (hasEdge() == other.hasEdge());
+      if (hasEdge()) {
+        result = result && getEdge()
+            .equals(other.getEdge());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasMessage()) {
+        hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
+        hash = (53 * hash) + getMessage().hashCode();
+      }
+      if (hasEdge()) {
+        hash = (37 * hash) + EDGE_FIELD_NUMBER;
+        hash = (53 * hash) + getEdge().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code OnmsTopologyEdgeMessage}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:OnmsTopologyEdgeMessage)
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessageOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologyEdgeMessage_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologyEdgeMessage_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage.class, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage.Builder.class);
+      }
+
+      // Construct using org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        if (messageBuilder_ == null) {
+          message_ = null;
+        } else {
+          message_ = null;
+          messageBuilder_ = null;
+        }
+        if (edgeBuilder_ == null) {
+          edge_ = null;
+        } else {
+          edge_ = null;
+          edgeBuilder_ = null;
+        }
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologyEdgeMessage_descriptor;
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage getDefaultInstanceForType() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage.getDefaultInstance();
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage build() {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage buildPartial() {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage result = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage(this);
+        if (messageBuilder_ == null) {
+          result.message_ = message_;
+        } else {
+          result.message_ = messageBuilder_.build();
+        }
+        if (edgeBuilder_ == null) {
+          result.edge_ = edge_;
+        } else {
+          result.edge_ = edgeBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage) {
+          return mergeFrom((org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage other) {
+        if (other == org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage.getDefaultInstance()) return this;
+        if (other.hasMessage()) {
+          mergeMessage(other.getMessage());
+        }
+        if (other.hasEdge()) {
+          mergeEdge(other.getEdge());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage message_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder> messageBuilder_;
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public boolean hasMessage() {
+        return messageBuilder_ != null || message_ != null;
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getMessage() {
+        if (messageBuilder_ == null) {
+          return message_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : message_;
+        } else {
+          return messageBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public Builder setMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage value) {
+        if (messageBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          message_ = value;
+          onChanged();
+        } else {
+          messageBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public Builder setMessage(
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder builderForValue) {
+        if (messageBuilder_ == null) {
+          message_ = builderForValue.build();
+          onChanged();
+        } else {
+          messageBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public Builder mergeMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage value) {
+        if (messageBuilder_ == null) {
+          if (message_ != null) {
+            message_ =
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.newBuilder(message_).mergeFrom(value).buildPartial();
+          } else {
+            message_ = value;
+          }
+          onChanged();
+        } else {
+          messageBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public Builder clearMessage() {
+        if (messageBuilder_ == null) {
+          message_ = null;
+          onChanged();
+        } else {
+          message_ = null;
+          messageBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder getMessageBuilder() {
+        
+        onChanged();
+        return getMessageFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getMessageOrBuilder() {
+        if (messageBuilder_ != null) {
+          return messageBuilder_.getMessageOrBuilder();
+        } else {
+          return message_ == null ?
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : message_;
+        }
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder> 
+          getMessageFieldBuilder() {
+        if (messageBuilder_ == null) {
+          messageBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder>(
+                  getMessage(),
+                  getParentForChildren(),
+                  isClean());
+          message_ = null;
+        }
+        return messageBuilder_;
+      }
+
+      private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge edge_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeOrBuilder> edgeBuilder_;
+      /**
+       * <code>.OnmsTopologyEdge edge = 2;</code>
+       */
+      public boolean hasEdge() {
+        return edgeBuilder_ != null || edge_ != null;
+      }
+      /**
+       * <code>.OnmsTopologyEdge edge = 2;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge getEdge() {
+        if (edgeBuilder_ == null) {
+          return edge_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge.getDefaultInstance() : edge_;
+        } else {
+          return edgeBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.OnmsTopologyEdge edge = 2;</code>
+       */
+      public Builder setEdge(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge value) {
+        if (edgeBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          edge_ = value;
+          onChanged();
+        } else {
+          edgeBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyEdge edge = 2;</code>
+       */
+      public Builder setEdge(
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge.Builder builderForValue) {
+        if (edgeBuilder_ == null) {
+          edge_ = builderForValue.build();
+          onChanged();
+        } else {
+          edgeBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyEdge edge = 2;</code>
+       */
+      public Builder mergeEdge(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge value) {
+        if (edgeBuilder_ == null) {
+          if (edge_ != null) {
+            edge_ =
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge.newBuilder(edge_).mergeFrom(value).buildPartial();
+          } else {
+            edge_ = value;
+          }
+          onChanged();
+        } else {
+          edgeBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyEdge edge = 2;</code>
+       */
+      public Builder clearEdge() {
+        if (edgeBuilder_ == null) {
+          edge_ = null;
+          onChanged();
+        } else {
+          edge_ = null;
+          edgeBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyEdge edge = 2;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge.Builder getEdgeBuilder() {
+        
+        onChanged();
+        return getEdgeFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.OnmsTopologyEdge edge = 2;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeOrBuilder getEdgeOrBuilder() {
+        if (edgeBuilder_ != null) {
+          return edgeBuilder_.getMessageOrBuilder();
+        } else {
+          return edge_ == null ?
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge.getDefaultInstance() : edge_;
+        }
+      }
+      /**
+       * <code>.OnmsTopologyEdge edge = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeOrBuilder> 
+          getEdgeFieldBuilder() {
+        if (edgeBuilder_ == null) {
+          edgeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdge.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeOrBuilder>(
+                  getEdge(),
+                  getParentForChildren(),
+                  isClean());
+          edge_ = null;
+        }
+        return edgeBuilder_;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:OnmsTopologyEdgeMessage)
+    }
+
+    // @@protoc_insertion_point(class_scope:OnmsTopologyEdgeMessage)
+    private static final org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage();
+    }
+
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<OnmsTopologyEdgeMessage>
+        PARSER = new com.google.protobuf.AbstractParser<OnmsTopologyEdgeMessage>() {
+      public OnmsTopologyEdgeMessage parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new OnmsTopologyEdgeMessage(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<OnmsTopologyEdgeMessage> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<OnmsTopologyEdgeMessage> getParserForType() {
+      return PARSER;
+    }
+
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyEdgeMessage getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface OnmsTopologySharedMessageOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:OnmsTopologySharedMessage)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    boolean hasMessage();
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getMessage();
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getMessageOrBuilder();
+
+    /**
+     * <code>.OnmsTopologyShared edge = 2;</code>
+     */
+    boolean hasEdge();
+    /**
+     * <code>.OnmsTopologyShared edge = 2;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared getEdge();
+    /**
+     * <code>.OnmsTopologyShared edge = 2;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedOrBuilder getEdgeOrBuilder();
+  }
+  /**
+   * Protobuf type {@code OnmsTopologySharedMessage}
+   */
+  public  static final class OnmsTopologySharedMessage extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:OnmsTopologySharedMessage)
+      OnmsTopologySharedMessageOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use OnmsTopologySharedMessage.newBuilder() to construct.
+    private OnmsTopologySharedMessage(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private OnmsTopologySharedMessage() {
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private OnmsTopologySharedMessage(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder subBuilder = null;
+              if (message_ != null) {
+                subBuilder = message_.toBuilder();
+              }
+              message_ = input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(message_);
+                message_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 18: {
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared.Builder subBuilder = null;
+              if (edge_ != null) {
+                subBuilder = edge_.toBuilder();
+              }
+              edge_ = input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(edge_);
+                edge_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologySharedMessage_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologySharedMessage_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage.class, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage.Builder.class);
+    }
+
+    public static final int MESSAGE_FIELD_NUMBER = 1;
+    private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage message_;
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    public boolean hasMessage() {
+      return message_ != null;
+    }
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getMessage() {
+      return message_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : message_;
+    }
+    /**
+     * <code>.OnmsTopologyMessage message = 1;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getMessageOrBuilder() {
+      return getMessage();
+    }
+
+    public static final int EDGE_FIELD_NUMBER = 2;
+    private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared edge_;
+    /**
+     * <code>.OnmsTopologyShared edge = 2;</code>
+     */
+    public boolean hasEdge() {
+      return edge_ != null;
+    }
+    /**
+     * <code>.OnmsTopologyShared edge = 2;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared getEdge() {
+      return edge_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared.getDefaultInstance() : edge_;
+    }
+    /**
+     * <code>.OnmsTopologyShared edge = 2;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedOrBuilder getEdgeOrBuilder() {
+      return getEdge();
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (message_ != null) {
+        output.writeMessage(1, getMessage());
+      }
+      if (edge_ != null) {
+        output.writeMessage(2, getEdge());
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (message_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, getMessage());
+      }
+      if (edge_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, getEdge());
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage)) {
+        return super.equals(obj);
+      }
+      org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage other = (org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage) obj;
+
+      boolean result = true;
+      result = result && (hasMessage() == other.hasMessage());
+      if (hasMessage()) {
+        result = result && getMessage()
+            .equals(other.getMessage());
+      }
+      result = result && (hasEdge() == other.hasEdge());
+      if (hasEdge()) {
+        result = result && getEdge()
+            .equals(other.getEdge());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasMessage()) {
+        hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
+        hash = (53 * hash) + getMessage().hashCode();
+      }
+      if (hasEdge()) {
+        hash = (37 * hash) + EDGE_FIELD_NUMBER;
+        hash = (53 * hash) + getEdge().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code OnmsTopologySharedMessage}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:OnmsTopologySharedMessage)
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessageOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologySharedMessage_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologySharedMessage_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage.class, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage.Builder.class);
+      }
+
+      // Construct using org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        if (messageBuilder_ == null) {
+          message_ = null;
+        } else {
+          message_ = null;
+          messageBuilder_ = null;
+        }
+        if (edgeBuilder_ == null) {
+          edge_ = null;
+        } else {
+          edge_ = null;
+          edgeBuilder_ = null;
+        }
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_OnmsTopologySharedMessage_descriptor;
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage getDefaultInstanceForType() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage.getDefaultInstance();
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage build() {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage buildPartial() {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage result = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage(this);
+        if (messageBuilder_ == null) {
+          result.message_ = message_;
+        } else {
+          result.message_ = messageBuilder_.build();
+        }
+        if (edgeBuilder_ == null) {
+          result.edge_ = edge_;
+        } else {
+          result.edge_ = edgeBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage) {
+          return mergeFrom((org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage other) {
+        if (other == org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage.getDefaultInstance()) return this;
+        if (other.hasMessage()) {
+          mergeMessage(other.getMessage());
+        }
+        if (other.hasEdge()) {
+          mergeEdge(other.getEdge());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage message_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder> messageBuilder_;
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public boolean hasMessage() {
+        return messageBuilder_ != null || message_ != null;
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage getMessage() {
+        if (messageBuilder_ == null) {
+          return message_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : message_;
+        } else {
+          return messageBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public Builder setMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage value) {
+        if (messageBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          message_ = value;
+          onChanged();
+        } else {
+          messageBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public Builder setMessage(
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder builderForValue) {
+        if (messageBuilder_ == null) {
+          message_ = builderForValue.build();
+          onChanged();
+        } else {
+          messageBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public Builder mergeMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage value) {
+        if (messageBuilder_ == null) {
+          if (message_ != null) {
+            message_ =
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.newBuilder(message_).mergeFrom(value).buildPartial();
+          } else {
+            message_ = value;
+          }
+          onChanged();
+        } else {
+          messageBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public Builder clearMessage() {
+        if (messageBuilder_ == null) {
+          message_ = null;
+          onChanged();
+        } else {
+          message_ = null;
+          messageBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder getMessageBuilder() {
+        
+        onChanged();
+        return getMessageFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder getMessageOrBuilder() {
+        if (messageBuilder_ != null) {
+          return messageBuilder_.getMessageOrBuilder();
+        } else {
+          return message_ == null ?
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.getDefaultInstance() : message_;
+        }
+      }
+      /**
+       * <code>.OnmsTopologyMessage message = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder> 
+          getMessageFieldBuilder() {
+        if (messageBuilder_ == null) {
+          messageBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessage.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyMessageOrBuilder>(
+                  getMessage(),
+                  getParentForChildren(),
+                  isClean());
+          message_ = null;
+        }
+        return messageBuilder_;
+      }
+
+      private org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared edge_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedOrBuilder> edgeBuilder_;
+      /**
+       * <code>.OnmsTopologyShared edge = 2;</code>
+       */
+      public boolean hasEdge() {
+        return edgeBuilder_ != null || edge_ != null;
+      }
+      /**
+       * <code>.OnmsTopologyShared edge = 2;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared getEdge() {
+        if (edgeBuilder_ == null) {
+          return edge_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared.getDefaultInstance() : edge_;
+        } else {
+          return edgeBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.OnmsTopologyShared edge = 2;</code>
+       */
+      public Builder setEdge(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared value) {
+        if (edgeBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          edge_ = value;
+          onChanged();
+        } else {
+          edgeBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyShared edge = 2;</code>
+       */
+      public Builder setEdge(
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared.Builder builderForValue) {
+        if (edgeBuilder_ == null) {
+          edge_ = builderForValue.build();
+          onChanged();
+        } else {
+          edgeBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyShared edge = 2;</code>
+       */
+      public Builder mergeEdge(org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared value) {
+        if (edgeBuilder_ == null) {
+          if (edge_ != null) {
+            edge_ =
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared.newBuilder(edge_).mergeFrom(value).buildPartial();
+          } else {
+            edge_ = value;
+          }
+          onChanged();
+        } else {
+          edgeBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyShared edge = 2;</code>
+       */
+      public Builder clearEdge() {
+        if (edgeBuilder_ == null) {
+          edge_ = null;
+          onChanged();
+        } else {
+          edge_ = null;
+          edgeBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.OnmsTopologyShared edge = 2;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared.Builder getEdgeBuilder() {
+        
+        onChanged();
+        return getEdgeFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.OnmsTopologyShared edge = 2;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedOrBuilder getEdgeOrBuilder() {
+        if (edgeBuilder_ != null) {
+          return edgeBuilder_.getMessageOrBuilder();
+        } else {
+          return edge_ == null ?
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared.getDefaultInstance() : edge_;
+        }
+      }
+      /**
+       * <code>.OnmsTopologyShared edge = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedOrBuilder> 
+          getEdgeFieldBuilder() {
+        if (edgeBuilder_ == null) {
+          edgeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologyShared.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedOrBuilder>(
+                  getEdge(),
+                  getParentForChildren(),
+                  isClean());
+          edge_ = null;
+        }
+        return edgeBuilder_;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:OnmsTopologySharedMessage)
+    }
+
+    // @@protoc_insertion_point(class_scope:OnmsTopologySharedMessage)
+    private static final org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage();
+    }
+
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<OnmsTopologySharedMessage>
+        PARSER = new com.google.protobuf.AbstractParser<OnmsTopologySharedMessage>() {
+      public OnmsTopologySharedMessage parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new OnmsTopologySharedMessage(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<OnmsTopologySharedMessage> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<OnmsTopologySharedMessage> getParserForType() {
+      return PARSER;
+    }
+
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.OnmsTopologySharedMessage getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_NodeCriteria_descriptor;
   private static final 
@@ -20958,6 +24450,11 @@ public final class OpennmsModelProtos {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_Node_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_OnmsTopologyRef_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_OnmsTopologyRef_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_OnmsTopologyMessage_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -20982,6 +24479,26 @@ public final class OpennmsModelProtos {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_OnmsTopologyShared_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_OnmsTopologyVertexMessage_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_OnmsTopologyVertexMessage_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_OnmsTopologyPortMessage_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_OnmsTopologyPortMessage_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_OnmsTopologyEdgeMessage_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_OnmsTopologyEdgeMessage_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_OnmsTopologySharedMessage_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_OnmsTopologySharedMessage_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -21049,29 +24566,39 @@ public final class OpennmsModelProtos {
       "ys_description\030\t \001(\t\022\025\n\rsys_object_id\030\n " +
       "\001(\t\022\"\n\014ip_interface\030\013 \003(\0132\014.IpInterface\022" +
       "&\n\016snmp_interface\030\014 \003(\0132\016.SnmpInterface\022" +
-      "\037\n\014hw_inventory\030\r \001(\0132\t.HwEntity\"\231\001\n\023Onm" +
-      "sTopologyMessage\022\n\n\002id\030\001 \001(\t\022\020\n\010protocol" +
-      "\030\002 \001(\t\0222\n\006status\030\003 \001(\0162\".OnmsTopologyMes" +
-      "sage.MessageStatus\"0\n\rMessageStatus\022\007\n\003N" +
-      "EW\020\000\022\n\n\006UPDATE\020\001\022\n\n\006DELETE\020\002\"o\n\022OnmsTopo" +
-      "logyVertex\022$\n\006ref_id\030\001 \001(\0132\024.OnmsTopolog" +
-      "yMessage\022$\n\rnode_criteria\030\002 \001(\0132\r.NodeCr" +
-      "iteria\022\r\n\005label\030\003 \001(\t\"\213\001\n\020OnmsTopologyPo" +
-      "rt\022$\n\006ref_id\030\001 \001(\0132\024.OnmsTopologyMessage" +
-      "\022#\n\006vtx_id\030\002 \001(\0132\023.OnmsTopologyVertex\022\r\n" +
-      "\005index\030\003 \001(\004\022\014\n\004port\030\004 \001(\t\022\017\n\007address\030\005 " +
-      "\001(\t\"~\n\020OnmsTopologyEdge\022$\n\006ref_id\030\001 \001(\0132" +
-      "\024.OnmsTopologyMessage\022!\n\006source\030\002 \001(\0132\021." +
-      "OnmsTopologyPort\022!\n\006target\030\003 \001(\0132\021.OnmsT" +
-      "opologyPort\"^\n\022OnmsTopologyShared\022$\n\006ref" +
-      "_id\030\001 \001(\0132\024.OnmsTopologyMessage\022\"\n\007sourc" +
-      "es\030\002 \003(\0132\021.OnmsTopologyPort*g\n\010Severity\022" +
-      "\021\n\rINDETERMINATE\020\000\022\013\n\007CLEARED\020\001\022\n\n\006NORMA" +
-      "L\020\002\022\013\n\007WARNING\020\003\022\t\n\005MINOR\020\004\022\t\n\005MAJOR\020\005\022\014" +
-      "\n\010CRITICAL\020\006*<\n\031OnmsTopologyMessageStatu" +
-      "s\022\007\n\003NEW\020\000\022\n\n\006UPDATE\020\001\022\n\n\006DELETE\020\002B?\n)or" +
-      "g.opennms.features.kafka.producer.modelB" +
-      "\022OpennmsModelProtosb\006proto3"
+      "\037\n\014hw_inventory\030\r \001(\0132\t.HwEntity\"\035\n\017Onms" +
+      "TopologyRef\022\n\n\002id\030\001 \001(\t\"\215\001\n\023OnmsTopology" +
+      "Message\022\020\n\010protocol\030\001 \001(\t\0222\n\006status\030\002 \001(" +
+      "\0162\".OnmsTopologyMessage.MessageStatus\"0\n" +
+      "\rMessageStatus\022\007\n\003NEW\020\000\022\n\n\006UPDATE\020\001\022\n\n\006D" +
+      "ELETE\020\002\"k\n\022OnmsTopologyVertex\022 \n\006ref_id\030" +
+      "\001 \001(\0132\020.OnmsTopologyRef\022$\n\rnode_criteria" +
+      "\030\002 \001(\0132\r.NodeCriteria\022\r\n\005label\030\003 \001(\t\"\207\001\n" +
+      "\020OnmsTopologyPort\022 \n\006ref_id\030\001 \001(\0132\020.Onms" +
+      "TopologyRef\022#\n\006vertex\030\002 \001(\0132\023.OnmsTopolo" +
+      "gyVertex\022\r\n\005index\030\003 \001(\004\022\014\n\004port\030\004 \001(\t\022\017\n" +
+      "\007address\030\005 \001(\t\"z\n\020OnmsTopologyEdge\022 \n\006re" +
+      "f_id\030\001 \001(\0132\020.OnmsTopologyRef\022!\n\006source\030\002" +
+      " \001(\0132\021.OnmsTopologyPort\022!\n\006target\030\003 \001(\0132" +
+      "\021.OnmsTopologyPort\"Z\n\022OnmsTopologyShared" +
+      "\022 \n\006ref_id\030\001 \001(\0132\020.OnmsTopologyRef\022\"\n\007so" +
+      "urces\030\002 \003(\0132\021.OnmsTopologyPort\"g\n\031OnmsTo" +
+      "pologyVertexMessage\022%\n\007message\030\001 \001(\0132\024.O" +
+      "nmsTopologyMessage\022#\n\006vertex\030\002 \001(\0132\023.Onm" +
+      "sTopologyVertex\"a\n\027OnmsTopologyPortMessa" +
+      "ge\022%\n\007message\030\001 \001(\0132\024.OnmsTopologyMessag" +
+      "e\022\037\n\004port\030\002 \001(\0132\021.OnmsTopologyPort\"a\n\027On" +
+      "msTopologyEdgeMessage\022%\n\007message\030\001 \001(\0132\024" +
+      ".OnmsTopologyMessage\022\037\n\004edge\030\002 \001(\0132\021.Onm" +
+      "sTopologyEdge\"e\n\031OnmsTopologySharedMessa" +
+      "ge\022%\n\007message\030\001 \001(\0132\024.OnmsTopologyMessag" +
+      "e\022!\n\004edge\030\002 \001(\0132\023.OnmsTopologyShared*g\n\010" +
+      "Severity\022\021\n\rINDETERMINATE\020\000\022\013\n\007CLEARED\020\001" +
+      "\022\n\n\006NORMAL\020\002\022\013\n\007WARNING\020\003\022\t\n\005MINOR\020\004\022\t\n\005" +
+      "MAJOR\020\005\022\014\n\010CRITICAL\020\006*<\n\031OnmsTopologyMes" +
+      "sageStatus\022\007\n\003NEW\020\000\022\n\n\006UPDATE\020\001\022\n\n\006DELET" +
+      "E\020\002B?\n)org.opennms.features.kafka.produc" +
+      "er.modelB\022OpennmsModelProtosb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -21145,36 +24672,66 @@ public final class OpennmsModelProtos {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Node_descriptor,
         new java.lang.String[] { "Id", "ForeignSource", "ForeignId", "Location", "Category", "Label", "CreateTime", "SysContact", "SysDescription", "SysObjectId", "IpInterface", "SnmpInterface", "HwInventory", });
-    internal_static_OnmsTopologyMessage_descriptor =
+    internal_static_OnmsTopologyRef_descriptor =
       getDescriptor().getMessageTypes().get(10);
+    internal_static_OnmsTopologyRef_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_OnmsTopologyRef_descriptor,
+        new java.lang.String[] { "Id", });
+    internal_static_OnmsTopologyMessage_descriptor =
+      getDescriptor().getMessageTypes().get(11);
     internal_static_OnmsTopologyMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_OnmsTopologyMessage_descriptor,
-        new java.lang.String[] { "Id", "Protocol", "Status", });
+        new java.lang.String[] { "Protocol", "Status", });
     internal_static_OnmsTopologyVertex_descriptor =
-      getDescriptor().getMessageTypes().get(11);
+      getDescriptor().getMessageTypes().get(12);
     internal_static_OnmsTopologyVertex_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_OnmsTopologyVertex_descriptor,
         new java.lang.String[] { "RefId", "NodeCriteria", "Label", });
     internal_static_OnmsTopologyPort_descriptor =
-      getDescriptor().getMessageTypes().get(12);
+      getDescriptor().getMessageTypes().get(13);
     internal_static_OnmsTopologyPort_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_OnmsTopologyPort_descriptor,
-        new java.lang.String[] { "RefId", "VtxId", "Index", "Port", "Address", });
+        new java.lang.String[] { "RefId", "Vertex", "Index", "Port", "Address", });
     internal_static_OnmsTopologyEdge_descriptor =
-      getDescriptor().getMessageTypes().get(13);
+      getDescriptor().getMessageTypes().get(14);
     internal_static_OnmsTopologyEdge_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_OnmsTopologyEdge_descriptor,
         new java.lang.String[] { "RefId", "Source", "Target", });
     internal_static_OnmsTopologyShared_descriptor =
-      getDescriptor().getMessageTypes().get(14);
+      getDescriptor().getMessageTypes().get(15);
     internal_static_OnmsTopologyShared_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_OnmsTopologyShared_descriptor,
         new java.lang.String[] { "RefId", "Sources", });
+    internal_static_OnmsTopologyVertexMessage_descriptor =
+      getDescriptor().getMessageTypes().get(16);
+    internal_static_OnmsTopologyVertexMessage_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_OnmsTopologyVertexMessage_descriptor,
+        new java.lang.String[] { "Message", "Vertex", });
+    internal_static_OnmsTopologyPortMessage_descriptor =
+      getDescriptor().getMessageTypes().get(17);
+    internal_static_OnmsTopologyPortMessage_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_OnmsTopologyPortMessage_descriptor,
+        new java.lang.String[] { "Message", "Port", });
+    internal_static_OnmsTopologyEdgeMessage_descriptor =
+      getDescriptor().getMessageTypes().get(18);
+    internal_static_OnmsTopologyEdgeMessage_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_OnmsTopologyEdgeMessage_descriptor,
+        new java.lang.String[] { "Message", "Edge", });
+    internal_static_OnmsTopologySharedMessage_descriptor =
+      getDescriptor().getMessageTypes().get(19);
+    internal_static_OnmsTopologySharedMessage_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_OnmsTopologySharedMessage_descriptor,
+        new java.lang.String[] { "Message", "Edge", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)
