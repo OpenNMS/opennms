@@ -46,6 +46,8 @@ import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 import org.opennms.netmgt.xml.eventconf.EventOrdering.EventOrderIndex;
 
+import com.google.common.base.MoreObjects;
+
 @XmlRootElement(name="event")
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("eventconf.xsd")
@@ -64,6 +66,12 @@ public class Event implements Serializable, Comparable<Event> {
      */
     @XmlElement(name="uei", required=true)
     private String m_uei;
+
+    /**
+     * The Priority of the Event definition. Higher number has higher priority.
+     */
+    @XmlElement(name="priority", required=false)
+    private Integer m_priority;
 
     /**
      * A human readable name used to identify an event in the web ui
@@ -202,6 +210,14 @@ public class Event implements Serializable, Comparable<Event> {
 
     public void setUei(final String uei) {
         m_uei = ConfigUtils.assertNotEmpty(uei, "uei").intern();
+    }
+
+    public Integer getPriority() {
+        return m_priority == null ? 0 : m_priority;
+    }
+
+    public void setPriority(Integer priority) {
+        m_priority = priority;
     }
 
     public String getEventLabel() {
@@ -532,6 +548,21 @@ public class Event implements Serializable, Comparable<Event> {
 
     @Override
     public int compareTo(final Event o) {
+        // Order based on priority with Highest Priority first
+        int priorityOrder = getPriority().compareTo(o.getPriority());
+        if (priorityOrder != 0) {
+            return -priorityOrder;
+        }
         return getIndex().compareTo(o.getIndex());
     }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("uei", m_uei)
+                .add("priority", getPriority())
+                .add("mask", m_mask)
+                .toString();
+    }
+
 }

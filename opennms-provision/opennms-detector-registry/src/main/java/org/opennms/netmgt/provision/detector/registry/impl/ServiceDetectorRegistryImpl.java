@@ -45,6 +45,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+
 public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceDetectorRegistryImpl.class);
 
@@ -111,12 +114,12 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
 
     @Override
     public Map<String, String> getTypes() {
-        return Collections.unmodifiableMap(m_classNameByServiceName);
+        return ImmutableMap.copyOf(m_classNameByServiceName);
     }
 
     @Override
     public Set<String> getServiceNames() {
-        return Collections.unmodifiableSet(m_factoriesByServiceName.keySet());
+        return ImmutableSet.copyOf(m_factoriesByServiceName.keySet());
     }
 
     @Override
@@ -141,7 +144,7 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
 
     @Override
     public Set<String> getClassNames() {
-        return Collections.unmodifiableSet(m_factoriesByClassName.keySet());
+        return ImmutableSet.copyOf(m_factoriesByClassName.keySet());
     }
 
     @Override
