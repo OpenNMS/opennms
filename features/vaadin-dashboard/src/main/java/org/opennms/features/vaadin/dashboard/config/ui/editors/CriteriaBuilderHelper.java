@@ -31,6 +31,8 @@ package org.opennms.features.vaadin.dashboard.config.ui.editors;
 import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.net.InetAddress;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -234,9 +236,20 @@ public class CriteriaBuilderHelper {
 
         for (String entry : entries) {
             String[] entryParts = entry.split("(?<!\\\\)[\\(\\),]", -1);
+            for (int i = 0; i < entryParts.length; i++) {
+                entryParts[i] = decode(entryParts[i]);
+            }
             CriteriaRestriction criteriaRestriction = CriteriaRestriction.valueOfIgnoreCase(entryParts[0]);
             criteriaRestriction.addRestrictionToCriteriaBuilder(this, criteriaBuilder, Arrays.copyOfRange(entryParts, 1, entryParts.length));
         }
+    }
+
+    public static String decode(final String string) {
+        return URLDecoder.decode(string);
+    }
+
+    public static String encode(final String string) {
+        return URLEncoder.encode(string).replace("%7C", "|");
     }
 
     /**

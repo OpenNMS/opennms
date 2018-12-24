@@ -51,6 +51,7 @@ public class InMemoryEventBean implements InMemoryEvent {
         this.event = Objects.requireNonNull(event);
         this.severity = ModelMappers.toSeverity(OnmsSeverity.get(event.getSeverity()));
         this.parameters = ImmutableList.copyOf(event.getParmCollection().stream()
+                .filter(Objects::nonNull) // Skip null parameters
                 .map(EventParameterBean::new)
                 .collect(Collectors.toList()));
     }

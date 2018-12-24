@@ -70,6 +70,14 @@
           </annotation>
         </element>
 
+        <element maxOccurs="1" minOccurs="0" name="priority" type="nonNegativeInteger">
+          <annotation>
+            <documentation>The Priority of the Event Definition.
+                Events with a higher priority value are evaluated for matching before events with lower priority.
+                Events without a priority are assigned a working priority of 0.</documentation>
+          </annotation>
+        </element>
+
         <element maxOccurs="1" minOccurs="1" name="event-label" type="string">
           <annotation>
             <documentation>A human readable name used to identify an event in
@@ -213,7 +221,6 @@
     <complexType>
       <sequence>
         <element maxOccurs="unbounded" minOccurs="1" ref="this:maskelement"/>
-
         <element maxOccurs="unbounded" minOccurs="0" ref="this:varbind"/>
       </sequence>
     </complexType>
