@@ -36,7 +36,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TopologyShared {
+public class TopologyShared implements Topology {
     
     private final static Logger LOG = LoggerFactory.getLogger(TopologyShared.class);
 
@@ -95,6 +95,32 @@ public class TopologyShared {
 
     public void setCloud(MacCloud cloud) {
         this.cloud = cloud;
+    }
+
+    @Override
+    public String printTopology() {
+        final StringBuffer strbfr = new StringBuffer();
+        strbfr.append("shared -> designated bridge:[");
+        strbfr.append(top.printTopology());
+        strbfr.append("]\n");
+        for (BridgePort blink:  left) {
+            strbfr.append("        -> port:");            
+            if (blink == null) {
+                strbfr.append("[null]");
+            } else {
+                strbfr.append(blink.printTopology());
+            }
+            strbfr.append("\n");
+        }
+        for (MacPort port: right) {
+            strbfr.append("        -> macs:");
+            strbfr.append(port.printTopology());
+        }
+        if (cloud != null) {
+            strbfr.append("        -> macs:");
+            strbfr.append(cloud.printTopology());
+        }
+        return strbfr.toString();
     }
         
 }

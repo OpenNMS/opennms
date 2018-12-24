@@ -284,7 +284,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         }
     }
 
-    
     private void getBridgeLinks() throws BridgeTopologyException {
         m_bridgeTopologyService.match().stream().forEach(topologylink ->
         {
@@ -294,7 +293,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
             portToNodeVertexMap.values().stream().forEach(vertex ->        
                 vertex.getProtocolSupported().add(ProtocolSupported.BRIDGE));
-            
             Map<MacPort,LinkdVertex> macPortToNodeVertexMap = topologylink.getMacPorts().
                     stream().
                     filter( port -> port.getNodeId() != null).
@@ -313,6 +311,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 addVertices(macsVertex);
             } 
             
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getBridgeLinks: parsing {}",topologylink.printTopology());
+            }
             if (portToNodeVertexMap.size() == 2 && 
                     macPortToNodeVertexMap.size() == 0 && macsVertex == null ) {
                 LinkdVertex source = null;
