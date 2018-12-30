@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Utility to extract system properties, similar to Integer.getInteger. This class allows to distinguish between a not
+ * Utility to extract system properties, similar to Integer.getInteger. This class allows to distinguish between a none
  * present value and a malformed value. In case of the latter a log message is produced. Integer.getInteger would just return
  * the defaultValue without informing the user and can therefor lead to hard to find configuration problems.
  */
