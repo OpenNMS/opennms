@@ -225,7 +225,7 @@ public class CollectionAgentDTO implements CollectionAgent {
     public String toString() {
         return String.format("CollectionAgentDTO[attributes=%s, address=%s, storeByForeignSource=%s, "
                 + "nodeId=%d, nodeLabel=%s, foreignSource=%s, foreignId=%s, location=%s, storageDir=%s, "
-                + "sysObjectId=%s, sysUpTime=%d]",
+                + "sysUpTime=%d]",
                 attributes, address != null ? InetAddrUtils.str(address) : null, storeByForeignSource,
                 nodeId, nodeLabel, foreignSource, foreignId, location, storageResourcePath, sysUpTime);
     }

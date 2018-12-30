@@ -32,7 +32,6 @@ import java.util.Collection;
 
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
-import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.PersistenceSelectorStrategy;
@@ -61,7 +60,7 @@ public class SnmpCollectionSetRefactorDummy extends SnmpCollectionSet implements
 
     CollectionSet createCollectionSet() {
         CollectionSetBuilder builder = new CollectionSetBuilder(getAgent());
-
+        builder.withTimestamp(getCollectionTimestamp());
 
         // TODO Patrick Very ugly mapping until refactoring is done. We convert here the snmp world into the CollectionSetBuilder world
         for (CollectionResource collectionResource : getResources()) {
@@ -69,17 +68,21 @@ public class SnmpCollectionSetRefactorDummy extends SnmpCollectionSet implements
                 NodeInfo nodeInfo = (NodeInfo) collectionResource;
                 NodeLevelResource resource = new NodeLevelResource(nodeInfo.getNodeId());
                 addGroupsToBuilder(builder, resource, nodeInfo.getGroups());
+                resource.setTimestamp(getCollectionTimestamp());
             } else if(collectionResource instanceof IfInfo) {
                 IfInfo ifInfo = (IfInfo) collectionResource;
                 InterfaceLevelResource resource = new InterfaceLevelResource(new NodeLevelResource(ifInfo.getNodeId()), ifInfo.getAttributesMap().get("snmpifname"));
                 addGroupsToBuilder(builder, resource, ifInfo.getGroups());
-            } else if(collectionResource instanceof AliasedResource) {
-                AliasedResource aliasedResource = (AliasedResource) collectionResource;
-                InterfaceLevelResource resource = new InterfaceLevelResource(
-                        new NodeLevelResource(aliasedResource.getIfInfo().getNodeId()),
-                        aliasedResource.getIfInfo().getAttributesMap().get("snmpifname"));
                 resource.setTimestamp(getCollectionTimestamp());
-                addGroupsToBuilder(builder, resource, aliasedResource.getGroups());
+            } else if(collectionResource instanceof AliasedResource) {
+                // LOG.warn("we don't support AliasedResources");
+                // We don't do anything for AliasedResource as discussed with jesse - AliasedResource is not used currently
+                // AliasedResource aliasedResource = (AliasedResource) collectionResource;
+                // InterfaceLevelResource resource = new InterfaceLevelResource(
+                // new NodeLevelResource(aliasedResource.getIfInfo().getNodeId()),
+                // aliasedResource.getIfInfo().getAttributesMap().get("snmpifname"));
+                // resource.setTimestamp(getCollectionTimestamp());
+                // addGroupsToBuilder(builder, resource, aliasedResource.getGroups());
             } else if(collectionResource instanceof GenericIndexResource) {
                 GenericIndexResource genericResource = (GenericIndexResource) collectionResource;
                 PersistenceSelectorStrategy persistenceSelectorStrategy = ((GenericIndexResourceType)genericResource.getResourceType()).getPersistenceSelectorStrategy();
@@ -90,19 +93,13 @@ public class SnmpCollectionSetRefactorDummy extends SnmpCollectionSet implements
                 resourceType.setPersistenceSelectorStrategy(convert(persistenceSelectorStrategy));
                 // TODO Patrick what shall we set here?  resourceType.setResourceLabel();
                 resourceType.setStorageStrategy(convert(storageStrategy));
-
-
-//                DeferredGenericTypeResource resource = new DeferredGenericTypeResource(
-//                        new NodeLevelResource(genericResource.getCollectionAgent().getNodeId()),
-//                        genericResource.getResourceTypeName(),
-//                        genericResource.getInstance());
                 GenericTypeResource resource = new GenericTypeResource(new NodeLevelResource(genericResource.getCollectionAgent().getNodeId()),resourceType,genericResource.getInstance());
+                resource.setTimestamp(getCollectionTimestamp());
                 addGroupsToBuilder(builder, resource, genericResource.getGroups());
             } else {
                 throw new IllegalArgumentException("Unknown Resource: " + collectionResource.getClass().getName());
             }
         }
-        builder.withTimestamp(getCollectionTimestamp());
         return builder.build();
     }
 
