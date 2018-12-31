@@ -47,6 +47,8 @@ public class SnmpCollector extends AbstractServiceCollector {
 
     private static final Logger LOG = LoggerFactory.getLogger(SnmpCollector.class);
 
+    public static final String SYS_PROPERTY_USE_OLD_IMPLEMENTATION = "SYS_PROPERTY_USE_OLD_IMPLEMENTATION";
+
     /**
      * Name of monitored service.
      */
@@ -92,9 +94,10 @@ public class SnmpCollector extends AbstractServiceCollector {
 
     private SnmpCollectorAbstract delegate;
 
-    public SnmpCollector(){
-        boolean useOld = false;
-        if(useOld) {
+
+    public SnmpCollector() {
+        boolean useOldImplementation = Boolean.getBoolean(SYS_PROPERTY_USE_OLD_IMPLEMENTATION);
+        if(useOldImplementation) {
             delegate = new SnmpCollectorOld();
         } else {
             delegate = new SnmpCollectorNew();
