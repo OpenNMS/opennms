@@ -1196,8 +1196,8 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     @Transient
     @XmlTransient
     public Set<Integer> getRelatedAlarmIds() {
-        return getRelatedAlarms().stream()
-                .map(OnmsAlarm::getId)
+        return getAssociatedAlarms().stream()
+                .map(AlarmAssociation::getRelatedAlarmId)
                 .collect(Collectors.toSet());
     }
 

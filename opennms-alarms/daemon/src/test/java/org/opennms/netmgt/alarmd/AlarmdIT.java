@@ -39,6 +39,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.isIn;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -380,6 +381,34 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
         situation = m_alarmDao.findByReductionKey("Situation1");
         assertEquals(1, situation.getRelatedAlarms().size());
+    }
+
+    @Test
+    @Transactional
+    public void testPersistSituationAndGetRelatedAlarmIds() throws Exception {
+        final MockNode node = m_mockNetwork.getNode(1);
+
+        //there should be no alarms in the alarms table
+        assertEmptyAlarmTable();
+
+        //there should be no alarms in the alarm_situations table
+        assertEmptyAlarmSituationTable();
+
+        //create 2 alarms to roll up into situation
+        sendNodeDownEvent("Alarm1", node);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        assertEquals(1, m_alarmDao.findAll().size());
+
+        sendNodeDownEvent("Alarm2", node);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        assertEquals(2, m_alarmDao.findAll().size());
+
+        //create situation rolling up the alarms
+        List<String> reductionKeys = Arrays.asList("Alarm1", "Alarm2");
+        sendSituationEvent("Situation1", node, reductionKeys);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        OnmsAlarm situation = m_alarmDao.findByReductionKey("Situation1");
+        assertThat(situation.getRelatedAlarmIds(), hasSize(2));
     }
 
     @Test

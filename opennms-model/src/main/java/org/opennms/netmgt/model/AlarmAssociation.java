@@ -34,6 +34,7 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -64,6 +65,8 @@ public class AlarmAssociation implements Serializable {
 
     private Date mappedTime;
 
+    private Integer relatedAlarmId;
+
     public AlarmAssociation() {
     }
 
@@ -75,6 +78,7 @@ public class AlarmAssociation implements Serializable {
         this.mappedTime = mappedTime;
         this.situationAlarm = situationAlarm;
         this.relatedAlarm = relatedAlarm;
+        relatedAlarmId = relatedAlarm.getId();
     }
 
     @Id
@@ -89,7 +93,7 @@ public class AlarmAssociation implements Serializable {
         this.id = id;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "situation_id")
     public OnmsAlarm getSituationAlarm() {
         return situationAlarm;
@@ -99,7 +103,7 @@ public class AlarmAssociation implements Serializable {
         this.situationAlarm = situationAlarm;
     }
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "related_alarm_id")
     public OnmsAlarm getRelatedAlarm() {
         return relatedAlarm;
@@ -109,6 +113,22 @@ public class AlarmAssociation implements Serializable {
         this.relatedAlarm = relatedAlarm;
     }
 
+    /**
+     * Accessor method to retrieve the related alarm Id without loading the full related alarm object. Annotated
+     * "insertable = false" and "updatable = false" to indicate that updates to this column should be done via updating
+     * the referenced related alarm object rather than updating this Id directly.
+     */
+    @Column(name = "related_alarm_id", insertable = false, updatable = false)
+    public Integer getRelatedAlarmId() {
+        return relatedAlarmId;
+    }
+
+    /**
+     * Private setter to appease hibernate. We don't actually want to call this ourselves.
+     */
+    private void setRelatedAlarmId(Integer relatedAlarmId) {
+        this.relatedAlarmId = relatedAlarmId;
+    }
 
     public void setMappedTime(Date mappedTime) {
         this.mappedTime = mappedTime;

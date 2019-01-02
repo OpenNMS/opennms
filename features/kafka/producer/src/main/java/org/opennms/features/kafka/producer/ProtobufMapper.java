@@ -323,17 +323,7 @@ public class ProtobufMapper {
             alarm.getRelatedAlarms().forEach(relatedAlarm -> builder.addRelatedAlarm(toAlarm(relatedAlarm)));
         }
 
-        OpennmsModelProtos.Alarm.Type type = OpennmsModelProtos.Alarm.Type.UNRECOGNIZED;
-        if (alarm.getAlarmType() != null) {
-            if (alarm.getAlarmType() == OnmsAlarm.PROBLEM_TYPE) {
-                type = OpennmsModelProtos.Alarm.Type.PROBLEM_WITH_CLEAR;
-            } else if (alarm.getAlarmType() == OnmsAlarm.RESOLUTION_TYPE) {
-                type = OpennmsModelProtos.Alarm.Type.CLEAR;
-            } else if (alarm.getAlarmType() == OnmsAlarm.PROBLEM_WITHOUT_RESOLUTION_TYPE) {
-                type = OpennmsModelProtos.Alarm.Type.PROBLEM_WITHOUT_CLEAR;
-            }
-        }
-        builder.setType(type);
+        builder.setType(toType(alarm));
 
         if (alarm.getServiceType() != null) {
             builder.setServiceName(alarm.getServiceType().getName());
@@ -344,6 +334,21 @@ public class ProtobufMapper {
         setTimeIfNotNull(alarm.getAckTime(), builder::setAckTime);
 
         return builder;
+    }
+    
+    public OpennmsModelProtos.Alarm.Type toType(OnmsAlarm alarm) {
+        OpennmsModelProtos.Alarm.Type type = OpennmsModelProtos.Alarm.Type.UNRECOGNIZED;
+        if (alarm.getAlarmType() != null) {
+            if (alarm.getAlarmType() == OnmsAlarm.PROBLEM_TYPE) {
+                type = OpennmsModelProtos.Alarm.Type.PROBLEM_WITH_CLEAR;
+            } else if (alarm.getAlarmType() == OnmsAlarm.RESOLUTION_TYPE) {
+                type = OpennmsModelProtos.Alarm.Type.CLEAR;
+            } else if (alarm.getAlarmType() == OnmsAlarm.PROBLEM_WITHOUT_RESOLUTION_TYPE) {
+                type = OpennmsModelProtos.Alarm.Type.PROBLEM_WITHOUT_CLEAR;
+            }
+        }
+        
+        return type;
     }
 
     public OpennmsModelProtos.AlarmFeedback.Builder toAlarmFeedback(AlarmFeedback alarmFeedback) {

@@ -110,8 +110,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private KafkaProducer<String, byte[]> producer;
     
     private final Map<String, OpennmsModelProtos.Alarm> outstandingAlarms = new ConcurrentHashMap<>();
-    private final AlarmEqualityChecker alarmEqualityChecker =
-            AlarmEqualityChecker.with(AlarmEqualityChecker.Exclusions::defaultExclusions);
 
     private final AlarmCallbackStateTracker stateTracker = new AlarmCallbackStateTracker();
 
@@ -229,15 +227,8 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     private boolean isIncrementalAlarm(String reductionKey, OnmsAlarm alarm) {
         OpennmsModelProtos.Alarm existingAlarm = outstandingAlarms.get(reductionKey);
-        return existingAlarm != null && alarmEqualityChecker.equalsExcludingOnFirst(protobufMapper.toAlarm(alarm),
-                existingAlarm);
-    }
-
-    private void recordIncrementalAlarm(String reductionKey, OnmsAlarm alarm) {
-        // Apply the excluded fields when putting to the map so we do not have to perform this calculation
-        // on each equality check
-        outstandingAlarms.put(reductionKey,
-                AlarmEqualityChecker.Exclusions.defaultExclusions(protobufMapper.toAlarm(alarm)).build());
+        return existingAlarm != null && !AlarmEqualityChecker.withProtoAlarm(existingAlarm, protobufMapper)
+                .hasNonIncrementalDifferences(alarm);
     }
 
     private void updateAlarm(String reductionKey, OnmsAlarm alarm) {
@@ -277,7 +268,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             final OpennmsModelProtos.Alarm mappedAlarm = protobufMapper.toAlarm(alarm).build();
             LOG.debug("Sending alarm with reduction key: {}", reductionKey);
             if (suppressIncrementalAlarms) {
-                recordIncrementalAlarm(reductionKey, alarm);
+                outstandingAlarms.put(reductionKey, mappedAlarm);
             }
             return new ProducerRecord<>(alarmTopic, reductionKey, mappedAlarm.toByteArray());
         }, recordMetadata -> {

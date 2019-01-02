@@ -96,8 +96,6 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
     private KTable<String, byte[]> alarmBytesKtable;
     private KTable<String, OpennmsModelProtos.Alarm> alarmKtable;
 
-    private final AlarmEqualityChecker alarmEqualityChecker =
-            AlarmEqualityChecker.with(AlarmEqualityChecker.Exclusions::defaultExclusions);
     private boolean suppressIncrementalAlarms;
 
     public KafkaAlarmDataSync(ConfigurationAdmin configAdmin, OpennmsKafkaProducer kafkaProducer, ProtobufMapper protobufMapper) {
@@ -244,14 +242,9 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
                 }
 
                 final OnmsAlarm dbAlarm = alarmsInDbByReductionKey.get(rkey);
-                final OpennmsModelProtos.Alarm.Builder mappedDbAlarm = protobufMapper.toAlarm(dbAlarm);
                 final OpennmsModelProtos.Alarm alarmFromKtable = alarmsInKtableByReductionKey.get(rkey);
-                final OpennmsModelProtos.Alarm.Builder alarmBuilderFromKtable =
-                        alarmsInKtableByReductionKey.get(rkey).toBuilder();
 
-                if ((suppressIncrementalAlarms && !alarmEqualityChecker.equalsExcludingOnBoth(mappedDbAlarm,
-                        alarmBuilderFromKtable)) || (!suppressIncrementalAlarms && !Objects.equals(mappedDbAlarm.build(),
-                        alarmFromKtable))) {
+                if(shouldSendAlarm(dbAlarm, alarmFromKtable)) {
                     kafkaProducer.handleNewOrUpdatedAlarm(dbAlarm);
                     reductionKeysUpdated.add(rkey);
                 }
@@ -276,6 +269,16 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
         }
 
         return results;
+    }
+
+    private boolean shouldSendAlarm(OnmsAlarm alarmFromDb, OpennmsModelProtos.Alarm alarmFromKTable) {
+        // If suppressing incremental alarms we check for a non-incremental difference between the alarms otherwise we
+        // check for any difference
+        AlarmEqualityChecker alarmEqualityChecker = AlarmEqualityChecker.withProtoAlarm(alarmFromKTable,
+                protobufMapper);
+        return (suppressIncrementalAlarms && alarmEqualityChecker.hasNonIncrementalDifferences(alarmFromDb)) ||
+                (!suppressIncrementalAlarms && !alarmEqualityChecker.equalTo(alarmFromDb));
+
     }
 
     private Properties loadStreamsProperties() throws IOException {

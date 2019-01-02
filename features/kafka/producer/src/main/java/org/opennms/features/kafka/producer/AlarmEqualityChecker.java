@@ -28,105 +28,153 @@
 
 package org.opennms.features.kafka.producer;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
+import org.opennms.netmgt.model.OnmsAlarm;
 
 /**
- * Checks equality between two alarms based on a defined set of excluded fields.
+ * Contains a {@link OpennmsModelProtos.Alarm} to encapsulate comparison logic to the {@link OnmsAlarm source type} that
+ * the proto object was originally mapped from. This prevents re-mapping the object to the source type to compare
+ * against another alarm of the source type.
  * <p>
- * Equality methods in this class modify their parameters as a side effect of comparison (by clearing certain fields).
- * This is done to avoid needlessly cloning parameters by default. If modification is undesirable the parameters must
- * be cloned before being passed to this class and discarded afterwards.
+ * Note that this class only references the contained alarm and does not copy it. Therefore mutations to the original
+ * alarm will effect the results from this class.
  */
 public class AlarmEqualityChecker {
     /**
-     * The function to use to apply exclusions.
+     * The {@link OpennmsModelProtos.Alarm contained alarm}.
      */
-    private final Function<OpennmsModelProtos.Alarm.Builder, OpennmsModelProtos.Alarm.Builder> applyExclusions;
+    private final OpennmsModelProtos.Alarm protoAlarm;
 
     /**
-     * Private constructor.
-     *
-     * @param applyExclusions exclusion function
+     * The mapper to use to map fields that cannot be easily compared directly.
      */
-    private AlarmEqualityChecker(Function<OpennmsModelProtos.Alarm.Builder,
-            OpennmsModelProtos.Alarm.Builder> applyExclusions) {
-        this.applyExclusions = Objects.requireNonNull(applyExclusions);
+    private final ProtobufMapper protobufMapper;
+
+    private AlarmEqualityChecker(OpennmsModelProtos.Alarm protoAlarm, ProtobufMapper protobufMapper) {
+        this.protoAlarm = protoAlarm;
+        this.protobufMapper = protobufMapper;
     }
 
     /**
-     * Static factory method.
+     * Static factory method that creates an instance containing the given alarm.
      *
-     * @param applyExclusions exclusion function
-     * @return the instance with the given exclusion function
+     * @param protoAlarm     the alarm to contain
+     * @param protobufMapper the mapper to use
+     * @return a new instance containing the given alarm
      */
-    public static AlarmEqualityChecker with(Function<OpennmsModelProtos.Alarm.Builder,
-            OpennmsModelProtos.Alarm.Builder> applyExclusions) {
-        return new AlarmEqualityChecker(applyExclusions);
+    public static AlarmEqualityChecker withProtoAlarm(OpennmsModelProtos.Alarm protoAlarm,
+                                                      ProtobufMapper protobufMapper) {
+        return new AlarmEqualityChecker(Objects.requireNonNull(protoAlarm), Objects.requireNonNull(protobufMapper));
     }
 
     /**
-     * Checks two given alarms for equality excluding a defined set of fields during the equality check.
+     * Compares the fields in {@link #protoAlarm the contained alarm} with the fields in
+     * {@link OnmsAlarm the given alarm} for any incremental differences in logical equality.
+     * <p>
+     * Incremental differences are differences in one of the following attributes:
+     * <list>
+     * <li>count</li>
+     * <li>lastEvent</li>
+     * <li>lastEventTime</li>
+     * </list>
      *
-     * @param a alarm a
-     * @param b alarm b
-     * @return true if equal, false otherwise
+     * @param onmsAlarm the alarm to compare with
+     * @return whether or not the given alarm has incremental differences
      */
-    public boolean equalsExcludingOnBoth(OpennmsModelProtos.Alarm.Builder a, OpennmsModelProtos.Alarm.Builder b) {
-        return applyExclusions.apply(Objects.requireNonNull(a)).build()
-                .equals(applyExclusions.apply(Objects.requireNonNull(b)).build());
+    private boolean hasIncrementalDifferences(OnmsAlarm onmsAlarm) {
+        return !equalsOrZero((int) protoAlarm.getCount(), onmsAlarm.getCounter()) ||
+                !equalsOrZero(protoAlarm.getLastEventTime(), onmsAlarm.getLastEventTime() == null ? null :
+                        onmsAlarm.getLastEventTime().getTime()) ||
+                ((protoAlarm.getLastEvent() == null || onmsAlarm.getLastEvent() == null ||
+                        !equalsOrZero((int) protoAlarm.getLastEvent().getId(), onmsAlarm.getLastEvent().getId())) &&
+                        (protoAlarm.getLastEvent() != OpennmsModelProtos.Event.getDefaultInstance() ||
+                                onmsAlarm.getLastEvent() != null));
     }
 
     /**
-     * Checks two given alarms for equality excluding a defined set of fields on alarm a during the equality check.
+     * Compares the fields in {@link #protoAlarm the contained alarm} except for those checked by
+     * {@link #hasIncrementalDifferences} with the fields in {@link OnmsAlarm the given alarm} for any differences in
+     * logical equality.
+     * <p>
+     * All fields not compared by {@link #hasIncrementalDifferences} must be compared here.
+     * <p>
+     * Note that the comparison between related alarms is done on the Ids only.
      *
-     * @param a alarm a which will have exclusions applied
-     * @param b alarm b
-     * @return true if equal, false otherwise
+     * @param onmsAlarm the alarm to compare with
+     * @return whether or not the given alarm has non-incremental differences
      */
-    public boolean equalsExcludingOnFirst(OpennmsModelProtos.Alarm.Builder a, OpennmsModelProtos.Alarm b) {
-        return applyExclusions.apply(Objects.requireNonNull(a)).build()
-                .equals(Objects.requireNonNull(b));
+    public boolean hasNonIncrementalDifferences(OnmsAlarm onmsAlarm) {
+        // TODO: order for efficient short-circuit
+        return !(equalsOrZero((int) protoAlarm.getId(), onmsAlarm.getId()) &&
+                equalsOrEmpty(protoAlarm.getUei(), onmsAlarm.getUei()) &&
+                Objects.equals(protoAlarm.getNodeCriteria(), onmsAlarm.getNode() == null ?
+                        OpennmsModelProtos.NodeCriteria.getDefaultInstance() :
+                        protobufMapper.toNodeCriteria(onmsAlarm.getNode()).build()) &&
+                equalsOrEmpty(protoAlarm.getIpAddress(), onmsAlarm.getIpAddr() == null ? null :
+                        onmsAlarm.getIpAddr().toString()) &&
+                equalsOrEmpty(protoAlarm.getServiceName(), onmsAlarm.getServiceType() == null ? null :
+                        onmsAlarm.getServiceType().getName()) &&
+                equalsOrEmpty(protoAlarm.getReductionKey(), onmsAlarm.getReductionKey()) &&
+                Objects.equals(protoAlarm.getType(), protobufMapper.toType(onmsAlarm)) &&
+                Objects.equals(protoAlarm.getSeverity(), onmsAlarm.getSeverity() == null ? null :
+                        protobufMapper.toSeverity(onmsAlarm.getSeverity())) &&
+                equalsOrZero(protoAlarm.getFirstEventTime(), onmsAlarm.getFirstEventTime() == null ? null :
+                        onmsAlarm.getFirstEventTime().getTime()) &&
+                equalsOrEmpty(protoAlarm.getDescription(), onmsAlarm.getDescription()) &&
+                equalsOrEmpty(protoAlarm.getLogMessage(), onmsAlarm.getLogMsg()) &&
+                equalsOrEmpty(protoAlarm.getAckUser(), onmsAlarm.getAckUser()) &&
+                equalsOrZero(protoAlarm.getAckTime(), onmsAlarm.getAckTime() == null ? null :
+                        onmsAlarm.getAckTime().getTime()) &&
+                equalsOrZero(protoAlarm.getIfIndex(), onmsAlarm.getIfIndex()) &&
+                equalsOrEmpty(protoAlarm.getOperatorInstructions(), onmsAlarm.getOperInstruct()) &&
+                equalsOrEmpty(protoAlarm.getClearKey(), onmsAlarm.getClearKey()) &&
+                equalsOrEmpty(protoAlarm.getManagedObjectInstance(), onmsAlarm.getManagedObjectInstance()) &&
+                equalsOrEmpty(protoAlarm.getManagedObjectType(), onmsAlarm.getManagedObjectType()) &&
+                // Note: I'm assuming comparing the set of related alarm Ids is sufficient here as differences in the
+                // related alarms themselves shouldn't be interesting for the consumers of this method
+                Objects.equals(protoAlarm.getRelatedAlarmList()
+                        .stream()
+                        .map(ra -> (int) ra.getId())
+                        .collect(Collectors.toSet()), onmsAlarm.getRelatedAlarmIds()));
     }
 
     /**
-     * Static class to namespace a predefined set of exclusions.
+     * Compares the fields in {@link #protoAlarm the contained alarm} with {@link OnmsAlarm the given alarm} for any
+     * differences in logical equality.
+     *
+     * @param onmsAlarm the alarm to compare with
+     * @return whether or not the given alarm has any differences
      */
-    public static class Exclusions {
-        /**
-         * The default exclusions.
-         *
-         * @param alarmBuilder the alarm builder to apply exclusions to
-         * @return the alarm builder with exclusions applied
-         */
-        public static OpennmsModelProtos.Alarm.Builder defaultExclusions(
-                OpennmsModelProtos.Alarm.Builder alarmBuilder) {
-            // Recursively apply these exclusions to any related alarms
-            if (!alarmBuilder.getRelatedAlarmList().isEmpty()) {
-                List<OpennmsModelProtos.Alarm> relatedAlarmsWithExclusions = alarmBuilder.getRelatedAlarmList().stream()
-                        // Convert the related alarm into a builder
-                        .map(OpennmsModelProtos.Alarm::newBuilder)
-                        // Apply the exclusions
-                        .map(Exclusions::defaultExclusions)
-                        // Convert the alarm back
-                        .map(OpennmsModelProtos.Alarm.Builder::build)
-                        .collect(Collectors.toList());
-                // Doesn't look like we can just replace the list at this point so we need to clear it and repopulate
-                // it iteratively
-                // Clear all the untouched related alarms
-                alarmBuilder.clearRelatedAlarm();
-                // Replace them with the excluded related alarms
-                relatedAlarmsWithExclusions.forEach(alarmBuilder::addRelatedAlarm);
-            }
+    public boolean equalTo(OnmsAlarm onmsAlarm) {
+        return !hasIncrementalDifferences(onmsAlarm) && !hasNonIncrementalDifferences(onmsAlarm);
+    }
 
-            return alarmBuilder
-                    .clearCount()
-                    .clearLastEvent()
-                    .clearLastEventTime();
+    // The methods below accommodate comparisons between primitive fields in the proto objects and reference fields in
+    // the Onms* objects
+    //
+    // Because of the difference in types we can't tell the difference between a value being unset or explicitly set to
+    // 0 on the proto objects
+
+    private static boolean equalsOrEmpty(String a, String b) {
+        if (b == null) {
+            return Objects.equals(a, "");
         }
+
+        return b.equals(a);
+    }
+
+    private static boolean equalsOrZero(long a, Long b) {
+        if (b == null) {
+            return a == 0;
+        }
+
+        return b.equals(a);
+    }
+
+    private static boolean equalsOrZero(int a, Integer b) {
+        return equalsOrZero((long) a, b == null ? null : b.longValue());
     }
 }

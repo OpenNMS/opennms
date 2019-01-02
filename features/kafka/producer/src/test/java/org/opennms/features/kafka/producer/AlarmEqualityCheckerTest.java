@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,47 +29,62 @@
 package org.opennms.features.kafka.producer;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+
+import java.util.Date;
 
 import org.junit.Test;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
+import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.api.HwEntityDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.springframework.transaction.support.TransactionOperations;
 
-/**
- * Tests for {@link AlarmEqualityChecker}.
- */
 public class AlarmEqualityCheckerTest {
-    /**
-     * Tests that two alarms match except for their excluded fields.
-     */
+    private final ProtobufMapper protobufMapper = new ProtobufMapper(mock(EventConfDao.class),
+            mock(HwEntityDao.class), mock(TransactionOperations.class), mock(NodeDao.class), 1000);
+
     @Test
-    public void testMatchingAfterDefaultExclusions() {
-        AlarmEqualityChecker alarmEqualityChecker =
-                AlarmEqualityChecker.with(AlarmEqualityChecker.Exclusions::defaultExclusions);
+    public void testEqualTo() {
+        OnmsAlarm onmsAlarm = new OnmsAlarm();
+        onmsAlarm.setId(1);
+        onmsAlarm.setAlarmType(1);
 
-        // These alarms (and their related alarms) will have different counts and last events but will otherwise be the
-        // same so they should match after exclusions are applied
-        OpennmsModelProtos.Alarm.Builder alarmA = OpennmsModelProtos.Alarm.newBuilder()
-                .setLastEvent(OpennmsModelProtos.Event.newBuilder()
-                        .setLogMessage("test.a"))
-                .setCount(1)
-                .setLastEventTime(1)
-                .addRelatedAlarm(OpennmsModelProtos.Alarm.newBuilder()
-                        .setLastEvent(OpennmsModelProtos.Event.newBuilder()
-                                .setLogMessage("test.a"))
-                        .setLastEventTime(1)
-                        .setCount(1));
-        OpennmsModelProtos.Alarm.Builder alarmB = OpennmsModelProtos.Alarm.newBuilder()
-                .setLastEvent(OpennmsModelProtos.Event.newBuilder()
-                        .setLogMessage("test.b"))
-                .setCount(2)
-                .setLastEventTime(2)
-                .addRelatedAlarm(OpennmsModelProtos.Alarm.newBuilder()
-                        .setLastEvent(OpennmsModelProtos.Event.newBuilder()
-                                .setLogMessage("test.b"))
-                        .setLastEventTime(2)
-                        .setCount(2));
+        OpennmsModelProtos.Alarm protoAlarm = OpennmsModelProtos.Alarm.newBuilder()
+                .setId(1)
+                .setType(OpennmsModelProtos.Alarm.Type.PROBLEM_WITH_CLEAR)
+                .build();
 
-        assertThat(alarmEqualityChecker.equalsExcludingOnBoth(alarmA, alarmB), is(equalTo(true)));
+        AlarmEqualityChecker comparison = AlarmEqualityChecker.withProtoAlarm(protoAlarm, protobufMapper);
+        assertThat(comparison.equalTo(onmsAlarm), equalTo(true));
+    }
+
+    @Test
+    public void testHasNonIncrementalDifferences() {
+        OnmsAlarm onmsAlarm = new OnmsAlarm();
+        onmsAlarm.setId(1);
+        onmsAlarm.setAlarmType(1);
+
+        OpennmsModelProtos.Alarm protoAlarm = OpennmsModelProtos.Alarm.newBuilder()
+                .setId(1)
+                .setType(OpennmsModelProtos.Alarm.Type.PROBLEM_WITH_CLEAR)
+                .build();
+
+        AlarmEqualityChecker comparison = AlarmEqualityChecker.withProtoAlarm(protoAlarm, protobufMapper);
+
+        // The alarms should be equal with only Ids and types set
+        assertThat(comparison.equalTo(onmsAlarm), equalTo(true));
+
+        // By setting the event time on one alarm they should no longer be equal but they shouldn't have any
+        // non-incremental differences yet
+        onmsAlarm.setLastEventTime(new Date(System.currentTimeMillis()));
+        assertThat(comparison.equalTo(onmsAlarm), equalTo(false));
+        assertThat(comparison.hasNonIncrementalDifferences(onmsAlarm), equalTo(false));
+
+        // By setting a UEI on one alarm they will now be non-incrementally different
+        onmsAlarm.setUei("testuei");
+        assertThat(comparison.hasNonIncrementalDifferences(onmsAlarm), equalTo(true));
     }
 }
