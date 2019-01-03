@@ -61,9 +61,10 @@ import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
 import org.opennms.core.ipc.common.kafka.Utils;
+import org.opennms.core.utils.UniMapper;
 import org.opennms.features.kafka.producer.AlarmEqualityChecker;
 import org.opennms.features.kafka.producer.OpennmsKafkaProducer;
-import org.opennms.features.kafka.producer.ProtobufMapper;
+import org.opennms.features.kafka.producer.ProtobufMapperFactory;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.netmgt.alarmd.api.AlarmCallbackStateTracker;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -84,7 +85,7 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
 
     private final ConfigurationAdmin configAdmin;
     private final OpennmsKafkaProducer kafkaProducer;
-    private final ProtobufMapper protobufMapper;
+    private final UniMapper<OnmsAlarm, OpennmsModelProtos.Alarm.Builder> alarmMapper;
     private final AtomicBoolean closed = new AtomicBoolean(true);
 
     private String alarmTopic;
@@ -100,10 +101,11 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
             AlarmEqualityChecker.with(AlarmEqualityChecker.Exclusions::defaultExclusions);
     private boolean suppressIncrementalAlarms;
 
-    public KafkaAlarmDataSync(ConfigurationAdmin configAdmin, OpennmsKafkaProducer kafkaProducer, ProtobufMapper protobufMapper) {
+    public KafkaAlarmDataSync(ConfigurationAdmin configAdmin, OpennmsKafkaProducer kafkaProducer,
+                              ProtobufMapperFactory protobufMapperFactory) {
         this.configAdmin = Objects.requireNonNull(configAdmin);
         this.kafkaProducer = Objects.requireNonNull(kafkaProducer);
-        this.protobufMapper = Objects.requireNonNull(protobufMapper);
+        alarmMapper = Objects.requireNonNull(protobufMapperFactory).getAlarmMapper();
     }
 
     /**
@@ -244,7 +246,7 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
                 }
 
                 final OnmsAlarm dbAlarm = alarmsInDbByReductionKey.get(rkey);
-                final OpennmsModelProtos.Alarm.Builder mappedDbAlarm = protobufMapper.toAlarm(dbAlarm);
+                final OpennmsModelProtos.Alarm.Builder mappedDbAlarm = alarmMapper.to(dbAlarm);
                 final OpennmsModelProtos.Alarm alarmFromKtable = alarmsInKtableByReductionKey.get(rkey);
                 final OpennmsModelProtos.Alarm.Builder alarmBuilderFromKtable =
                         alarmsInKtableByReductionKey.get(rkey).toBuilder();

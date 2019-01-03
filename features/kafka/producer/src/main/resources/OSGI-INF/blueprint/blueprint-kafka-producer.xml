@@ -38,7 +38,7 @@
   <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" />
   <reference id="hwEntityDao" interface="org.opennms.netmgt.dao.api.HwEntityDao" />
 
-  <bean id="protobufMapper" class="org.opennms.features.kafka.producer.ProtobufMapper">
+  <bean id="protobufMapperFactory" class="org.opennms.features.kafka.producer.MapStructProtobufMapperFactory">
     <argument ref="eventConfDao"/>
     <argument ref="hwEntityDao"/>
     <argument ref="transactionOperations"/>
@@ -54,7 +54,7 @@
 
   <bean id="kafkaProducer" class="org.opennms.features.kafka.producer.OpennmsKafkaProducer"
           init-method="init" destroy-method="destroy">
-    <argument ref="protobufMapper"/>
+    <argument ref="protobufMapperFactory"/>
     <argument ref="nodeCache"/>
     <argument ref="configAdmin"/>
     <argument ref="eventSubscriptionService"/>
@@ -79,7 +79,7 @@
 		init-method="init" destroy-method="destroy">
     <argument ref="configAdmin"/>
     <argument ref="kafkaProducer"/>
-    <argument ref="protobufMapper" />
+    <argument ref="protobufMapperFactory" />
     <property name="alarmTopic" value="${alarmTopic}"/>
     <property name="alarmSync" value="${alarmSync}"/>
     <property name="suppressIncrementalAlarms" value="${suppressIncrementalAlarms}"/>

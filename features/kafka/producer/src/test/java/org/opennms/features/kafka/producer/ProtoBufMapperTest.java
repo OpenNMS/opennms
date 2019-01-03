@@ -45,7 +45,7 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.springframework.transaction.support.TransactionOperations;
 
 /**
- * Tests for {@link ProtobufMapper}.
+ * Tests for {@link MapStructProtobufMapperFactory}.
  */
 public class ProtoBufMapperTest {
     /**
@@ -68,9 +68,9 @@ public class ProtoBufMapperTest {
         childAlarm.setLogMsg(childLogMsg);
 
         parentAlarm.setRelatedAlarms(new HashSet<>(Collections.singletonList(childAlarm)));
-        ProtobufMapper protobufMapper = new ProtobufMapper(mock(EventConfDao.class), mock(HwEntityDao.class),
-                mock(TransactionOperations.class), mock(NodeDao.class), 1);
-        OpennmsModelProtos.Alarm.Builder mappedAlarm = protobufMapper.toAlarm(parentAlarm);
+        ProtobufMapperFactory protobufMapperFactory = new MapStructProtobufMapperFactory(mock(EventConfDao.class),
+                mock(HwEntityDao.class), mock(TransactionOperations.class), mock(NodeDao.class), 1);
+        OpennmsModelProtos.Alarm.Builder mappedAlarm = protobufMapperFactory.getAlarmMapper().to(parentAlarm);
         List<OpennmsModelProtos.Alarm> relatedAlarms = mappedAlarm.getRelatedAlarmList();
         
         assertEquals(1, relatedAlarms.size());

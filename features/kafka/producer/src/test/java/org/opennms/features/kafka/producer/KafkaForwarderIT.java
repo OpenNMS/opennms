@@ -73,7 +73,6 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.streams.StreamsConfig;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -146,7 +145,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     private MockEventIpcManager eventdIpcMgr;
 
     @Autowired
-    private ProtobufMapper protobufMapper;
+    private ProtobufMapperFactory protobufMapperFactory;
 
     @Autowired
     private NodeCache nodeCache;
@@ -226,7 +225,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         when(configAdmin.getConfiguration(OpennmsKafkaProducer.KAFKA_CLIENT_PID).getProperties()).thenReturn(producerConfig);
         when(configAdmin.getConfiguration(KafkaAlarmDataSync.KAFKA_STREAMS_PID).getProperties()).thenReturn(streamsConfig);
 
-        kafkaProducer = new OpennmsKafkaProducer(protobufMapper, nodeCache, configAdmin, eventdIpcMgr);
+        kafkaProducer = new OpennmsKafkaProducer(protobufMapperFactory, nodeCache, configAdmin, eventdIpcMgr);
         kafkaProducer.setEventTopic(EVENT_TOPIC_NAME);
         // Don't forward newSuspect events
         kafkaProducer.setEventFilter("!getUei().equals(\"" + EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI + "\")");
@@ -237,7 +236,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         kafkaProducer.setNodeTopic(NODE_TOPIC_NAME);
         kafkaProducer.init();
 
-        kafkaAlarmaDataStore = new KafkaAlarmDataSync(configAdmin, kafkaProducer, protobufMapper);
+        kafkaAlarmaDataStore = new KafkaAlarmDataSync(configAdmin, kafkaProducer, protobufMapperFactory);
         kafkaAlarmaDataStore.setAlarmTopic(ALARM_TOPIC_NAME);
         kafkaAlarmaDataStore.setAlarmSync(true);
         kafkaAlarmaDataStore.init();

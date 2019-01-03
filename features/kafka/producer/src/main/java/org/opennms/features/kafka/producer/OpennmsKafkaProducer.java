@@ -52,6 +52,7 @@ import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.joda.time.Duration;
 import org.opennms.core.ipc.common.kafka.Utils;
+import org.opennms.core.utils.UniMapper;
 import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
@@ -61,6 +62,7 @@ import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -83,7 +85,10 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     public static final String KAFKA_CLIENT_PID = "org.opennms.features.kafka.producer.client";
     private static final ExpressionParser SPEL_PARSER = new SpelExpressionParser();
 
-    private final ProtobufMapper protobufMapper;
+    private final UniMapper<OnmsNode, OpennmsModelProtos.Node.Builder> nodeMapper;
+    private final UniMapper<Event, OpennmsModelProtos.Event.Builder> eventMapper;
+    private final UniMapper<OnmsAlarm, OpennmsModelProtos.Alarm.Builder> alarmMapper;
+    private final UniMapper<AlarmFeedback, OpennmsModelProtos.AlarmFeedback.Builder> alarmFeedbackMapper;
     private final NodeCache nodeCache;
     private final ConfigurationAdmin configAdmin;
     private final EventSubscriptionService eventSubscriptionService;
@@ -120,9 +125,12 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private final ExecutorService kafkaSendQueueExecutor =
             Executors.newSingleThreadExecutor(runnable -> new Thread(runnable, "KafkaSendQueueProcessor"));
 
-    public OpennmsKafkaProducer(ProtobufMapper protobufMapper, NodeCache nodeCache,
+    public OpennmsKafkaProducer(ProtobufMapperFactory protobufMapperFactory, NodeCache nodeCache,
                                 ConfigurationAdmin configAdmin, EventSubscriptionService eventSubscriptionService) {
-        this.protobufMapper = Objects.requireNonNull(protobufMapper);
+        nodeMapper = Objects.requireNonNull(protobufMapperFactory).getNodeMapper();
+        eventMapper = protobufMapperFactory.getEventMapper();
+        alarmMapper = protobufMapperFactory.getAlarmMapper();
+        alarmFeedbackMapper = protobufMapperFactory.getAlarmFeedbackMapper();
         this.nodeCache = Objects.requireNonNull(nodeCache);
         this.configAdmin = Objects.requireNonNull(configAdmin);
         this.eventSubscriptionService = Objects.requireNonNull(eventSubscriptionService);
@@ -197,7 +205,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
         // Forward!
         sendRecord(() -> {
-            final OpennmsModelProtos.Event mappedEvent = protobufMapper.toEvent(event).build();
+            final OpennmsModelProtos.Event mappedEvent = eventMapper.to(event).build();
             LOG.debug("Sending event with UEI: {}", mappedEvent.getUei());
             return new ProducerRecord<>(eventTopic, mappedEvent.getUei(), mappedEvent.toByteArray());
         }, recordMetadata -> {
@@ -229,7 +237,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     private boolean isIncrementalAlarm(String reductionKey, OnmsAlarm alarm) {
         OpennmsModelProtos.Alarm existingAlarm = outstandingAlarms.get(reductionKey);
-        return existingAlarm != null && alarmEqualityChecker.equalsExcludingOnFirst(protobufMapper.toAlarm(alarm),
+        return existingAlarm != null && alarmEqualityChecker.equalsExcludingOnFirst(alarmMapper.to(alarm),
                 existingAlarm);
     }
 
@@ -237,7 +245,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         // Apply the excluded fields when putting to the map so we do not have to perform this calculation
         // on each equality check
         outstandingAlarms.put(reductionKey,
-                AlarmEqualityChecker.Exclusions.defaultExclusions(protobufMapper.toAlarm(alarm)).build());
+                AlarmEqualityChecker.Exclusions.defaultExclusions(alarmMapper.to(alarm)).build());
     }
 
     private void updateAlarm(String reductionKey, OnmsAlarm alarm) {
@@ -274,7 +282,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
         // Forward!
         sendRecord(() -> {
-            final OpennmsModelProtos.Alarm mappedAlarm = protobufMapper.toAlarm(alarm).build();
+            final OpennmsModelProtos.Alarm mappedAlarm = alarmMapper.to(alarm).build();
             LOG.debug("Sending alarm with reduction key: {}", reductionKey);
             if (suppressIncrementalAlarms) {
                 recordIncrementalAlarm(reductionKey, alarm);
@@ -306,7 +314,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             }
 
             sendRecord(() -> {
-                final OpennmsModelProtos.Node mappedNode = protobufMapper.toNode(node).build();
+                final OpennmsModelProtos.Node mappedNode = nodeMapper.to(node).build();
                 LOG.debug("Sending node with criteria: {}", nodeCriteria);
                 return new ProducerRecord<>(nodeTopic, nodeCriteria, mappedNode.toByteArray());
             }, recordMetadata -> {
@@ -476,7 +484,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             LOG.debug("Sending alarm feedback with key: {}", feedback.getAlarmKey());
 
             return new ProducerRecord<>(alarmFeedbackTopic, feedback.getAlarmKey(),
-                    protobufMapper.toAlarmFeedback(feedback).build().toByteArray());
+                    alarmFeedbackMapper.to(feedback).build().toByteArray());
         }, recordMetadata -> {
             // We've got an ACK from the server that the alarm feedback was forwarded
             // Let other threads know when we've successfully forwarded an alarm feedback

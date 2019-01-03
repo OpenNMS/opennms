@@ -34,6 +34,22 @@
           </instructions>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.5.1</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.mapstruct</groupId>
+              <artifactId>mapstruct-processor</artifactId>
+              <version>${mapstructVersion}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -114,6 +130,11 @@
       <groupId>org.opennms.features.situation-feedback</groupId>
       <artifactId>org.opennms.features.situation-feedback.api</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct-jdk8</artifactId>
+      <version>${mapstructVersion}</version>
     </dependency>
 
     <!-- Test -->
