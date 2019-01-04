@@ -538,8 +538,8 @@ public class ConvertToEventTest {
                 .getContent());
         assertEquals(componentId, event.getParm("ComponentId").getValue()
                 .getContent());
-        Date expectedDate = new SimpleDateFormat("yyyy MMM dd hh:mm:ss").parse(Calendar.getInstance()
-                .get(Calendar.YEAR) + " " + date);
+        int expectedYear = SyslogMessageTest.getExpectedYear(date);
+        Date expectedDate = new SimpleDateFormat("yyyy MMM dd hh:mm:ss").parse(expectedYear + " " + date);
         assertEquals(expectedDate, event.getTime());
         assertEquals(processName, event.getParm("process").getValue().getContent());
         assertEquals(processId, event.getParm("processid").getValue().getContent());
@@ -564,8 +564,8 @@ public class ConvertToEventTest {
                 event.getParm("severity").getValue().getContent());
         assertEquals(sequenceNum, event.getParm("SequenceNum").getValue()
                 .getContent());
-        Date expectedDate = new SimpleDateFormat("yyyy MMM dd hh:mm:ss").parse(Calendar.getInstance()
-                .get(Calendar.YEAR) + " " + date);
+        int expectedYear = SyslogMessageTest.getExpectedYear(date);
+        Date expectedDate = new SimpleDateFormat("yyyy MMM dd hh:mm:ss").parse(expectedYear + " " + date);
         assertEquals(expectedDate, event.getTime());
         assertEquals(messageContent, event.getLogmsg().getContent());
     }
