@@ -41,6 +41,7 @@ import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.collection.support.builder.Resource;
+import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
@@ -62,7 +63,6 @@ public class SnmpCollectionSetRefactorDummy extends SnmpCollectionSet implements
         CollectionSetBuilder builder = new CollectionSetBuilder(getAgent());
         builder.withTimestamp(getCollectionTimestamp());
 
-        // TODO Patrick Very ugly mapping until refactoring is done. We convert here the snmp world into the CollectionSetBuilder world
         for (CollectionResource collectionResource : getResources()) {
             if(collectionResource instanceof NodeInfo) {
                 NodeInfo nodeInfo = (NodeInfo) collectionResource;
@@ -74,47 +74,20 @@ public class SnmpCollectionSetRefactorDummy extends SnmpCollectionSet implements
                 InterfaceLevelResource resource = new InterfaceLevelResource(new NodeLevelResource(ifInfo.getNodeId()), ifInfo.getAttributesMap().get("snmpifname"));
                 addGroupsToBuilder(builder, resource, ifInfo.getGroups());
                 resource.setTimestamp(getCollectionTimestamp());
-            } else if(collectionResource instanceof AliasedResource) {
-                // LOG.warn("we don't support AliasedResources");
-                // We don't do anything for AliasedResource as discussed with jesse - AliasedResource is not used currently
-                // AliasedResource aliasedResource = (AliasedResource) collectionResource;
-                // InterfaceLevelResource resource = new InterfaceLevelResource(
-                // new NodeLevelResource(aliasedResource.getIfInfo().getNodeId()),
-                // aliasedResource.getIfInfo().getAttributesMap().get("snmpifname"));
-                // resource.setTimestamp(getCollectionTimestamp());
-                // addGroupsToBuilder(builder, resource, aliasedResource.getGroups());
             } else if(collectionResource instanceof GenericIndexResource) {
                 GenericIndexResource genericResource = (GenericIndexResource) collectionResource;
-                PersistenceSelectorStrategy persistenceSelectorStrategy = ((GenericIndexResourceType)genericResource.getResourceType()).getPersistenceSelectorStrategy();
-                StorageStrategy storageStrategy = ((GenericIndexResourceType)genericResource.getResourceType()).getStorageStrategy();
-                org.opennms.netmgt.config.datacollection.ResourceType resourceType = new org.opennms.netmgt.config.datacollection.ResourceType();
-                resourceType.setName(genericResource.getResourceTypeName());
-                resourceType.setLabel(genericResource.getResourceTypeName());
-                resourceType.setPersistenceSelectorStrategy(convert(persistenceSelectorStrategy));
-                // TODO Patrick what shall we set here?  resourceType.setResourceLabel();
-                resourceType.setStorageStrategy(convert(storageStrategy));
-                GenericTypeResource resource = new GenericTypeResource(new NodeLevelResource(genericResource.getCollectionAgent().getNodeId()),resourceType,genericResource.getInstance());
+                ResourceType resourceType = ((GenericIndexResourceType)genericResource.getResourceType()).getResourceType();
+                GenericTypeResource resource = new GenericTypeResource(new NodeLevelResource(genericResource.getCollectionAgent().getNodeId())
+                        ,resourceType
+                        ,genericResource.getInstance());
                 resource.setTimestamp(getCollectionTimestamp());
                 addGroupsToBuilder(builder, resource, genericResource.getGroups());
             } else {
-                throw new IllegalArgumentException("Unknown Resource: " + collectionResource.getClass().getName());
+                // We don't do anything for AliasedResource as discussed with jesse - AliasedResource is not used currently
+                LOG.warn("we don't support {}, will ignore it", collectionResource.getClass().getName());
             }
         }
         return builder.build();
-    }
-
-    org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy convert(PersistenceSelectorStrategy strategy) {
-        org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy persistenceSelectorStrategy = new org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy();
-        persistenceSelectorStrategy.setClazz(strategy.getClass().getName());
-        // TODO: patrick persistenceSelectorStrategy.setParameters(strategy.);
-        return persistenceSelectorStrategy;
-    }
-
-    org.opennms.netmgt.config.datacollection.StorageStrategy convert(StorageStrategy strategy) {
-        org.opennms.netmgt.config.datacollection.StorageStrategy storageStrategy = new org.opennms.netmgt.config.datacollection.StorageStrategy();
-        storageStrategy.setClazz(strategy.getClass().getName());
-        // TODO: patrick persistenceSelectorStrategy.setParameters(strategy.);
-        return storageStrategy;
     }
 
     private void addGroupsToBuilder(CollectionSetBuilder builder, Resource resource, Collection<AttributeGroup> groups){
@@ -122,7 +95,6 @@ public class SnmpCollectionSetRefactorDummy extends SnmpCollectionSet implements
             for(CollectionAttribute attribute : group.getAttributes()){
 
                 String value;
-                // TODO: Patrick Not sure if we should convert while reading or if we should add a HexString type to the builder world?
                 if(attribute.getAttributeType() instanceof HexStringAttributeType){
                     value = ((SnmpAttribute)attribute).getValue().toHexString();
                 } else {
