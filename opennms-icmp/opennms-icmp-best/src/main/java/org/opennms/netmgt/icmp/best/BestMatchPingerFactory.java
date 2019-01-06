@@ -28,7 +28,10 @@
 
 package org.opennms.netmgt.icmp.best;
 
+import java.net.InetAddress;
 import java.util.Arrays;
+
+import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.icmp.AbstractPingerFactory;
@@ -42,6 +45,8 @@ import org.slf4j.LoggerFactory;
 
 public class BestMatchPingerFactory extends AbstractPingerFactory {
     private static Logger LOG = LoggerFactory.getLogger(BestMatchPingerFactory.class);
+    private static InetAddress LOOPBACK = InetAddressUtils.getLocalLoopbackAddress().orElse(addr("127.0.0.1"));
+
     Class<? extends Pinger> m_pingerClass = null;
 
     @Override
@@ -83,27 +88,32 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
             LOG.trace("Failed to initialize {} for IPv4.", pingerClass, t);
         }
 
-        try {
-            final long timeout = Long.valueOf(System.getProperty("org.opennms.netmgt.icmp.best.timeout", "500"), 10);
-            final Number result = pinger.ping(InetAddressUtils.getLocalHostAddress(), timeout, 0);
-            if (result == null) {
-                throw new IllegalStateException("No result pinging localhost.");
+        final long timeout = Long.valueOf(System.getProperty("org.opennms.netmgt.icmp.best.timeout", "500"), 10);
+
+        // try the found loopback, fall back to 127.0.0.1 or ::1 as a last resort
+        for (final InetAddress tryme : new InetAddress[] { LOOPBACK, addr("127.0.0.1"), addr("::1") }) {
+            try {
+                final Number result = pinger.ping(tryme, timeout, 0);
+                if (result == null) {
+                    throw new IllegalStateException("No result pinging localhost.");
+                }
+
+                // as long as we have v4 and/or v6, return success if pinger.ping() passes
+                if (v4 && v6) {
+                    return PingerMatch.IPv46;
+                } else if (v6) {
+                    return PingerMatch.IPv6;
+                } else if (v4) {
+                    return PingerMatch.IPv4;
+                }
+            } catch (final Throwable t) {
+                LOG.info("Found pinger {}, but it was unable to ping localhost: {}", pingerClass, t.getMessage());
+                LOG.trace("Pinger failure:", t);
             }
-        } catch (final Throwable t) {
-            LOG.info("Found pinger {}, but it was unable to ping localhost: {}", pingerClass, t.getMessage());
-            LOG.trace("Found pinger {}, but it was unable to ping localhost.", pingerClass, t);
-            return PingerMatch.NONE;
         }
 
-        if (v4 && v6) {
-            return PingerMatch.IPv46;
-        } else if (v6) {
-            return PingerMatch.IPv6;
-        } else if (v4) {
-            return PingerMatch.IPv4;
-        } else {
-            return PingerMatch.NONE;
-        }
+        // if none of the loopback addresses works, give up
+        return PingerMatch.NONE;
     }
 
     static Class<? extends Pinger> findPinger() {
