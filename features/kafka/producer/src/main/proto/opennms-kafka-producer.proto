@@ -148,67 +148,42 @@ message Node {
   HwEntity hw_inventory = 13;
 }
 
-enum OnmsTopologyMessageStatus {
-  NEW = 0;
-  UPDATE=1;
-  DELETE=2;
-}
-
-message OnmsTopologyRef {
+message Vertex {
   string id = 1;
-}
-
-message OnmsTopologyMessage {
-  string protocol = 1;
-  enum MessageStatus {
-    NEW = 0;
-    UPDATE=1;
-    DELETE=2;
-  }
-  MessageStatus status = 2;
-}
-
-message OnmsTopologyVertex {
-  OnmsTopologyRef ref_id = 1;
   NodeCriteria node_criteria = 2;
   string label = 3;
 }
 
-message OnmsTopologyPort {
-  OnmsTopologyRef ref_id = 1;
-  OnmsTopologyVertex vertex = 2;
+message Port {
+  string id = 1;
+  Vertex vertex = 2;
   uint64 index = 3; 
   string port = 4; 
-  string address = 5; 
+  string address = 5;
 }
 
-message OnmsTopologyEdge {
-  OnmsTopologyRef ref_id = 1;
-  OnmsTopologyPort source = 2;
-  OnmsTopologyPort target = 3;
+message Edge {
+  string id = 1;
+  Port source = 2;
+  Port target = 3;
 }
 
-message OnmsTopologyShared {
-  OnmsTopologyRef ref_id = 1;
-  repeated OnmsTopologyPort sources = 2;
+message Segment {
+  string id = 1;
+  repeated Port sources = 2;
 }
 
-message OnmsTopologyVertexMessage {
-	OnmsTopologyMessage message = 1;
-	OnmsTopologyVertex vertex = 2;
+message TopologyVertex {
+	string protocol = 1;
+	Vertex vertex = 2;
 }
 
-message OnmsTopologyPortMessage {
-	OnmsTopologyMessage message = 1;
-	OnmsTopologyPort port = 2;
+message TopologyEdge {
+	string protocol = 1;
+	Edge edge = 2;
 }
 
-message OnmsTopologyEdgeMessage {
-	OnmsTopologyMessage message = 1;
-	OnmsTopologyEdge edge = 2;
-}
-
-message OnmsTopologySharedMessage {
-	OnmsTopologyMessage message = 1;
-	OnmsTopologyShared edge = 2;
+message TopologySegment {
+	string protocol = 1;
+	Segment segment = 2;
 }
