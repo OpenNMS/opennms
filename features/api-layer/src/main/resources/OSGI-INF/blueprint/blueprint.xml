@@ -37,7 +37,7 @@
   </service>
 
   <!-- Configuration properties for the API layer -->
-  <cm:property-placeholder id="org.opennms.features.apilayer.cfg"
+  <cm:property-placeholder id="org.opennms.features.apilayer"
                            persistent-id="org.opennms.features.apilayer"
                            update-strategy="reload">
     <cm:default-properties>
