@@ -31,7 +31,6 @@ package org.opennms.netmgt.collectd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.opennms.netmgt.collectd.SnmpCollector.SYS_PROPERTY_USE_OLD_IMPLEMENTATION;
 
 import java.io.File;
 import java.util.Collection;
@@ -175,8 +174,7 @@ public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingB
         iface = ifaces.iterator().next();
         
         LOG.debug("iface = {}", iface);
-        // TODO: Patrick remove We use a System property since the Collector gets created a second time where we have no access to the constructor
-        System.setProperty(SYS_PROPERTY_USE_OLD_IMPLEMENTATION, Boolean.TRUE.toString());
+
         final SnmpCollector collector = new SnmpCollector();
         collector.initialize();
 

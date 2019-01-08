@@ -30,30 +30,32 @@ package org.opennms.netmgt.collectd;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Date;
 import java.util.Map;
 
-import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.collection.api.AbstractServiceCollector;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.InvalidCollectionAgentException;
-import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.EventIpcManagerFactory;
-import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SnmpCollectorOld extends SnmpCollectorAbstract {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SnmpCollector.class);
+/**
+ * <P>
+ * Commons between SnmpCollector and SnmpCollectorNG.
+ * </P>
+ *
+ * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
+ */
+public abstract class AbstractSnmpCollector extends AbstractServiceCollector {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractSnmpCollector.class);
 
     /**
      * Name of monitored service.
@@ -82,29 +84,29 @@ public class SnmpCollectorOld extends SnmpCollectorAbstract {
      * node.
      */
     static final String SQL_GET_SNMPIFALIASES = "SELECT snmpifalias "
-            + "FROM snmpinterface "
-            + "WHERE nodeid=? "
-            + "AND snmpifindex = ? "
-            + "AND snmpifalias != ''";
+        + "FROM snmpinterface "
+        + "WHERE nodeid=? "
+        + "AND snmpifindex = ? "
+        + "AND snmpifalias != ''";
 
     /**
      * SQL statement to retrieve most recent forced rescan eventid for a node.
      */
     static final String SQL_GET_LATEST_FORCED_RESCAN_EVENTID = "SELECT eventid "
-            + "FROM events "
-            + "WHERE (nodeid=? OR ipaddr=?) "
-            + "AND eventuei='" + EventConstants.FORCE_RESCAN_EVENT_UEI + "' "
-            + "ORDER BY eventid DESC " + "LIMIT 1";
+        + "FROM events "
+        + "WHERE (nodeid=? OR ipaddr=?) "
+        + "AND eventuei='" + EventConstants.FORCE_RESCAN_EVENT_UEI + "' "
+        + "ORDER BY eventid DESC " + "LIMIT 1";
 
     /**
      * SQL statement to retrieve most recent rescan completed eventid for a
      * node.
      */
     static final String SQL_GET_LATEST_RESCAN_COMPLETED_EVENTID = "SELECT eventid "
-            + "FROM events "
-            + "WHERE nodeid=? "
-            + "AND eventuei='" + EventConstants.RESCAN_COMPLETED_EVENT_UEI + "' "
-            + "ORDER BY eventid DESC " + "LIMIT 1";
+        + "FROM events "
+        + "WHERE nodeid=? "
+        + "AND eventuei='" + EventConstants.RESCAN_COMPLETED_EVENT_UEI + "' "
+        + "ORDER BY eventid DESC " + "LIMIT 1";
 
     /**
      * Object identifier used to retrieve interface count. This is the MIB-II
@@ -179,7 +181,7 @@ public class SnmpCollectorOld extends SnmpCollectorAbstract {
      */
     static final String SNMP_STORAGE_KEY = "org.opennms.netmgt.collectd.SnmpCollector.snmpStorage";
 
-    private LocationAwareSnmpClient m_client;
+    protected LocationAwareSnmpClient m_client;
 
     /**
      * Returns the name of the service that the plug-in collects ("SNMP").
@@ -192,7 +194,7 @@ public class SnmpCollectorOld extends SnmpCollectorAbstract {
 
     @Override
     public void initialize() {
-        initSnmpPeerFactory();
+    	initSnmpPeerFactory();
     }
 
     private void initSnmpPeerFactory() {
@@ -215,55 +217,7 @@ public class SnmpCollectorOld extends SnmpCollectorAbstract {
      * Perform data collection.
      */
     @Override
-    public CollectionSet collect(CollectionAgent agent, Map<String, Object> parameters) throws CollectionException {
-        try {
-            final ServiceParameters params = new ServiceParameters(parameters);
-            params.logIfAliasConfig();
-
-            if (m_client == null) {
-                m_client = BeanUtils.getBean("daoContext", "locationAwareSnmpClient", LocationAwareSnmpClient.class);
-            }
-
-            if (!(agent instanceof SnmpCollectionAgent)) {
-                throw new InvalidCollectionAgentException(String.format("Expected agent of type: %s, but got: %s",
-                        SnmpCollectionAgent.class.getCanonicalName(), agent.getClass().getCanonicalName()));
-            }
-            OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection((SnmpCollectionAgent)agent, params, m_client);
-
-            final EventProxy eventProxy = EventIpcManagerFactory.getIpcManager();
-            final ForceRescanState forceRescanState = new ForceRescanState(agent, eventProxy);
-
-            SnmpCollectionSet collectionSet = snmpCollection.createCollectionSet((SnmpCollectionAgent)agent);
-            collectionSet.setCollectionTimestamp(new Date());
-            if (!collectionSet.hasDataToCollect()) {
-                LOG.info("agent {} defines no data to collect.  Skipping.", agent);
-                // should we return here?
-            }
-
-            collectionSet.collect();
-
-            /*
-             * FIXME: Should we even be doing this? I say we get rid of this force rescan thingie
-             * {@see http://issues.opennms.org/browse/NMS-1057}
-             */
-            if (System.getProperty("org.opennms.netmgt.collectd.SnmpCollector.forceRescan", "false").equalsIgnoreCase("true")
-                    && collectionSet.rescanNeeded()) {
-                /*
-                 * TODO: the behavior of this object may have been re-factored away.
-                 * Verify that this is correct and remove this unused object if it
-                 * is no longer needed.  My gut thinks this should be investigated.
-                 */
-                forceRescanState.rescanIndicated();
-            } else {
-                collectionSet.checkForSystemRestart();
-            }
-            return collectionSet;
-        } catch (CollectionException e) {
-            throw e;
-        } catch (Throwable t) {
-            throw new CollectionException("Unexpected error during node SNMP collection for: " + agent.getHostAddress(), t);
-        }
-    }
+    public abstract CollectionSet collect(CollectionAgent agent, Map<String, Object> parameters) throws CollectionException;
 
     /** {@inheritDoc} */
     @Override

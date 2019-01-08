@@ -6,12 +6,17 @@
 
 The _SnmpCollector_ is used to collect performance data through the _SNMP protocol_.
 Access to the _SNMP Agent_ is configured through the _SNMP configuration_ in the _Web User Interface_.
+Two implementations exist:
+
+* org.opennms.netmgt.collectd.SnmpCollector (legacy)
+* org.opennms.netmgt.collectd.SnmpCollectorNG (refactored implementation)
+SnmpCollectorNG doesn't support Aliases and Min/Max values.
 
 ===== Collector Facts
 
 [options="autowidth"]
 |===
-| Class Name          | `org.opennms.netmgt.collectd.SnmpCollector`
+| Class Name          | `org.opennms.netmgt.collectd.SnmpCollector` or `org.opennms.netmgt.collectd.SnmpCollectorNG`
 | Package             | core
 | Supported on Minion | `Yes` (via the SNMP proxy)
 |===

@@ -33,54 +33,46 @@ import java.util.Collection;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
-import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.PersistenceSelectorStrategy;
-import org.opennms.netmgt.collection.api.StorageStrategy;
+import org.opennms.netmgt.collection.dto.CollectionSetDTO;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.collection.support.builder.Resource;
 import org.opennms.netmgt.config.datacollection.ResourceType;
-import org.opennms.netmgt.snmp.Collectable;
-import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Extension to SnmpCollectionSet to create a CollectionSet with the CollectionsetBuilder. This is an immediate step
- * in order to refactor the SnmpCollertor to use the CollectionsetBuilder.
+ * Converts a {@link SnmpCollectionSet} to {@link CollectionSetDTO}. This is an immediate step
+ * in order to refactor the SnmpCollector to use the {@link CollectionSetBuilder}.
  */
-public class SnmpCollectionSetRefactorDummy extends SnmpCollectionSet implements Collectable, CollectionSet {
+public class SnmpCollectionSetToCollectionSetDTOConverter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SnmpCollectionSetRefactorDummy.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpCollectionSetToCollectionSetDTOConverter.class);
 
-    SnmpCollectionSetRefactorDummy(SnmpCollectionAgent agent, OnmsSnmpCollection snmpCollection, LocationAwareSnmpClient client) {
-        super(agent,  snmpCollection, client);
-    }
+    public CollectionSetDTO convert(SnmpCollectionSet collectionSet) {
+        CollectionSetBuilder builder = new CollectionSetBuilder(collectionSet.getAgent());
+        builder.withTimestamp(collectionSet.getCollectionTimestamp());
 
-    CollectionSet createCollectionSet() {
-        CollectionSetBuilder builder = new CollectionSetBuilder(getAgent());
-        builder.withTimestamp(getCollectionTimestamp());
-
-        for (CollectionResource collectionResource : getResources()) {
+        for (CollectionResource collectionResource : collectionSet.getResources()) {
             if(collectionResource instanceof NodeInfo) {
                 NodeInfo nodeInfo = (NodeInfo) collectionResource;
                 NodeLevelResource resource = new NodeLevelResource(nodeInfo.getNodeId());
                 addGroupsToBuilder(builder, resource, nodeInfo.getGroups());
-                resource.setTimestamp(getCollectionTimestamp());
+                resource.setTimestamp(collectionSet.getCollectionTimestamp());
             } else if(collectionResource instanceof IfInfo) {
                 IfInfo ifInfo = (IfInfo) collectionResource;
                 InterfaceLevelResource resource = new InterfaceLevelResource(new NodeLevelResource(ifInfo.getNodeId()), ifInfo.getAttributesMap().get("snmpifname"));
                 addGroupsToBuilder(builder, resource, ifInfo.getGroups());
-                resource.setTimestamp(getCollectionTimestamp());
+                resource.setTimestamp(collectionSet.getCollectionTimestamp());
             } else if(collectionResource instanceof GenericIndexResource) {
                 GenericIndexResource genericResource = (GenericIndexResource) collectionResource;
                 ResourceType resourceType = ((GenericIndexResourceType)genericResource.getResourceType()).getResourceType();
                 GenericTypeResource resource = new GenericTypeResource(new NodeLevelResource(genericResource.getCollectionAgent().getNodeId())
                         ,resourceType
                         ,genericResource.getInstance());
-                resource.setTimestamp(getCollectionTimestamp());
+                resource.setTimestamp(collectionSet.getCollectionTimestamp());
                 addGroupsToBuilder(builder, resource, genericResource.getGroups());
             } else {
                 // We don't do anything for AliasedResource as discussed with jesse - AliasedResource is not used currently
