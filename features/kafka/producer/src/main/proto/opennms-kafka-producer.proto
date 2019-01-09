@@ -153,18 +153,27 @@ message TopologyRef {
   string protocol = 2;
 }
 
-message TopologyVertex {
-  TopologyRef ref = 1;
-  NodeCriteria node_criteria = 2;
-  string label = 3;
+message TopologyVertexNode {
+  NodeCriteria node_criteria = 1;
+}
+
+message TopologyVertexSegment {
 }
 
 message TopologyPort {
-  string id = 1;
-  string vertex_id = 2;
-  uint64 index = 3; 
-  string port = 4; 
+  string vertex_id = 1;
+  uint64 ifindex = 2; 
+  string ifname = 4; 
   string address = 5;
+}
+
+message TopologyVertex {
+    TopologyRef ref = 1;
+  	oneof vertex {
+  		TopologyVertexNode node = 2;
+  		TopologyVertexSegment segment = 3;
+	}
+    string label = 4;
 }
 
 message TopologyEdge {
