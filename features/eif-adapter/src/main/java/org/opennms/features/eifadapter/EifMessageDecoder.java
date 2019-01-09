@@ -29,6 +29,7 @@
 package org.opennms.features.eifadapter;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.camel.component.netty4.ChannelHandlerFactory;
@@ -44,7 +45,7 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 public class EifMessageDecoder extends MessageToMessageDecoder<ByteBuf> implements ChannelHandlerFactory {
 
     private final StringBuilder buffer = new StringBuilder();
-    private final Charset charset = Charset.defaultCharset();
+    private final Charset charset = StandardCharsets.UTF_8;
 
     private NodeDao nodeDao;
 
