@@ -238,7 +238,6 @@ public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingB
 
         // by now the values should be the new values
         assertEquals(Double.valueOf(456.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, rangeSizeInMillis));
-        // TODO: Patrick: is this correct?
         assertEquals(Double.valueOf(1234567.0), m_rrdStrategy.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, rangeSizeInMillis));
 
         // now update the data in the agent
@@ -251,98 +250,6 @@ public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingB
         assertEquals(Double.valueOf(456.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, rangeSizeInMillis));
         assertEquals(Double.valueOf(1234567.0), m_rrdStrategy.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, rangeSizeInMillis));
     }
-
-    @Test
-    @JUnitCollector(
-            datacollectionConfig = "/org/opennms/netmgt/config/datacollection-minmax-persistTest-config.xml",
-            datacollectionType = "snmp",
-            anticipateFiles = {
-                    "1",
-                    "1/fw0"
-            },
-            anticipateRrds = {
-                    "1/tcpCurrEstab",
-                    "1/fw0/ifInOctets"
-            }
-    )
-    @JUnitSnmpAgent(host=TEST_HOST_ADDRESS, resource="/org/opennms/netmgt/snmp/snmpTestData1.properties")
-    /**
-     * Just to understand the how the SNMPCollector works. TODO: Patrick Delete afterwards
-     */
-    public void testPersistOldImplementation() throws Exception {
-
-        final File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
-
-        // node level collection
-        final File nodeDir = new File(snmpRrdDirectory, "1");
-        final File rrdFile = new File(nodeDir, rrd("tcpCurrEstab"));
-
-        // interface level collection
-        final File ifDir = new File(nodeDir, "fw0");
-        final File ifRrdFile = new File(ifDir, rrd("ifInOctets"));
-
-        final int numUpdates = 2;
-        final int stepSizeInSecs = 1;
-
-        final int stepSizeInMillis = stepSizeInSecs*1000;
-        final int rangeSizeInMillis = stepSizeInMillis + 20000;
-
-        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
-
-        // This is the value from snmpTestData1.properties
-        //.1.3.6.1.2.1.6.9.0 = Gauge32: 123
-        assertEquals(Double.valueOf(123.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, rangeSizeInMillis));
-
-        // This is the value from snmpTestData1.properties
-        // .1.3.6.1.2.1.2.2.1.10.6 = Counter32: 1234567
-        assertEquals(Double.valueOf(1234567.0), m_rrdStrategy.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, rangeSizeInMillis));
-
-        // now update the data in the agent
-
-        // Lets set it to: 7654321
-        SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.2.2.1.10.6"), SnmpUtils.getValueFactory().getCounter32(7654321));
-        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
-        // Hm it is still: 1234567
-        assertEquals(Double.valueOf(1234567.0), m_rrdStrategy.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, rangeSizeInMillis));
-
-        // Let's try again: 7654321
-        SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.2.2.1.10.6"), SnmpUtils.getValueFactory().getCounter32(7654321));
-        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
-        // still at: 1234567
-        assertEquals(Double.valueOf(1234567.0), m_rrdStrategy.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, rangeSizeInMillis));
-
-        // Then let's try: 7654322
-        SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.2.2.1.10.6"), SnmpUtils.getValueFactory().getCounter32(7654322));
-        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
-        // still not working
-        assertEquals(Double.valueOf(1234567.0), m_rrdStrategy.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, rangeSizeInMillis));
-
-        // Now let's try: 1234568 (go 1 up)
-        SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.2.2.1.10.6"), SnmpUtils.getValueFactory().getCounter32(1234568));
-        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
-        // finally it worked
-        assertEquals(Double.valueOf(1234568.0), m_rrdStrategy.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, rangeSizeInMillis));
-
-        // Now let's try once again: 7654321
-        SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.2.2.1.10.6"), SnmpUtils.getValueFactory().getCounter32(7654321));
-        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
-        // still not working
-        assertEquals(Double.valueOf(1234568.0), m_rrdStrategy.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, rangeSizeInMillis));
-
-        // Now let's try to go to : 1234570 (2 up)
-        SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.2.2.1.10.6"), SnmpUtils.getValueFactory().getCounter32(1234570));
-        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
-        // still not working
-        assertEquals(Double.valueOf(1234570.0), m_rrdStrategy.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, rangeSizeInMillis));
-
-        // Ok then 1 up: 1234569 ( up)
-        SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.2.2.1.10.6"), SnmpUtils.getValueFactory().getCounter32(1234569));
-        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
-        // still not working
-        assertEquals(Double.valueOf(1234569.0), m_rrdStrategy.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, rangeSizeInMillis));
-        // ==> it seems we can increment only by one
-    }
-
 
     private String rrd(final String file) {
         return file + m_rrdStrategy.getDefaultFileExtension();
