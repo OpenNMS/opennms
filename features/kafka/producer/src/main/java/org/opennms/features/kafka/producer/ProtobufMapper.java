@@ -465,12 +465,19 @@ public class ProtobufMapper {
             setter.accept(date.getTime());
         }
     }
-        
-    private OpennmsModelProtos.Vertex getVertex(org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex vertex) {
-        final OpennmsModelProtos.Vertex.Builder builder = OpennmsModelProtos.Vertex.newBuilder()
-                .setId(vertex.getId())
+    
+    private OpennmsModelProtos.TopologyRef getTopologyRef(String protocol, String id) {
+        final OpennmsModelProtos.TopologyRef.Builder builder = OpennmsModelProtos.TopologyRef.newBuilder()
+                .setId(id)
+                .setProtocol(protocol);
+        return builder.build();
+    }
+
+    public OpennmsModelProtos.TopologyVertex.Builder toVertexTopologyMessage(String protocol,
+            org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex vertex) {
+        final OpennmsModelProtos.TopologyVertex.Builder builder = OpennmsModelProtos.TopologyVertex.newBuilder()
+                .setRef(getTopologyRef(protocol, vertex.getId()))
                 .setLabel(vertex.getLabel());
-        
         if (vertex.getNodeid() != null) {
             try {
                 builder.setNodeCriteria(nodeIdToCriteriaCache.get(Integer.toUnsignedLong(vertex.getNodeid())));
@@ -483,56 +490,34 @@ public class ProtobufMapper {
             }
         }
 
-        return builder.build();
-        
-    }
-
-    public OpennmsModelProtos.TopologyVertex.Builder toVertexTopologyMessage(String protocol,
-            org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex vertex) {
-        final OpennmsModelProtos.TopologyVertex.Builder builder = OpennmsModelProtos.TopologyVertex.newBuilder()
-                .setVertex(getVertex(vertex))
-                .setProtocol(protocol);
-                return builder;
+        return builder;
     }
     
-    private OpennmsModelProtos.Port getPort(org.opennms.netmgt.topologies.service.api.OnmsTopologyPort port) {
-        final OpennmsModelProtos.Port.Builder builder = OpennmsModelProtos.Port.newBuilder()
+    private OpennmsModelProtos.TopologyPort getPort(org.opennms.netmgt.topologies.service.api.OnmsTopologyPort port) {
+        final OpennmsModelProtos.TopologyPort.Builder builder = OpennmsModelProtos.TopologyPort.newBuilder()
                 .setId(port.getId())
-                .setVertex(getVertex(port.getVertex()))
+                .setVertexId(port.getVertex().getId())
                 .setIndex(port.getIndex())
                 .setPort(port.getPort())
                 .setAddress(port.getAddr());
         return builder.build();
     }
     
-    private OpennmsModelProtos.Edge getEdge(org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge edge) {
-        final OpennmsModelProtos.Edge.Builder builder = OpennmsModelProtos.Edge.newBuilder()
-                .setId(edge.getId())
-                .setSource(getPort(edge.getSource()))
-                .setTarget(getPort(edge.getTarget()));
-        return builder.build();
-    }
-
     public OpennmsModelProtos.TopologyEdge.Builder toEdgeTopologyMessage(String protocol,
             org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge edge) {
         final OpennmsModelProtos.TopologyEdge.Builder builder = OpennmsModelProtos.TopologyEdge.newBuilder()
-                .setEdge(getEdge(edge))
-                .setProtocol(protocol);
+                .setRef(getTopologyRef(protocol, edge.getId()))
+                .setSource(getPort(edge.getSource()))
+                .setTarget(getPort(edge.getTarget()));
+                        
         return builder;
-    }
-
-    private OpennmsModelProtos.Segment getTopologySegment(org.opennms.netmgt.topologies.service.api.OnmsTopologyShared shared) {
-        final OpennmsModelProtos.Segment.Builder builder = OpennmsModelProtos.Segment.newBuilder()
-                .setId(shared.getId());
-        shared.getSources().stream().forEach(source -> builder.addSources(getPort(source)));
-        return builder.build();
     }
 
     public OpennmsModelProtos.TopologySegment.Builder toSegmentTopologyMessage(String protocol,
             org.opennms.netmgt.topologies.service.api.OnmsTopologyShared shared) {
         final OpennmsModelProtos.TopologySegment.Builder builder = OpennmsModelProtos.TopologySegment.newBuilder()
-                .setSegment(getTopologySegment(shared))
-                .setProtocol(protocol);
+                .setRef(getTopologyRef(protocol, shared.getId()));
+        shared.getSources().stream().forEach(source -> builder.addSources(getPort(source)));
         return builder;
     }
 

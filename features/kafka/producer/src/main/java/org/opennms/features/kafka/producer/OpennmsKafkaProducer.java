@@ -251,29 +251,29 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
                 return;
             }
             forwardTopologyVertexMessage(message.getProtocol().getId(),
-                                         mappedTopoMsg.getVertex().getId(),
+                                         mappedTopoMsg.getRef().getId(),
                                          mappedTopoMsg.toByteArray());
         } else if (message.getMessagebody() instanceof OnmsTopologyEdge) {
             OnmsTopologyEdge edge = (OnmsTopologyEdge) message.getMessagebody();
             final OpennmsModelProtos.TopologyEdge mappedTopoMsg = 
                     protobufMapper.toEdgeTopologyMessage(message.getProtocol().getId(),edge).build();
             forwardTopologyEdgeMessage(message.getProtocol().getId(),
-                                       mappedTopoMsg.getEdge().getId(),
+                                       mappedTopoMsg.getRef().getId(),
                                        mappedTopoMsg.toByteArray());
         } else if (message.getMessagebody() instanceof OnmsTopologyShared) {
             OnmsTopologyShared edge = (OnmsTopologyShared) message.getMessagebody();
             final OpennmsModelProtos.TopologySegment mappedTopoMsg = 
                     protobufMapper.toSegmentTopologyMessage(message.getProtocol().getId(),edge).build();
             forwardTopologySegmentMessage(message.getProtocol().getId(),
-                                          mappedTopoMsg.getSegment().getId(),
+                                          mappedTopoMsg.getRef().getId(),
                                           mappedTopoMsg.toByteArray());
             return;
         }
     }
  
-    private void forwardTopologyVertexMessage(String protocol, String refid, byte[] message) {
+    private void forwardTopologyVertexMessage(String protocol, String refid, byte[] value) {
         sendRecord(() -> {
-            return new ProducerRecord<>(topologyVertexTopic, refid, message);
+            return new ProducerRecord<>(topologyVertexTopic, refid, value);
         }, recordMetadata -> {
             // We've got an ACK from the server that the event was forwarded
             // Let other threads know when we've successfully forwarded an event

@@ -148,42 +148,32 @@ message Node {
   HwEntity hw_inventory = 13;
 }
 
-message Vertex {
+message TopologyRef {
   string id = 1;
+  string protocol = 2;
+}
+
+message TopologyVertex {
+  TopologyRef ref = 1;
   NodeCriteria node_criteria = 2;
   string label = 3;
 }
 
-message Port {
+message TopologyPort {
   string id = 1;
-  Vertex vertex = 2;
+  string vertex_id = 2;
   uint64 index = 3; 
   string port = 4; 
   string address = 5;
 }
 
-message Edge {
-  string id = 1;
-  Port source = 2;
-  Port target = 3;
-}
-
-message Segment {
-  string id = 1;
-  repeated Port sources = 2;
-}
-
-message TopologyVertex {
-	string protocol = 1;
-	Vertex vertex = 2;
-}
-
 message TopologyEdge {
-	string protocol = 1;
-	Edge edge = 2;
+  TopologyRef ref = 1;
+  TopologyPort source = 2;
+  TopologyPort target = 3;
 }
 
 message TopologySegment {
-	string protocol = 1;
-	Segment segment = 2;
+  TopologyRef ref = 1;
+  repeated TopologyPort sources = 2;
 }
