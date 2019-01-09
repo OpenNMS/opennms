@@ -92,7 +92,7 @@ JMX_URL="service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi"
 # The user that OpenNMS needs to run as.
 RUNAS="root"
 
-# Maximum file Descriptors + 1to be setted by ulimit -n
+# Maximum file Descriptors to be setted by ulimit -n
 MAXIMUM_FILE_DESCRIPTORS=20480
 
 # maximum size of stack segment (in kbytes) to be setted by ulimit -s
@@ -104,7 +104,7 @@ APP_PARMS_CONTROLLER=()
 APP_VM_PARMS=()
 
 CONTROLLER_OPTIONS=("-Dopennms.home=$OPENNMS_HOME")
-#CONTROLLER_OPTIONS=("${CONTROLLER_OPTIONS[@]}" "-Dlog4j.configuration=log4j.properties")
+#CONTROLLER_OPTIONS+=("-Dlog4j.configuration=log4j.properties")
 
 COMMAND=""
 
@@ -350,7 +350,7 @@ doStart(){
 	fi
 
 	if [ "$SERVICE" = "" ]; then
-		APP_VM_PARMS=("${JPDA[@]}" "$MANAGER_OPTIONS")
+		APP_VM_PARMS+=("$MANAGER_OPTIONS")
 		APP_PARMS_BEFORE=("start")
 
 	else
@@ -406,7 +406,7 @@ doStart(){
 			return 1
 		fi
 		sleep $STATUS_WAIT
-		STATUS_ATTEMPTS="$((STATUS_ATTEMPTS + 1))"
+		STATUS_ATTEMPTS="$((STATUS_ATTEMPTS++))"
 	done
 
 	echo "Started ${install.package.description}, but it has not finished starting up" >&2
@@ -426,7 +426,7 @@ doPause(){
 		APP_VM_PARMS=("${CONTROLLER_OPTIONS[@]}")
 		APP_PARMS_BEFORE=("${PARM_PID[@]}" -u "$JMX_URL" pause)
 		if [ -n "$SERVICE" ]; then
-			APP_PARMS_BEFORE=("${APP_PARMS_BEFORE[@]}" "$SERVICE")
+			APP_PARMS_BEFORE+=("$SERVICE")
 		fi
 		if [ "$NOEXECUTE" -eq 0 ]; then
 			"${JAVA_CMD[@]}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}"
@@ -449,7 +449,7 @@ doResume(){
 		APP_VM_PARMS=("${CONTROLLER_OPTIONS[@]}")
 		APP_PARMS_BEFORE=("${PARM_PID[@]}" -u "$JMX_URL" resume)
 		if [ -n "$SERVICE" ]; then
-			APP_PARMS_BEFORE=("${APP_PARMS_BEFORE[@]}" "$SERVICE")
+			APP_PARMS_BEFORE+=("$SERVICE")
 		fi
 		if [ "$NOEXECUTE" -eq 0 ]; then
 			"${JAVA_CMD[@]}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}"
@@ -504,13 +504,13 @@ doStop() {
 			APP_VM_PARMS=("${CONTROLLER_OPTIONS[@]}")
 			APP_PARMS_BEFORE=("${PARM_PID[@]}" -u "$JMX_URL" stop)
 			if [ -n "$SERVICE" ]; then
-				APP_PARMS_BEFORE=("${APP_PARMS_BEFORE[@]}" "$SERVICE")
+				APP_PARMS_BEFORE+=("$SERVICE")
 			fi
 			"${JAVA_CMD[@]}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}"
 		fi
 
 		sleep $STATUS_WAIT
-		STATUS_ATTEMPTS="$((STATUS_ATTEMPTS + 1))"
+		STATUS_ATTEMPTS="$((STATUS_ATTEMPTS++))"
 	done
 
 	return 1
@@ -611,76 +611,77 @@ cd "$OPENNMS_HOME" || { echo "could not \"cd $OPENNMS_HOME\"" >&2; exit 1; }
 JAVA_CMD=("$OPENNMS_HOME/bin/runjava" -r "${RUNJAVA_OPTIONS[@]}" --)
 BOOTSTRAP="$OPENNMS_HOME/lib/opennms_bootstrap.jar"
 
-#MANAGER_OPTIONS=("-DOPENNMSLAUNCH")
-MANAGER_OPTIONS=("-Dopennms.home=$OPENNMS_HOME")
-#MANAGER_OPTIONS=("${MANAGER_OPTIONS[@]}" "-Djcifs.properties=$OPENNMS_HOME/etc/jcifs.properties")
-MANAGER_OPTIONS=("${MANAGER_OPTIONS[@]}" "-Xmx${JAVA_HEAP_SIZE}m")
-MANAGER_OPTIONS=("${MANAGER_OPTIONS[@]}" "-XX:+HeapDumpOnOutOfMemoryError")
+MANAGER_OPTIONS=()
+#MANAGER_OPTIONS+=("-DOPENNMSLAUNCH")
+MANAGER_OPTIONS+=("-Dopennms.home=$OPENNMS_HOME")
+#MANAGER_OPTIONS+=("-Djcifs.properties=$OPENNMS_HOME/etc/jcifs.properties")
+MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}m")
+MANAGER_OPTIONS+=("-XX:+HeapDumpOnOutOfMemoryError")
 
 if [ -n "$USE_INCGC" ] && [ "$USE_INCGC" = true ] ; then
-	MANAGER_OPTIONS=("${MANAGER_OPTIONS[@]}" "-Xincgc")
+	MANAGER_OPTIONS+=("-Xincgc")
 fi
 
 #if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c -- -Dcom.sun.management.jmxremote.port=)" -eq 0 ]; then
-#	ADDITIONAL_MANAGER_OPTIONS=("${ADDITIONAL_MANAGER_OPTIONS[@]}" "-Dcom.sun.management.jmxremote.port=18980")
+#	ADDITIONAL_MANAGER_OPTIONS+=("-Dcom.sun.management.jmxremote.port=18980")
 #fi
 
 #if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c -- -Dcom.sun.management.jmxremote.ssl=)" -eq 0 ]; then
-#	ADDITIONAL_MANAGER_OPTIONS=("${ADDITIONAL_MANAGER_OPTIONS[@]}" "-Dcom.sun.management.jmxremote.ssl=false")
+#	ADDITIONAL_MANAGER_OPTIONS+=("-Dcom.sun.management.jmxremote.ssl=false")
 #fi
 
 if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c -- -Dcom.sun.management.jmxremote.authenticate=)" -eq 0 ]; then
-	ADDITIONAL_MANAGER_OPTIONS=("${ADDITIONAL_MANAGER_OPTIONS[@]}" "-Dcom.sun.management.jmxremote.authenticate=true")
+	ADDITIONAL_MANAGER_OPTIONS+=("-Dcom.sun.management.jmxremote.authenticate=true")
 fi
 
 if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c -- -Dcom.sun.management.jmxremote.login.config=)" -eq 0 ]; then
-	ADDITIONAL_MANAGER_OPTIONS=("${ADDITIONAL_MANAGER_OPTIONS[@]}" "-Dcom.sun.management.jmxremote.login.config=opennms")
+	ADDITIONAL_MANAGER_OPTIONS+=("-Dcom.sun.management.jmxremote.login.config=opennms")
 fi
 
 if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c -- -Dcom.sun.management.jmxremote.access.file=)" -eq 0 ]; then
-	ADDITIONAL_MANAGER_OPTIONS=("${ADDITIONAL_MANAGER_OPTIONS[@]}" "-Dcom.sun.management.jmxremote.access.file=$OPENNMS_HOME/etc/jmxremote.access")
+	ADDITIONAL_MANAGER_OPTIONS+=("-Dcom.sun.management.jmxremote.access.file=$OPENNMS_HOME/etc/jmxremote.access")
 fi
 
 #if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c -- -Djava.security.debug=)" -eq 0 ]; then
-#	ADDITIONAL_MANAGER_OPTIONS=("${ADDITIONAL_MANAGER_OPTIONS[@]}" "-Djava.security.debug=all")
+#	ADDITIONAL_MANAGER_OPTIONS+=("-Djava.security.debug=all")
 #fi
 
 if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c -- -DisThreadContextMapInheritable=)" -eq 0 ]; then
-	ADDITIONAL_MANAGER_OPTIONS=("${ADDITIONAL_MANAGER_OPTIONS[@]}" "-DisThreadContextMapInheritable=true")
+	ADDITIONAL_MANAGER_OPTIONS+=("-DisThreadContextMapInheritable=true")
 fi
 
 # Fix for NMS-8125: Groovy meta-space leak
 if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c -- -Dgroovy.use.classvalue=)" -eq 0 ]; then
-	ADDITIONAL_MANAGER_OPTIONS=("${ADDITIONAL_MANAGER_OPTIONS[@]}" "-Dgroovy.use.classvalue=true")
+	ADDITIONAL_MANAGER_OPTIONS+=("-Dgroovy.use.classvalue=true")
 fi
 
 if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c MaxMetaspaceSize=)" -eq 0 ]; then
-	ADDITIONAL_MANAGER_OPTIONS=("${ADDITIONAL_MANAGER_OPTIONS[@]}" "-XX:MaxMetaspaceSize=512m")
+	ADDITIONAL_MANAGER_OPTIONS+=("-XX:MaxMetaspaceSize=512m")
 fi
 
 if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c -- -Djava.io.tmpdir=)" -eq 0 ]; then
 	if [ ! -d "$OPENNMS_HOME/data/tmp" ]; then
 		mkdir -p "$OPENNMS_HOME/data/tmp"
 	fi
-	ADDITIONAL_MANAGER_OPTIONS=("${ADDITIONAL_MANAGER_OPTIONS[@]}" "-Djava.io.tmpdir=$OPENNMS_HOME/data/tmp")
+	ADDITIONAL_MANAGER_OPTIONS+=("-Djava.io.tmpdir=$OPENNMS_HOME/data/tmp")
 fi
 
 # Fix for Attach API listener sometimes going AWOL
 if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c StartAttachListener)" -eq 0 ]; then
-	ADDITIONAL_MANAGER_OPTIONS=("${ADDITIONAL_MANAGER_OPTIONS[@]}" -XX:+StartAttachListener)
+	ADDITIONAL_MANAGER_OPTIONS+=("-XX:+StartAttachListener")
 fi
 
 if (( ${#ADDITIONAL_MANAGER_OPTIONS[@]} )); then
-	MANAGER_OPTIONS=("${MANAGER_OPTIONS[@]}" "${ADDITIONAL_MANAGER_OPTIONS[@]}")
+	MANAGER_OPTIONS+=("${ADDITIONAL_MANAGER_OPTIONS[@]}")
 fi
 
 
 if [ -n "$HOTSPOT" ] && [ "$HOTSPOT" = true ] ; then
-	JAVA_CMD=("${JAVA_CMD[@]}" -server)
+	JAVA_CMD+=("-server")
 fi
 
 if (( ${#ADDITIONAL_CONTROLLER_OPTIONS} )); then
-	CONTROLLER_OPTIONS=("${CONTROLLER_OPTIONS[@]}" "${ADDITIONAL_CONTROLLER_OPTIONS[@]}")
+	CONTROLLER_OPTIONS+=("${ADDITIONAL_CONTROLLER_OPTIONS[@]}")
 fi
 
 TEST=0
@@ -695,7 +696,7 @@ NAME="opennms"
 while getopts c:fntvpoQ c; do
 	case $c in
 		c)
-			APP_PARMS_CONTROLLER=("${APP_PARMS_CONTROLLER[@]}" -t "$OPTARG")
+			APP_PARMS_CONTROLLER+=("-t" "$OPTARG")
 			;;
 		f)
 			BACKGROUND=0
@@ -751,7 +752,7 @@ if [ x"$SERVICE" = x"all" ]; then
 fi
 
 if [ x"$VERBOSE_GC" != x"" ]; then
-	MANAGER_OPTIONS=("${MANAGER_OPTIONS[@]}" -verbose:gc)
+	MANAGER_OPTIONS+=("-verbose:gc")
 fi
 
 if [ ! -f "$OPENNMS_HOME/etc/configured" ]; then
@@ -800,9 +801,7 @@ case "$COMMAND" in
 			# Remember status and be verbose
 			rc_status -v
 		elif [ "$FUNCTIONS_LOADED" -ne 0 ]; then
-			doStart "$@"
-			ret="$?"
-			if [ "$ret" -eq 0 ]; then
+			if doStart "$@"; then
 				echo_success
 				if [ -w /var/lock/subsys ]; then
 					touch /var/lock/subsys/${NAME}
@@ -812,9 +811,7 @@ case "$COMMAND" in
 			fi
 			echo ""
 		else
-			doStart "$@"
-			ret="$?"
-			if [ "$ret" -eq 0 ]; then
+			if doStart "$@"; then
 				echo "ok"
 			else
 				echo "failed"
@@ -832,9 +829,7 @@ case "$COMMAND" in
 
 			doKill "$@"
 		elif [ "$FUNCTIONS_LOADED" -ne 0 ]; then
-			doStop "$@"
-			ret="$?"
-			if [ "$ret" -eq 0 ]; then
+			if doStop "$@"; then
 				echo_success
 			else
 				echo_failure
@@ -846,9 +841,7 @@ case "$COMMAND" in
 
 			doKill "$@"
 		else
-			doStop "$@"
-			ret="$?"
-			if [ "$ret" -eq 0 ]; then
+			if doStop "$@"; then
 				echo "stopped"
 			else
 				echo "failed"
@@ -904,16 +897,9 @@ case "$COMMAND" in
 
 	configtest)
 		$opennms_echo "Validating XML files: \c"
-		checkXmlFiles
-		ret=$?
-		case $ret in
-			0)
-				echo "PASSED"
-				;;
-			*)
-				# nothing
-				;;
-		esac
+		if checkXmlFiles; then
+			echo "PASSED"
+		fi
 		;;
 
 	ssh)
