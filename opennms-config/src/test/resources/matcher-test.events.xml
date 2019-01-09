@@ -83,7 +83,71 @@
     <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" alarm-type="1" auto-clean="false"/>
   </event>
 
-   <event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>parm[status]</mename>
+                <mevalue>up</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>parm[ifDescr]</mename>
+                <mevalue>eth0</mevalue>
+            </maskelement>
+        </mask>
+      <uei>uei.opennms.org/threshold/highThresholdExceeded</uei>
+      <event-label>OpenNMS-defined threshold event: highThresholdExceeded</event-label>
+      <descr>
+      &lt;p&gt;High threshold exceeded for %service% datasource
+                        %parm[ds]% on interface %interface%, parms: %parm[all]%&lt;/p&gt;
+                        &lt;p&gt;By default, OpenNMS watches some key parameters
+                        on devices in your network and will alert you with
+                        an event if certain conditions arise. For example, if
+                        the CPU utilization on your Cisco router maintains an
+                        inordinately high percentage of utilization for an extended
+                        period, an event will be generated. These thresholds are
+                        determined and configured based on vendor recommendations,
+                        tempered with real-world experience in working
+                        deployments.&lt;/p&gt; &lt;p&gt;This specific event
+                        indicates that a high threshold was exceeded.&lt;/p&gt;
+      </descr>
+      <logmsg dest="logndisplay">
+        High threshold exceeded for IronPort (%interface%) - CPU %parm[value]%, Threshold %parm[threshold]%
+	  </logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" alarm-type="1" auto-clean="false"/>
+    </event>
+
+    <event>
+        <mask>
+            <maskelement>
+                <mename>parm[ifDescr]</mename>
+                <mevalue>eth0</mevalue>
+            </maskelement>
+        </mask>
+      <uei>uei.opennms.org/threshold/highThresholdExceeded</uei>
+      <event-label>OpenNMS-defined threshold event: highThresholdExceeded</event-label>
+      <descr>
+      &lt;p&gt;High threshold exceeded for %service% datasource
+                        %parm[ds]% on interface %interface%, parms: %parm[all]%&lt;/p&gt;
+                        &lt;p&gt;By default, OpenNMS watches some key parameters
+                        on devices in your network and will alert you with
+                        an event if certain conditions arise. For example, if
+                        the CPU utilization on your Cisco router maintains an
+                        inordinately high percentage of utilization for an extended
+                        period, an event will be generated. These thresholds are
+                        determined and configured based on vendor recommendations,
+                        tempered with real-world experience in working
+                        deployments.&lt;/p&gt; &lt;p&gt;This specific event
+                        indicates that a high threshold was exceeded.&lt;/p&gt;
+      </descr>
+      <logmsg dest="logndisplay">
+        High threshold exceeded for IronPort (%interface%) - CPU %parm[value]%, Threshold %parm[threshold]%
+	  </logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" alarm-type="1" auto-clean="false"/>
+    </event>
+
+  <event>
     <uei>uei.opennms.org/threshold/highThresholdExceeded</uei>
     <event-label>OpenNMS-defined threshold event: highThresholdExceeded</event-label>
     <descr>

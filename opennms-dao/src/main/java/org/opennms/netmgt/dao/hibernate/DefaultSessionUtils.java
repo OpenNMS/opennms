@@ -70,7 +70,7 @@ public class DefaultSessionUtils implements SessionUtils {
 
     @Override
     public <V> V withReadOnlyTransaction(Supplier<V> supplier) {
-        return withManualFlush(() -> executeWithTransactionDefinition(readOnlyTransactionDefinition, supplier));
+        return executeWithTransactionDefinition(readOnlyTransactionDefinition, () -> withManualFlush(supplier));
     }
 
     @Override

@@ -29,7 +29,6 @@
 package org.opennms.features.kafka.producer;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.List;
@@ -466,7 +465,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     }
 
     @Override
-    public void handleAlarmFeedback(Collection<AlarmFeedback> alarmFeedback) {
+    public void handleAlarmFeedback(List<AlarmFeedback> alarmFeedback) {
         if (!forwardAlarmFeedback) {
             return;
         }
