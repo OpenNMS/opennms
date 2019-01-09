@@ -28,19 +28,20 @@
 
 package org.opennms.core.ipc.rpc.kafka;
 
-import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.DEFAULT_CACHE_CONFIG;
-import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.RPCID_CACHE_CONFIG;
-
 import java.io.IOException;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.DelayQueue;
+import java.util.concurrent.Delayed;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -68,8 +69,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.math.IntMath;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
@@ -99,10 +98,11 @@ public class KafkaRpcServerManager {
                                                        .build();
     private final ExecutorService executor = Executors.newCachedThreadPool(threadFactory);
     private Map<RpcModule<RpcRequest, RpcResponse>, KafkaConsumerRunner> rpcModuleConsumers = new ConcurrentHashMap<>();
-    // cache to hold rpcId for directed RPCs and expire them
-    private Cache<String, Long>  rpcIdCache;
     // cache to hold rpcId and ByteString when there are multiple chunks for the message.
-    private Cache<String, ByteString> messageCache;
+    private Map<String, ByteString> messageCache = new ConcurrentHashMap<>();
+    // Delay queue which caches rpcId and removes when rpcId reaches expiration time.
+    private DelayQueue<RpcId> rpcIdQueue = new DelayQueue<>();
+    private ExecutorService delayQueueExecutor = Executors.newSingleThreadExecutor();
 
     public KafkaRpcServerManager(KafkaConfigProvider configProvider, MinionIdentity minionIdentity) {
         this.kafkaConfigProvider = configProvider;
@@ -125,9 +125,17 @@ public class KafkaRpcServerManager {
         producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<String, byte[]>(kafkaConfig), KafkaProducer.class.getClassLoader());
         // Configurable cache config.
         maxBufferSize = KafkaRpcConstants.getMaxBufferSize(kafkaConfig);
-        String cacheConfig = kafkaConfig.getProperty(RPCID_CACHE_CONFIG, DEFAULT_CACHE_CONFIG);
-        rpcIdCache = CacheBuilder.from(cacheConfig).build();
-        messageCache = CacheBuilder.from(cacheConfig).build();
+        // Thread to expire RpcId from rpcIdQueue.
+        delayQueueExecutor.execute(() -> {
+            while(true) {
+                try {
+                    rpcIdQueue.take();
+                } catch (InterruptedException e) {
+                    LOG.error("Delay Queue has been interrupted ", e);
+                    break;
+                }
+            }
+        });
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -172,8 +180,9 @@ public class KafkaRpcServerManager {
         if (producer != null) {
             producer.close();
         }
-         rpcIdCache.invalidateAll();
-         messageCache.invalidateAll();
+         messageCache.clear();
+         executor.shutdown();
+         delayQueueExecutor.shutdown();
     }
 
 
@@ -226,18 +235,18 @@ public class KafkaRpcServerManager {
                                 if (rpcMessage.getTotalChunks() > 1) {
                                     messageId = messageId + rpcMessage.getCurrentChunkNumber();
                                 }
-                                Long cachedTime = rpcIdCache.getIfPresent(messageId);
-                                if (cachedTime == null) {
-                                    rpcIdCache.put(messageId, System.currentTimeMillis());
-                                } else {
+                                // If rpcId is already present in queue, no need to process it again.
+                                if (rpcIdQueue.contains(new RpcId(messageId, rpcMessage.getExpirationTime()))) {
                                     continue;
+                                } else {
+                                    rpcIdQueue.offer(new RpcId(messageId, rpcMessage.getExpirationTime()));
                                 }
                             }
                             ByteString rpcContent = rpcMessage.getRpcContent();
 
                             // For larger messages which get split into multiple chunks, cache them until all of them arrive.
                             if (rpcMessage.getTotalChunks() > 1) {
-                                ByteString byteString = messageCache.getIfPresent(rpcId);
+                                ByteString byteString = messageCache.get(rpcId);
                                 if (byteString != null) {
                                     messageCache.put(rpcId, byteString.concat(rpcMessage.getRpcContent()));
                                 } else {
@@ -246,8 +255,8 @@ public class KafkaRpcServerManager {
                                 if (rpcMessage.getTotalChunks() != rpcMessage.getCurrentChunkNumber() + 1) {
                                     continue;
                                 }
-                                rpcContent = messageCache.getIfPresent(rpcId);
-                                messageCache.invalidate(rpcId);
+                                rpcContent = messageCache.get(rpcId);
+                                messageCache.remove(rpcId);
                             }
                             RpcRequest request = module.unmarshalRequest(rpcContent.toStringUtf8());
                             CompletableFuture<RpcResponse> future = module.execute(request);
@@ -271,12 +280,12 @@ public class KafkaRpcServerManager {
                                     // Divide the message in chunks and send each chunk as a different message with the same key.
                                     RpcMessageProtos.RpcMessage.Builder builder = RpcMessageProtos.RpcMessage.newBuilder()
                                                                                       .setRpcId(rpcId);
+                                    builder.setTotalChunks(totalChunks);
                                     for (int chunk = 0; chunk < totalChunks; chunk++) {
                                         // Calculate remaining bufferSize for each chunk.
                                         int bufferSize = KafkaRpcConstants.getBufferSize(messageInBytes.length, maxBufferSize, chunk);
                                         ByteString byteString = ByteString.copyFrom(messageInBytes, chunk * maxBufferSize, bufferSize);
-                                        RpcMessageProtos.RpcMessage rpcResponse = builder.setTotalChunks(totalChunks)
-                                                                                      .setCurrentChunkNumber(chunk)
+                                        RpcMessageProtos.RpcMessage rpcResponse = builder.setCurrentChunkNumber(chunk)
                                                                                       .setRpcContent(byteString)
                                                                                       .build();
                                         final ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<>(
@@ -313,7 +322,50 @@ public class KafkaRpcServerManager {
 
     }
 
-    protected Cache<String, Long> getRpcIdCache() {
-        return rpcIdCache;
+    /**
+     * RpcId is used to remove rpcId from DelayQueue after it reaches expirationTime.
+     */
+    private class RpcId implements Delayed {
+
+        private final long expirationTime;
+
+        private final String rpcId;
+
+        public RpcId(String rpcId, long expirationTime) {
+            this.rpcId = rpcId;
+            this.expirationTime = expirationTime;
+        }
+
+        @Override
+        public int compareTo(Delayed other) {
+            long myDelay = getDelay(TimeUnit.MILLISECONDS);
+            long otherDelay = other.getDelay(TimeUnit.MILLISECONDS);
+            return Long.compare(myDelay, otherDelay);
+        }
+
+        @Override
+        public long getDelay(TimeUnit unit) {
+            long now = System.currentTimeMillis();
+            return unit.convert(expirationTime - now, TimeUnit.MILLISECONDS);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            RpcId that = (RpcId) o;
+            return expirationTime == that.expirationTime &&
+                    Objects.equals(rpcId, that.rpcId);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(expirationTime, rpcId);
+        }
     }
+
+    public DelayQueue<RpcId> getRpcIdQueue() {
+        return rpcIdQueue;
+    }
+
 }

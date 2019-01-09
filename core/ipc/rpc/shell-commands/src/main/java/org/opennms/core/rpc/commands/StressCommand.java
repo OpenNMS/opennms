@@ -52,7 +52,6 @@ import com.google.common.base.Strings;
 @Service
 public class StressCommand implements Action {
 
-    private static final Integer MAX_BUFFER_SIZE = 500000;
 
     @Reference
     public RpcClientFactory rpcClientFactory;
@@ -143,11 +142,7 @@ public class StressCommand implements Action {
         final EchoRequest request = new EchoRequest();
         request.setId(System.currentTimeMillis());
         String message = Strings.repeat("*", messageSize);
-        if(messageSize > MAX_BUFFER_SIZE) {
-            request.setBody(message);
-        } else {
-            request.setMessage(message);
-        }
+        request.setBody(message);
         request.setLocation(location);
         request.setSystemId(systemId);
         request.setTimeToLiveMs(ttlInMs);

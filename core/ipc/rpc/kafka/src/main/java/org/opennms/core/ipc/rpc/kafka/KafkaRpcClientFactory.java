@@ -241,10 +241,10 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                             responseCb.sendResponse(null);
                         }
                     } catch (InterruptedException e) {
-                        LOG.info("interrupted while waiting for an element from delayQueue {}", e);
+                        LOG.info("interrupted while waiting for an element from delayQueue", e);
                         break;
                     } catch (Exception e) {
-                        LOG.warn("error while sending response from timeout handler {}", e);
+                        LOG.warn("error while sending response from timeout handler", e);
                     }
                 }
             });
@@ -300,11 +300,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         public int compareTo(Delayed other) {
             long myDelay = getDelay(TimeUnit.MILLISECONDS);
             long otherDelay = other.getDelay(TimeUnit.MILLISECONDS);
-            if (myDelay < otherDelay)
-                return -1;
-            if (myDelay == otherDelay)
-                return 0;
-            return 1;
+            return Long.compare(myDelay, otherDelay);
         }
 
         @Override
@@ -437,5 +433,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         executor.shutdown();
         timerExecutor.shutdown();
     }
+
+
 
 }

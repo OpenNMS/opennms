@@ -31,6 +31,7 @@ package org.opennms.core.ipc.rpc.kafka;
 import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -113,7 +114,6 @@ public class RpcKafkaIT {
         rpcClient.start();
         kafkaConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
         kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        kafkaConfig.put(KafkaRpcConstants.RPCID_CACHE_CONFIG, "maximumSize=1000,expireAfterWrite=15s");
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(KafkaRpcConstants.KAFKA_CONFIG_PID).getProperties())
                 .thenReturn(kafkaConfig);
@@ -264,11 +264,7 @@ public class RpcKafkaIT {
         });
         await().atMost(45, TimeUnit.SECONDS).untilAtomic(count, equalTo(maxRequests));
         await().atMost(45, TimeUnit.SECONDS).untilAtomic(messageCount, equalTo(maxRequests));
-        await().atMost(45, TimeUnit.SECONDS).pollDelay(15, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() ->   {
-            // In real world scenario, this will be done by cache in read/write operations. Don't need explicit cleanUp.
-            kafkaRpcServer.getRpcIdCache().cleanUp();
-            return kafkaRpcServer.getRpcIdCache().size() == 0;
-        } );
+        await().atMost(45, TimeUnit.SECONDS).until(() -> kafkaRpcServer.getRpcIdQueue().size(), is(0));
         closed.set(true);
     }
 

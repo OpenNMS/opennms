@@ -48,10 +48,6 @@ public interface KafkaRpcConstants {
     public static final String DEFAULT_TTL_PROPERTY = "ttl";
     public static final long DEFAULT_TTL = Long.getLong(String.format("%s%s", KAFKA_CONFIG_SYS_PROP_PREFIX, DEFAULT_TTL_PROPERTY),
             DEFAULT_TTL_CONFIGURED);
-    // Config for rpcId and message Cache to expire since there is no way easy way to remove keys from map.
-    public static final String DEFAULT_CACHE_CONFIG = "maximumSize=1000,expireAfterWrite=5m";
-    public static final String RPCID_CACHE_CONFIG = "rpcid.cache.config";
-
 
 
     // Calculate remaining buffer size for each chunk.
