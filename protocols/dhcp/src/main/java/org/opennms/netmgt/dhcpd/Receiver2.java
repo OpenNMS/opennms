@@ -36,8 +36,8 @@ import java.net.DatagramSocket;
 import java.util.Iterator;
 import java.util.List;
 
+import org.dhcp4java.DHCPPacket;
 import org.opennms.core.fiber.Fiber;
-import org.opennms.jdhcp.DHCPMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,7 +137,7 @@ final class Receiver2 implements Runnable, Fiber {
                 DatagramPacket pkt = new DatagramPacket(dgbuf, dgbuf.length);
                 m_receiver.receive(pkt);
                 LOG.debug("got a DHCP response.");
-                Message msg = new Message(pkt.getAddress(), new DHCPMessage(pkt.getData()));
+                Message msg = new Message(pkt.getAddress(), DHCPPacket.getPacket(pkt));
 
                 synchronized (m_clients) {
                     Iterator<Client> iter = m_clients.iterator();

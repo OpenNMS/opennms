@@ -31,6 +31,7 @@ package org.opennms.netmgt.alarmd;
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
@@ -43,6 +44,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -232,6 +234,35 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         }
     }
     
+    @Test
+    public void canHandleMultipleClearsWithNoCorrrespondingProblemAlarm() throws Exception {
+        final MockNode node = m_mockNetwork.getNode(1);
+        sendNodeUpEvent(node);
+        sendNodeUpEvent(node);
+
+        // We should only have one alarm now and should have a count of 2
+        await().until(() -> m_alarmDao.findAll(), hasSize(1));
+        await().until(() -> m_alarmDao.findAll().get(0).getCounter(), equalTo(2));
+    }
+
+    @Test
+    public void canReduceMultipleClearsWithOutOfOrderProblem() throws Exception {
+        final MockNode node = m_mockNetwork.getNode(1);
+        // Send Clear
+        Date firstClearTime = new Date();
+        sendNodeUpEvent(node, firstClearTime);
+        // Send Second Clear
+        sendNodeUpEvent(node, new Date());
+        // Send OutOfOrder Problem with a timestamp 2 minutes before the initial Clear
+        Date initialProblemDate = new Date(firstClearTime.getTime() - SECONDS.toMillis(60));
+        sendNodeDownEvent(node, initialProblemDate);
+
+        // We should have 2 alarms now
+        // The problem should be cleared and the clear should be normal
+        await().until(() -> m_alarmDao.findAll().size(), equalTo(2));
+        await().until(() -> m_alarmDao.findByReductionKey("uei.opennms.org/nodes/nodeDown:1").getSeverity(), equalTo(OnmsSeverity.CLEARED));
+        await().until(() -> m_alarmDao.findByReductionKey("uei.opennms.org/nodes/nodeUp:1").getSeverity(), equalTo(OnmsSeverity.NORMAL));
+    }
 
     @Test
     public void testPersistManyAlarmsAtOnce() throws InterruptedException {
@@ -725,9 +756,15 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         m_eventMgr.sendNow(event.getEvent());
     }
 
+
     private void sendNodeDownEvent(MockNode node) throws SQLException {
+        sendNodeDownEvent(node, new Date());
+    }
+
+    private void sendNodeDownEvent(MockNode node, Date eventTime) {
         EventBuilder event = MockEventUtil.createNodeDownEventBuilder("Test", node);
-        
+        event.setTime(eventTime);
+
         AlarmData data = new AlarmData();
         data.setAlarmType(1);
         data.setReductionKey("uei.opennms.org/nodes/nodeDown:1");
@@ -740,7 +777,12 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     }
 
     private void sendNodeUpEvent(MockNode node) throws SQLException {
+        sendNodeUpEvent(node, new Date());
+    }
+
+    private void sendNodeUpEvent(MockNode node, Date eventTime) throws SQLException {
         EventBuilder event = MockEventUtil.createNodeUpEventBuilder("Test", node);
+        event.setTime(eventTime);
 
         AlarmData data = new AlarmData();
         data.setAlarmType(2);

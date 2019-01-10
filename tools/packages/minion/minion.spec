@@ -12,14 +12,14 @@
 %{!?minionrepoprefix:%define minionrepoprefix /opt/minion/repositories}
 
 # Description
-%{!?_name:%define _name "opennms"}
-%{!?_descr:%define _descr "OpenNMS"}
+%{!?_name:%define _name opennms}
+%{!?_descr:%define _descr OpenNMS}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
 %{!?_java:%define _java jre-1.8.0}
 
-%{!?extrainfo:%define extrainfo }
-%{!?extrainfo2:%define extrainfo2 }
+%{!?extrainfo:%define extrainfo %{nil}}
+%{!?extrainfo2:%define extrainfo2 %{nil}}
 %{!?skip_compile:%define skip_compile 0}
 %{!?enable_snapshots:%define enable_snapshots 1}
 
@@ -47,6 +47,9 @@ BuildArch:     noarch
 Source:        %{_name}-source-%{version}-%{releasenumber}.tar.gz
 URL:           http://www.opennms.org/wiki/Minion
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
+
+BuildRequires:	%{_java}
+BuildRequires:	libxslt
 
 Requires(pre): %{name}-features-default = %{version}-%{release}
 Requires:      %{name}-features-default = %{version}-%{release}
@@ -130,6 +133,10 @@ if [ "%{enable_snapshots}" = 1 ]; then
 	EXTRA_ARGS="-s"
 fi
 
+if [ "%{skip_compile}" = 1 ]; then
+	EXTRA_ARGS="$EXTRA_ARGS -c"
+fi
+
 tools/packages/minion/create-minion-assembly.sh $EXTRA_ARGS
 
 # Extract the minion assembly
@@ -145,7 +152,11 @@ echo "id = 00000000-0000-0000-0000-000000ddba11" >> %{buildroot}%{minioninstpref
 
 # fix the init script for RedHat/CentOS layout
 mkdir -p "%{buildroot}%{_initrddir}"
-sed -e "s,^SYSCONFDIR[ \t]*=.*$,SYSCONFDIR=%{_sysconfdir}/sysconfig,g" -e "s,^MINION_HOME[ \t]*=.*$,MINION_HOME=%{minioninstprefix},g" "%{buildroot}%{minioninstprefix}/etc/minion.init" > "%{buildroot}%{_initrddir}"/minion
+sed -e "s,^SYSCONFDIR[ \t]*=.*$,SYSCONFDIR=%{_sysconfdir}/sysconfig,g" \
+	-e 's,^PING_REQUIRED=FALSE,PING_REQUIRED=TRUE,g' \
+	-e "s,^MINION_HOME[ \t]*=.*$,MINION_HOME=%{minioninstprefix},g" \
+	"%{buildroot}%{minioninstprefix}/etc/minion.init" \
+	> "%{buildroot}%{_initrddir}"/minion
 chmod 755 "%{buildroot}%{_initrddir}"/minion
 rm -f '%{buildroot}%{minioninstprefix}/etc/minion.init'
 

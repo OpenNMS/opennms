@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
@@ -73,7 +74,9 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
 
     private void start() {
         timer = new Timer("AlarmLifecycleListenerManager");
-        timer.scheduleAtFixedRate(new TimerTask() {
+        // Use a fixed delay instead of a fixed interval so that snapshots are not constantly in progress
+        // if they take a long time
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 try {
@@ -92,23 +95,47 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
         }
     }
 
-    private void doSnapshot() {
+    protected void doSnapshot() {
         if (listeners.size() < 1) {
             return;
         }
-        template.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                final List<OnmsAlarm> allAlarms = alarmDao.findAll();
-                listeners.forEach(l -> l.handleAlarmSnapshot(allAlarms));
+
+        final AtomicLong numAlarms = new AtomicLong(-1);
+        final long systemMillisBeforeSnasphot = System.currentTimeMillis();
+        final AtomicLong systemMillisAfterLoad = new AtomicLong(-1);
+        try {
+            forEachListener(AlarmLifecycleListener::preHandleAlarmSnapshot);
+            template.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus status) {
+                    final List<OnmsAlarm> allAlarms = alarmDao.findAll();
+                    numAlarms.set(allAlarms.size());
+                    // Save the timestamp after the load, so we can differentiate between how long it took
+                    // to load the alarms and how long it took to invoke the callbacks
+                    systemMillisAfterLoad.set(System.currentTimeMillis());
+                    forEachListener(l -> {
+                        LOG.debug("Calling handleAlarmSnapshot on listener: {}", l);
+                        l.handleAlarmSnapshot(allAlarms);
+                        LOG.debug("Done calling listener.");
+                    });
+                }
+            });
+        } finally {
+            if (LOG.isDebugEnabled()) {
+                final long now = System.currentTimeMillis();
+                LOG.debug("Alarm snapshot for {} alarms completed. Spent {}ms loading the alarms. " +
+                                "Snapshot processing took a total of of {}ms.",
+                        numAlarms.get(),
+                        systemMillisAfterLoad.get() - systemMillisBeforeSnasphot,
+                        now - systemMillisBeforeSnasphot);
             }
-        });
+            forEachListener(AlarmLifecycleListener::postHandleAlarmSnapshot);
+        }
     }
 
     public void onNewOrUpdatedAlarm(OnmsAlarm alarm) {
         forEachListener(l -> l.handleNewOrUpdatedAlarm(alarm));
     }
-
 
     @Override
     public void onAlarmArchived(OnmsAlarm alarm, String previousReductionKey) {
@@ -117,9 +144,7 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
 
     @Override
     public void onAlarmDeleted(OnmsAlarm alarm) {
-        final Integer alarmId = alarm.getId();
-        final String reductionKey = alarm.getReductionKey();
-        forEachListener(l -> l.handleDeletedAlarm(alarmId, reductionKey));
+        forEachListener(l -> l.handleDeletedAlarm(alarm.getId(), alarm.getReductionKey()));
     }
 
     @Override
@@ -195,6 +220,14 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
     public void onListenerUnregistered(final AlarmLifecycleListener listener, final Map<String,String> properties) {
         LOG.debug("onListenerUnregistered: {} with properties: {}", listener, properties);
         listeners.remove(listener);
+    }
+
+    public void setAlarmDao(AlarmDao alarmDao) {
+        this.alarmDao = alarmDao;
+    }
+
+    public void setTransactionTemplate(TransactionTemplate template) {
+        this.template = template;
     }
 
     @Override

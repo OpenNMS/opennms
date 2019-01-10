@@ -700,7 +700,7 @@ find %{buildroot}%{instprefix}/contrib ! -type d | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/lib ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
-	grep -v 'jdhcp' | \
+	grep -v 'dhcp4java' | \
 	grep -v 'jradius' | \
 	grep -v 'org.opennms.features.ncs.ncs-' | \
 	grep -v 'opennms-alarm-northbounder-jms' | \
@@ -879,7 +879,7 @@ rm -rf %{buildroot}
 %files plugin-protocol-dhcp
 %defattr(664 root root 775)
 %config(noreplace) %{instprefix}/etc/dhcp*.xml
-%{instprefix}/lib/jdhcp-*.jar
+%{instprefix}/lib/dhcp4java-*.jar
 %{instprefix}/lib/org.opennms.protocols.dhcp*.jar
 %{sharedir}/etc-pristine/dhcp*.xml
 %{sharedir}/xsds/dhcp*.xsd

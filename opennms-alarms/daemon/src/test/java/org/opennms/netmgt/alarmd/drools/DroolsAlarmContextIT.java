@@ -39,6 +39,8 @@ import static org.mockito.Mockito.when;
 import static org.opennms.netmgt.alarmd.driver.AlarmMatchers.hasSeverity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -53,7 +55,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.dao.support.AlarmEntityNotifierImpl;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsServiceType;
@@ -88,15 +92,30 @@ public class DroolsAlarmContextIT {
         dac.setUseManualTick(true);
         dac.setAlarmTicketerService(ticketer);
 
-        DefaultAlarmService alarmService = new DefaultAlarmService();
+        MockTransactionTemplate transactionTemplate = new MockTransactionTemplate();
+        transactionTemplate.afterPropertiesSet();
+        dac.setTransactionTemplate(transactionTemplate);
+
         alarmDao = mock(AlarmDao.class);
+        when(alarmDao.findAll()).thenReturn(Collections.emptyList());
+        dac.setAlarmDao(alarmDao);
+
+        DefaultAlarmService alarmService = new DefaultAlarmService();
         alarmService.setAlarmDao(alarmDao);
+        EventForwarder eventForwarder = mock(EventForwarder.class);
+        alarmService.setEventForwarder(eventForwarder);
 
         AlarmEntityNotifierImpl alarmEntityNotifier = mock(AlarmEntityNotifierImpl.class);
         alarmService.setAlarmEntityNotifier(alarmEntityNotifier);
         dac.setAlarmService(alarmService);
 
         dac.start();
+
+        // Wait until the seed thread has completed - it will hold the session lock
+        // after start returns, so it is sufficient to wait until we can acquire
+        // that same lock ourselves
+        dac.getLock().lock();
+        dac.getLock().unlock();
     }
 
     @After
@@ -123,6 +142,7 @@ public class DroolsAlarmContextIT {
         clear.setId(2);
         clear.setAlarmType(2);
         clear.setSeverity(OnmsSeverity.CLEARED);
+        clear.setReductionKey("clear:n1:oops");
         clear.setClearKey("n1:oops");
         clear.setLastEventTime(new Date(101));
         when(alarmDao.get(clear.getId())).thenReturn(clear);
@@ -139,6 +159,7 @@ public class DroolsAlarmContextIT {
         toDelete.setId(2);
         toDelete.setAlarmType(2);
         toDelete.setSeverity(OnmsSeverity.CLEARED);
+        toDelete.setReductionKey("clear:n1:oops");
         toDelete.setClearKey("n1:oops");
         toDelete.setLastEventTime(new Date(101));
         when(alarmDao.get(toDelete.getId())).thenReturn(toDelete);
@@ -169,6 +190,7 @@ public class DroolsAlarmContextIT {
         toDelete.setId(2);
         toDelete.setAlarmType(2);
         toDelete.setSeverity(OnmsSeverity.CLEARED);
+        toDelete.setReductionKey("clear:n1:oops");
         toDelete.setClearKey("n1:oops");
         toDelete.setLastEventTime(new Date(101));
         // "Ack" the alarm
@@ -455,6 +477,7 @@ public class DroolsAlarmContextIT {
         clear.setId(2);
         clear.setAlarmType(2);
         clear.setSeverity(OnmsSeverity.CLEARED);
+        clear.setReductionKey("clear:n1:oops");
         clear.setClearKey("n1:oops");
         clear.setLastEventTime(new Date(101));
         dac.getClock().advanceTime( 1, TimeUnit.MILLISECONDS );
@@ -490,6 +513,44 @@ public class DroolsAlarmContextIT {
         dac.tick();
 
         // The trigger should be cleared
+        assertThat(trigger, hasSeverity(OnmsSeverity.CLEARED));
+    }
+
+    @Test
+    public void canReloadEngine() {
+        // Create a trigger alarm
+        OnmsAlarm trigger = new OnmsAlarm();
+        trigger.setId(1);
+        trigger.setAlarmType(1);
+        trigger.setSeverity(OnmsSeverity.WARNING);
+        trigger.setReductionKey("n1:oops");
+        trigger.setLastEventTime(new Date(100));
+        when(alarmDao.get(trigger.getId())).thenReturn(trigger);
+        dac.getClock().advanceTime( 100, TimeUnit.MILLISECONDS );
+        dac.handleNewOrUpdatedAlarm(trigger);
+        dac.tick();
+
+        // Update the mock to return the alarm we just created, so that the initial
+        // seed includes it
+        when(alarmDao.findAll()).thenReturn(Arrays.asList(trigger));
+
+        // Reload the context
+        dac.reload();
+
+        // Create a clear alarm
+        OnmsAlarm clear = new OnmsAlarm();
+        clear.setId(2);
+        clear.setAlarmType(2);
+        clear.setSeverity(OnmsSeverity.CLEARED);
+        clear.setReductionKey("clear:n1:oops");
+        clear.setClearKey("n1:oops");
+        clear.setLastEventTime(new Date(101));
+        when(alarmDao.get(clear.getId())).thenReturn(clear);
+        dac.getClock().advanceTime( 101, TimeUnit.MILLISECONDS );
+        dac.handleNewOrUpdatedAlarm(clear);
+        dac.tick();
+
+        // The trigger should have been cleared
         assertThat(trigger, hasSeverity(OnmsSeverity.CLEARED));
     }
 

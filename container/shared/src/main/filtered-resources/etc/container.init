@@ -1,31 +1,30 @@
 #!/bin/sh -
 #
 # chkconfig:   345 99 01
-# description: Starts and stops the OpenNMS Minion distributed client
+# description: Starts and stops the OpenNMS @NAME_DISPLAY@ distributed client
 # processname: java
 #
 ### BEGIN INIT INFO
-# Provides:          minion
+# Provides:          @NAME_LC@
 # Required-Start:    $network $remote_fs
 # Required-Stop:     $network $remote_fs
 # Should-Start:      $local_fs
 # Should-Stop:       $local_fs
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: OpenNMS Minion
-# Description:       Distributed client for OpenNMS
+# Short-Description: OpenNMS @NAME_DISPLAY@
+# Description:       OpenNMS @NAME_DISPLAY@ in a Karaf Container
 ### END INIT INFO
 
-ME="$0"
-
-NAME="minion"
-DESC="Minion"
+NAME="@NAME_LC@"
+DESC="@NAME_DISPLAY@"
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-MINION_HOME="@INSTPREFIX@"
+CONTAINER_HOME="@INSTPREFIX@"
 SYSCONFDIR="@SYSCONFDIR@"
-RUNAS=root
+RUNAS="@RUNAS@"
 STOP_RETRIES=10
 STOP_WAIT=5
+PING_REQUIRED=FALSE
 
 export NAME DESC PATH
 
@@ -40,22 +39,22 @@ if [ -f /etc/rc.d/init.d/functions ]; then
 fi
 
 if [ -z "$JAVA_HOME" ]; then
-	JAVA_HOME="$("${MINION_HOME}/bin/find-java.sh" 1.8.0 1.8.9999)"
+	JAVA_HOME="$("$CONTAINER_HOME/bin/find-java.sh" 1.8.0 1.8.9999)"
 fi
 
-if [ -r "${SYSCONFDIR}/minion" ]; then
+if [ -r "$SYSCONFDIR/$NAME" ]; then
 	# shellcheck disable=SC1090,SC1091
-	. "${SYSCONFDIR}/minion"
+	. "$SYSCONFDIR/$NAME"
 fi
 
-if [ -r "${MINION_HOME}/minion.conf" ]; then
+if [ -r "$CONTAINER_HOME/$NAME.conf" ]; then
 	# shellcheck disable=SC1090,SC1091
-	. "${MINION_HOME}/minion.conf"
+	. "$CONTAINER_HOME/$NAME.conf"
 fi
 
-if [ -r "${MINION_HOME}/etc/minion.conf" ]; then
+if [ -r "$CONTAINER_HOME/etc/$NAME.conf" ]; then
 	# shellcheck disable=SC1090,SC1091
-	. "${MINION_HOME}/etc/minion.conf"
+	. "$CONTAINER_HOME/etc/$NAME.conf"
 fi
 
 # The user config can set JAVA_OPTS, but Karaf will not
@@ -64,57 +63,60 @@ fi
 # now, rather than letting Karaf init do it.
 
 # shellcheck disable=SC1090,SC1091
-. "${MINION_HOME}/bin/inc"
+. "$CONTAINER_HOME/bin/inc"
 setupDefaults
 
 # always dump heap if we OOM
-DEFAULT_JAVA_OPTS="${DEFAULT_JAVA_OPTS} -XX:+HeapDumpOnOutOfMemoryError"
+DEFAULT_JAVA_OPTS="$DEFAULT_JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
 
 # combine user JAVA_OPTS with the defaults from Karaf
-JAVA_OPTS="${DEFAULT_JAVA_OPTS} ${JAVA_OPTS}"
+JAVA_OPTS="$DEFAULT_JAVA_OPTS $JAVA_OPTS"
 
 # export any default configurable variables from sysconf
-export JAVA_HOME JAVA_MIN_MEM JAVA_MAX_MEM MAX_FD JAVA JAVA_DEBUG_OPTS JAVA_DEBUG_PORT JAVA_OPTS CLASSPATH KARAF_DEBUG LD_LIBRARY_PATH
+export RUNAS JAVA_MIN_MEM JAVA_MAX_MEM MAX_FD JAVA_HOME JAVA JAVA_DEBUG_OPTS JAVA_DEBUG_PORT JAVA_OPTS CLASSPATH KARAF_DEBUG LD_LIBRARY_PATH
+
+# export any local configurable variables
+export NAME DESC PATH CONTAINER_HOME SYSCONFDIR STOP_RETRIES STOP_WAIT
 
 run_as() {
-	if [ "$(id -n -u)" "!=" "${RUNAS}" ]; then
-		DAEMON="$(daemon --user="${RUNAS}" true >/dev/null 2>&1 && echo daemon)"
-		RUNUSER="$(runuser -u "${RUNAS}" true 2>/dev/null && which runuser 2>/dev/null)"
-		if [ -n "${DAEMON}" ]; then
-			"$DAEMON" --user="${RUNAS}" "$@" >/dev/null 2>&1
-		elif [ -n "${RUNUSER}" ] && [ -x "${RUNUSER}" ]; then
-			exec "${RUNUSER}" -u "${RUNAS}" "$@"
+	if [ "$(id -n -u)" "!=" "$RUNAS" ]; then
+		DAEMON="$(daemon --user="$RUNAS" true >/dev/null 2>&1 && command -v daemon)"
+		RUNUSER="$(runuser -u "$RUNAS" true 2>/dev/null && command -v runuser)"
+		if [ -n "$DAEMON" ]; then
+			"$DAEMON" --user="$RUNAS" "$@" >/dev/null 2>&1
+		elif [ -n "$RUNUSER" ] && [ -x "$RUNUSER" ]; then
+			"$RUNUSER" -u "$RUNAS" "$@"
 		else
-			exec /usr/bin/sudo -u "${RUNAS}" "$@"
+			/usr/bin/sudo -u "$RUNAS" "$@"
 		fi
 	else
-		exec "$@"
+		"$@"
 	fi
 }
 
 get_root_pid() {
 	ROOT_INSTANCE_PID=0
-	if [ -f "${MINION_HOME}/instances/instance.properties" ];
+	if [ -f "$CONTAINER_HOME/instances/instance.properties" ];
 	then
-		ROOT_INSTANCE_PID=$(sed -n -e '/item.0.pid/ s/.*\= *//p' "${MINION_HOME}/instances/instance.properties")
+		ROOT_INSTANCE_PID=$(sed -n -e '/item.0.pid/ s/.*\= *//p' "$CONTAINER_HOME/instances/instance.properties")
 	fi
 	echo "$ROOT_INSTANCE_PID"
 }
 
 is_running() {
   PID=$(get_root_pid)
-  if [ "${PID}" -ne "0" ] && ps p "$PID" > /dev/null; then
+  if [ "$PID" -ne "0" ] && ps p "$PID" > /dev/null; then
     return 0
   else
     return 1
   fi
 }
 
-stop_minion() {
-	run_as "$MINION_HOME"/bin/stop >/dev/null
+stop_process() {
+	run_as "$CONTAINER_HOME"/bin/stop >/dev/null
 }
 
-kill_minion() {
+kill_process() {
 	SIGNAL="$1"
 	if [ -z "$SIGNAL" ]; then
 		SIGNAL="-15"
@@ -136,12 +138,21 @@ case "$COMMAND" in
 			exit 0
 		fi
 
-		# LSB 4 = insufficient privilege
-		"${MINION_HOME}/bin/ensure-user-ping.sh" "${RUNAS}" || exit 4
-		if [ ! -d "${MINION_HOME}/data/tmp" ]; then
-			install -d -m 755 -o "${RUNAS}" "${MINION_HOME}/data/tmp"
+		case "$PING_REQUIRED" in
+			[Tt][Rr][Uu][Ee])
+				# LSB 4 = insufficient privilege
+				"$CONTAINER_HOME/bin/ensure-user-ping.sh" "$RUNAS" || exit 4
+				;;
+			*)
+				QUIET=true "$CONTAINER_HOME/bin/ensure-user-ping.sh" "$RUNAS" || :
+				;;
+		esac
+
+		if [ ! -d "$CONTAINER_HOME/data/tmp" ]; then
+			install -d -m 755 "$CONTAINER_HOME/data/tmp"
+			chown -R "$RUNAS:$RUNAS" "$CONTAINER_HOME/data"
 		fi
-		run_as "$MINION_HOME"/bin/start
+		run_as "$CONTAINER_HOME"/bin/start
 		exit $?
 		;;
 
@@ -149,8 +160,8 @@ case "$COMMAND" in
 		if is_running; then
 			printf "Stopping %s: " "$DESC"
 			STOP_ATTEMPTS=0
-			while [ $STOP_ATTEMPTS -lt $STOP_RETRIES ]; do
-				stop_minion
+			while [ "$STOP_ATTEMPTS" -lt "$STOP_RETRIES" ]; do
+				stop_process
 				if is_running; then
 					STOP_ATTEMPTS="$((STOP_ATTEMPTS + 1))"
 					sleep $STOP_WAIT
@@ -162,7 +173,7 @@ case "$COMMAND" in
 			echo "FAILED"
 
 			printf "Killing %s: " "$DESC"
-			kill_minion
+			kill_process
 			if is_running; then
 				echo "FAILED"
 			else
@@ -171,7 +182,7 @@ case "$COMMAND" in
 			fi
 
 			printf "Force-killing %s: " "$DESC"
-			kill_minion -9
+			kill_process -9
 			if is_running; then
 				echo "FAILED"
 				exit 1
@@ -208,7 +219,7 @@ case "$COMMAND" in
 		;;
 
 	status)
-		run_as "$MINION_HOME"/bin/status >/dev/null
+		run_as "$CONTAINER_HOME"/bin/status >/dev/null
 		RETVAL="$?"
 		if [ $RETVAL -eq 0 ]; then
 			echo "$DESC is running."
