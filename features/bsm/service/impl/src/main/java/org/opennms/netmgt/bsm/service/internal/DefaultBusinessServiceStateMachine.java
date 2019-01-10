@@ -57,6 +57,7 @@ import org.opennms.netmgt.bsm.service.AlarmProvider;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
+import org.opennms.netmgt.bsm.service.model.Application;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
@@ -507,6 +508,17 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
         m_rwLock.readLock().lock();
         try {
             final GraphVertex vertex = m_g.getVertexByIpServiceId(ipService.getId());
+            return calculateImpact(vertex);
+        } finally {
+            m_rwLock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public List<GraphVertex> calculateImpact(Application application) {
+        m_rwLock.readLock().lock();
+        try {
+            final GraphVertex vertex = m_g.getVertexByApplicationId(application.getId());
             return calculateImpact(vertex);
         } finally {
             m_rwLock.readLock().unlock();

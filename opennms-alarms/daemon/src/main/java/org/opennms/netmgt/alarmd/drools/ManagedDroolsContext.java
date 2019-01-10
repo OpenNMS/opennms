@@ -94,9 +94,10 @@ public class ManagedDroolsContext {
 
     private SessionPseudoClock clock;
 
-    private final Lock lock = new ReentrantLock();
-
-    private final ThreadLocal<Boolean> firing = new ThreadLocal<>();
+    /**
+     * Ensure that this lock is fair so that ordering is respected.
+     */
+    private final ReentrantLock lock = new ReentrantLock(true);
 
     private Consumer<KieSession> onNewKiewSessionCallback;
 
@@ -118,6 +119,10 @@ public class ManagedDroolsContext {
         startWithModuleAndFacts(kieModuleReleaseId, Collections.emptyList());
     }
 
+    public void onStart() {
+        // pass
+    }
+
     private void startWithModuleAndFacts(ReleaseId releaseId, List<Object> factObjects) {
         final KieServices ks = KieServices.Factory.get();
         kieContainer = ks.newKieContainer(releaseId);
@@ -136,12 +141,20 @@ public class ManagedDroolsContext {
             onNewKiewSessionCallback.accept(kieSession);
         }
 
+        // Save the releaseId
+        releaseIdForContainerUsedByKieSession = releaseId;
+
+        // We're started!
+        started = true;
+
+        // Allow the base classes to seed the context before we start ticking
+        onStart();
+
         if (!useManualTick) {
             timer = new Timer();
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    firing.set(true);
                     lock.lock();
                     try {
                         LOG.debug("Firing rules.");
@@ -149,18 +162,11 @@ public class ManagedDroolsContext {
                     } catch (Exception e) {
                         LOG.error("Error occurred while firing rules.", e);
                     } finally {
-                        firing.set(false);
                         lock.unlock();
                     }
                 }
             }, TimeUnit.SECONDS.toMillis(1), TimeUnit.SECONDS.toMillis(1));
         }
-
-        // Save the releaseId
-        releaseIdForContainerUsedByKieSession = releaseId;
-
-        // We're started!
-        started = true;
     }
 
     public synchronized void reload() {
@@ -175,31 +181,33 @@ public class ManagedDroolsContext {
         final ReleaseId releaseId = buildKieModule();
 
         // The rules we're successfully built and deployed
+        // Let's lock the current engine, grab the facts, and stop it
+        final List<Object> factObjects;
         lock.lock();
         try {
             // Capture the current set of facts
-            final List<Object> factObjects = kieSession.getFactHandles().stream()
+            factObjects  = kieSession.getFactHandles().stream()
                     .map(fact -> kieSession.getObject(fact))
                     .collect(Collectors.toList());
 
             // Stop the engine
             stop();
-
-            // Remove the previous module
-            if (releaseIdForContainerUsedByKieSession != null) {
-                if (KieServices.Factory.get().getRepository().removeKieModule(releaseIdForContainerUsedByKieSession) != null) {
-                    LOG.info("Successfully removed previous KIE module with ID: {}.", releaseIdForContainerUsedByKieSession);
-                } else {
-                    LOG.info("Previous KIE module was with ID: {} was already removed.", releaseIdForContainerUsedByKieSession);
-                }
-                releaseIdForContainerUsedByKieSession = null;
-            }
-
-            // Restart the engine
-            startWithModuleAndFacts(releaseId, factObjects);
         } finally {
             lock.unlock();
         }
+
+        // Remove the previous module
+        if (releaseIdForContainerUsedByKieSession != null) {
+            if (KieServices.Factory.get().getRepository().removeKieModule(releaseIdForContainerUsedByKieSession) != null) {
+                LOG.info("Successfully removed previous KIE module with ID: {}.", releaseIdForContainerUsedByKieSession);
+            } else {
+                LOG.info("Previous KIE module was with ID: {} was already removed.", releaseIdForContainerUsedByKieSession);
+            }
+            releaseIdForContainerUsedByKieSession = null;
+        }
+
+        // Restart the engine
+        startWithModuleAndFacts(releaseId, factObjects);
     }
 
     private ReleaseId buildKieModule() {
@@ -264,26 +272,16 @@ public class ManagedDroolsContext {
     }
 
     public void tick() {
-        firing.set(true);
         lock.lock();
         try {
             kieSession.fireAllRules();
         } finally {
             lock.unlock();
-            firing.set(false);
         }
     }
 
-    protected void lockIfNotFiring() {
-        if (Boolean.TRUE.equals(firing.get())) {
-            lock.lock();
-        }
-    }
-
-    protected void unlockIfNotFiring() {
-        if (Boolean.TRUE.equals(firing.get())) {
-            lock.unlock();
-        }
+    ReentrantLock getLock() {
+        return lock;
     }
 
     public synchronized void stop() {

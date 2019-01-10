@@ -1,81 +1,17 @@
-[[releasenotes-23]]
-== What's New in OpenNMS Horizon 23
+[[releasenotes-24]]
+== What's New in OpenNMS Horizon 24
 
 === System Requirements
 
-* *Java 8*: OpenNMS Horizon 23 requires Java 8 as the runtime environment.
-  To run Horizon 23, we recommend the most recent version of Oracle JDK 8 for your platform.
-* *PostgreSQL 9 or higher*: Horizon 23 requires Any supported version PostgreSQL 9 or higher.
+* *Java 8*: OpenNMS Horizon 24 requires Java 8 as the runtime environment.
+  To run Horizon 24, we recommend the most recent version of Oracle JDK 8 for your platform.
+* *PostgreSQL 9 or higher*: Horizon 24 requires Any supported version PostgreSQL 9 or higher.
   As of this writing, PostgreSQL 9.3 is the earliest version under active support, but OpenNMS is known to work with at least PostgreSQL 9.1 and up.
 
 === Breaking Changes
 
-==== Vacuumd Alarm Handling
-
-In previous OpenNMS releases, a large portion of the alarm workflow was handled by Vacuumd automations, triggers, and actions.
-As part of the work to implement alarm correlation, this logic has been moved to Drools, running inside Alarmd.
-
-If you made any changes to `vacuumd-configuration.xml` related to alarms, it is strongly recommended you port them to the new Alarmd Drools context.
-The Drools rules are in the `$OPENNMS_HOME/etc/alarmd/drools-rules.d/` directory.
-
-Also, we no longer generate `alarmCreated`, `alarmEscalated`, `alarmCleared`, `alarmUncleared`, `alarmUpdatedWithReducedEvent`, and `alarmDeleted` events.
-Instead, it is recommended that you add Drools rules to react to alarm changes.
-For more complicated integrations, we also have a new API -- `AlarmLifecycleListener` -- for reacting to alarm changes.
-
 === New Features
-
-==== OpenNMS Correlation Engine ("Sextant") Proof of Concept
-
-Horizon 23 introduces the groundwork for supporting correlation of alarms into meta-alarms called "situations" using an external engine called the link:https://github.com/OpenNMS/oce[OpenNMS Correlation Engine].
-Situations are OpenNMS alarms that contain one or more triggering alarms, which allows them to be browsed, acknowledged, and unacknowledged just like any other alarm.
-A high-level overview of the goal and implementation of correlation can be seen link:https://wiki.opennms.org/wiki/DevProjects/Sextant[on the Sextant wiki page].
-
-Please note that implementing OCE is an advanced topic and there is still work to do before it is ready for general use.
-While the OpenNMS core supports situations, the logic of creating them is part of the OCE, which is designed to run in a separate Karaf container.
-Full support for OCE and correlation is due to be released in Horizon 24.
-
-==== Alarmd Improvements
-
-In addition to the Alarmd Drools updates mentioned previously, there have been some other enhancements made to Alarmd.
-
-Traditionally, OpenNMS has created and resolved alarms in pairs, with one alarm representing the triggering event (or events), and then a second alarm representing the resolution.
-Horizon 23 changes this default behavior to use a single alarm to track the problem state, incrementing the alarm count when it occurs while in a problem state, or when moving from resolved _back_ into a problem state.
-Additionally, you can configure OpenNMS to create a new alarm if a problem happens again.
-
-These behaviors are controlled by the introduction of 2 new settings in the `opennms.properties` file:
-
-`org.opennms.alarmd.legacyAlarmState`::
-    This setting reverts to the old (pre-23) behavior of creating separate alarms for a problem and its resolution.
-`org.opennms.alarmd.newIfClearedAlarmExists`::
-    This setting forces Alarmd to create a new alarm if a problem reoccurs, rather than incrementing an existing alarm.
-    (Note: this is ignored if `legacyAlarmState` is set to `true`.)
-
-These improvements are covered in a link:https://www.youtube.com/watch?v=5jpHVb1Od-g[lunch and learn video] we published recently, if you would like to learn more.
-
-==== Kafka Data Collection Sync
-
-In addition to publishing events, alarms, and node inventory to Kafka, we can now link:https://issues.opennms.org/browse/NMS-10215[publish collected time-series data to the Kafka bus] as well.
-
-==== Sentinel
-
-In addition to the Minion, we have added a new container-based subsystem called "Sentinel."
-The Sentinel is a standalone container that can be configured to run a subset of OpenNMS daemons as a standalone tool, to aid in horizontal scaling and/or high availability.
-
-This initial release of Sentinel is designed to run our Karaf/Camel/SQS-based messaging bus, syslog listener, Netflow receiver, and Newts and Elasticsearch persistence.
 
 === Other Improvements
 
-* A number of monitors now support using placeholders in parameter values to allow runtime substitution of IP address, node ID, and so on. (See: https://issues.opennms.org/browse/NMS-10200[NMS-10200])
-* A new WSMan monitor has been added which can use WQL filters against an endpoint to detect arbitrary services.
-* The web UI now fully supports configuring date formats and user time zone in `opennms.properties` which was partially introduced in Horizon 22.
-* Daemon reloading can now be done from the Karaf shell.  Also, Syslogd and Trapd can now respond to daemon reload events.
-* The RadixTreeSyslogParser now handles link:https://issues.opennms.org/browse/NMS-10273[Cisco Syslog Message formats].
-* RPC to Minions is now fully supported when using Kafka rather than JMS.
-* A bunch of tools for checking the health of OpenNMS, Minions, and Sentinel containers have been added to the Karaf command-line.  (Run `health:check --help` for more details.)
-* Many other improvements were made to the flow support introduced in Horizon 22.
-* Support for HTTP proxies has been added to a number of places where OpenNMS makes outgoing HTTP connections. (link:https://issues.opennms.org/browse/NMS-10312[NMS-10312], link:https://issues.opennms.org/browse/NMS-10313[NMS-10313])
-* A number of VMware improvements have been made including configurable timeouts and hanlding of unacknowledged vSphere alarms.
-* Many subsystems have been improved as part of the refactoring to make them capable of running in the Sentinel container.
-* The OSGi Plugin Manager has been updated to version 1.1.0.
-* A policy (`ScriptPolicy`) has been added to Provisiond that allows you to run arbitrary Groovy scripts before persistence.  An example policy can be found in `$OPENNMS_HOME/etc/examples/script-policies/`.
-
+* list of notable issues not covered elsewhere

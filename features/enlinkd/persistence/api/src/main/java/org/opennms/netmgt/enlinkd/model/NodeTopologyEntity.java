@@ -31,12 +31,12 @@ package org.opennms.netmgt.enlinkd.model;
 import java.io.Serializable;
 
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.ReadOnlyEntity;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
-/**
- * This is NOT a Hibernate/JPA entity but rather a lightweight model without less attributes than OnmsNode and no lazy
- * loading. We use it to retrieve node information from the database fast.
- */
+import com.google.common.base.MoreObjects;
+
+@ReadOnlyEntity
 public class NodeTopologyEntity implements Serializable {
 
     private Integer id;
@@ -57,7 +57,7 @@ public class NodeTopologyEntity implements Serializable {
         this(id, type, sysObjectId, label, location.getLocationName());
     }
 
-    public static NodeTopologyEntity toVertexInfo(OnmsNode node){
+    public static NodeTopologyEntity toNodeTopologyInfo(OnmsNode node){
         return new NodeTopologyEntity(node.getId(), node.getType(), node.getSysObjectId(), node.getLabel(), node.getLocation().getLocationName());
     }
 
@@ -86,12 +86,12 @@ public class NodeTopologyEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "NodeTopologyEntity{" +
-                "id=" + id +
-                ", type=" + type +
-                ", sysObjectId='" + sysObjectId + '\'' +
-                ", label='" + label + '\'' +
-                ", location=" + location +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("type", type)
+                .add("sysObjectId", sysObjectId)
+                .add("label", label)
+                .add("location", location)
+                .toString();
     }
 }

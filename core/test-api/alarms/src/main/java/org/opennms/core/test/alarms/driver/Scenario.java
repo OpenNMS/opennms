@@ -36,6 +36,7 @@ import java.util.Objects;
 
 import org.opennms.netmgt.alarmd.AlarmPersisterImpl;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.AlarmData;
@@ -109,6 +110,24 @@ public class Scenario {
             return this;
         }
 
+        // Create an event with lower severity
+        public ScenarioBuilder withInterfaceDownEvent(long time, int nodeId) {
+            EventBuilder builder = new EventBuilder(EventConstants.INTERFACE_DOWN_EVENT_UEI, "test");
+            builder.setTime(new Date(time));
+            builder.setNodeid(nodeId);
+            builder.setSeverity(OnmsSeverity.MINOR.getLabel());
+
+            AlarmData data = new AlarmData();
+            data.setAlarmType(1);
+            data.setReductionKey(String.format("%s:%d", EventConstants.INTERFACE_DOWN_EVENT_UEI, nodeId));
+            builder.setAlarmData(data);
+
+            builder.setLogDest("logndisplay");
+            builder.setLogMessage("testing");
+            actions.add(new SendEventAction(builder.getEvent()));
+            return this;
+        }
+
         public ScenarioBuilder withAcknowledgmentForNodeDownAlarm(long time, int nodeId) {
             actions.add(new AcknowledgeAlarmAction("test", new Date(time), String.format("%s:%d", EventConstants.NODE_DOWN_EVENT_UEI, nodeId)));
             return this;
@@ -136,6 +155,24 @@ public class Scenario {
             for (int k = 0; k < nodesIds.length; k++) {
                 final String reductionKey = String.format("%s:%d", EventConstants.NODE_DOWN_EVENT_UEI, nodesIds[k]);
                 builder.addParam(AlarmPersisterImpl.RELATED_REDUCTION_KEY_PREFIX + k, reductionKey);
+            }
+
+            AlarmData data = new AlarmData();
+            data.setAlarmType(3);
+            data.setReductionKey(String.format("%s:%s", EventConstants.SITUATION_EVENT_UEI, situtationId));
+            builder.setAlarmData(data);
+
+            actions.add(new SendEventAction(builder.getEvent()));
+            return this;
+        }
+
+        // create a situation using reduction keys
+        public ScenarioBuilder withSituationForAlarmReductionKeys(long time, String situtationId, String... alarms) {
+            EventBuilder builder = new EventBuilder(EventConstants.SITUATION_EVENT_UEI, "test");
+            builder.setTime(new Date(time));
+            builder.setSeverity(OnmsSeverity.NORMAL.getLabel());
+            for (int k = 0; k < alarms.length; k++) {
+                builder.addParam(AlarmPersisterImpl.RELATED_REDUCTION_KEY_PREFIX + k, alarms[k]);
             }
 
             AlarmData data = new AlarmData();
