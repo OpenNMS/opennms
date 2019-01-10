@@ -442,7 +442,7 @@ public class ConfigTesterTest {
     /**
      * FIXME: Not part of the standard build?
      */
-    public void testWsmanAssetAdapterConfiguration() {
+    public void testWsManAssetAdapterConfiguration() {
         ignoreConfigFile("wsman-asset-adapter-configuration.xml");
     }
 
