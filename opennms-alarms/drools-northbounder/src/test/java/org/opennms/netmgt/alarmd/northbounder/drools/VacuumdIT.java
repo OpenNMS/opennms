@@ -30,19 +30,20 @@ package org.opennms.netmgt.alarmd.northbounder.drools;
 import java.io.File;
 import java.net.InetAddress;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
-import org.opennms.netmgt.alarmd.northbounder.drools.DroolsNorthbounder;
-import org.opennms.netmgt.alarmd.northbounder.drools.DroolsNorthbounderConfigDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -87,6 +88,9 @@ import com.google.common.collect.Lists;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
 public class VacuumdIT {
+
+    @Rule
+    public Timeout globalTimeout = Timeout.millis(TimeUnit.MINUTES.toMillis(5));
 
     /** The Constant DELAY. */
     private static final int DELAY = 5000;
