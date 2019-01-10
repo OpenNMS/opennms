@@ -29,11 +29,14 @@
 package org.opennms.netmgt.collectd;
 
 import java.util.Collection;
+import java.util.Objects;
 
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.dto.CollectionSetDTO;
+import org.opennms.netmgt.collection.support.builder.AbstractResource;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
@@ -46,55 +49,81 @@ import org.slf4j.LoggerFactory;
 /**
  * Converts a {@link SnmpCollectionSet} to {@link CollectionSetDTO}. This is an immediate step
  * in order to refactor the SnmpCollector to use the {@link CollectionSetBuilder}.
+ * Usage:
+ * <code>new SnmpCollectionSetToCollectionSetDTOConverter().withParameters(params).convert(collectionSet)</code>
  */
 public class SnmpCollectionSetToCollectionSetDTOConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(SnmpCollectionSetToCollectionSetDTOConverter.class);
 
+    private ServiceParameters params;
+
+    public SnmpCollectionSetToCollectionSetDTOConverter withParameters(ServiceParameters params) {
+        this.params = params;
+        return this;
+    }
+
     public CollectionSetDTO convert(SnmpCollectionSet collectionSet) {
+        Objects.requireNonNull(collectionSet, "SnmpCollectionSet cannot be null");
+        Objects.requireNonNull(params, "ServiceParameters cannot be null");
         CollectionSetBuilder builder = new CollectionSetBuilder(collectionSet.getAgent());
         builder.withTimestamp(collectionSet.getCollectionTimestamp());
 
-        for (CollectionResource collectionResource : collectionSet.getResources()) {
-            if(collectionResource instanceof NodeInfo) {
-                NodeInfo nodeInfo = (NodeInfo) collectionResource;
-                NodeLevelResource resource = new NodeLevelResource(nodeInfo.getNodeId());
-                addGroupsToBuilder(builder, resource, nodeInfo.getGroups());
-                resource.setTimestamp(collectionSet.getCollectionTimestamp());
-            } else if(collectionResource instanceof IfInfo) {
-                IfInfo ifInfo = (IfInfo) collectionResource;
-                InterfaceLevelResource resource = new InterfaceLevelResource(new NodeLevelResource(ifInfo.getNodeId()), ifInfo.getAttributesMap().get("snmpifname"));
-                addGroupsToBuilder(builder, resource, ifInfo.getGroups());
-                resource.setTimestamp(collectionSet.getCollectionTimestamp());
-            } else if(collectionResource instanceof GenericIndexResource) {
-                GenericIndexResource genericResource = (GenericIndexResource) collectionResource;
-                ResourceType resourceType = ((GenericIndexResourceType)genericResource.getResourceType()).getResourceType();
-                GenericTypeResource resource = new GenericTypeResource(new NodeLevelResource(genericResource.getCollectionAgent().getNodeId())
-                        ,resourceType
-                        ,genericResource.getInstance());
-                resource.setTimestamp(collectionSet.getCollectionTimestamp());
-                addGroupsToBuilder(builder, resource, genericResource.getGroups());
-            } else {
-                // We don't do anything for AliasedResource as discussed with jesse - AliasedResource is not used currently
-                LOG.warn("we don't support {}, will ignore it", collectionResource.getClass().getName());
-            }
+        for (CollectionResource collectionResource : collectionSet.getResources()){
+            addResourceToBuilder(builder, collectionResource);
         }
         return builder.build();
     }
 
+    public void addResourceToBuilder(CollectionSetBuilder builder, CollectionResource collectionResource) {
+
+            SnmpCollectionResource snmpResource = (SnmpCollectionResource) collectionResource;
+            AbstractResource builderResource;
+
+            if(collectionResource instanceof NodeInfo) {
+                NodeInfo nodeInfo = (NodeInfo) collectionResource;
+                builderResource = new NodeLevelResource(nodeInfo.getNodeId());
+            } else if(collectionResource instanceof IfInfo) {
+                IfInfo ifInfo = (IfInfo) collectionResource;
+                builderResource = new InterfaceLevelResource(new NodeLevelResource(ifInfo.getNodeId()), ifInfo.getAttributesMap().get("snmpifname"));
+            } else if(collectionResource instanceof GenericIndexResource) {
+                GenericIndexResource genericResource = (GenericIndexResource) collectionResource;
+                ResourceType resourceType = ((GenericIndexResourceType)genericResource.getResourceType()).getResourceType();
+                builderResource = new GenericTypeResource(new NodeLevelResource(genericResource.getCollectionAgent().getNodeId())
+                        ,resourceType
+                        ,genericResource.getInstance());
+            } else {
+                // We don't do anything for AliasedResource as discussed with jesse - AliasedResource is not used currently
+                LOG.warn("we don't support {}, will ignore it", collectionResource.getClass().getName());
+                return;
+            }
+            // we add only groups that should be persisted to the CollectionBuilder since it doesn't have the concept
+            // of "shouldPersist".
+            Collection<AttributeGroup> groups = snmpResource.getGroups();
+            if(collectionResource.shouldPersist(params)) {
+                addGroupsToBuilder(builder, builderResource, groups);
+            }
+    }
+
     private void addGroupsToBuilder(CollectionSetBuilder builder, Resource resource, Collection<AttributeGroup> groups){
         for(AttributeGroup group : groups){
-            for(CollectionAttribute attribute : group.getAttributes()){
-
-                String value;
-                if(attribute.getAttributeType() instanceof HexStringAttributeType){
-                    value = ((SnmpAttribute)attribute).getValue().toHexString();
-                } else {
-                    value = attribute.getStringValue();
-                }
-                builder.withAttribute(resource, group.getName(), attribute.getName(), value, attribute.getType());
+            if(group.shouldPersist(params)){
+                addGroupToBuilder(builder, resource, group);
             }
         }
     }
 
+    private void addGroupToBuilder(CollectionSetBuilder builder, Resource resource, AttributeGroup group) {
+        for (CollectionAttribute attribute : group.getAttributes()) {
+            String value;
+            if(!attribute.shouldPersist(params)){
+                continue;
+            } else if (attribute.getAttributeType() instanceof HexStringAttributeType) {
+                value = ((SnmpAttribute) attribute).getValue().toHexString();
+            } else {
+                value = attribute.getStringValue();
+            }
+            builder.withAttribute(resource, group.getName(), attribute.getName(), value, attribute.getType());
+        }
+    }
 }

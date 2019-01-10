@@ -103,7 +103,7 @@ public class SnmpCollectorNG extends AbstractSnmpCollector {
             } else {
                 collectionSet.checkForSystemRestart();
             }
-            return new SnmpCollectionSetToCollectionSetDTOConverter().convert(collectionSet);
+            return new SnmpCollectionSetToCollectionSetDTOConverter().withParameters(params).convert(collectionSet);
         } catch (CollectionException e) {
             throw e;
         } catch (Throwable t) {
