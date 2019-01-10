@@ -203,7 +203,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             ips.contains(InetAddressUtils.addr(PE01_IP));
             ips.contains(InetAddressUtils.addr("10.27.19.1"));
             assertEquals(pe01.getId() ,mp.getNodeId());
-            assertEquals(-1,mp.getMacPortIfIndex().intValue());
+            assertEquals(-1,mp.getIfIndex().intValue());
             assertNull(mp.getMacPortName());
             System.err.println(mp.printTopology());
             System.err.println(mp.getPortMacInfo());
@@ -260,7 +260,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
                  String mac = mp.getMacPortMap().keySet().iterator().next();
                  assertEquals(1, mp.getMacPortMap().get(mac).size());
                  assertNull(mp.getNodeId());
-                 assertNull(mp.getMacPortIfIndex());
+                 assertNull(mp.getIfIndex());
                  assertNull(mp.getMacPortName());
                  System.err.println(mp.printTopology());
                  System.err.println(mp.getPortMacInfo());
@@ -275,7 +275,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             ips.contains(InetAddressUtils.addr(PE01_IP));
             ips.contains(InetAddressUtils.addr("10.27.19.1"));
             assertEquals(pe01.getId() ,mp.getNodeId());
-            assertEquals(-1,mp.getMacPortIfIndex().intValue());
+            assertEquals(-1,mp.getIfIndex().intValue());
             assertNull(mp.getMacPortName());
             System.err.println(mp.printTopology());
             System.err.println(mp.getPortMacInfo());
@@ -332,7 +332,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             ips.contains(InetAddressUtils.addr(PE01_IP));
             ips.contains(InetAddressUtils.addr("10.27.19.1"));
             assertEquals(pe01.getId() ,mp.getNodeId());
-            assertEquals(-1,mp.getMacPortIfIndex().intValue());
+            assertEquals(-1,mp.getIfIndex().intValue());
             assertNull(mp.getMacPortName());
             System.err.println(mp.printTopology());
             System.err.println(mp.getPortMacInfo());
@@ -346,7 +346,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             assertEquals(1, ips.size());
             ips.contains(InetAddressUtils.addr(ASW01_IP));
             assertEquals(asw01.getId() ,mp.getNodeId());
-            assertEquals(-1,mp.getMacPortIfIndex().intValue());
+            assertEquals(-1,mp.getIfIndex().intValue());
             assertNull(mp.getMacPortName());
             System.err.println(mp.printTopology());
             System.err.println(mp.getPortMacInfo());
@@ -360,7 +360,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             assertEquals(5, ips.size());
             ips.contains(InetAddressUtils.addr(OSPESS01_IP));
             assertEquals(ospess01.getId() ,mp.getNodeId());
-            assertEquals(-1,mp.getMacPortIfIndex().intValue());
+            assertEquals(-1,mp.getIfIndex().intValue());
             assertNull(mp.getMacPortName());
             System.err.println(mp.printTopology());
             System.err.println(mp.getPortMacInfo());
@@ -374,7 +374,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             assertEquals(1, ips.size());
             ips.contains(InetAddressUtils.addr(OSPWL01_IP));
             assertEquals(ospwl01.getId() ,mp.getNodeId());
-            assertEquals(-1,mp.getMacPortIfIndex().intValue());
+            assertEquals(-1,mp.getIfIndex().intValue());
             assertNull(mp.getMacPortName());
             System.err.println(mp.printTopology());
             System.err.println(mp.getPortMacInfo());
@@ -388,7 +388,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             assertEquals(2, ips.size());
             ips.contains(InetAddressUtils.addr(SAMASW01_IP));
             assertEquals(samasw01.getId() ,mp.getNodeId());
-            assertEquals(-1,mp.getMacPortIfIndex().intValue());
+            assertEquals(-1,mp.getIfIndex().intValue());
             assertNull(mp.getMacPortName());
             System.err.println(mp.printTopology());
             System.err.println(mp.getPortMacInfo());
@@ -402,7 +402,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             assertEquals(1, ips.size());
             ips.contains(InetAddressUtils.addr(STCASW01_IP));
             assertEquals(stcasw01.getId() ,mp.getNodeId());
-            assertEquals(-1,mp.getMacPortIfIndex().intValue());
+            assertEquals(-1,mp.getIfIndex().intValue());
             assertNull(mp.getMacPortName());
             System.err.println(mp.printTopology());
             System.err.println(mp.getPortMacInfo());

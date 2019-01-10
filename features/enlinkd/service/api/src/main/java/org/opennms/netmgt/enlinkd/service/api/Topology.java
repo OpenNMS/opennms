@@ -45,7 +45,7 @@ public interface Topology {
 
     String printTopology();
     
-    public static String getPort(SnmpInterfaceTopologyEntity snmpiface) {
+    public static String getPortTextString(SnmpInterfaceTopologyEntity snmpiface) {
         final StringBuilder port = new StringBuilder();
         port.append(snmpiface.getIfName());
         if (!"".equals(snmpiface.getIfAlias()) ) {
@@ -65,27 +65,34 @@ public interface Topology {
         return port.toString();
     }
 
-    public static String getToolTipText(String label, Integer index, String port, String address, Long speed) {
+    public static String getPortTextString(String label, Integer ifindex, String address, SnmpInterfaceTopologyEntity snmpiface) {
+        if (snmpiface == null) {
+            return getPortTextString(label, ifindex, address);
+        }
         final StringBuilder tooltipText = new StringBuilder();
         tooltipText.append(label);
-        if (port != null ) {
-            tooltipText.append("(");
-            tooltipText.append(port);
-            tooltipText.append(")");
-        }
+        tooltipText.append(" ");
+        tooltipText.append(getPortTextString(snmpiface));
         if (address != null ) {
             tooltipText.append("(");
             tooltipText.append(address);
             tooltipText.append(")");
         }
-        if (index != null ) {
-            tooltipText.append("(index:");
-            tooltipText.append(index);
+        return tooltipText.toString();        
+    }
+    
+    public static String getPortTextString(String label, Integer ifindex, String address ) {
+        final StringBuilder tooltipText = new StringBuilder();
+        tooltipText.append(label);
+        tooltipText.append(" ");
+        if (ifindex  != null ) {
+            tooltipText.append("(ifIndex:");
+            tooltipText.append(ifindex);
             tooltipText.append(")");
         }
-        if (speed != null ) {
+        if (address != null ) {
             tooltipText.append("(");
-            tooltipText.append(InetAddressUtils.getHumanReadableIfSpeed(speed));
+            tooltipText.append(address);
             tooltipText.append(")");
         }
         return tooltipText.toString();
@@ -98,18 +105,14 @@ public interface Topology {
         return id.toString();
     }
     
-    public static String getSharedSegmentLabel() {
-        return "Macs on Segment with no Onms node";
+    public static String getMacsIpLabel() {
+        return "Macs/ip addresses on Segment without node";
     }
 
-    public static String getCloudLabel() {
-        return "Segment";
+    public static String getSharedSegmentLabel() {
+        return "Shared Segment";
     }
     
-    public static String getCloudToolTip(BridgePort designated) {
-        return String.format("'Shared Segment': designated bridge: %s" ,
-                designated.printTopology());
-    }
     public static String getAddress(InetAddress address) {
         return InetAddressUtils.str(address);
     }
@@ -156,7 +159,7 @@ public interface Topology {
         return ip.toString();
     }
 
-    public static String getToolTipText(MacCloud cloud, List<MacPort> ports) {
+    public static String getMacsIpTextString(MacCloud cloud, List<MacPort> ports) {
         final StringBuilder tooltipText = new StringBuilder();
         tooltipText.append("shared addresses: ");
         tooltipText.append("(");
@@ -171,7 +174,7 @@ public interface Topology {
     
     }
 
-    public static String getToolTipText(NodeTopologyEntity node, IpInterfaceTopologyEntity primary) {
+    public static String getNodeTextString(NodeTopologyEntity node, IpInterfaceTopologyEntity primary) {
         final StringBuilder tooltipText = new StringBuilder();
         tooltipText.append(node.getLabel());
         tooltipText.append(": ");
@@ -195,6 +198,12 @@ public interface Topology {
         return tooltipText.toString();
     
     }
+    
+    public static String getSharedSegmentTextString(BridgePort designated) {
+        return String.format("'Shared Segment': designated bridge: %s" ,
+                designated.printTopology());
+    }
+
     public static String getIsManaged(boolean isManaged) {
         if (isManaged) {
             return "Managed";

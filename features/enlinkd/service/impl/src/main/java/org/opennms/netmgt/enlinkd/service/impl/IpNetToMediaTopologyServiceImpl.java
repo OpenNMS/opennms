@@ -30,6 +30,7 @@ package org.opennms.netmgt.enlinkd.service.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -135,6 +136,8 @@ public class IpNetToMediaTopologyServiceImpl implements
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Found {} OnmsIpInterface for {}", onmsiplist.size(),ipnetToMedia);
             }
+            List<Integer> nodeids =onmsiplist.stream().map(onmsip -> onmsip.getNodeId()).collect(Collectors.toList());
+            ipnetToMedia.setPort("Multiple Nodes: " + nodeids);
             return;
         }
 
@@ -145,7 +148,7 @@ public class IpNetToMediaTopologyServiceImpl implements
             return;
         }
         ipnetToMedia.setIfIndex(onmsip.getIfIndex());
-        ipnetToMedia.setPort(Topology.getPort(SnmpInterfaceTopologyEntity.create(onmsip.getSnmpInterface())));
+        ipnetToMedia.setPort(Topology.getPortTextString(SnmpInterfaceTopologyEntity.create(onmsip.getSnmpInterface())));
     }
     
     public IpNetToMediaDao getIpNetToMediaDao() {

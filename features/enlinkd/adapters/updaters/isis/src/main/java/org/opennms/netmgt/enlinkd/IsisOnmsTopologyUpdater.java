@@ -34,6 +34,7 @@ import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IsIsElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
@@ -48,13 +49,22 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
+import com.google.common.collect.Table;
+
 public class IsisOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
-    public static OnmsTopologyPort create(OnmsTopologyVertex source,IsIsLinkTopologyEntity sourceLink,IsIsLinkTopologyEntity targetLink ) throws OnmsTopologyException {
-        OnmsTopologyPort port= OnmsTopologyPort.create(sourceLink.getId().toString(),source, sourceLink.getIsisCircIfIndex());
-        port.setPort(sourceLink.getIsisCircIfIndex().toString());
+    public static OnmsTopologyPort create(OnmsTopologyVertex source,
+            IsIsLinkTopologyEntity sourceLink,
+            IsIsLinkTopologyEntity targetLink,
+            SnmpInterfaceTopologyEntity snmpiface) throws OnmsTopologyException {
+        OnmsTopologyPort port= OnmsTopologyPort.create(sourceLink.getId().toString(),source, targetLink.getIsisISAdjIndex());
+        port.setIfindex(sourceLink.getIsisCircIfIndex());
+        if (snmpiface != null) {
+            port.setIfname(snmpiface.getIfName());            
+        }
+        port.setIfname(sourceLink.getIsisCircIfIndex().toString());
         port.setAddr(Topology.getRemoteAddress(targetLink));
-        port.setToolTipText(Topology.getToolTipText(source.getLabel(), port.getIndex(), port.getPort(), port.getAddr(), null));
+        port.setToolTipText(Topology.getPortTextString(source.getLabel(),port.getIfindex(),port.getAddr(),snmpiface));
         return port;
     }
 
@@ -77,6 +87,8 @@ public class IsisOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     public OnmsTopology buildTopology() throws OnmsTopologyException {
         Map<Integer, NodeTopologyEntity> nodeMap= getNodeMap();
         Map<Integer, IpInterfaceTopologyEntity> ipMap= getIpPrimaryMap();
+        Table<Integer, Integer,SnmpInterfaceTopologyEntity> nodeToOnmsSnmpTable = getSnmpInterfaceTable();
+
         OnmsTopology topology = new OnmsTopology();
         for ( IsIsElementTopologyEntity element: m_isisTopologyService.findAllIsIsElements()) {
             topology.getVertices().add(create(nodeMap.get(element.getNodeId()),ipMap.get(element.getNodeId()).getIpAddress()));
@@ -88,10 +100,14 @@ public class IsisOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
                                                             Topology.getDefaultEdgeId(pair.getLeft().getId(), pair.getRight().getId()),
                                                             create(topology.getVertex(pair.getLeft().getNodeIdAsString()), 
                                                                    pair.getLeft(), 
-                                                                   pair.getRight()), 
+                                                                   pair.getRight(),
+                                                                   nodeToOnmsSnmpTable.get(pair.getLeft().getNodeId(), pair.getLeft().getIsisCircIfIndex())
+                                                                   ), 
                                                             create(topology.getVertex(pair.getRight().getNodeIdAsString()), 
                                                                    pair.getRight(), 
-                                                                   pair.getLeft())
+                                                                   pair.getLeft(),
+                                                                   nodeToOnmsSnmpTable.get(pair.getRight().getNodeId(), pair.getRight().getIsisCircIfIndex())
+                                                                   )
                                                             )
                                 );
        }

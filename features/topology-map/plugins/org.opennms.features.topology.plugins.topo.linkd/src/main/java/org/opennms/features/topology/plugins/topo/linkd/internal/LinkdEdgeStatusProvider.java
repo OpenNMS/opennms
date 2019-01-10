@@ -106,15 +106,15 @@ EDGES:        for (EdgeRef edgeRef : edges) {
                     int alarmnodeid = alarm.getNode().getId().intValue();
                     if ( edge.getSourcePort().getVertex().getNodeID() != null 
                             && edge.getSourcePort().getVertex().getNodeID().intValue() == alarmnodeid
-                            && edge.getSourcePort().getIndex() != null
-                            && edge.getSourcePort().getIndex().intValue() == alarm.getIfIndex().intValue()) {
+                            && edge.getSourcePort().getIfIndex() != null
+                            && edge.getSourcePort().getIfIndex().intValue() == alarm.getIfIndex().intValue()) {
                         retVal.put(edgeRef, new LinkdEdgeStatus(alarm));
                         continue EDGES;
                     }
                     if ( edge.getTargetPort().getVertex().getNodeID() != null 
                             && edge.getTargetPort().getVertex().getNodeID().intValue() == alarmnodeid
-                            && edge.getTargetPort().getIndex() != null
-                            && edge.getTargetPort().getIndex().intValue() == alarm.getIfIndex().intValue()) {
+                            && edge.getTargetPort().getIfIndex() != null
+                            && edge.getTargetPort().getIfIndex().intValue() == alarm.getIfIndex().intValue()) {
                         retVal.put(edgeRef, new LinkdEdgeStatus(alarm));
                         continue EDGES;
                     }                

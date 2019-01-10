@@ -34,6 +34,7 @@ import org.opennms.netmgt.enlinkd.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
@@ -48,13 +49,16 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
+import com.google.common.collect.Table;
+
 public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
-    public static OnmsTopologyPort create(OnmsTopologyVertex vertex,CdpLinkTopologyEntity cdpLink ) throws OnmsTopologyException {
+    public static OnmsTopologyPort create(OnmsTopologyVertex vertex,CdpLinkTopologyEntity cdpLink, SnmpInterfaceTopologyEntity snmpiface ) throws OnmsTopologyException {
         OnmsTopologyPort port = OnmsTopologyPort.create(cdpLink.getId().toString(),vertex, cdpLink.getCdpCacheIfIndex());
-        port.setPort(cdpLink.getCdpInterfaceName());
+        port.setIfindex(cdpLink.getCdpCacheIfIndex());
+        port.setIfname(cdpLink.getCdpInterfaceName());
         port.setAddr(Topology.getAddress(cdpLink));
-        port.setToolTipText(Topology.getToolTipText(vertex.getLabel(), port.getIndex(), port.getPort(), port.getAddr(), null));
+        port.setToolTipText(Topology.getPortTextString(vertex.getLabel(),port.getIfindex(),port.getAddr(),snmpiface));
         return port;
     }
     
@@ -76,6 +80,7 @@ public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     public OnmsTopology buildTopology() throws OnmsTopologyException {
         Map<Integer, NodeTopologyEntity> nodeMap= getNodeMap();
         Map<Integer, IpInterfaceTopologyEntity> ipMap= getIpPrimaryMap();
+        Table<Integer, Integer,SnmpInterfaceTopologyEntity> nodeToOnmsSnmpTable = getSnmpInterfaceTable();
         OnmsTopology topology = new OnmsTopology();
         for (CdpElementTopologyEntity element: m_cdpTopologyService.findAllCdpElements()) {
             topology.getVertices().add(create(nodeMap.get(element.getNodeId()),ipMap.get(element.getNodeId()).getIpAddress()));
@@ -85,8 +90,13 @@ public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
             topology.getEdges().add(
                 OnmsTopologyEdge.create(
                         Topology.getDefaultEdgeId(pair.getLeft().getId().intValue(), pair.getRight().getId().intValue()),
-                        create(topology.getVertex(pair.getLeft().getNodeIdAsString()),pair.getLeft()),
-                        create(topology.getVertex(pair.getRight().getNodeIdAsString()),pair.getRight())
+                        create(topology.getVertex(pair.getLeft().getNodeIdAsString()),
+                               pair.getLeft(),
+                               nodeToOnmsSnmpTable.get(pair.getLeft().getNodeId(), pair.getLeft().getCdpCacheIfIndex())),
+                        create(topology.getVertex(pair.getRight().getNodeIdAsString()),
+                               pair.getRight(),
+                               nodeToOnmsSnmpTable.get(pair.getRight().getNodeId(), pair.getRight().getCdpCacheIfIndex())
+                               )
                         )
                 );
        }

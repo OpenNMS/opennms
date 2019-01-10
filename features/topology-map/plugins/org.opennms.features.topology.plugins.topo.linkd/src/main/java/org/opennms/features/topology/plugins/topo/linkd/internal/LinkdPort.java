@@ -33,51 +33,53 @@ import org.opennms.netmgt.enlinkd.service.api.Topology;
 
 public class LinkdPort {
 
-    public static LinkdPort create(LinkdVertex vertex, String addr) {
+    public static LinkdPort create(LinkdVertex vertex) {
         LinkdPort port = new LinkdPort(vertex, -1);
-        port.setToolTipText(Topology.getToolTipText(vertex.getLabel(), null, null, addr, null));
+        port.setPort(vertex.getTooltipText());
         return port;
     }
     
-    public static LinkdPort create(LinkdVertex vertex, SnmpInterfaceTopologyEntity iface, String addr) {
-        if (iface == null ) {
-            return create(vertex,addr);
+    public static LinkdPort create(LinkdVertex vertex, Integer ifindex, String addr, SnmpInterfaceTopologyEntity iface) {
+        if (ifindex == null ) {
+            LinkdPort port = new LinkdPort(vertex, -1);
+            port.setPort(Topology.getPortTextString(vertex.getLabel(), null, addr));
+            return port;
         }
         LinkdPort port = new LinkdPort(vertex, iface.getIfIndex());
-        port.setToolTipText(Topology.getToolTipText(vertex.getLabel(), iface.getIfIndex(), iface.getIfName(), addr, iface.getIfSpeed()));
+        port.setPort(Topology.getPortTextString(vertex.getLabel(), ifindex, addr,iface));
         return port;
         
     }
     
     private final LinkdVertex m_vertex;
-    private final Integer m_index;
-    private String m_toolTipText;
+    private final Integer m_ifindex;
+    private String m_port;
     
-    public LinkdPort(LinkdVertex vertex, Integer index) {
+    public LinkdPort(LinkdVertex vertex, Integer ifindex) {
         super();
         m_vertex = vertex;
-        m_index = index;
+        m_ifindex = ifindex;
     }
     
     public LinkdPort clone () {
-        LinkdPort clone = new LinkdPort(this.getVertex(), this.getIndex());
-        clone.setToolTipText(this.getToolTipText());
+        LinkdPort clone = new LinkdPort(this.getVertex(), this.getIfIndex());
+        clone.setPort(this.getPort());
         return clone;
     }
 
     public LinkdVertex getVertex() {
         return m_vertex;
     }
-    public Integer getIndex() {
-        return m_index;
+    public Integer getIfIndex() {
+        return m_ifindex;
     }
 
-    public String getToolTipText() {
-        return m_toolTipText;
+    public String getPort() {
+        return m_port;
     }
 
-    public void setToolTipText(String toolTipText) {
-        m_toolTipText = toolTipText;
+    public void setPort(String port) {
+        m_port = port;
     }
 
 }

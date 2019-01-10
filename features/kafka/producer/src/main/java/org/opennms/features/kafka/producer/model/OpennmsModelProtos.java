@@ -17639,21 +17639,21 @@ public final class OpennmsModelProtos {
     long getIfindex();
 
     /**
-     * <code>string ifname = 4;</code>
+     * <code>string ifname = 3;</code>
      */
     java.lang.String getIfname();
     /**
-     * <code>string ifname = 4;</code>
+     * <code>string ifname = 3;</code>
      */
     com.google.protobuf.ByteString
         getIfnameBytes();
 
     /**
-     * <code>string address = 5;</code>
+     * <code>string address = 4;</code>
      */
     java.lang.String getAddress();
     /**
-     * <code>string address = 5;</code>
+     * <code>string address = 4;</code>
      */
     com.google.protobuf.ByteString
         getAddressBytes();
@@ -17719,13 +17719,13 @@ public final class OpennmsModelProtos {
               ifindex_ = input.readUInt64();
               break;
             }
-            case 34: {
+            case 26: {
               java.lang.String s = input.readStringRequireUtf8();
 
               ifname_ = s;
               break;
             }
-            case 42: {
+            case 34: {
               java.lang.String s = input.readStringRequireUtf8();
 
               address_ = s;
@@ -17798,10 +17798,10 @@ public final class OpennmsModelProtos {
       return ifindex_;
     }
 
-    public static final int IFNAME_FIELD_NUMBER = 4;
+    public static final int IFNAME_FIELD_NUMBER = 3;
     private volatile java.lang.Object ifname_;
     /**
-     * <code>string ifname = 4;</code>
+     * <code>string ifname = 3;</code>
      */
     public java.lang.String getIfname() {
       java.lang.Object ref = ifname_;
@@ -17816,7 +17816,7 @@ public final class OpennmsModelProtos {
       }
     }
     /**
-     * <code>string ifname = 4;</code>
+     * <code>string ifname = 3;</code>
      */
     public com.google.protobuf.ByteString
         getIfnameBytes() {
@@ -17832,10 +17832,10 @@ public final class OpennmsModelProtos {
       }
     }
 
-    public static final int ADDRESS_FIELD_NUMBER = 5;
+    public static final int ADDRESS_FIELD_NUMBER = 4;
     private volatile java.lang.Object address_;
     /**
-     * <code>string address = 5;</code>
+     * <code>string address = 4;</code>
      */
     public java.lang.String getAddress() {
       java.lang.Object ref = address_;
@@ -17850,7 +17850,7 @@ public final class OpennmsModelProtos {
       }
     }
     /**
-     * <code>string address = 5;</code>
+     * <code>string address = 4;</code>
      */
     public com.google.protobuf.ByteString
         getAddressBytes() {
@@ -17885,10 +17885,10 @@ public final class OpennmsModelProtos {
         output.writeUInt64(2, ifindex_);
       }
       if (!getIfnameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, ifname_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, ifname_);
       }
       if (!getAddressBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, address_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, address_);
       }
       unknownFields.writeTo(output);
     }
@@ -17906,10 +17906,10 @@ public final class OpennmsModelProtos {
           .computeUInt64Size(2, ifindex_);
       }
       if (!getIfnameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, ifname_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, ifname_);
       }
       if (!getAddressBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, address_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, address_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -18298,7 +18298,7 @@ public final class OpennmsModelProtos {
 
       private java.lang.Object ifname_ = "";
       /**
-       * <code>string ifname = 4;</code>
+       * <code>string ifname = 3;</code>
        */
       public java.lang.String getIfname() {
         java.lang.Object ref = ifname_;
@@ -18313,7 +18313,7 @@ public final class OpennmsModelProtos {
         }
       }
       /**
-       * <code>string ifname = 4;</code>
+       * <code>string ifname = 3;</code>
        */
       public com.google.protobuf.ByteString
           getIfnameBytes() {
@@ -18329,7 +18329,7 @@ public final class OpennmsModelProtos {
         }
       }
       /**
-       * <code>string ifname = 4;</code>
+       * <code>string ifname = 3;</code>
        */
       public Builder setIfname(
           java.lang.String value) {
@@ -18342,7 +18342,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>string ifname = 4;</code>
+       * <code>string ifname = 3;</code>
        */
       public Builder clearIfname() {
         
@@ -18351,7 +18351,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>string ifname = 4;</code>
+       * <code>string ifname = 3;</code>
        */
       public Builder setIfnameBytes(
           com.google.protobuf.ByteString value) {
@@ -18367,7 +18367,7 @@ public final class OpennmsModelProtos {
 
       private java.lang.Object address_ = "";
       /**
-       * <code>string address = 5;</code>
+       * <code>string address = 4;</code>
        */
       public java.lang.String getAddress() {
         java.lang.Object ref = address_;
@@ -18382,7 +18382,7 @@ public final class OpennmsModelProtos {
         }
       }
       /**
-       * <code>string address = 5;</code>
+       * <code>string address = 4;</code>
        */
       public com.google.protobuf.ByteString
           getAddressBytes() {
@@ -18398,7 +18398,7 @@ public final class OpennmsModelProtos {
         }
       }
       /**
-       * <code>string address = 5;</code>
+       * <code>string address = 4;</code>
        */
       public Builder setAddress(
           java.lang.String value) {
@@ -18411,7 +18411,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>string address = 5;</code>
+       * <code>string address = 4;</code>
        */
       public Builder clearAddress() {
         
@@ -18420,7 +18420,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>string address = 5;</code>
+       * <code>string address = 4;</code>
        */
       public Builder setAddressBytes(
           com.google.protobuf.ByteString value) {
@@ -21786,8 +21786,8 @@ public final class OpennmsModelProtos {
       "\022TopologyVertexNode\022$\n\rnode_criteria\030\001 \001" +
       "(\0132\r.NodeCriteria\"\027\n\025TopologyVertexSegme" +
       "nt\"S\n\014TopologyPort\022\021\n\tvertex_id\030\001 \001(\t\022\017\n" +
-      "\007ifindex\030\002 \001(\004\022\016\n\006ifname\030\004 \001(\t\022\017\n\007addres" +
-      "s\030\005 \001(\t\"\224\001\n\016TopologyVertex\022\031\n\003ref\030\001 \001(\0132" +
+      "\007ifindex\030\002 \001(\004\022\016\n\006ifname\030\003 \001(\t\022\017\n\007addres" +
+      "s\030\004 \001(\t\"\224\001\n\016TopologyVertex\022\031\n\003ref\030\001 \001(\0132" +
       "\014.TopologyRef\022#\n\004node\030\002 \001(\0132\023.TopologyVe" +
       "rtexNodeH\000\022)\n\007segment\030\003 \001(\0132\026.TopologyVe" +
       "rtexSegmentH\000\022\r\n\005label\030\004 \001(\tB\010\n\006vertex\"g" +

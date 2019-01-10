@@ -77,12 +77,12 @@ public class OnmsTopologyLogger implements OnmsTopologyConsumer {
             OnmsTopologyEdge edge = (OnmsTopologyEdge)message.getMessagebody();
             OnmsTopologyPort source = edge.getSource();
             OnmsTopologyPort target = edge.getTarget();
-            LOG.debug("edge: vertex {} port {}", source.getVertex().getLabel(), source.getPort());
-            LOG.debug("edge: vertex {} port {}", target.getVertex().getLabel(), target.getPort());
+            LOG.debug("edge: vertex {} port {}", source.getVertex().getLabel(), source.getIfname());
+            LOG.debug("edge: vertex {} port {}", target.getVertex().getLabel(), target.getIfname());
         } else if (message.getMessagebody() instanceof OnmsTopologyShared) {
            OnmsTopologyShared shared = (OnmsTopologyShared) message.getMessagebody(); 
            shared.getSources().stream().forEach( p -> {
-               LOG.debug("edge: vertex {} port {}", p.getVertex().getLabel(), p.getPort());
+               LOG.debug("edge: vertex {} port {}", p.getVertex().getLabel(), p.getIfname());
            });
         }
         LOG.debug("-------End receiving message--------");

@@ -34,6 +34,7 @@ import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
@@ -48,13 +49,21 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
+import com.google.common.collect.Table;
+
 public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
-    public static OnmsTopologyPort create(OnmsTopologyVertex source,OspfLinkTopologyEntity sourcelink, OspfLinkTopologyEntity targetlink ) throws OnmsTopologyException {
+    public static OnmsTopologyPort create(OnmsTopologyVertex source,
+                                            OspfLinkTopologyEntity sourcelink, 
+                                            OspfLinkTopologyEntity targetlink,
+                                            SnmpInterfaceTopologyEntity snmpiface) throws OnmsTopologyException {
         OnmsTopologyPort port = OnmsTopologyPort.create(sourcelink.getId().toString(),source, sourcelink.getOspfIfIndex());
-        port.setPort(Topology.getAddress(sourcelink));
+        port.setIfindex(sourcelink.getOspfIfIndex());
+        if (snmpiface != null) {
+            port.setIfname(snmpiface.getIfName());            
+        }
         port.setAddr(Topology.getRemoteAddress(targetlink));
-        port.setToolTipText(Topology.getToolTipText(source.getLabel(), port.getIndex(), port.getPort(), port.getAddr(), null));
+        port.setToolTipText(Topology.getPortTextString(source.getLabel(), port.getIndex(), port.getAddr(), snmpiface));
         return port;
     }
 
@@ -76,6 +85,7 @@ public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     public OnmsTopology buildTopology() throws OnmsTopologyException {
         Map<Integer, NodeTopologyEntity> nodeMap=getNodeMap();
         Map<Integer, IpInterfaceTopologyEntity> ipMap= getIpPrimaryMap();
+        Table<Integer, Integer,SnmpInterfaceTopologyEntity> nodeToOnmsSnmpTable = getSnmpInterfaceTable();
         OnmsTopology topology = new OnmsTopology();
         for (OspfElement element: m_ospfTopologyService.findAllOspfElements()) {
             topology.getVertices().add(create(nodeMap.get(element.getNode().getId()),ipMap.get(element.getNode().getId()).getIpAddress()));
@@ -87,12 +97,14 @@ public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
                                                             create(
                                                                    topology.getVertex(pair.getLeft().getNodeIdAsString()), 
                                                                    pair.getLeft(), 
-                                                                   pair.getRight()
+                                                                   pair.getRight(),
+                                                                   nodeToOnmsSnmpTable.get(pair.getLeft().getNodeId(), pair.getLeft().getOspfIfIndex())
                                                                    ), 
                                                             create(
                                                                    topology.getVertex(pair.getRight().getNodeIdAsString()), 
                                                                    pair.getRight(), 
-                                                                   pair.getLeft()
+                                                                   pair.getLeft(),
+                                                                   nodeToOnmsSnmpTable.get(pair.getRight().getNodeId(), pair.getRight().getOspfIfIndex())
                                                                    )
                                                             )
                                     );

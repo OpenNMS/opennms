@@ -46,7 +46,7 @@ public class MacPort implements Topology {
         
         MacPort port = new MacPort();
         port.setNodeId(media.getNodeId());
-        port.setMacPortIfIndex(media.getIfIndex());
+        port.setIfIndex(media.getIfIndex());
         port.setMacPortName(media.getPort());
         port.getMacPortMap().put(media.getPhysAddress(), ips);
         return port;
@@ -104,10 +104,10 @@ public class MacPort implements Topology {
         return strbfr.toString();
     }
 
-    public Integer getMacPortIfIndex() {
+    public Integer getIfIndex() {
         return m_macPortIfIndex;
     }
-    public void setMacPortIfIndex(Integer macPortIfIndex) {
+    public void setIfIndex(Integer macPortIfIndex) {
         m_macPortIfIndex = macPortIfIndex;
     }
     public String getMacPortName() {
@@ -122,15 +122,12 @@ public class MacPort implements Topology {
     public void setMacPortMap(Map<String, Set<InetAddress>> macPortMap) {
         m_macPortMap = macPortMap;
     }
-
     public Integer getNodeId() {
         return m_nodeId;
     }
-
     public void setNodeId(Integer nodeId) {
         m_nodeId = nodeId;
     }
-
     @Override
     public int hashCode() {
         final int prime = 31;

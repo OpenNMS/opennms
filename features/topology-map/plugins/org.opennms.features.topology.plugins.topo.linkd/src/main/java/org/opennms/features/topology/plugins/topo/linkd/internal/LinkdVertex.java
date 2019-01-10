@@ -43,24 +43,24 @@ import org.opennms.netmgt.enlinkd.service.api.Topology;
 
 public class LinkdVertex extends SimpleLeafVertex {
 
-    public static LinkdVertex create(BridgePort designated) {
+    public static LinkdVertex createSegmentVertex(BridgePort designated) {
         LinkdVertex cloudVertex = new LinkdVertex(Topology.getId(designated));
-        cloudVertex.setLabel(Topology.getCloudLabel());
+        cloudVertex.setLabel(Topology.getSharedSegmentLabel());
         cloudVertex.setIconKey(Topology.getCloudIconKey());
-        cloudVertex.setTooltipText(Topology.getCloudToolTip(designated));
+        cloudVertex.setTooltipText(Topology.getSharedSegmentTextString(designated));
         return cloudVertex;        
     }
 
-    public static LinkdVertex create(MacCloud cloud, List<MacPort> ports, BridgePort designated) {
+    public static LinkdVertex createMacIpVertex(MacCloud cloud, List<MacPort> ports, BridgePort designated) {
         LinkdVertex vertex = new LinkdVertex(Topology.getSharedSegmentId(designated));
-        vertex.setLabel(Topology.getSharedSegmentLabel());
+        vertex.setLabel(Topology.getMacsIpLabel());
         vertex.setIconKey(Topology.getDefaultIconKey());
-        vertex.setTooltipText(Topology.getToolTipText(cloud, ports));
+        vertex.setTooltipText(Topology.getMacsIpTextString(cloud, ports));
         return vertex;
         
     }
 
-    public static LinkdVertex create(NodeTopologyEntity node, IpInterfaceTopologyEntity primary) {
+    public static LinkdVertex createNodeVertex(NodeTopologyEntity node, IpInterfaceTopologyEntity primary) {
         LinkdVertex vertex = new LinkdVertex(node.getId().toString());
         vertex.setNodeID(node.getId());
         vertex.setLabel(node.getLabel());
@@ -68,7 +68,7 @@ public class LinkdVertex extends SimpleLeafVertex {
             vertex.setIpAddress(Topology.getAddress(primary.getIpAddress()));
         }
         vertex.setIconKey(Topology.getIconKey(node));
-        vertex.setTooltipText(Topology.getToolTipText(node,primary));
+        vertex.setTooltipText(Topology.getNodeTextString(node,primary));
         return vertex;
     }
     private Set<ProtocolSupported> m_protocolSupported = EnumSet.noneOf(ProtocolSupported.class);

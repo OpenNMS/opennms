@@ -31,7 +31,7 @@ package org.opennms.netmgt.topologies.service.api;
 public class OnmsTopologyVertex extends OnmsTopologyAbstractRef implements OnmsTopologyRef {
 
 
-    public static OnmsTopologyVertex create(String id,String label,String address, String iconKey) throws OnmsTopologyException {
+    public static OnmsTopologyVertex create(String id,String label,String address,String iconKey) throws OnmsTopologyException {
         if (id == null) {
             throw new OnmsTopologyException("id is null, cannot create vertex");
         }
@@ -40,11 +40,13 @@ public class OnmsTopologyVertex extends OnmsTopologyAbstractRef implements OnmsT
     
     private Integer m_nodeid;
     private final String m_label;
+    private final String m_address;
     private final String m_iconKey;
 
     private OnmsTopologyVertex(String id, String label, String address,String iconKey) {
         super(id);
         m_label=label;
+        m_address = address;
         m_iconKey=iconKey;
     }
 
@@ -62,6 +64,10 @@ public class OnmsTopologyVertex extends OnmsTopologyAbstractRef implements OnmsT
 
     public void setNodeid(Integer nodeid) {
         m_nodeid = nodeid;
+    }
+
+    public String getAddress() {
+        return m_address;
     }
 
 }

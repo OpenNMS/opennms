@@ -45,8 +45,9 @@ public class OnmsTopologyPort extends OnmsTopologyAbstractRef implements OnmsTop
 
     private final OnmsTopologyVertex m_vertex;
     private final Integer m_index;
+    private Integer m_ifindex;
+    private String m_ifname;
     
-    private String m_port;
     private String m_addr;
     private String m_speed;
     
@@ -56,17 +57,6 @@ public class OnmsTopologyPort extends OnmsTopologyAbstractRef implements OnmsTop
         m_vertex = vertex;
         m_index = index;
     }
-
-
-    public String getPort() {
-        return m_port;
-    }
-
-
-    public void setPort(String port) {
-        m_port = port;
-    }
-
 
     public String getAddr() {
         return m_addr;
@@ -95,6 +85,26 @@ public class OnmsTopologyPort extends OnmsTopologyAbstractRef implements OnmsTop
 
     public Integer getIndex() {
         return m_index;
+    }
+
+
+    public Integer getIfindex() {
+        return m_ifindex;
+    }
+
+
+    public void setIfindex(Integer ifindex) {
+        m_ifindex = ifindex;
+    }
+
+
+    public String getIfname() {
+        return m_ifname;
+    }
+
+
+    public void setIfname(String ifname) {
+        m_ifname = ifname;
     }
 
     

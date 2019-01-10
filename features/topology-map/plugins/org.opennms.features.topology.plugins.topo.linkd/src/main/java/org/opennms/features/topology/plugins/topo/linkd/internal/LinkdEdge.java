@@ -35,10 +35,6 @@ import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 
 public class LinkdEdge extends AbstractEdge implements Edge {
     
-    public static LinkdEdge create(String id, LinkdVertex sourceV, LinkdVertex targetV, ProtocolSupported discoveredBy) {
-        return new LinkdEdge(id, LinkdPort.create(sourceV, sourceV.getIpAddress()), LinkdPort.create(targetV, targetV.getIpAddress()),discoveredBy);
-    }
-
     public static LinkdEdge create(String id,
             LinkdPort sourceport, LinkdPort targetport,
             ProtocolSupported discoveredBy) {
@@ -98,11 +94,11 @@ public class LinkdEdge extends AbstractEdge implements Edge {
         tooltipText.append("</p>");
     
         tooltipText.append("<p>");
-        tooltipText.append(m_sourcePort.getToolTipText());
+        tooltipText.append(m_sourcePort.getPort());
         tooltipText.append("</p>");
         
         tooltipText.append("<p>");
-        tooltipText.append(m_targetPort.getToolTipText());
+        tooltipText.append(m_targetPort.getPort());
         tooltipText.append("</p>");
         return tooltipText.toString();
     }
