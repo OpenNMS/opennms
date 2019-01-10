@@ -35,8 +35,10 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
+import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
 import org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
@@ -143,18 +145,7 @@ public class IpNetToMediaTopologyServiceImpl implements
             return;
         }
         ipnetToMedia.setIfIndex(onmsip.getIfIndex());
-        ipnetToMedia.setPort(onmsip.getSnmpInterface().getIfName());
-        if (!"".equals(onmsip.getSnmpInterface().getIfAlias()) ) {
-                ipnetToMedia.setPort(ipnetToMedia.getPort()
-                                     +"("+onmsip.getSnmpInterface().getIfAlias()+")");
-            
-        } 
-        if ( onmsip.getSnmpInterface().getIfSpeed() > 0) {
-            ipnetToMedia.setPort(ipnetToMedia.getPort()
-                                 +"("+InetAddressUtils.getHumanReadableIfSpeed(onmsip.getSnmpInterface().getIfSpeed())+")");
-        
-        }
-
+        ipnetToMedia.setPort(Topology.getPort(SnmpInterfaceTopologyEntity.create(onmsip.getSnmpInterface())));
     }
     
     public IpNetToMediaDao getIpNetToMediaDao() {

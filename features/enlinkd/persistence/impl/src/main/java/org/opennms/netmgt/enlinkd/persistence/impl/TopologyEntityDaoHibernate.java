@@ -82,7 +82,7 @@ public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements T
     public List<SnmpInterfaceTopologyEntity> getSnmpTopologyEntities() {
         return (List<SnmpInterfaceTopologyEntity>)getHibernateTemplate().find(
                 "select new org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity(" +
-                        "i.id, i.ifIndex, i.ifName, i.ifSpeed, i.node.id) from org.opennms.netmgt.model.OnmsSnmpInterface i");
+                        "i.id, i.ifIndex, i.ifName, i.ifAlias, i.ifSpeed, i.node.id) from org.opennms.netmgt.model.OnmsSnmpInterface i");
     }
 
     @Override

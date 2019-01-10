@@ -118,7 +118,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         if(m_nodeToOnmsSnmpTable.contains(nodeid,ifindex) ) {
                 return m_nodeToOnmsSnmpTable.get(nodeid,ifindex);
         }
-        return new SnmpInterfaceTopologyEntity(null, ifindex, "No Interface Found", 0l, nodeid);
+        return new SnmpInterfaceTopologyEntity(null, ifindex, "No Interface Found",null, 0l, nodeid);
     }
     
     @Override

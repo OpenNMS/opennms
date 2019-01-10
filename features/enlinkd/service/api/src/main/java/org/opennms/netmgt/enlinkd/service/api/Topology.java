@@ -38,12 +38,33 @@ import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.model.OnmsNode;
 
 public interface Topology {
 
     String printTopology();
     
+    public static String getPort(SnmpInterfaceTopologyEntity snmpiface) {
+        final StringBuilder port = new StringBuilder();
+        port.append(snmpiface.getIfName());
+        if (!"".equals(snmpiface.getIfAlias()) ) {
+            port.append("(");
+            port.append(snmpiface.getIfAlias());
+            port.append(")");
+        } 
+        if ( snmpiface.getIfSpeed() > 0) {
+            port.append("(");
+            port.append(InetAddressUtils.getHumanReadableIfSpeed(snmpiface.getIfSpeed()));
+            port.append(")");
+        }
+        port.append("(ifIndex:");
+        port.append(snmpiface.getIfIndex());
+        port.append(")");
+       
+        return port.toString();
+    }
+
     public static String getToolTipText(String label, Integer index, String port, String address, Long speed) {
         final StringBuilder tooltipText = new StringBuilder();
         tooltipText.append(label);
