@@ -44,6 +44,10 @@
       <type>pom</type>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.daemon</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.events</groupId>
       <artifactId>org.opennms.features.events.api</artifactId>
     </dependency>
@@ -63,11 +67,11 @@
       <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
+<!--    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.daemon</artifactId>
       <scope>test</scope>
-    </dependency>
+    </dependency> -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>

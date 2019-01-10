@@ -439,6 +439,14 @@ public class ConfigTesterTest {
     }
 
     @Test
+    /**
+     * FIXME: Not part of the standard build?
+     */
+    public void testWsmanAssetAdapterConfiguration() {
+        ignoreConfigFile("wsman-asset-adapter-configuration.xml");
+    }
+
+    @Test
     public void testSnmpConfig() {
         testConfigFile("snmp-config.xml");
     }

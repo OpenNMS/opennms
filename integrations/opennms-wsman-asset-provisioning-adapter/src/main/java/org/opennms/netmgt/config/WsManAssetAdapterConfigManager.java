@@ -37,6 +37,7 @@ import java.io.Reader;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -149,7 +150,7 @@ public class WsManAssetAdapterConfigManager implements WsManAssetAdapterConfig {
                     }
                 }
             }
-            if (retval.IsEmpty()) {
+            if (retval.isEmpty()) {
                 LOG.debug("getAssetFieldsForAddress: Zero AssetField matches returned for {} with vendor: {}", InetAddressUtils.str(address), vendor);
             }
             return retval.toArray(new AssetField[0]);

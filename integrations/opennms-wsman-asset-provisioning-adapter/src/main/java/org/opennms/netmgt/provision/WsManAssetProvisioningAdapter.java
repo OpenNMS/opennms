@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingFormatArgumentException;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -50,6 +51,8 @@ import org.opennms.core.wsman.WSManEndpoint;
 import org.opennms.core.wsman.cxf.CXFWSManClientFactory;
 import org.opennms.core.wsman.exceptions.WSManException;
 
+import org.opennms.netmgt.config.wsmanAsset.adapter.AssetField;
+import org.opennms.netmgt.config.wsmanAsset.adapter.WqlObj;
 import org.opennms.netmgt.config.wsman.WsmanAgentConfig;
 import org.opennms.netmgt.config.WsManAssetAdapterConfig;
 import org.opennms.netmgt.daemon.DaemonTools;
@@ -93,7 +96,7 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
         /**
          * Constant <code>NAME="WsManAssetProvisioningAdapter"</code>
          */
-        private final String NAME = "WsManAssetProvisioningAdapter";
+        private static final String NAME = "WsManAssetProvisioningAdapter";
 
         public WsManAssetProvisioningAdapter() {
                 super(NAME);
@@ -190,7 +193,7 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
                         wqls.add(wqlobj.getWql());
                         resourceUris.add(wqlobj.getResourceUri());
 			client.enumerateAndPullUsingFilter(wqlobj.getResourceUri(), WSManConstants.XML_NS_WQL_DIALECT, wqlobj.getWql(), nodes, true);
-                        if (!nodes.IsEmpty()) {
+                        if (!nodes.isEmpty()) {
                         	values.add(nodes.get(0).getTextContent());
                         } else {
 				values.add(null);
@@ -396,9 +399,18 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
                 return ipaddr;
         }
 
+	private void handleConfigurationChanged() {
+	        try {
+			m_config.update();
+        	} catch (Throwable e) {
+			LOG.info("Unable to reload WS-Man asset adapter configuration", e);
+        	}
+
+	}
+
         @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
         public void handleReloadEvent(Event e) {
-            DaemonTools.handleReloadEvent(e, Provisiond.NAME, (event) -> handleConfigurationChanged());
+            DaemonTools.handleReloadEvent(e, WsManAssetProvisioningAdapter.NAME, (event) -> handleConfigurationChanged());
         }
 
 }
