@@ -41,7 +41,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
@@ -49,13 +48,14 @@ import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.enlinkd.model.IsIsElement;
-import org.opennms.netmgt.enlinkd.model.IsIsLink;
-import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
+import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
+import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -86,17 +86,55 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
 
     protected void add(String id,
             LinkdVertex sourceV, 
-            LinkdVertex targetV,  
+            LinkdVertex targetV,              
             SnmpInterfaceTopologyEntity sourceIntf,
             SnmpInterfaceTopologyEntity targetIntf,
             String sourceAddr,
             String targetAddr,
             ProtocolSupported discoveredBy) {
+            LinkdPort sourcePort = LinkdPort.create(
+                                                    sourceV, 
+                                                    sourceIntf.getIfIndex(),
+                                                    sourceAddr,
+                                                    sourceIntf
+                                                    ); 
+            LinkdPort targetPort = LinkdPort.create(targetV, 
+                                                    targetIntf.getIfIndex(),
+                                                    targetAddr,
+                                                    targetIntf);
+
                 m_edges.add(
                  LinkdEdge.create(
                                   id, 
-                                  LinkdPort.create(sourceV, sourceIntf.getIfIndex(),sourceAddr,sourceIntf),
-                                  LinkdPort.create(targetV, targetIntf.getIfIndex(),targetAddr,targetIntf),
+                                  sourcePort,
+                                  targetPort,
+                                  discoveredBy
+                          )
+                 );
+    }
+
+    protected void add(String id,
+            LinkdVertex sourceV, 
+            LinkdVertex targetV,              
+            SnmpInterfaceTopologyEntity targetIntf,
+            String targetAddr,
+            ProtocolSupported discoveredBy) {
+            LinkdPort sourcePort = LinkdPort.create(sourceV
+                                                    ); 
+            Integer targetifIndex = null;
+            if (targetIntf != null) {
+                targetifIndex = targetIntf.getIfIndex();
+            }
+            LinkdPort targetPort = LinkdPort.create(targetV, 
+                                                    targetifIndex,
+                                                    targetAddr,
+                                                    targetIntf);
+
+                m_edges.add(
+                 LinkdEdge.create(
+                                  id, 
+                                  sourcePort,
+                                  targetPort,
                                   discoveredBy
                           )
                  );
@@ -147,7 +185,7 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         designated.setNodeId(1);
         designated.setBridgePort(48);
         // Cloud is identified by the designated bridge and designated port
-        LinkdVertex cloud = LinkdVertex.createSegmentVertex(designated);
+        LinkdVertex segment = LinkdVertex.createSegmentVertex(designated);
         LinkdVertex node1Vertex = LinkdVertex.createNodeVertex(NodeTopologyEntity.toNodeTopologyInfo(m_node1),null);
         LinkdVertex node2Vertex = LinkdVertex.createNodeVertex(NodeTopologyEntity.toNodeTopologyInfo(m_node2),null);
         LinkdVertex node3Vertex = LinkdVertex.createNodeVertex(NodeTopologyEntity.toNodeTopologyInfo(m_node3),null);
@@ -163,10 +201,22 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         bpnode1port48.setNodeId(m_node1.getId());
         bpnode1port48.setBridgePort(48);
         bpnode1port48.setBridgePortIfIndex(48);
-        SnmpInterfaceTopologyEntity sourceinterfacenode1port48 = new SnmpInterfaceTopologyEntity(10048,48,"port 48","",0l,m_node1.getId());
+        SnmpInterfaceTopologyEntity sourceinterfacenode1port48 = 
+                new SnmpInterfaceTopologyEntity(10048,
+                                                bpnode1port48.getBridgePortIfIndex(),
+                                                "port 48",
+                                                "",
+                                                0l,
+                                                m_node1.getId());
 
-        add(Topology.getEdgeId(cloud.getId(), bpnode1port48), 
-                                     cloud, node1Vertex, null, sourceinterfacenode1port48, "cloud", "bp: 48", ProtocolSupported.BRIDGE);
+        add(
+            Topology.getEdgeId(segment.getId(), bpnode1port48), 
+            segment, 
+            node1Vertex, 
+            sourceinterfacenode1port48, 
+            Topology.getAddress(bpnode1port48),
+            ProtocolSupported.BRIDGE
+        );
 
         BridgePort bpnode2port24 = new BridgePort();
         bpnode2port24.setNodeId(m_node2.getId());
@@ -174,47 +224,77 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         bpnode2port24.setBridgePortIfIndex(24);
         
         SnmpInterfaceTopologyEntity sourceinterfacenode2port24 = new SnmpInterfaceTopologyEntity(20024,24,"port 24","",0l,m_node2.getId());
-        add(Topology.getEdgeId(cloud.getId(), bpnode2port24), 
-                                     cloud, node2Vertex, null, sourceinterfacenode2port24, null, null, ProtocolSupported.BRIDGE);
+        add(Topology.getEdgeId(segment.getId(), bpnode2port24), 
+                               segment, 
+                               node2Vertex, 
+                               sourceinterfacenode2port24, 
+                               Topology.getAddress(bpnode2port24), 
+                               ProtocolSupported.BRIDGE);
+        
+        IpNetToMedia iptm3 = new IpNetToMedia();
+        iptm3.setNetAddress(InetAddressUtils.addr("10.10.1.1"));
+        iptm3.setPhysAddress("a8d0e5a0a467");
+        MacPort mp3 = MacPort.create(iptm3);
 
         add(
-            Topology.getDefaultEdgeId(cloud.getId(), "[a8d0e5a0a467]"), 
-                                     cloud, node3Vertex, 
-                                     null, 
-                                     null,
-                                     null,
-                                     "[a8d0e5a0a467]", ProtocolSupported.BRIDGE);
+            Topology.getEdgeId(segment.getId(), mp3), 
+            segment, 
+            node3Vertex, 
+            null,
+            Topology.getAddress(mp3), 
+            ProtocolSupported.BRIDGE
+        );
         
         // isis link
-        IsIsLink link1 = createIsIsLink(m_node4, 599, 599, 1, 1, "001f12accbf1", "000110255062");
-        link1.setId(104);
+        IsIsLinkTopologyEntity link1 = createIsIsLink(104,m_node4, 599, 1, "001f12accbf1", "000110255062");
         SnmpInterfaceTopologyEntity node4port599 = new SnmpInterfaceTopologyEntity(104, link1.getIsisCircIfIndex(), "port 599","", 0l, m_node4.getId());
 
-        IsIsLink link2 = createIsIsLink(m_node5, 578, 578, 1, 1, "0021590e47c1", "000110088500");
-        link2.setId(105);
+        IsIsLinkTopologyEntity link2 = createIsIsLink(105,m_node5, 578, 1, "0021590e47c1", "000110088500");
         SnmpInterfaceTopologyEntity node5port578 = new SnmpInterfaceTopologyEntity(50578,link2.getIsisCircIfIndex(),"port 578","",0l,m_node5.getId());
         
-        add(Topology.getDefaultEdgeId(link1.getId(), link2.getId()), 
-                                     node4Vertex, node5Vertex, 
-                                     node4port599, node5port578, 
-                                     link2.getIsisISAdjNeighSNPAAddress(), link1.getIsisISAdjNeighSNPAAddress(), 
-                                    ProtocolSupported.ISIS);
+        add(
+            Topology.getDefaultEdgeId(link1.getId(), link2.getId()), 
+            node4Vertex, 
+            node5Vertex, 
+            node4port599, 
+            node5port578, 
+            Topology.getRemoteAddress(link2),
+            Topology.getRemoteAddress(link1), 
+            ProtocolSupported.ISIS);
 
         // lldp link
-        LldpLink link3 = new LldpLink(m_node4, 12, 1, "node4PortId", "node4PortDescr", LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL,
-                                     "node4ChassisId", "node4SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL, "node4PortId",
-                                     LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, "node2PortDescr");
-        link3.setId(204);
+        LldpLinkTopologyEntity link3 = new LldpLinkTopologyEntity(204, 
+                                                                  m_node4.getId(), 
+                                                                  "node5ChassisId", 
+                                                                  "node5PortId", 
+                                                                  LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, 
+                                                                  "node4PortId", 
+                                                                  LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, 
+                                                                  "node4PortDescr", 1);
+                                                                  
         SnmpInterfaceTopologyEntity node4portPort1 = new SnmpInterfaceTopologyEntity(40001,link3.getLldpPortIfindex(),"port 1","",0l,m_node4.getId());
   
-        LldpLink link4 = new LldpLink(m_node5, 21, 2, "node5PortId", "node5PortDescr", LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL,
-                                     "node5ChassisId", "node5SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL, "node5PortId",
-                                     LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, "node1PortDescr");
-        link4.setId(205);
+        LldpLinkTopologyEntity link4 = new LldpLinkTopologyEntity(205, 
+                                                                  m_node5.getId(), 
+                                                                  "node4ChassisId", 
+                                                                  "node4PortId", 
+                                                                  LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, 
+                                                                  "node5PortId", 
+                                                                  LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, 
+                                                                  "node5PortDescr", 21);
+                                      
         SnmpInterfaceTopologyEntity node5portPort2 = new SnmpInterfaceTopologyEntity(50002,link4.getLldpPortIfindex(),"port 2","",0l,m_node5.getId());
          
-         add(Topology.getDefaultEdgeId(link3.getId(), link4.getId()), node4Vertex, node5Vertex, 
-                                      node4portPort1, node5portPort2, link3.getLldpPortDescr(), link4.getLldpPortDescr(), ProtocolSupported.LLDP);
+         add(
+             Topology.getDefaultEdgeId(link3.getId(), link4.getId()), 
+             node4Vertex, 
+             node5Vertex, 
+             node4portPort1, 
+             node5portPort2, 
+             Topology.getRemoteAddress(link4), 
+             Topology.getRemoteAddress(link3), 
+             ProtocolSupported.LLDP
+             );
         
         //ospf link
          OspfLink link5 = createOspfLink(m_node4, "192.168.100.246", "255.255.255.252", 0, 10101, "192.168.100.249", "192.168.100.245", 0);
@@ -549,17 +629,22 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         return Arrays.asList(alarm);
     }
     
-    private IsIsLink createIsIsLink(OnmsNode node, int isisCircIndex, int isisCircIfindex, int isisAdjIndex, int isisCircAdmin, String isisIsAdjNeighsnpaadress, String isisisAdjNeighSysid) {
-        final IsIsLink isisLink = new IsIsLink();
-        isisLink.setNode(node);
-        isisLink.setIsisCircIndex(isisCircIndex);
-        isisLink.setIsisCircIfIndex(isisCircIfindex);
-        isisLink.setIsisISAdjIndex(isisAdjIndex);
-        isisLink.setIsisCircAdminState(IsIsElement.IsisAdminState.get(isisCircAdmin));
-        isisLink.setIsisISAdjNeighSNPAAddress(isisIsAdjNeighsnpaadress);
-        isisLink.setIsisISAdjNeighSysID(isisisAdjNeighSysid);
-        return isisLink;
-
+    private IsIsLinkTopologyEntity createIsIsLink(
+            Integer id, 
+            OnmsNode node, 
+            int isisCircIfindex, 
+            int isisAdjIndex, 
+            String isisIsAdjNeighsnpaadress, 
+            String isisisAdjNeighSysid) 
+    {
+        return new IsIsLinkTopologyEntity(
+                                          id, 
+                                          node.getId(), 
+                                          isisAdjIndex, 
+                                          isisCircIfindex, 
+                                          isisisAdjNeighSysid, 
+                                          isisIsAdjNeighsnpaadress
+                                          );
     }
     
     private OspfLink createOspfLink(OnmsNode node, String sourceIpAddr, String sourceIpMask, int addrLessIndex, int ifIndex, String remRouterId, String remIpAddr, int remAddrLessIndex) {
