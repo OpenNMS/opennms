@@ -406,7 +406,7 @@ doStart(){
 			return 1
 		fi
 		sleep $STATUS_WAIT
-		STATUS_ATTEMPTS="$((STATUS_ATTEMPTS++))"
+		((STATUS_ATTEMPTS++))
 	done
 
 	echo "Started ${install.package.description}, but it has not finished starting up" >&2
