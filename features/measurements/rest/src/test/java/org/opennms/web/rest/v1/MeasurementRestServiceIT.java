@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -175,7 +175,10 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String json = sendRequest(request, 200);
 
         assertThat(xml, containsString("<columns>"));
+        assertThat(xml, containsString("<resources>"));
+        assertThat(xml, containsString("<resource id="));
         assertThat(json, containsString("\"columns\":"));
+        assertThat(json, containsString("\"resources\":"));
     }
 
     /**
