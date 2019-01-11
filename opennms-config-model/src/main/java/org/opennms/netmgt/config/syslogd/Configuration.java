@@ -153,7 +153,7 @@ public class Configuration implements Serializable {
     private String timeZone;
 
     @XmlAttribute(name = "includeRawSyslogmessage")
-    private boolean includeRawSyslogmessage;
+    private Boolean includeRawSyslogmessage;
 
     public Optional<String> getListenAddress() {
         return Optional.ofNullable(m_listenAddress);
@@ -268,7 +268,7 @@ public class Configuration implements Serializable {
     }
 
     public boolean shouldIncludeRawSyslogmessage() {
-        return includeRawSyslogmessage;
+        return includeRawSyslogmessage == null ? false : includeRawSyslogmessage;
     }
 
     public void setIncludeRawSyslogmessage(boolean includeRawSyslogmessage) {

@@ -691,6 +691,12 @@ public class ConvertToEventTest {
         String rawMessage = "<123>123456: Jan 1 01:10:10.123 CDT: %BGP-5-ADJCHANGE: neighbor 1.2.3.4 vpn " +
                 "vrf abc-def Up";
         // Test that default behavior is to not include
+        boolean existingConfig = radixConfig.shouldIncludeRawSyslogmessage();
+        
+        if(existingConfig) {
+            fail("Default configuration for including raw syslog messages was true instead of false");
+        }
+
         Event event = parseSyslog("canIncludeRawSyslogmessage", radixConfig, rawMessage, new Date());
         assertThat(event.getParm("rawSyslogmessage"), equalTo(null));
 
@@ -698,5 +704,6 @@ public class ConvertToEventTest {
         radixConfig.setIncludeRawSyslogmessage(true);
         event = parseSyslog("canIncludeRawSyslogmessage", radixConfig, rawMessage, new Date());
         assertThat(event.getParm("rawSyslogmessage").getValue().getContent(), equalTo(rawMessage));
+        radixConfig.setIncludeRawSyslogmessage(existingConfig);
     }
 }

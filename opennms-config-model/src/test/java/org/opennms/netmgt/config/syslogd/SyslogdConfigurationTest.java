@@ -58,8 +58,7 @@ public class SyslogdConfigurationTest extends XmlTestNoCastor<SyslogdConfigurati
                         "            forwarding-regexp=\"^.*\\s(19|20)\\d\\d([-/.])(0[1-9]|1[012])\\2(0[1-9]|[12][0-9]|3[01])(\\s+)(\\S+)(\\s)(\\S.+)\"\n" + 
                         "            matching-group-host=\"6\"\n" + 
                         "            matching-group-message=\"8\"\n" + 
-                        "            discard-uei=\"DISCARD-MATCHING-MESSAGES\"\n" +
-                        "            includeRawSyslogmessage=\"false\"\n" +
+                        "            discard-uei=\"DISCARD-MATCHING-MESSAGES\"\n" + 
                         "            />\n" +
                         "    <ueiList/>" +
                         "    <hideMessage/>" +

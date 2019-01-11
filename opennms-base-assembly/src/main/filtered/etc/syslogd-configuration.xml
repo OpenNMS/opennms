@@ -14,7 +14,6 @@
             matching-group-message="8"
             discard-uei="DISCARD-MATCHING-MESSAGES"
             timezone=""
-            includeRawSyslogmessage="false"
             />
 
     <!--
