@@ -576,7 +576,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         this.topologyVertexTopic = topologyVertexTopic;
     }
 
-    public void setTopologyedgeTopic(String topologyEdgeTopic) {
+    public void setTopologyEdgeTopic(String topologyEdgeTopic) {
         this.topologyEdgeTopic = topologyEdgeTopic;
     }
 
