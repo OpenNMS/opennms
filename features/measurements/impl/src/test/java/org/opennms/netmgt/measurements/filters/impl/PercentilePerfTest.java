@@ -38,6 +38,7 @@ import org.junit.Test;
 import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.model.FilterDef;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.RowSortedTable;
 
 public class PercentilePerfTest extends AnalyticsFilterTest {
@@ -63,7 +64,8 @@ public class PercentilePerfTest extends AnalyticsFilterTest {
         columns.put("X", values);
 
         long now = System.currentTimeMillis();
-        FetchResults results = new FetchResults(timestamps, columns, 1, Collections.emptyMap());
+        Map<String, Object> constants = Maps.newHashMap();
+        FetchResults results = new FetchResults(timestamps, columns, 1, constants, null);
         RowSortedTable<Long, String, Double> table = results.asRowSortedTable();
 
         // Apply the filter
@@ -73,7 +75,7 @@ public class PercentilePerfTest extends AnalyticsFilterTest {
                 "outputColumn", "Y",
                 "quantile", Double.valueOf(quantile).toString());
         getFilterEngine().filter(filterDef, table);
-        results = new FetchResults(table, results.getStep(), results.getConstants());
+        results = new FetchResults(table, results.getStep(), results.getConstants(), null);
 
         // Quickly validate the results
         assertEquals(94999.95, table.get(1000L, "Y"), 0.0001);

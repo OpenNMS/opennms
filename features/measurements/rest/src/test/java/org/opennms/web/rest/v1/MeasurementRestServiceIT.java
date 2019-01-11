@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,6 +30,8 @@ package org.opennms.web.rest.v1;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.containsString;
 
 import java.io.File;
 import java.net.URLEncoder;
@@ -161,8 +163,31 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
         request.addHeader("Accept", MediaType.APPLICATION_JSON);
         String json = sendRequest(request, 200);
 
-        assertTrue(xml.contains("<columns>"));
-        assertTrue(json.contains("\"columns\":"));
+        assertThat(xml, containsString("<columns>"));
+        assertThat(xml, containsString("<resources>"));
+        assertThat(xml, containsString("<resource id="));
+        assertThat(json, containsString("\"columns\":"));
+        assertThat(json, containsString("\"resources\":"));
+    }
+
+    /**
+     * Here we query the same resource as above, but refer to it using the ifIndex
+     * instead of the interface name.
+     */
+    @Test
+    public void canRetrieveMeasurementsUsingIfIndexAlias() throws Exception {
+        final String url = String.format("/measurements/%s/%s",
+                URLEncoder.encode("node[1].interfaceSnmpByIfIndex[12]", StandardCharsets.UTF_8.name()),
+                "ifInOctets");
+
+        final Map<String, String> parameters = Maps.newHashMap();
+        parameters.put("start", Long.toString(1414602000000L));
+        parameters.put("end", Long.toString(1417046400000L));
+
+        final MockHttpServletRequest request = createRequest(m_context, GET, url);
+        request.setParameters(parameters);
+        String xml = sendRequest(request, 200);
+        assertThat(xml, containsString("<columns>"));
     }
 
     @Test

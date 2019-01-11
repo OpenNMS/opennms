@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,6 +40,7 @@ import org.opennms.netmgt.dao.support.InterfaceSnmpResourceType;
 import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.measurements.impl.AbstractRrdBasedFetchStrategy;
+import org.opennms.netmgt.measurements.model.QueryMetadata;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -63,7 +64,7 @@ public class CustomSpringConfiguration {
         return new AbstractRrdBasedFetchStrategy() {
 
             @Override
-            protected FetchResults fetchMeasurements(long start, long end, long step, int maxrows, Map<Source, String> rrdsBySource, Map<String, Object> constants) throws RrdException {
+            protected FetchResults fetchMeasurements(long start, long end, long step, int maxrows, Map<Source, String> rrdsBySource, Map<String, Object> constants, QueryMetadata metadata) throws RrdException {
                 final long[] timestamps = new long[] {start, end};
                 final Map columnMap = new HashMap<>();
                 if (!rrdsBySource.isEmpty()) {
@@ -71,7 +72,7 @@ public class CustomSpringConfiguration {
                         columnMap.put(eachKey.getLabel(), new double[]{13, 17});
                     }
                 }
-                return new FetchResults(timestamps, columnMap, step, constants);
+                return new FetchResults(timestamps, columnMap, step, constants, metadata);
             }
         };
     }
