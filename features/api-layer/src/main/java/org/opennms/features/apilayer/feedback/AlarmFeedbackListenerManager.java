@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,35 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.situationfeedback.api;
+package org.opennms.features.apilayer.feedback;
 
-import java.util.Collection;
 import java.util.List;
 
-/**
- * This interface provides an abstraction over storing/retrieving {@link AlarmFeedback feedback} to some persistent
- * storage provider.
- */
-public interface FeedbackRepository {
+import org.opennms.features.apilayer.utils.InterfaceMapper;
+import org.opennms.features.apilayer.utils.ModelMappers;
+import org.opennms.features.situationfeedback.api.AlarmFeedback;
+import org.opennms.features.situationfeedback.api.AlarmFeedbackListener;
+import org.osgi.framework.BundleContext;
 
-    /**
-     * Persists the given collection of {@link AlarmFeedback feedback} and notifies any
-     * {@link AlarmFeedbackListener listeners}.
-     *
-     * @param feedback the feedback to persist
-     * @throws FeedbackException if the feedback could not be persisted
-     */
-    void persist(List<AlarmFeedback> feedback) throws FeedbackException;
+public class AlarmFeedbackListenerManager extends InterfaceMapper<org.opennms.integration.api.v1.feedback.AlarmFeedbackListener, AlarmFeedbackListener> {
 
-    /**
-     * @param situationKey the reduction key of the situation to get feedback for
-     * @return all of the feedback applicable to the given situation
-     */
-    Collection<AlarmFeedback> getFeedback(String situationKey) throws FeedbackException;
+    public AlarmFeedbackListenerManager(BundleContext bundleContext) {
+        super(AlarmFeedbackListener.class, bundleContext);
+    }
 
-    /**
-     * @return all of the feedback present in the repository
-     */
-    List<AlarmFeedback> getAllFeedback() throws FeedbackException;
-
+    @Override
+    public AlarmFeedbackListener map(org.opennms.integration.api.v1.feedback.AlarmFeedbackListener ext) {
+        return new AlarmFeedbackListener() {
+            @Override
+            public void handleAlarmFeedback(List<AlarmFeedback> alarmFeedback) {
+                alarmFeedback.stream()
+                        .map(ModelMappers::toFeedback)
+                        .forEach(ext::onFeedback);
+            }
+        };
+    }
 }

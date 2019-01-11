@@ -28,7 +28,7 @@
 
 package org.opennms.features.situationfeedback.api;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Implementations of this interface react to alarm feedback being generated.
@@ -39,5 +39,5 @@ public interface AlarmFeedbackListener {
      *
      * @param alarmFeedback the collection of alarm feedback
      */
-    void handleAlarmFeedback(Collection<AlarmFeedback> alarmFeedback);
+    void handleAlarmFeedback(List<AlarmFeedback> alarmFeedback);
 }
