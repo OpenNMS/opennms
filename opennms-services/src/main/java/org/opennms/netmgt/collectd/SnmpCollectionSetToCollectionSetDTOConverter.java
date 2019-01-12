@@ -47,10 +47,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Converts a {@link SnmpCollectionSet} to {@link CollectionSetDTO}. This is an immediate step
+ * <p>Converts a {@link SnmpCollectionSet} to {@link CollectionSetDTO}. This is an immediate step
  * in order to refactor the SnmpCollector to use the {@link CollectionSetBuilder}.
+ * </p>
+ * <p>
  * Usage:
  * <code>new SnmpCollectionSetToCollectionSetDTOConverter().withParameters(params).convert(collectionSet)</code>
+ * </p>
  */
 public class SnmpCollectionSetToCollectionSetDTOConverter {
 
