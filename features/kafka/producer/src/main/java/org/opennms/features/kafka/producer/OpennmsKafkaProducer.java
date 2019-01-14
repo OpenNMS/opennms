@@ -69,7 +69,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage.TopologyMessageStatus;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyShared;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologySegment;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.opennms.netmgt.xml.event.Event;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -234,7 +234,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             forwardTopologyVertexMessage(mappedTopomsg.toByteArray(),null);
         } else if (message.getMessagebody() instanceof OnmsTopologyEdge) {
             forwardTopologyEdgeMessage(mappedTopomsg.toByteArray(),null);
-        } else if (message.getMessagebody() instanceof OnmsTopologyShared) {
+        } else if (message.getMessagebody() instanceof OnmsTopologySegment) {
             forwardTopologyVertexMessage(mappedTopomsg.toByteArray(),null);
         } else {
             LOG.error("forwardTopologyDeleteMessage: no supported update class {}", message.getMessagebody().getClass().getName());            
@@ -254,8 +254,8 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
                     protobufMapper.toEdgeTopologyMessage(message.getProtocol().getId(),edge).build();
             forwardTopologyEdgeMessage(mappedTopoMsg.getRef().toByteArray(),
                                        mappedTopoMsg.toByteArray());
-        } else if (message.getMessagebody() instanceof OnmsTopologyShared) {
-            OnmsTopologyShared edge = (OnmsTopologyShared) message.getMessagebody();
+        } else if (message.getMessagebody() instanceof OnmsTopologySegment) {
+            OnmsTopologySegment edge = (OnmsTopologySegment) message.getMessagebody();
             final OpennmsModelProtos.TopologySegment mappedTopoMsg = 
                     protobufMapper.toSegmentTopologyMessage(message.getProtocol().getId(),edge).build();
             forwardTopologySegmentMessage(mappedTopoMsg.getRef().toByteArray(),

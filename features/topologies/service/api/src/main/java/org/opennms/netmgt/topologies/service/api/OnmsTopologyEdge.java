@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.topologies.service.api;
 
-public class OnmsTopologyEdge extends OnmsTopologyShared {
+public class OnmsTopologyEdge extends OnmsTopologySegment {
 
     public static OnmsTopologyEdge create(String id, OnmsTopologyPort source, OnmsTopologyPort target) throws OnmsTopologyException {
         if (source == null && target == null) {

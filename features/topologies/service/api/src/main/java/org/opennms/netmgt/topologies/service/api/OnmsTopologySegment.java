@@ -31,18 +31,18 @@ package org.opennms.netmgt.topologies.service.api;
 import java.util.Arrays;
 import java.util.List;
 
-public class OnmsTopologyShared extends OnmsTopologyAbstractRef implements OnmsTopologyRef {
+public class OnmsTopologySegment extends OnmsTopologyAbstractRef implements OnmsTopologyRef {
 
-    public static OnmsTopologyShared create(String id,OnmsTopologyPort...sources) throws OnmsTopologyException {
+    public static OnmsTopologySegment create(String id,OnmsTopologyPort...sources) throws OnmsTopologyException {
         if (id ==  null || sources == null || sources.length <= 1) {
             throw new OnmsTopologyException("Cannot create Shared");
         }
-        return new OnmsTopologyShared(id,sources);
+        return new OnmsTopologySegment(id,sources);
     }
         
     private final OnmsTopologyPort[] m_sources;
 
-    protected OnmsTopologyShared(String id, OnmsTopologyPort...sources) {
+    protected OnmsTopologySegment(String id, OnmsTopologyPort...sources) {
         super(id);
         m_sources = sources;
     }

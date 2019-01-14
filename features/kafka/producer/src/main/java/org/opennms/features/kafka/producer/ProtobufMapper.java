@@ -533,7 +533,7 @@ public class ProtobufMapper {
     }
 
     public OpennmsModelProtos.TopologySegment.Builder toSegmentTopologyMessage(String protocol,
-            org.opennms.netmgt.topologies.service.api.OnmsTopologyShared shared) {
+            org.opennms.netmgt.topologies.service.api.OnmsTopologySegment shared) {
         final OpennmsModelProtos.TopologySegment.Builder builder = OpennmsModelProtos.TopologySegment.newBuilder()
                 .setRef(getTopologyRef(protocol, shared.getId()));
         shared.getSources().stream().forEach(source -> builder.addSources(getPort(source)));

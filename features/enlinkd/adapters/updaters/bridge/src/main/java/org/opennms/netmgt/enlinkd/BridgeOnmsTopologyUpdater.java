@@ -51,7 +51,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyShared;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologySegment;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -158,7 +158,7 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater  {
                 topology.getVertices().add(macVertex);
                 ports.add( create(macVertex));
             }
-            OnmsTopologyShared edge = OnmsTopologyShared.create(
+            OnmsTopologySegment edge = OnmsTopologySegment.create(
                                                           Topology.getId(shared.getUpPort()), 
                                                           ports.toArray(new OnmsTopologyPort[ports.size()]));
             topology.getEdges().add(edge);

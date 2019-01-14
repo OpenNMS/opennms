@@ -37,7 +37,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyShared;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologySegment;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,8 +79,8 @@ public class OnmsTopologyLogger implements OnmsTopologyConsumer {
             OnmsTopologyPort target = edge.getTarget();
             LOG.debug("edge: vertex {} port {}", source.getVertex().getLabel(), source.getIfname());
             LOG.debug("edge: vertex {} port {}", target.getVertex().getLabel(), target.getIfname());
-        } else if (message.getMessagebody() instanceof OnmsTopologyShared) {
-           OnmsTopologyShared shared = (OnmsTopologyShared) message.getMessagebody(); 
+        } else if (message.getMessagebody() instanceof OnmsTopologySegment) {
+           OnmsTopologySegment shared = (OnmsTopologySegment) message.getMessagebody(); 
            shared.getSources().stream().forEach( p -> {
                LOG.debug("edge: vertex {} port {}", p.getVertex().getLabel(), p.getIfname());
            });

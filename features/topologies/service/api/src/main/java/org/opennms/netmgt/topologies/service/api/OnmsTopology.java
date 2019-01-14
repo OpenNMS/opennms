@@ -41,18 +41,18 @@ public class OnmsTopology {
     public final static String TARGET_IFINDEX= "targetifindex";
     
     private Set<OnmsTopologyVertex> m_vertices;
-    private Set<OnmsTopologyShared> m_edges;
+    private Set<OnmsTopologySegment> m_edges;
     
     public OnmsTopology() {
         m_vertices = new HashSet<OnmsTopologyVertex>();
-        m_edges = new HashSet<OnmsTopologyShared>();
+        m_edges = new HashSet<OnmsTopologySegment>();
     }
 
     public OnmsTopologyVertex getVertex(String id) {
         return m_vertices.stream().filter(vertex -> id.equals(vertex.getId())).findAny().orElse(null);
     }
 
-    public OnmsTopologyShared getEdge(String id) {
+    public OnmsTopologySegment getEdge(String id) {
         return m_edges.stream().filter(edge -> id.equals(edge.getId())).findAny().orElse(null);
     }
 
@@ -64,11 +64,11 @@ public class OnmsTopology {
         m_vertices = vertices;
     }
 
-    public Set<OnmsTopologyShared> getEdges() {
+    public Set<OnmsTopologySegment> getEdges() {
         return m_edges;
     }
 
-    public void setConnections(Set<OnmsTopologyShared> edges) {
+    public void setConnections(Set<OnmsTopologySegment> edges) {
         m_edges = edges;
     }    
 

@@ -48,7 +48,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyRef;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyShared;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologySegment;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyUpdater;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
@@ -149,7 +149,7 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
                 topo.getEdges().stream().filter(g -> !m_topology.hasEdge(g.getId())).forEach(g -> create(g));
                 
                 topo.getEdges().stream().filter(g -> m_topology.hasEdge(g.getId())).forEach(g -> {
-                    OnmsTopologyShared og = m_topology.getEdge(g.getId()); 
+                    OnmsTopologySegment og = m_topology.getEdge(g.getId()); 
                     boolean updated = false;
                     for (OnmsTopologyPort op: og.getSources()) {
                         if (!g.hasPort(op.getId())) {
