@@ -86,7 +86,6 @@ public class ServiceLookupBuilder<C, F> {
         return serviceProvider;
     }
 
-    /** TODO Patrick: needs to be replaced by SystemProperties */
     private static Long getLong(String propertyName, Long defaultValue) {
         String valueAsString = System.getProperty(propertyName);
         if (valueAsString == null) {
