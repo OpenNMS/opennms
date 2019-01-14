@@ -205,7 +205,7 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertThat(filtersXml, containsString("Chomp"));
 
         // Retrieve a specific filter by name
-        String filterXml = sendRequest(GET, "/measurements/filters/chomp", 200);
+        filtersXml = sendRequest(GET, "/measurements/filters/chomp", 200);
         assertThat(filtersXml, containsString("Chomp"));
     }
 }
