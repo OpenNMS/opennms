@@ -24,12 +24,13 @@ The finished CSS file will include this line, directly:
 @import "opennms-theme.scss";
 @import "ionicons.scss";
 
-.root-layout {
-  padding-top: 65px;
+.navbar-brand {
+  padding: 0px;
 }
 
-.navbar-brand {
-  padding: 1px;
+.onmsheader {
+  /* enforce visibility of dropdown elements, as they are otherwise hidden and not fully shown */
+  overflow: visible;
 }
 
 .v-absolutelayout-wrapper {

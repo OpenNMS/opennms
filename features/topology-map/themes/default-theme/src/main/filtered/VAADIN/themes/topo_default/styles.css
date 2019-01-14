@@ -1,12 +1,6 @@
 @CHARSET "UTF-8";
 @import "../opennms/styles.css?v=${buildNumber}";
 
-.topo-root-layout {
-	width: 100%;
-	height: auto;
-	bottom: 0;
-}
-
 .opacity-50{
 	opacity: 0.5;
 	-moz-opacity:0.5;
