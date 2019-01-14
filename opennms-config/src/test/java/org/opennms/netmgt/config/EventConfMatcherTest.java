@@ -28,6 +28,11 @@
 
 package org.opennms.netmgt.config;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.io.File;
 
 import org.junit.After;
@@ -49,7 +54,7 @@ public class EventConfMatcherTest {
         eventConfDao = new DefaultEventConfDao();
         eventConfDao.setConfigResource(new FileSystemResource(new File("src/test/resources/matcher-test.events.xml")));
         eventConfDao.afterPropertiesSet();
-        Assert.assertEquals(5, eventConfDao.getAllEvents().size());
+        Assert.assertEquals(7, eventConfDao.getAllEvents().size());
     }
 
     @After
@@ -113,5 +118,29 @@ public class EventConfMatcherTest {
         eb.setParam(".1.3.6.1.4.1.25461.2.1.3.2.1.12", "Management server started, everything is OK");
         event = eventConfDao.findByEvent(eb.getEvent());
         Assert.assertEquals("Cleared", event.getSeverity());
+    }
+
+    /**
+     * NMS-10465: Verify that named event paramters can be used to match event
+     * definitions, even when multiple event definitions with the same UEI are
+     * present.
+     */
+    @Test
+    public void canUseMaskParameterKeyValuePairs() throws Exception {
+        EventBuilder eb = new EventBuilder("uei.opennms.org/threshold/highThresholdExceeded", "JUnit");
+        eb.setGeneric(6);
+        eb.setSpecific(600);
+        eb.setEnterpriseId(".1.3.6.1.4.1.25461.2.1.3.2");
+        eb.addParam("status", "down");
+        eb.addParam("ifDescr", "eth0");
+
+        Event event = eventConfDao.findByEvent(eb.getEvent());
+        assertThat(event, is(not(nullValue())));
+        assertThat(event.getSeverity(), is("Minor"));
+
+        eb.setParam("status", "up");
+        event = eventConfDao.findByEvent(eb.getEvent());
+        assertThat(event, is(not(nullValue())));
+        assertThat(event.getSeverity(), is("Cleared"));
     }
 }

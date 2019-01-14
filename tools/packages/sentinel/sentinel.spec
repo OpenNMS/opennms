@@ -12,14 +12,14 @@
 %{!?sentinelrepoprefix:%define sentinelrepoprefix /opt/sentinel/repositories}
 
 # Description
-%{!?_name:%define _name "opennms"}
-%{!?_descr:%define _descr "OpenNMS"}
+%{!?_name:%define _name opennms}
+%{!?_descr:%define _descr OpenNMS}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
 %{!?_java:%define _java jre-1.8.0}
 
-%{!?extrainfo:%define extrainfo }
-%{!?extrainfo2:%define extrainfo2 }
+%{!?extrainfo:%define extrainfo %{nil}}
+%{!?extrainfo2:%define extrainfo2 %{nil}}
 %{!?skip_compile:%define skip_compile 0}
 %{!?enable_snapshots:%define enable_snapshots 1}
 
@@ -47,6 +47,9 @@ BuildArch:     noarch
 Source:        %{_name}-source-%{version}-%{releasenumber}.tar.gz
 URL:           http://www.opennms.org/wiki/Sentinel
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
+
+BuildRequires:	%{_java}
+BuildRequires:	libxslt
 
 #Requires:       jicmp >= 2.0.0
 #Requires(pre):  jicmp >= 2.0.0
@@ -96,6 +99,10 @@ if [ "%{enable_snapshots}" = 1 ]; then
 	EXTRA_ARGS="-s"
 fi
 
+if [ "%{skip_compile}" = 1 ]; then
+	EXTRA_ARGS="$EXTRA_ARGS -c"
+fi
+
 tools/packages/sentinel/create-sentinel-assembly.sh $EXTRA_ARGS
 
 # Extract the sentinel assembly
@@ -119,6 +126,7 @@ mv "%{buildroot}%{sentinelinstprefix}/etc/sentinel.conf" "%{buildroot}%{_sysconf
 find %{buildroot}%{sentinelinstprefix} ! -type d | \
     grep -v %{sentinelinstprefix}/bin | \
     grep -v %{sentinelrepoprefix} | \
+    grep -v %{sentinelinstprefix}/etc/featuresBoot.d | \
     sed -e "s|^%{buildroot}|%attr(644,sentinel,sentinel) |" | \
     sort > %{_tmppath}/files.sentinel
 find %{buildroot}%{sentinelinstprefix}/bin ! -type d | \
@@ -137,6 +145,7 @@ rm -rf %{buildroot}
 %defattr(664 sentinel sentinel 775)
 %attr(755,sentinel,sentinel) %{_initrddir}/sentinel
 %attr(644,sentinel,sentinel) %config(noreplace) %{_sysconfdir}/sysconfig/sentinel
+%attr(644,sentinel,sentinel) %{sentinelinstprefix}/etc/featuresBoot.d/.readme
 
 %pre
 ROOT_INST="${RPM_INSTALL_PREFIX0}"
@@ -155,7 +164,9 @@ ROOT_INST="${RPM_INSTALL_PREFIX0}"
 # Clean out the data directory
 if [ -d "${ROOT_INST}/data" ]; then
     find "$ROOT_INST/data/"* -maxdepth 0 -name tmp -prune -o -print0 | xargs -0 rm -rf
-    find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
+    if [ -d "${ROOT_INST}/data/tmp"  ]; then
+        find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
+    fi
 fi
 
 # Remove the directory used as the local Maven repo cache

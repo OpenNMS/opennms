@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>23.0.0-SNAPSHOT</version>
+        <version>24.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.container</groupId>
@@ -26,7 +26,7 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.core</artifactId>
-            <version>6.0.0</version>
+            <version>${osgiVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -44,6 +44,11 @@
         <dependency>
             <groupId>org.apache.karaf.config</groupId>
             <artifactId>org.apache.karaf.config.core</artifactId>
+            <version>${karafVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.kar</groupId>
+            <artifactId>org.apache.karaf.kar.core</artifactId>
             <version>${karafVersion}</version>
         </dependency>
         <dependency>

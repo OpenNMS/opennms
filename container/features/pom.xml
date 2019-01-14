@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.container</artifactId>
-    <version>23.0.0-SNAPSHOT</version>
+    <version>24.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.karaf</groupId>
@@ -45,7 +45,6 @@
 
             <!-- Pax JDBC -->
             <value>org.ops4j.pax.jdbc-1.0.1</value>
-
           </importRepositoryExclusions>
           <repositories>
 
@@ -69,6 +68,9 @@
             <!-- OpenNMS features bundle -->
             <repository>file:${project.build.outputDirectory}/features.xml</repository>
 
+            <!-- OpenNMS Karaf extensions -->
+            <repository>file:${project.build.outputDirectory}/karaf-extensions.xml</repository>
+
             <!-- OpenNMS OSGI Core feature bundle -->
             <repository>mvn:org.opennms.osgi/opennms-osgi-core-rest/${project.version}/xml/features</repository>
 
@@ -78,6 +80,9 @@
             <!-- JMX Config Generator features -->
             <repository>mvn:org.opennms.features/jmxconfiggenerator/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features/vaadin-jmxconfiggenerator/${project.version}/xml/features</repository>
+
+            <!-- Enlinkd features -->
+            <repository>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.service.api/${project.version}/xml/features</repository>
 
             <!-- BSM features -->
             <repository>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service.api/${project.version}/xml/features</repository>
@@ -100,8 +105,6 @@
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-base/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-browsers/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-linkd/${project.version}/xml/features</repository>
-            <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-ncs/${project.version}/xml/features</repository>
-            <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-sfree/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-vmware/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-application/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-bsm/${project.version}/xml/features</repository>
@@ -143,7 +146,6 @@
 
             <!-- Jest Feature -->
             <repository>mvn:org.opennms.features.jest/opennms-jest/${project.version}/xml/features</repository>
-
           </repositories>
 
           <!--
@@ -312,8 +314,6 @@
             <feature>opennms-topology-runtime-base</feature>
             <feature>opennms-topology-runtime-browsers</feature>
             <feature>opennms-topology-runtime-linkd</feature>
-            <feature>opennms-topology-runtime-ncs</feature>
-            <feature>opennms-topology-runtime-sfree</feature>
             <feature>opennms-topology-runtime-vmware</feature>
             <feature>opennms-topology-runtime-application</feature>
             <feature>opennms-topology-runtime-bsm</feature>
@@ -335,6 +335,9 @@
             <feature>opennms-telemetry-jti</feature>
             <feature>opennms-telemetry-nxos</feature>
 
+            <!-- Enlinkd -->
+            <feature>org.opennms.features.enlinkd.service.api</feature>
+
             <!-- BSM -->
             <feature>org.opennms.features.bsm.service.api</feature>
             <feature>org.opennms.features.bsm.shell-commands</feature>
@@ -352,6 +355,11 @@
 
             <!-- Flows -->
             <feature>opennms-flows</feature>
+
+	    <!-- Integration API -->
+	    <feature>opennms-api-layer</feature>
+
+	    <feature>karaf-extender</feature>
           </features>
         </configuration>
       </plugin>
@@ -570,13 +578,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>opennms-topology-runtime-ncs</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.osgi.features.topology</groupId>
       <artifactId>opennms-topology-runtime-application</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
@@ -592,13 +593,6 @@
     <dependency>
       <groupId>org.opennms.osgi.features.topology</groupId>
       <artifactId>opennms-topology-runtime-graphml</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>opennms-topology-runtime-sfree</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
@@ -838,8 +832,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.telemetry.adapters</groupId>
-      <artifactId>org.opennms.features.telemetry.adapters.api</artifactId>
+      <groupId>org.opennms.features.telemetry</groupId>
+      <artifactId>org.opennms.features.telemetry.api</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -868,6 +862,25 @@
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.api-layer</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.integration.api.sample</groupId>
+      <artifactId>sample-project</artifactId>
+      <version>${opennmsApiVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.integration.api</groupId>
+      <artifactId>karaf-features</artifactId>
+      <version>${opennmsApiVersion}</version>
+      <type>xml</type>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <!-- Required for com.eclipsesource.jaxrs/* -->
@@ -885,6 +898,13 @@
       <id>opennms-snapshots</id>
       <name>OpenNMS Snapshot Maven Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+    </repository>
+    <repository>
+      <id>sonatype.org-snapshot</id>
+      <name>Sonatype OSS Snapshots Repository</name>
+      <url>http://maven.opennms.org/content/groups/sonatype.org-snapshot/</url>
+      <releases><enabled>false</enabled></releases>
+      <snapshots><enabled>true</enabled></snapshots>
     </repository>
   </repositories>
 </project>

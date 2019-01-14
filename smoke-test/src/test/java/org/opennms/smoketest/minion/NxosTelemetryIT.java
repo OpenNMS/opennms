@@ -36,8 +36,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Date;
@@ -67,22 +65,21 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.smoketest.telemetry.Packet;
+import org.opennms.smoketest.telemetry.Packets;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
 import org.opennms.smoketest.utils.RestClient;
+import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 import org.opennms.test.system.api.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.io.Resources;
-
 public class NxosTelemetryIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(NxosTelemetryIT.class);
-    public static final String SENDER_IP = "192.168.1.1";
 
     private static TestEnvironment m_testEnvironment;
     private static Executor executor;
@@ -128,7 +125,7 @@ public class NxosTelemetryIT {
         Date startOfTest = new Date();
 
         OnmsNode onmsNode = addRequisition(opennmsHttp, false, startOfTest);
-        final InetSocketAddress opennmsUdp = m_testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 50000, "udp");
+        final InetSocketAddress opennmsUdp = m_testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 50001, "udp");
         sendNxosTelemetryMessage(opennmsUdp);
 
         await().atMost(30, SECONDS).pollDelay(0, SECONDS).pollInterval(5, SECONDS)
@@ -146,17 +143,19 @@ public class NxosTelemetryIT {
         try (final SshClient sshClient = new SshClient(sshAddr, "admin", "admin")) {
             // Modify minion configuration for telemetry
             PrintStream pipe = sshClient.openShell();
-            pipe.println("config:edit org.opennms.features.telemetry.listeners-udp-50000");
+            pipe.println("config:edit org.opennms.features.telemetry.listeners-udp-50001");
             pipe.println("config:property-set name NXOS");
-            pipe.println("config:property-set class-name org.opennms.netmgt.telemetry.listeners.udp.UdpListener");
-            pipe.println("config:property-set listener.port 50000");
+            pipe.println("config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener");
+            pipe.println("config:property-set parameters.port 50001");
+            pipe.println("config:property-set parsers.1.name NXOS");
+            pipe.println("config:property-set parsers.1.class-name org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser");
             pipe.println("config:update");
             pipe.println("logout");
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
         }
 
         OnmsNode onmsNode = addRequisition(opennmsHttp, true, startOfTest);
-        final InetSocketAddress minionUdp = m_testEnvironment.getServiceAddress(ContainerAlias.MINION, 50000, "udp");
+        final InetSocketAddress minionUdp = m_testEnvironment.getServiceAddress(ContainerAlias.MINION, 50001, "udp");
         sendNxosTelemetryMessage(minionUdp);
 
         await().atMost(2, MINUTES).pollDelay(0, SECONDS).pollInterval(15, SECONDS)
@@ -164,12 +163,8 @@ public class NxosTelemetryIT {
     }
 
     public static void sendNxosTelemetryMessage(InetSocketAddress udpAddress) throws IOException {
-
-        byte[] nxosOutBytes = Resources.toByteArray(Resources.getResource("telemetry/cisco-nxos-proto.raw"));
-        DatagramPacket packet = new DatagramPacket(nxosOutBytes, nxosOutBytes.length, udpAddress);
-
-        try (DatagramSocket socket = new DatagramSocket()) {
-            socket.send(packet);
+        try {
+            new Packet(Packets.NXOS.getResource(), udpAddress).send();
         } catch (IOException e) {
             LOG.error("Exception while sending nxos packets", e);
         }

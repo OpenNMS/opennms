@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,7 +40,6 @@ import javax.annotation.Nullable;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
@@ -58,8 +57,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
-@Ignore
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
 public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
     private static final Logger LOG = LoggerFactory.getLogger(BSMAdminIT.class);
@@ -203,6 +202,16 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
             return addIpServiceEdge(ipServiceText, mapFunctionText, weight, null);
         }
 
+        public BsmAdminPageEditWindow addApplicationEdge(String application, String mapFunctionText, int weight) throws InterruptedException {
+            newEdgeWindow()
+                    .selectApplication(application)
+                    .selectMapFunction(mapFunctionText)
+                    .weight(weight)
+                    .confirm();
+            testCase.wait.until(ExpectedConditions.elementToBeClickable(By.id("addEdgeButton")));
+            return this;
+        }
+
         public BsmAdminPageEditWindow addIpServiceEdge(String ipServiceText, String mapFunctionText, int weight, String friendlyName) throws InterruptedException {
             newEdgeWindow()
             .selectIpService(ipServiceText)
@@ -315,6 +324,12 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         public BsmAdminPageEdgeEditWindow selectIpService(String ipServiceText) {
             selectEdgeType("IP Service");
             testCase.enterAutocompleteText(By.xpath("//div[@id='ipServiceList']/input[1]"), ipServiceText);
+            return this;
+        }
+
+        public BsmAdminPageEdgeEditWindow selectApplication(String application) {
+            selectEdgeType("Application");
+            testCase.enterAutocompleteText(By.xpath("//div[@id='applicationList']/input[1]"), application);
             return this;
         }
 
@@ -517,6 +532,42 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
             bsmAdminPageEditWindow.cancel();
             bsmAdminPage.delete(serviceName);
         } finally {
+            removeTestSetup();
+        }
+    }
+
+    @Test
+    public void testCanAddApplicationEdge() throws Exception {
+        try {
+            createTestSetup();
+
+            // create application MyApplication
+            sendPost("api/v2/applications", "<application id='42'><name>MyApplication</name><monitoredServices></monitoredServices></application>", 201);
+
+            // Create a BusinessService and open editor
+            final String serviceName = createUniqueBusinessServiceName();
+            BsmAdminPageEditWindow bsmAdminPageEditWindow = bsmAdminPage.openNewDialog(serviceName);
+
+            BsmAdminPageEdgeEditWindow bsmAdminPageEdgeEditWindow = bsmAdminPageEditWindow.newEdgeWindow();
+            bsmAdminPageEdgeEditWindow.selectMapFunction("Increase");
+            bsmAdminPageEdgeEditWindow.selectEdgeType("Application");
+            bsmAdminPageEdgeEditWindow.selectApplication("MyApplication");
+
+            // save
+            bsmAdminPageEdgeEditWindow.confirm();
+            bsmAdminPageEditWindow.save();
+
+            // Verify
+            bsmAdminPage.openEditDialog(serviceName);
+            wait.until(pageContainsText("Application: MyApplication, Map: Increase, Weight: 1"));
+
+            // Close dialog and delete BusinessService
+            bsmAdminPageEditWindow.cancel();
+            bsmAdminPage.delete(serviceName);
+        } finally {
+            // delete application MyApplication
+            sendDelete("api/v2/applications");
+
             removeTestSetup();
         }
     }

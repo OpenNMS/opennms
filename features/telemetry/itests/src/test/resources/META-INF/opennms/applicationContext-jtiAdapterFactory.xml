@@ -9,13 +9,18 @@
        ">
 
     <context:annotation-config />
-    <bean id="jtiAdapterFactory" class="org.opennms.netmgt.telemetry.adapters.jti.JtiAdapterFactory" />
 
-    <onmsgi:service interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory" ref="jtiAdapterFactory" >
-        <onmsgi:service-properties>
-            <entry key="registration.export" value="true" />
-            <entry key="type" value="org.opennms.netmgt.telemetry.adapters.jti.JtiGpbAdapter" />
-        </onmsgi:service-properties>
-    </onmsgi:service>
+    <bean id="jtiAdapterFactory" class="org.opennms.netmgt.telemetry.protocols.jti.adapter.JtiAdapterFactory" />
+    <onmsgi:service interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory" ref="jtiAdapterFactory" />
+
+    <bean id="udpListenerFactory" class="org.opennms.netmgt.telemetry.listeners.factory.UdpListenerFactory" >
+        <constructor-arg ref="telemetryRegistry" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.telemetry.api.receiver.ListenerFactory" ref="udpListenerFactory" />
+
+    <bean id="forwardParserFactory" class="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParserFactory" >
+        <constructor-arg ref="telemetryRegistry" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.telemetry.api.receiver.ParserFactory" ref="forwardParserFactory" />
 
 </beans>

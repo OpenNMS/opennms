@@ -16,11 +16,14 @@
     -->
     <!-- <set-property name="user.agent" value="gecko1_8"/> -->
     <!-- Inherit DefaultWidgetSet -->
+    <inherits name="com.google.gwt.xml.XML"/>
+    <inherits name="com.google.gwt.touch.Touch"/>
     <inherits name="com.google.gwt.json.JSON" /> 
     <inherits name="com.google.gwt.http.HTTP" />   
+    <inherits name="com.vaadin.v7.Vaadin7WidgetSet" />
     <inherits name="com.vaadin.DefaultWidgetSet" />
-    <inherits name="com.github.wolfie.refresher.RefresherWidgetset" />
-    <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
+    <inherits name="com.vaadin.contextmenu.WidgetSet" />
 
     <collapse-all-properties/>
+    <set-configuration-property name="devModeRedirectEnabled" value="true"/>
 </module>

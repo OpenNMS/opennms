@@ -28,26 +28,32 @@
 
 package org.opennms.netmgt.telemetry.distributed.common;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.opennms.netmgt.telemetry.config.api.Adapter;
+import javax.xml.bind.JAXB;
 
-public class MapBasedAdapterDef implements Adapter {
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
+
+import com.google.common.collect.Lists;
+
+public class MapBasedAdapterDef implements AdapterDefinition {
     private final String name;
     private final String className;
     private final Map<String, String> parameters;
 
-    public MapBasedAdapterDef(Map<String, String> parameters) {
-        name = MapUtils.getRequiredString("name", parameters);
-        className = MapUtils.getRequiredString("class-name", parameters);
-        // Extract the keys from the map that are prefixed with "listener."
-        this.parameters = MapUtils.filterKeysByPrefix(parameters, "parameters.");
+    protected MapBasedAdapterDef(Map<String, String> properties) {
+        this(PropertyTree.from(Objects.requireNonNull(properties)));
     }
 
-    @Override
-    public String getName() {
-        return name;
+    public MapBasedAdapterDef(final PropertyTree definition) {
+        this.name = definition.getRequiredString("name");
+        this.className = definition.getRequiredString("class-name");
+        this.parameters = definition.getMap("parameters");
     }
 
     @Override
@@ -61,17 +67,31 @@ public class MapBasedAdapterDef implements Adapter {
     }
 
     @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public List<? extends PackageDefinition> getPackages() {
+        try (InputStream inputStream = getClass().getResourceAsStream("/package.xml")) {
+            final org.opennms.netmgt.telemetry.config.model.PackageConfig pkg = JAXB.unmarshal(inputStream, org.opennms.netmgt.telemetry.config.model.PackageConfig.class);
+            return Lists.newArrayList(pkg);
+        } catch (IOException e) {
+            throw new RuntimeException("Error while reading package.xml", e);
+        }
+    }
+
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final MapBasedAdapterDef that = (MapBasedAdapterDef) o;
-        return Objects.equals(name, that.name)
-                && Objects.equals(className, that.className)
-                && Objects.equals(parameters, that.parameters);
+        return Objects.equals(this.name, that.name)
+                && Objects.equals(this.className, that.className)
+                && Objects.equals(this.parameters, that.parameters);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, className, parameters);
+        return Objects.hash(this.name, this.className, this.parameters);
     }
 }

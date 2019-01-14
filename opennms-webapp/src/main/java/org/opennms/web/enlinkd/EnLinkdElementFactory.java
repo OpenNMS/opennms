@@ -30,7 +30,6 @@ package org.opennms.web.enlinkd;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,47 +49,45 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
-import org.opennms.netmgt.dao.api.BridgeElementDao;
-import org.opennms.netmgt.dao.api.BridgeTopologyDao;
-import org.opennms.netmgt.dao.api.CdpElementDao;
-import org.opennms.netmgt.dao.api.CdpLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.BridgeElementDao;
+import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
+import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.IpNetToMediaDao;
-import org.opennms.netmgt.dao.api.IsIsElementDao;
-import org.opennms.netmgt.dao.api.IsIsLinkDao;
-import org.opennms.netmgt.dao.api.LldpElementDao;
-import org.opennms.netmgt.dao.api.LldpLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
+import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.OspfElementDao;
-import org.opennms.netmgt.dao.api.OspfLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.hibernate.BridgeTopologyDaoHibernate;
-import org.opennms.netmgt.dao.hibernate.IpNetToMediaDaoHibernate;
-import org.opennms.netmgt.model.BridgeElement;
-import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
-import org.opennms.netmgt.model.BridgeElement.BridgeDot1dStpProtocolSpecification;
-import org.opennms.netmgt.model.CdpElement;
-import org.opennms.netmgt.model.CdpElement.CdpGlobalDeviceIdFormat;
-import org.opennms.netmgt.model.CdpLink;
-import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
-import org.opennms.netmgt.model.IpNetToMedia;
-import org.opennms.netmgt.model.IsIsElement;
-import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
-import org.opennms.netmgt.model.IsIsLink;
-import org.opennms.netmgt.model.IsIsLink.IsisISAdjNeighSysType;
-import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
-import org.opennms.netmgt.model.LldpElement;
-import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.BridgeElement;
+import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dBaseType;
+import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dStpProtocolSpecification;
+import org.opennms.netmgt.enlinkd.model.CdpElement;
+import org.opennms.netmgt.enlinkd.model.CdpElement.CdpGlobalDeviceIdFormat;
+import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.CdpLink.CiscoNetworkProtocolType;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
+import org.opennms.netmgt.enlinkd.model.IsIsElement;
+import org.opennms.netmgt.enlinkd.model.IsIsElement.IsisAdminState;
+import org.opennms.netmgt.enlinkd.model.IsIsLink;
+import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjNeighSysType;
+import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjState;
+import org.opennms.netmgt.enlinkd.model.LldpElement;
+import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OspfElement;
-import org.opennms.netmgt.model.OspfElement.Status;
-import org.opennms.netmgt.model.OspfElement.TruthValue;
-import org.opennms.netmgt.model.OspfLink;
-import org.opennms.netmgt.model.topology.BridgePort;
-import org.opennms.netmgt.model.topology.BridgeTopologyException;
-import org.opennms.netmgt.model.topology.SharedSegment;
+import org.opennms.netmgt.enlinkd.model.OspfElement;
+import org.opennms.netmgt.enlinkd.model.OspfElement.Status;
+import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
+import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.service.api.BridgePort;
+import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
+import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
 import org.opennms.web.api.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,7 +126,7 @@ public class EnLinkdElementFactory implements InitializingBean,
     private BridgeElementDao m_bridgeElementDao;
 
     @Autowired
-    private BridgeTopologyDao m_bridgetopologyDao;
+    private BridgeTopologyService m_bridgeTopologyService;
 
     @Autowired
     private IpNetToMediaDao m_ipNetToMediaDao;
@@ -761,7 +758,7 @@ public class EnLinkdElementFactory implements InitializingBean,
     @Override
     public Collection<BridgeLinkNode> getBridgeLinks(int nodeId) {
         List<BridgeLinkNode> bridgelinks = new ArrayList<BridgeLinkNode>();
-        for (SharedSegment segment: m_bridgetopologyDao.getBridgeSharedSegments(nodeId)) {
+        for (SharedSegment segment: m_bridgeTopologyService.getSharedSegments(nodeId)) {
             try {
                 bridgelinks.add(convertFromModel(nodeId, segment));
             } catch (BridgeTopologyException e) {
@@ -788,7 +785,7 @@ public class EnLinkdElementFactory implements InitializingBean,
         });
 
         for (String mac : mactoIpNodeMap.keySet()) {
-            SharedSegment segment = m_bridgetopologyDao.getHostSharedSegment(mac);
+            SharedSegment segment = m_bridgeTopologyService.getSharedSegment(mac);
             if (segment.isEmpty()) {
                 continue;
             }

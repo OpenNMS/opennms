@@ -118,7 +118,7 @@ public class InstallerDb {
 
     private final Set<String> m_changed = new HashSet<String>();
     
-    private Map<String, Integer> m_dbtypes = null;
+    private Map<String, Long> m_dbtypes = null;
     
     private Map<String, String[]> m_seqmapping = null;
     private Connection m_connection;
@@ -690,18 +690,18 @@ public class InstallerDb {
      * @throws java.lang.Exception if any.
      */
     private boolean functionExists(final String function, String columns, final String returnType) throws Exception {
-    	final Map<String, Integer> types = getTypesFromDB();
+    	final Map<String, Long> types = getTypesFromDB();
 
-    	int[] columnTypes = new int[0];
+    	long[] columnTypes = new long[0];
         columns = columns.trim();
         if (columns.length() > 0) {
         	final String[] splitColumns = columns.split("\\s*,\\s*");
-            columnTypes = new int[splitColumns.length];
+            columnTypes = new long[splitColumns.length];
             Column c;
             for (int j = 0; j < splitColumns.length; j++) {
                 c = new Column();
                 c.parseColumnType(splitColumns[j]);
-                columnTypes[j] = (types.get(c.getType())).intValue();
+                columnTypes[j] = (types.get(c.getType())).longValue();
             }
         }
 
@@ -711,7 +711,7 @@ public class InstallerDb {
         } catch (final Throwable e) {
             throw new Exception("Could not parse column type '" + returnType + "' for function '" + function + "'.  Nested exception: " + e.getMessage(), e);
         }
-        final int retType = (types.get(c.getType())).intValue();
+        final long retType = (types.get(c.getType())).longValue();
 
         return functionExists(function, columnTypes, retType);
     }
@@ -725,12 +725,12 @@ public class InstallerDb {
      * @return a boolean.
      * @throws java.lang.Exception if any.
      */
-    private boolean functionExists(final String function, final int[] columnTypes, final int retType) throws Exception {
+    private boolean functionExists(final String function, final long[] columnTypes, final long retType) throws Exception {
     	final Statement st = getConnection().createStatement();
         ResultSet rs;
 
         final StringBuilder ct = new StringBuilder();
-        for (final int columnType : columnTypes) {
+        for (final long columnType : columnTypes) {
             ct.append(" " + columnType);
         }
 
@@ -748,20 +748,20 @@ public class InstallerDb {
      * @return a {@link java.util.Map} object.
      * @throws java.sql.SQLException if any.
      */
-    private Map<String, Integer> getTypesFromDB() throws SQLException {
+    private Map<String, Long> getTypesFromDB() throws SQLException {
         if (m_dbtypes != null) {
             return Collections.unmodifiableMap(m_dbtypes);
         }
 
         final Statement st = getConnection().createStatement();
         ResultSet rs;
-        final HashMap<String, Integer> m = new HashMap<String, Integer>();
+        final HashMap<String, Long> m = new HashMap<String, Long>();
 
         rs = st.executeQuery("SELECT oid,typname,typlen FROM pg_type");
 
         while (rs.next()) {
             try {
-                m.put(Column.normalizeColumnType(rs.getString(2),  (rs.getInt(3) < 0)), Integer.valueOf(rs.getInt(1)));
+                m.put(Column.normalizeColumnType(rs.getString(2),  (rs.getInt(3) < 0)), Long.valueOf(rs.getLong(1)));
             } catch (final Throwable e) {
                 // ignore
             }
@@ -1194,11 +1194,11 @@ public class InstallerDb {
         rs = st.executeQuery(query);
 
         while (rs.next()) {
-        	final int oid = rs.getInt(1);
+            final long oid = rs.getLong(1);
             final String name = rs.getString(2);
             final String type = rs.getString(3);
-            final int conrelid = rs.getInt(4);
-            final int confrelid = rs.getInt(5);
+            final long conrelid = rs.getLong(4);
+            final long confrelid = rs.getLong(5);
             final String ftable = rs.getString(6);
             final String foreignUpdType = rs.getString(7);
             final String foreignDelType = rs.getString(8);
@@ -1228,7 +1228,7 @@ public class InstallerDb {
 
 
 
-    private List<String> getConstrainedColumnsFromDBForConstraint(final int oid, final int conrelid) throws Exception {
+    private List<String> getConstrainedColumnsFromDBForConstraint(final long oid, final long conrelid) throws Exception {
     	final Statement st = getConnection().createStatement();
     	final ResultSet rs;
 
@@ -1248,7 +1248,7 @@ public class InstallerDb {
         return columns;
     }
 
-    private List<String> getForeignColumnsFromDBForConstraint(final int oid, final int confrelid) throws Exception {
+    private List<String> getForeignColumnsFromDBForConstraint(final long oid, final long confrelid) throws Exception {
     	final Statement st = getConnection().createStatement();
     	final ResultSet rs;
 

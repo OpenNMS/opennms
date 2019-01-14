@@ -72,9 +72,11 @@ import org.apache.kafka.common.protocol.types.Field;
 import org.apache.kafka.common.protocol.types.Schema;
 import org.apache.kafka.common.protocol.types.Struct;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
+import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
+import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
+import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
+import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
-import org.opennms.core.ipc.sink.kafka.server.Utils;
-import org.opennms.core.ipc.sink.kafka.server.config.KafkaConfigProvider;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.slf4j.Logger;
@@ -172,7 +174,7 @@ public class KafkaOffsetProvider {
                                     }
                                     KafkaOffset mon = new KafkaOffset(group, topic, partition, realOffset,
                                             consumerOffset, lag);
-                                    LOGGER.debug("group : {} , topic: {}:{} , offsets : {}-{}-{}", group, topic,
+                                    LOGGER.trace("group : {} , topic: {}:{} , offsets : {}-{}-{}", group, topic,
                                             partition, consumerOffset, realOffset, lag);
 
                                     Map<Integer, KafkaOffset> map = consumerOffsetMap.get(topic);
@@ -193,19 +195,19 @@ public class KafkaOffsetProvider {
                                     for (KafkaOffset offset : map.values()) {
                                         totalLag += offset.getLag();
                                     }
-                                    LOGGER.debug(" Total lag for topic {} is {} ", topic, totalLag);
+                                    LOGGER.trace(" Total lag for topic {} is {} ", topic, totalLag);
 
                                     consumerLagMap.put(topic, totalLag);
 
                                 } catch (Exception e) {
-                                    LOGGER.debug("Exception while getting offset", e);
+                                    LOGGER.trace("Exception while getting offset", e);
                                 }
                             }
                         }
                     }
                 }
             } catch (Exception e) {
-                LOGGER.debug("Exception while getting offset", e);
+                LOGGER.trace("Exception while getting offset", e);
             } finally {
                 consumer.close();
             }
@@ -219,6 +221,10 @@ public class KafkaOffsetProvider {
             consumer.wakeup();
         }
 
+    }
+
+    public KafkaOffsetProvider() {
+        this(new OnmsKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX));
     }
 
     public KafkaOffsetProvider(KafkaConfigProvider configProvider) {
@@ -245,7 +251,7 @@ public class KafkaOffsetProvider {
             }
         }
         if (resetBroker.get() == NUM_RETRIES) {
-            LOGGER.debug(" Max num of retries reached, try if there is another broker");
+            LOGGER.trace(" Max num of retries reached, try if there is another broker");
             kafkaHost = HostAndPort.getNextHostAndPort(kafkaHost);
             if (kafkaHost == null) {
                 // No valid kafkaHost, shutdown offset consumer.
@@ -296,14 +302,14 @@ public class KafkaOffsetProvider {
                     kafka.api.OffsetRequest.CurrentVersion(), KafkaOffsetConstants.CLIENT_NAME);
             OffsetResponse response = consumer.getOffsetsBefore(request);
             if (response.hasError()) {
-                LOGGER.debug("Error fetching Offset Data from the Broker. Reason: {}",
+                LOGGER.trace("Error fetching Offset Data from the Broker. Reason: {}",
                         response.errorCode(topic, partition));
                 lastOffset = 0;
             }
             long[] offsets = response.offsets(topic, partition);
             lastOffset = offsets[0];
         } catch (Exception e) {
-            LOGGER.debug("Error while collecting the log Size for topic: {}:{} ", topic, partition, e);
+            LOGGER.trace("Error while collecting the log Size for topic: {}:{} ", topic, partition, e);
             // Store first partitionNumber and track errors with that partition
             if (partitionNumber == INVALID) {
                 partitionNumber = partition;
@@ -329,7 +335,7 @@ public class KafkaOffsetProvider {
         kafkaConfig.put("key.deserializer", ByteArrayDeserializer.class.getCanonicalName());
         kafkaConfig.put("value.deserializer", ByteArrayDeserializer.class.getCanonicalName());
         kafkaConfig.putAll(configProvider.getProperties());
-        consumerRunner = Utils.runWithNullContextClassLoader(() -> new KafkaOffsetConsumerRunner());
+        consumerRunner = Utils.runWithGivenClassLoader(() -> new KafkaOffsetConsumerRunner(), KafkaConsumer.class.getClassLoader());
         reporter = JmxReporter.forRegistry(kafkaOffsetMetrics).inDomain("org.opennms.core.ipc.sink.kafka").build();
 
         reporter.start();

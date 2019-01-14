@@ -36,6 +36,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -103,6 +104,13 @@ public class AlarmData implements Serializable {
     @XmlElement(name="update-field", required=false)
     @Valid
     private List<UpdateField> m_updateFieldList = new ArrayList<>();
+
+    /**
+     * Field m_managedObject
+     */
+    @XmlElement(name="managed-object", required=false)
+    private ManagedObject m_managedObject;
+
 
     public AlarmData() {
         super();
@@ -326,6 +334,35 @@ public class AlarmData implements Serializable {
         if (m_updateFieldList == fields) return;
         m_updateFieldList.clear();
         m_updateFieldList.addAll(fields);
+    }
+
+
+    public ManagedObject getManagedObject() {
+        return m_managedObject;
+    }
+
+    public void setManagedObject(ManagedObject m_managedObject) {
+        this.m_managedObject = m_managedObject;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AlarmData alarmData = (AlarmData) o;
+        return Objects.equals(_reductionKey, alarmData._reductionKey) &&
+                Objects.equals(_alarmType, alarmData._alarmType) &&
+                Objects.equals(_clearKey, alarmData._clearKey) &&
+                Objects.equals(_autoClean, alarmData._autoClean) &&
+                Objects.equals(_x733AlarmType, alarmData._x733AlarmType) &&
+                Objects.equals(_x733ProbableCause, alarmData._x733ProbableCause) &&
+                Objects.equals(m_updateFieldList, alarmData.m_updateFieldList) &&
+                Objects.equals(m_managedObject, alarmData.m_managedObject);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(_reductionKey, _alarmType, _clearKey, _autoClean, _x733AlarmType, _x733ProbableCause, m_updateFieldList, m_managedObject);
     }
 
     @Override

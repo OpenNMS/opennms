@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -61,6 +60,8 @@ import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.camel.JmsQueueNameFactory;
+import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
+import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
 import org.opennms.core.ipc.rpc.kafka.model.RpcMessageProtos;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.logging.Logging.MDCCloseable;
@@ -178,20 +179,8 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getCanonicalName());
 
             // Find all of the system properties that start with 'org.opennms.core.ipc.rpc.kafka.' and add them to the config.
-            // See https://kafka.apache.org/10/documentation.html#newconsumerconfigs for the list of supported properties
-            for (Entry<Object, Object> entry : System.getProperties().entrySet()) {
-                final Object keyAsObject = entry.getKey();
-                if (keyAsObject == null || !(keyAsObject instanceof String)) {
-                    continue;
-                }
-                final String key = (String) keyAsObject;
-
-                if (key.length() > KafkaRpcConstants.KAFKA_CONFIG_SYS_PROP_PREFIX.length()
-                        && key.startsWith(KafkaRpcConstants.KAFKA_CONFIG_SYS_PROP_PREFIX)) {
-                    final String kafkaConfigKey = key.substring(KafkaRpcConstants.KAFKA_CONFIG_SYS_PROP_PREFIX.length());
-                    kafkaConfig.put(kafkaConfigKey, entry.getValue());
-                }
-            }
+            KafkaConfigProvider kafkaConfigProvider = new OnmsKafkaConfigProvider(KafkaRpcConstants.KAFKA_CONFIG_SYS_PROP_PREFIX);
+            kafkaConfig.putAll(kafkaConfigProvider.getProperties());
             producer = new KafkaProducer<>(kafkaConfig);
             LOG.info("initializing the Kafka producer with: {}", kafkaConfig);
             // Start consumer which handles all the responses.

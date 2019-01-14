@@ -35,4 +35,6 @@ public interface BusinessServiceVertexVisitor<T> {
     T visit(IpServiceVertex vertex);
 
     T visit(ReductionKeyVertex vertex);
+
+    T visit(ApplicationVertex vertex);
 }

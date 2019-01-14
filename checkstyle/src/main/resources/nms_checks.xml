@@ -14,6 +14,12 @@
             <property name="forbiddenImportsExcludesRegexp" value="" />
             <message key="forbid.certain.imports" value="Use ''java.nio.charset.StandardCharsets'' instead of ''{0}''" />
         </module>
+        <module name="com.github.sevntu.checkstyle.checks.coding.ForbidCertainImportsCheck">
+            <property name="packageNameRegexp" value=".*" />
+            <property name="forbiddenImportsRegexp" value="org.springframework.core.style.ToStringCreator" />
+            <property name="forbiddenImportsExcludesRegexp" value="" />
+            <message key="forbid.certain.imports" value="Use ''com.google.common.base.MoreObjects'' instead of ''{0}''" />
+        </module>
         <module name="IllegalTokenText">
             <property name="tokens" value="STRING_LITERAL"/>
             <property name="format" value="^UTF-8$"/>

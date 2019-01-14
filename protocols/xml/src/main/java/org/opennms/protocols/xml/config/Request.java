@@ -111,16 +111,16 @@ public class Request implements Cloneable {
      * @return the parameter value as integer
      */
     public int getParameterAsInt(String name) {
-        for (Parameter p : parameters) {
-            if (p.getName().equals(name)) {
-                try {
-                    return Integer.parseInt(p.getValue());
-                } catch (NumberFormatException e) {
-                    return -1;
-                }
-            }
+        try {
+            return Integer.parseInt(getParameter(name));
+        } catch (NumberFormatException e) {
+            return -1;
         }
-        return -1;
+
+    }
+
+    public boolean getParameterAsBoolean(String name) {
+        return Boolean.valueOf(getParameter(name));
     }
 
     /**

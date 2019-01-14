@@ -46,7 +46,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.opennms.core.web.HttpClientWrapper;
@@ -240,27 +239,50 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    @Ignore("flapping")
     public void verifyCanChangeIcon() throws IOException, InterruptedException {
+        // Select Meta Topology and select target Topology
         topologyUIPage.selectTopologyProvider(() -> LABEL);
-        waitFor(1);
-        topologyUIPage.findVertex("North Region").contextMenu().click("Navigate To", "Markets (North Region)");
-        String label = "North 1";
+        topologyUIPage.findVertex("North Region")
+                .contextMenu()
+                .click("Navigate To", "Markets (North Region)");
 
-        String oldIconName = topologyUIPage.findVertex(label).getIconName();
-        String newIconName = "microwave_backhaul_1";
-        if(newIconName.equals(oldIconName)){
-            // make sure we actually change the icon
-            newIconName = "IP_service";
+        final String vertexName = "North 1";
+        final String currentIconName = topologyUIPage.findVertex(vertexName).getIconName();
+        final String newIconName = "microwave_backhaul_1";
+
+        // Ensure icon is not yet changed
+        if (newIconName.equals(currentIconName)) {
+            throw new IllegalStateException("Cannot run test, as preconditions are not met");
         }
-        topologyUIPage.findVertex(label).changeIcon(newIconName);
-        topologyUIPage.refreshNow();
-        assertEquals(newIconName, topologyUIPage.findVertex(label).getIconName());
+
+        // Change icon
+        topologyUIPage.findVertex(vertexName).changeIcon(newIconName);
+
+        // Verify icon has changed
+        Assert.assertEquals(newIconName, topologyUIPage.findVertex(vertexName).getIconName());
     }
 
-        /**
-         * Creates and publishes a requisition with 2 dummy nodes with predefined parameters
-         */
+    // See NMS-10451
+    @Test
+    public void verifyCanSelectNonVisibleVertex() {
+        // Ensure nothing is visible for now
+        Assert.assertEquals(0, topologyUIPage.getVisibleVertices().size());
+
+        // Select Nodes tab and select node
+        final TopologyIT.BrowserTab browserTab = topologyUIPage.getTab(TopologyIT.Tabs.Nodes);
+        browserTab.click();
+        browserTab.getRowByLabel("North 2").click();
+
+        // Verify that now the vertex is visible and in focus
+        final List<TopologyIT.VisibleVertex> visibleVertices = topologyUIPage.getVisibleVertices();
+        Assert.assertEquals(1, visibleVertices.size());
+        Assert.assertEquals("North 2", visibleVertices.get(0).getLabel());
+        Assert.assertEquals(1, topologyUIPage.getFocusedVertices().size());
+    }
+
+    /**
+     * Creates and publishes a requisition with 2 dummy nodes with predefined parameters
+     */
     private void createDummyNodes() throws IOException, InterruptedException {
 
         // First node has foreign ID "node1", label - "North 2" and category "Routers"

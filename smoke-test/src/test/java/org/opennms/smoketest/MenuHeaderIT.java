@@ -100,14 +100,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
 
         frontPage();
         final String mapsMenuName = "name=nav-Maps-top";
-        clickMenuItem(mapsMenuName, "Distributed", "RemotePollerMap/index.jsp");
-        // switchTo() by xpath is much faster than by ID
-        //m_driver.switchTo().frame("app");
-        m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("gwt-uid-1")));
-        m_driver.switchTo().parentFrame();
-        frontPage();
-
         clickMenuItem(mapsMenuName, "Topology", "topology");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(), 'Selection Context')]")));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='navbar']//a[@name='nav-Maps-top']")));

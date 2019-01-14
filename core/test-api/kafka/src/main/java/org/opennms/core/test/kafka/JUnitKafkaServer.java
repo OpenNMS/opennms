@@ -196,4 +196,15 @@ public class JUnitKafkaServer extends ExternalResource {
     public String getZookeeperConnectString() {
         return zkServer.getConnectString();
     }
+
+    public synchronized void stopKafkaServer() {
+        kafkaServer.shutdown();
+    }
+
+    public synchronized void startKafkaServer() {
+        kafkaServer.startup();
+        await().atMost(1, MINUTES).until(this::getBrokerMetadatas, hasSize(greaterThanOrEqualTo(1)));
+        System.err.println("Kafka Address: " + getKafkaConnectString());
+        System.err.println("Zookeeper Address: " + getZookeeperConnectString());
+    }
 }

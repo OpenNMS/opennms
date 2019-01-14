@@ -32,13 +32,13 @@ import org.opennms.features.topology.api.browsers.AbstractSelectionLinkGenerator
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-import com.vaadin.data.Property;
+import com.vaadin.v7.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.ColumnGenerator;
-import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.Table.ColumnGenerator;
+import com.vaadin.v7.ui.themes.BaseTheme;
 
 public class NodeSelectionLinkGenerator extends AbstractSelectionLinkGenerator {
 

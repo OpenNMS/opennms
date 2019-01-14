@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,6 +49,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.DefaultTopologyServiceClient;
 import org.opennms.features.topology.app.internal.service.DefaultTopologyService;
 import org.opennms.features.topology.app.internal.service.SimpleServiceLocator;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -123,6 +125,7 @@ public class BreadcrumbPathCalculatorTest {
         };
         DefaultTopologyService topologyService = new DefaultTopologyService();
         topologyService.setServiceLocator(new SimpleServiceLocator(metaTopologyProvider));
+        topologyService.setTopologyEntityCache(EasyMock.niceMock(TopologyEntityCache.class));
         DefaultTopologyServiceClient client = new DefaultTopologyServiceClient(topologyService);
         client.setMetaTopologyId(metaTopologyProvider.getId());
         client.setNamespace(metaTopologyProvider.getDefaultGraphProvider().getNamespace());

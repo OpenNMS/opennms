@@ -1,0 +1,37 @@
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== Using Off-heap Storage for Sink Messages
+
+If a _Minion_ loses connectivity with the broker (i.e. _Kafka_ or _ActiveMQ_), then any received messages (i.e. syslog, flows, SNMP traps) are queued in the JVM heap until connectivity is restored.
+This queue is limited by a fixed (and configurable) number of messages.
+Once the queue is full, additional messages will be dropped.
+
+The off-heap storage feature allows us to extend the storage capacity by queuing messages outside of the JVM heap.
+
+NOTE: The current implementation of the off-heap storage supports storing messages in the system memory outside of the heap.
+      No file-system based storage is currently support.
+
+==== Configuring Off-heap Storage
+
+Install off-heap feature on _Minion_:
+
+[source, sh]
+----
+echo 'opennms-core-ipc-sink-offheap' >> "$MINION_HOME/etc/featuresBoot.d/features.boot"
+----
+
+Configure storage limits and enable the feature with:
+
+[source, sh]
+----
+echo 'offHeapSize=1.2GB
+enableOffHeap=true' > "$MINION_HOME/etc/org.opennms.core.ipc.sink.offheap.cfg"
+----
+
+Specify offHeapSize in KB, MB or GB. For ex: 1.2GB, 2.5MB, 845KB.
+It will be converted to bytes.
+In above example, offHeapSize is configured to 1.2GB.
+That is 1288490188 bytes.
+For ex: 1.2MB is valid.
+1gb is not valid.

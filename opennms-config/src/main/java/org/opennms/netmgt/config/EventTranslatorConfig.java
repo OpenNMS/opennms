@@ -50,14 +50,6 @@ public interface EventTranslatorConfig {
     List<String> getUEIList();
 
     /**
-     * Determine if the @param e is a translation event
-     *
-     * @param e Event
-     * @return true if e is a translation event
-     */
-    boolean isTranslationEvent(Event e);
-
-    /**
      * Translate the @param e to a new event
      *
      * @param e Event

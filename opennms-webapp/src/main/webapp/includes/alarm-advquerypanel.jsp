@@ -140,6 +140,15 @@
 		</select>
 	</div>
 
+	<div class="form-group col-sm-6">
+		<label for="situation">Alarm type</label>
+		<select class="form-control custom-select" name="situation">
+			<option value="any">All Alarms and Situations</option>
+			<option value="false">Only Alarms</option>
+			<option value="true">Only Situations</option>
+		</select>
+	</div>
+
 	<div class="col-sm-6 my-2">
 		<label data-toggle="collapse" data-target="#collapseAlarmsFirstAfter" aria-expanded="false" aria-controls="collapseAlarmsFirstAfter">
 			<input type="checkbox" name="useafterfirsteventtime" value="1" /> Filter for Alarm's First Event After:

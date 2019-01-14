@@ -34,20 +34,18 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertNotNull;
-
+import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
+
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -77,17 +75,16 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.smoketest.telemetry.Packet;
+import org.opennms.smoketest.telemetry.Packets;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
 import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
+import org.opennms.test.system.api.TestEnvironment;
+import org.opennms.test.system.api.TestEnvironmentBuilder;
 import org.opennms.test.system.api.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.io.Resources;
-
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
 
 /**
  * Verifies that Telemetry listeners can receive proto buffers and generate rrd
@@ -144,7 +141,7 @@ public class JtiTelemetryIT {
 
         Date startOfTest = new Date();
 
-        OnmsNode onmsNode = sendnewSuspectEvent(executor, opennmsHttp, m_testEnvironment, false, startOfTest);
+        OnmsNode onmsNode = sendNewSuspectEvent(executor, opennmsHttp, m_testEnvironment, false, startOfTest);
 
         final InetSocketAddress opennmsUdp = m_testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 50000, "udp");
 
@@ -166,14 +163,16 @@ public class JtiTelemetryIT {
             PrintStream pipe = sshClient.openShell();
             pipe.println("config:edit org.opennms.features.telemetry.listeners-udp-50000");
             pipe.println("config:property-set name JTI");
-            pipe.println("config:property-set class-name org.opennms.netmgt.telemetry.listeners.udp.UdpListener");
-            pipe.println("config:property-set listener.port 50000");
+            pipe.println("config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener");
+            pipe.println("config:property-set parameters.port 50000");
+            pipe.println("config:property-set parsers.1.name JTI"); // Is also the queueName to dispatch to
+            pipe.println("config:property-set parsers.1.class-name org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser");
             pipe.println("config:update");
             pipe.println("logout");
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
         }
 
-        OnmsNode onmsNode = sendnewSuspectEvent(executor, opennmsHttp, m_testEnvironment, true, startOfTest);
+        OnmsNode onmsNode = sendNewSuspectEvent(executor, opennmsHttp, m_testEnvironment, true, startOfTest);
 
         final InetSocketAddress minionUdp = m_testEnvironment.getServiceAddress(ContainerAlias.MINION, 50000, "udp");
 
@@ -184,12 +183,8 @@ public class JtiTelemetryIT {
     }
 
     public static void sendJtiTelemetryMessage(InetSocketAddress udpAddress) throws IOException {
-       
-        byte[] jtiOutBytes = Resources.toByteArray(Resources.getResource("telemetry/jti-proto.raw"));
-        DatagramPacket packet = new DatagramPacket(jtiOutBytes, jtiOutBytes.length, udpAddress);
-
-        try (DatagramSocket socket = new DatagramSocket()) {
-            socket.send(packet);
+        try {
+            new Packet(Packets.JTI.getResource(), udpAddress).send();
         } catch (IOException e) {
             LOG.error("Exception while sending jti packets", e);
         }
@@ -218,9 +213,8 @@ public class JtiTelemetryIT {
         };
     }
 
-
-    public static OnmsNode sendnewSuspectEvent(Executor executor, InetSocketAddress opennmsHttp,
-            TestEnvironment m_testEnvironment, boolean isMinion, Date startOfTest)
+    public static OnmsNode sendNewSuspectEvent(Executor executor, InetSocketAddress opennmsHttp,
+                                               TestEnvironment m_testEnvironment, boolean isMinion, Date startOfTest)
             throws ClientProtocolException, IOException {
 
         Event minionEvent = new Event();

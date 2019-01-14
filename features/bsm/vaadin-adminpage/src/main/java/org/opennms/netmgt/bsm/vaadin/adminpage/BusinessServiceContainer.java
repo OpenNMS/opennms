@@ -37,7 +37,7 @@ import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 
 import com.google.common.collect.Maps;
-import com.vaadin.data.util.BeanContainer;
+import com.vaadin.v7.data.util.BeanContainer;
 
 /**
  * Container which holds {@link BusinessServiceRow} objects.

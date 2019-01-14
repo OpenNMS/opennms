@@ -34,6 +34,7 @@ import java.util.Map;
 import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
+import org.opennms.netmgt.model.alarm.SituationSummary;
 
 public interface AlarmDao extends LegacyOnmsDao<OnmsAlarm, Integer> {
 
@@ -47,6 +48,13 @@ public interface AlarmDao extends LegacyOnmsDao<OnmsAlarm, Integer> {
      * @return A list of alarm summaries.
      */
     List<AlarmSummary> getNodeAlarmSummaries();
+
+    /**
+     * <p>Get the list of current - not yet acknowledged - situations with severity greater than normal;
+     *
+     * @return A list of situation summaries.
+     */
+    List<SituationSummary> getSituationSummaries();
 
     /**
      * Get the list of current alarms per node with severity not equal to cleared, reflecting the max severity,

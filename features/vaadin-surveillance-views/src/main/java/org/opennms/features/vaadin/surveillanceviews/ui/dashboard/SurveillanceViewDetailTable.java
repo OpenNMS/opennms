@@ -28,10 +28,10 @@
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.themes.BaseTheme;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 
 /**

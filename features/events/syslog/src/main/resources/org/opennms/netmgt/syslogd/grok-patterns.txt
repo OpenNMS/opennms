@@ -1,6 +1,13 @@
 # Note: Ordering is important in this file. Patterns should be ordered from most specific to least specific. The first
 # pattern found to match will be the one used.
 
+# Support for Cisco syslog message patterns
+<%{INT:facilityPriority}>%{INT:parmSequenceNum}: %{MONTH:month}%{WHITESPACE:ignore}%{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second}: %{STRING:message}
+<%{INT:facilityPriority}>%{INT:parmSequenceNum}: %{NOSPACE:ignore}: %{MONTH:month}%{WHITESPACE:ignore}%{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction} %{STRING:timezone}: %{STRING:message}
+<%{INT:facilityPriority}>%{MONTH:month}%{WHITESPACE:ignore}%{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction} %{STRING:timezone}:%{WHITESPACE:ignore}%{NOSPACE:ignore}: %{NOSPACE:ignore}:%{MONTH:month}%{WHITESPACE:ignore}%{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction} %{STRING:timezone}: %{NOSPACE:ignore}: %{STRING:message}
+<%{INT:facilityPriority}>%{INT:parmSequenceNum}: %{NOSPACE:ignore}: %{MONTH:month}%{WHITESPACE:ignore}%{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second}: %{STRING:message}
+<%{INT:facilityPriority}>%{INT:parmSequenceNum}: %{MONTH:month}%{WHITESPACE:ignore}%{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction} %{STRING:timezone}: %{STRING:message}
+
 # RFC 3164 with messageId, time
 <%{INT:facilityPriority}>%{NOSPACE:messageId}: %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{HOSTNAMEORIP:hostname} %{NOSPACE:processName}[%{INT:processId}]: %{STRING:message}
 <%{INT:facilityPriority}>%{NOSPACE:messageId}: %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{HOSTNAMEORIP:hostname} [%{INT:processId}]: %{STRING:message}

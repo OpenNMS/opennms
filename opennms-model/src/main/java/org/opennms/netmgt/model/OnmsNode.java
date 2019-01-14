@@ -91,7 +91,8 @@ import org.opennms.netmgt.model.events.NodeLabelChangedEventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.style.ToStringCreator;
+
+import com.google.common.base.MoreObjects;
 
 
 /**
@@ -180,25 +181,10 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     private OnmsAssetRecord m_assetRecord;
 
     /** persistent field */
-    private LldpElement m_lldpElement;
-
-    /** persistent field */
-    private OspfElement m_ospfElement;
-
-    /** persistent field */
-    private IsIsElement m_isisElement;
-
-    /** persistent field */
-    private CdpElement m_cdpElement;
-
-    /** persistent field */
     private Set<OnmsIpInterface> m_ipInterfaces = new LinkedHashSet<>();
 
     /** persistent field */
     private Set<OnmsSnmpInterface> m_snmpInterfaces = new LinkedHashSet<>();
-
-    /** persistent field */
-    private Set<LldpLink> m_lldpLinks = new LinkedHashSet<>();
 
     private Set<OnmsCategory> m_categories = new LinkedHashSet<>();
 
@@ -815,82 +801,6 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     }
 
     /**
-     * The lldp element associated with this node
-     *
-     * @return a {@link org.opennms.netmgt.model.LldpElement} object.
-     */
-    @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
-    public LldpElement getLldpElement() {
-        return m_lldpElement;
-    }
-
-    /**
-     * <p>setLldpElement</p>
-     *
-     * @param asset a {@link org.opennms.netmgt.model.LldpElement} object.
-     */
-    public void setLldpElement(LldpElement lldpElement) {
-        m_lldpElement = lldpElement;
-    }
-
-    /**
-     * The ospf element associated with this node
-     *
-     * @return a {@link org.opennms.netmgt.model.OspfElement} object.
-     */
-    @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
-    public OspfElement getOspfElement() {
-        return m_ospfElement;
-    }
-
-    /**
-     * <p>setOspfElement</p>
-     *
-     * @param asset a {@link org.opennms.netmgt.model.OspfElement} object.
-     */
-    public void setOspfElement(OspfElement ospfElement) {
-        m_ospfElement = ospfElement;
-    }
-
-    /**
-     * The isis element associated with this node
-     *
-     * @return a {@link org.opennms.netmgt.model.IsIsElement} object.
-     */
-    @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
-    public IsIsElement getIsisElement() {
-        return m_isisElement;
-    }
-
-    /**
-     * <p>setIsIsElement</p>
-     *
-     * @param asset a {@link org.opennms.netmgt.model.OspfElement} object.
-     */
-    public void setIsisElement(IsIsElement isisElement) {
-        m_isisElement = isisElement;
-    }
-
-    /**
-     * The cdp element associated with this node
-     *
-     * @return a {@link org.opennms.netmgt.model.CdpElement} object.
-     */
-    @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
-    public CdpElement getCdpElement() {
-        return m_cdpElement;
-    }
-
-    /**
-     * <p>setCdpElement</p>
-     *
-     * @param asset a {@link org.opennms.netmgt.model.CdpElement} object.
-     */
-    public void setCdpElement(CdpElement cdpElement) {
-        m_cdpElement = cdpElement;
-    }
-
-    /**
      * <p>getPathElement</p>
      *
      * @return a {@link org.opennms.netmgt.model.PathElement} object.
@@ -951,39 +861,6 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     public void removeIpInterface(final OnmsIpInterface iface) {
         getIpInterfaces().remove(iface);
     }
-
-    /**
-     * The interfaces on this node
-     *
-     * @return a {@link java.util.Set} object.
-     */
-    @XmlTransient
-    @JsonIgnore
-    @OneToMany(mappedBy="node",orphanRemoval=true)
-    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.ALL)
-    public Set<LldpLink> getLldpLinks() {
-        return m_lldpLinks;
-    }
-
-    /**
-     * <p>setIpInterfaces</p>
-     *
-     * @param ipinterfaces a {@link java.util.Set} object.
-     */
-    public void setLldpLinks(Set<LldpLink> lldpLinks) {
-        m_lldpLinks = lldpLinks;
-    }
-
-    /**
-     * <p>addIpInterface</p>
-     *
-     * @param iface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
-     */
-    public void addLldpLink(LldpLink lldpLink) {
-        lldpLink.setNode(this);
-        getLldpLinks().add(lldpLink);
-    }
-
 
     /**
      * The information from the SNMP interfaces/ipAddrTables for the node
@@ -1092,25 +969,24 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      */
     @Override
     public String toString() {
-        ToStringCreator retval = new ToStringCreator(this);
-        retval.append("id", m_id);
-        retval.append("location", m_location == null ? null : m_location.getLocationName());
-        retval.append("foreignSource", m_foreignSource);
-        retval.append("foreignId", m_foreignId);
-        retval.append("labelSource", m_labelSource == null ? null : m_labelSource.toString());
-        retval.append("label", m_label);
-        retval.append("parent.id", getParent() == null ? null : getParent().getId());
-        retval.append("createTime", m_createTime);
-        retval.append("sysObjectId", m_sysObjectId);
-        retval.append("sysName", m_sysName);
-        retval.append("sysDescription", m_sysDescription);
-        retval.append("sysLocation", m_sysLocation);
-        retval.append("sysContact", m_sysContact);
-        retval.append("type", m_type == null ? null : m_type.toString());
-        retval.append("operatingSystem", m_operatingSystem);
-        retval.append("hasFlows", getHasFlows());
-
-        return retval.toString();
+        return MoreObjects.toStringHelper(this)
+        .add("id", m_id)
+        .add("location", m_location == null ? null : m_location.getLocationName())
+        .add("foreignSource", m_foreignSource)
+        .add("foreignId", m_foreignId)
+        .add("labelSource", m_labelSource == null ? null : m_labelSource.toString())
+        .add("label", m_label)
+        .add("parent.id", getParent() == null ? null : getParent().getId())
+        .add("createTime", m_createTime)
+        .add("sysObjectId", m_sysObjectId)
+        .add("sysName", m_sysName)
+        .add("sysDescription", m_sysDescription)
+        .add("sysLocation", m_sysLocation)
+        .add("sysContact", m_sysContact)
+        .add("type", m_type == null ? null : m_type.toString())
+        .add("operatingSystem", m_operatingSystem)
+        .add("hasFlows", getHasFlows())
+        .toString();
     }
 
     /** {@inheritDoc} */

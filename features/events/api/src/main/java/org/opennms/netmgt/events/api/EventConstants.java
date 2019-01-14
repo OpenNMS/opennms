@@ -386,6 +386,11 @@ public abstract class EventConstants {
     public static final String RELOAD_TOPOLOGY_UEI = "uei.opennms.org/internal/reloadTopology";
 
     /**
+     * Reload Drools Correlation Engine.
+     */
+    public static final String DROOLS_ENGINE_ENCOUNTERED_EXCEPTION = "uei.opennms.org/internal/droolsEngineException";
+
+    /**
      * Reload Daemon configuration UEI.
      */
     public static final String RELOAD_DAEMON_CONFIG_UEI = "uei.opennms.org/internal/reloadDaemonConfig";
@@ -942,13 +947,6 @@ public abstract class EventConstants {
     public static final String PARM_NEW_SEVERITY_LABEL = "newSeverityLabel";
     public static final String PARM_PREV_SEVERITY_ID = "prevSeverityId";
     public static final String PARM_PREV_SEVERITY_LABEL = "prevSeverityLabel";
-
-    //
-    // for NCS service
-    //
-    public static final String COMPONENT_ADDED_UEI   = "uei.opennms.org/internal/ncs/componentAdded";
-    public static final String COMPONENT_DELETED_UEI = "uei.opennms.org/internal/ncs/componentDeleted";
-    public static final String COMPONENT_UPDATED_UEI = "uei.opennms.org/internal/ncs/componentUpdated";
 
     //
     // For Trapd

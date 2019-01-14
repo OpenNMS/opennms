@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>23.0.0-SNAPSHOT</version>
+    <version>24.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>opennms-full-assembly</artifactId>
@@ -729,36 +729,6 @@
       <classifier>lib</classifier>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>org.opennms.features.ncs.ncs-model</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>org.opennms.features.ncs.ncs-persistence</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>org.opennms.features.ncs.ncs-drools</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>org.opennms.features.ncs.ncs-drools</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>etc</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>org.opennms.features.ncs.ncs-northbounder</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>org.opennms.features.ncs.ncs-northbounder</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>etc</classifier>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.juniper-tca-collector</artifactId>
       <version>${project.version}</version>
@@ -882,6 +852,13 @@
       <id>coova</id>
       <name>Coova Repository</name>
       <url>http://maven.opennms.org/content/repositories/coova/</url>
+    </repository>
+    <repository>
+      <id>sonatype.org-snapshot</id>
+      <name>Sonatype OSS Snapshots Repository</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases><enabled>false</enabled></releases>
+      <snapshots><enabled>true</enabled></snapshots>
     </repository>
   </repositories>
 </project>

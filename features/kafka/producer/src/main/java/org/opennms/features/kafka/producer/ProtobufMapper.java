@@ -35,6 +35,7 @@ import java.util.function.Consumer;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
+import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -343,6 +344,18 @@ public class ProtobufMapper {
         setTimeIfNotNull(alarm.getAckTime(), builder::setAckTime);
 
         return builder;
+    }
+
+    public OpennmsModelProtos.AlarmFeedback.Builder toAlarmFeedback(AlarmFeedback alarmFeedback) {
+        return OpennmsModelProtos.AlarmFeedback.newBuilder()
+                .setSituationKey(alarmFeedback.getSituationKey())
+                .setSituationFingerprint(alarmFeedback.getSituationFingerprint())
+                .setAlarmKey(alarmFeedback.getAlarmKey())
+                .setFeedbackType(OpennmsModelProtos.AlarmFeedback.FeedbackType
+                        .valueOf(alarmFeedback.getFeedbackType().toString()))
+                .setReason(alarmFeedback.getReason())
+                .setUser(alarmFeedback.getUser())
+                .setTimestamp(alarmFeedback.getTimestamp());
     }
 
     public OpennmsModelProtos.NodeCriteria.Builder toNodeCriteria(OnmsNode node) {

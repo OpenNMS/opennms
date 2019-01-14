@@ -128,6 +128,7 @@ include::text/service-assurance/monitors/Pop3Monitor.adoc[]
 include::text/service-assurance/monitors/PrTableMonitor.adoc[]
 include::text/service-assurance/monitors/RadiusAuthMonitor.adoc[]
 include::text/service-assurance/monitors/SmbMonitor.adoc[]
+include::text/service-assurance/monitors/SmtpMonitor.adoc[]
 include::text/service-assurance/monitors/SnmpMonitor.adoc[]
 include::text/service-assurance/monitors/SshMonitor.adoc[]
 include::text/service-assurance/monitors/SSLCertMonitor.adoc[]
@@ -136,6 +137,7 @@ include::text/service-assurance/monitors/TcpMonitor.adoc[]
 include::text/service-assurance/monitors/SystemExecuteMonitor.adoc[]
 include::text/service-assurance/monitors/VmwareCimMonitor.adoc[]
 include::text/service-assurance/monitors/VmwareMonitor.adoc[]
+include::text/service-assurance/monitors/WebMonitor.adoc[]
 include::text/service-assurance/monitors/Win32ServiceMonitor.adoc[]
 include::text/service-assurance/monitors/WsManMonitor.adoc[]
 include::text/service-assurance/monitors/XmpMonitor.adoc[]
@@ -311,6 +313,7 @@ ifndef::opennms-prime[]
 == Minion
 include::text/minion/kafka.adoc[]
 include::text/minion/aws-sqs.adoc[]
+include::text/minion/offheap.adoc[]
 endif::opennms-prime[]
 
 [[ga-sentinel]]
@@ -343,25 +346,19 @@ include::text/ifttt/ifttt-integration.adoc[]
 == Telemetry Daemon
 include::text/telemetryd/introduction.adoc[]
 
-[[ga-telemetryd-protocols]]
-=== Protocol Reference
-include::text/telemetryd/protocols/ipfix/ipfix-interface.adoc[]
-include::text/telemetryd/protocols/ipfix/ipfix-adapter.adoc[]
-include::text/telemetryd/protocols/jti/junos-telemetry-interface.adoc[]
-include::text/telemetryd/protocols/jti/jti-adapter.adoc[]
-include::text/telemetryd/protocols/netflow5/netflow5-interface.adoc[]
-include::text/telemetryd/protocols/netflow5/netflow5-adapter.adoc[]
-include::text/telemetryd/protocols/netflow9/netflow9-interface.adoc[]
-include::text/telemetryd/protocols/netflow9/netflow9-adapter.adoc[]
-include::text/telemetryd/protocols/nxos/cisco-nxos-telemetry.adoc[]
-include::text/telemetryd/protocols/nxos/nxos-adapter.adoc[]
-include::text/telemetryd/protocols/sflow/sflow-interface.adoc[]
-include::text/telemetryd/protocols/sflow/sflow-adapter.adoc[]
-
 [[ga-telemetryd-listener]]
 === Listener Reference
-include::text/telemetryd/listener/udp-listener.adoc[]
-include::text/telemetryd/listener/flow-listeners.adoc[]
+include::text/telemetryd/listener/tcp.adoc[]
+include::text/telemetryd/listener/udp.adoc[]
+
+[[ga-telemetryd-protocols]]
+=== Protocol Reference
+include::text/telemetryd/protocols/ipfix.adoc[]
+include::text/telemetryd/protocols/jti.adoc[]
+include::text/telemetryd/protocols/netflow5.adoc[]
+include::text/telemetryd/protocols/netflow9.adoc[]
+include::text/telemetryd/protocols/nxos.adoc[]
+include::text/telemetryd/protocols/sflow.adoc[]
 
 [[ga-elasticsearch-integration]]
 == Elasticsearch Integration
@@ -374,6 +371,7 @@ include::text/elasticsearch/features/alarm-event-forwarder.adoc[]
 include::text/elasticsearch/features/alarm-event-forwarder-mapping.adoc[]
 include::text/elasticsearch/features/alarm-event-forwarder-mapping-table.adoc[]
 include::text/elasticsearch/features/flows.adoc[]
+include::text/elasticsearch/features/situation-feedback.adoc[]
 
 [[ga-flow-support]]
 == Flow Support
@@ -384,3 +382,7 @@ include::text/flows/classification-engine.adoc[]
 [[ga-kafka-producer]]
 == Kafka Producer
 include::text/kafka-producer/kafka-producer.adoc[]
+
+[[ga-alarm-correlation]]
+== Alarm Correlation
+include::text/alarm-correlation/situation-feedback.adoc[]

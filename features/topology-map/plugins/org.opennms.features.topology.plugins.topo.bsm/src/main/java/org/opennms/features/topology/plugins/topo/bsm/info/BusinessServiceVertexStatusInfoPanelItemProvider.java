@@ -39,6 +39,7 @@ import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
 import org.opennms.features.topology.api.info.item.InfoPanelItem;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.topo.bsm.ApplicationVertex;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertex;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServicesStatusProvider;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServicesTopologyProvider;
@@ -49,6 +50,7 @@ import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.ApplicationEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
@@ -61,10 +63,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.Label;
 
 public class BusinessServiceVertexStatusInfoPanelItemProvider extends VertexInfoPanelItemProvider {
 
@@ -125,6 +127,11 @@ public class BusinessServiceVertexStatusInfoPanelItemProvider extends VertexInfo
                 @Override
                 public VertexRef visit(final ChildEdge edge) {
                     return new BusinessServiceVertex(edge.getChild(), 0);
+                }
+
+                @Override
+                public VertexRef visit(final ApplicationEdge edge) {
+                    return new ApplicationVertex(edge.getApplication(), 0);
                 }
             }));
             final Status edgeStatus = stateMachine.getOperationalStatus(edge);

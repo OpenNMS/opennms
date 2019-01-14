@@ -41,16 +41,31 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.servlet.jsp.JspContext;
 import javax.servlet.jsp.JspWriter;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.opennms.core.time.CentralizedDateTimeFormat;
 
 public class DateTimeTagTest {
+    private TimeZone m_defaultZone;
+
+    @Before
+    public void setUp() {
+        m_defaultZone = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("Australia/Perth"));
+    }
+
+    @After
+    public void tearDown() {
+        TimeZone.setDefault(m_defaultZone);
+    }
 
     @Test
     public void shouldOutputeDateTimeIncludingTimeZone() throws IOException {
@@ -75,22 +90,24 @@ public class DateTimeTagTest {
     public void shouldHonorUserTimezone() throws IOException {
         Map<String, Object> attributes = new HashMap<>();
         // Martinique has no daylight savings => offset to UTC should be always the same
-        attributes.put(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID, ZoneId.of("America/Martinique"));
-        String result = test("yyyy-MM-dd'T'HH:mm:ssxxx", Instant.now(), attributes);
+        final ZoneId martinique = ZoneId.of("America/Martinique");
+        attributes.put(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID, martinique);
+        String result = test("yyyy-MM-dd'T'HH:mm:ssxxx", martinique, Instant.now(), attributes);
         assertEquals("-04:00", result.substring(result.length()-6));
     }
 
     public void test(String expectedPattern) throws IOException {
-        test(expectedPattern, Instant.now(), new HashMap<>());
+        test(expectedPattern, ZoneId.systemDefault(), Instant.now(), new HashMap<>());
     }
+      ZoneId martinique = ZoneId.of("America/Martinique");
 
-    public String test(String expectedPattern, Instant time, Map<String, Object> attributes) throws IOException {
+    public String test(String expectedPattern, ZoneId expectedZone, Instant time, Map<String, Object> attributes) throws IOException {
         String output = new DateTimeTagInvoker(attributes)
                 .setInstant(time)
                 .invokeAndGet();
         DateTimeFormatter formatter = DateTimeFormatter
                 .ofPattern(expectedPattern)
-                .withZone(ZoneId.systemDefault());
+                .withZone(expectedZone);
         assertEquals(formatter.format(time), output);
         return output;
     }

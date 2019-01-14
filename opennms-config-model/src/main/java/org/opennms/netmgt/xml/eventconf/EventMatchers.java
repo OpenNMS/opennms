@@ -191,6 +191,19 @@ public abstract class EventMatchers  {
 	}
 	
 	public static Field field(String name) {
+
+        if (name.startsWith("parm[") && name.endsWith("]")) {
+            String parmName = name.substring(5, name.length() - 1);
+            return new EventField(name) {
+                public String get(Event event) {
+                    if (event != null && event.getParm(parmName) != null && event.getParm(parmName).getValue() != null) {
+                        return event.getParm(parmName).getValue().getContent();
+                    }
+                    return null;
+                }
+            };
+        }
+
 		if (name.equals(TAG_UEI)) {
 			return new EventField(name) { public String get(Event event) { return event.getUei(); } };
 		} else if (name.equals(TAG_SOURCE)) {

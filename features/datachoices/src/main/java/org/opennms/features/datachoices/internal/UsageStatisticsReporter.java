@@ -74,6 +74,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     private AlarmDao m_alarmDao;
 
+    private boolean m_useSystemProxy = true; // true == legacy behaviour
+
     public synchronized void init() {
         if (m_timer != null) {
             LOG.warn("Usage statistic reporter was already initialized.");
@@ -127,8 +129,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
             final HttpClientWrapper clientWrapper = HttpClientWrapper.create()
                     .setConnectionTimeout(30 * 1000)
-                    .setSocketTimeout(30 * 1000)
-                    .useSystemProxySettings();
+                    .setSocketTimeout(30 * 1000);
+            if(m_useSystemProxy) {
+                clientWrapper.useSystemProxySettings();
+            }
             try (CloseableHttpClient client = clientWrapper.getClient()) {
                 HttpPost httpRequest = new HttpPost(m_url + USAGE_REPORT);
                 httpRequest.setEntity(new StringEntity(usageStatsReportJson, ContentType.create("application/json", StandardCharsets.UTF_8)));
@@ -214,5 +218,9 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public void setAlarmDao(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
+    }
+
+    public void setUseSystemProxy(boolean useSystemProxy){
+        m_useSystemProxy = useSystemProxy;
     }
 }

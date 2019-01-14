@@ -56,6 +56,7 @@ import org.opennms.web.alarm.filter.NodeLocationFilter;
 import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.ServiceFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
+import org.opennms.web.alarm.filter.SituationFilter;
 import org.opennms.web.api.Util;
 import org.opennms.web.controller.alarm.AlarmFilterController;
 import org.opennms.web.filter.Filter;
@@ -218,6 +219,11 @@ public class AlarmQueryServlet extends HttpServlet {
         String nodelocation = WebSecurityUtils.sanitizeString(request.getParameter("nodelocation"));
         if (nodelocation != null && !nodelocation.equalsIgnoreCase("any")) {
             filterArray.add(new NodeLocationFilter(WebSecurityUtils.sanitizeString(nodelocation)));
+        }
+
+        String situation = WebSecurityUtils.sanitizeString(request.getParameter("situation"));
+        if (situation != null && !situation.equalsIgnoreCase("any")) {
+            filterArray.add(new SituationFilter(Boolean.valueOf(situation)));
         }
 
         String queryString = "";

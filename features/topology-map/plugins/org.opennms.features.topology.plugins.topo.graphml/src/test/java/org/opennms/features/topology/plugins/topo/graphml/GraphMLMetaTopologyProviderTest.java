@@ -47,9 +47,9 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
 
+import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
-import com.google.gwt.thirdparty.guava.common.collect.Lists;
 
 public class GraphMLMetaTopologyProviderTest {
 

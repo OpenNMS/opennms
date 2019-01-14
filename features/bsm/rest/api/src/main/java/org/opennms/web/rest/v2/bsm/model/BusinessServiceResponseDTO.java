@@ -47,6 +47,7 @@ import org.opennms.web.rest.api.ResourceLocation;
 import org.opennms.web.rest.api.support.JAXBResourceLocationAdapter;
 import org.opennms.web.rest.api.support.JsonResourceLocationDeserializationProvider;
 import org.opennms.web.rest.api.support.JsonResourceLocationSerializationProvider;
+import org.opennms.web.rest.v2.bsm.model.edge.ApplicationEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeResponseDTO;
@@ -81,6 +82,10 @@ public class BusinessServiceResponseDTO {
     @XmlElement(name="child-edge")
     @XmlElementWrapper(name="child-edges")
     private List<ChildEdgeResponseDTO> m_children = Lists.newArrayList();;
+
+    @XmlElement(name="application-edge")
+    @XmlElementWrapper(name="application-edges")
+    private List<ApplicationEdgeResponseDTO> m_applications = Lists.newArrayList();
 
     @XmlElement(name="parent-service")
     @XmlElementWrapper(name="parent-services")
@@ -140,6 +145,14 @@ public class BusinessServiceResponseDTO {
 
     public void setIpServices(List<IpServiceEdgeResponseDTO> ipServices) {
         m_ipServices = ipServices;
+    }
+
+    public List<ApplicationEdgeResponseDTO> getApplications() {
+        return m_applications;
+    }
+
+    public void setApplications(List<ApplicationEdgeResponseDTO> applications) {
+        m_applications = applications;
     }
 
     public Set<Long> getParentServices() {

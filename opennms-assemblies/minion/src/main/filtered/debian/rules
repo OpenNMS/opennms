@@ -31,6 +31,7 @@ override_dh_auto_install:
 	sed -e "s,/opt/minion/etc,$(SYSCONFDIR),g" \
 			-e "s,RUNAS=root,RUNAS=minion,g" \
 			-e "s,/opt/minion,$(MINION_PREFIX),g" \
+			-e 's,PING_REQUIRED=FALSE,PING_REQUIRED=TRUE,g' \
 			$$(pwd)/etc/minion.init > $$(pwd)/debian/$(CONTAINER_NAME).minion.init \
 		&& rm -f $$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX)/etc/minion.init
 	
@@ -54,7 +55,9 @@ override_dh_auto_install:
 	rm -rf $$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX)/COPYING
 	
 	# move the minion.conf to /etc/defaults and change the default RUNAS to minion
-	sed -e "s,RUNAS=root,RUNAS=minion,g" $$(pwd)/debian/$(CONTAINER_NAME)$(ETCDIR)/minion.conf > $$(pwd)/debian/$(CONTAINER_NAME)$(SYSCONFDIR)/minion \
+	sed -e "s,RUNAS=root,RUNAS=minion,g" \
+		-e 's,PING_REQUIRED=FALSE,PING_REQUIRED=TRUE,g' \
+		$$(pwd)/debian/$(CONTAINER_NAME)$(ETCDIR)/minion.conf > $$(pwd)/debian/$(CONTAINER_NAME)$(SYSCONFDIR)/minion \
 		&& rm -rf $$(pwd)/debian/$(CONTAINER_NAME)$(ETCDIR)/minion.conf
 	
 	# change the logging directory to /var/log/minion

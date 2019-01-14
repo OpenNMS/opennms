@@ -3,38 +3,50 @@
 :imagesdir: ../../images
 
 The telemetry daemon (telemetryd) provides an extensible framework that can be used to handle sensor data pushed to _{opennms-product-name}_.
-The extensible framework is used to implement support for a variety of applications which use different protocols to transfer metrics.
-In _telemetryd_ an operator can define a series of protocols, each of which has at least one _Listener_, and at least one _Adapter_.
+The framework can be used to implement support for a variety of applications which use different protocols to transfer metrics.
+Using _telemetryd_, operators can define listeners supporting different protocols to receive the telemetry data and adapters transferring the received data into generic formats like flows or performance data.
 
-.Generic component overview of protocol implementations in Telemetryd
+.Generic component overview of components in telemetryd
 image::telemetryd/telemetryd-overview.png[]
 
-The _Listener_ and _Adapter_ together with it's configuration build a _Protocol_ for an application.
+The configuration is split in two parts.
+_Listeners_ and attached _Parsers_ on one side, are responsible for receiving telemetry data transported over a specific protocol and parse the protocol according to its specification.
+On the other side, _Adapters_ pick up the parsed data and enrich it before persisting it.
 
-=== What is a Listener
+_Queues_ are used to transport the parsed telemetry data from _Parsers_ to _Adapters_ by binding a specific _Parser_ to a specific _Adapter_.
 
-A _Listener_ is responsible for receiving sensor data from some external source.
-For example, this may include listening for packets from an UDP socket, retrieving messages from an _MQTT_ topic, etc...
-It is possible to configure multiple _Listeners_.
+=== _Listeners_ and _Parsers_
+_Listeners_ are responsible for receiving sensor data from some external source and hand them off to _Parsers_ which handles the transport protocol format and extracts the transported data.
 
-=== What is an Adapter
+A _Listener_ does the transport protocol handling like opening a socket and accepting incoming connections.
+The received messages are then passed to the parser configured for the _Listener_ which parses the concrete protocol implementation and extract all available information out of the received message.
+For further processing, the extracted data is handed over to the configured queue.
 
-An _Adapter_ is responsible for processing the byte streams dispatched by the _Listeners_.
-For example, this may include decoding a specific _JSON_ format, persisting metrics and/or generating events.
+For example: A _Listener_ may open a UDP socket for receiving packets and a assigned _Parser_ parses the incoming IPFix packets.
 
-The framework does not make any assumption about the data about being received or processed, leaving this up to the _Listener_ and _Adapter_ implementation.
+_Parsers_ and _Listeners_ must work together in a tight manner.
+Therefore they can not be combined in any possible combination.
+Which _Parser_ is supported by which _Listener_ is described in the documentation of each _Parser_ accordingly.
+
+=== _Adapters_
+_Adapters_ are responsible for enriching and processing the data dispatched over a queue.
+It receives the data from queue and transforms it into a format usable by _{opennms-product-name}_.
+Adapters can also be used to enrich the incoming data to attach node or interface information depending on information already available.
+
+For example: An _Adapter_ may be used to transform telemetry data received via SFlow into performance data and persist it to the according node.
+
+As an _Adapter_ must handle data dependent to a transport protocol, not all _Adapters_ can be used in combination with any possible
+_Parser_.
+Which _Parsers_ are supported by which _Adapters_ is described in the documentation of each _Adapter_ accordingly.
 
 TIP: In case you have multiple _Adapters_, the execution order is the same as defined in the `telemetryd-configuration.xml`.
 
-=== What are Protocols
-
-A _Protocol_ is composed with at least one _Listener_ and at least one _Adapter_ and their configuration.
-With a _Protocol_ it is possible to process sensor data from _Juniper Telemetry Interface (JTI)_ or _Netflow v5_.
+=== _Queues_
+_Queues_ are used to transfer data between _Parsers_ and _Adapters_ and are represented by a channel in the messaging system.
 
 === Push Sensor Data through Minion
+_Listeners_ and its _Parsers_ may run on either _{opennms-product-name}_ or _Minion_, whereas adapters run on _{opennms-product-name}_ or _Sentinel_.
+If a _Listener_ its _Parsers_ is running on _Minion_, the received messages will be automatically dispatched to the associated _Adapters_ running in _{opennms-product-name}_ or _Sentinel_ via a _Queue_.
 
-_Listeners_ may run on either _{opennms-product-name}_ or _Minion_, whereas adapters run exclusively on _{opennms-product-name}_.
-If a listener is running on _Minion_, the received messages will be automatically dispatched to the associated adapter(s) running in _{opennms-product-name}_.
-
-.Running Listener on a Minion forwarding packets using the messaging system
+.Running _Listener_ on a _Minion_ forwarding packets using the messaging system
 image::telemetryd/telemetryd-minion.png[]

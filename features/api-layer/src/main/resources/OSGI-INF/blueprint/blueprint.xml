@@ -1,0 +1,145 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+  <!-- Runtime -->
+  <service interface="org.opennms.integration.api.v1.runtime.RuntimeInfo" >
+    <bean class="org.opennms.features.apilayer.RuntimeInfoImpl" />
+  </service>
+
+  <!-- DAOs -->
+  <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory"/>
+  <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
+  <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
+  <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
+
+  <service interface="org.opennms.integration.api.v1.dao.NodeDao" >
+    <bean class="org.opennms.features.apilayer.dao.NodeDaoImpl">
+      <argument ref="nodeDao"/>
+      <argument ref="sessionUtils"/>
+    </bean>
+  </service>
+
+  <service interface="org.opennms.integration.api.v1.dao.AlarmDao" >
+    <bean class="org.opennms.features.apilayer.dao.AlarmDaoImpl">
+      <argument ref="alarmDao"/>
+      <argument ref="sessionUtils"/>
+    </bean>
+  </service>
+
+  <service interface="org.opennms.integration.api.v1.dao.SnmpInterfaceDao" >
+    <bean class="org.opennms.features.apilayer.dao.SnmpInterfaceDaoImpl">
+      <argument ref="snmpInterfaceDao"/>
+      <argument ref="sessionUtils"/>
+    </bean>
+  </service>
+
+  <!-- Configuration properties for the API layer -->
+  <cm:property-placeholder id="org.opennms.features.apilayer"
+                           persistent-id="org.opennms.features.apilayer"
+                           update-strategy="reload">
+    <cm:default-properties>
+      <cm:property name="alarmFeedback.gracePeriodInMs" value="5000"/>
+      <cm:property name="alarmFeedback.sleepTimeInMs" value="1000"/>
+      <cm:property name="alarmFeedback.waitTimeMs" value="500"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <service interface="org.opennms.integration.api.v1.dao.AlarmFeedbackDao">
+    <bean class="org.opennms.features.apilayer.dao.AlarmFeedbackDaoImpl">
+      <argument value="${alarmFeedback.gracePeriodInMs}"/>
+      <argument value="${alarmFeedback.sleepTimeInMs}"/>
+      <argument value="${alarmFeedback.waitTimeMs}"/>
+    </bean>
+  </service>
+
+  <!-- Events -->
+  <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" availability="mandatory"/>
+  <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
+
+  <bean id="eventConfExtensionManager" class="org.opennms.features.apilayer.config.EventConfExtensionManager">
+    <argument ref="eventConfDao"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.config.events.EventConfExtension" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="eventConfExtensionManager" />
+  </reference-list>
+
+  <service ref="eventConfExtensionManager" interface="org.opennms.core.config.api.ConfigurationProvider" >
+    <service-properties>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
+  </service>
+
+  <service interface="org.opennms.integration.api.v1.events.EventForwarder" >
+    <bean class="org.opennms.features.apilayer.events.EventForwarderImpl">
+      <argument ref="eventForwarder"/>
+    </bean>
+  </service>
+
+  <!-- Syslog -->
+  <reference id="syslogdConfig" interface="org.opennms.netmgt.config.SyslogdConfig" availability="mandatory"/>
+
+  <bean id="syslogMatchExtensionManager" class="org.opennms.features.apilayer.config.SyslogMatchExtensionManager">
+    <argument ref="syslogdConfig"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.config.syslog.SyslogMatchExtension" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="syslogMatchExtensionManager" />
+  </reference-list>
+
+  <service ref="syslogMatchExtensionManager" interface="org.opennms.core.config.api.ConfigurationProvider" >
+    <service-properties>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
+  </service>
+
+  <!-- Alarm Persister Extension -->
+  <bean id="alarmPersisterExtensionManager" class="org.opennms.features.apilayer.alarms.AlarmPersisterExtensionManager">
+    <argument ref="blueprintBundleContext"/>
+    <argument ref="sessionUtils"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.alarms.AlarmPersisterExtension" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="alarmPersisterExtensionManager" />
+  </reference-list>
+
+  <!-- Alarm Lifecycle Listener Extension -->
+  <bean id="alarmLifecycleListenerManager" class="org.opennms.features.apilayer.alarms.AlarmLifecycleListenerManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.alarms.AlarmLifecycleListener" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="alarmLifecycleListenerManager" />
+  </reference-list>
+
+  <!-- Health Checks -->
+  <bean id="healthCheckManager" class="org.opennms.features.apilayer.health.HealthCheckManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.health.HealthCheck" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="healthCheckManager" />
+  </reference-list>
+
+  <!-- Alarm Feedback Listener -->
+  <bean id="alarmFeedbackListener" class="org.opennms.features.apilayer.feedback.AlarmFeedbackListenerManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.feedback.AlarmFeedbackListener" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="alarmFeedbackListener" />
+  </reference-list>
+
+  <!-- Detectors -->
+  <bean id="detectorManager" class="org.opennms.features.apilayer.detectors.DetectorManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.detectors.ServiceDetectorFactory" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="detectorManager" />
+  </reference-list>
+
+  <reference id="locationAwareDetectorClient" interface="org.opennms.netmgt.provision.LocationAwareDetectorClient"/>
+  <service ref="detectorClient" interface="org.opennms.integration.api.v1.detectors.DetectorClient" >
+  </service>
+  <bean id="detectorClient" class="org.opennms.features.apilayer.detectors.DetectorClientImpl">
+    <argument ref="locationAwareDetectorClient"/>
+  </bean>
+
+</blueprint>
