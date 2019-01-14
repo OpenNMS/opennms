@@ -88,7 +88,7 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
         if (detector == null) {
             throw new IllegalArgumentException("No detector found with service name '" + serviceName + "'.");
         }
-        this.className = detector.getClass().getCanonicalName();
+        this.className = client.getRegistry().getDetectorClassNameFromServiceName(serviceName);
         return this;
     }
 

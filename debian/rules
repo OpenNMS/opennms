@@ -147,7 +147,7 @@ install: build
 	mv debian/temp/lib/org.opennms.protocols.cifs-*.jar                                        debian/opennms-plugin-protocol-cifs/usr/share/java/opennms/
 	
 	# DHCP
-	mv debian/temp/lib/jdhcp-*.jar                                                             debian/opennms-plugin-protocol-dhcp/usr/share/java/opennms/
+	mv debian/temp/lib/dhcp4java-*.jar                                                             debian/opennms-plugin-protocol-dhcp/usr/share/java/opennms/
 	mv debian/temp/lib/org.opennms.protocols.dhcp-*.jar                                        debian/opennms-plugin-protocol-dhcp/usr/share/java/opennms/
 	mv debian/temp/etc/dhcpd-configuration.xml                                                 debian/opennms-plugin-protocol-dhcp/etc/opennms/
 	mv debian/temp/share/xsds/dhcpd-configuration.xsd                                          debian/opennms-plugin-protocol-dhcp/var/lib/opennms/xsds/

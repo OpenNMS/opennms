@@ -20,6 +20,7 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
     <reference id="geolocationConfiguration" interface="org.opennms.features.geolocation.api.GeolocationConfiguration" availability="mandatory" />
     <reference id="layoutDao" interface="org.opennms.netmgt.topology.persistence.api.LayoutDao" availability="mandatory" />
     <reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventIpcManager" availability="mandatory"/>
+    <reference id="topologyEntityCache" interface="org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache" availability="mandatory"/>
 
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyUI" scope="prototype">
         <argument ref="operationManager"/>
@@ -139,6 +140,7 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
     <bean id="topologyService" class="org.opennms.features.topology.app.internal.service.DefaultTopologyService" >
         <argument value="${topologyServiceCacheTimeout}"/>
         <property name="serviceLocator" ref="bundleContextServiceLocator"/>
+        <property name="topologyEntityCache" ref="topologyEntityCache"/>
     </bean>
     <service ref="topologyService" interface="org.opennms.features.topology.api.TopologyService" />
 

@@ -39,6 +39,8 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -50,6 +52,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -259,15 +262,14 @@ public class Events implements Serializable {
                 m_nullPartitionedEvents.add(event);
             } else {
                 for(final String key : keys) {
-                    List<Event> events = m_partitionedEvents.get(key);
-                    if (events == null) {
-                        events = new ArrayList<Event>(1);
-                        m_partitionedEvents.put(key, events);
-                    }
+                    List<Event> events = m_partitionedEvents.computeIfAbsent(key, k -> new ArrayList<Event>());
                     events.add(event);
                 }
             }
         }
+        // Place all the partitioned and nullPartitioned event definitions in priority order.
+        m_partitionedEvents.values().stream().forEach(l -> Collections.sort(l));
+        Collections.sort(m_nullPartitionedEvents);
     }
 
 
@@ -293,14 +295,13 @@ public class Events implements Serializable {
             }
         }
 
-        for(final Event event : potentialMatches) {
+        for (final Event event : potentialMatches) {
             if (event.matches(matchingEvent)) {
                 return event;
             }
         }
 
-        for(Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
-            final Events subEvents = loadedEvents.getValue();
+        for (Events subEvents : m_loadedEventFiles.values()) {
             final Event event = subEvents.findFirstMatchingEvent(matchingEvent);
             if (event != null) {
                 return event;
@@ -354,12 +355,30 @@ public class Events implements Serializable {
 
         partitionEvents(partition);
 
-        for(final Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
-            final Events events = loadedEvents.getValue();
+        for (final Events events : m_loadedEventFiles.values()) {
             events.initialize(partition, m_ordering.subsequence());
         }
 
+        // roll up all prioritized events and sort all events by priority
+        // must be done after event.initialize() has been called to set the event.index
+        List<Event> prioritizedEvents = getPrioritizedEvents();
+        m_events.addAll(prioritizedEvents);
+        m_events.sort(Comparator.naturalOrder());
+        // Also add to unpartitioned events for first crack when not using a UEI match
+        m_nullPartitionedEvents.addAll(prioritizedEvents);
+        m_nullPartitionedEvents.sort(Comparator.naturalOrder());
+
         indexEventsByUei();
+    }
+
+    // Recurse through the configuration and return Event Definitions with priority > 0
+    private List<Event> getPrioritizedEvents() {
+        List<Event> prioritizedEvents = new ArrayList<Event>();
+        prioritizedEvents.addAll(m_events.stream().filter(e -> e.getPriority() > 0).collect(Collectors.toList()));
+        for (final Events eventsFile : m_loadedEventFiles.values()) {
+            prioritizedEvents.addAll(eventsFile.getPrioritizedEvents());
+        }
+        return prioritizedEvents;
     }
 
     private void indexEventsByUei() {

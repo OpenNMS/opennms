@@ -32,6 +32,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
+import java.util.HashMap;
 
 import org.junit.After;
 import org.junit.Before;
@@ -70,7 +71,7 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
         mockSrv = new MockRadiusServer();
         mockSrv.start(true,false);
         MockLogAppender.setupLogging();
-        m_detector = m_detectorFactory.createDetector();
+        m_detector = m_detectorFactory.createDetector(new HashMap<>());
     }
     @After
     public void tearDown(){

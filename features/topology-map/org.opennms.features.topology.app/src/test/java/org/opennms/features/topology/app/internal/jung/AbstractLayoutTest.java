@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.app.internal.jung;
 
+import org.easymock.EasyMock;
 import org.junit.Before;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.support.SimpleGraphBuilder;
@@ -37,6 +38,7 @@ import org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider;
 import org.opennms.features.topology.app.internal.VEProviderGraphContainer;
 import org.opennms.features.topology.app.internal.service.DefaultTopologyService;
 import org.opennms.features.topology.app.internal.service.SimpleServiceLocator;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +76,7 @@ public abstract class AbstractLayoutTest {
         final DefaultTopologyService topologyService = new DefaultTopologyService();
         final MetaTopologyProvider metaTopologyProvider = new SimpleMetaTopologyProvider(getGraphProvider());
         topologyService.setServiceLocator(new SimpleServiceLocator(metaTopologyProvider));
+        topologyService.setTopologyEntityCache(EasyMock.niceMock(TopologyEntityCache.class));
 
         final VEProviderGraphContainer graphContainer = new VEProviderGraphContainer();
         graphContainer.setTopologyService(topologyService);
