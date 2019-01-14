@@ -36,6 +36,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -95,10 +97,16 @@ public class HibernateEventWriterIT {
         builder.addParam("param4", 23.42);
         builder.addParam("param4", 42.23); // Test for duplicated values - last should win
 
+        // Test for long parameter name - see NMS-10525
+        final String longParamName = "param5 - with a really long name - " + IntStream.range(1, 1024)
+                .mapToObj(i ->"x")
+                .collect(Collectors.joining());
+        builder.addParam(longParamName, longParamName);
+
         m_eventWriter.process(builder.getLog());
 
         final List<Map<String, Object>> parameters = jdbcTemplate.queryForList("SELECT name, value FROM event_parameters WHERE eventID = " + builder.getEvent().getDbid() + " ORDER BY name");
-        assertEquals(4, parameters.size());
+        assertEquals(5, parameters.size());
 
         assertEquals("param1", parameters.get(0).get("name"));
         assertEquals("value1", parameters.get(0).get("value"));
@@ -111,6 +119,9 @@ public class HibernateEventWriterIT {
 
         assertEquals("param4", parameters.get(3).get("name"));
         assertEquals("42.23", parameters.get(3).get("value"));
+
+        assertEquals(longParamName, parameters.get(4).get("name"));
+        assertEquals(longParamName, parameters.get(4).get("value"));
     }
 
     /**
