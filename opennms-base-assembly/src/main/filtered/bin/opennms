@@ -510,7 +510,7 @@ doStop() {
 		fi
 
 		sleep $STATUS_WAIT
-		STATUS_ATTEMPTS="$((STATUS_ATTEMPTS++))"
+		((STATUS_ATTEMPTS++))
 	done
 
 	return 1
