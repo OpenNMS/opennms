@@ -28,11 +28,14 @@
 
 package org.opennms.netmgt.eventd.processor;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -52,6 +55,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -122,6 +126,50 @@ public class HibernateEventWriterIT {
 
         assertEquals(longParamName, parameters.get(4).get("name"));
         assertEquals(longParamName, parameters.get(4).get("value"));
+    }
+
+    /**
+     * In NMS-10525, we switched the event parameter name column from varchar(256) to text.
+     *
+     * This field is part of the primary key for which PostgreSQL automatically creates an index.
+     * There is a limit on the size of the text field for it to be indexed using a B-tree index.
+     *
+     * This test verifies this limit.
+     */
+    @Test
+    public void canHaveLargeParameterNames() {
+        final int expectedParamNameLengthSupported = 2712;
+        int largestLengthSupported = 0;
+        for(int N : Arrays.asList(1,2,8,32,256,1024,2712,2713,8096)) {
+            try {
+                // Generate a event that has a parameter with both key and value of length N
+                final EventBuilder builder = new EventBuilder("testUei", "testSource");
+                builder.setLogDest(HibernateEventWriter.LOG_MSG_DEST_LOG_AND_DISPLAY);
+                final String longString = IntStream.range(1, N)
+                        .mapToObj(i ->"x")
+                        .collect(Collectors.joining());
+                builder.addParam(longString, longString);
+
+                // Save the event
+                Log log = builder.getLog();
+                Event e = log.getEvents().getEvent(0);
+                m_eventWriter.process(log);
+
+                // Retrieve the strings back out of the datatabase
+                final List<Map<String, Object>> parameters = jdbcTemplate.queryForList(
+                        "SELECT name, value FROM event_parameters WHERE eventID = " + e.getDbid() + " ORDER BY name");
+
+                // Validate
+                assertEquals(longString, parameters.get(0).get("name"));
+                assertEquals(longString, parameters.get(0).get("value"));
+
+                // This length was OK
+                largestLengthSupported = Math.max(largestLengthSupported, N);
+            } catch (Exception e) {
+                // pass
+            }
+        }
+        assertThat(largestLengthSupported, greaterThanOrEqualTo(expectedParamNameLengthSupported));
     }
 
     /**
