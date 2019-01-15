@@ -81,12 +81,14 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
             public void processIpNetToMediaRow(final IpNetToMediaRow row) {
                 IpNetToMedia macep = row.getIpNetToMedia();
 
-                LOG.debug("processIpNetToMediaRow: node [{}], {}:{}:{}. ",
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("processIpNetToMediaRow: node [{}], {}:{}:{}. ",
                           getNodeId(),
                           macep.getPhysAddress(),
                           str(macep.getNetAddress()),
                           macep.getIpNetToMediaType());
-
+                }
+                
                 if (macep.getPhysAddress() == null
                         || macep.getNetAddress() == null
                         || macep.getIpNetToMediaType() == null
