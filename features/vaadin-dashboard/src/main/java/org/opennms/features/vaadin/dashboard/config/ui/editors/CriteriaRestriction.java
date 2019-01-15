@@ -85,15 +85,16 @@ public enum CriteriaRestriction {
             criteriaBuilder.ilike(values[0].toString(), values[1]);
         }
     },
-    In(CriteriaEntry.Property, CriteriaEntry.Value) {
+    In(CriteriaEntry.Property, CriteriaEntry.StringValue) {
         public void addRestriction(String property, CriteriaBuilderHelper criteriaBuilderHelper, CriteriaBuilder criteriaBuilder, Object[] values) {
             Set<Object> set = new HashSet<>();
 
             Class<?> clazz = criteriaBuilderHelper.getTypeOfProperty(property);
 
-            for (String string : String.valueOf(values[1]).split(",")) {
+            for (String string : String.valueOf(values[1]).split("\\|")) {
                 set.add(criteriaBuilderHelper.parseCriteriaValue(clazz, string));
             }
+
             criteriaBuilder.in(values[0].toString(), set);
         }
     },

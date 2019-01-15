@@ -14,7 +14,7 @@
       <outputDirectory>lib</outputDirectory>
       <useStrictFiltering>true</useStrictFiltering>
       <includes>
-        <include>org.opennms:jdhcp</include>
+        <include>com.helger:dhcp4java</include>
       </includes>
     </dependencySet>
   </dependencySets>

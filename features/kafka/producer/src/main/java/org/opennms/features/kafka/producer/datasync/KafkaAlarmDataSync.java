@@ -65,6 +65,7 @@ import org.opennms.features.kafka.producer.AlarmEqualityChecker;
 import org.opennms.features.kafka.producer.OpennmsKafkaProducer;
 import org.opennms.features.kafka.producer.ProtobufMapper;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
+import org.opennms.netmgt.alarmd.api.AlarmCallbackStateTracker;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -206,7 +207,8 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
 
             final Set<String> reductionKeysInKtable = alarmsInKtableByReductionKey.keySet();
 
-            // Retrieve all of the alarms from the database and apply the filter (if any) to these
+            // Use the given alarms and apply the filter (if any) to these
+            // This represents the set of alarms that should be in the ktable at the given timestamp
             final List<OnmsAlarm> alarmsInDb = alarms.stream()
                     .filter(kafkaProducer::shouldForwardAlarm)
                     .collect(Collectors.toList());
@@ -215,18 +217,32 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
                     .collect(Collectors.toMap(OnmsAlarm::getReductionKey, a -> a));
             final Set<String> reductionKeysInDb = alarmsInDbByReductionKey.keySet();
 
+            // Grab a reference to the state tracker
+            final AlarmCallbackStateTracker stateTracker = kafkaProducer.getAlarmCallbackStateTracker();
+
             // Push deletes for keys that are in the ktable, but not in the database
-            final Set<String> reductionKeysNotInDb = Sets.difference(reductionKeysInKtable, reductionKeysInDb);
-            reductionKeysNotInDb.forEach(kafkaProducer::handleDeletedAlarm);
+            final Set<String> reductionKeysNotInDb = Sets.difference(reductionKeysInKtable, reductionKeysInDb).stream()
+                    // Only remove it if the alarm we have dates before the snapshot
+                    .filter(reductionKey -> !stateTracker.wasAlarmWithReductionKeyUpdated(reductionKey))
+                    .collect(Collectors.toSet());
+            reductionKeysNotInDb.forEach(rkey -> kafkaProducer.handleDeletedAlarm((int)alarmsInKtableByReductionKey.get(rkey).getId(), rkey));
 
             // Push new entries for keys that are in the database, but not in the ktable
-            final Set<String> reductionKeysNotInKtable = Sets.difference(reductionKeysInDb, reductionKeysInKtable);
+            final Set<String> reductionKeysNotInKtable = Sets.difference(reductionKeysInDb, reductionKeysInKtable).stream()
+                    // Unless we've deleted the alarm after the snapshot time
+                    .filter(reductionKey -> !stateTracker.wasAlarmWithReductionKeyDeleted(reductionKey))
+                    .collect(Collectors.toSet());
             reductionKeysNotInKtable.forEach(rkey -> kafkaProducer.handleNewOrUpdatedAlarm(alarmsInDbByReductionKey.get(rkey)));
 
             // Handle Updates
             final Set<String> reductionKeysUpdated = new LinkedHashSet<>();
             final Set<String> commonReductionKeys = Sets.intersection(reductionKeysInKtable, reductionKeysInDb);
             commonReductionKeys.forEach(rkey -> {
+                // Don't bother updating the alarm if the one we we have is more recent than the snapshot
+                if (stateTracker.wasAlarmWithReductionKeyUpdated(rkey)) {
+                    return;
+                }
+
                 final OnmsAlarm dbAlarm = alarmsInDbByReductionKey.get(rkey);
                 final OpennmsModelProtos.Alarm.Builder mappedDbAlarm = protobufMapper.toAlarm(dbAlarm);
                 final OpennmsModelProtos.Alarm alarmFromKtable = alarmsInKtableByReductionKey.get(rkey);

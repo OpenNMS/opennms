@@ -36,8 +36,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
@@ -68,16 +66,6 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
     private final Set<AlarmLifecycleListener> listeners = Sets.newConcurrentHashSet();
     private Timer timer;
 
-    /**
-     * This lock is used to prevent us from issuing create/update/delete callbacks
-     * while a snapshot is in progress.
-     *
-     * Callbacks hold a read-lock, while the snapshot holds a write lock.
-     *
-     * A fair lock is used so that the callbacks continue to be processed in order.
-     */
-    private final ReadWriteLock snapshotRwLock = new ReentrantReadWriteLock(true);
-
     @Autowired
     private AlarmDao alarmDao;
 
@@ -86,7 +74,9 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
 
     private void start() {
         timer = new Timer("AlarmLifecycleListenerManager");
-        timer.scheduleAtFixedRate(new TimerTask() {
+        // Use a fixed delay instead of a fixed interval so that snapshots are not constantly in progress
+        // if they take a long time
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 try {
@@ -111,34 +101,40 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
         }
 
         final AtomicLong numAlarms = new AtomicLong(-1);
-        final long systemMillisBefore = System.currentTimeMillis();
-        snapshotRwLock.writeLock().lock();
+        final long systemMillisBeforeSnasphot = System.currentTimeMillis();
+        final AtomicLong systemMillisAfterLoad = new AtomicLong(-1);
         try {
+            forEachListener(AlarmLifecycleListener::preHandleAlarmSnapshot);
             template.execute(new TransactionCallbackWithoutResult() {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
                     final List<OnmsAlarm> allAlarms = alarmDao.findAll();
                     numAlarms.set(allAlarms.size());
-                    forEachListener(l -> l.handleAlarmSnapshot(allAlarms));
+                    // Save the timestamp after the load, so we can differentiate between how long it took
+                    // to load the alarms and how long it took to invoke the callbacks
+                    systemMillisAfterLoad.set(System.currentTimeMillis());
+                    forEachListener(l -> {
+                        LOG.debug("Calling handleAlarmSnapshot on listener: {}", l);
+                        l.handleAlarmSnapshot(allAlarms);
+                        LOG.debug("Done calling listener.");
+                    });
                 }
             });
         } finally {
-            snapshotRwLock.writeLock().unlock();
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Alarm snapshot for {} alarms completed. Other callbacks were blocked for a total of {}ms.",
-                        numAlarms.get(), System.currentTimeMillis() - systemMillisBefore);
+                final long now = System.currentTimeMillis();
+                LOG.debug("Alarm snapshot for {} alarms completed. Spent {}ms loading the alarms. " +
+                                "Snapshot processing took a total of of {}ms.",
+                        numAlarms.get(),
+                        systemMillisAfterLoad.get() - systemMillisBeforeSnasphot,
+                        now - systemMillisBeforeSnasphot);
             }
+            forEachListener(AlarmLifecycleListener::postHandleAlarmSnapshot);
         }
     }
 
     public void onNewOrUpdatedAlarm(OnmsAlarm alarm) {
-        // Don't propagate the callbacks while a snapshot is in progress
-        snapshotRwLock.readLock().lock();
-        try {
-            forEachListener(l -> l.handleNewOrUpdatedAlarm(alarm));
-        } finally {
-            snapshotRwLock.readLock().unlock();
-        }
+        forEachListener(l -> l.handleNewOrUpdatedAlarm(alarm));
     }
 
     @Override
@@ -148,15 +144,7 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
 
     @Override
     public void onAlarmDeleted(OnmsAlarm alarm) {
-        // Don't propagate the callbacks while a snapshot is in progress
-        snapshotRwLock.readLock().lock();
-        try {
-            final Integer alarmId = alarm.getId();
-            final String reductionKey = alarm.getReductionKey();
-            forEachListener(l -> l.handleDeletedAlarm(alarmId, reductionKey));
-        } finally {
-            snapshotRwLock.readLock().unlock();
-        }
+        forEachListener(l -> l.handleDeletedAlarm(alarm.getId(), alarm.getReductionKey()));
     }
 
     @Override

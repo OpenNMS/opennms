@@ -30,8 +30,16 @@ package org.opennms.netmgt.enlinkd.persistence.api;
 
 import java.util.List;
 
+import org.opennms.netmgt.enlinkd.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.IsIsElementTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 
 /**
  * Retrieves TopologyEntities from the database. TopologyEntities are views on OnmsEntities (such as OnmsNode, CdpLink, etc.)
@@ -44,4 +52,12 @@ import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 public interface TopologyEntityDao {
     List<NodeTopologyEntity> getNodeTopologyEntities();
     List<CdpLinkTopologyEntity> getCdpLinkTopologyEntities();
+    List<IsIsLinkTopologyEntity> getIsIsLinkTopologyEntities();
+    List<LldpLinkTopologyEntity> getLldpLinkTopologyEntities();
+    List<OspfLinkTopologyEntity> getOspfLinkTopologyEntities();
+    List<SnmpInterfaceTopologyEntity> getSnmpTopologyEntities();
+    List<IpInterfaceTopologyEntity> getIpTopologyEntities();
+    List<CdpElementTopologyEntity> getCdpElementTopologyEntities();
+    List<IsIsElementTopologyEntity> getIsIsElementTopologyEntities();
+    List<LldpElementTopologyEntity> getLldpElementTopologyEntities();
 }

@@ -30,12 +30,14 @@ package org.opennms.features.situationfeedback.api;
 
 import java.util.Objects;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Enums;
 
 /**
  * Expresses Feedback on the Correlation of an Alarm.
  */
-public class AlarmFeedback {
+@JsonDeserialize(builder = AlarmFeedback.Builder.class)
+public final class AlarmFeedback {
 
     public enum FeedbackType {
         FALSE_POSITIVE, // Alarm does not belong in this Situation
@@ -82,9 +84,10 @@ public class AlarmFeedback {
         private AlarmFeedback.FeedbackType feedbackType;
         private String reason;
         private String user;
-        private long timestamp;
+        private Long timestamp;
 
-        private Builder() {
+        // This constructor is public for the purposes of JSON deserialization
+        public Builder() {
             timestamp = System.currentTimeMillis();
         }
 
@@ -127,6 +130,7 @@ public class AlarmFeedback {
             Objects.requireNonNull(situationKey, "The situation key cannot be null");
             Objects.requireNonNull(alarmKey, "The alarm key cannot be null");
             Objects.requireNonNull(feedbackType, "The feedback type cannot be null");
+            Objects.requireNonNull(timestamp, "The timestamp cannot be null");
 
             return new AlarmFeedback(this);            
         }
@@ -165,9 +169,34 @@ public class AlarmFeedback {
     }
 
     @Override
-    public String toString() {
-        return "Feedback[" + getFeedbackType() + ":" + getSituationKey() + ":" + getAlarmKey() + ":" + getReason() +
-                "]";
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AlarmFeedback that = (AlarmFeedback) o;
+        return timestamp == that.timestamp &&
+                Objects.equals(situationKey, that.situationKey) &&
+                Objects.equals(situationFingerprint, that.situationFingerprint) &&
+                Objects.equals(alarmKey, that.alarmKey) &&
+                feedbackType == that.feedbackType &&
+                Objects.equals(reason, that.reason) &&
+                Objects.equals(user, that.user);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(situationKey, situationFingerprint, alarmKey, feedbackType, reason, user, timestamp);
+    }
+
+    @Override
+    public String toString() {
+        return "AlarmFeedback{" +
+                "situationKey='" + situationKey + '\'' +
+                ", situationFingerprint='" + situationFingerprint + '\'' +
+                ", alarmKey='" + alarmKey + '\'' +
+                ", feedbackType=" + feedbackType +
+                ", reason='" + reason + '\'' +
+                ", user='" + user + '\'' +
+                ", timestamp=" + timestamp +
+                '}';
+    }
 }
