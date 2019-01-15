@@ -95,13 +95,14 @@
             <div ng-class="col.class" ng-repeat="col in row.columns">
               <div class="card" ng-repeat="panel in col.panels">
                 <div class="card-header">
-                  <span>{{ panel.title }}</span>
+                  <span>{{ panel.title }} WTFF</span>
                 </div>
                 <div class="card-body">
                   <div class="form-horizontal" ng-repeat="field in panel.fields">
-                    <!-- TODO: SEG Think of something to do with has-warning -->
-                    <div class="form-group" ng-class="{ 'has-error': assetForm[field.model].$invalid && !assetForm[field.model].$pristine, 'has-warning': assetForm[field.model].$dirty }">
-                      <label class="col-form-label col-md-3" for="{{ field.model }}" uib-tooltip="{{ field.tooltip  }}">{{ field.label }}</label>
+                    <div class="form-group">
+                      <label class="col-form-label col-md-3" for="{{ field.model }}" uib-tooltip="{{ field.tooltip  }}">{{ field.label }}
+                        <span class="badge badge-secondary ml-2" ng-show="(assetForm[field.model].$dirty && !(assetForm[field.model].$invalid && !assetForm[field.model].$pristine))">modified</span>
+                      </label>
                       <div class="col-md-9">
                         <%-- Static/ReadOnly fields --%>
                         <p class="form-control-plaintext" ng-if="field.type=='static'">{{ asset[field.model] }}</p>
