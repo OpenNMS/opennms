@@ -164,7 +164,7 @@
 
 	<div class="col-md-10">
 	<c:forEach var="resultSet" items="${results.graphResultSets}">
-    <div class="card text-center" id="card-resource${resultSet.index}">
+    <div class="card text-center" id="panel-resource${resultSet.index}">
       <div class="card-header">
         <span>
             ${resultSet.resource.parent.resourceType.label}:
@@ -281,13 +281,13 @@
 
 	<div class="col-md-2">
 	<div id="results-sidebar" class="resource-graphs-sidebar hidden-print hidden-xs hidden-sm sidebar-fixed">
-        <ul class="nav nav-stacked">
+        <ul class="nav flex-column">
             <c:forEach var="resourceType" items="${results.resourceTypes}">
-            <li>
-                <a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${results.graphResultMap[resourceType][0].index}" data-target="#panel-resource${results.graphResultMap[resourceType][0].index}">${resourceType}</a>
+            <li class="nav-item">
+                <a class="nav-link" href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${results.graphResultMap[resourceType][0].index}" data-target="#panel-resource${results.graphResultMap[resourceType][0].index}">${resourceType}</a>
                 <ul class="nav">
                     <c:forEach var="resultSet" items="${results.graphResultMap[resourceType]}">
-                    <li><a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${resultSet.index}" data-target="#panel-resource${resultSet.index}">${resultSet.resource.label}</a></li>
+                    <li class="nav-item"><a class="nav-link" href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${resultSet.index}" data-target="#panel-resource${resultSet.index}">${resultSet.resource.label}</a></li>
                     </c:forEach>
                 </ul>
             </li>
@@ -309,6 +309,23 @@
 </c:url>
 
 <script type="text/javascript">
+
+    $(document).ready(function() {
+        // Hide all sub elements
+        $("ul.nav ul.nav").css("display", "none");
+
+        // For each navigation click, ensure the child navigation is visible
+        $('.nav .nav-link').click(function() {
+            $("ul.nav ul.nav").css("display", "none"); // Hide all sub-elements on click
+
+            if ($(this).parent("li").children("ul").length == 0) { // nested element
+                $(this).parent("li").parent("ul").css("display", "block"); // show parent element
+            } else { // parent element
+                $(this).parent("li").children("ul").css("display", "block"); // show child element
+            }
+        });
+    });
+
     function relativeTimeFormChange() {
         for (i = 0; i < document.reltimeform.rtstatus.length; i++) {
             if (document.reltimeform.rtstatus[i].selected) {
