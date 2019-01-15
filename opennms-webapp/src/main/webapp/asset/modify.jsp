@@ -95,7 +95,7 @@
             <div ng-class="col.class" ng-repeat="col in row.columns">
               <div class="card" ng-repeat="panel in col.panels">
                 <div class="card-header">
-                  <span>{{ panel.title }} WTFF</span>
+                  <span>{{ panel.title }}</span>
                 </div>
                 <div class="card-body">
                   <div class="form-horizontal" ng-repeat="field in panel.fields">
