@@ -28,40 +28,33 @@
 
 package org.opennms.netmgt.enlinkd.service.impl;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 import org.opennms.netmgt.enlinkd.service.api.TopologyService;
 
 public class TopologyServiceImpl implements TopologyService {
 
     private TopologyEntityCache m_topologyEntityCache;
-    private Boolean m_updates = false;
+    private AtomicBoolean m_updates = new AtomicBoolean(false);
 
     @Override
     public  boolean parseUpdates() {
-        synchronized (m_updates) {
-            if (m_updates.booleanValue()) {
-                m_updates = false;
-                return true;
-            }
+        if (m_updates.get()) {
+            m_updates.set(false);
+            return true;
         }
         return false;            
     }
 
     @Override
     public void updatesAvailable() {
-        synchronized (m_updates) {
-            m_updates = true;
-        }
+            m_updates.set(true);
     }
 
     @Override
     public boolean hasUpdates() {
-        synchronized (m_updates) {
-            if (m_updates.booleanValue()) {
-                return true;
-            }
-        }
-        return false;
+            return m_updates.get();
     }
 
     @Override
