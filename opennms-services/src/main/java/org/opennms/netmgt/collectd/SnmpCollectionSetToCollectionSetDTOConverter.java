@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
  * Usage:
  * <code>new SnmpCollectionSetToCollectionSetDTOConverter().withParameters(params).convert(collectionSet)</code>
  * </p>
+ * 
  */
 public class SnmpCollectionSetToCollectionSetDTOConverter {
 
