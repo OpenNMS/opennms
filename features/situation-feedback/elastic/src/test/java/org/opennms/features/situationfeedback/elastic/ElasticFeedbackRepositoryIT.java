@@ -28,11 +28,12 @@
 package org.opennms.features.situationfeedback.elastic;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
 import java.net.MalformedURLException;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.Before;
@@ -86,7 +87,9 @@ public class ElasticFeedbackRepositoryIT {
     }
 
     @Test
-    public void canPersistFeedback() throws FeedbackException {
+    public void canPersistAndRetrieveFeedback() throws FeedbackException {
+        long now = System.currentTimeMillis();
+
         AlarmFeedback feedback1 = AlarmFeedback.newBuilder()
                 .withSituationKey("situationKey1")
                 .withSituationFingerprint("fingerprint1")
@@ -94,6 +97,7 @@ public class ElasticFeedbackRepositoryIT {
                 .withFeedbackType(FeedbackType.FALSE_POSITIVE)
                 .withReason("reason")
                 .withUser("user")
+                .withTimestamp(now)
                 .build();
         AlarmFeedback feedback2 = AlarmFeedback.newBuilder()
                 .withSituationKey("situationKey2")
@@ -102,6 +106,7 @@ public class ElasticFeedbackRepositoryIT {
                 .withFeedbackType(FeedbackType.FALSE_POSITIVE)
                 .withReason("reason")
                 .withUser("user")
+                .withTimestamp(now + 1)
                 .build();
         AlarmFeedback feedback3 = AlarmFeedback.newBuilder()
                 .withSituationKey("situationKey3")
@@ -110,11 +115,13 @@ public class ElasticFeedbackRepositoryIT {
                 .withFeedbackType(FeedbackType.FALSE_POSITIVE)
                 .withReason("reason")
                 .withUser("user")
+                .withTimestamp(now + 2)
                 .build();
-        final Collection<AlarmFeedback> feedback = Arrays.asList(feedback1, feedback2, feedback3);
+        final List<AlarmFeedback> feedback = Arrays.asList(feedback1, feedback2, feedback3);
         feedbackRepository.persist(feedback);
 
         await().until(() -> feedbackRepository.getFeedback("situationKey1"), hasSize(1));
+        await().until(() -> feedbackRepository.getAllFeedback(), equalTo(feedback));
     }
 
 }

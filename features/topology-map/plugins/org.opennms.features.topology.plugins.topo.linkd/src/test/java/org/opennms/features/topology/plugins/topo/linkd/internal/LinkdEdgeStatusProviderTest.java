@@ -54,12 +54,12 @@ import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 
 import com.codahale.metrics.MetricRegistry;
 
@@ -132,9 +132,7 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         bpnode1port48.setNodeId(m_node1.getId());
         bpnode1port48.setBridgePort(48);
         bpnode1port48.setBridgePortIfIndex(48);
-        OnmsSnmpInterface sourceinterfacenode1port48 = new OnmsSnmpInterface();
-        sourceinterfacenode1port48.setNode(m_node1);
-        sourceinterfacenode1port48.setIfIndex(48);;
+        SnmpInterfaceTopologyEntity sourceinterfacenode1port48 = createSnmpInterface(48, m_node1);
 
         m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getEdgeId(cloud, bpnode1port48), 
                                      cloud, node1Vertex, null, sourceinterfacenode1port48, "cloud", "bp: 48", ProtocolSupported.BRIDGE));
@@ -143,9 +141,8 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         bpnode2port24.setNodeId(m_node2.getId());
         bpnode2port24.setBridgePort(24);
         bpnode2port24.setBridgePortIfIndex(24);
-        OnmsSnmpInterface sourceinterfacenode2port24 = new OnmsSnmpInterface();
-        sourceinterfacenode2port24.setNode(m_node2);
-        sourceinterfacenode2port24.setIfIndex(24);;
+        SnmpInterfaceTopologyEntity sourceinterfacenode2port24 = createSnmpInterface(24, m_node2);
+
         m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getEdgeId(cloud, bpnode2port24), 
                                      cloud, node2Vertex, null, sourceinterfacenode2port24, null, null, ProtocolSupported.BRIDGE));
 
@@ -158,15 +155,11 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         // isis link
         IsIsLink link1 = createIsIsLink(m_node4, 599, 599, 1, 1, "001f12accbf1", "000110255062");
         link1.setId(104);
-        OnmsSnmpInterface node4port599 = new OnmsSnmpInterface();
-        node4port599.setNode(m_node4);
-        node4port599.setIfIndex(link1.getIsisCircIfIndex());
+        SnmpInterfaceTopologyEntity node4port599 = createSnmpInterface(link1.getIsisCircIfIndex(), m_node4);
 
         IsIsLink link2 = createIsIsLink(m_node5, 578, 578, 1, 1, "0021590e47c1", "000110088500");
         link2.setId(105);
-        OnmsSnmpInterface node5port578 = new OnmsSnmpInterface();
-        node5port578.setNode(m_node5);
-        node5port578.setIfIndex(link2.getIsisCircIfIndex());
+        SnmpInterfaceTopologyEntity node5port578 = createSnmpInterface(link2.getIsisCircIfIndex(), m_node5);
         
         m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getDefaultEdgeId(link1.getId(), link2.getId()), 
                                      node4Vertex, node5Vertex, 
@@ -179,17 +172,13 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
                                      "node4ChassisId", "node4SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL, "node4PortId",
                                      LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, "node2PortDescr");
         link3.setId(204);
-        OnmsSnmpInterface node4portPort1 = new OnmsSnmpInterface();
-        node4portPort1.setNode(m_node4);
-        node4portPort1.setIfIndex(link3.getLldpPortIfindex());
+        SnmpInterfaceTopologyEntity node4portPort1 = createSnmpInterface(link3.getLldpPortIfindex(), m_node4);
   
         LldpLink link4 = new LldpLink(m_node5, 21, 2, "node5PortId", "node5PortDescr", LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL,
                                      "node5ChassisId", "node5SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL, "node5PortId",
                                      LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, "node1PortDescr");
         link4.setId(205);
-        OnmsSnmpInterface node5portPort2 = new OnmsSnmpInterface();
-        node5portPort2.setNode(m_node5);
-        node5portPort2.setIfIndex(link4.getLldpPortIfindex());
+        SnmpInterfaceTopologyEntity node5portPort2 = createSnmpInterface(link4.getLldpPortIfindex(), m_node5);
          
          m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getDefaultEdgeId(link3.getId(), link4.getId()), node4Vertex, node5Vertex, 
                                       node4portPort1, node5portPort2, link3.getLldpPortDescr(), link4.getLldpPortDescr(), ProtocolSupported.LLDP));
@@ -197,16 +186,11 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         //ospf link
          OspfLink link5 = createOspfLink(m_node4, "192.168.100.246", "255.255.255.252", 0, 10101, "192.168.100.249", "192.168.100.245", 0);
          link5.setId(404);
-         OnmsSnmpInterface node4portPort10101 = new OnmsSnmpInterface();
-         node4portPort10101.setNode(m_node4);
-         node4portPort10101.setIfIndex(link5.getOspfIfIndex());
-
+         SnmpInterfaceTopologyEntity node4portPort10101 = createSnmpInterface(link5.getOspfIfIndex(), m_node4);
 
          OspfLink link6 = createOspfLink(m_node5, "192.168.100.245", "255.255.255.252", 0, 10100, "192.168.100.250", "192.168.100.246", 0);
          link6.setId(405);
-         OnmsSnmpInterface node5portPort10100 = new OnmsSnmpInterface();
-         node5portPort10100.setNode(m_node5);
-         node5portPort10100.setIfIndex(link6.getOspfIfIndex());
+         SnmpInterfaceTopologyEntity node5portPort10100 = createSnmpInterface(link6.getOspfIfIndex(), m_node5);
          m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getDefaultEdgeId(link5.getId(), link6.getId()), node4Vertex, node5Vertex, 
                                       node4portPort10101, node5portPort10100, 
                                       InetAddressUtils.str(link6.getOspfRemIpAddr()), 
@@ -234,6 +218,10 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         m_statusProvider.setAlarmDao(m_alarmDao);
 
 
+    }
+
+    private SnmpInterfaceTopologyEntity createSnmpInterface(Integer ifIndex, OnmsNode node){
+        return new SnmpInterfaceTopologyEntity(null, ifIndex, null, null, node.getId());
     }
 
     @After

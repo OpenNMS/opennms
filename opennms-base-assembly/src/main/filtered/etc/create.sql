@@ -2345,6 +2345,16 @@ CREATE TABLE bsm_service_ifservices (
     REFERENCES ifservices (id) ON DELETE CASCADE
 );
 
+CREATE TABLE bsm_service_applications (
+    id integer NOT NULL,
+    applicationid integer NOT NULL,
+    CONSTRAINT bsm_service_applications_pkey PRIMARY KEY (id),
+    CONSTRAINT fk_bsm_service_applications_edge_id FOREIGN KEY (id)
+      REFERENCES bsm_service_edge (id) ON DELETE CASCADE,
+    CONSTRAINT fk_bsm_service_applications_applicationid FOREIGN KEY (applicationid)
+      REFERENCES applications (id) ON DELETE CASCADE
+);
+
 CREATE TABLE bsm_service_reductionkeys (
     id integer NOT NULL,
     reductionkey TEXT NOT NULL,

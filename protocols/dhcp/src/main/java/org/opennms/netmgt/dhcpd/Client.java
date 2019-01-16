@@ -38,9 +38,9 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Observable;
 
+import org.dhcp4java.DHCPPacket;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.jdhcp.DHCPMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,7 +141,7 @@ final class Client extends Observable implements Runnable, Fiber {
                 try {
                     DatagramPacket pkt = new DatagramPacket(dgbuf, dgbuf.length);
                     m_incomingUdp.receive(pkt);
-                    Message msg = new Message(pkt.getAddress(), new DHCPMessage(pkt.getData()));
+                    Message msg = new Message(pkt.getAddress(), DHCPPacket.getPacket(pkt));
 
                     try {
                         m_client.sendMessage(msg);
@@ -282,7 +282,7 @@ final class Client extends Observable implements Runnable, Fiber {
                     isOk = false;
                 } else {
                         LOG.debug("Got request... address = {}", msg.getAddress());
-                    byte[] dhcp = msg.getMessage().externalize();
+                    byte[] dhcp = msg.getMessage().serialize();
 
                     DatagramPacket pkt = new DatagramPacket(dhcp, dhcp.length, msg.getAddress(), DHCP_TARGET_PORT);
                     try {

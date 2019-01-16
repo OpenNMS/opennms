@@ -86,6 +86,7 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
         final Event event = new Event();
         event.setMask(toMask(def.getMask()));
         event.setUei(def.getUei());
+        event.setPriority(def.getPriority());
         event.setEventLabel(def.getLabel());
         event.setDescr(def.getDescription());
         event.setSeverity(def.getSeverity().getLabel());

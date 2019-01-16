@@ -32,9 +32,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.core.criteria.Criteria;
+import org.opennms.netmgt.bsm.service.model.Application;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.ApplicationEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
@@ -77,7 +79,11 @@ public interface BusinessServiceManager extends NodeManager {
 
     List<IpService> getAllIpServices();
 
+    List<Application> getAllApplications();
+
     IpService getIpServiceById(Integer id);
+
+    Application getApplicationById(Integer id);
 
     /**
      * Triggers a reload of the Business Service Daemon.
@@ -95,6 +101,10 @@ public interface BusinessServiceManager extends NodeManager {
     boolean addIpServiceEdge(BusinessService businessService, IpService ipService, MapFunction mapFunction, int weight);
 
     boolean addIpServiceEdge(BusinessService businessService, IpService ipService, MapFunction mapFunction, int weight, String friendlyName);
+
+    void setApplicationEdges(BusinessService businessService, Set<ApplicationEdge> applicationEdges);
+
+    boolean addApplicationEdge(BusinessService businessService, Application application, MapFunction mapFunction, int weight);
 
     boolean addReductionKeyEdge(BusinessService businessService, String reductionKey, MapFunction mapFunction, int weight);
 

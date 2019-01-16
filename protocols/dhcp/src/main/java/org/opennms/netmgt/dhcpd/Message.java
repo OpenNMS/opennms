@@ -34,8 +34,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.InetAddress;
 
-import org.opennms.jdhcp.DHCPMessage;
-import org.opennms.jdhcp.MalformedPacketException;
+import org.dhcp4java.DHCPPacket;
 
 /**
  * <p>Message class.</p>
@@ -47,7 +46,7 @@ public final class Message implements Serializable {
 
     private static final long serialVersionUID = -2712181407338192347L;
 
-    private DHCPMessage m_dhcpmsg;
+    private DHCPPacket m_dhcpmsg;
 
     private InetAddress m_target;
 
@@ -61,9 +60,9 @@ public final class Message implements Serializable {
      * <p>Constructor for Message.</p>
      *
      * @param target a {@link java.net.InetAddress} object.
-     * @param msg a {@link edu.bucknell.net.JDHCP.DHCPMessage} object.
+     * @param msg a {@link org.dhcp4java.DHCPPacket} object.
      */
-    public Message(InetAddress target, DHCPMessage msg) {
+    public Message(InetAddress target, DHCPPacket msg) {
         m_dhcpmsg = msg;
         m_target = target;
     }
@@ -80,26 +79,26 @@ public final class Message implements Serializable {
     /**
      * <p>getMessage</p>
      *
-     * @return a {@link edu.bucknell.net.JDHCP.DHCPMessage} object.
+     * @return a {@link org.dhcp4java.DHCPPacket} object.
      */
-    public DHCPMessage getMessage() {
+    public DHCPPacket getMessage() {
         return m_dhcpmsg;
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeObject(m_target);
 
-        byte[] buf = m_dhcpmsg.externalize();
+        byte[] buf = m_dhcpmsg.serialize();
         out.writeInt(buf.length);
         out.write(buf);
     }
 
-    private void readObject(ObjectInputStream in) throws MalformedPacketException, ClassNotFoundException, IOException {
+    private void readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
         m_target = (InetAddress) in.readObject();
 
         byte[] buf = new byte[in.readInt()];
         in.readFully(buf, 0, buf.length);
 
-        m_dhcpmsg = new DHCPMessage(buf);
+        m_dhcpmsg = DHCPPacket.getPacket(buf, 0, buf.length, true);
     }
 }
