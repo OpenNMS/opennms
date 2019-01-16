@@ -34,52 +34,86 @@ import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.protocols.dhcp.detector.client.DhcpClient;
 import org.opennms.protocols.dhcp.detector.request.DhcpRequest;
 import org.opennms.protocols.dhcp.detector.response.DhcpResponse;
-
-/**
- * <p>DhcpDetector class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
+import org.opennms.protocols.dhcp.monitor.DhcpMonitor;
 
 public class DhcpDetector extends BasicDetector<DhcpRequest, DhcpResponse> {
-    
-    private static final int DEFAULT_RETRY = 0;
-    private static final int DEFAULT_TIMEOUT = 3000;
-    
-    /**
-     * <p>Constructor for DhcpDetector.</p>
-     */
+
+    String macAddress = DhcpMonitor.DEFAULT_MAC_ADDRESS;
+    boolean relayMode = false;
+    boolean extendedMode = false;
+    String myAddress = "127.0.0.1";
+    String requestIpAddress = "127.0.0.1";
+
     public DhcpDetector() {
         super("DHCP", 0);
-        setTimeout(DEFAULT_TIMEOUT);
-        setRetries(DEFAULT_RETRY);
+        setTimeout(DhcpMonitor.DEFAULT_TIMEOUT);
+        setRetries(DhcpMonitor.DEFAULT_RETRY);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onInit() {
         expectBanner(responseTimeGreaterThan(-1));
     }
 
     private static ResponseValidator<DhcpResponse> responseTimeGreaterThan(final long num) {
-        return new ResponseValidator<DhcpResponse>(){
-
+        return new ResponseValidator<DhcpResponse>() {
             @Override
             public boolean validate(DhcpResponse response) {
                 return response.validate(num);
             }
-            
         };
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected Client<DhcpRequest, DhcpResponse> getClient() {
         DhcpClient client = new DhcpClient();
-        client.setRetries(1);
+        client.setRetries(getRetries());
         return client;
     }
 
-    
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
+    }
+
+    public boolean isRelayMode() {
+        return relayMode;
+    }
+
+    public void setRelayMode(boolean relayMode) {
+        this.relayMode = relayMode;
+    }
+
+    public boolean isExtendedMode() {
+        return extendedMode;
+    }
+
+    public void setExtendedMode(boolean extendedMode) {
+        this.extendedMode = extendedMode;
+    }
+
+    public String getMyAddress() {
+        return myAddress;
+    }
+
+    public void setMyAddress(String myAddress) {
+        this.myAddress = myAddress;
+    }
+
+    public String getRequestIpAddress() {
+        return requestIpAddress;
+    }
+
+    public void setRequestIpAddress(String requestIpAddress) {
+        this.requestIpAddress = requestIpAddress;
+    }
 }

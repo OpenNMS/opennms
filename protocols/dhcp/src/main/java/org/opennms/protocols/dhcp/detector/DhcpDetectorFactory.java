@@ -28,14 +28,53 @@
 
 package org.opennms.protocols.dhcp.detector;
 
+import java.net.InetAddress;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.PollerConfigFactory;
+import org.opennms.netmgt.config.PollerConfigManager;
+import org.opennms.netmgt.config.WmiPeerFactory;
+import org.opennms.netmgt.config.poller.Parameter;
+import org.opennms.netmgt.config.poller.Service;
+import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.provision.DetectRequest;
+import org.opennms.netmgt.provision.support.DetectRequestImpl;
 import org.opennms.netmgt.provision.support.GenericServiceDetectorFactory;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
+
+import org.opennms.netmgt.config.poller.Package;
+
 @Component
 public class DhcpDetectorFactory extends GenericServiceDetectorFactory<DhcpDetector> {
+    final Set<String> PARAMETER_KEYS = Sets.newHashSet("retry", "timeout", "macAddress", "relayMode", "extendedMode", "myAddress", "requestIpAddress");
 
-	public DhcpDetectorFactory() {
-		super(DhcpDetector.class);
-	}
+    public DhcpDetectorFactory() {
+        super(DhcpDetector.class);
+    }
 
+    @Override
+    public DetectRequest buildRequest(String location, InetAddress address, Integer port, Map<String, String> attributes) {
+        Map<String, String> runtimeAttributes = Collections.emptyMap();
+
+        final String serviceName = attributes.get("serviceName");
+
+        if (!Strings.isNullOrEmpty(serviceName)) {
+            final Package pkg = PollerConfigFactory.getInstance().getFirstPackageMatch(InetAddressUtils.str(address));
+
+            if (pkg != null) {
+                final Service service = pkg.getService(serviceName);
+                runtimeAttributes = service.getParameters().stream()
+                        .filter(p -> PARAMETER_KEYS.contains(p.getKey()))
+                        .collect(Collectors.toMap(Parameter::getKey, Parameter::getValue));
+            }
+        }
+        return new DetectRequestImpl(address, port, runtimeAttributes);
+    }
 }

@@ -35,6 +35,7 @@ import org.opennms.netmgt.dhcpd.Dhcpd;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.protocols.dhcp.detector.request.DhcpRequest;
 import org.opennms.protocols.dhcp.detector.response.DhcpResponse;
+import org.opennms.protocols.dhcp.monitor.DhcpMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +68,6 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         m_address = address;
         m_timeout = timeout;
-        
     }
 
     /**

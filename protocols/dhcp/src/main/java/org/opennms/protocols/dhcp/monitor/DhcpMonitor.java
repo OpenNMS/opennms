@@ -29,11 +29,10 @@
 package org.opennms.protocols.dhcp.monitor;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.dhcpd.Dhcpd;
+import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -46,8 +45,7 @@ import org.slf4j.LoggerFactory;
  * This class is designed to be used by the service poller framework to test the
  * availability of the DHCP service on remote interfaces as defined by RFC 2131.
  *
- * This class relies on the DHCP API provided by JDHCP v1.1.1 (please refer to
- * <A HREF="http://www.dhcp.org/javadhcp">http://www.dhcp.org/javadhcp </A>).
+ * This class relies on the DHCP API provided by dhcp4java.
  *
  * The class implements the ServiceMonitor interface that allows it to be used
  * along with other plug-ins by the service poller framework.
@@ -57,20 +55,20 @@ import org.slf4j.LoggerFactory;
  */
 @Distributable(DistributionContext.DAEMON)
 public final class DhcpMonitor extends AbstractServiceMonitor {
-	
 	private static final Logger LOG = LoggerFactory.getLogger(DhcpMonitor.class);
 
     /**
      * Default retries.
      */
-    private static final int DEFAULT_RETRY = 0;
+    public static final int DEFAULT_RETRY = 0;
 
     /**
      * Default timeout. Specifies how long (in milliseconds) to block waiting
      * for data from the monitored interface.
      */
-    private static final int DEFAULT_TIMEOUT = 3000; // 3 second timeout on
-                                                        // read()
+    public static final int DEFAULT_TIMEOUT = 3000;
+
+    public static final String DEFAULT_MAC_ADDRESS = "00:06:0D:BE:9C:B2";
 
     /**
      * {@inheritDoc}
@@ -79,45 +77,30 @@ public final class DhcpMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        // Process parameters
-        //
 
-        // Retries
-        //
-        int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+        // common parameters
+        final int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+        final int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
 
-        // Get interface address from NetworkInterface
-        //
-        InetAddress ipAddr = svc.getAddress();
+        // DHCP-specific parameters
+        final String macAddress = ParameterMap.getKeyedString(parameters, "macAddress", DEFAULT_MAC_ADDRESS);
+        final boolean relayMode = ParameterMap.getKeyedBoolean(parameters, "relayMode", false);
+        final boolean extendedMode = ParameterMap.getKeyedBoolean(parameters, "extendedMode", false);
+        final String myAddress = ParameterMap.getKeyedString(parameters, "myIpAddress", "127.0.0.1");
+        final String requestIpAddress = ParameterMap.getKeyedString(parameters, "requestIpAddress", "127.0.0.1");
 
-        LOG.debug("DhcpMonitor.poll: address: {} timeout: {} retry: {}", ipAddr, timeout,  retry);
-
-        PollStatus serviceStatus = PollStatus.unavailable();
-        long responseTime = -1;
-        try {
-            // Dhcpd.isServer() returns the response time in milliseconds
-            // if the remote box is a DHCP server or -1 if the remote
-            // box is NOT a DHCP server.
-            // 
-            responseTime = Dhcpd.isServer(ipAddr, (long) timeout, retry);
-            if (responseTime >= 0) {
-                serviceStatus = PollStatus.available((double)responseTime);
+        final TimeoutTracker tracker = new TimeoutTracker(parameters, retry, timeout);
+        final Transaction transaction = new Transaction(svc.getIpAddr(), macAddress, relayMode, myAddress, extendedMode, requestIpAddress, timeout);
+        for (tracker.reset(); tracker.shouldRetry() && !transaction.isSuccess(); tracker.nextAttempt()) {
+            try {
+                Dhcpd.addTransaction(transaction);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return PollStatus.unavailable("An unexpected exception occurred during DHCP polling");
             }
-        } catch (IOException e) {
-            e.fillInStackTrace();
-            DhcpMonitor.LOG.debug("An I/O exception occured during DHCP polling", e);
-            serviceStatus = PollStatus.unavailable("An I/O exception occured during DHCP polling");
-        } catch (Throwable e) {
-            e.fillInStackTrace();
-            DhcpMonitor.LOG.debug("An unexpected exception occured during DHCP polling", e);
-            serviceStatus = PollStatus.unavailable("An unexpected exception occured during DHCP polling");
         }
 
-        //
-        // return the status of the service
-        //
-        return serviceStatus;
+        return transaction.isSuccess() ? PollStatus.available() : PollStatus.unavailable("DHCP service unavailable");
     }
     
 }
