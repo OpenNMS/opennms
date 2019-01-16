@@ -303,14 +303,14 @@ function confirmAssetEdit() {
 }
 </script>
 
-<h4>
+<h5>
   <c:if test="${model.foreignSource != null}">
-    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid label label-default" title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span>&nbsp;<span class="NPfs label label-default" title="Requisition: ${model.foreignSource}"><i class="fa fa-list-alt"></i>&nbsp;${model.foreignSource}</span>&nbsp;<span class="NPfid label label-default" title="Foreign ID: ${model.foreignId}"><i class="fa fa-qrcode"></i>&nbsp;${model.foreignId}</span>&nbsp;<span class="NPloc label label-default" title="Location: ${model.location}"><i class="fa fa-map-marker"></i>&nbsp;${model.location}</span></div>
+    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid badge badge-secondary " title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span>&nbsp;<span class="NPfs badge badge-secondary " title="Requisition: ${model.foreignSource}"><i class="fa fa-list-alt"></i>&nbsp;${model.foreignSource}</span>&nbsp;<span class="NPfid badge badge-secondary " title="Foreign ID: ${model.foreignId}"><i class="fa fa-qrcode"></i>&nbsp;${model.foreignId}</span>&nbsp;<span class="NPloc badge badge-secondary " title="Location: ${model.location}"><i class="fa fa-map-marker"></i>&nbsp;${model.location}</span></div>
   </c:if>
   <c:if test="${model.foreignSource == null}">
-    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid label label-default" title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span>&nbsp;<span class="NPloc label label-default" title="Location: ${model.location}"><i class="fa fa-map-marker"></i>&nbsp;${model.location}</span></div>
+    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid badge badge-secondary " title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span>&nbsp;<span class="NPloc badge badge-secondary " title="Location: ${model.location}"><i class="fa fa-map-marker"></i>&nbsp;${model.location}</span></div>
   </c:if>
-</h4>
+</h5>
 
   <ul class="list-inline">
     <c:url var="eventLink" value="event/list">
