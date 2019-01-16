@@ -129,7 +129,8 @@ public class KafkaRpcServerManager {
         delayQueueExecutor.execute(() -> {
             while(true) {
                 try {
-                    rpcIdQueue.take();
+                    RpcId rpcId = rpcIdQueue.take();
+                    messageCache.remove(rpcId.getRpcId());
                 } catch (InterruptedException e) {
                     LOG.error("Delay Queue has been interrupted ", e);
                     break;
@@ -236,14 +237,14 @@ public class KafkaRpcServerManager {
                                     messageId = messageId + rpcMessage.getCurrentChunkNumber();
                                 }
                                 // If rpcId is already present in queue, no need to process it again.
-                                if (rpcIdQueue.contains(new RpcId(messageId, rpcMessage.getExpirationTime()))) {
+                                if (rpcIdQueue.contains(new RpcId(messageId, rpcMessage.getExpirationTime())) ||
+                                        rpcMessage.getExpirationTime() < System.currentTimeMillis()) {
                                     continue;
                                 } else {
                                     rpcIdQueue.offer(new RpcId(messageId, rpcMessage.getExpirationTime()));
                                 }
                             }
                             ByteString rpcContent = rpcMessage.getRpcContent();
-
                             // For larger messages which get split into multiple chunks, cache them until all of them arrive.
                             if (rpcMessage.getTotalChunks() > 1) {
                                 ByteString byteString = messageCache.get(rpcId);
@@ -347,6 +348,10 @@ public class KafkaRpcServerManager {
         public long getDelay(TimeUnit unit) {
             long now = System.currentTimeMillis();
             return unit.convert(expirationTime - now, TimeUnit.MILLISECONDS);
+        }
+
+        public String getRpcId() {
+            return rpcId;
         }
 
         @Override
