@@ -41,7 +41,6 @@ import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.CdpCacheTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.CdpGlobalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.CdpInterfacePortNameGetter;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
@@ -64,12 +63,12 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
      * <code>run</code> method is invoked.
      * 
 	 */
-    public NodeDiscoveryCdp(final EventForwarder eventForwarder,
+    public NodeDiscoveryCdp(
             final CdpTopologyService cdpTopologyService,
             final LocationAwareSnmpClient locationAwareSnmpClient,
             final long interval,final long initial,
             final Node node) {
-        super(eventForwarder, locationAwareSnmpClient, interval, initial,node);
+        super(locationAwareSnmpClient, interval, initial,node);
     	m_cdpTopologyService = cdpTopologyService;
     }
 

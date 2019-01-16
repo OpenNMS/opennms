@@ -28,12 +28,15 @@
 
 package org.opennms.netmgt.enlinkd;
 
+import java.util.List;
+
 import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 
 /**
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
@@ -122,6 +125,24 @@ public final class EventProcessor {
     @EventHandler(uei = EventConstants.FORCE_RESCAN_EVENT_UEI)
     public void handleForceRescan(Event e) {
     	m_linkd.rescheduleNodeCollection(new Long(e.getNodeid()).intValue());
+    }
+    
+
+    /**
+     * <p>handleForceRescan</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
+    @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
+    public void handleReloadDaemonconfig(Event e) {
+        List<Parm> parmCollection = e.getParmCollection();
+
+        for (Parm parm : parmCollection) {
+            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Enlinkd".equalsIgnoreCase(parm.getValue().getContent())) {
+                m_linkd.reloadConfig();
+                break;
+            }
+        }
     }
     
 

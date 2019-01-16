@@ -40,7 +40,6 @@ import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.enlinkd.service.api.TopologyConnection;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
@@ -71,10 +70,10 @@ public class IsisOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
     private final IsisTopologyService m_isisTopologyService;
 
-    public IsisOnmsTopologyUpdater(EventForwarder eventforwarder,
+    public IsisOnmsTopologyUpdater(
             OnmsTopologyDao topologyDao, IsisTopologyService isisTopologyService, NodeTopologyService nodeTopologyService,
             long interval, long initialsleeptime) {
-        super(eventforwarder,isisTopologyService, topologyDao,nodeTopologyService,interval, initialsleeptime);
+        super(isisTopologyService, topologyDao,nodeTopologyService,interval, initialsleeptime);
         m_isisTopologyService = isisTopologyService;
     }            
     

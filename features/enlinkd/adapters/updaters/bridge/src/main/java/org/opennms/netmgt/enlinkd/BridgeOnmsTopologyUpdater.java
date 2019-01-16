@@ -45,7 +45,6 @@ import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.enlinkd.service.api.TopologyShared;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
@@ -101,10 +100,10 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater  {
 
     protected final BridgeTopologyService m_bridgeTopologyService;
 
-    public BridgeOnmsTopologyUpdater(EventForwarder eventforwarder,
+    public BridgeOnmsTopologyUpdater(
             OnmsTopologyDao topologyDao, BridgeTopologyService bridgeTopologyService, NodeTopologyService nodeTopologyService,
             long interval, long initialsleeptime) {
-        super(eventforwarder, bridgeTopologyService,topologyDao,nodeTopologyService,interval, initialsleeptime);
+        super(bridgeTopologyService,topologyDao,nodeTopologyService,interval, initialsleeptime);
         m_bridgeTopologyService = bridgeTopologyService;
     }            
     

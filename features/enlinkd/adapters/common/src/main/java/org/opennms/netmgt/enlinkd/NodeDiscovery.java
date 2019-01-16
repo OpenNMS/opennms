@@ -34,7 +34,6 @@ import java.net.InetAddress;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.enlinkd.service.api.Node;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
@@ -65,9 +64,9 @@ public abstract class NodeDiscovery extends Discovery {
      * @param config
      *            The SnmpPeer object to collect from.
      */
-    public NodeDiscovery(final EventForwarder eventForwarder, final LocationAwareSnmpClient locationAwareSnmpClient,
+    public NodeDiscovery(final LocationAwareSnmpClient locationAwareSnmpClient,
             final long interval,final long initial, final Node node) {
-        super(eventForwarder,interval, initial);
+        super(interval, initial);
         m_node = node;
         m_locationAwareSnmpClient=locationAwareSnmpClient;
     }
@@ -87,15 +86,14 @@ public abstract class NodeDiscovery extends Discovery {
      */
     public void runDiscovery() {
         if (m_suspendCollection) {
-            sendSuspendedEvent(getNodeId());
+            LOG.info( "run: node [{}], suspended {} collection.", 
+                      getNodeId(), getName());
         } else {
-            sendStartEvent(getNodeId());
             LOG.info( "run: node [{}], start {} collection.", 
                       getNodeId(), getName());
             runNodeDiscovery();
             LOG.info( "run: node [{}], end {} collection.", 
                       getNodeId(),getName());
-            sendCompletedEvent(getNodeId());
         }
     }
 

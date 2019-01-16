@@ -40,7 +40,6 @@ import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.enlinkd.service.api.TopologyConnection;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
@@ -64,10 +63,10 @@ public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     
     private final CdpTopologyService m_cdpTopologyService;
 
-    public CdpOnmsTopologyUpdater(EventForwarder eventforwarder,
+    public CdpOnmsTopologyUpdater(
             OnmsTopologyDao topologyDao, CdpTopologyService cdpTopologyService, NodeTopologyService nodeTopologyService,
             long interval, long initialsleeptime) {
-        super(eventforwarder, cdpTopologyService,topologyDao,nodeTopologyService,interval, initialsleeptime);
+        super(cdpTopologyService,topologyDao,nodeTopologyService,interval, initialsleeptime);
         m_cdpTopologyService = cdpTopologyService;
     }            
     

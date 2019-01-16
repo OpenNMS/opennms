@@ -89,7 +89,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             final int maxSize,
             final LocationAwareSnmpClient locationAwareSnmpClient,
             final long interval,final long initial, final Node node) {
-        super(eventForwarder, locationAwareSnmpClient, interval, initial,node);
+        super(locationAwareSnmpClient, interval, initial,node);
         m_bridgeTopologyService = bridgeTopologyService;
         m_maxSize = maxSize;
     }

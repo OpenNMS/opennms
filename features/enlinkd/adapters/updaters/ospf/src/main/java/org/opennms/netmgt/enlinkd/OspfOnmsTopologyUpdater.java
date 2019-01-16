@@ -40,7 +40,6 @@ import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.enlinkd.service.api.TopologyConnection;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
@@ -69,10 +68,10 @@ public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
 
     protected final OspfTopologyService m_ospfTopologyService;
 
-    public OspfOnmsTopologyUpdater(EventForwarder eventforwarder,
+    public OspfOnmsTopologyUpdater(
             OnmsTopologyDao topologyDao, OspfTopologyService ospfTopologyService, NodeTopologyService nodeTopologyService,
             long interval, long initialsleeptime) {
-        super(eventforwarder, ospfTopologyService,topologyDao,nodeTopologyService,interval, initialsleeptime);
+        super(ospfTopologyService,topologyDao,nodeTopologyService,interval, initialsleeptime);
         m_ospfTopologyService = ospfTopologyService;
     }            
     

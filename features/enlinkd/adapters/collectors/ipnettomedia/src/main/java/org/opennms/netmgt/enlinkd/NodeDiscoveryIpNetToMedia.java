@@ -38,7 +38,6 @@ import org.opennms.netmgt.enlinkd.model.IpNetToMedia.IpNetToMediaType;
 import org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
@@ -64,12 +63,12 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
 	 * @param EnhancedLinkd linkd
 	 * @param LinkableNode node
 	 */
-	public NodeDiscoveryIpNetToMedia(final EventForwarder eventForwarder,
+	public NodeDiscoveryIpNetToMedia(
 	            final IpNetToMediaTopologyService ipNetToMediaTopologyService,
 	            final LocationAwareSnmpClient locationAwareSnmpClient,
 	            final long interval,final long initial,
 	            final Node node) {
-	        super(eventForwarder, locationAwareSnmpClient, interval, initial,node);
+	        super(locationAwareSnmpClient, interval, initial,node);
     	m_ipNetToMediaTopologyService = ipNetToMediaTopologyService;
     }
 

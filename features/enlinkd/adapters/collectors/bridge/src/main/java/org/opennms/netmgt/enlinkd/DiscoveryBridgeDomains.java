@@ -47,7 +47,6 @@ import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.DiscoveryBridgeTopology;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,8 +56,8 @@ public class DiscoveryBridgeDomains extends Discovery {
     private final int m_maxthreads;
     private final BridgeTopologyService m_bridgeTopologyService;
 
-    public DiscoveryBridgeDomains(EventForwarder eventforwarder, BridgeTopologyService bridgeTopologyService, long interval, long initialsleeptime, int maxthreads) {
-        super(eventforwarder, interval, initialsleeptime);
+    public DiscoveryBridgeDomains(BridgeTopologyService bridgeTopologyService, long interval, long initialsleeptime, int maxthreads) {
+        super(interval, initialsleeptime);
         m_maxthreads=maxthreads;
         m_bridgeTopologyService = bridgeTopologyService;
     }

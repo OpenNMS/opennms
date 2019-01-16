@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 
@@ -58,8 +56,6 @@ public abstract class Discovery implements ReadyRunnable {
      */
 
     protected boolean m_suspendCollection = false;
-
-    private final EventForwarder m_eventForwarder;
     
     /**
      * Constructs a new SNMP collector for a node using the passed interface
@@ -70,8 +66,7 @@ public abstract class Discovery implements ReadyRunnable {
      * @param config
      *            The SnmpPeer object to collect from.
      */
-    public Discovery(final EventForwarder eventforwarder, long interval, long initial) {
-        m_eventForwarder = eventforwarder;
+    public Discovery(long interval, long initial) {
         m_poll_interval = interval;
         m_initial_sleep_time = initial;
    }
@@ -243,34 +238,5 @@ public abstract class Discovery implements ReadyRunnable {
                     return false;
             return true;
     }
-
-    protected void sendSuspendedEvent(int nodeid) {
-        EventBuilder builder = new EventBuilder(
-                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended",
-                                   "EnhancedLinkd");
-                           builder.setNodeid(nodeid);
-                           builder.addParam("runnable", getName());
-       m_eventForwarder.sendNow(builder.getEvent());
-    }
-    
-    protected void sendStartEvent(int nodeid) {
-        EventBuilder builder = new EventBuilder(
-                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted",
-                                   "EnhancedLinkd");
-                           builder.setNodeid(nodeid);
-                           builder.addParam("runnable", getName());
-                           m_eventForwarder.sendNow(builder.getEvent());
-        
-    }
-    
-    protected void sendCompletedEvent(int nodeid) {
-        EventBuilder builder = new EventBuilder(
-                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted",
-                                   "EnhancedLinkd");
-                           builder.setNodeid(nodeid);
-                           builder.addParam("runnable", getName());
-                           m_eventForwarder.sendNow(builder.getEvent());
-    }
-
 
 }

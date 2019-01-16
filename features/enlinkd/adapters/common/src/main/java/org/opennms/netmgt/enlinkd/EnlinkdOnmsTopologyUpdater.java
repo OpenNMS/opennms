@@ -39,7 +39,6 @@ import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.TopologyService;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
@@ -79,11 +78,11 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
     private OnmsTopology m_topology;
     private boolean m_runned = false;
     
-    public EnlinkdOnmsTopologyUpdater(EventForwarder eventforwarder,
+    public EnlinkdOnmsTopologyUpdater(
             TopologyService topologyService,
             OnmsTopologyDao topologyDao, NodeTopologyService nodeTopologyService,
             long interval, long initialsleeptime) {
-        super(eventforwarder, interval, initialsleeptime);
+        super(interval, initialsleeptime);
         m_topologyDao = topologyDao;
         m_topologyService = topologyService;
         m_nodeTopologyService = nodeTopologyService;

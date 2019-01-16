@@ -40,7 +40,6 @@ import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
@@ -71,12 +70,12 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
      * @param LinkableNode node
      * 
      */
-    public NodeDiscoveryLldp(final EventForwarder eventForwarder,
+    public NodeDiscoveryLldp(
             final LldpTopologyService lldpTopologyService,
             final LocationAwareSnmpClient locationAwareSnmpClient,
             final long interval,final long initial,
             final Node node) {
-        super(eventForwarder, locationAwareSnmpClient, interval, initial,node);
+        super(locationAwareSnmpClient, interval, initial,node);
     	m_lldpTopologyService = lldpTopologyService;
     }
 

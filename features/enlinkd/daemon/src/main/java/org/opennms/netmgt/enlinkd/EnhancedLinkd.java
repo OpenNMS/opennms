@@ -73,7 +73,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         switch (proto) {
         case CDP:
             onmsTopologyUpdater = new CdpOnmsTopologyUpdater(
-                                                             linkd.getEventForwarder(),
                                                              linkd.getOnmsTopologyDao(),
                                                              linkd.getCdpTopologyService(),
                                                              linkd.getQueryManager(),
@@ -84,7 +83,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             break;
         case BRIDGE:
             onmsTopologyUpdater = new BridgeOnmsTopologyUpdater(
-                                                             linkd.getEventForwarder(),
                                                              linkd.getOnmsTopologyDao(),
                                                              linkd.getBridgeTopologyService(),
                                                              linkd.getQueryManager(),
@@ -94,7 +92,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             break;
         case ISIS:
             onmsTopologyUpdater = new IsisOnmsTopologyUpdater(
-                                                             linkd.getEventForwarder(),
                                                              linkd.getOnmsTopologyDao(),
                                                              linkd.getIsisTopologyService(),
                                                              linkd.getQueryManager(),
@@ -105,7 +102,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             break;
         case LLDP:
             onmsTopologyUpdater = new LldpOnmsTopologyUpdater(
-                                                             linkd.getEventForwarder(),
                                                              linkd.getOnmsTopologyDao(),
                                                              linkd.getLldpTopologyService(),
                                                              linkd.getQueryManager(),
@@ -115,7 +111,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             break;
         case OSPF:
             onmsTopologyUpdater = new OspfOnmsTopologyUpdater(
-                                                             linkd.getEventForwarder(),
                                                              linkd.getOnmsTopologyDao(),
                                                              linkd.getOspfTopologyService(),
                                                              linkd.getQueryManager(),
@@ -269,8 +264,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
     public void scheduleDiscoveryBridgeDomain() {
             m_discoveryBridgeDomains=
-                    new DiscoveryBridgeDomains(getEventForwarder(),
-                                               getBridgeTopologyService(),
+                    new DiscoveryBridgeDomains(getBridgeTopologyService(),
                                                getBridgeTopologyInterval(),
                                                getBridgeTopologyInterval()+getInitialSleepTime(),
                                                getDiscoveryBridgeThreads());
@@ -302,8 +296,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         if (m_linkdConfig.useLldpDiscovery()) {
             LOG.debug("getSnmpCollections: adding Lldp: {}",
                     node);
-            colls.add(new NodeDiscoveryLldp(getEventForwarder(), 
-                                            getLldpTopologyService(),
+            colls.add(new NodeDiscoveryLldp(getLldpTopologyService(),
                                             getLocationAwareSnmpClient(), 
                                             getRescanInterval(),
                                             getInitialSleepTime(),
@@ -313,8 +306,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         if (m_linkdConfig.useCdpDiscovery()) {
             LOG.debug("getSnmpCollections: adding Cdp: {}",
                     node);
-             colls.add(new NodeDiscoveryCdp(getEventForwarder(), 
-                                            getCdpTopologyService(),
+             colls.add(new NodeDiscoveryCdp(getCdpTopologyService(),
                                             getLocationAwareSnmpClient(), 
                                             getRescanInterval(),
                                             getInitialSleepTime(),
@@ -324,8 +316,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         if (m_linkdConfig.useBridgeDiscovery()) {
                 LOG.debug("getSnmpCollections: adding IpNetToMedia: {}",
                     node);
-                colls.add(new NodeDiscoveryIpNetToMedia(getEventForwarder(), 
-                                                        getIpNetToMediaTopologyService(),
+                colls.add(new NodeDiscoveryIpNetToMedia(getIpNetToMediaTopologyService(),
                                                         getLocationAwareSnmpClient(), 
                                                         getRescanInterval(),
                                                         getInitialSleepTime(),
@@ -345,8 +336,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         if (m_linkdConfig.useOspfDiscovery()) {
             LOG.debug("getSnmpCollections: adding Ospf: {}",
                     node);
-                colls.add(new NodeDiscoveryOspf(getEventForwarder(), 
-                                                getOspfTopologyService(),
+                colls.add(new NodeDiscoveryOspf(getOspfTopologyService(),
                                                 getLocationAwareSnmpClient(), 
                                                 getRescanInterval(),
                                                 getInitialSleepTime(),
@@ -356,12 +346,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         if (m_linkdConfig.useIsisDiscovery()) {
             LOG.debug("getSnmpCollections: adding Is-Is: {}",
                     node);
-                colls.add(new NodeDiscoveryIsis(getEventForwarder(), 
-                        getIsisTopologyService(),
-                        getLocationAwareSnmpClient(), 
-                        getRescanInterval(),
-                        getInitialSleepTime(), 
-                        node));
+                colls.add(new NodeDiscoveryIsis(getIsisTopologyService(),
+                                                getLocationAwareSnmpClient(), 
+                                                getRescanInterval(),
+                                                getInitialSleepTime(), 
+                                                node));
         }
        
         for (final NodeDiscovery coll : colls ){
@@ -717,6 +706,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     }
     public void setOnmsTopologyDao(OnmsTopologyDao onmsTopologyDao) {
         m_onmsTopologyDao = onmsTopologyDao;
+    }
+
+    public void reloadConfig() {
+        // TODO Auto-generated method stub
+        
     }
 
 }
