@@ -161,11 +161,11 @@ pageContext.setAttribute("searchString", searchString==null?"":Util.encode(searc
       <div class="card-body">
         <form id="ILRfilter" action="admin/nodemanagement/instrumentationLogReader.jsp" method="get" style="display:inline">
           <input type="text" class="form-control" name="searchString" size="15" value="<%=searchString==null?"":WebSecurityUtils.sanitizeString(searchString)%>"/>
-          <button type="submit" class="btn btn-secondary">Submit</button>
+          <button type="submit" class="btn btn-secondary mt-1">Submit</button>
         </form>
         <form id="ILRreset" action="admin/nodemanagement/instrumentationLogReader.jsp" method="get" style="display:inline">
           <input type="hidden" name="searchString" value=""/>
-          <button type="submit" class="btn btn-secondary">Reset</button>
+          <button type="submit" class="btn btn-secondary mt-1">Reset</button>
         </form>
       </div> <!-- card-body -->
     </div> <!-- panel -->

@@ -114,18 +114,16 @@
       <div class="card-body">
         <form method="post" name="deleteNode" action="admin/deleteSelNodes" onSubmit="return applyChanges();">
           <div class="form-group">
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" name="nodeCheck" id="nodeCheck" value='<%= nodeId %>'> Node
-              </label>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="nodeCheck" id="nodeCheck" value='<%= nodeId %>'>
+              <label class="form-check-label" for="nodeCheck">Node</label>
             </div>
           </div>
 
           <div class="form-group">
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" name="nodeData" id="nodeData" value='<%= nodeId %>'> Data
-              </label>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="nodeData" id="nodeData" value='<%= nodeId %>'>
+              <label class="form-check-label" for="nodeData">Data</label>
             </div>
           </div>
 
