@@ -503,8 +503,8 @@ public class ProtobufMapper {
     private OpennmsModelProtos.TopologyPort getPort(org.opennms.netmgt.topologies.service.api.OnmsTopologyPort port) {
         final OpennmsModelProtos.TopologyPort.Builder builder = OpennmsModelProtos.TopologyPort.newBuilder()
                 .setVertexId(port.getVertex().getId())
-                .setIfindex(port.getIfindex())
-                .setIfname(port.getIfname())
+                .setIfIndex(port.getIfindex())
+                .setIfName(port.getIfname())
                 .setAddress(port.getAddr());
         return builder.build();
     }

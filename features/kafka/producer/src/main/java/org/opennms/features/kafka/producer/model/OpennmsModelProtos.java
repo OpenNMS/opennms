@@ -17634,19 +17634,19 @@ public final class OpennmsModelProtos {
         getVertexIdBytes();
 
     /**
-     * <code>uint64 ifindex = 2;</code>
+     * <code>uint64 if_index = 2;</code>
      */
-    long getIfindex();
+    long getIfIndex();
 
     /**
-     * <code>string ifname = 3;</code>
+     * <code>string if_name = 3;</code>
      */
-    java.lang.String getIfname();
+    java.lang.String getIfName();
     /**
-     * <code>string ifname = 3;</code>
+     * <code>string if_name = 3;</code>
      */
     com.google.protobuf.ByteString
-        getIfnameBytes();
+        getIfNameBytes();
 
     /**
      * <code>string address = 4;</code>
@@ -17672,8 +17672,8 @@ public final class OpennmsModelProtos {
     }
     private TopologyPort() {
       vertexId_ = "";
-      ifindex_ = 0L;
-      ifname_ = "";
+      ifIndex_ = 0L;
+      ifName_ = "";
       address_ = "";
     }
 
@@ -17716,13 +17716,13 @@ public final class OpennmsModelProtos {
             }
             case 16: {
 
-              ifindex_ = input.readUInt64();
+              ifIndex_ = input.readUInt64();
               break;
             }
             case 26: {
               java.lang.String s = input.readStringRequireUtf8();
 
-              ifname_ = s;
+              ifName_ = s;
               break;
             }
             case 34: {
@@ -17789,43 +17789,43 @@ public final class OpennmsModelProtos {
       }
     }
 
-    public static final int IFINDEX_FIELD_NUMBER = 2;
-    private long ifindex_;
+    public static final int IF_INDEX_FIELD_NUMBER = 2;
+    private long ifIndex_;
     /**
-     * <code>uint64 ifindex = 2;</code>
+     * <code>uint64 if_index = 2;</code>
      */
-    public long getIfindex() {
-      return ifindex_;
+    public long getIfIndex() {
+      return ifIndex_;
     }
 
-    public static final int IFNAME_FIELD_NUMBER = 3;
-    private volatile java.lang.Object ifname_;
+    public static final int IF_NAME_FIELD_NUMBER = 3;
+    private volatile java.lang.Object ifName_;
     /**
-     * <code>string ifname = 3;</code>
+     * <code>string if_name = 3;</code>
      */
-    public java.lang.String getIfname() {
-      java.lang.Object ref = ifname_;
+    public java.lang.String getIfName() {
+      java.lang.Object ref = ifName_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        ifname_ = s;
+        ifName_ = s;
         return s;
       }
     }
     /**
-     * <code>string ifname = 3;</code>
+     * <code>string if_name = 3;</code>
      */
     public com.google.protobuf.ByteString
-        getIfnameBytes() {
-      java.lang.Object ref = ifname_;
+        getIfNameBytes() {
+      java.lang.Object ref = ifName_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        ifname_ = b;
+        ifName_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -17881,11 +17881,11 @@ public final class OpennmsModelProtos {
       if (!getVertexIdBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, vertexId_);
       }
-      if (ifindex_ != 0L) {
-        output.writeUInt64(2, ifindex_);
+      if (ifIndex_ != 0L) {
+        output.writeUInt64(2, ifIndex_);
       }
-      if (!getIfnameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, ifname_);
+      if (!getIfNameBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, ifName_);
       }
       if (!getAddressBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, address_);
@@ -17901,12 +17901,12 @@ public final class OpennmsModelProtos {
       if (!getVertexIdBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, vertexId_);
       }
-      if (ifindex_ != 0L) {
+      if (ifIndex_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(2, ifindex_);
+          .computeUInt64Size(2, ifIndex_);
       }
-      if (!getIfnameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, ifname_);
+      if (!getIfNameBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, ifName_);
       }
       if (!getAddressBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, address_);
@@ -17929,10 +17929,10 @@ public final class OpennmsModelProtos {
       boolean result = true;
       result = result && getVertexId()
           .equals(other.getVertexId());
-      result = result && (getIfindex()
-          == other.getIfindex());
-      result = result && getIfname()
-          .equals(other.getIfname());
+      result = result && (getIfIndex()
+          == other.getIfIndex());
+      result = result && getIfName()
+          .equals(other.getIfName());
       result = result && getAddress()
           .equals(other.getAddress());
       result = result && unknownFields.equals(other.unknownFields);
@@ -17948,11 +17948,11 @@ public final class OpennmsModelProtos {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + VERTEX_ID_FIELD_NUMBER;
       hash = (53 * hash) + getVertexId().hashCode();
-      hash = (37 * hash) + IFINDEX_FIELD_NUMBER;
+      hash = (37 * hash) + IF_INDEX_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-          getIfindex());
-      hash = (37 * hash) + IFNAME_FIELD_NUMBER;
-      hash = (53 * hash) + getIfname().hashCode();
+          getIfIndex());
+      hash = (37 * hash) + IF_NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getIfName().hashCode();
       hash = (37 * hash) + ADDRESS_FIELD_NUMBER;
       hash = (53 * hash) + getAddress().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
@@ -18086,9 +18086,9 @@ public final class OpennmsModelProtos {
         super.clear();
         vertexId_ = "";
 
-        ifindex_ = 0L;
+        ifIndex_ = 0L;
 
-        ifname_ = "";
+        ifName_ = "";
 
         address_ = "";
 
@@ -18115,8 +18115,8 @@ public final class OpennmsModelProtos {
       public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort buildPartial() {
         org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort result = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort(this);
         result.vertexId_ = vertexId_;
-        result.ifindex_ = ifindex_;
-        result.ifname_ = ifname_;
+        result.ifIndex_ = ifIndex_;
+        result.ifName_ = ifName_;
         result.address_ = address_;
         onBuilt();
         return result;
@@ -18163,11 +18163,11 @@ public final class OpennmsModelProtos {
           vertexId_ = other.vertexId_;
           onChanged();
         }
-        if (other.getIfindex() != 0L) {
-          setIfindex(other.getIfindex());
+        if (other.getIfIndex() != 0L) {
+          setIfIndex(other.getIfIndex());
         }
-        if (!other.getIfname().isEmpty()) {
-          ifname_ = other.ifname_;
+        if (!other.getIfName().isEmpty()) {
+          ifName_ = other.ifName_;
           onChanged();
         }
         if (!other.getAddress().isEmpty()) {
@@ -18270,97 +18270,97 @@ public final class OpennmsModelProtos {
         return this;
       }
 
-      private long ifindex_ ;
+      private long ifIndex_ ;
       /**
-       * <code>uint64 ifindex = 2;</code>
+       * <code>uint64 if_index = 2;</code>
        */
-      public long getIfindex() {
-        return ifindex_;
+      public long getIfIndex() {
+        return ifIndex_;
       }
       /**
-       * <code>uint64 ifindex = 2;</code>
+       * <code>uint64 if_index = 2;</code>
        */
-      public Builder setIfindex(long value) {
+      public Builder setIfIndex(long value) {
         
-        ifindex_ = value;
+        ifIndex_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>uint64 ifindex = 2;</code>
+       * <code>uint64 if_index = 2;</code>
        */
-      public Builder clearIfindex() {
+      public Builder clearIfIndex() {
         
-        ifindex_ = 0L;
+        ifIndex_ = 0L;
         onChanged();
         return this;
       }
 
-      private java.lang.Object ifname_ = "";
+      private java.lang.Object ifName_ = "";
       /**
-       * <code>string ifname = 3;</code>
+       * <code>string if_name = 3;</code>
        */
-      public java.lang.String getIfname() {
-        java.lang.Object ref = ifname_;
+      public java.lang.String getIfName() {
+        java.lang.Object ref = ifName_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          ifname_ = s;
+          ifName_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>string ifname = 3;</code>
+       * <code>string if_name = 3;</code>
        */
       public com.google.protobuf.ByteString
-          getIfnameBytes() {
-        java.lang.Object ref = ifname_;
+          getIfNameBytes() {
+        java.lang.Object ref = ifName_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          ifname_ = b;
+          ifName_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>string ifname = 3;</code>
+       * <code>string if_name = 3;</code>
        */
-      public Builder setIfname(
+      public Builder setIfName(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   
-        ifname_ = value;
+        ifName_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string ifname = 3;</code>
+       * <code>string if_name = 3;</code>
        */
-      public Builder clearIfname() {
+      public Builder clearIfName() {
         
-        ifname_ = getDefaultInstance().getIfname();
+        ifName_ = getDefaultInstance().getIfName();
         onChanged();
         return this;
       }
       /**
-       * <code>string ifname = 3;</code>
+       * <code>string if_name = 3;</code>
        */
-      public Builder setIfnameBytes(
+      public Builder setIfNameBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
         
-        ifname_ = value;
+        ifName_ = value;
         onChanged();
         return this;
       }
@@ -21785,21 +21785,22 @@ public final class OpennmsModelProtos {
       "logyRef\022\n\n\002id\030\001 \001(\t\022\020\n\010protocol\030\002 \001(\t\":\n" +
       "\022TopologyVertexNode\022$\n\rnode_criteria\030\001 \001" +
       "(\0132\r.NodeCriteria\"\027\n\025TopologyVertexSegme" +
-      "nt\"S\n\014TopologyPort\022\021\n\tvertex_id\030\001 \001(\t\022\017\n" +
-      "\007ifindex\030\002 \001(\004\022\016\n\006ifname\030\003 \001(\t\022\017\n\007addres" +
-      "s\030\004 \001(\t\"\224\001\n\016TopologyVertex\022\031\n\003ref\030\001 \001(\0132" +
-      "\014.TopologyRef\022#\n\004node\030\002 \001(\0132\023.TopologyVe" +
-      "rtexNodeH\000\022)\n\007segment\030\003 \001(\0132\026.TopologyVe" +
-      "rtexSegmentH\000\022\r\n\005label\030\004 \001(\tB\010\n\006vertex\"g" +
-      "\n\014TopologyEdge\022\031\n\003ref\030\001 \001(\0132\014.TopologyRe" +
-      "f\022\035\n\006source\030\002 \001(\0132\r.TopologyPort\022\035\n\006targ" +
-      "et\030\003 \001(\0132\r.TopologyPort\"L\n\017TopologySegme" +
-      "nt\022\031\n\003ref\030\001 \001(\0132\014.TopologyRef\022\036\n\007sources" +
-      "\030\002 \003(\0132\r.TopologyPort*g\n\010Severity\022\021\n\rIND" +
-      "ETERMINATE\020\000\022\013\n\007CLEARED\020\001\022\n\n\006NORMAL\020\002\022\013\n" +
-      "\007WARNING\020\003\022\t\n\005MINOR\020\004\022\t\n\005MAJOR\020\005\022\014\n\010CRIT" +
-      "ICAL\020\006B?\n)org.opennms.features.kafka.pro" +
-      "ducer.modelB\022OpennmsModelProtosb\006proto3"
+      "nt\"U\n\014TopologyPort\022\021\n\tvertex_id\030\001 \001(\t\022\020\n" +
+      "\010if_index\030\002 \001(\004\022\017\n\007if_name\030\003 \001(\t\022\017\n\007addr" +
+      "ess\030\004 \001(\t\"\224\001\n\016TopologyVertex\022\031\n\003ref\030\001 \001(" +
+      "\0132\014.TopologyRef\022#\n\004node\030\002 \001(\0132\023.Topology" +
+      "VertexNodeH\000\022)\n\007segment\030\003 \001(\0132\026.Topology" +
+      "VertexSegmentH\000\022\r\n\005label\030\004 \001(\tB\010\n\006vertex" +
+      "\"g\n\014TopologyEdge\022\031\n\003ref\030\001 \001(\0132\014.Topology" +
+      "Ref\022\035\n\006source\030\002 \001(\0132\r.TopologyPort\022\035\n\006ta" +
+      "rget\030\003 \001(\0132\r.TopologyPort\"L\n\017TopologySeg" +
+      "ment\022\031\n\003ref\030\001 \001(\0132\014.TopologyRef\022\036\n\007sourc" +
+      "es\030\002 \003(\0132\r.TopologyPort*g\n\010Severity\022\021\n\rI" +
+      "NDETERMINATE\020\000\022\013\n\007CLEARED\020\001\022\n\n\006NORMAL\020\002\022" +
+      "\013\n\007WARNING\020\003\022\t\n\005MINOR\020\004\022\t\n\005MAJOR\020\005\022\014\n\010CR" +
+      "ITICAL\020\006B?\n)org.opennms.features.kafka.p" +
+      "roducer.modelB\022OpennmsModelProtosb\006proto" +
+      "3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -21896,7 +21897,7 @@ public final class OpennmsModelProtos {
     internal_static_TopologyPort_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TopologyPort_descriptor,
-        new java.lang.String[] { "VertexId", "Ifindex", "Ifname", "Address", });
+        new java.lang.String[] { "VertexId", "IfIndex", "IfName", "Address", });
     internal_static_TopologyVertex_descriptor =
       getDescriptor().getMessageTypes().get(14);
     internal_static_TopologyVertex_fieldAccessorTable = new

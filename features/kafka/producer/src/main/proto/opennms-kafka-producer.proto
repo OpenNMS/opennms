@@ -162,8 +162,8 @@ message TopologyVertexSegment {
 
 message TopologyPort {
   string vertex_id = 1;
-  uint64 ifindex = 2; 
-  string ifname = 3; 
+  uint64 if_index = 2; 
+  string if_name = 3; 
   string address = 4;
 }
 
