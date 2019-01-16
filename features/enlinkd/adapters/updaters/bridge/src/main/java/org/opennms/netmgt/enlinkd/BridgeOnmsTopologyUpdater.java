@@ -134,7 +134,7 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater  {
             for(BridgePort bp :shared.getBridgePorts()) {
                 NodeTopologyEntity node = nodeMap.get(bp.getNodeId());
                 if (topology.getVertex(node.getId().toString()) == null) {
-                    topology.getVertices().add(create(node,ipMap.get(node.getId()).getIpAddress()));
+                    topology.getVertices().add(create(node,ipMap.get(node.getId())));
                 }
                 ports.add(create(topology.getVertex(node.getId().toString()), bp, nodeToOnmsSnmpTable.get(bp.getNodeId(), bp.getBridgePortIfIndex())));
 
@@ -150,7 +150,7 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater  {
                 } else {
                     NodeTopologyEntity node = nodeMap.get(mp.getNodeId());
                     if (topology.getVertex(node.getId().toString()) ==  null) {
-                        topology.getVertices().add(create(node,ipMap.get(node.getId()).getIpAddress()));
+                        topology.getVertices().add(create(node,ipMap.get(node.getId())));
                     }
                     ports.add(create(topology.getVertex(node.getId().toString()),mp,nodeToOnmsSnmpTable.get(mp.getNodeId(), mp.getIfIndex())));
                     if (LOG.isDebugEnabled()) {

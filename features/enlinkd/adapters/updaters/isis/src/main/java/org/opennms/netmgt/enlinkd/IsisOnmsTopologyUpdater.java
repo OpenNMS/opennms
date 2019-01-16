@@ -97,7 +97,7 @@ public class IsisOnmsTopologyUpdater extends TopologyUpdater {
 
         OnmsTopology topology = new OnmsTopology();
         for ( IsIsElementTopologyEntity element: m_isisTopologyService.findAllIsIsElements()) {
-            topology.getVertices().add(create(nodeMap.get(element.getNodeId()),ipMap.get(element.getNodeId()).getIpAddress()));
+            topology.getVertices().add(create(nodeMap.get(element.getNodeId()),ipMap.get(element.getNodeId())));
         }
         
     for(TopologyConnection<IsIsLinkTopologyEntity, IsIsLinkTopologyEntity> pair : m_isisTopologyService.match()){

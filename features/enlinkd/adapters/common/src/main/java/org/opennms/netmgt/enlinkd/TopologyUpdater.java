@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import java.net.InetAddress;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -38,6 +37,7 @@ import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
+import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.enlinkd.service.api.TopologyService;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
@@ -62,11 +62,14 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
             return OnmsTopologyProtocol.create(protocol.name());
     }
     
-    public static OnmsTopologyVertex create(NodeTopologyEntity node, InetAddress addr) throws OnmsTopologyException {
-        return OnmsTopologyVertex.create(node.getId().toString(), 
+    public static OnmsTopologyVertex create(NodeTopologyEntity node, IpInterfaceTopologyEntity primary) throws OnmsTopologyException {
+        OnmsTopologyVertex vertex = OnmsTopologyVertex.create(node.getId().toString(), 
                                          node.getLabel(), 
-                                         InetAddressUtils.str(addr), 
+                                         InetAddressUtils.str(primary.getIpAddress()), 
                                          node.getSysObjectId());
+        vertex.setNodeid(node.getId());
+        vertex.setToolTipText(Topology.getNodeTextString(node, primary));
+        return vertex;
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyUpdater.class);

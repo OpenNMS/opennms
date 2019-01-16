@@ -28,7 +28,9 @@
 
 package org.opennms.netmgt.topologies.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer;
@@ -47,6 +49,7 @@ public class OnmsTopologyLogger implements OnmsTopologyConsumer {
     private final static Logger LOG = LoggerFactory.getLogger(OnmsTopologyLogger.class);
 
     private final OnmsTopologyProtocol m_protocol;
+    private List<OnmsTopologyMessage> m_queue = new ArrayList<>();
     
     public OnmsTopologyLogger(String protocol) throws OnmsTopologyException {
         m_protocol =OnmsTopologyProtocol.create(protocol);
@@ -66,6 +69,7 @@ public class OnmsTopologyLogger implements OnmsTopologyConsumer {
 
     @Override
     public void consume(OnmsTopologyMessage message) {
+        m_queue.add(message);
         LOG.debug("-------Start receiving message--------");
         LOG.debug("received message type: {}" ,  message.getMessagestatus());
         LOG.debug("ref: {}",message.getMessagebody().getId());
@@ -87,6 +91,16 @@ public class OnmsTopologyLogger implements OnmsTopologyConsumer {
         }
         LOG.debug("-------End receiving message--------");
 
+    }
+
+    public List<OnmsTopologyMessage> getQueue() {
+        synchronized (m_queue) {
+            return new ArrayList<>(m_queue);            
+        }
+    }
+
+    public OnmsTopologyProtocol getProtocol() {
+        return m_protocol;
     }
 
 }

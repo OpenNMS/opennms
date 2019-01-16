@@ -71,6 +71,11 @@ import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms7918NetworkBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage.TopologyMessageStatus;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologySegment;
 import org.opennms.netmgt.topologies.service.impl.OnmsTopologyLogger;
 /*
  * 
@@ -994,6 +999,12 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
     public void testTopology() throws Exception {
         //Default configuration we support 5 protocols,
         // BRIDGE, CDP, ISIS, LLDP, OSPF
+        assertTrue(m_linkdConfig.useLldpDiscovery());
+        assertTrue(m_linkdConfig.useCdpDiscovery());
+        assertTrue(m_linkdConfig.useOspfDiscovery());
+        assertTrue(m_linkdConfig.useBridgeDiscovery());
+        assertTrue(m_linkdConfig.useIsisDiscovery());
+
         assertEquals(5, m_topologyDao.getSupportedProtocols().size());
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.BRIDGE.name()));
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.CDP.name()));
@@ -1077,10 +1088,55 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         OnmsTopologyLogger tl = createAndSubscribe(
                   ProtocolSupported.BRIDGE.name());
         assertEquals("BRIDGE:Consumer:Logger", tl.getName());
-                
+        assertEquals(0, tl.getQueue().size());        
         System.err.println("--------Printing new start----------");
         m_linkd.runTopologyUpdater(ProtocolSupported.BRIDGE);
         System.err.println("--------Printing new end----------");
+
+        int vertices = 0;
+        int nodes =0;
+        int macs = 0;
+        int edges = 0;
+        int segments = 0;
+        for (OnmsTopologyMessage m: tl.getQueue()) {
+            assertEquals(TopologyUpdater.create(ProtocolSupported.BRIDGE), m.getProtocol());
+            assertEquals(TopologyMessageStatus.NEW, m.getMessagestatus());
+            if (m.getMessagebody() instanceof OnmsTopologyVertex) {
+                OnmsTopologyVertex vertex = (OnmsTopologyVertex) m.getMessagebody();
+                assertNotNull(vertex.getId());
+                assertNotNull(vertex.getLabel());
+                assertNotNull(vertex.getAddress());
+                assertNotNull(vertex.getIconKey());
+                assertNotNull(vertex.getToolTipText());
+                if (vertex.getNodeid() == null) {
+                    macs++;
+                    assertTrue(vertex.getId().contains("macs:"));
+                } else {
+                    assertNotNull(vertex.getNodeid());
+                    nodes++;
+                }
+                vertices++;
+            } else if (m.getMessagebody() instanceof OnmsTopologyEdge ) {
+                OnmsTopologyEdge edge = (OnmsTopologyEdge) m.getMessagebody();
+                assertNotNull(edge.getId());
+                assertNotNull(edge.getSource().getVertex());
+                assertNotNull(edge.getTarget().getVertex());
+                edges++;
+            } else if (m.getMessagebody() instanceof OnmsTopologySegment ) {
+                OnmsTopologySegment segment = (OnmsTopologySegment) m.getMessagebody();
+                assertNotNull(segment.getId());
+                segment.getSources().stream().forEach(s ->assertNotNull(s.getVertex()));
+                segments++;
+            } else {
+                assertTrue(false);
+            }
+        }
+        assertEquals(19, tl.getQueue().size());        
+        assertEquals(12, vertices);
+        assertEquals(6, nodes);
+        assertEquals(6, macs);
+        assertEquals(0, edges);
+        assertEquals(7, segments);
 
         OnmsTopology lldptopo2 = m_topologyDao.getTopology(ProtocolSupported.BRIDGE.name());
         assertEquals(12, lldptopo2.getVertices().size());
