@@ -417,7 +417,7 @@ function confirmAssetEdit() {
     </c:if>
 
     <c:if test="${model.existsInRequisition && (model.admin || model.provision)}">
-        <li>
+        <li class="list-inline-item">
             <a href="<c:out value="admin/ng-requisitions/index.jsp#/requisitions/${model.foreignSource}/nodes/${model.foreignId}"/>">Edit in Requisition</a>
         </li>
     </c:if>
