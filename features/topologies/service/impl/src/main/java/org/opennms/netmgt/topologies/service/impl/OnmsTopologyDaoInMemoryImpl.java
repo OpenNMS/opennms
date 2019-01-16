@@ -83,9 +83,14 @@ public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
     @Override
     public void unregister(OnmsTopologyUpdater updater) throws OnmsTopologyException {
         synchronized (m_updatersMap) {
-            OnmsTopologyUpdater subscribed =  m_updatersMap.remove(updater.getProtocol());
+            OnmsTopologyUpdater subscribed =  m_updatersMap.get(updater.getProtocol());
             if (subscribed == null) {
                 throw new OnmsTopologyException("updater is not registered", updater.getProtocol());
+            }
+            if (subscribed == updater) {
+                m_updatersMap.remove(updater.getProtocol());
+            } else {
+                throw new OnmsTopologyException("updater is not registered", updater.getProtocol());                
             }
         }
     }
