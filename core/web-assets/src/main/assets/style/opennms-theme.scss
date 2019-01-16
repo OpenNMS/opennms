@@ -404,9 +404,20 @@ Bootstrap Theme Specific Stylesheet
 //  min-width: 50px;
 //}
 //
-// Allow hovering over dropdown to show elements
-.dropdown:hover .dropdown-menu {
+
+/* Allow hovering over dropdown to show elements */
+.dropdown:hover > .dropdown-menu {
   display: block;
+}
+/*
+ Between the menu item and the (showing) dropdown menu is a space of >1 pixel.
+ If the mouse is moved very slowly from the menu item to the dropdown menu the menu is
+ disappearing before the user reaches the dropdown menu.
+ The following css prevents this, by simply moving the dropdown-menu a little bit closer to
+ the menu item.
+*/
+.dropdown > .dropdown-menu {
+  top: calc(100% - 2px);
 }
 
 
