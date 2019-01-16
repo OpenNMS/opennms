@@ -33,14 +33,25 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This provider handles all exceptions which are not handled by any other provider.
+ * This is required to ensure that rest requests return a 500 instead of the html error page from OpenNMS.
+ *
  * @author mvrueden
  */
 @Provider
 public class ErrorResponseProvider implements ExceptionMapper<Exception> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ErrorResponseProvider.class);
+
     @Override
     public Response toResponse(Exception exception) {
+        // Ensure Exception is logged. See HZN-1458
+        LOG.error("An exception occurred while processing a rest request in an OSGi Rest Service: {}", exception.getMessage(), exception);
+
         // if there is an optional exception message, we add it to the response
         if (exception.getMessage() != null) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
