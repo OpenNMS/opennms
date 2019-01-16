@@ -93,7 +93,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 <div class="row-fluid" ng-app="forecast" ng-controller="forecastCtrl">
     <div class="col-md-12">
       <div ng-cloak class="alert alert-danger" role="alert" ng-show="error">
-	    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+		<span class="fa fa-exclamation-circle" aria-hidden="true"></span>
 	    <span class="sr-only">Error:</span>
 	    {{error}}
 	  </div>

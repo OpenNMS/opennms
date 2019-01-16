@@ -96,12 +96,12 @@
           </p>
           <div class="table-responsive" ng-show="resources.length > 0 && level < 2">
             <div class="input-group">
-              <span class="input-group-addon">
-                <span class="glyphicon glyphicon-search"></span>
+              <span class="input-group-prepend">
+                <span class="input-group-text"><span class="fa fa-search"></span></span>
               </span>
               <input class="form-control" type="text" placeholder="Search/Filter Reports" ng-model="resourceFilter"></input>
             </div>
-            <table class="table table-sm table-hover ">
+            <table class="table table-sm table-hover">
               <thead>
                 <tr>
                   <th>Resources</th>
