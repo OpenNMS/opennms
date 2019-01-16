@@ -65,7 +65,7 @@
                             <div class="form-group col-md-4 col-sm-4 col-xs-4" style="padding-right: 0">
                                 <label class="col-form-label" for="classify-srcPort" >Port</label>
                                 <input class="form-control" type="text" id="classify-srcPort" name="classify-srcPort" placeholder="e.g. 55252"
-                                       g-model="classificationRequest.srcPort"
+                                       ng-model="classificationRequest.srcPort"
                                        ng-class="{ 'is-invalid' : ruleForm['classify-srcPort'].$invalid || classifyError.srcPort }">
                                 <p id="classifyError.srcPort" ng-show="classifyError.srcPort" class="invalid-feedback">{{classifyError.srcPort}}</p>
                             </div>
