@@ -740,6 +740,16 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertTrue(!m_linkdConfig.useBridgeDiscovery());
         assertTrue(!m_linkdConfig.useIsisDiscovery());
 
+        //update configuration to support only CDP updates
+        //need to reload daemon
+        m_linkd.reload();
+        assertEquals(1, m_topologyDao.getSupportedProtocols().size());
+        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.BRIDGE.name()));
+        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.CDP.name()));
+        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.ISIS.name()));
+        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.LLDP.name()));
+        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.OSPF.name()));
+
         final OnmsNode switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME);
         final OnmsNode switch2 = m_nodeDao.findByForeignId("linkd", SWITCH2_NAME);
 
@@ -754,14 +764,6 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertEquals(11, m_cdpLinkDao.countAll());
         assertTrue(m_cdpTopologyService.hasUpdates());
         
-        // Now we support by default configuration: BRIDGE, CDP, ISIS, LLDP and OSPF
-        assertEquals(5, m_topologyDao.getSupportedProtocols().size());
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.BRIDGE.name()));
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.CDP.name()));
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.ISIS.name()));
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.LLDP.name()));
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.OSPF.name()));
-
         m_cdpTopologyService.updatesAvailable();
         assertEquals(2, m_nodeTopologyService.findAllSnmpNode().size());
         assertEquals(2, m_nodeTopologyService.findAllNode().size());
@@ -787,8 +789,8 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertEquals(2, topology.getVertices().size());
         assertEquals(4, topology.getEdges().size());
         
-        OnmsTopologyLogger tl = EnLinkdBuilderITCase.createAndSubscribe(
-                  ProtocolSupported.CDP.name(),m_linkd);
+        OnmsTopologyLogger tl = createAndSubscribe(
+                  ProtocolSupported.CDP.name());
         assertEquals("CDP:Consumer:Logger", tl.getName());
                 
         assertTrue(m_cdpTopologyService.hasUpdates());
@@ -811,7 +813,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource=SWITCH2_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource=SWITCH3_SNMP_RESOURCE)
     })
-    public void testNetwork17216lldpTopology() throws Exception {
+    public void testNetwork17216LldpTopology() throws Exception {
         m_nodeDao.save(builder.getSwitch1());
         m_nodeDao.save(builder.getSwitch2());
         m_nodeDao.save(builder.getSwitch3());
@@ -829,6 +831,15 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertTrue(!m_linkdConfig.useOspfDiscovery());
         assertTrue(!m_linkdConfig.useBridgeDiscovery());
         assertTrue(!m_linkdConfig.useIsisDiscovery());
+        
+        // reload daemon and support only: LLDP updates
+        m_linkd.reload();
+        assertEquals(1, m_topologyDao.getSupportedProtocols().size());
+        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.BRIDGE.name()));
+        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.CDP.name()));
+        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.ISIS.name()));
+        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.LLDP.name()));
+        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.OSPF.name()));
 
         final OnmsNode switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME);
         final OnmsNode switch2 = m_nodeDao.findByForeignId("linkd", SWITCH2_NAME);
@@ -845,23 +856,15 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.runSingleSnmpCollection(switch2.getId()));
         assertEquals(10, m_lldpLinkDao.countAll());
         assertTrue(m_lldpTopologyService.hasUpdates());
-        
-        // Now we support by default configuration: BRIDGE, CDP, ISIS, LLDP and OSPF
-        assertEquals(5, m_topologyDao.getSupportedProtocols().size());
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.BRIDGE.name()));
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.CDP.name()));
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.ISIS.name()));
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.LLDP.name()));
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.OSPF.name()));
-        
+                
         LldpOnmsTopologyUpdater lldptopology = m_linkd.getLldpTopologyUpdater();
         assertNotNull(lldptopology);
         OnmsTopology topology = lldptopology.buildTopology();
         assertEquals(2, topology.getVertices().size());
         assertEquals(4, topology.getEdges().size());
         
-        OnmsTopologyLogger tl = EnLinkdBuilderITCase.createAndSubscribe(
-                  ProtocolSupported.LLDP.name(),m_linkd);
+        OnmsTopologyLogger tl = createAndSubscribe(
+                  ProtocolSupported.LLDP.name());
         assertEquals("LLDP:Consumer:Logger", tl.getName());
                 
         System.err.println("--------Printing new start----------");

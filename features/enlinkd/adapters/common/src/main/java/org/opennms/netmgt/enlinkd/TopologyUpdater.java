@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
-public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements OnmsTopologyUpdater {
+public abstract class TopologyUpdater extends Discovery implements OnmsTopologyUpdater {
 
     public static OnmsTopologyProtocol create(ProtocolSupported protocol) throws OnmsTopologyException {
             return OnmsTopologyProtocol.create(protocol.name());
@@ -69,26 +69,51 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
                                          node.getSysObjectId());
     }
 
-    private static final Logger LOG = LoggerFactory.getLogger(EnlinkdOnmsTopologyUpdater.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TopologyUpdater.class);
 
-    private final OnmsTopologyDao m_topologyDao;
-    private final NodeTopologyService m_nodeTopologyService;
-    private final TopologyService m_topologyService;
+    private OnmsTopologyDao m_topologyDao;
+    private NodeTopologyService m_nodeTopologyService;
+    private TopologyService m_topologyService;
 
     private OnmsTopology m_topology;
     private boolean m_runned = false;
-    
-    public EnlinkdOnmsTopologyUpdater(
+    private boolean m_registered = false;
+
+    public TopologyUpdater(
             TopologyService topologyService,
-            OnmsTopologyDao topologyDao, NodeTopologyService nodeTopologyService,
-            long interval, long initialsleeptime) {
-        super(interval, initialsleeptime);
+            OnmsTopologyDao topologyDao, NodeTopologyService nodeTopologyService) {
+        super();
         m_topologyDao = topologyDao;
         m_topologyService = topologyService;
         m_nodeTopologyService = nodeTopologyService;
         m_topology = new OnmsTopology();
     }            
     
+    public void register() {
+        if (m_registered) {
+            return;
+        }
+        try {
+            m_topologyDao.register(this);
+            m_registered  = true;
+            LOG.info("register: protocol:{}", getProtocol());
+        } catch (OnmsTopologyException e) {
+            LOG.error("register: protocol:{} {}", e.getProtocol(),e.getMessage());
+        }
+    }
+    
+    public void unregister() {
+        if (!m_registered) {
+            return;
+        }
+        try {
+            m_topologyDao.unregister(this);
+            m_registered = false;
+            LOG.info("unregister: protocol:{}", getProtocol());
+        } catch (OnmsTopologyException e) {
+            LOG.error("unregister: protocol:{} {}", e.getProtocol(),e.getMessage());
+        }
+    }
     private <T extends OnmsTopologyRef>void update(T topoObject) {
         try {
             m_topologyDao.update(this, OnmsTopologyMessage.update(topoObject,getProtocol()));
@@ -222,11 +247,26 @@ public abstract class EnlinkdOnmsTopologyUpdater extends Discovery implements On
             return m_topology.clone();
         }
     }
-    
-    @Override
-    public boolean isReady() {
-        return true;
+
+    public boolean isRegistered() {
+        return m_registered;
     }
-            
+
+    public void setRegistered(boolean registered) {
+        m_registered = registered;
+    }
+
+    public void setTopology(OnmsTopology topology) {
+        m_topology = topology;
+    }
+
+    public boolean isRunned() {
+        return m_runned;
+    }
+
+    public void setRunned(boolean runned) {
+        m_runned = runned;
+    }
+                
 }
 

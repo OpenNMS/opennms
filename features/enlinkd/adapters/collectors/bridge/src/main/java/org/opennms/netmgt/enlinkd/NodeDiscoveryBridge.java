@@ -67,7 +67,7 @@ import org.slf4j.LoggerFactory;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public final class NodeDiscoveryBridge extends NodeDiscovery {
+public final class NodeDiscoveryBridge extends NodeCollector {
     private static final Logger LOG = LoggerFactory.getLogger(NodeDiscoveryBridge.class);
 
     // public final static String CISCO_ENTERPRISE_OID = ".1.3.6.1.4.1.9";
@@ -93,7 +93,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         m_maxSize = maxSize;
     }
 
-    protected void runNodeDiscovery() {
+    protected void collect() {
         final Date now = new Date();
 
         SnmpAgentConfig peer = getSnmpAgentConfig();

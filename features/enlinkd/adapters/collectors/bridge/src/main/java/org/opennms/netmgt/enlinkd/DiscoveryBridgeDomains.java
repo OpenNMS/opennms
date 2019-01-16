@@ -52,13 +52,16 @@ import org.slf4j.LoggerFactory;
 
 public class DiscoveryBridgeDomains extends Discovery {
 
+    public static DiscoveryBridgeDomains clone(DiscoveryBridgeDomains dbd) {
+        return new DiscoveryBridgeDomains(dbd.getBridgeTopologyService());
+    }
+    
     private static final Logger LOG = LoggerFactory.getLogger(DiscoveryBridgeDomains.class);
-    private final int m_maxthreads;
+    private int m_maxthreads=1;
     private final BridgeTopologyService m_bridgeTopologyService;
 
-    public DiscoveryBridgeDomains(BridgeTopologyService bridgeTopologyService, long interval, long initialsleeptime, int maxthreads) {
-        super(interval, initialsleeptime);
-        m_maxthreads=maxthreads;
+    public DiscoveryBridgeDomains(BridgeTopologyService bridgeTopologyService) {
+        super();
         m_bridgeTopologyService = bridgeTopologyService;
     }
             
@@ -238,6 +241,18 @@ public class DiscoveryBridgeDomains extends Discovery {
     @Override
     public String getName() {
         return "DiscoveryBridgeDomain";
+    }
+
+    public int getMaxthreads() {
+        return m_maxthreads;
+    }
+
+    public void setMaxthreads(int maxthreads) {
+        m_maxthreads = maxthreads;
+    }
+
+    public BridgeTopologyService getBridgeTopologyService() {
+        return m_bridgeTopologyService;
     }
             
 }

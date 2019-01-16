@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
+public final class NodeDiscoveryIpNetToMedia extends NodeCollector {
     
 	private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIpNetToMedia.class);
 	
@@ -72,7 +72,7 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
     	m_ipNetToMediaTopologyService = ipNetToMediaTopologyService;
     }
 
-    protected void runNodeDiscovery() {
+    protected void collect() {
 
     	final Date now = new Date(); 
 

@@ -992,14 +992,16 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host=STCASW01_IP, port=161, resource=STCASW01_SNMP_RESOURCE)
     })
     public void testTopology() throws Exception {
-        
-        final OnmsNode pe01 = m_nodeDao.findByForeignId("linkd", PE01_NAME);
-        final OnmsNode asw01 = m_nodeDao.findByForeignId("linkd", ASW01_NAME);
-        final OnmsNode ospess01 = m_nodeDao.findByForeignId("linkd", OSPESS01_NAME);
-        final OnmsNode ospwl01 = m_nodeDao.findByForeignId("linkd", OSPWL01_NAME);
-        final OnmsNode samasw01 = m_nodeDao.findByForeignId("linkd", SAMASW01_NAME);
-        final OnmsNode stcasw01 = m_nodeDao.findByForeignId("linkd", STCASW01_NAME);
-        
+        //Default configuration we support 5 protocols,
+        // BRIDGE, CDP, ISIS, LLDP, OSPF
+        assertEquals(5, m_topologyDao.getSupportedProtocols().size());
+        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.BRIDGE.name()));
+        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.CDP.name()));
+        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.ISIS.name()));
+        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.LLDP.name()));
+        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.OSPF.name()));
+
+        //update config to suppoort only BRIDGE discovery
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
@@ -1011,6 +1013,22 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(!m_linkdConfig.useOspfDiscovery());
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertTrue(!m_linkdConfig.useIsisDiscovery());
+
+        //Updated configuration will lead to support only BRIDGE updates,
+        m_linkd.reload();
+        assertEquals(1, m_topologyDao.getSupportedProtocols().size());
+        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.BRIDGE.name()));
+        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.CDP.name()));
+        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.ISIS.name()));
+        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.LLDP.name()));
+        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.OSPF.name()));
+        
+        final OnmsNode pe01 = m_nodeDao.findByForeignId("linkd", PE01_NAME);
+        final OnmsNode asw01 = m_nodeDao.findByForeignId("linkd", ASW01_NAME);
+        final OnmsNode ospess01 = m_nodeDao.findByForeignId("linkd", OSPESS01_NAME);
+        final OnmsNode ospwl01 = m_nodeDao.findByForeignId("linkd", OSPWL01_NAME);
+        final OnmsNode samasw01 = m_nodeDao.findByForeignId("linkd", SAMASW01_NAME);
+        final OnmsNode stcasw01 = m_nodeDao.findByForeignId("linkd", STCASW01_NAME);
 
         assertTrue(m_linkd.scheduleNodeCollection(pe01.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(ospess01.getId()));
@@ -1057,7 +1075,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         Set<String> protocols= new HashSet<>();
         protocols.add(ProtocolSupported.BRIDGE.name());
         OnmsTopologyLogger tl = createAndSubscribe(
-                  ProtocolSupported.BRIDGE.name(),m_linkd);
+                  ProtocolSupported.BRIDGE.name());
         assertEquals("BRIDGE:Consumer:Logger", tl.getName());
                 
         System.err.println("--------Printing new start----------");

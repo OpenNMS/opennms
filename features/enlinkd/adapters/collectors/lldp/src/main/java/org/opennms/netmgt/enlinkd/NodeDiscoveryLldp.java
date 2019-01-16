@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public final class NodeDiscoveryLldp extends NodeDiscovery {
+public final class NodeDiscoveryLldp extends NodeCollector {
     private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryLldp.class);
 
     private final static String DW_SYSOID=".1.3.6.1.4.1.7262.2.4";
@@ -79,7 +79,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
     	m_lldpTopologyService = lldpTopologyService;
     }
 
-    protected void runNodeDiscovery() {
+    protected void collect() {
 
     	final Date now = new Date(); 
 

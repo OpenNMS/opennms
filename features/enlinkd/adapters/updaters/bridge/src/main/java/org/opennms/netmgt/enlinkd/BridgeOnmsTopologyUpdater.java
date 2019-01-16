@@ -57,8 +57,16 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Table;
 
-public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater  {
+public class BridgeOnmsTopologyUpdater extends TopologyUpdater  {
 
+    public static BridgeOnmsTopologyUpdater clone(BridgeOnmsTopologyUpdater bpu) {
+        
+        BridgeOnmsTopologyUpdater update = new BridgeOnmsTopologyUpdater(bpu.getTopologyDao(), bpu.getBridgeTopologyService(), bpu.getNodeTopologyService());
+        update.setRunned(bpu.isRunned());
+        update.setTopology(bpu.getTopology());
+        return update;
+    }
+    
     public static OnmsTopologyVertex create(MacCloud macCloud, List<MacPort> ports, BridgePort designated ) throws OnmsTopologyException {
         OnmsTopologyVertex vertex = OnmsTopologyVertex.create(Topology.getSharedSegmentId(designated), 
                                          Topology.getMacsIpLabel(), 
@@ -101,9 +109,8 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater  {
     protected final BridgeTopologyService m_bridgeTopologyService;
 
     public BridgeOnmsTopologyUpdater(
-            OnmsTopologyDao topologyDao, BridgeTopologyService bridgeTopologyService, NodeTopologyService nodeTopologyService,
-            long interval, long initialsleeptime) {
-        super(bridgeTopologyService,topologyDao,nodeTopologyService,interval, initialsleeptime);
+            OnmsTopologyDao topologyDao, BridgeTopologyService bridgeTopologyService, NodeTopologyService nodeTopologyService) {
+        super(bridgeTopologyService,topologyDao,nodeTopologyService);
         m_bridgeTopologyService = bridgeTopologyService;
     }            
     
@@ -169,6 +176,10 @@ public class BridgeOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater  {
     @Override
     public OnmsTopologyProtocol getProtocol() throws OnmsTopologyException {
         return create(ProtocolSupported.BRIDGE);
+    }
+
+    public BridgeTopologyService getBridgeTopologyService() {
+        return m_bridgeTopologyService;
     }
             
 }

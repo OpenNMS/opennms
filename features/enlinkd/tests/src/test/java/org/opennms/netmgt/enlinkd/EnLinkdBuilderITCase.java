@@ -181,9 +181,9 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
         m_nodeDao.flush();
     }
 
-    public static OnmsTopologyLogger createAndSubscribe(String protocol, EnhancedLinkd linkd) throws OnmsTopologyException {
+    public OnmsTopologyLogger createAndSubscribe(String protocol) throws OnmsTopologyException {
         OnmsTopologyLogger tl = new OnmsTopologyLogger(protocol);
-        linkd.getOnmsTopologyDao().subscribe(tl);
+        m_topologyDao.subscribe(tl);
         return tl;
     }
     

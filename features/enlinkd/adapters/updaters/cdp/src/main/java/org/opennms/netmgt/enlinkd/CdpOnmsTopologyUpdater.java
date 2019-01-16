@@ -50,7 +50,15 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 import com.google.common.collect.Table;
 
-public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
+public class CdpOnmsTopologyUpdater extends TopologyUpdater {
+
+    public static CdpOnmsTopologyUpdater clone (CdpOnmsTopologyUpdater bpu) {
+        CdpOnmsTopologyUpdater update = new CdpOnmsTopologyUpdater(bpu.getTopologyDao(), bpu.getCdpTopologyService(), bpu.getNodeTopologyService());
+        update.setRunned(bpu.isRunned());
+        update.setTopology(bpu.getTopology());
+        return update;
+ 
+    }
 
     public static OnmsTopologyPort create(OnmsTopologyVertex vertex,CdpLinkTopologyEntity cdpLink, SnmpInterfaceTopologyEntity snmpiface ) throws OnmsTopologyException {
         OnmsTopologyPort port = OnmsTopologyPort.create(cdpLink.getId().toString(),vertex, cdpLink.getCdpCacheIfIndex());
@@ -64,9 +72,8 @@ public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     private final CdpTopologyService m_cdpTopologyService;
 
     public CdpOnmsTopologyUpdater(
-            OnmsTopologyDao topologyDao, CdpTopologyService cdpTopologyService, NodeTopologyService nodeTopologyService,
-            long interval, long initialsleeptime) {
-        super(cdpTopologyService,topologyDao,nodeTopologyService,interval, initialsleeptime);
+            OnmsTopologyDao topologyDao, CdpTopologyService cdpTopologyService, NodeTopologyService nodeTopologyService) {
+        super(cdpTopologyService,topologyDao,nodeTopologyService);
         m_cdpTopologyService = cdpTopologyService;
     }            
     
@@ -106,6 +113,10 @@ public class CdpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     @Override
     public OnmsTopologyProtocol getProtocol() throws OnmsTopologyException {
         return create(ProtocolSupported.CDP);
+    }
+
+    public CdpTopologyService getCdpTopologyService() {
+        return m_cdpTopologyService;
     }
             
 }

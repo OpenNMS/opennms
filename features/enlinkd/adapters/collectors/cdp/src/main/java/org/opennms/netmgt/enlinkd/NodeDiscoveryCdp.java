@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public final class NodeDiscoveryCdp extends NodeDiscovery {
+public final class NodeDiscoveryCdp extends NodeCollector {
 	private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryCdp.class);
 
 	private final CdpTopologyService m_cdpTopologyService;
@@ -72,7 +72,7 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
     	m_cdpTopologyService = cdpTopologyService;
     }
 
-    protected void runNodeDiscovery() {
+    protected void collect() {
 
     	final Date now = new Date(); 
         final CdpGlobalGroupTracker cdpGlobalGroup = new CdpGlobalGroupTracker();

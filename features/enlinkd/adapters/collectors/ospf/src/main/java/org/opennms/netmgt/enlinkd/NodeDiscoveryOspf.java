@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public final class NodeDiscoveryOspf extends NodeDiscovery {
+public final class NodeDiscoveryOspf extends NodeCollector {
     
 	private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryOspf.class);
 	
@@ -76,7 +76,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
     	m_ospfTopologyService = ospfTopologyService;
     }
 
-    protected void runNodeDiscovery() {
+    protected void collect() {
 
     	final Date now = new Date(); 
 

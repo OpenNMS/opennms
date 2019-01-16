@@ -50,7 +50,15 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 import com.google.common.collect.Table;
 
-public class IsisOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
+public class IsisOnmsTopologyUpdater extends TopologyUpdater {
+
+    public static IsisOnmsTopologyUpdater clone (IsisOnmsTopologyUpdater bpu) {
+        IsisOnmsTopologyUpdater update = new IsisOnmsTopologyUpdater(bpu.getTopologyDao(), bpu.getIsisTopologyService(), bpu.getNodeTopologyService());
+        update.setRunned(bpu.isRunned());
+        update.setTopology(bpu.getTopology());
+        return update;
+ 
+    }
 
     public static OnmsTopologyPort create(OnmsTopologyVertex source,
             IsIsLinkTopologyEntity sourceLink,
@@ -71,9 +79,8 @@ public class IsisOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     private final IsisTopologyService m_isisTopologyService;
 
     public IsisOnmsTopologyUpdater(
-            OnmsTopologyDao topologyDao, IsisTopologyService isisTopologyService, NodeTopologyService nodeTopologyService,
-            long interval, long initialsleeptime) {
-        super(isisTopologyService, topologyDao,nodeTopologyService,interval, initialsleeptime);
+            OnmsTopologyDao topologyDao, IsisTopologyService isisTopologyService, NodeTopologyService nodeTopologyService) {
+        super(isisTopologyService, topologyDao,nodeTopologyService);
         m_isisTopologyService = isisTopologyService;
     }            
     
@@ -117,6 +124,10 @@ public class IsisOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     @Override
     public OnmsTopologyProtocol getProtocol() throws OnmsTopologyException {
         return create(ProtocolSupported.ISIS);
+    }
+
+    public IsisTopologyService getIsisTopologyService() {
+        return m_isisTopologyService;
     }
             
 }

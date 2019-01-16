@@ -50,7 +50,15 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 import com.google.common.collect.Table;
 
-public class LldpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
+public class LldpOnmsTopologyUpdater extends TopologyUpdater {
+
+    public static LldpOnmsTopologyUpdater clone (LldpOnmsTopologyUpdater bpu) {
+        LldpOnmsTopologyUpdater update = new LldpOnmsTopologyUpdater(bpu.getTopologyDao(), bpu.getLldpTopologyService(), bpu.getNodeTopologyService());
+        update.setRunned(bpu.isRunned());
+        update.setTopology(bpu.getTopology());
+        return update;
+ 
+    }
 
     public static OnmsTopologyPort create(OnmsTopologyVertex source,LldpLinkTopologyEntity sourceLink, 
                                                                     LldpLinkTopologyEntity targetlink,
@@ -68,9 +76,8 @@ public class LldpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     private final LldpTopologyService m_lldpTopologyService;
 
     public LldpOnmsTopologyUpdater(
-            OnmsTopologyDao topologyDao, LldpTopologyService lldpTopologyService, NodeTopologyService nodeTopologyService,
-            long interval, long initialsleeptime) {
-        super(lldpTopologyService, topologyDao,nodeTopologyService,interval, initialsleeptime);
+            OnmsTopologyDao topologyDao, LldpTopologyService lldpTopologyService, NodeTopologyService nodeTopologyService) {
+        super(lldpTopologyService, topologyDao,nodeTopologyService);
         m_lldpTopologyService = lldpTopologyService;
     }            
     
@@ -115,6 +122,10 @@ public class LldpOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     @Override
     public OnmsTopologyProtocol getProtocol() throws OnmsTopologyException {
         return create(ProtocolSupported.LLDP);
+    }
+
+    public LldpTopologyService getLldpTopologyService() {
+        return m_lldpTopologyService;
     }
             
 }

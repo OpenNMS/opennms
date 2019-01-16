@@ -30,6 +30,8 @@ package org.opennms.netmgt.enlinkd;
 
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is designed to collect the necessary SNMP information from the
@@ -39,6 +41,8 @@ import org.opennms.netmgt.scheduler.ReadyRunnable;
  * allows the collection to occur in a thread if necessary.
  */
 public abstract class Discovery implements ReadyRunnable {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Discovery.class);
 
     /**
      * The scheduler object
@@ -55,7 +59,8 @@ public abstract class Discovery implements ReadyRunnable {
      * The initial sleep time, default value 5 minutes
      */
 
-    protected boolean m_suspendCollection = false;
+    private boolean m_suspendCollection = false;
+    private boolean m_unschedule = false;
     
     /**
      * Constructs a new SNMP collector for a node using the passed interface
@@ -69,7 +74,10 @@ public abstract class Discovery implements ReadyRunnable {
     public Discovery(long interval, long initial) {
         m_poll_interval = interval;
         m_initial_sleep_time = initial;
-   }
+    }
+
+    public Discovery() {
+    }
 
     public abstract String getName();
     public abstract void runDiscovery();
@@ -77,8 +85,23 @@ public abstract class Discovery implements ReadyRunnable {
     // run is called by a Thread for the runnable
     // execute is where you got the stuff made
     public void run() {
-        runDiscovery();
-        reschedule();
+        if (m_suspendCollection) {
+            LOG.info( "run: suspended {} discovery.", 
+                       getInfo());
+            
+        } else {
+            LOG.info( "run: start {} discovery.", 
+                      getInfo());
+            runDiscovery();            
+            LOG.info( "run: end {} discovery.", 
+                      getInfo());
+        }
+        if (m_unschedule) {
+            LOG.info( "run: unscheduled {} discovery.", 
+                      getInfo());
+        } else {
+            reschedule();
+        }
     }
     /**
      * <p>
@@ -119,7 +142,7 @@ public abstract class Discovery implements ReadyRunnable {
     /**
 	 * 
 	 */
-    public void reschedule() {
+    private void reschedule() {
         if (m_scheduler == null)
             throw new IllegalStateException(
                                             "Cannot schedule a service whose scheduler is set to null");
@@ -134,9 +157,17 @@ public abstract class Discovery implements ReadyRunnable {
      * @return a boolean.
      */
     public boolean isReady() {
+        if (m_unschedule) {
+            return true;
+        }
+            
         return !m_suspendCollection;
     }
 
+    public void unschedule() {
+        m_suspendCollection = true;
+        m_unschedule = true;
+    }
     /**
      * <p>
      * suspend
@@ -163,7 +194,7 @@ public abstract class Discovery implements ReadyRunnable {
      * @return a {@link java.lang.String} object.
      */
     public String getInfo() {
-        return  getName();  
+        return  getName() + " initial:" + m_initial_sleep_time + "interval:" + m_poll_interval;  
     }
 
     /**

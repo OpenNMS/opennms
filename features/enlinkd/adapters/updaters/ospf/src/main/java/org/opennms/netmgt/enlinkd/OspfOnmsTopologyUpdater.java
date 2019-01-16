@@ -50,7 +50,15 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 import com.google.common.collect.Table;
 
-public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
+public class OspfOnmsTopologyUpdater extends TopologyUpdater {
+
+    public static OspfOnmsTopologyUpdater clone (OspfOnmsTopologyUpdater bpu) {
+        OspfOnmsTopologyUpdater update = new OspfOnmsTopologyUpdater(bpu.getTopologyDao(), bpu.getOspfTopologyService(), bpu.getNodeTopologyService());
+        update.setRunned(bpu.isRunned());
+        update.setTopology(bpu.getTopology());
+        return update;
+ 
+    }
 
     public static OnmsTopologyPort create(OnmsTopologyVertex source,
                                             OspfLinkTopologyEntity sourcelink, 
@@ -69,9 +77,8 @@ public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     protected final OspfTopologyService m_ospfTopologyService;
 
     public OspfOnmsTopologyUpdater(
-            OnmsTopologyDao topologyDao, OspfTopologyService ospfTopologyService, NodeTopologyService nodeTopologyService,
-            long interval, long initialsleeptime) {
-        super(ospfTopologyService,topologyDao,nodeTopologyService,interval, initialsleeptime);
+            OnmsTopologyDao topologyDao, OspfTopologyService ospfTopologyService, NodeTopologyService nodeTopologyService) {
+        super(ospfTopologyService,topologyDao,nodeTopologyService);
         m_ospfTopologyService = ospfTopologyService;
     }            
     
@@ -115,6 +122,10 @@ public class OspfOnmsTopologyUpdater extends EnlinkdOnmsTopologyUpdater {
     @Override
     public OnmsTopologyProtocol getProtocol() throws OnmsTopologyException {
         return create(ProtocolSupported.OSPF);
+    }
+
+    public OspfTopologyService getOspfTopologyService() {
+        return m_ospfTopologyService;
     }
             
 }
