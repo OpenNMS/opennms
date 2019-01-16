@@ -48,7 +48,6 @@ import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
@@ -162,11 +161,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      */
     private Map<Integer, List<NodeDiscovery>> m_nodes = new HashMap<Integer, List<NodeDiscovery>>();
 
-    /**
-     * Event handler
-     */
-    private volatile EventForwarder m_eventForwarder;
-
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
 
@@ -194,9 +188,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      */
     protected void onInit() {
         BeanUtils.assertAutowiring(this);
-
-        Assert.state(m_eventForwarder != null,
-                     "must set the eventForwarder property");
 
         createScheduler();
 
@@ -324,8 +315,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                 
                 LOG.debug("getSnmpCollections: adding Bridge: {}",
                     node);
-                colls.add(new NodeDiscoveryBridge(getEventForwarder(), 
-                                                  getBridgeTopologyService(),
+                colls.add(new NodeDiscoveryBridge(getBridgeTopologyService(),
                                                   getMaxbft(),
                                                   getLocationAwareSnmpClient(), 
                                                   getRescanInterval(),
@@ -606,21 +596,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      */
     public void setLinkdConfig(final EnhancedLinkdConfig config) {
         m_linkdConfig = config;
-    }
-
-    /**
-     * @return the eventForwarder
-     */
-    public EventForwarder getEventForwarder() {
-        return m_eventForwarder;
-    }
-
-    /**
-     * @param eventForwarder
-     *            the eventForwarder to set
-     */
-    public void setEventForwarder(EventForwarder eventForwarder) {
-        this.m_eventForwarder = eventForwarder;
     }
 
     public String getSource() {
