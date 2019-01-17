@@ -92,20 +92,9 @@ public final class NodeDiscoveryIpNetToMedia extends NodeCollector {
                         || macep.getNetAddress() == null
                         || macep.getIpNetToMediaType() == null
                         || macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_INVALID) {
-                    LOG.debug("processIpNetToMediaRow: node [{}], {}:{}:{}. skipping",
-                              getNodeId(),
-                              macep.getPhysAddress(),
-                              str(macep.getNetAddress()),
-                              macep.getIpNetToMediaType());
                     return;
                 }
-                
-                LOG.debug("processIpNetToMediaRow: node [{}], {}:{}:{}. store",
-                          getNodeId(),
-                          macep.getPhysAddress(),
-                          str(macep.getNetAddress()),
-                          macep.getIpNetToMediaType());
-               m_ipNetToMediaTopologyService.store(getNodeId(), macep);
+                m_ipNetToMediaTopologyService.store(getNodeId(), macep);
             }
         };
 		
