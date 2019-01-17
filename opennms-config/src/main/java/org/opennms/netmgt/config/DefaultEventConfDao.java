@@ -154,8 +154,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		m_events.save(m_configResource);
 	}
 
-
-
 	public List<Event> getAllEvents() {
 		return m_events.forEachEvent(new ArrayList<Event>(), new EventCallback<List<Event>>() {
 
@@ -164,7 +162,10 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 				accum.add(event);
 				return accum;
 			}
-		});
+            // remove duplicates:
+            // event definitions with priority > 0 are copied up the configuration tree.
+            // if they do not match we do not want to re-compare them when matching events to definitions.
+        }).stream().distinct().collect(Collectors.toList());
 	}
 
 	@Override
@@ -284,8 +285,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
             // Insert events exposed via the service registry
             Events extEvents = m_extContainer.getObject();
             if (extEvents != null) {
-                // Events exposed via the registry currently take priority over the events defined
-                // in the configuration files. This behavior may change with HZN-1419.
+                // Prioritize events loaded from the registry along with any loaded from the root config
                 events.getEvents().addAll(0, extEvents.getEvents());
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Events with the following UEIs are contributed by one or more extensions: {}", extEvents.getEvents().stream()

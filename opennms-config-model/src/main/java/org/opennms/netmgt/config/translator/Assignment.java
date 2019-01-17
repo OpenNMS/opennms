@@ -56,6 +56,9 @@ public class Assignment implements Serializable {
     @XmlAttribute(name = "name", required = true)
     private String m_name;
 
+    @XmlAttribute(name = "default", required = false)
+    private String m_default;
+
     /**
      * An element representing a value to be used in a
      *  translation. 
@@ -90,9 +93,21 @@ public class Assignment implements Serializable {
         m_value = ConfigUtils.assertNotNull(value, "value");
     }
 
+    public String getDefault() {
+        return m_default;
+    }
+
+    public void setDefault(final String defaultValue) {
+        this.m_default = ConfigUtils.assertNotNull(defaultValue, "default");
+    }
+
+    public boolean hasDefault() {
+        return m_default != null;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(m_type, m_name, m_value);
+        return Objects.hash(m_type, m_name, m_default, m_value);
     }
 
     @Override
@@ -105,6 +120,7 @@ public class Assignment implements Serializable {
             final Assignment that = (Assignment)obj;
             return Objects.equals(this.m_type, that.m_type)
                     && Objects.equals(this.m_name, that.m_name)
+                    && Objects.equals(this.m_default, that.m_default)
                     && Objects.equals(this.m_value, that.m_value);
         }
         return false;

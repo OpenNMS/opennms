@@ -49,7 +49,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -538,8 +537,8 @@ public class ConvertToEventTest {
                 .getContent());
         assertEquals(componentId, event.getParm("ComponentId").getValue()
                 .getContent());
-        Date expectedDate = new SimpleDateFormat("yyyy MMM dd hh:mm:ss").parse(Calendar.getInstance()
-                .get(Calendar.YEAR) + " " + date);
+        int expectedYear = SyslogMessageTest.getExpectedYear(date);
+        Date expectedDate = new SimpleDateFormat("yyyy MMM dd hh:mm:ss").parse(expectedYear + " " + date);
         assertEquals(expectedDate, event.getTime());
         assertEquals(processName, event.getParm("process").getValue().getContent());
         assertEquals(processId, event.getParm("processid").getValue().getContent());
@@ -564,8 +563,8 @@ public class ConvertToEventTest {
                 event.getParm("severity").getValue().getContent());
         assertEquals(sequenceNum, event.getParm("SequenceNum").getValue()
                 .getContent());
-        Date expectedDate = new SimpleDateFormat("yyyy MMM dd hh:mm:ss").parse(Calendar.getInstance()
-                .get(Calendar.YEAR) + " " + date);
+        int expectedYear = SyslogMessageTest.getExpectedYear(date);
+        Date expectedDate = new SimpleDateFormat("yyyy MMM dd hh:mm:ss").parse(expectedYear + " " + date);
         assertEquals(expectedDate, event.getTime());
         assertEquals(messageContent, event.getLogmsg().getContent());
     }
@@ -685,5 +684,26 @@ public class ConvertToEventTest {
     private void testAuditPattern(String syslog, String mnemonic) {
         Event event = parseSyslog("testAuditPattern", radixConfig, syslog, new Date());
         assertThat(event.getLogmsg().getContent().startsWith(mnemonic), is(equalTo(true)));
+    }
+    
+    @Test
+    public void canIncludeRawSyslogmessage() {
+        String rawMessage = "<123>123456: Jan 1 01:10:10.123 CDT: %BGP-5-ADJCHANGE: neighbor 1.2.3.4 vpn " +
+                "vrf abc-def Up";
+        // Test that default behavior is to not include
+        boolean existingConfig = radixConfig.shouldIncludeRawSyslogmessage();
+        
+        if(existingConfig) {
+            fail("Default configuration for including raw syslog messages was true instead of false");
+        }
+
+        Event event = parseSyslog("canIncludeRawSyslogmessage", radixConfig, rawMessage, new Date());
+        assertThat(event.getParm("rawSyslogmessage"), equalTo(null));
+
+        // Once configured we should include a new event parameter containing the raw message
+        radixConfig.setIncludeRawSyslogmessage(true);
+        event = parseSyslog("canIncludeRawSyslogmessage", radixConfig, rawMessage, new Date());
+        assertThat(event.getParm("rawSyslogmessage").getValue().getContent(), equalTo(rawMessage));
+        radixConfig.setIncludeRawSyslogmessage(existingConfig);
     }
 }

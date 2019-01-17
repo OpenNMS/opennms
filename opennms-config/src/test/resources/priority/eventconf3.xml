@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+	<global>
+		<security>
+			<doNotOverride>logmsg</doNotOverride>
+			<doNotOverride>operaction</doNotOverride>
+			<doNotOverride>autoaction</doNotOverride>
+			<doNotOverride>tticket</doNotOverride>
+			<doNotOverride>script</doNotOverride>
+		</security>
+	</global>
+
+	<event>
+		<uei>uei.opennms.org/opennmsConfig/eventconf</uei>
+		<event-label>OpenNMS-defined opennms-config event: eventconf</event-label>
+		<descr>
+			&lt;p&gt;During a rescan the ip interfaces as determined by snmp
+			conflict with the ip interfaces listed in the database for this node.
+			&lt;/p&gt;
+		</descr>
+		<logmsg dest='logndisplay'>
+			IP interfaces as determined by SNMP disagree with the database.
+		</logmsg>
+		<severity>Warning</severity>
+	</event>
+
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.43.29.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <priority>2000</priority>
+      <uei>uei.opennms.org/vendor/3Com/traps/a3ComFddiMACNeighborChangeEvent</uei>
+      <event-label>ROOT3 CONFIG</event-label>
+      <severity>Warning</severity>
+   </event>
+
+    <event-file>events/events.1.xml</event-file>
+    <event-file>events/events.2.xml</event-file>
+ 
+ 
+</events>

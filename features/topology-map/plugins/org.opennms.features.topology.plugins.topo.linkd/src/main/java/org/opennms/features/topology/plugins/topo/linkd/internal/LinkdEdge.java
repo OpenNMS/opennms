@@ -35,7 +35,7 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 
 public class LinkdEdge extends AbstractEdge implements Edge {
 
@@ -47,8 +47,8 @@ public class LinkdEdge extends AbstractEdge implements Edge {
     }
 
     public static LinkdEdge create(String id,
-            AbstractVertex sourceV, AbstractVertex targetV,  
-            OnmsSnmpInterface sourceinterface, OnmsSnmpInterface targetInterface,
+            AbstractVertex sourceV, AbstractVertex targetV,
+            SnmpInterfaceTopologyEntity sourceinterface, SnmpInterfaceTopologyEntity targetInterface,
             String sourceAddr, String targetAddr,
             ProtocolSupported discoveredBy) {
         

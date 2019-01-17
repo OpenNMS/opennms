@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JacksonUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.bsm.persistence.api.ApplicationEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.EdgeEntityVisitor;
@@ -107,6 +108,15 @@ public class BsmTestUtils {
                         transform(edgeEntity.getMapFunction()),
                         edgeEntity.getWeight(),
                         edgeEntity.getFriendlyName());
+                return null;
+            }
+
+            @Override
+            public Void visit(ApplicationEdgeEntity edgeEntity) {
+                request.addApplication(
+                        edgeEntity.getApplication().getId(),
+                        transform(edgeEntity.getMapFunction()),
+                        edgeEntity.getWeight());
                 return null;
             }
         }));

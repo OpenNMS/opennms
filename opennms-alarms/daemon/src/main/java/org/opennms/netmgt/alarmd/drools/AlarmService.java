@@ -32,6 +32,7 @@ import java.util.Date;
 
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * This API is intended to provide RHS functionality for Drools Alarmd and
@@ -58,4 +59,12 @@ public interface AlarmService {
     void info(String message, Object... objects);
 
     void warn(String message, Object... objects);
+
+    /**
+     * Asynchronously broadcast the given event.
+     *
+     * @param e event to broadcast
+     */
+    void sendEvent(Event e);
+
 }

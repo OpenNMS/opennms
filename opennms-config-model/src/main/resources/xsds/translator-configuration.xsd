@@ -35,6 +35,7 @@
 				</sequence>
 				<attribute name="type" type="string" use="required" />
 				<attribute name="name" type="string" use="required" />
+				<attribute name="default" type="string" use="optional" />
 			</complexType>
 		</element>
 

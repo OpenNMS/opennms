@@ -332,7 +332,12 @@ public class ElasticFlowRepository implements FlowRepository {
         final String query = searchQueryProvider.getTopNQuery(multiplier*N, groupByTerm, keyForMissingTerm, filters);
         return searchAsync(query, extractTimeRangeFilter(filters))
                 .thenApply(res -> {
-                    final TermsAggregation groupedBy = res.getAggregations().getTermsAggregation("grouped_by");
+                    final MetricAggregation aggs = res.getAggregations();
+                    if (aggs == null) {
+                        // No results
+                        return Collections.emptyList();
+                    }
+                    final TermsAggregation groupedBy = aggs.getTermsAggregation("grouped_by");
                     if (groupedBy == null) {
                         // No results
                         return Collections.emptyList();
@@ -381,7 +386,15 @@ public class ElasticFlowRepository implements FlowRepository {
                     timeRangeFilter.getStart(), timeRangeFilter.getEnd(), groupByTerm, missingTermIncludedInTopN, filters);
             seriesFuture = seriesFuture.thenCombine(searchAsync(seriesFromOthersQuery, timeRangeFilter), (ignored,res) -> {
                 final MetricAggregation aggs = res.getAggregations();
+                if (aggs == null) {
+                    // No results
+                    return null;
+                }
                 final TermsAggregation directionAgg = aggs.getTermsAggregation("direction");
+                if (directionAgg == null) {
+                    // No results
+                    return null;
+                }
                 for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
                     final boolean isIngress = isIngress(directionBucket);
                     final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
@@ -399,7 +412,15 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private static void toTable(ImmutableTable.Builder<Directional<String>, Long, Double> builder, SearchResult res) {
         final MetricAggregation aggs = res.getAggregations();
+        if (aggs == null) {
+            // No results
+            return;
+        }
         final TermsAggregation groupedBy = aggs.getTermsAggregation("grouped_by");
+        if (groupedBy == null) {
+            // No results
+            return;
+        }
         for (TermsAggregation.Entry bucket : groupedBy.getBuckets()) {
             final TermsAggregation directionAgg = bucket.getTermsAggregation("direction");
             for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
@@ -455,8 +476,16 @@ public class ElasticFlowRepository implements FlowRepository {
                     groupByTerm, missingTermIncludedInTopN, filters);
             summariesFuture = summariesFuture.thenCombine(searchAsync(bytesFromOthersQuery, timeRangeFilter), (summaries,results) -> {
                 final MetricAggregation aggs = results.getAggregations();
-                final TrafficSummary<String> trafficSummary = new TrafficSummary<>(OTHER_APPLICATION_NAME);
+                if (aggs == null) {
+                    // No results
+                    return summaries;
+                }
                 final TermsAggregation directionAgg = aggs.getTermsAggregation("direction");
+                if (directionAgg == null) {
+                    // No results
+                    return summaries;
+                }
+                final TrafficSummary<String> trafficSummary = new TrafficSummary<>(OTHER_APPLICATION_NAME);
                 for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
                     final boolean isIngress = isIngress(directionBucket);
                     final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
@@ -496,7 +525,15 @@ public class ElasticFlowRepository implements FlowRepository {
         // Build the traffic summaries from the search results
         final Map<String, TrafficSummary<String>> summaries = new LinkedHashMap<>();
         final MetricAggregation aggs = res.getAggregations();
+        if (aggs == null) {
+            // No results
+            return summaries;
+        }
         final TermsAggregation groupedBy = aggs.getTermsAggregation("grouped_by");
+        if (groupedBy == null) {
+            // No results
+            return summaries;
+        }
         for (TermsAggregation.Entry bucket : groupedBy.getBuckets()) {
             final TrafficSummary<String> trafficSummary = new TrafficSummary<>(bucket.getKey());
             final TermsAggregation directionAgg = bucket.getTermsAggregation("direction");

@@ -30,11 +30,13 @@ package org.opennms.netmgt.alarmd;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.CoreMatchers.everyItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.isIn;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -73,6 +75,7 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
+import org.opennms.netmgt.model.AlarmAssociation;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -352,6 +355,23 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
         OnmsAlarm situation = m_alarmDao.findByReductionKey("Situation1");
         assertEquals(2, situation.getRelatedAlarms().size());
+
+        //capture the current association time of the related alarms
+        Map<Integer, Date> associationTimesByRelatedAlarmId = situation.getAssociatedAlarms().stream()
+                .collect(Collectors.toMap(assoc -> assoc.getRelatedAlarm().getId(), AlarmAssociation::getMappedTime));
+
+        //now trigger the same situation again
+        sendSituationEvent("Situation1", node, reductionKeys);
+        await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
+        situation = m_alarmDao.findByReductionKey("Situation1");
+        assertEquals(2, situation.getRelatedAlarms().size());
+
+        //the association times should not have changed - gather them again and compare
+        Map<Integer, Date> afterReduceAssociationTimesByRelatedAlarmId = situation.getAssociatedAlarms().stream()
+                .collect(Collectors.toMap(assoc -> assoc.getRelatedAlarm().getId(), AlarmAssociation::getMappedTime));
+        //make sure the two maps match
+        assertThat(associationTimesByRelatedAlarmId.entrySet(), everyItem(isIn(afterReduceAssociationTimesByRelatedAlarmId.entrySet())));
+        assertThat(afterReduceAssociationTimesByRelatedAlarmId.entrySet(), everyItem(isIn(associationTimesByRelatedAlarmId.entrySet())));
 
         //send situation in with 3rd alarm, should result in 1 situation with 1 alarm since the situation's related
         //alarms will be overwritten with this new related alarm
