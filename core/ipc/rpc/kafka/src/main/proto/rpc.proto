@@ -7,4 +7,6 @@ required string rpc_id = 1;
 required bytes  rpc_content = 2;
 optional string system_id = 3;
 optional uint64 expiration_time = 4;
+optional int32  current_chunk_number = 5;
+optional int32  total_chunks = 6;
 }

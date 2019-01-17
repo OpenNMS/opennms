@@ -33,6 +33,7 @@ import java.util.Objects;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.rpc.api.RemoteExecutionException;
@@ -50,6 +51,9 @@ public class EchoResponse implements RpcResponse {
 
     @XmlAttribute(name="message")
     private String message;
+
+    @XmlElement(name="body", required=false)
+    private String body;
 
     public EchoResponse() { }
 
@@ -77,6 +81,14 @@ public class EchoResponse implements RpcResponse {
         return message;
     }
 
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
     @Override
     public String getErrorMessage() {
         return error;
@@ -98,12 +110,13 @@ public class EchoResponse implements RpcResponse {
         final EchoResponse other = (EchoResponse) obj;
         return Objects.equals(this.id, other.id) &&
                 Objects.equals(this.message, other.message) &&
+                Objects.equals(this.body, other.body) &&
                 Objects.equals(this.error, other.error);
     }
 
     @Override
     public String toString() {
-        return String.format("EchoResponse[id=%d, message=%s, error=%s]",
-                id, message, error);
+        return String.format("EchoResponse[id=%d, message=%s, body=%s error=%s]",
+                id, body, message, error);
     }
 }
