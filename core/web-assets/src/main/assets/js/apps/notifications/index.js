@@ -5,38 +5,41 @@
 'use strict';
 
 import Util from 'lib/util';
+import $ from 'vendor/jquery-js';
 
-if ('Notification' in window) {
-    let notificationSocket = null;
+$(function() {
+    if ('Notification' in window) {
+        let notificationSocket = null;
 
-    let connect = function () {
-        notificationSocket = new WebSocket((Util.getBaseHref() + 'notification/stream').replace(/^http/, 'ws'));
+        let connect = function () {
+            notificationSocket = new WebSocket((Util.getBaseHref() + 'notification/stream').replace(/^http/, 'ws'));
 
-        notificationSocket.onclose = function () {
-            setTimeout(connect, 1000);
+            notificationSocket.onclose = function () {
+                setTimeout(connect, 1000);
+            };
+            notificationSocket.onerror = function () {
+                setTimeout(connect, 5000);
+            };
+            notificationSocket.onmessage = function (event) {
+                let message = JSON.parse(event.data);
+                let notification = new Notification(message.head, {
+                    body: message.body,
+                    icon: Util.getBaseHref() + 'images/o-512.png',
+                    badge: Util.getBaseHref() + 'favicon.ico',
+                    tag: 'opennms:notification:' + message.id
+                });
+            };
         };
-        notificationSocket.onerror = function () {
-            setTimeout(connect, 5000);
-        };
-        notificationSocket.onmessage = function (event) {
-            let message = JSON.parse(event.data);
-            let notification = new Notification(message.head, {
-                body: message.body,
-                icon: Util.getBaseHref() + 'images/o-512.png',
-                badge: Util.getBaseHref() + 'favicon.ico',
-                tag: 'opennms:notification:' + message.id
-            });
-        };
-    };
 
-    if (Notification.permission === 'granted') {
-        connect();
-    } else if (Notification.permission !== 'denied') {
-        Notification.requestPermission()
-            .then(function (permission) {
-                if (permission === 'granted') {
-                    connect();
-                }
-            });
+        if (Notification.permission === 'granted') {
+            connect();
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission()
+                .then(function (permission) {
+                    if (permission === 'granted') {
+                        connect();
+                    }
+                });
+        }
     }
-}
+});

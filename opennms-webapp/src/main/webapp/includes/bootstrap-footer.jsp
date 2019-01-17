@@ -82,12 +82,13 @@
             </p>
         </footer>
 
-        <!-- Browser notification support -->
-        <c:if test="${!empty pageContext.request.remoteUser}">
+        <% if (req.getUserPrincipal() != null) { %>
+            <!-- Browser notifications -->
             <jsp:include page="/assets/load-assets.jsp" flush="false">
                 <jsp:param name="asset" value="notifications" />
+                <jsp:param name="asset-defer" value="true" />
             </jsp:include>
-        </c:if>
+        <% } %>
     </c:otherwise>
 </c:choose>
 
