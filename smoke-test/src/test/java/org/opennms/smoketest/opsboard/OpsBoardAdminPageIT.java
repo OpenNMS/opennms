@@ -31,7 +31,10 @@ package org.opennms.smoketest.opsboard;
 import static org.openqa.selenium.support.ui.ExpectedConditions.not;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nullable;
 
 import org.junit.After;
 import org.junit.Before;
@@ -39,7 +42,10 @@ import org.junit.Test;
 import org.opennms.smoketest.AbstractPage;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -81,6 +87,25 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumTestCase {
         }
     }
 
+    // See NMS-10515
+    @Test
+    public void canCreateAndUseDeepLink() {
+        final OpsBoardAdminEditorPage testBoard = adminPage.createNew("My-Wallboard");
+        testBoard.addDashlet(new DashletBuilder()
+                .withDashlet("Alarms")
+                .withTitle("My-Alarms")
+                .withDuration(300).build());
+
+        adminPage.open("/vaadin-wallboard#!wallboard/My-Wallboard");
+
+        try {
+            setImplicitWait(1, TimeUnit.SECONDS);
+            new WebDriverWait(m_driver, 5).until(pageContainsText("Alarms: My-Alarms"));
+        } finally {
+            setImplicitWait();
+        }
+    }
+
     private static class OpsBoardAdminPage extends AbstractPage {
 
         OpsBoardAdminPage(OpenNMSSeleniumTestCase testCase) {
@@ -90,6 +115,12 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumTestCase {
         public OpsBoardAdminPage open() {
             get("/admin/wallboardConfig.jsp");
             getDriver().switchTo().frame(0);
+            return this;
+        }
+
+        public OpsBoardAdminPage open(final String path) {
+            get(path);
+            getDriver().switchTo().parentFrame();
             return this;
         }
 
