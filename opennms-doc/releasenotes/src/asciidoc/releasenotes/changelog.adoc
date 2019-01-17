@@ -2,6 +2,53 @@
 
 === Changelog
 
+[[releasenotes-changelog-23.0.2]]
+==== Release 23.0.2
+
+OpenNMS Horizon 23.0.2 is an update to Horizon 23.0.2.
+It contains a number of bug fixes and enhancements, including performance improvements to topology maps, many fixes and improvements to Kafka support, and a bunch of correlation and alarm updates.
+
+For a high-level overview of what's changed in OpenNMS 23, see link:http://docs.opennms.org/opennms/releases/23.0.2/releasenotes/releasenotes.html#releasenotes-23[What's New in OpenNMS 23].
+
+The codename for 23.0.2 is _link:https://en.wikipedia.org/wiki/Sabrina_the_Teenage_Witch[Sabrina]_.
+
+===== Bug
+
+* Cannot clear alarms (Issue http://issues.opennms.org/browse/HZN-1437[HZN-1437])
+* No stack-traces for exceptions thrown by REST services in OSGi (Issue http://issues.opennms.org/browse/HZN-1458[HZN-1458])
+* BestMatchPingerFactory returns NullPinger when better options are available (Issue http://issues.opennms.org/browse/NMS-9659[NMS-9659])
+* Sentinel does not start using init scripts on RHEL 6.6 (Issue http://issues.opennms.org/browse/NMS-10434[NMS-10434])
+* Support large buffer sizes in Kafka RPC (Issue http://issues.opennms.org/browse/NMS-10446[NMS-10446])
+* noisy logs by the kafka-offset-producer (Issue http://issues.opennms.org/browse/NMS-10464[NMS-10464])
+* Fix offheap doc to be included in docs (Issue http://issues.opennms.org/browse/NMS-10468[NMS-10468])
+* duplicate key exceptions in alarmd (Issue http://issues.opennms.org/browse/NMS-10473[NMS-10473])
+* Kafka Producer: Sync timing issues cause erroneous deletes (Issue http://issues.opennms.org/browse/NMS-10474[NMS-10474])
+* When using the events:stress command, the node-id or interface passed as parameters are ignored when using jexl (Issue http://issues.opennms.org/browse/NMS-10475[NMS-10475])
+* Alarm Dashlet CriteriaBuilder In-Restriction not working (Issue http://issues.opennms.org/browse/NMS-10479[NMS-10479])
+* Standard output get wasted with "Unknown record type: 0 / 2209" messages (Issue http://issues.opennms.org/browse/NMS-10480[NMS-10480])
+* Broken links in Newts install documentation (Issue http://issues.opennms.org/browse/NMS-10481[NMS-10481])
+* Drools alarm may update alarms unnecessarily on snapshot (Issue http://issues.opennms.org/browse/NMS-10494[NMS-10494])
+* Harden Drools engine in alarmd (Issue http://issues.opennms.org/browse/NMS-10509[NMS-10509])
+* Syslog test failures due to year offset in eventConverter (Issue http://issues.opennms.org/browse/NMS-10523[NMS-10523])
+* Flow query fails with NPE if it returns no data (Issue http://issues.opennms.org/browse/NMS-10530[NMS-10530])
+
+===== Enhancement
+
+* Topologies REST Service (Issue http://issues.opennms.org/browse/HZN-1377[HZN-1377])
+* Add an "ssh" action to bin/opennms (Issue http://issues.opennms.org/browse/HZN-1391[HZN-1391])
+* Update telemetryd documentation to reflect single port support (Issue http://issues.opennms.org/browse/HZN-1408[HZN-1408])
+* Add example on how to use Drools with alarms for nagging events (Issue http://issues.opennms.org/browse/HZN-1450[HZN-1450])
+* Replaced jdhcp with dhcp4java (Issue http://issues.opennms.org/browse/NMS-10337[NMS-10337])
+* Performance problems with the Topology Map on large networks (Issue http://issues.opennms.org/browse/NMS-10369[NMS-10369])
+* APCs rpdu's total energy/power metric is missing (Issue http://issues.opennms.org/browse/NMS-10383[NMS-10383])
+* Apply initial loading improvements to IsIs, lldp, ospf protocols (Issue http://issues.opennms.org/browse/NMS-10439[NMS-10439])
+* Allow PostgreSQL 11.x (Issue http://issues.opennms.org/browse/NMS-10450[NMS-10450])
+* Support Additional EIF Protocol Version (Issue http://issues.opennms.org/browse/NMS-10454[NMS-10454])
+* Make favicons in the web application great again (Issue http://issues.opennms.org/browse/NMS-10483[NMS-10483])
+* Meassure and improve performance of Interface loading and mapping (Issue http://issues.opennms.org/browse/NMS-10459[NMS-10459])
+* Meassure and improve performance of Cdp/Lldp/IsIsElement loading (Issue http://issues.opennms.org/browse/NMS-10487[NMS-10487])
+* Add select/deselect all packages when creating a scheduled outage (Issue http://issues.opennms.org/browse/NMS-10227[NMS-10227])
+
 [[releasenotes-changelog-23.0.1]]
 
 ==== Release 23.0.1
