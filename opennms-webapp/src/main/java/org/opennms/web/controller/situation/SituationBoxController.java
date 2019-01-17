@@ -33,9 +33,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.core.utils.SystemProperties;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.dao.api.AlarmRepository;
-import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.alarm.SituationSummary;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;

@@ -26,12 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.utils;
+package org.opennms.sysprops;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNull;
 
 import org.junit.Test;
+import org.opennms.core.sysprops.SystemProperties;
+
 
 public class SystemPropertiesTest {
 

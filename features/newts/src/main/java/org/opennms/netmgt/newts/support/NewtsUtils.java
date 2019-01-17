@@ -31,9 +31,8 @@ package org.opennms.netmgt.newts.support;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
-import org.opennms.core.utils.SystemProperties;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.MetricType;

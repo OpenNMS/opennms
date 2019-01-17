@@ -31,21 +31,17 @@ package org.opennms.core.soa.lookup;
 import java.lang.management.ManagementFactory;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.core.sysprops.SystemProperties;
 
 public class ServiceLookupBuilder<C, F> {
 
-    private final static Logger LOG = LoggerFactory.getLogger(ServiceLookupBuilder.class);
+public static final long GRACE_PERIOD_MS = SystemProperties.getLong("org.opennms.core.soa.lookup.gracePeriodMs", TimeUnit.MINUTES.toMillis(5));
 
-    public static final long GRACE_PERIOD_MS = getLong("org.opennms.core.soa.lookup.gracePeriodMs", TimeUnit.MINUTES.toMillis(5));
+    public static final long WAIT_PERIOD_MS = SystemProperties.getLong("org.opennms.core.soa.lookup.gracePeriodMs", TimeUnit.MINUTES.toMillis(1));
 
-    public static final long WAIT_PERIOD_MS = getLong("org.opennms.core.soa.lookup.gracePeriodMs", TimeUnit.MINUTES.toMillis(1));
-
-    public static final long LOOKUP_DELAY_MS = getLong("org.opennms.core.soa.lookup.lookupDelayMs", TimeUnit.SECONDS.toMillis(5));
+    public static final long LOOKUP_DELAY_MS = SystemProperties.getLong("org.opennms.core.soa.lookup.lookupDelayMs", TimeUnit.SECONDS.toMillis(5));
 
     private final ServiceLookup<C, F> serviceProvider;
     private long gracePeriodInMs;
@@ -85,22 +81,4 @@ public class ServiceLookupBuilder<C, F> {
         }
         return serviceProvider;
     }
-
-    private static Long getLong(String propertyName, Long defaultValue) {
-        String valueAsString = System.getProperty(propertyName);
-        if (valueAsString == null) {
-            return defaultValue;
-        }
-        try {
-            return Long.parseLong(valueAsString);
-        } catch (NumberFormatException e) {
-            String message = String.format("cannot parse system property: %s with value=%s, using default=%s instead."
-                    , propertyName
-                    , valueAsString
-                    , defaultValue);
-            LOG.warn(message, e);
-        }
-        return defaultValue;
-    }
-
 }

@@ -32,7 +32,7 @@ import java.util.ServiceLoader;
 
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-import org.opennms.core.utils.SystemProperties;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.newts.cassandra.Schema;
 import org.opennms.newts.cassandra.SchemaManager;
 

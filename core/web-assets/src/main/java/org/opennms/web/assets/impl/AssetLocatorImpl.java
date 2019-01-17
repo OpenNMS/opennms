@@ -55,7 +55,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.StringUtils;
-import org.opennms.core.utils.SystemProperties;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.web.assets.api.AssetLocator;
 import org.opennms.web.assets.api.AssetResource;
 import org.slf4j.Logger;

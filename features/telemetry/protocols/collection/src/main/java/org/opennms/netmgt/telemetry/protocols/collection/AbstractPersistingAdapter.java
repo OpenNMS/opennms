@@ -43,7 +43,7 @@ import javax.script.ScriptException;
 
 import org.opennms.core.fileutils.FileUpdateCallback;
 import org.opennms.core.fileutils.FileUpdateWatcher;
-import org.opennms.core.utils.SystemProperties;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.Persister;

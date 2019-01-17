@@ -31,7 +31,7 @@ package org.opennms.netmgt.asterisk.agi;
 import org.asteriskjava.fastagi.AgiServerThread;
 import org.asteriskjava.fastagi.ClassNameMappingStrategy;
 import org.asteriskjava.fastagi.DefaultAgiServer;
-import org.opennms.core.utils.SystemProperties;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 
 /**

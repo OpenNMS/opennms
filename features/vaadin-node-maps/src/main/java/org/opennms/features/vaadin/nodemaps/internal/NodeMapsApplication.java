@@ -36,7 +36,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.opennms.core.utils.SystemProperties;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.features.topology.api.HasExtraComponents;
 import org.opennms.features.topology.api.VerticesUpdateManager.VerticesUpdateEvent;
 import org.opennms.features.topology.api.browsers.SelectionAwareTable;
