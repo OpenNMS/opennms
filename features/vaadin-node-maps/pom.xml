@@ -212,7 +212,7 @@
 		<dependency>
 			<groupId>org.opennms.core</groupId>
 			<artifactId>org.opennms.core.sysprops</artifactId>
-                        <version>${project.version}</version>
+            <version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

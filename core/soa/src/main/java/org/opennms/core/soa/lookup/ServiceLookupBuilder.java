@@ -81,4 +81,5 @@ public static final long GRACE_PERIOD_MS = SystemProperties.getLong("org.opennms
         }
         return serviceProvider;
     }
+
 }
