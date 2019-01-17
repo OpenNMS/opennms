@@ -84,6 +84,35 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.4]
+
+==== Release Meridian-2018.1.4
+
+Release 2018.1.4 is an update to Meridian 2018.1.3.
+It contains a number of bug fixes and a few enhancements, including a bunch of performance fixes to topology maps and a number of other smaller changes.
+
+The codename for 2018.1.4 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_4[Moderate breeze]_.
+
+===== Bug
+
+* BestMatchPingerFactory returns NullPinger when better options are available (Issue http://issues.opennms.org/browse/NMS-9659[NMS-9659])
+* When selecting a vertex which is neither visible nor in focus the ui state is stuck (Issue http://issues.opennms.org/browse/NMS-10451[NMS-10451])
+* Building the menu takes forever if a visible node has an invalid ip address set (Issue http://issues.opennms.org/browse/NMS-10452[NMS-10452])
+* "Use Default Focus" may not show the "add nodes manual" indicator if "getDefaults().getCriteria()" returns empty list rather than null (Issue http://issues.opennms.org/browse/NMS-10453[NMS-10453])
+* Kafka Producer: Sync timing issues cause erroneous deletes (Issue http://issues.opennms.org/browse/NMS-10474[NMS-10474])
+* When using the events:stress command, the node-id or interface passed as parameters are ignored when using jexl (Issue http://issues.opennms.org/browse/NMS-10475[NMS-10475])
+* Alarm Dashlet CriteriaBuilder In-Restriction not working (Issue http://issues.opennms.org/browse/NMS-10479[NMS-10479])
+
+===== Enhancement
+
+* Performance problems with the Topology Map on large networks (Issue http://issues.opennms.org/browse/NMS-10369[NMS-10369])
+* Find out why intial loading of the topology map takes so long, fix for CDP (Issue http://issues.opennms.org/browse/NMS-10398[NMS-10398])
+* Apply initial loading improvements to IsIs, lldp, ospf protocols (Issue http://issues.opennms.org/browse/NMS-10439[NMS-10439])
+* Allow PostgreSQL 11.x (Issue http://issues.opennms.org/browse/NMS-10450[NMS-10450])
+* Support Additional EIF Protocol Version (Issue http://issues.opennms.org/browse/NMS-10454[NMS-10454])
+* Meassure and improve performance of Interface loading and mapping (Issue http://issues.opennms.org/browse/NMS-10459[NMS-10459])
+* Meassure and improve performance of Cdp/Lldp/IsIsElement loading (Issue http://issues.opennms.org/browse/NMS-10487[NMS-10487])
+
 [releasenotes-changelog-Meridian-2018.1.3]
 
 ==== Release Meridian-2018.1.3
