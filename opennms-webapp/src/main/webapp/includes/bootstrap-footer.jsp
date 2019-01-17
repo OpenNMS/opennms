@@ -83,7 +83,11 @@
         </footer>
 
         <!-- Browser notification support -->
-        <jsp:include page="notifications.jsp"/>
+        <c:if test="${!empty pageContext.request.remoteUser}">
+            <jsp:include page="/assets/load-assets.jsp" flush="false">
+                <jsp:param name="asset" value="notifications" />
+            </jsp:include>
+        </c:if>
     </c:otherwise>
 </c:choose>
 
