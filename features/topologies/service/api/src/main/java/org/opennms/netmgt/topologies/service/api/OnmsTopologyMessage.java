@@ -29,11 +29,6 @@
 package org.opennms.netmgt.topologies.service.api;
 
 public class OnmsTopologyMessage {
-
-    public static OnmsTopologyMessage  create(OnmsTopologyRef messagebody, OnmsTopologyProtocol protocol) throws OnmsTopologyException {
-        checkOnmsTopologyMessage(messagebody, protocol, TopologyMessageStatus.NEW);
-        return new OnmsTopologyMessage(messagebody, protocol,TopologyMessageStatus.NEW);
-    }
     
     public static OnmsTopologyMessage  update(OnmsTopologyRef messagebody,OnmsTopologyProtocol protocol) throws OnmsTopologyException {
         checkOnmsTopologyMessage(messagebody, protocol, TopologyMessageStatus.UPDATE);
@@ -59,7 +54,6 @@ public class OnmsTopologyMessage {
     }
     
     public enum TopologyMessageStatus {
-        NEW,
         UPDATE,
         DELETE
     }

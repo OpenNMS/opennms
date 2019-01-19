@@ -789,9 +789,14 @@ SEG:        for (SharedSegment segment : bmlsegments) {
         final List<MacPort> macPortMap = getMacPorts();
         
         m_domains.stream().forEach(dm ->{
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("match: \n{}", dm.printTopology());
+            }
             dm.getSharedSegments().stream().forEach( shs -> {
                 try {
-                    links.add(TopologyShared.of(shs, macPortMap));
+                    links.add(TopologyShared.of(shs, macPortMap.stream().filter( mp -> 
+                    shs.getMacsOnSegment().containsAll(mp.getMacPortMap().keySet())).
+                                                collect(Collectors.toList())));
                 } catch (BridgeTopologyException e) {
                     LOG.error("{} Cannot add shared segment to topology: {}", e.getMessage(), e.printTopology(),e);
                 }

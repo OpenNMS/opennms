@@ -39,7 +39,6 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologySegment;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,27 +69,29 @@ public class OnmsTopologyLogger implements OnmsTopologyConsumer {
     @Override
     public void consume(OnmsTopologyMessage message) {
         m_queue.add(message);
-        LOG.debug("-------Start receiving message--------");
-        LOG.debug("received message type: {}" ,  message.getMessagestatus());
-        LOG.debug("ref: {}",message.getMessagebody().getId());
-        LOG.debug("protocol: {}",message.getProtocol().getId());
+        StringBuffer txt = new StringBuffer();
+        txt.append(getName());
+        txt.append("-");
+        txt.append(message.getMessagestatus());
+        txt.append("-");
+        txt.append(message.getMessagebody().getId());
         if (message.getMessagebody() instanceof OnmsTopologyVertex) {
-            LOG.debug("vertex: {}", ((OnmsTopologyVertex)message.getMessagebody()).getLabel());
-        }
-        if (message.getMessagebody() instanceof OnmsTopologyEdge) {
+            txt.append(":");
+            txt.append(((OnmsTopologyVertex)message.getMessagebody()).getLabel());
+        } else if (message.getMessagebody() instanceof OnmsTopologyEdge) {
+            txt.append(":");
             OnmsTopologyEdge edge = (OnmsTopologyEdge)message.getMessagebody();
             OnmsTopologyPort source = edge.getSource();
+            txt.append(source.getVertex().getId());
+            txt.append(":");
+            txt.append(source.getIfname());
+            txt.append("|");
             OnmsTopologyPort target = edge.getTarget();
-            LOG.debug("edge: vertex {} port {}", source.getVertex().getLabel(), source.getIfname());
-            LOG.debug("edge: vertex {} port {}", target.getVertex().getLabel(), target.getIfname());
-        } else if (message.getMessagebody() instanceof OnmsTopologySegment) {
-           OnmsTopologySegment shared = (OnmsTopologySegment) message.getMessagebody(); 
-           shared.getSources().stream().forEach( p -> {
-               LOG.debug("edge: vertex {} port {}", p.getVertex().getLabel(), p.getIfname());
-           });
+            txt.append(target.getVertex().getId());
+            txt.append(":");
+            txt.append(target.getIfname());
         }
-        LOG.debug("-------End receiving message--------");
-
+        LOG.debug(txt.toString());
     }
 
     public List<OnmsTopologyMessage> getQueue() {

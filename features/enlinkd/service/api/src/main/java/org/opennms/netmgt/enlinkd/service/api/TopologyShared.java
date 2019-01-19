@@ -33,47 +33,30 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class TopologyShared implements Topology {
     
-    private final static Logger LOG = LoggerFactory.getLogger(TopologyShared.class);
-
-    public static TopologyShared   of(SharedSegment shs, List<MacPort> macPortMap) throws BridgeTopologyException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("matchBridgeLinks: \n{}", shs.printTopology());
-        }
-        Set<String> macsOnMacPorts = new HashSet<String>();
-        List<MacPort> macPortsOnSegment = new ArrayList<MacPort>();
-        macPortMap.stream().filter( mp -> 
-            shs.getMacsOnSegment().containsAll(mp.getMacPortMap().keySet())).
-            forEach(mp -> {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("matchBridgeLinks: add mac port \n{}", mp.printTopology());
-                }
-                macPortsOnSegment.add(mp);
-                macsOnMacPorts.addAll(mp.getMacPortMap().keySet());
-        });
+    public static TopologyShared   of(SharedSegment shs, List<MacPort> macPortsOnSegment) throws BridgeTopologyException {
         TopologyShared tps = new TopologyShared(new ArrayList<BridgePort>(shs.getBridgePortsOnSegment()), 
-                                                   macPortsOnSegment, shs.getDesignatedPort());
+                                                macPortsOnSegment, shs.getDesignatedPort());
         
-        Set<String>  noMacPortMacs = new HashSet<String>(shs.getMacsOnSegment());
-        noMacPortMacs.removeAll(macsOnMacPorts);
-        if (noMacPortMacs.size() >0) {
-            tps.setCloud(MacCloud.create(noMacPortMacs));
+
+        final Set<String>  noPortMacs = new HashSet<String>(shs.getMacsOnSegment());
+        macPortsOnSegment.stream().forEach(mp -> noPortMacs.removeAll(mp.getMacPortMap().keySet()));
+        
+        if (noPortMacs.size() >0) {
+            tps.setCloud(MacCloud.create(noPortMacs));
         }
         return tps;
     }
 
     private TopologyShared(List<BridgePort> left, List<MacPort> right,BridgePort top ) {
-        this.top = top;
+        this.designated = top;
         this.left = left;
         this.right = right;
     }
 
     private MacCloud cloud;
-    private BridgePort top;
+    private BridgePort designated;
     private List<BridgePort> left;
     private List<MacPort> right;
 
@@ -86,7 +69,7 @@ public class TopologyShared implements Topology {
     }
 
     public BridgePort getUpPort() {
-        return top;
+        return designated;
     }
 
     public MacCloud getCloud() {
@@ -101,7 +84,7 @@ public class TopologyShared implements Topology {
     public String printTopology() {
         final StringBuffer strbfr = new StringBuffer();
         strbfr.append("shared -> designated bridge:[");
-        strbfr.append(top.printTopology());
+        strbfr.append(designated.printTopology());
         strbfr.append("]\n");
         for (BridgePort blink:  left) {
             strbfr.append("        -> port:");            

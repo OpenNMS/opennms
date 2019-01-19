@@ -810,7 +810,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertEquals(6, tl.getQueue().size());
         for (OnmsTopologyMessage m: tl.getQueue()) {
             assertEquals(TopologyUpdater.create(ProtocolSupported.CDP), m.getProtocol());
-            assertEquals(TopologyMessageStatus.NEW, m.getMessagestatus());
+            assertEquals(TopologyMessageStatus.UPDATE, m.getMessagestatus());
             if (m.getMessagebody() instanceof OnmsTopologyVertex) {
                 OnmsTopologyVertex vertex = (OnmsTopologyVertex) m.getMessagebody();
                 assertNotNull(vertex.getId());
@@ -918,7 +918,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         int edges = 0;
         for (OnmsTopologyMessage m: tl.getQueue()) {
             assertEquals(TopologyUpdater.create(ProtocolSupported.LLDP), m.getProtocol());
-            assertEquals(TopologyMessageStatus.NEW, m.getMessagestatus());
+            assertEquals(TopologyMessageStatus.UPDATE, m.getMessagestatus());
             if (m.getMessagebody() instanceof OnmsTopologyVertex) {
                 OnmsTopologyVertex vertex = (OnmsTopologyVertex) m.getMessagebody();
                 assertNotNull(vertex.getId());

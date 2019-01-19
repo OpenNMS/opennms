@@ -97,10 +97,24 @@ public interface Topology {
         }
         return tooltipText.toString();
     }
-    
-    public static String getSharedSegmentId(BridgePort designated) {
+
+    public static String getSharedSegmentId(BridgePort bp) {
         StringBuffer id = new StringBuffer();
-        id.append("macs:on:");
+        id.append("s:");
+        id.append(Topology.getId(bp));
+        return id.toString();
+    }
+
+    public static String getSharedSegmentId(TopologyShared designated) {
+        StringBuffer id = new StringBuffer();
+        id.append("s:");
+        id.append(Topology.getId(designated));
+        return id.toString();
+    }
+
+    public static String getMacsCloudId(TopologyShared designated) {
+        StringBuffer id = new StringBuffer();
+        id.append("m:");
         id.append(Topology.getId(designated));
         return id.toString();
     }
@@ -110,7 +124,7 @@ public interface Topology {
     }
 
     public static String getSharedSegmentLabel() {
-        return "Shared Segment";
+        return "Segment";
     }
     
     public static String getAddress(InetAddress address) {
@@ -174,6 +188,21 @@ public interface Topology {
     
     }
 
+    public static String getMacsCloudIpTextString(TopologyShared shared, List<MacPort> ports) {
+        final StringBuilder tooltipText = new StringBuilder();
+        tooltipText.append("shared addresses: ");
+        tooltipText.append("(");
+        tooltipText.append(getAddress(shared.getCloud(), ports));
+        tooltipText.append(")");
+        tooltipText.append("(");
+        tooltipText.append(getNodeStatus(OnmsNode.NodeType.UNKNOWN));
+        tooltipText.append("/");
+        tooltipText.append("Not an OpenNMS Node");
+        tooltipText.append(")");        
+        return tooltipText.toString();
+    
+    }
+
     public static String getNodeTextString(NodeTopologyEntity node, IpInterfaceTopologyEntity primary) {
         final StringBuilder tooltipText = new StringBuilder();
         tooltipText.append(node.getLabel());
@@ -198,10 +227,15 @@ public interface Topology {
         return tooltipText.toString();
     
     }
-    
-    public static String getSharedSegmentTextString(BridgePort designated) {
-        return String.format("'Shared Segment': designated bridge: %s" ,
-                designated.printTopology());
+
+    public static String getSharedSegmentTextString(BridgePort bp) {
+        return String.format("'Shared Segment': %s" ,
+                bp.printTopology());
+    }
+
+    public static String getSharedSegmentTextString(TopologyShared segment) {
+        return String.format("'Shared Segment': %s" ,
+                segment.getUpPort().printTopology());
     }
 
     public static String getIsManaged(boolean isManaged) {
@@ -255,8 +289,8 @@ public interface Topology {
     public static String getDefaultEdgeId(int sourceId,int targetId) {
         return Math.min(sourceId, targetId) + "|" + Math.max(sourceId, targetId);
     }  
-    public static String getId(BridgePort designated) {
-        return  designated.getNodeId()+":"+designated.getBridgePort();
+    public static String getId(TopologyShared segment) {
+        return  getId(segment.getUpPort());
     }
     
     public static String getId(MacCloud macCloud) {
@@ -267,6 +301,9 @@ public interface Topology {
             return macPort.getMacPortMap().keySet().toString();
         }
         return Integer.toString(macPort.getNodeId());
+    }
+    public static String getId(BridgePort bp) {
+        return bp.getNodeId()+":"+bp.getBridgePort();
     }
     public static String getEdgeId(BridgePort bp, MacPort macport ) {
             return getId(bp)+"|"+getId(macport);
@@ -286,7 +323,11 @@ public interface Topology {
     public static String getEdgeId(String id, BridgePort bp) {
         return id + "|" + bp.getNodeId() + ":" + bp.getBridgePort();
     }
-    static String getDefaultEdgeId(String id, String id2) {
-        return id+"|"+id2;
+    static String getDefaultEdgeId(String id1, String id2) {
+        return id1+"|"+id2;
+    }
+
+    static String getPortId(String id) {
+        return "p:"+id;
     }
 }

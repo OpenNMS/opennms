@@ -28,7 +28,10 @@
 
 package org.opennms.netmgt.topologies.service.api;
 
-public class OnmsTopologyEdge extends OnmsTopologySegment {
+import java.util.ArrayList;
+import java.util.List;
+
+public class OnmsTopologyEdge extends OnmsTopologyAbstractRef implements OnmsTopologyRef {
 
     public static OnmsTopologyEdge create(String id, OnmsTopologyPort source, OnmsTopologyPort target) throws OnmsTopologyException {
         if (source == null && target == null) {
@@ -42,7 +45,7 @@ public class OnmsTopologyEdge extends OnmsTopologySegment {
         }
         
         if (source.getId().equals(target.getId())) {
-            throw new OnmsTopologyException("target =0 source port, cannot create edge");
+            throw new OnmsTopologyException("target equals source port, cannot create edge");
         }
         
         return new OnmsTopologyEdge(id, source, target);
@@ -52,7 +55,7 @@ public class OnmsTopologyEdge extends OnmsTopologySegment {
     private final OnmsTopologyPort m_target;
 
     private OnmsTopologyEdge(String id, OnmsTopologyPort source, OnmsTopologyPort target) {
-        super(id, source,target);
+        super(id);
         m_source = source;
         m_target = target;
     }
@@ -64,5 +67,19 @@ public class OnmsTopologyEdge extends OnmsTopologySegment {
     public OnmsTopologyPort getTarget() {
         return m_target;
     }
+
+    public OnmsTopologyPort getPort(String id) {
+        return getPorts().stream().filter(p -> id.equals(p.getId())).findAny().orElse(null);
+    }
+     
+    public boolean hasPort(String id) {
+           return (getPort(id) != null);
+    }
     
+    public List<OnmsTopologyPort> getPorts() {
+        List<OnmsTopologyPort>ports = new ArrayList<>();
+        ports.add(m_source);
+        ports.add(m_target);
+        return ports;
+    }
 }

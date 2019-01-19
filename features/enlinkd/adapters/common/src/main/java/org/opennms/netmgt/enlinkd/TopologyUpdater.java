@@ -44,10 +44,8 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyRef;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologySegment;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyUpdater;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
@@ -63,10 +61,12 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
     }
     
     public static OnmsTopologyVertex create(NodeTopologyEntity node, IpInterfaceTopologyEntity primary) throws OnmsTopologyException {
-        OnmsTopologyVertex vertex = OnmsTopologyVertex.create(node.getId().toString(), 
-                                         node.getLabel(), 
-                                         InetAddressUtils.str(primary.getIpAddress()), 
-                                         node.getSysObjectId());
+        OnmsTopologyVertex vertex = 
+                OnmsTopologyVertex.create(node.getId().toString(), 
+                                          node.getLabel(), 
+                                          InetAddressUtils.str(primary.getIpAddress()), 
+                                          node.getSysObjectId()
+                                          );
         vertex.setNodeid(node.getId());
         vertex.setToolTipText(Topology.getNodeTextString(node, primary));
         return vertex;
@@ -117,6 +117,7 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
             LOG.error("unregister: protocol:{} {}", e.getProtocol(),e.getMessage());
         }
     }
+    
     private <T extends OnmsTopologyRef>void update(T topoObject) {
         try {
             m_topologyDao.update(this, OnmsTopologyMessage.update(topoObject,getProtocol()));
@@ -133,14 +134,6 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
         }
     }
 
-    private <T extends OnmsTopologyRef>void create(T topoObject) {
-        try {
-            m_topologyDao.update(this, OnmsTopologyMessage.create(topoObject,getProtocol()));
-        } catch (OnmsTopologyException e) {
-            LOG.error("create: status:{} id:{} protocol:{} message{}", e.getMessageStatus(), e.getId(), e.getProtocol(),e.getMessage());
-       }
-    }
-
     @Override
     public void runDiscovery() {
         LOG.debug("run: start {}", getName());
@@ -150,8 +143,8 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
                     m_topology = buildTopology();
                     m_runned = true;
                     m_topologyService.parseUpdates();
-                    m_topology.getVertices().stream().forEach(v -> create(v));
-                    m_topology.getEdges().stream().forEach(g -> create(g));
+                    m_topology.getVertices().stream().forEach(v -> update(v));
+                    m_topology.getEdges().stream().forEach(g -> update(g));
                     LOG.debug("run: {} first run topology calculated", getName());
                 } catch (OnmsTopologyException e) {
                     LOG.error("run: {} first run: cannot build topology",getName(), e);
@@ -172,28 +165,8 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
                 m_topology.getVertices().stream().filter(v -> !topo.hasVertex(v.getId())).forEach(v -> delete(v));
                 m_topology.getEdges().stream().filter(g -> !topo.hasEdge(g.getId())).forEach(g -> delete(g));
 
-                topo.getVertices().stream().filter(v -> !m_topology.hasVertex(v.getId())).forEach(v -> create(v));
-                topo.getEdges().stream().filter(g -> !m_topology.hasEdge(g.getId())).forEach(g -> create(g));
-                
-                topo.getEdges().stream().filter(g -> m_topology.hasEdge(g.getId())).forEach(g -> {
-                    OnmsTopologySegment og = m_topology.getEdge(g.getId()); 
-                    boolean updated = false;
-                    for (OnmsTopologyPort op: og.getSources()) {
-                        if (!g.hasPort(op.getId())) {
-                            update(g);
-                            updated=true;
-                            break;
-                        }
-                    }
-                    if (!updated) {
-                        for (OnmsTopologyPort p: g.getSources()) {
-                            if (!og.hasPort(p.getId())) {
-                                update(g);
-                                break;
-                            }
-                        }
-                    }
-                });
+                topo.getVertices().stream().filter(v -> !m_topology.hasVertex(v.getId())).forEach(v -> update(v));
+                topo.getEdges().stream().filter(g -> !m_topology.hasEdge(g.getId())).forEach(g -> update(g));                
                 m_topology = topo;
             }
         }

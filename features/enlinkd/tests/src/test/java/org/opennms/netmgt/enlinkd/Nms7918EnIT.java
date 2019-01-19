@@ -29,21 +29,21 @@
 package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.ASW01_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.ASW01_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.ASW01_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.OSPESS01_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.OSPESS01_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.OSPESS01_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.OSPWL01_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.OSPWL01_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.OSPWL01_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.ASW01_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.ASW01_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.ASW01_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.PE01_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SAMASW01_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SAMASW01_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SAMASW01_SNMP_RESOURCE;
@@ -73,9 +73,8 @@ import org.opennms.netmgt.nb.Nms7918NetworkBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage.TopologyMessageStatus;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologySegment;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.opennms.netmgt.topologies.service.impl.OnmsTopologyLogger;
 /*
  * 
@@ -1078,10 +1077,10 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         BridgeOnmsTopologyUpdater topologyUpdater = m_linkd.getBridgeTopologyUpdater();
         assertNotNull(topologyUpdater);
         OnmsTopology topology = topologyUpdater.buildTopology();
-        topology.getVertices().stream().forEach(v -> System.err.println("vertex"+v.getId()));
-        topology.getEdges().stream().forEach(e -> System.err.println("edge"+e.getId()));
-        assertEquals(12, topology.getVertices().size());
-        assertEquals(7, topology.getEdges().size());
+        topology.getVertices().stream().forEach(v -> System.err.println(v.getId()));
+        topology.getEdges().stream().forEach(e -> System.err.println(e.getId()));
+        assertEquals(14, topology.getVertices().size());
+        assertEquals(13, topology.getEdges().size());
         
         Set<String> protocols= new HashSet<>();
         protocols.add(ProtocolSupported.BRIDGE.name());
@@ -1089,10 +1088,9 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
                   ProtocolSupported.BRIDGE.name());
         assertEquals("BRIDGE:Consumer:Logger", tl.getName());
         assertEquals(0, tl.getQueue().size());        
-        System.err.println("--------Printing new start----------");
+        
         m_linkd.runTopologyUpdater(ProtocolSupported.BRIDGE);
-        System.err.println("--------Printing new end----------");
-
+        
         int vertices = 0;
         int nodes =0;
         int macs = 0;
@@ -1100,20 +1098,23 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         int segments = 0;
         for (OnmsTopologyMessage m: tl.getQueue()) {
             assertEquals(TopologyUpdater.create(ProtocolSupported.BRIDGE), m.getProtocol());
-            assertEquals(TopologyMessageStatus.NEW, m.getMessagestatus());
+            assertEquals(TopologyMessageStatus.UPDATE, m.getMessagestatus());
             if (m.getMessagebody() instanceof OnmsTopologyVertex) {
                 OnmsTopologyVertex vertex = (OnmsTopologyVertex) m.getMessagebody();
                 assertNotNull(vertex.getId());
                 assertNotNull(vertex.getLabel());
-                assertNotNull(vertex.getAddress());
                 assertNotNull(vertex.getIconKey());
                 assertNotNull(vertex.getToolTipText());
-                if (vertex.getNodeid() == null) {
+                if (vertex.getAddress() == null) {
+                    segments++;
+                    assertNull(vertex.getNodeid());
+                    assertTrue(vertex.getId().contains("s:"));
+                } else  if (vertex.getNodeid() == null) {
                     macs++;
-                    assertTrue(vertex.getId().contains("macs:"));
+                    assertTrue(vertex.getId().contains("m:"));
                 } else {
-                    assertNotNull(vertex.getNodeid());
                     nodes++;
+                    assertTrue(vertex.getId().equals(vertex.getNodeid().toString()));
                 }
                 vertices++;
             } else if (m.getMessagebody() instanceof OnmsTopologyEdge ) {
@@ -1122,25 +1123,20 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
                 assertNotNull(edge.getSource().getVertex());
                 assertNotNull(edge.getTarget().getVertex());
                 edges++;
-            } else if (m.getMessagebody() instanceof OnmsTopologySegment ) {
-                OnmsTopologySegment segment = (OnmsTopologySegment) m.getMessagebody();
-                assertNotNull(segment.getId());
-                segment.getSources().stream().forEach(s ->assertNotNull(s.getVertex()));
-                segments++;
             } else {
                 assertTrue(false);
             }
         }
-        assertEquals(19, tl.getQueue().size());        
-        assertEquals(12, vertices);
+        assertEquals(27, tl.getQueue().size());        
+        assertEquals(14, vertices);
         assertEquals(6, nodes);
         assertEquals(6, macs);
-        assertEquals(0, edges);
-        assertEquals(7, segments);
+        assertEquals(2, segments);
+        assertEquals(13, edges);
 
-        OnmsTopology lldptopo2 = m_topologyDao.getTopology(ProtocolSupported.BRIDGE.name());
-        assertEquals(12, lldptopo2.getVertices().size());
-        assertEquals(7, lldptopo2.getEdges().size());
+        OnmsTopology bridgetopo2 = m_topologyDao.getTopology(ProtocolSupported.BRIDGE.name());
+        assertEquals(14, bridgetopo2.getVertices().size());
+        assertEquals(13, bridgetopo2.getEdges().size());
 
 
     }

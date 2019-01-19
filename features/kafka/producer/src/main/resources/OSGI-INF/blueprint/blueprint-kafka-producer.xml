@@ -20,7 +20,6 @@
       <cm:property name="topologyProtocols" value="bridge,cdp,isis,lldp,ospf"/>
       <cm:property name="topologyVertexTopic" value="vertices"/>
       <cm:property name="topologyEdgeTopic" value="edges"/>
-      <cm:property name="topologySegmentTopic" value="segments"/>
       <cm:property name="alarmFeedbackTopic" value="alarmFeedback"/>
       <cm:property name="metricTopic" value="metrics"/>
       <cm:property name="forward.metrics" value="true"/>
@@ -69,7 +68,6 @@
     <property name="topologyProtocols" value="${topologyProtocols}"/>
     <property name="topologyVertexTopic" value="${topologyVertexTopic}"/>
     <property name="topologyEdgeTopic" value="${topologyEdgeTopic}"/>
-    <property name="topologySegmentTopic" value="${topologySegmentTopic}"/>
     <property name="eventTopic" value="${eventTopic}"/>
     <property name="alarmTopic" value="${alarmTopic}"/>
     <property name="nodeTopic" value="${nodeTopic}"/>

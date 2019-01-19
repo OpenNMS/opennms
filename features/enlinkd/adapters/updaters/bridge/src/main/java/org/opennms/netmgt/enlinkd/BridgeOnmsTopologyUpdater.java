@@ -29,17 +29,15 @@
 package org.opennms.netmgt.enlinkd;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
-import org.opennms.netmgt.enlinkd.service.api.MacCloud;
 import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
@@ -47,10 +45,10 @@ import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.enlinkd.service.api.TopologyShared;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologySegment;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,18 +65,27 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater  {
         return update;
     }
     
-    public static OnmsTopologyVertex create(MacCloud macCloud, List<MacPort> ports, BridgePort designated ) throws OnmsTopologyException {
-        OnmsTopologyVertex vertex = OnmsTopologyVertex.create(Topology.getSharedSegmentId(designated), 
+    public static OnmsTopologyVertex createSegmentVertex(TopologyShared segment) throws OnmsTopologyException {
+        OnmsTopologyVertex cloudVertex = OnmsTopologyVertex.create(Topology.getSharedSegmentId(segment),
+                                                                Topology.getSharedSegmentLabel(),
+                                                                null,
+                                                                Topology.getCloudIconKey());
+        cloudVertex.setToolTipText(Topology.getSharedSegmentTextString(segment));
+        return cloudVertex;        
+    }
+
+    public static OnmsTopologyVertex createMacsCloudVertex(List<MacPort> ports, TopologyShared segment ) throws OnmsTopologyException {
+        OnmsTopologyVertex vertex = OnmsTopologyVertex.create(Topology.getMacsCloudId(segment), 
                                          Topology.getMacsIpLabel(), 
-                                         Topology.getAddress(macCloud,ports), 
+                                         Topology.getAddress(segment.getCloud(),ports), 
                                          Topology.getDefaultIconKey());
-        vertex.setToolTipText(Topology.getMacsIpTextString(macCloud, ports));
+        vertex.setToolTipText(Topology.getMacsCloudIpTextString(segment, ports));
         return vertex;
     }
 
-    public static OnmsTopologyPort create(OnmsTopologyVertex ipandmacnonode) throws OnmsTopologyException{
-        OnmsTopologyPort   port = OnmsTopologyPort.create(ipandmacnonode.getId(),ipandmacnonode,-1);
-        port.setToolTipText(ipandmacnonode.getToolTipText());
+    public static OnmsTopologyPort createVertexPort(OnmsTopologyVertex vertex) throws OnmsTopologyException{
+        OnmsTopologyPort   port = OnmsTopologyPort.create(Topology.getPortId(vertex.getId()),vertex,-1);
+        port.setToolTipText(vertex.getToolTipText());
         return port;
     }
 
@@ -123,25 +130,25 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater  {
     public OnmsTopology buildTopology() throws OnmsTopologyException {
         Map<Integer, NodeTopologyEntity> nodeMap= getNodeMap();
         Map<Integer, IpInterfaceTopologyEntity> ipMap= getIpPrimaryMap();
-        Table<Integer, Integer,SnmpInterfaceTopologyEntity> nodeToOnmsSnmpTable = getSnmpInterfaceTable();
+        Table<Integer, Integer,SnmpInterfaceTopologyEntity> snmpTable = getSnmpInterfaceTable();
         OnmsTopology topology = new OnmsTopology();
 
         for (TopologyShared shared : m_bridgeTopologyService.match()){
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getTopology: parsing shared designated: {}", shared.getUpPort().printTopology());
+                LOG.debug("getTopology: parsing shared designated: {}", shared.printTopology());
             }
-            Set<OnmsTopologyPort> ports = new HashSet<>();
+            Map<BridgePort,OnmsTopologyVertex> bpVtxMap = new HashMap<>();
             for(BridgePort bp :shared.getBridgePorts()) {
                 NodeTopologyEntity node = nodeMap.get(bp.getNodeId());
                 if (topology.getVertex(node.getId().toString()) == null) {
                     topology.getVertices().add(create(node,ipMap.get(node.getId())));
                 }
-                ports.add(create(topology.getVertex(node.getId().toString()), bp, nodeToOnmsSnmpTable.get(bp.getNodeId(), bp.getBridgePortIfIndex())));
-
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("getTopology: added port: {}", bp.printTopology());
-                }
+                bpVtxMap.put(
+                               bp,
+                               topology.getVertex(node.getId().toString())
+                );
             }
+            Map<MacPort,OnmsTopologyVertex> macPortToNodeVertexMap = new HashMap<>();
 
             List<MacPort> portsWithoutNode = new ArrayList<>();
             for (MacPort mp :shared.getMacPorts()) {
@@ -152,23 +159,116 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater  {
                     if (topology.getVertex(node.getId().toString()) ==  null) {
                         topology.getVertices().add(create(node,ipMap.get(node.getId())));
                     }
-                    ports.add(create(topology.getVertex(node.getId().toString()),mp,nodeToOnmsSnmpTable.get(mp.getNodeId(), mp.getIfIndex())));
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("getTopology: added port: {}", mp.printTopology());
-                    }
+                    macPortToNodeVertexMap.put(
+                               mp,
+                               topology.getVertex(node.getId().toString())
+                               );
                 }
             }
-            
+            OnmsTopologyVertex macsVertex = null;
+            OnmsTopologyPort macsVertexPort = null;
             if (shared.getCloud() != null || portsWithoutNode.size() > 0) {
-                OnmsTopologyVertex macVertex = create(shared.getCloud(),portsWithoutNode, shared.getUpPort()) ;
-                topology.getVertices().add(macVertex);
-                ports.add( create(macVertex));
+                macsVertex = createMacsCloudVertex(portsWithoutNode, shared) ;
+                topology.getVertices().add(macsVertex);
+                macsVertexPort= createVertexPort(macsVertex);
             }
-            OnmsTopologySegment edge = OnmsTopologySegment.create(
-                                                          Topology.getId(shared.getUpPort()), 
-                                                          ports.toArray(new OnmsTopologyPort[ports.size()]));
-            topology.getEdges().add(edge);
+            
+            if (bpVtxMap.size() == 2 && 
+                    macPortToNodeVertexMap.size() == 0 && macsVertex == null ) {
+                BridgePort sourcebp = null;
+                BridgePort targetbp = null;
+                OnmsTopologyPort sourceport = null;
+                OnmsTopologyPort targetport = null;
+                for (BridgePort bp: bpVtxMap.keySet()) {
+                    SnmpInterfaceTopologyEntity snmpiface = snmpTable.get(bp.getNodeId(), bp.getBridgePortIfIndex());
+                    if (bp.getNodeId().intValue() == shared.getUpPort().getNodeId().intValue()) {
+                        sourcebp = bp;
+                        sourceport = create(bpVtxMap.get(bp),bp,snmpiface);
+                        continue;
+                    } 
+                    targetbp=bp;
+                    targetport = create(bpVtxMap.get(bp),bp,snmpiface);
+                }
+                topology.getEdges().add(OnmsTopologyEdge.create(Topology.getEdgeId(sourcebp, targetbp), sourceport, targetport));
+            } else if (bpVtxMap.size() == 1 && 
+                    macPortToNodeVertexMap.size() == 1 && macsVertex == null ){
+                BridgePort sourcebp = bpVtxMap.keySet().iterator().next();
+                MacPort targetmp = macPortToNodeVertexMap.keySet().iterator().next();
+                topology.getEdges().add(
+                      OnmsTopologyEdge.create(
+                              Topology.getEdgeId(sourcebp, targetmp), 
+                              create(
+                                     bpVtxMap.get(sourcebp),
+                                     sourcebp,
+                                     snmpTable.get(sourcebp.getNodeId(), sourcebp.getBridgePortIfIndex())
+                                 ), 
+                              create(
+                                     macPortToNodeVertexMap.get(targetmp),
+                                     targetmp,
+                                     snmpTable.get(targetmp.getNodeId(), targetmp.getIfIndex())
+                                 )
+                      ) 
+                );         
+            } else  if (bpVtxMap.size() == 1 && 
+                    macPortToNodeVertexMap.size() == 0 && macsVertex != null ) {
+                    BridgePort sourcebp = bpVtxMap.keySet().iterator().next();
+                    topology.getEdges().add(
+                            OnmsTopologyEdge.create(
+                                             Topology.getEdgeId(macsVertex.getId(),sourcebp), 
+                                             create(
+                                                    bpVtxMap.values().iterator().next(),
+                                                    sourcebp,
+                                                    snmpTable.get(sourcebp.getNodeId(), sourcebp.getBridgePortIfIndex())
+                                                ),
+                                             macsVertexPort
+                                         )
+                             );
 
+
+            } else {
+                OnmsTopologyVertex segment = createSegmentVertex(shared);
+                OnmsTopologyPort segmentPort = createVertexPort(segment);
+                topology.getVertices().add(segment);
+                for (BridgePort bp: bpVtxMap.keySet()) {
+                    topology.getEdges().add(
+                             OnmsTopologyEdge.create(
+                                              Topology.getEdgeId(segment.getId(), bp), 
+                                              segmentPort,
+                                              create(
+                                                   bpVtxMap.get(bp),
+                                                   bp,
+                                                   snmpTable.get(bp.getNodeId(), bp.getBridgePortIfIndex())
+                                              )
+                                          )
+                             );
+                    
+                }
+                for (MacPort mp: macPortToNodeVertexMap.keySet()) {
+                    topology.getEdges().add(
+                             OnmsTopologyEdge.create(
+                                              Topology.getEdgeId(segment.getId(), mp), 
+                                              segmentPort,
+                                              create(
+                                                   macPortToNodeVertexMap.get(mp),
+                                                   mp,
+                                                   snmpTable.get(mp.getNodeId(), mp.getIfIndex())
+                                              )
+                                          )
+                              );
+                }
+                
+                if (macsVertex != null) {
+                    topology.getEdges().add(
+                             OnmsTopologyEdge.create(
+                                                 Topology.getDefaultEdgeId(segment.getId(), macsVertex.getId()), 
+                                                 segmentPort,
+                                                 macsVertexPort
+                                          )
+                             );
+                    
+                }
+
+            }
         }
         return topology;
     }

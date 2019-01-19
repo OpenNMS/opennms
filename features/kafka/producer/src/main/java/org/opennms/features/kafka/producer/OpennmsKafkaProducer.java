@@ -50,7 +50,6 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.joda.time.Duration;
 import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync;
@@ -69,7 +68,6 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage.TopologyMessageStatus;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologySegment;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.opennms.netmgt.xml.event.Event;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -105,9 +103,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private String alarmFeedbackTopic;
     private String topologyVertexTopic;
     private String topologyEdgeTopic;
-    private String topologySegmentTopic;
-    
-    
+        
     private boolean forwardEvents;
     private boolean forwardAlarms;
     private boolean forwardAlarmFeedback;
@@ -123,7 +119,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private final CountDownLatch forwardedAlarmFeedback = new CountDownLatch(1);
     private final CountDownLatch forwardedTopologyVertexMessage = new CountDownLatch(1);
     private final CountDownLatch forwardedTopologyEdgeMessage = new CountDownLatch(1);
-    private final CountDownLatch forwardedTopologySegmentMessage = new CountDownLatch(1);
 
     private KafkaProducer<byte[], byte[]> producer;
     
@@ -234,8 +229,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             forwardTopologyVertexMessage(mappedTopomsg.toByteArray(),null);
         } else if (message.getMessagebody() instanceof OnmsTopologyEdge) {
             forwardTopologyEdgeMessage(mappedTopomsg.toByteArray(),null);
-        } else if (message.getMessagebody() instanceof OnmsTopologySegment) {
-            forwardTopologyVertexMessage(mappedTopomsg.toByteArray(),null);
         } else {
             LOG.error("forwardTopologyDeleteMessage: no supported update class {}", message.getMessagebody().getClass().getName());            
         }
@@ -254,12 +247,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
                     protobufMapper.toEdgeTopologyMessage(message.getProtocol().getId(),edge).build();
             forwardTopologyEdgeMessage(mappedTopoMsg.getRef().toByteArray(),
                                        mappedTopoMsg.toByteArray());
-        } else if (message.getMessagebody() instanceof OnmsTopologySegment) {
-            OnmsTopologySegment edge = (OnmsTopologySegment) message.getMessagebody();
-            final OpennmsModelProtos.TopologySegment mappedTopoMsg = 
-                    protobufMapper.toSegmentTopologyMessage(message.getProtocol().getId(),edge).build();
-            forwardTopologySegmentMessage(mappedTopoMsg.getRef().toByteArray(),
-                                          mappedTopoMsg.toByteArray());
         } else {
             LOG.error("forwardTopologyUpdateMessage: no supported update class {}", message.getMessagebody().getClass().getName());
         }
@@ -283,17 +270,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             // We've got an ACK from the server that the event was forwarded
             // Let other threads know when we've successfully forwarded an event
             forwardedTopologyEdgeMessage.countDown();
-        });
-        
-    }
-
-    private void forwardTopologySegmentMessage(byte[] refid, byte[] message) {
-        sendRecord(() -> {
-            return new ProducerRecord<>(topologySegmentTopic, refid, message);
-        }, recordMetadata -> {
-            // We've got an ACK from the server that the event was forwarded
-            // Let other threads know when we've successfully forwarded an event
-            forwardedTopologySegmentMessage.countDown();
         });
         
     }
@@ -579,10 +555,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     public void setTopologyEdgeTopic(String topologyEdgeTopic) {
         this.topologyEdgeTopic = topologyEdgeTopic;
     }
-
-    public void setTopologySegmentTopic(String topologySegmentTopic) {
-        this.topologySegmentTopic = topologySegmentTopic;
-    }
     
     public void setEventTopic(String eventTopic) {
         this.eventTopic = eventTopic;
@@ -705,10 +677,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     public CountDownLatch getForwardedTopologyEdgeMessage() {
         return forwardedTopologyEdgeMessage;
-    }
-
-    public CountDownLatch getForwardedTopologySegmentMessage() {
-        return forwardedTopologySegmentMessage;
     }
 
     public String getEncoding() {

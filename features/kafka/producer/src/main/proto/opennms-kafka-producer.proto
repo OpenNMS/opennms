@@ -182,7 +182,3 @@ message TopologyEdge {
   TopologyPort target = 3;
 }
 
-message TopologySegment {
-  TopologyRef ref = 1;
-  repeated TopologyPort sources = 2;
-}
