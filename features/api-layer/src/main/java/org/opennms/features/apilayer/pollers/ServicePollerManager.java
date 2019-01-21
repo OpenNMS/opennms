@@ -26,63 +26,48 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.apilayer.utils;
+package org.opennms.features.apilayer.pollers;
 
 import java.util.Hashtable;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
+import org.opennms.features.apilayer.utils.InterfaceMapper;
+import org.opennms.integration.api.v1.pollers.ServicePollerFactory;
+import org.opennms.netmgt.poller.ServiceMonitor;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Used to consume one type of interface from the OSGi registry, map this to another
- * interface, and expose the mapped type.
- *
- * @author jwhite
- * @param <S> input interface
- * @param <T> mapped interface
+ * Manager to plug the service pollers that implement integration-api to the default service poller registry.
  */
-public abstract class InterfaceMapper<S,T> {
+public class ServicePollerManager extends InterfaceMapper<ServicePollerFactory, ServiceMonitor> {
+
     private static final Logger LOG = LoggerFactory.getLogger(InterfaceMapper.class);
 
-    protected final Class<T> clazz;
-    protected final BundleContext bundleContext;
-
-    protected final Map<S, ServiceRegistration<T>> extServiceRegistrationMap = new LinkedHashMap<>();
-
-    public InterfaceMapper(Class<T> clazz, BundleContext bundleContext) {
-        this.clazz = Objects.requireNonNull(clazz);
-        this.bundleContext = Objects.requireNonNull(bundleContext);
+    public ServicePollerManager(BundleContext bundleContext) {
+        super(ServiceMonitor.class, bundleContext);
     }
 
-    @SuppressWarnings({ "rawtypes" })
-    public synchronized void onBind(S extension, Map properties) {
+    @Override
+    public ServiceMonitor map(ServicePollerFactory ext) {
+        return new ServicePollerImpl(ext);
+    }
+
+    // Had to override as registry needs poller class name in properties.
+    @Override
+    public synchronized void onBind(ServicePollerFactory extension, Map properties) {
         LOG.debug("bind called with {}: {}", extension, properties);
         if (extension != null) {
             extServiceRegistrationMap.computeIfAbsent(extension, (ext) -> {
-                final T mappedExt = map(ext);
-                final Hashtable<String,Object> props = new Hashtable<>();
+                final ServiceMonitor mappedExt = map(ext);
+                final Hashtable<String, Object> props = new Hashtable<>();
                 // Make the service available to any Spring-based listeners
                 props.put("registration.export", Boolean.TRUE.toString());
+                // Registry needs type of poller class.
+                props.put("type", ext.getPollerClassName());
                 return bundleContext.registerService(clazz, mappedExt, props);
             });
         }
     }
-
-    @SuppressWarnings({ "rawtypes" })
-    public synchronized void onUnbind(S extension, Map properties) {
-        LOG.debug("unbind called with {}: {}", extension, properties);
-        if (extension != null) {
-            final ServiceRegistration<T> registration = extServiceRegistrationMap.remove(extension);
-            if (registration != null) {
-                registration.unregister();
-            }
-        }
-    }
-
-    public abstract T map(S ext);
 }
