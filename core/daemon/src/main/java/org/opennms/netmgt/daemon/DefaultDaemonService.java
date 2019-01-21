@@ -83,7 +83,7 @@ public class DefaultDaemonService implements DaemonService {
     }
 
     @Override
-    public void reload(String daemonName) throws DaemonReloadException {
+    public void triggerReload(String daemonName) throws DaemonReloadException {
         final DaemonInfo dameonInfo = daemonList.stream()
                 .filter(daemon -> daemon.getName().equalsIgnoreCase(daemonName))
                 .findFirst()
