@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -288,7 +288,7 @@ public class JEXLExpressionEngineEnhancedTest {
 		}
 		Map<String, double[]> values = Maps.newHashMap();
 		values.put("x", xValues);
-		FetchResults results = new FetchResults(timestamps, values, 1, constants);
+		FetchResults results = new FetchResults(timestamps, values, 1, constants, null);
 
 		// Use the engine to evaluate the expression
 		jexlExpressionEngine.applyExpressions(request, results);

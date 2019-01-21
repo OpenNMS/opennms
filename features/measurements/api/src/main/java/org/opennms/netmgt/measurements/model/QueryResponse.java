@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -87,6 +87,11 @@ public class QueryResponse {
      * String constants
      */
     private List<QueryConstant> constants;
+
+    /**
+     * Source resource metadata
+     */
+    private QueryMetadata metadata;
 
     @XmlAttribute(name = "step")
     public long getStep() {
@@ -190,6 +195,15 @@ public class QueryResponse {
         this.constants = c;
     }
 
+    @XmlElement(name="metadata")
+    public QueryMetadata getMetadata() {
+        return this.metadata;
+    }
+
+    public void setMetadata(final QueryMetadata metadata) {
+        this.metadata = metadata;
+    }
+
     /**
      * Convenience method.
      */
@@ -217,6 +231,7 @@ public class QueryResponse {
              && com.google.common.base.Objects.equal(this.start, other.start)
              && com.google.common.base.Objects.equal(this.end, other.end)
              && com.google.common.base.Objects.equal(this.constants, other.constants)
+             && com.google.common.base.Objects.equal(this.metadata, other.metadata)
              && Arrays.equals(this.timestamps, other.timestamps)
              && Arrays.equals(this.labels, other.labels)
              && Arrays.equals(this.columns, other.columns);
@@ -225,12 +240,12 @@ public class QueryResponse {
     @Override
     public int hashCode() {
        return com.google.common.base.Objects.hashCode(
-                 this.step, this.start, this.end, this.timestamps, this.labels, this.columns, this.constants);
+                 this.step, this.start, this.end, this.timestamps, this.labels, this.columns, this.constants, this.metadata);
     }
 
     @Override
     public String toString() {
-       return com.google.common.base.Objects.toStringHelper(this)
+       return com.google.common.base.MoreObjects.toStringHelper(this)
                  .add("Step", this.step)
                  .add("Start", this.start)
                  .add("End", this.end)
@@ -238,6 +253,7 @@ public class QueryResponse {
                  .add("Labels", Arrays.toString(this.labels))
                  .add("Columns", Arrays.toString(this.columns))
                  .add("Constants", this.constants)
+                 .add("Metadata",  this.metadata)
                  .toString();
     }
 
@@ -288,7 +304,7 @@ public class QueryResponse {
 
         @Override
         public String toString() {
-           return com.google.common.base.Objects.toStringHelper(this)
+           return com.google.common.base.MoreObjects.toStringHelper(this)
                      .add("Values", Arrays.toString(this.values))
                      .toString();
         }
