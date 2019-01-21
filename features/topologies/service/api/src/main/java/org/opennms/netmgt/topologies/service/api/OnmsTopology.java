@@ -42,7 +42,8 @@ public class OnmsTopology {
     
     private Set<OnmsTopologyVertex> m_vertices;
     private Set<OnmsTopologyEdge> m_edges;
-    
+    private OnmsTopologyVertex m_defaultVertex;
+
     public OnmsTopology() {
         m_vertices = new HashSet<OnmsTopologyVertex>();
         m_edges = new HashSet<OnmsTopologyEdge>();
@@ -85,6 +86,14 @@ public class OnmsTopology {
         topo.setVertices(new HashSet<>(m_vertices));
         topo.setEdges(new HashSet<>(m_edges));
         return topo;
+    }
+
+    public OnmsTopologyVertex getDefaultVertex() {
+        return m_defaultVertex;
+    }
+
+    public void setDefaultVertex(OnmsTopologyVertex defaultVertex) {
+        m_defaultVertex = defaultVertex;
     }
 }
 

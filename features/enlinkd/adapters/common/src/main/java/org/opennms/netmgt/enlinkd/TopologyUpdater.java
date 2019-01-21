@@ -224,6 +224,10 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
         }
     }
 
+    public NodeTopologyEntity getDefaultFocusPoint() { 
+        return m_nodeTopologyService.getDefaultFocusPoint();
+    }
+
     public boolean isRegistered() {
         return m_registered;
     }
