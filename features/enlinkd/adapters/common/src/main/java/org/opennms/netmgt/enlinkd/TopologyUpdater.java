@@ -99,7 +99,7 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
         try {
             m_topologyDao.register(this);
             m_registered  = true;
-            LOG.info("register: protocol:{}", getProtocol());
+            LOG.info("register: protocol:{}", getProtocol().getId());
         } catch (OnmsTopologyException e) {
             LOG.error("register: protocol:{} {}", e.getProtocol(),e.getMessage());
         }
@@ -112,7 +112,7 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
         try {
             m_topologyDao.unregister(this);
             m_registered = false;
-            LOG.info("unregister: protocol:{}", getProtocol());
+            LOG.info("unregister: protocol:{}", getProtocol().getId());
         } catch (OnmsTopologyException e) {
             LOG.error("unregister: protocol:{} {}", e.getProtocol(),e.getMessage());
         }
