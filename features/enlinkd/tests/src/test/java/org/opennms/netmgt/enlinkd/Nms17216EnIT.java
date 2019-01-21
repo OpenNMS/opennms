@@ -747,7 +747,8 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         //update configuration to support only CDP updates
         //need to reload daemon
         m_linkd.reload();
-        assertEquals(1, m_topologyDao.getSupportedProtocols().size());
+        assertEquals(2, m_topologyDao.getSupportedProtocols().size());
+        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.NODES.name()));               
         assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.BRIDGE.name()));
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.CDP.name()));
         assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.ISIS.name()));
@@ -864,7 +865,8 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         
         // reload daemon and support only: LLDP updates
         m_linkd.reload();
-        assertEquals(1, m_topologyDao.getSupportedProtocols().size());
+        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.NODES.name()));
+        assertEquals(2, m_topologyDao.getSupportedProtocols().size());
         assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.BRIDGE.name()));
         assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.CDP.name()));
         assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.ISIS.name()));

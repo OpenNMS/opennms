@@ -400,7 +400,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             case BRIDGE:
                 m_bridgeTopologyUpdater.runDiscovery();
                 break;
-            
+
+            case NODES:
+                m_nodesTopologyUpdater.runDiscovery();
+                break;
+
             default:
                 break;
             

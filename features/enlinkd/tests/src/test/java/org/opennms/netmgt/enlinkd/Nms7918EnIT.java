@@ -1004,7 +1004,8 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertTrue(m_linkdConfig.useIsisDiscovery());
 
-        assertEquals(5, m_topologyDao.getSupportedProtocols().size());
+        assertEquals(6, m_topologyDao.getSupportedProtocols().size());
+        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.NODES.name()));
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.BRIDGE.name()));
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.CDP.name()));
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.ISIS.name()));
@@ -1026,7 +1027,8 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
 
         //Updated configuration will lead to support only BRIDGE updates,
         m_linkd.reload();
-        assertEquals(1, m_topologyDao.getSupportedProtocols().size());
+        assertEquals(2, m_topologyDao.getSupportedProtocols().size());
+        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.NODES.name()));
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.BRIDGE.name()));
         assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.CDP.name()));
         assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.ISIS.name()));
