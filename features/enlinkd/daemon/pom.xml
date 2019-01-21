@@ -77,6 +77,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.adapters.updaters.nodes</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.adapters.updaters.bridge</artifactId>
       <version>${project.version}</version>
     </dependency>

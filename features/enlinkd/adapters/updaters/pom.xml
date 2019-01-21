@@ -15,5 +15,6 @@
     <module>ospf</module>
     <module>isis</module>
     <module>bridge</module>
+    <module>nodes</module>
   </modules>
 </project>

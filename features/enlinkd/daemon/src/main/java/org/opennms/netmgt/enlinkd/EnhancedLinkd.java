@@ -105,6 +105,8 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
 
     @Autowired
+    private NodesOnmsTopologyUpdater m_nodesTopologyUpdater;
+    @Autowired
     private BridgeOnmsTopologyUpdater m_bridgeTopologyUpdater;
     @Autowired
     private CdpOnmsTopologyUpdater m_cdpTopologyUpdater;
@@ -153,7 +155,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         m_bridgeTopologyService.load();
         LOG.debug("init: Bridge Topology loaded.");
 
-        
+        scheduleAndRegisterOnmsTopologyUpdater(m_nodesTopologyUpdater);
 
         if (m_linkdConfig.useBridgeDiscovery()) {
             scheduleDiscoveryBridgeDomain();
@@ -419,7 +421,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         } 
         m_nodes.get(nodeid).stream().forEach(collection -> collection.wakeUp());
     }
-    
+
+    public void addNode(int intValue) {
+        m_queryMgr.updatesAvailable();
+    }
+
     void deleteNode(int nodeid) {
         LOG.info("deleteNode: deleting LinkableNode for node {}",
                         nodeid);
@@ -435,7 +441,8 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         m_lldpTopologyService.delete(nodeid);
         m_ospfTopologyService.delete(nodeid);
         m_ipNetToMediaTopologyService.delete(nodeid);
-        //FIXME update with a delete topologyService
+        
+        m_queryMgr.updatesAvailable();
 
     }
 
@@ -592,7 +599,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             IpNetToMediaTopologyService ipNetToMediaTopologyService) {
         m_ipNetToMediaTopologyService = ipNetToMediaTopologyService;
     }
-
+    public NodesOnmsTopologyUpdater getNodesTopologyUpdater() {
+        return m_nodesTopologyUpdater;
+    }
     public CdpOnmsTopologyUpdater getCdpTopologyUpdater() {
         return m_cdpTopologyUpdater;
     }
@@ -611,6 +620,12 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
     public void reload() {
         LOG.info("reload: reload enlinkd daemon service");
+
+        m_nodesTopologyUpdater.unschedule();
+        m_nodesTopologyUpdater.unregister();
+        NodesOnmsTopologyUpdater nodeupdater = NodesOnmsTopologyUpdater.clone(m_nodesTopologyUpdater);
+        scheduleAndRegisterOnmsTopologyUpdater(nodeupdater);
+        m_nodesTopologyUpdater = nodeupdater;
 
         if (m_linkdConfig.useOspfDiscovery()) {
             if (m_ospfTopologyUpdater.isRegistered()) {
@@ -714,5 +729,4 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         }
         reload();
     }
-
 }

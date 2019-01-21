@@ -64,6 +64,19 @@ public final class EventProcessor {
      * 
      * @param event
      */
+    @EventHandler(uei=EventConstants.NODE_ADDED_EVENT_UEI)
+    public void handleNodeAdded(Event event) throws InsufficientInformationException {
+
+        EventUtils.checkNodeId(event);
+
+        m_linkd.addNode(event.getNodeid().intValue());
+    }
+
+    /**
+     * Handle a Node Deleted Event
+     * 
+     * @param event
+     */
     @EventHandler(uei=EventConstants.NODE_DELETED_EVENT_UEI)
     public void handleNodeDeleted(Event event) throws InsufficientInformationException {
 

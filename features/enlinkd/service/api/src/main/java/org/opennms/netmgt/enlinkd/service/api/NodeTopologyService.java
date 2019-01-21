@@ -34,7 +34,7 @@ import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 
-public interface NodeTopologyService {
+public interface NodeTopologyService extends TopologyService {
 
     List<Node> findAllSnmpNode();
 
