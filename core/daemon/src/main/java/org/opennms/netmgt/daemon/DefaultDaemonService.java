@@ -32,13 +32,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.opennms.core.config.api.ConfigurationResource;
 import org.opennms.core.config.api.ConfigurationResourceException;
-import org.opennms.core.config.impl.JaxbResourceConfiguration;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.config.service.Service;
@@ -63,7 +62,7 @@ public class DefaultDaemonService implements DaemonService {
 
     @Autowired
     @Qualifier("service-configuration.xml")
-    private JaxbResourceConfiguration<ServiceConfiguration> serviceConfiguration;
+    private ConfigurationResource<ServiceConfiguration> serviceConfiguration;
 
     private final List<DaemonInfo> daemonList = new ArrayList<>();
 
@@ -74,7 +73,7 @@ public class DefaultDaemonService implements DaemonService {
         final ServiceConfiguration config = serviceConfiguration.get();
         for (Service service : config.getServices()) {
             final String name = service.getName().split("=")[1]; // OpenNMS:Name=Manager => Manager
-            this.daemonList.add(new DaemonInfo(name, ignoreList.contains(name), service.isEnabled(), service.isReloadable() /* Internal daemons are not reloadable by default */));
+            daemonList.add(new DaemonInfo(name, ignoreList.contains(name), service.isEnabled(), service.isReloadable() /* Internal daemons are not reloadable by default */));
         }
     }
 
@@ -85,14 +84,11 @@ public class DefaultDaemonService implements DaemonService {
 
     @Override
     public void reload(String daemonName) throws DaemonReloadException {
-        Optional<DaemonInfo> daemonOptional = this.daemonList.stream()
+        final DaemonInfo dameonInfo = daemonList.stream()
                 .filter(daemon -> daemon.getName().equalsIgnoreCase(daemonName))
-                .findFirst();
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException());
 
-        if (!daemonOptional.isPresent()) {
-            throw new NoSuchElementException();
-        }
-        final DaemonInfo dameonInfo = daemonOptional.get();
         if (!dameonInfo.isEnabled()) {
             throw new DaemonReloadException("Daemon with name " + daemonName + " is not enabled and therefore cannot be reloaded");
         }
@@ -102,22 +98,18 @@ public class DefaultDaemonService implements DaemonService {
         if (dameonInfo.isReloadable()) {
             EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "Daemon Config Service");
             eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, daemonName.toLowerCase());
-            this.eventForwarder.sendNow(eventBuilder.getEvent());
+            eventForwarder.sendNow(eventBuilder.getEvent());
         }
     }
 
     @Override
     public DaemonReloadInfo getCurrentReloadState(String daemonName) {
-        final Optional<DaemonInfo> daemonOptional = this.daemonList.stream()
-                .filter(daemon -> daemon.getName().equalsIgnoreCase(daemonName))
-                .findFirst();
-
-        if (!daemonOptional.isPresent()) {
+        if (!daemonList.stream().anyMatch(daemon -> daemon.getName().equalsIgnoreCase(daemonName))) {
             throw new NoSuchElementException();
         }
 
         // Retrieve the last (youngest) reload event of the given daemon
-        final List<OnmsEvent> lastReloadEventList = this.eventDao.findMatching(
+        final List<OnmsEvent> lastReloadEventList = eventDao.findMatching(
                 new CriteriaBuilder(OnmsEvent.class)
                         .alias("eventParameters", "eventParameters")
                         .and(
@@ -138,7 +130,7 @@ public class DefaultDaemonService implements DaemonService {
 
         // If there is a last event time, check for a SUCCESS or FAILED event
         long lastReloadEventTime = lastReloadEventList.get(0).getEventTime().getTime();
-        final List<OnmsEvent> lastReloadResultEventList = this.eventDao.findMatching(
+        final List<OnmsEvent> lastReloadResultEventList = eventDao.findMatching(
                 new CriteriaBuilder(OnmsEvent.class)
                         .alias("eventParameters", "params")
                         .and(

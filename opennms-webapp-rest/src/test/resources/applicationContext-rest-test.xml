@@ -9,6 +9,8 @@
 
 	<context:annotation-config />
 
+	<import resource="classpath:/META-INF/opennms/component-daemon.xml" />
+
 	<bean name="collectd-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
 		<constructor-arg value="org.opennms.netmgt.config.collectd.CollectdConfiguration" />
 		<constructor-arg value="file:target/test-classes/collectd-configuration.xml" />

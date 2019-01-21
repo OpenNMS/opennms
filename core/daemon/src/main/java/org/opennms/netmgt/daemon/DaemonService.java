@@ -44,7 +44,7 @@ public interface DaemonService {
      * In order to reload the daemon it must listen
      * to {@link org.opennms.netmgt.events.api.EventConstants#RELOAD_DAEMON_CONFIG_UEI} events.
      *
-     * @param daemonName Case insensitive name of the daemon.
+     * @param daemonName Case insensitive name of the daemon
      * @throws {@link java.util.NoSuchElementException} if a daemon for <code>daemonName</code> does not exist
      */
     void reload(String daemonName) throws DaemonReloadException;
@@ -52,7 +52,7 @@ public interface DaemonService {
     /**
      * Returns the {@link DaemonReloadInfo} of the provided daemon.
      *
-     * @param daemonName Case insensitive name of the daemon.
+     * @param daemonName Case insensitive name of the daemon
      * @throws {@link java.util.NoSuchElementException} if a daemon for <code>daemonName</code> does not exist
      */
     DaemonReloadInfo getCurrentReloadState(String daemonName);

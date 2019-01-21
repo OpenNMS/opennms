@@ -29,24 +29,30 @@
 package org.opennms.netmgt.events.commands;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.api.console.CommandLine;
 import org.apache.karaf.shell.api.console.Completer;
 import org.apache.karaf.shell.api.console.Session;
 import org.apache.karaf.shell.support.completers.StringsCompleter;
-import org.opennms.core.daemon.DaemonReloadEnum;
+import org.opennms.netmgt.daemon.DaemonInfo;
+import org.opennms.netmgt.daemon.DaemonService;
 
 
 @Service
 public class DaemonNameCompleter implements Completer {
 
+    @Reference
+    private DaemonService daemonService;
+
     @Override
     public int complete(Session session, CommandLine commandLine, List<String> candidates) {
-        StringsCompleter daemonNames = new StringsCompleter();
-        for(DaemonReloadEnum value : DaemonReloadEnum.values()) {
-            daemonNames.getStrings().add(value.getDaemonName());
-        }
-        return daemonNames.complete(session, commandLine, candidates);
+        final List<String> daemonNames = daemonService.getDaemons()
+                .stream().map(DaemonInfo::getName)
+                .collect(Collectors.toList());
+        final StringsCompleter daemonNameCompleter = new StringsCompleter(daemonNames);
+        return daemonNameCompleter.complete(session, commandLine, candidates);
     }
 }
