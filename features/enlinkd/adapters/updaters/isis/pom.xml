@@ -27,10 +27,6 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.daemon</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.service.api</artifactId>
     </dependency>
