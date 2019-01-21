@@ -134,7 +134,15 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     protected void onInit() {
         BeanUtils.assertAutowiring(this);
 
-        createScheduler();
+        // Create a scheduler
+        //
+        try {
+            LOG.info("init: Creating EnhancedLinkd scheduler");
+            m_scheduler = new LegacyScheduler("EnhancedLinkd", getLinkdConfig().getThreads());
+        } catch (RuntimeException e) {
+            LOG.error("init: Failed to create EnhancedLinkd scheduler", e);
+            throw e;
+        }
 
         LOG.debug("init: Loading nodes.....");
         for (final Node node : m_queryMgr.findAllSnmpNode()) {
@@ -169,19 +177,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             scheduleAndRegisterOnmsTopologyUpdater(m_ospfTopologyUpdater);
         }
 
-    }
-
-    private void createScheduler() {
-
-        // Create a scheduler
-        //
-        try {
-            LOG.info("init: Creating EnhancedLinkd scheduler");
-            setScheduler(new LegacyScheduler("EnhancedLinkd", getLinkdConfig().getThreads()));
-        } catch (RuntimeException e) {
-            LOG.error("init: Failed to create EnhancedLinkd scheduler", e);
-            throw e;
-        }
     }
 
     public void unscheduleAndUnregisterOnmsTopologyUpdater(TopologyUpdater onmsTopologyUpdater) {
@@ -714,7 +709,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         try {
             m_linkdConfig.reload();
         } catch (IOException e) {
-            LOG.error("reloadConfig: cannot relaod config: {}", e.getMessage());
+            LOG.error("reloadConfig: cannot reload config: {}", e.getMessage());
             return;
         }
         reload();
