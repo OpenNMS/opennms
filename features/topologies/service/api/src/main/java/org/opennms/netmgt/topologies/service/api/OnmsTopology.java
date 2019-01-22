@@ -85,6 +85,7 @@ public class OnmsTopology {
         OnmsTopology topo = new OnmsTopology();
         topo.setVertices(new HashSet<>(m_vertices));
         topo.setEdges(new HashSet<>(m_edges));
+        topo.setDefaultVertex(m_defaultVertex);
         return topo;
     }
 
