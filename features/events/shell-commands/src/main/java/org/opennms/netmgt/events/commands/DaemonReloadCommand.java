@@ -61,7 +61,7 @@ public class DaemonReloadCommand implements Action {
             if (blockAndWait) {
                 final long started = System.currentTimeMillis();
                 System.out.print("Reloading daemon '" + daemonName +"' ...");
-                daemonService.triggerReload(daemonName);
+                daemonService.reload(daemonName);
                 for (int i=0; i < 5001; i++) {
                     Thread.sleep(500);
                     final DaemonReloadInfo currentReloadState = daemonService.getCurrentReloadState(daemonName);
@@ -81,7 +81,7 @@ public class DaemonReloadCommand implements Action {
                 System.out.println();
                 System.out.println("Daemon reload state is unclear");
             } else {
-                daemonService.triggerReload(daemonName);
+                daemonService.reload(daemonName);
             }
         } catch (NoSuchElementException e) {
             System.err.println("Daemon with name '" + daemonName + "' is unknown");

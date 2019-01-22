@@ -10,8 +10,8 @@
     <div class="panel-body">
         <span class="lead navbar-left">List of Daemons</span>
         <div class="navbar-form navbar-right">
-            <button type="button" ng-click="refreshDaemonList()" class="btn btn-primary"><span
-                    class="glyphicon glyphicon-refresh"></span> Refresh
+            <button type="button" ng-click="refreshDaemonList()" class="btn btn-primary">
+                <i class="fa fa-refresh fa-lg"></i> Refresh
             </button>
         </div>
         <div ng-show="daemons.length == 0">No daemons available.</div>
@@ -33,33 +33,47 @@
                 </td>
 
                 <td>
-                    <div ng-if="!d.reloadable">Daemon not reloadable</div>
-
-                    <div ng-if="d.reloadable">
-                        <button ng-disabled="d.isReloading" type="button" ng-click="reloadPressed(d)"
+                    <div ng-if="d.reloadable && d.enabled">
+                        <button ng-disabled="d.isReloading" type="button" ng-click="reloadDaemon(d)"
                                 class="btn btn-sm">
-                            <span
-                                    class="glyphicon glyphicon-repeat">
-                            </span>
+                            <i
+                                    class="fa fa-repeat fa-lg">
+                            </i>
                             Reload
                         </button>
-                        <span ng-show="d.showReloadState">
-                            <span style="margin-left: 4pt; margin-right: 4pt" ng-class="d.reloadIconClass"></span>
+                        <span>
+                            <span style="margin-left: 4pt; margin-right: 4pt" class="fa fa-times-circle fa-lg" ng-show="d.reloadNote == 'Failed'"></span>
+                            <span style="margin-left: 4pt; margin-right: 4pt" class="fa fa-check-circle fa-lg" ng-show="d.reloadNote == 'Success'"></span>
+                            <span style="margin-left: 4pt; margin-right: 4pt" class="fa fa-question-circle fa-lg" ng-show="d.reloadNote == 'Undefined'"></span>
+                            <span style="margin-left: 4pt; margin-right: 4pt" class="fa fa-spinner fa-spin fa-lg" ng-show="d.reloadNote == 'Reloading...'"></span>
                             {{d.reloadNote}}
                         </span>
-
                         <span class="pull-right">
-                            <button
-                                    class="btn btn-sm"
-                                    mwl-confirm
-                                    title="Curl script"
-                                    message="<pre>curl --request POST -u USERNAME:PASSWORD -url {{serverUrl}}/opennms/rest/daemons/reload/{{d.name}}/</pre>"
-                                    placement="left"
-                                    hide-confirm-button="true"
-                                    cancel-text="close">
-                                <i class="glyphicon glyphicon-console"></i>
+                            <button type="button" class="btn" data-toggle="modal" data-target="#curlModal_{{d.name}}">
+                                <i class="fa fa-terminal fa-lg"></i>
                             </button>
                         </span>
+
+                        <!-- Modal -->
+                        <div class="modal" id="curlModal_{{d.name}}" tabindex="-1" role="dialog" aria-labelledby="curlModalLabel">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        <h4 class="modal-title">Curl command</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <pre>curl --request POST -u USERNAME:PASSWORD -url {{serverUrl}}/opennms/rest/daemons/reload/{{d.name}}/</pre>
+                                        <h6>Hint: This Server-url is generated from the current session</h6>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </td>
             </tr>

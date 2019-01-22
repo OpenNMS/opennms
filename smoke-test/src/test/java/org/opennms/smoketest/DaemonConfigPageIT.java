@@ -63,12 +63,20 @@ public class DaemonConfigPageIT extends OpenNMSSeleniumTestCase {
         RestAssured.port = getServerHttpPort();
         RestAssured.basePath = "/opennms/admin/daemons/index.jsp";
         RestAssured.authentication = preemptive().basic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
+
+        // Reduces the XPath Find Element Waiting time to 5 seconds
+        setImplicitWait(5, TimeUnit.SECONDS);
     }
 
     @After
     public void tearDown() {
         RestAssured.reset();
+
+        // Resets the FindElement Waiting Time
+        setImplicitWait();
     }
+
+    private int expectedDaemonCount;
 
     @Test
     public void verifyDaemonListIsShown() {
@@ -76,27 +84,30 @@ public class DaemonConfigPageIT extends OpenNMSSeleniumTestCase {
                 .assertThat().statusCode(200)
                 .assertThat().contentType(ContentType.HTML);
 
+        expectedDaemonCount = 30;
+
         DaemonReloadPage page = new DaemonReloadPage().open();
         Assert.assertThat(page.getDaemonRows(), hasSize(30));
 
-        Daemon eventd = new Daemon(page, "eventd");
-        Daemon alarmd = new Daemon(page, "alarmd");
-        Daemon snmppoller = new Daemon(page, "snmppoller");
-        Daemon ticketer = new Daemon(page, "ticketer");
+        Daemon eventd = page.getDaemon("Eventd");
 
-        Assert.assertThat(eventd.getName(), is("eventd"));
+        Daemon alarmd = page.getDaemon("Alarmd");
+        Daemon snmppoller = page.getDaemon("SnmpPoller");
+        Daemon ticketer = page.getDaemon("Ticketer");
+
+        Assert.assertThat(eventd.getName(), is("Eventd"));
         Assert.assertThat(eventd.getStatus(), is("running"));
         Assert.assertThat(eventd.isReloadable(), is(true));
 
-        Assert.assertThat(alarmd.getName(), is("alarmd"));
+        Assert.assertThat(alarmd.getName(), is("Alarmd"));
         Assert.assertThat(alarmd.getStatus(), is("running"));
         Assert.assertThat(alarmd.isReloadable(), is(true));
 
-        Assert.assertThat(snmppoller.getName(), is("snmppoller"));
+        Assert.assertThat(snmppoller.getName(), is("SnmpPoller"));
         Assert.assertThat(snmppoller.getStatus(), is("not running"));
         Assert.assertThat(snmppoller.isReloadable(), is(false));
 
-        Assert.assertThat(ticketer.getName(), is("ticketer"));
+        Assert.assertThat(ticketer.getName(), is("Ticketer"));
         Assert.assertThat(ticketer.getStatus(), is("running"));
         Assert.assertThat(ticketer.isReloadable(), is(false));
 
@@ -113,34 +124,32 @@ public class DaemonConfigPageIT extends OpenNMSSeleniumTestCase {
     }
 
     private class Daemon {
-        private final DaemonReloadPage page;
         private final String daemonName;
 
-        public Daemon(DaemonReloadPage page, String daemonName) {
-            this.page = page;
+        public Daemon(String daemonName) {
             this.daemonName = daemonName;
         }
 
         public String getName() {
             // Assert That Right Name is shown
-            WebElement nameCell = getDaemonRowElement().findElements(By.xpath("./td[1]")).get(0);
+            WebElement nameCell = getDaemonRowElement().findElement(By.xpath("./td[1]"));
             Assert.assertThat(nameCell.isDisplayed(), is(true));
             Assert.assertThat(nameCell.isEnabled(), is(true));
             return nameCell.getText();
         }
 
         public String getStatus() {
-            WebElement label = getDaemonRowElement().findElements(By.xpath("./td[2]/label")).get(0);
+            WebElement label = getDaemonRowElement().findElement(By.xpath("./td[2]/label"));
             Assert.assertThat(label.isDisplayed(), is(true));
             Assert.assertThat(label.isEnabled(), is(true));
             return label.getText();
         }
 
         public boolean isReloadable() {
-            WebElement reloadCell = getDaemonRowElement().findElements(By.xpath("./td[3]")).get(0);
+            WebElement reloadCell = getDaemonRowElement().findElement(By.xpath("./td[3]"));
             Assert.assertThat(reloadCell.isDisplayed(), is(true));
             Assert.assertThat(reloadCell.isEnabled(), is(true));
-            return !reloadCell.getText().equals("Daemon not reloadable");
+            return !reloadCell.getText().equals("");
         }
 
         public String reload(long maxReloadTimeInSeconds) {
@@ -158,13 +167,13 @@ public class DaemonConfigPageIT extends OpenNMSSeleniumTestCase {
             Assert.assertThat(reloadButton.isDisplayed(), is(true));
             Assert.assertThat(reloadButton.isEnabled(), is(false));
 
-            WebElement reloadCellStateSpan = reloadCell.findElements(By.xpath("./div/span")).get(0);
+            WebElement reloadCellStateSpan = reloadCell.findElement(By.xpath("./div/span"));
             Assert.assertThat(reloadCellStateSpan.isDisplayed(), is(true));
             Assert.assertThat(reloadCellStateSpan.getText(), is("Reloading..."));
 
             //Wait for the Reload to terminate
             new WebDriverWait(m_driver, maxReloadTimeInSeconds).until((Predicate<WebDriver>) (driver) -> {
-                final String reloadStateText = getDaemonRowElement().findElements(By.xpath("./td[3]/div/span")).get(0).getText();
+                final String reloadStateText = getDaemonRowElement().findElement(By.xpath("./td[3]/div/span")).getText();
                 return (reloadStateText.equals("Success") || reloadStateText.equals("Failed") || reloadStateText.equals("Unknown"));
             });
 
@@ -174,7 +183,7 @@ public class DaemonConfigPageIT extends OpenNMSSeleniumTestCase {
             Assert.assertThat(reloadButton.isDisplayed(), is(true));
             Assert.assertThat(reloadButton.isEnabled(), is(true));
 
-            reloadCellStateSpan = reloadCell.findElements(By.xpath("./div/span")).get(0);
+            reloadCellStateSpan = reloadCell.findElement(By.xpath("./div/span"));
             Assert.assertThat(reloadCellStateSpan.isDisplayed(), is(true));
 
             return reloadCellStateSpan.getText();
@@ -185,7 +194,7 @@ public class DaemonConfigPageIT extends OpenNMSSeleniumTestCase {
                 throw new IllegalStateException("This daemon is not reloadable");
             }
 
-            WebElement preElement = getPopupPreElement();
+            WebElement preElement = getDaemonRowElement().findElement(By.xpath("./td[3]//pre"));
             Assert.assertThat(preElement.isDisplayed(), is(false));
             Assert.assertThat(preElement.isEnabled(), is(true));
 
@@ -194,18 +203,18 @@ public class DaemonConfigPageIT extends OpenNMSSeleniumTestCase {
             Assert.assertThat(curlButton.isEnabled(), is(true));
             curlButton.click();
 
-            preElement = getPopupPreElement();
+            preElement = getDaemonRowElement().findElement(By.xpath("./td[3]//pre"));
             Assert.assertThat(preElement.isDisplayed(), is(true));
             Assert.assertThat(preElement.isEnabled(), is(true));
 
             final String curlString = preElement.getText();
 
-            curlButton = getDaemonRowElement().findElement(By.xpath("./td[3]/div/span/button"));
+            curlButton = getDaemonRowElement().findElement(By.xpath(".//div[contains(@class, 'modal-footer')]/button"));
             Assert.assertThat(curlButton.isDisplayed(), is(true));
             Assert.assertThat(curlButton.isEnabled(), is(true));
             curlButton.click();
 
-            preElement = getPopupPreElement();
+            preElement = getDaemonRowElement().findElement(By.xpath("./td[3]//pre"));
             Assert.assertThat(preElement.isDisplayed(), is(false));
             Assert.assertThat(preElement.isEnabled(), is(true));
 
@@ -213,17 +222,12 @@ public class DaemonConfigPageIT extends OpenNMSSeleniumTestCase {
         }
 
         private WebElement getDaemonRowElement() {
-            return this.page.getRowForDaemonName(this.daemonName);
-        }
-
-        private WebElement getPopupPreElement() {
-            return this.page.getPopupPreElementForDaemonName(this.daemonName);
+            final String curlXpathExpression = String.format("//table/tbody/tr/td[contains(text(), '%s')]/..", daemonName);
+            return m_driver.findElement(By.xpath(curlXpathExpression));
         }
     }
 
     private class DaemonReloadPage {
-
-        private final int expectedDaemonCount = 30;
 
         public DaemonReloadPage open() {
             m_driver.get(baseURI + "opennms/admin/daemons/index.jsp");
@@ -235,24 +239,8 @@ public class DaemonConfigPageIT extends OpenNMSSeleniumTestCase {
             return m_driver.findElements(By.xpath("//table/tbody/tr"));
         }
 
-        public WebElement getRowForDaemonName(String name) {
-            final String curlXpathExpression = String.format("//table/tbody/tr/td[contains(text(), '%s')]/..", name);
-            try {
-                setImplicitWait(5, TimeUnit.SECONDS);
-                return m_driver.findElement(By.xpath(curlXpathExpression));
-            } finally {
-                setImplicitWait();
-            }
-        }
-
-        public WebElement getPopupPreElementForDaemonName(String name) {
-            final String curlXpathExpression = String.format("//pre[contains(text(), '%s')]", name);
-            try {
-                setImplicitWait(5, TimeUnit.SECONDS);
-                return m_driver.findElement(By.xpath(curlXpathExpression));
-            } finally {
-                setImplicitWait();
-            }
+        public Daemon getDaemon(String daemonName) {
+            return new Daemon(daemonName);
         }
     }
 }
