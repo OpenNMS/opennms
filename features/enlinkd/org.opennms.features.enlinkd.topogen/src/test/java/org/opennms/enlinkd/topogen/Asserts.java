@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,11 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.shell.topogen.topology;
+package org.opennms.enlinkd.topogen;
 
-import org.apache.commons.lang3.tuple.Pair;
+import static org.junit.Assert.fail;
 
-/** Generates an endless stream of Pairs **/
-public interface PairGenerator<E> {
-    Pair<E, E> next();
+public class Asserts {
+
+  /* Taken from a newer jUnit Version */
+  public static <T extends Throwable> void assertThrows(Class<T> expectedType, Runnable executable) {
+    try {
+      executable.run();
+    } catch (Throwable t) {
+      if (expectedType.isInstance(t)) {
+        return; // all good
+      }
+      fail("Expected Exception " + expectedType.getName());
+    }
+  }
+
 }

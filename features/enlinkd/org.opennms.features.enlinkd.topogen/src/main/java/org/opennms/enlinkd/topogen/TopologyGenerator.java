@@ -26,13 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.shell.topogen;
+package org.opennms.enlinkd.topogen;
 
 import java.sql.SQLException;
-import org.opennms.features.topology.shell.topogen.protocol.CdpProtocol;
-import org.opennms.features.topology.shell.topogen.protocol.IsIsProtocol;
-import org.opennms.features.topology.shell.topogen.protocol.LldpProtocol;
-import org.opennms.features.topology.shell.topogen.protocol.OspfProtocol;
+import org.opennms.enlinkd.topogen.protocol.CdpProtocol;
+import org.opennms.enlinkd.topogen.protocol.IsIsProtocol;
+import org.opennms.enlinkd.topogen.protocol.LldpProtocol;
+import org.opennms.enlinkd.topogen.protocol.OspfProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +51,7 @@ public class TopologyGenerator {
     cdp, isis, lldp, ospf
   }
 
-  private TopologyPersister persister;
+  private TopologyPersisterDao persister;
 
   private final Integer amountNodes;
 
@@ -69,8 +69,8 @@ public class TopologyGenerator {
 
   private final boolean deleteExistingTolology;
 
-  public TopologyGenerator(
-      TopologyPersister persister,
+  private TopologyGenerator(
+      TopologyPersisterDao persister,
       Integer amountNodes,
       Integer amountElements,
       Integer amountLinks,
@@ -102,13 +102,20 @@ public class TopologyGenerator {
   }
 
   public void createNetwork() throws SQLException {
+    String msg = String.format("Creating a topology with the following settings: amountNodes=%s,"
+            + "amountElements=%s, amountLinks=%s, amountSnmpInterfaces=%s, amountIpInterfaces=%s,"
+            + "topology=%s, protocol=%s, deleteExistingTolology=%s", this.amountNodes, this.amountElements,
+    this.amountLinks, this.amountSnmpInterfaces, this.amountIpInterfaces, this.topology, this.protocol,
+        this.deleteExistingTolology);
+    LOG.info(msg);
+
     if(deleteExistingTolology){
       this.persister.deleteTopology();
     }
     getProtocol().createAndPersistNetwork();
   }
 
-  private org.opennms.features.topology.shell.topogen.protocol.Protocol getProtocol(){
+  private org.opennms.enlinkd.topogen.protocol.Protocol getProtocol(){
     if(Protocol.cdp == this.protocol){
       return new CdpProtocol( this.topology,
           amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, persister);
@@ -134,7 +141,7 @@ public class TopologyGenerator {
 
   public static class TopologyGeneratorBuilder {
 
-    private TopologyPersister persister;
+    private TopologyPersisterDao persister;
     private Integer amountNodes;
     private Integer amountElements;
     private Integer amountLinks;
@@ -144,10 +151,10 @@ public class TopologyGenerator {
     private Protocol protocol;
     private Boolean deleteExistingTolology;
 
-    TopologyGeneratorBuilder() {
+    private TopologyGeneratorBuilder() {
     }
 
-    public TopologyGeneratorBuilder persister(TopologyPersister persister) {
+    public TopologyGeneratorBuilder persister(TopologyPersisterDao persister) {
       this.persister = persister;
       return this;
     }

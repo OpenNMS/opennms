@@ -26,22 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.shell.topogen.protocol;
+package org.opennms.enlinkd.topogen.protocol;
 
 import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.opennms.features.topology.shell.topogen.TopologyGenerator;
-import org.opennms.features.topology.shell.topogen.TopologyGenerator.Topology;
-import org.opennms.features.topology.shell.topogen.TopologyPersister;
-import org.opennms.features.topology.shell.topogen.topology.LinkedPairGenerator;
-import org.opennms.features.topology.shell.topogen.topology.PairGenerator;
-import org.opennms.features.topology.shell.topogen.topology.RandomConnectedPairGenerator;
-import org.opennms.features.topology.shell.topogen.topology.UndirectedPairGenerator;
-import org.opennms.features.topology.shell.topogen.util.InetAddressGenerator;
-import org.opennms.features.topology.shell.topogen.util.RandomUtil;
+import org.opennms.enlinkd.topogen.util.InetAddressGenerator;
+import org.opennms.enlinkd.topogen.TopologyGenerator;
+import org.opennms.enlinkd.topogen.TopologyGenerator.Topology;
+import org.opennms.enlinkd.topogen.TopologyPersisterDao;
+import org.opennms.enlinkd.topogen.topology.LinkedPairGenerator;
+import org.opennms.enlinkd.topogen.topology.PairGenerator;
+import org.opennms.enlinkd.topogen.topology.RandomConnectedPairGenerator;
+import org.opennms.enlinkd.topogen.topology.UndirectedPairGenerator;
+import org.opennms.enlinkd.topogen.util.RandomUtil;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -60,13 +60,13 @@ public abstract class Protocol<Element> {
     protected final int amountElements;
     private final int amountSnmpInterfaces;
     private final int amountIpInterfaces;
-    protected final TopologyPersister persister;
+    protected final TopologyPersisterDao persister;
     protected final RandomUtil random = new RandomUtil();
 
     @java.beans.ConstructorProperties({"topology", "amountNodes", "amountLinks", "amountElements",
         "amountSnmpInterfaces", "amountIpInterfaces", "persister"})
     public Protocol(Topology topology, int amountNodes, int amountLinks, int amountElements,
-        int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersister persister) {
+        int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersisterDao persister) {
         this.topology = topology;
         this.amountNodes = amountNodes;
         this.amountLinks = amountLinks;

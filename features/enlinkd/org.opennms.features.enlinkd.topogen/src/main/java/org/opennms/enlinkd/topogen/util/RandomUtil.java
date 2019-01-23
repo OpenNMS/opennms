@@ -26,16 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.shell.topogen.util;
+package org.opennms.enlinkd.topogen.util;
 
-import com.google.common.net.InetAddresses;
-import java.net.InetAddress;
+import java.util.List;
+import java.util.Random;
 
-public class InetAddressGenerator {
-    private InetAddress last = InetAddresses.forString("0.0.0.0");
-    public InetAddress next() {
-        InetAddress address = InetAddresses.increment(last);
-        last = address;
-        return address;
+public class RandomUtil {
+
+    private final Random random = new Random(42);
+
+    public <E> E getRandom(List<E> collection){
+        return collection.get(random.nextInt(collection.size()));
     }
 }

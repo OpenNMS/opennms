@@ -26,9 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.shell.topogen;
+package org.opennms.enlinkd.topogen;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -57,7 +56,7 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TopologyPersisterDao implements TopologyPersister{
+public class TopologyPersisterDao {
 
     private final static Logger LOG = LoggerFactory.getLogger(TopologyPersisterDao.class);
 
@@ -85,7 +84,7 @@ public class TopologyPersisterDao implements TopologyPersister{
         final OspfLinkDao ospfLinkDao,
         final IpInterfaceDao ipInterfaceDao,
         final SnmpInterfaceDao snmpInterfaceDao
-    ) throws IOException {
+    ) {
         this.nodeDao = nodeDao;
         this.cdpElementDao = cdpElementDao;
         this.isIsElementDao = isIsElementDao;
@@ -140,8 +139,17 @@ public class TopologyPersisterDao implements TopologyPersister{
     }
 
     private <E> void  persist(OnmsDao<E, ?> dao, List<E> elements) throws SQLException {
-        for(E element : elements) {
+        if(elements.size() < 1) {
+            return; // nothing do do
+        }
+        LOG.info("starting to insert {} {}s", elements.size(), elements.get(0).getClass().getSimpleName());
+
+        for(int i = 0; i< elements.size(); i++) {
+            E element = elements.get(i);
             dao.save(element);
+            if (i % 100 == 0 || i == elements.size()-1) {
+                LOG.info("inserting {} of {} {}s done.", i, elements.size(), elements.get(0).getClass().getSimpleName());
+            }
         }
     }
 

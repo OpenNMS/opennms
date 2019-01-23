@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.shell.topogen.protocol;
+package org.opennms.enlinkd.topogen.protocol;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -35,9 +35,9 @@ import java.util.List;
 import java.util.UUID;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.core.utils.LldpUtils;
-import org.opennms.features.topology.shell.topogen.TopologyGenerator;
-import org.opennms.features.topology.shell.topogen.TopologyPersister;
-import org.opennms.features.topology.shell.topogen.topology.PairGenerator;
+import org.opennms.enlinkd.topogen.TopologyGenerator;
+import org.opennms.enlinkd.topogen.TopologyPersisterDao;
+import org.opennms.enlinkd.topogen.topology.PairGenerator;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
@@ -48,7 +48,7 @@ public class LldpProtocol extends Protocol<LldpElement> {
     private final static Logger LOG = LoggerFactory.getLogger(IsIsProtocol.class);
     private TopologyGenerator.Protocol protocol = TopologyGenerator.Protocol.lldp;
     public LldpProtocol(TopologyGenerator.Topology topology, int amountNodes, int amountLinks,
-                        int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersister persister){
+                        int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersisterDao persister){
         super(topology, amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, persister);
     }
 

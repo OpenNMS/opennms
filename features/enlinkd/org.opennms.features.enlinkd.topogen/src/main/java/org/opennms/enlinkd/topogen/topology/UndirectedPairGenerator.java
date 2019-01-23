@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.shell.topogen.topology;
+package org.opennms.enlinkd.topogen.topology;
 
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;

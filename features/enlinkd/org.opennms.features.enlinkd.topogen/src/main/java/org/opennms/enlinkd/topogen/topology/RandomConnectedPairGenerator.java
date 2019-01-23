@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.shell.topogen.topology;
+package org.opennms.enlinkd.topogen.topology;
 
 import java.util.HashSet;
 import java.util.List;

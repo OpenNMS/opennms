@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.shell;
+package org.opennms.features.enlinkd.shell;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -35,8 +35,8 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.api.action.Option;
-import org.opennms.features.topology.shell.topogen.TopologyPersisterDao;
-import org.opennms.features.topology.shell.topogen.TopologyGenerator;
+import org.opennms.enlinkd.topogen.TopologyGenerator;
+import org.opennms.enlinkd.topogen.TopologyPersisterDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -149,8 +149,7 @@ public class GenerateTopologyCommand implements Action {
     /** Execute via Karaf. */
     @Override
     public Object execute() throws Exception {
-        GenerateTopologyCommand main = new GenerateTopologyCommand();
-        main.invokeGenerator();
+        invokeGenerator();
         return null;
     }
 }
