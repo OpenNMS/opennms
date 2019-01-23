@@ -67,7 +67,7 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
                 OnmsTopologyVertex.create(node.getId().toString(), 
                                           node.getLabel(), 
                                           Topology.getAddress(primary), 
-                                          node.getSysObjectId()
+                                          Topology.getIconKey(node)
                                           );
         vertex.setNodeid(node.getId());
         vertex.setToolTipText(Topology.getNodeTextString(node, primary));
