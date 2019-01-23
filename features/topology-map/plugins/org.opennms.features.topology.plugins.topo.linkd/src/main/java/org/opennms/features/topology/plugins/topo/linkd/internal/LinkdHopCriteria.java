@@ -87,7 +87,7 @@ public class LinkdHopCriteria extends VertexHopCriteria {
     @Override
     public Set<VertexRef> getVertices() {
 	Set<VertexRef> vertices = new TreeSet<VertexRef>(new RefComparator());
-        vertices.add(new DefaultVertexRef("nodes", m_nodeId, getLabel()));
+        vertices.add(new DefaultVertexRef(getNamespace(), m_nodeId, getLabel()));
         return vertices;
     }
 	

@@ -182,27 +182,35 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                                              );
     }
         
+    public Vertex getDefaultVertex() {
+        OnmsTopologyVertex node = null;
+        try {
+            node = m_onmsTopologyDao.getTopology(ProtocolSupported.NODES.name()).getDefaultVertex();
+        } catch (OnmsTopologyException e) {
+            LOG.error("getDefaultVertex: no default node found: {}", e.getMessage());
+            return null;
+        }
+
+        if (node == null) {
+            LOG.info("getDefaultVertex: no default node found!");
+            return null;
+        }
+        LOG.info("getDefaultVertex: default node found: [{}]:{}", node.getId(), node.getLabel());
+        return getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getId());
+    }
+
     @Override
     public Defaults getDefaults() {
         return new Defaults()
                 .withSemanticZoomLevel(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL)
                 .withPreferredLayout("D3 Layout") // D3 Layout
-                .withCriteria(() -> {
-                    OnmsTopologyVertex node;
-                    try {
-                        node = m_onmsTopologyDao.getTopology(ProtocolSupported.NODES.name()).getDefaultVertex();
-                    } catch (OnmsTopologyException e) {
-                        return Lists.newArrayList();
-                    }
-
-                    if (node != null) {
-                        final Vertex defaultVertex = getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getId());
-                        if (defaultVertex != null) {
-                            return Lists.newArrayList(LinkdHopCriteria.createCriteria(node.getId(), node.getLabel()));
-                        }
+                .withCriteria(() -> { 
+                    final Vertex defaultVertex = getDefaultVertex();
+                    if (defaultVertex != null) {
+                        return Lists.newArrayList(LinkdHopCriteria.createCriteria(defaultVertex.getId(), defaultVertex.getLabel()));
                     }
                     return Lists.newArrayList();
-                });
+        });
     }
     
     private void doRefresh() {        

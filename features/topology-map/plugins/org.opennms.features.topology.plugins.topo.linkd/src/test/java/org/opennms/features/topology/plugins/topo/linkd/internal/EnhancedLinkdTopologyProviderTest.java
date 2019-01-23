@@ -47,6 +47,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
+import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
@@ -112,6 +113,52 @@ public class EnhancedLinkdTopologyProviderTest {
 
         List<OspfLink> ospfLinks = m_databasePopulator.getOspfLinks();
         assertEquals(2, ospfLinks.size());
+    }
+
+    @Test
+    public void testGetDefaultsOnmsException() {
+        System.err.println("start unregister");
+        m_nodesOnmsTopologyUpdater.unregister();
+        System.err.println("stop unregister");
+        System.err.println("start getDefaults");
+        Defaults defaults = m_topologyProvider.getDefaults();
+        System.err.println("end getDefaults");
+        assertNotNull(defaults.getSemanticZoomLevel());
+        assertNotNull(defaults.getPreferredLayout());
+        assertNotNull(defaults.getCriteria());
+        assertEquals(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL, defaults.getSemanticZoomLevel());
+        assertEquals("D3 Layout", defaults.getPreferredLayout());
+        assertEquals(0, defaults.getCriteria().size());
+    }
+
+    @Test
+    public void testGetDefaults() {
+        System.err.println("start getDefaults");
+        Defaults defaults = m_topologyProvider.getDefaults();
+        System.err.println("end getDefaults");
+        assertNotNull(defaults.getSemanticZoomLevel());
+        assertNotNull(defaults.getPreferredLayout());
+        assertNotNull(defaults.getCriteria());
+        assertEquals(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL, defaults.getSemanticZoomLevel());
+        assertEquals("D3 Layout", defaults.getPreferredLayout());
+        assertEquals(0, defaults.getCriteria().size());
+    }
+    
+    @Test
+    public void testGetDefaultWithRefresh() {
+        m_topologyProvider.refresh();
+        System.err.println("start getDefaults");
+        Defaults defaults = m_topologyProvider.getDefaults();
+        System.err.println("end getDefaults");
+        assertNotNull(defaults.getSemanticZoomLevel());
+        assertNotNull(defaults.getPreferredLayout());
+        assertNotNull(defaults.getCriteria());
+        assertEquals(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL, defaults.getSemanticZoomLevel());
+        assertEquals("D3 Layout", defaults.getPreferredLayout());
+        assertEquals(1, defaults.getCriteria().size());
+        LinkdHopCriteria criteria = (LinkdHopCriteria) defaults.getCriteria().get(0);
+        assertNotNull(criteria);
+        
     }
 
     @Test
