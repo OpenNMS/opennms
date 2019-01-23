@@ -156,31 +156,31 @@ To automatically start features with the container, the file `${SENTINEL_HOME}/e
 featuresBoot = \
       (aries-blueprint, \
       deployer), \
-      instance/4.1.5, \
-      package/4.1.5, \
-      log/4.1.5, \
+      instance/4.2.2, \
+      package/4.2.2, \
+      log/4.2.2, \
       scv/24.0.0-SNAPSHOT, \
-      ssh/4.1.5, \
-      framework/4.1.5, \
-      system/4.1.5, \
-      eventadmin/4.1.5, \
-      feature/4.1.5, \
-      shell/4.1.5, \
-      management/4.1.5, \
-      service/4.1.5, \
-      system/4.1.5, \
-      eventadmin/4.1.5, \
-      feature/4.1.5, \
-      shell/4.1.5, \
-      management/4.1.5, \
-      service/4.1.5, \
-      jaas/4.1.5, \
-      shell-compat/4.1.5, \
-      diagnostic/4.1.5, \
+      ssh/4.2.2, \
+      framework/4.2.2, \
+      system/4.2.2, \
+      eventadmin/4.2.2, \
+      feature/4.2.2, \
+      shell/4.2.2, \
+      management/4.2.2, \
+      service/4.2.2, \
+      system/4.2.2, \
+      eventadmin/4.2.2, \
+      feature/4.2.2, \
+      shell/4.2.2, \
+      management/4.2.2, \
+      service/4.2.2, \
+      jaas/4.2.2, \
+      shell-compat/4.2.2, \
+      diagnostic/4.2.2, \
       wrap, \
-      bundle/4.1.5, \
-      config/4.1.5, \
-      kar/4.1.5, \
+      bundle/4.2.2, \
+      config/4.2.2, \
+      kar/4.2.2, \
       sentinel-jms, \ <1>
       sentinel-flows <2>
 

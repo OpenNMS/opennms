@@ -1332,7 +1332,7 @@
     <jsoupVersion>1.7.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
-    <karafVersion>4.1.5</karafVersion>
+    <karafVersion>4.2.2</karafVersion>
     <kafkaStreamsVersion>1.0.1</kafkaStreamsVersion>
     <kafkaStreamsBundleVersion>1.0.1_1</kafkaStreamsBundleVersion>
     <felixVersion>3.0.0</felixVersion>
@@ -1346,7 +1346,7 @@
     <mockitoVersion>1.10.19</mockitoVersion>
     <netty4Version>4.1.9.Final</netty4Version>
     <newtsVersion>1.5.0</newtsVersion>
-    <paxExamVersion>4.11.0</paxExamVersion>
+    <paxExamVersion>4.13.1</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <paxWebVersion>4.3.0</paxWebVersion>
     <protobufVersion>2.6.1</protobufVersion>

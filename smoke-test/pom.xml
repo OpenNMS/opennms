@@ -13,7 +13,7 @@
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <jackson2Version>2.6.6</jackson2Version>
     <jestVersion>5.3.3</jestVersion>
-    <karafVersion>4.1.5</karafVersion>
+    <karafVersion>4.2.2</karafVersion>
     <test.fork.count>1</test.fork.count>
   </properties>
   <build>

@@ -148,6 +148,12 @@
             <artifactId>framework</artifactId>
             <version>${karafVersion}</version>
             <type>kar</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.karaf.features</groupId>
@@ -155,6 +161,12 @@
             <version>${karafVersion}</version>
             <classifier>features</classifier>
             <type>xml</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <!-- scope is runtime so the feature repo is listed in etc/org.apache.karaf.features.cfg 
@@ -166,6 +178,12 @@
             <classifier>features</classifier>
             <type>xml</type>
             <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <!-- scope is runtime so the feature repo is listed in etc/org.apache.karaf.features.cfg 
@@ -177,6 +195,12 @@
             <classifier>features</classifier>
             <type>xml</type>
             <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.opennms.karaf</groupId>
