@@ -66,18 +66,37 @@ public class TopologyPersisterDao implements TopologyPersister{
     private IsIsElementDao isIsElementDao;
     private LldpElementDao lldpElementDao;
     private OspfElementDao ospfElementDao;
-
     private CdpLinkDao cdpLinkDao;
     private IsIsLinkDao isIsLinkDao;
     private LldpLinkDao lldpLinkDao;
     private OspfLinkDao ospfLinkDao;
-
     private IpInterfaceDao ipInterfaceDao;
     private SnmpInterfaceDao snmpInterfaceDao;
 
-    public TopologyPersisterDao(final NodeDao nodeDao) throws IOException {
+    public TopologyPersisterDao(
+        final NodeDao nodeDao,
+        final CdpElementDao cdpElementDao,
+        final IsIsElementDao isIsElementDao,
+        final LldpElementDao lldpElementDao,
+        final OspfElementDao ospfElementDao,
+        final CdpLinkDao cdpLinkDao,
+        final IsIsLinkDao isIsLinkDao,
+        final LldpLinkDao lldpLinkDao,
+        final OspfLinkDao ospfLinkDao,
+        final IpInterfaceDao ipInterfaceDao,
+        final SnmpInterfaceDao snmpInterfaceDao
+    ) throws IOException {
         this.nodeDao = nodeDao;
-
+        this.cdpElementDao = cdpElementDao;
+        this.isIsElementDao = isIsElementDao;
+        this.lldpElementDao = lldpElementDao;
+        this.ospfElementDao = ospfElementDao;
+        this.cdpLinkDao = cdpLinkDao;
+        this.isIsLinkDao = isIsLinkDao;
+        this.lldpLinkDao = lldpLinkDao;
+        this.ospfLinkDao = ospfLinkDao;
+        this.ipInterfaceDao = ipInterfaceDao;
+        this.snmpInterfaceDao = snmpInterfaceDao;
     }
 
     public void persistNodes(List<OnmsNode> nodes) throws SQLException {

@@ -37,7 +37,17 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.api.action.Option;
 import org.opennms.features.topology.shell.topogen.TopologyPersisterDao;
 import org.opennms.features.topology.shell.topogen.TopologyGenerator;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 
 @Command(scope="enlinkd", name="generate-topology", description="Creates a linkd topology")
 @Service
@@ -70,6 +80,36 @@ public class GenerateTopologyCommand implements Action {
     @Reference
     private NodeDao nodeDao;
 
+    @Reference
+    private CdpElementDao cdpElementDao;
+
+    @Reference
+    private IsIsElementDao isIsElementDao;
+
+    @Reference
+    private LldpElementDao lldpElementDao;
+
+    @Reference
+    private OspfElementDao ospfElementDao;
+
+    @Reference
+    private CdpLinkDao cdpLinkDao;
+
+    @Reference
+    private IsIsLinkDao isIsLinkDao;
+
+    @Reference
+    private LldpLinkDao lldpLinkDao;
+
+    @Reference
+    private OspfLinkDao ospfLinkDao;
+
+    @Reference
+    private IpInterfaceDao ipInterfaceDao;
+
+    @Reference
+    private SnmpInterfaceDao snmpInterfaceDao;
+
     private void invokeGenerator() throws SQLException, IOException {
         TopologyGenerator generator = TopologyGenerator.builder()
             .amountElements(this.amountElements)
@@ -81,9 +121,25 @@ public class GenerateTopologyCommand implements Action {
             .deleteExistingTolology(this.deleteExistingTolology)
             .protocol(toEnumOrNull(TopologyGenerator.Protocol.class, this.protocol))
             .topology(toEnumOrNull(TopologyGenerator.Topology.class, this.topology))
-            .persister(new TopologyPersisterDao(nodeDao))
+            .persister(createTopologyPersisterDao())
             .build();
         generator.createNetwork();
+    }
+
+    private TopologyPersisterDao createTopologyPersisterDao() throws IOException {
+        return new TopologyPersisterDao(
+            nodeDao,
+            cdpElementDao,
+            isIsElementDao,
+            lldpElementDao,
+            ospfElementDao,
+            cdpLinkDao,
+            isIsLinkDao,
+            lldpLinkDao,
+            ospfLinkDao,
+            ipInterfaceDao,
+            snmpInterfaceDao
+      );
     }
 
     private <E extends Enum> E toEnumOrNull(Class<E> enumClass, String s ) {
