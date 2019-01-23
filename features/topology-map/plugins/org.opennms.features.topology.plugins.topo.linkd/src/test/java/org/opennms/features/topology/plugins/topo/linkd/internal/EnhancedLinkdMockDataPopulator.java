@@ -36,35 +36,34 @@ import org.easymock.EasyMock;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
+import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
-import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
-import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
-import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class EnhancedLinkdMockDataPopulator {
 
     @Autowired
-    private BridgeTopologyService m_bridgeTopologyService;
-    @Autowired
-    private CdpTopologyService m_cdpTopologyService;
-    @Autowired
-    private IsisTopologyService m_isisTopologyService;
-    @Autowired
     private TopologyEntityCache m_topologyEntityCache;
+    @Autowired
+    private OspfElementDao m_ospfElementDao;
+    @Autowired
+    private NodeDao m_nodeDao;
 
     private OnmsNode m_node1;
     private OnmsNode m_node2;
@@ -85,18 +84,19 @@ public class EnhancedLinkdMockDataPopulator {
 
     private List<OnmsNode> m_nodes;
     private List<LldpElement> m_lldpnodes;
+    private List<OspfElement> m_ospfnodes;
     private List<LldpLink> m_lldplinks;
     private List<OspfLink> m_ospfLinks;
 
     public void populateDatabase() {
-
+        
         final String icmp = "ICMP";
         final String snmp = "SNMP";
         final String http = "HTTP";
 
         m_nodes = new ArrayList<OnmsNode>();
         m_lldpnodes = new ArrayList<LldpElement>();
-        
+        m_ospfnodes = new ArrayList<>();
         final NetworkBuilder builder = new NetworkBuilder();
 
         builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType(OnmsNode.NodeType.ACTIVE).setSysObjectId("1.3.6.1.4.1.5813.1.25");
@@ -133,7 +133,13 @@ public class EnhancedLinkdMockDataPopulator {
                 .addIpInterface("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(icmp);
         final OnmsNode node1 = builder.getCurrentNode();
-        setNode1(node1,new LldpElement(node1, "node1ChassisId", "node1SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
+        final OspfElement ospfelement1 = new OspfElement();
+        ospfelement1.setNode(node1);
+        ospfelement1.setOspfRouterId(InetAddressUtils.addr("192.168.100.250"));
+        setNode1(node1,
+                 new LldpElement(node1, "node1ChassisId", "node1SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL),
+                 ospfelement1
+                 );
 
         builder.addNode("node2").setForeignSource("imported:").setForeignId("2").setType(OnmsNode.NodeType.ACTIVE);
         builder.setBuilding("HQ");
@@ -146,7 +152,13 @@ public class EnhancedLinkdMockDataPopulator {
         builder.addInterface("192.168.2.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(icmp);
         OnmsNode node2 = builder.getCurrentNode();
-        setNode2(node2, new LldpElement(node2, "node2ChassisId", "node2SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
+        final OspfElement ospfelement2 = new OspfElement();
+        ospfelement2.setNode(node2);
+        ospfelement2.setOspfRouterId(InetAddressUtils.addr("192.168.100.249"));
+        setNode2(node2, 
+                 new LldpElement(node2, "node2ChassisId", "node2SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL),
+                 ospfelement2
+                 );
 
         builder.addNode("node3").setForeignSource("imported:").setForeignId("3").setType(OnmsNode.NodeType.ACTIVE);
         builder.addInterface("192.168.3.1").setIsManaged("M").setIsSnmpPrimary("P");
@@ -330,25 +342,18 @@ public class EnhancedLinkdMockDataPopulator {
                 node2PortId, LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, node2PortDescr);
     }
 
-    public void setUpMock() {
-        EasyMock.expect(m_bridgeTopologyService.match()).andReturn(new ArrayList<>()).anyTimes();
-        EasyMock.expect(m_cdpTopologyService.match()).andReturn(new ArrayList<>()).anyTimes();
-        EasyMock.expect(m_isisTopologyService.match()).andReturn(new ArrayList<>()).anyTimes();
+    public void setUpMock() throws OnmsTopologyException {
+        EasyMock.expect(m_nodeDao.getDefaultFocusPoint()).andReturn(getOnmsNode(1)).anyTimes();
+        EasyMock.expect(m_ospfElementDao.findAll()).andReturn(getOspfElements()).anyTimes();
         EasyMock.expect(m_topologyEntityCache.getNodeTopologyEntities()).andReturn(getNodes()).anyTimes();
-        EasyMock.expect(m_topologyEntityCache.getCdpLinkTopologyEntities()).andReturn(new ArrayList<>()).anyTimes();
         EasyMock.expect(m_topologyEntityCache.getOspfLinkTopologyEntities()).andReturn(convertToOspf(getOspfLinks())).anyTimes();
         EasyMock.expect(m_topologyEntityCache.getLldpLinkTopologyEntities()).andReturn(convertToLldp(getLinks())).anyTimes();
-        EasyMock.expect(m_topologyEntityCache.getIsIsLinkTopologyEntities()).andReturn(new ArrayList<>()).anyTimes();
-        EasyMock.expect(m_topologyEntityCache.getCdpElementTopologyEntities()).andReturn(new ArrayList<>()).anyTimes();
-        EasyMock.expect(m_topologyEntityCache.getIsIsElementTopologyEntities()).andReturn(new ArrayList<>()).anyTimes();
         EasyMock.expect(m_topologyEntityCache.getLldpElementTopologyEntities()).andReturn(convertToLldpElements(getLldpElements())).anyTimes();
         EasyMock.expect(m_topologyEntityCache.getSnmpInterfaceTopologyEntities()).andReturn(getSnmpInterfaceTopologyEntities()).anyTimes();
         EasyMock.expect(m_topologyEntityCache.getIpInterfaceTopologyEntities()).andReturn(getIpInterfaceTopologyEntities()).anyTimes();
-        
-        
-        EasyMock.replay(m_bridgeTopologyService);
-        EasyMock.replay(m_cdpTopologyService);
-        EasyMock.replay(m_isisTopologyService);
+
+        EasyMock.replay(m_nodeDao);
+        EasyMock.replay(m_ospfElementDao);
         EasyMock.replay(m_topologyEntityCache);
     }
 
@@ -365,10 +370,10 @@ public class EnhancedLinkdMockDataPopulator {
     }
 
     public void tearDown() {
-        EasyMock.reset(m_bridgeTopologyService);
-        EasyMock.reset(m_cdpTopologyService);
-        EasyMock.reset(m_isisTopologyService);
         EasyMock.reset(m_topologyEntityCache);
+        EasyMock.reset(m_ospfElementDao);
+        EasyMock.reset(m_nodeDao);
+
     }
 
     public List<OnmsNode> getOnmsNodes() {
@@ -399,22 +404,24 @@ public class EnhancedLinkdMockDataPopulator {
         return node;
     }
 
-    private void setNode1(final OnmsNode node1,final LldpElement lldpelement1) {
+    private void setNode1(final OnmsNode node1,final LldpElement lldpelement1, final OspfElement ospfelement1) {
         node1.setId(1);
         m_node1 = node1;
         lldpelement1.setNode(node1);
         m_lldpnode1 = lldpelement1;
         m_nodes.add(m_node1);
         m_lldpnodes.add(m_lldpnode1);
+        m_ospfnodes.add(ospfelement1);
     }
 
-    private void setNode2(final OnmsNode node2,final LldpElement lldpelement2) {
+    private void setNode2(final OnmsNode node2,final LldpElement lldpelement2, final OspfElement ospfelement2) {
         node2.setId(2);
         m_node2 = node2;
         lldpelement2.setNode(node2);
         m_lldpnode2 = lldpelement2;
         m_nodes.add(m_node2);
         m_lldpnodes.add(m_lldpnode2);
+        m_ospfnodes.add(ospfelement2);
     }
 
     private void setNode3(final OnmsNode node3,final LldpElement lldpelement3) {
@@ -498,7 +505,11 @@ public class EnhancedLinkdMockDataPopulator {
     public List<LldpElement> getLldpElements() {
         return m_lldpnodes;
     }
-    
+
+    public List<OspfElement> getOspfElements() {
+        return m_ospfnodes;
+    }
+
     public List<OnmsIpInterface> getOnmsIpInterfaces() {
         List<OnmsIpInterface> elements = new ArrayList<>();
         for (OnmsNode node: m_nodes)

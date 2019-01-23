@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
@@ -53,9 +54,13 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.netmgt.enlinkd.LldpOnmsTopologyUpdater;
+import org.opennms.netmgt.enlinkd.NodesOnmsTopologyUpdater;
+import org.opennms.netmgt.enlinkd.OspfOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -71,6 +76,14 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @Autowired
     private EnhancedLinkdMockDataPopulator m_databasePopulator;
+    @Autowired
+    private OnmsTopologyDao m_onmsTopologyDao;    
+    @Autowired
+    private NodesOnmsTopologyUpdater m_nodesOnmsTopologyUpdater;
+    @Autowired
+    private LldpOnmsTopologyUpdater m_lldpOnmsTopologyUpdater;    
+    @Autowired 
+    private OspfOnmsTopologyUpdater m_ospfOnmsTopologyUpdater;
 
     @Before
     public void setUp() throws Exception{
@@ -78,6 +91,18 @@ public class EnhancedLinkdTopologyProviderTest {
 
         m_databasePopulator.populateDatabase();
         m_databasePopulator.setUpMock();
+        assertNotNull(m_onmsTopologyDao);
+        assertNotNull(m_nodesOnmsTopologyUpdater);
+        assertNotNull(m_lldpOnmsTopologyUpdater);
+        assertNotNull(m_ospfOnmsTopologyUpdater);
+        
+        m_nodesOnmsTopologyUpdater.register();
+        m_lldpOnmsTopologyUpdater.register();
+        m_ospfOnmsTopologyUpdater.register();
+        m_nodesOnmsTopologyUpdater.runDiscovery();
+        m_lldpOnmsTopologyUpdater.runDiscovery();
+        m_ospfOnmsTopologyUpdater.runDiscovery();
+
     }
 
     @Test
@@ -91,14 +116,15 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @Test
     public void testGetIcon() {
-        LinkdVertex vertex1 = LinkdVertex.createNodeVertex(m_databasePopulator.getNode(1),null);
-        LinkdVertex vertex2 = LinkdVertex.createNodeVertex(m_databasePopulator.getNode(2),null);
-        LinkdVertex vertex3 = LinkdVertex.createNodeVertex(m_databasePopulator.getNode(3),null);
-        LinkdVertex vertex4 = LinkdVertex.createNodeVertex(m_databasePopulator.getNode(4),null);
-        LinkdVertex vertex5 = LinkdVertex.createNodeVertex(m_databasePopulator.getNode(5),null);
-        LinkdVertex vertex6 = LinkdVertex.createNodeVertex(m_databasePopulator.getNode(6),null);
-        LinkdVertex vertex7 = LinkdVertex.createNodeVertex(m_databasePopulator.getNode(7),null);
-        LinkdVertex vertex8 = LinkdVertex.createNodeVertex(m_databasePopulator.getNode(8),null);
+        m_topologyProvider.refresh();
+        Vertex vertex1 = m_topologyProvider.getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "1");
+        Vertex vertex2 = m_topologyProvider.getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "2");
+        Vertex vertex3 = m_topologyProvider.getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "3");
+        Vertex vertex4 = m_topologyProvider.getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "4");
+        Vertex vertex5 = m_topologyProvider.getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "5");
+        Vertex vertex6 = m_topologyProvider.getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "6");
+        Vertex vertex7 = m_topologyProvider.getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "7");
+        Vertex vertex8 = m_topologyProvider.getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "8");
         Assert.assertTrue("linkd.system.snmp.1.3.6.1.4.1.5813.1.25".equals(vertex1.getIconKey()));
         Assert.assertTrue("linkd.system".equals(vertex2.getIconKey()));
         Assert.assertTrue("linkd.system".equals(vertex3.getIconKey()));
@@ -277,6 +303,7 @@ public class EnhancedLinkdTopologyProviderTest {
             //assertTrue(vertex.getIpAddress(), "127.0.0.1".equals(vertex.getIpAddress()) || "64.146.64.214".equals(vertex.getIpAddress()));
         }
 
+        int countNODES = 0;
         int countLLDP = 0;
         int countOSPF = 0;
         int countCDP = 0;
@@ -285,6 +312,7 @@ public class EnhancedLinkdTopologyProviderTest {
         for (Edge edge : m_topologyProvider.getEdges()) {
             LinkdEdge linkdedge = (LinkdEdge) edge;
             switch (linkdedge.getDiscoveredBy()) {
+                case NODES: countNODES++;break;
                 case LLDP: countLLDP++;break;
                 case OSPF: countOSPF++;break;
                 case CDP: countCDP++;break;
@@ -294,6 +322,7 @@ public class EnhancedLinkdTopologyProviderTest {
         }
         assertEquals(8, countLLDP);
         assertEquals(1, countOSPF);
+        assertEquals(0, countNODES);
         assertEquals(0, countCDP);
         assertEquals(0, countISIS);
         assertEquals(0, countBRIDGE);

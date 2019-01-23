@@ -29,51 +29,27 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
-import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
-import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
-import org.opennms.netmgt.enlinkd.service.api.BridgePort;
-import org.opennms.netmgt.enlinkd.service.api.MacCloud;
-import org.opennms.netmgt.enlinkd.service.api.MacPort;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
-import org.opennms.netmgt.enlinkd.service.api.Topology;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 public class LinkdVertex extends SimpleLeafVertex {
 
-    public static LinkdVertex createSegmentVertex(BridgePort designated) {
-        LinkdVertex cloudVertex = new LinkdVertex(Topology.getId(designated));
-        cloudVertex.setLabel(Topology.getSharedSegmentLabel());
-        cloudVertex.setIconKey(Topology.getCloudIconKey());
-        cloudVertex.setTooltipText(Topology.getSharedSegmentTextString(designated));
-        return cloudVertex;        
-    }
-
-    public static LinkdVertex createMacIpVertex(MacCloud cloud, List<MacPort> ports, BridgePort designated) {
-        LinkdVertex vertex = new LinkdVertex(Topology.getSharedSegmentId(designated));
-        vertex.setLabel(Topology.getMacsIpLabel());
-        vertex.setIconKey(Topology.getDefaultIconKey());
-        vertex.setTooltipText(Topology.getMacsIpTextString(cloud, ports));
-        return vertex;
-        
-    }
-
-    public static LinkdVertex createNodeVertex(NodeTopologyEntity node, IpInterfaceTopologyEntity primary) {
-        LinkdVertex vertex = new LinkdVertex(node.getId().toString());
-        vertex.setNodeID(node.getId());
-        vertex.setLabel(node.getLabel());
-        if (primary != null) {
-            vertex.setIpAddress(Topology.getAddress(primary.getIpAddress()));
-        }
-        vertex.setIconKey(Topology.getIconKey(node));
-        vertex.setTooltipText(Topology.getNodeTextString(node,primary));
+    public static LinkdVertex create(OnmsTopologyVertex tvertex) {
+        LinkdVertex vertex = new LinkdVertex(tvertex.getId());
+        vertex.setNodeID(tvertex.getNodeid());
+        vertex.setLabel(tvertex.getLabel());
+        vertex.setIpAddress(tvertex.getAddress());
+        vertex.setIconKey(tvertex.getIconKey());
+        vertex.setTooltipText(tvertex.getToolTipText());
         return vertex;
     }
+
     private Set<ProtocolSupported> m_protocolSupported = EnumSet.noneOf(ProtocolSupported.class);
 
-    private LinkdVertex(String id) {
+    public LinkdVertex(String id) {
         super(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, id, 0, 0);
     }
     

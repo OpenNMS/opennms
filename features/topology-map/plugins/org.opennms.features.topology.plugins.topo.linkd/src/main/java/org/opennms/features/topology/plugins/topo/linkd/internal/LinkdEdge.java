@@ -34,7 +34,7 @@ import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 
 public class LinkdEdge extends AbstractEdge implements Edge {
-    
+
     public static LinkdEdge create(String id,
             LinkdPort sourceport, LinkdPort targetport,
             ProtocolSupported discoveredBy) {
@@ -51,14 +51,14 @@ public class LinkdEdge extends AbstractEdge implements Edge {
     private final LinkdPort m_targetPort;
     private final ProtocolSupported m_discoveredBy;
     
-    private LinkdEdge(String id, LinkdPort source, LinkdPort target, ProtocolSupported discoveredBy) {
+    public LinkdEdge(String id, LinkdPort source, LinkdPort target, ProtocolSupported discoveredBy) {
         super(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, id, source.getVertex(), target.getVertex());
         m_discoveredBy = discoveredBy;
         m_sourcePort = source;
         m_targetPort = target;
     }
 
-    private LinkdEdge(String id, LinkdPort sourcePort, LinkdPort targetPort, SimpleConnector source,
+    public LinkdEdge(String id, LinkdPort sourcePort, LinkdPort targetPort, SimpleConnector source,
             SimpleConnector target, ProtocolSupported discoveredBy) {
         super(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, id, source, target);
         m_sourcePort = sourcePort;
@@ -94,11 +94,11 @@ public class LinkdEdge extends AbstractEdge implements Edge {
         tooltipText.append("</p>");
     
         tooltipText.append("<p>");
-        tooltipText.append(m_sourcePort.getPort());
+        tooltipText.append(m_sourcePort.getToolTipText());
         tooltipText.append("</p>");
         
         tooltipText.append("<p>");
-        tooltipText.append(m_targetPort.getPort());
+        tooltipText.append(m_targetPort.getToolTipText());
         tooltipText.append("</p>");
         return tooltipText.toString();
     }

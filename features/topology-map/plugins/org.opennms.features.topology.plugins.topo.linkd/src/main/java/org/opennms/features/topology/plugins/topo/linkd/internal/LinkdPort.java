@@ -28,32 +28,19 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
-import org.opennms.netmgt.enlinkd.service.api.Topology;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 
 public class LinkdPort {
 
-    public static LinkdPort create(LinkdVertex vertex) {
-        LinkdPort port = new LinkdPort(vertex, -1);
-        port.setPort(vertex.getTooltipText());
+    public static LinkdPort create(OnmsTopologyPort tport, LinkdVertex vertex) {
+        LinkdPort port = new LinkdPort(vertex, tport.getIfindex());
+        port.setToolTipText(tport.getToolTipText());
         return port;
     }
-    
-    public static LinkdPort create(LinkdVertex vertex, Integer ifindex, String addr, SnmpInterfaceTopologyEntity iface) {
-        if (ifindex == null ) {
-            LinkdPort port = new LinkdPort(vertex, -1);
-            port.setPort(Topology.getPortTextString(vertex.getLabel(), null, addr));
-            return port;
-        }
-        LinkdPort port = new LinkdPort(vertex, iface.getIfIndex());
-        port.setPort(Topology.getPortTextString(vertex.getLabel(), ifindex, addr,iface));
-        return port;
         
-    }
-    
     private final LinkdVertex m_vertex;
     private final Integer m_ifindex;
-    private String m_port;
+    private String m_toolTipText;
     
     public LinkdPort(LinkdVertex vertex, Integer ifindex) {
         super();
@@ -63,7 +50,7 @@ public class LinkdPort {
     
     public LinkdPort clone () {
         LinkdPort clone = new LinkdPort(this.getVertex(), this.getIfIndex());
-        clone.setPort(this.getPort());
+        clone.setToolTipText(this.getToolTipText());
         return clone;
     }
 
@@ -74,12 +61,12 @@ public class LinkdPort {
         return m_ifindex;
     }
 
-    public String getPort() {
-        return m_port;
+    public String getToolTipText() {
+        return m_toolTipText;
     }
 
-    public void setPort(String port) {
-        m_port = port;
+    public void setToolTipText(String port) {
+        m_toolTipText = port;
     }
 
 }
