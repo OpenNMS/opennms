@@ -160,7 +160,7 @@ public final class IfInfo extends SnmpCollectionResource {
         if (getEntry() == null) {
             return getCurrentIfAlias();
         }
-        return getEntry().getValueForBase(SnmpCollector.IFALIAS_OID);
+        return getEntry().getValueForBase(AbstractSnmpCollector.IFALIAS_OID);
     }
 
     boolean currentAliasIsOutOfDate(String ifAlias) {
@@ -182,7 +182,7 @@ public final class IfInfo extends SnmpCollectionResource {
             }
             if (ifAlias != null) {
                 ifAlias = AlphaNumeric.parseAndReplaceExcept(ifAlias,
-                                                             SnmpCollector.nonAnRepl, SnmpCollector.AnReplEx);
+                                                             AbstractSnmpCollector.nonAnRepl, AbstractSnmpCollector.AnReplEx);
             }
         }
 

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,22 +28,10 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.SnmpObjId;
+public class SnmpCollectorNGIT extends AbstractSnmpCollectorIT {
 
-/**
- * <p>SysUpTimeTracker class.</p>
- *
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
- * @version $Id: $
- */
-public final class SysUpTimeTracker extends ObjIdMonitor {
-
-    SysUpTimeTracker() {
-        super(SnmpObjId.get(AbstractSnmpCollector.NODE_SYSUPTIME), SnmpInstId.INST_ZERO);
-    }
-    
-    boolean isChanged(long savedSysUpTime) {
-        return (savedSysUpTime != -1) && (getLongValue() < savedSysUpTime);
+    @Override
+    protected AbstractSnmpCollector createSnmpCollector() {
+        return new SnmpCollectorNG();
     }
 }
