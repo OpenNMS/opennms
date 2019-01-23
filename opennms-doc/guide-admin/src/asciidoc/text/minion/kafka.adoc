@@ -69,6 +69,8 @@ The _Kafka_ server must be compatible with _Kafka_ client version `1.0.1`.
 
 NOTE: For Kafka RPC, number of partitions should always be greater than number of minions at a location. When there are multiple locations, partitions >= max (number of minions at a location).
 
+NOTE: By default, kafka RPC supports buffers greater than >1MB by splitting large buffer into chunks of 900KB(912600). Max buffer size (900KB, by default) can be configured by setting org.opennms.core.ipc.rpc.kafka.max.buffer.size ( in bytes).
+
 ==== Client(OpenNMS) configuration
 
 Enable and configure the _Kafka_ on _{opennms-product-name}_ by using the following commands.
@@ -82,7 +84,7 @@ org.opennms.core.ipc.rpc.kafka.bootstrap.servers=127.0.0.1:9092' >> "$OPENNMS_HO
 Restart _{opennms-product-name}_ to apply the changes.
 Additional _Kafka_ producer/consumer options can be set by defining additional system properties prefixed with `org.opennms.core.ipc.rpc.kafka`.
 
-NOTE: Default time to live (time at which request will expire) is 30 secs. It can be changed by configuring system property `org.opennms.core.ipc.rpc.kafka.ttl`
+NOTE: Default time to live (time at which request will expire) is 30000 msecs (30sec). It can be changed by configuring system property `org.opennms.core.ipc.rpc.kafka.ttl` (in msec).
 
 
 ==== Server(Minion) configuration

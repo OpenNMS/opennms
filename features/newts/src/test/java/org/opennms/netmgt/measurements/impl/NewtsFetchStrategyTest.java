@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,6 +48,7 @@ import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.impl.NewtsFetchStrategy.LateAggregationParams;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.model.OnmsAttribute;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourceId;
@@ -234,14 +235,35 @@ public class NewtsFetchStrategyTest {
     }
 
     public Source createMockResource(final String label, final String attr, final String ds, final String node, boolean expect) {
-        OnmsResourceType type = EasyMock.createNiceMock(OnmsResourceType.class);
+        OnmsResourceType nodeType = EasyMock.createMock(OnmsResourceType.class);
+        EasyMock.expect(nodeType.getName()).andReturn("nodeSource").anyTimes();
+        EasyMock.expect(nodeType.getLabel()).andReturn("nodeSourceTypeLabel").anyTimes();
+        EasyMock.replay(nodeType);
+
+        OnmsResourceType type = EasyMock.createMock(OnmsResourceType.class);
+        EasyMock.expect(type.getName()).andReturn("newtsTypeName").anyTimes();
+        EasyMock.expect(type.getLabel()).andReturn("newtsTypeLabel").anyTimes();
+        EasyMock.replay(type);
 
         final int nodeId = node.hashCode();
         final String newtsResourceId = "response:" + node + ":" + attr;
-        final ResourceId resourceId = ResourceId.get("nodeSource", "NODES:" + nodeId).resolve("responseTime", node);
+        final ResourceId parentId = ResourceId.get("nodeSource", "NODES:" + nodeId);
+        final ResourceId resourceId = parentId.resolve("responseTime", node);
+        OnmsResource parent = m_resources.get(parentId);
+        if (parent == null) {
+            parent = new OnmsResource("NODES:" + nodeId, ""+nodeId, nodeType, Sets.newHashSet(), ResourcePath.get("foo"));
+            final OnmsNode entity = new OnmsNode();
+            entity.setId(nodeId);
+            entity.setForeignSource("NODES");
+            entity.setForeignId(""+nodeId);
+            entity.setLabel(""+nodeId);
+            parent.setEntity(entity);
+            m_resources.put(parentId, parent);
+        }
         OnmsResource resource = m_resources.get(resourceId);
         if (resource == null) {
             resource = new OnmsResource(attr, label, type, Sets.newHashSet(), ResourcePath.get("foo"));
+            resource.setParent(parent);
             m_resources.put(resourceId, resource);
         }
         Set<OnmsAttribute> attributes = resource.getAttributes();
@@ -272,7 +294,7 @@ public class NewtsFetchStrategyTest {
 
     private void replay() {
         for (Entry<ResourceId, OnmsResource> entry : m_resources.entrySet()) {
-            EasyMock.expect(m_resourceDao.getResourceById(entry.getKey())).andReturn(entry.getValue());
+            EasyMock.expect(m_resourceDao.getResourceById(entry.getKey())).andReturn(entry.getValue()).anyTimes();
         }
 
         EasyMock.replay(m_resourceDao, m_sampleRepository);

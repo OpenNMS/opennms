@@ -28,11 +28,47 @@
 
 package org.opennms.core.ipc.rpc.kafka;
 
+import java.util.Properties;
+
+/**
+ * This handles all the configuration specific to RPC and some utils common to OpenNMS/Minion.
+ */
 public interface KafkaRpcConstants {
     
     public static final String KAFKA_CONFIG_PID = "org.opennms.core.ipc.rpc.kafka";
     public static final String KAFKA_CONFIG_SYS_PROP_PREFIX = KAFKA_CONFIG_PID + ".";
     public static final String RPC_REQUEST_TOPIC_NAME = "rpc-request";
     public static final String RPC_RESPONSE_TOPIC_NAME = "rpc-response";
+    //By default, kafka allows 1MB buffer sizes, here rpcContent (refer to proto/rpc.proto) is limited to 900KB to allow space for other parameters in proto file.
+    public static final int MAX_BUFFER_SIZE_CONFIGURED = 921600;
+    public static final String MAX_BUFFER_SIZE_PROPERTY = "max.buffer.size";
+    //Configurable buffer size in system properties but it should always be less than MAX_BUFFER_SIZE_CONFIGURED
+    public static final Integer MAX_BUFFER_SIZE = Math.min(MAX_BUFFER_SIZE_CONFIGURED, Integer.getInteger(String.format("%s%s", KAFKA_CONFIG_SYS_PROP_PREFIX, MAX_BUFFER_SIZE_PROPERTY), MAX_BUFFER_SIZE_CONFIGURED));
+    public static final long DEFAULT_TTL_CONFIGURED = 30000;
+    public static final String DEFAULT_TTL_PROPERTY = "ttl";
+    public static final long DEFAULT_TTL = Long.getLong(String.format("%s%s", KAFKA_CONFIG_SYS_PROP_PREFIX, DEFAULT_TTL_PROPERTY),
+            DEFAULT_TTL_CONFIGURED);
+
+
+    // Calculate remaining buffer size for each chunk.
+    static int getBufferSize(int messageSize, int maxBufferSize, int chunk) {
+        int bufferSize = messageSize;
+        if (messageSize > maxBufferSize) {
+            int remaining = messageSize - chunk * maxBufferSize;
+            bufferSize = (remaining > maxBufferSize) ? maxBufferSize : remaining;
+        }
+        return bufferSize;
+    }
+
+    // Retrieve max buffer size from karaf configuration properties.
+    static int getMaxBufferSize(Properties properties) {
+        int maxBufferSize = MAX_BUFFER_SIZE_CONFIGURED;
+        try {
+            maxBufferSize = Math.min(MAX_BUFFER_SIZE_CONFIGURED, Integer.parseInt(properties.getProperty(MAX_BUFFER_SIZE_PROPERTY)));
+        } catch (NumberFormatException e) {
+            // pass
+        }
+        return maxBufferSize;
+    }
 
 }
