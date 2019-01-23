@@ -131,6 +131,12 @@ public interface Topology {
         return InetAddressUtils.str(address);
     }
     
+    public static String getAddress(IpInterfaceTopologyEntity ip) {
+        if (ip == null) {
+            return null;
+        }
+        return getAddress(ip.getIpAddress());
+    }
     public static String getAddress(MacPort port ) {
         return port.getPortMacInfo();
     }

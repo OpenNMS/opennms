@@ -31,7 +31,6 @@ package org.opennms.netmgt.enlinkd;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
@@ -61,10 +60,13 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
     }
     
     public static OnmsTopologyVertex create(NodeTopologyEntity node, IpInterfaceTopologyEntity primary) throws OnmsTopologyException {
+        if (node == null || node.getId() == null) {
+            throw new OnmsTopologyException("NodeTopologyEntity is null");
+        }
         OnmsTopologyVertex vertex = 
                 OnmsTopologyVertex.create(node.getId().toString(), 
                                           node.getLabel(), 
-                                          InetAddressUtils.str(primary.getIpAddress()), 
+                                          Topology.getAddress(primary), 
                                           node.getSysObjectId()
                                           );
         vertex.setNodeid(node.getId());
