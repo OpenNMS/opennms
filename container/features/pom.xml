@@ -83,6 +83,7 @@
 
             <!-- Enlinkd features -->
             <repository>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.service.api/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.shell/${project.version}/xml/features</repository>
 
             <!-- BSM features -->
             <repository>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service.api/${project.version}/xml/features</repository>
@@ -321,6 +322,7 @@
             <feature>opennms-topology-runtime-pathoutage</feature>
             <feature>opennms-topology-runtime-asset</feature>
             <feature>org.opennms.features.topology.shell</feature>
+            <feature>org.opennms.features.enlinkd.shell</feature>
             <feature>vaadin</feature>
             <feature>vaadin-dashboard</feature>
             <feature>vaadin-jmxconfiggenerator</feature>
@@ -607,6 +609,13 @@
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
       <artifactId>org.opennms.features.topology.shell</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.shell</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
