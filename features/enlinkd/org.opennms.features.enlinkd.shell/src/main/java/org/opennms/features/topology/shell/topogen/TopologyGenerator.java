@@ -142,7 +142,7 @@ public class TopologyGenerator {
     private Integer amountIpInterfaces;
     private Topology topology;
     private Protocol protocol;
-    private boolean deleteExistingTolology;
+    private Boolean deleteExistingTolology;
 
     TopologyGeneratorBuilder() {
     }
@@ -188,7 +188,7 @@ public class TopologyGenerator {
     }
 
     public TopologyGeneratorBuilder deleteExistingTolology(
-        boolean deleteExistingTolology) {
+        Boolean deleteExistingTolology) {
       this.deleteExistingTolology = deleteExistingTolology;
       return this;
     }

@@ -433,4 +433,10 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
             cause = cause.getCause();
         }
     }
+
+    @Override
+    public void deleteAll() {
+        String sql = String.format("delete from %s entity", this.m_entityClass.getSimpleName());
+        getHibernateTemplate().bulkUpdate(sql, new Object[] {});
+    }
 }

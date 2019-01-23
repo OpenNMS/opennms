@@ -32,10 +32,12 @@ import java.io.IOException;
 import java.sql.SQLException;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.api.action.Option;
+import org.opennms.features.topology.shell.topogen.TopologyPersisterDao;
 import org.opennms.features.topology.shell.topogen.TopologyGenerator;
-import org.opennms.features.topology.shell.topogen.TopologyPersister;
+import org.opennms.netmgt.dao.api.NodeDao;
 
 @Command(scope="enlinkd", name="generate-topology", description="Creates a linkd topology")
 @Service
@@ -65,6 +67,9 @@ public class GenerateTopologyCommand implements Action {
     @Option(name="delete", description = "delete existing toplogogy (all OnmsNodes, CdpElements and CdpLinks)")
     private Boolean deleteExistingTolology;
 
+    @Reference
+    private NodeDao nodeDao;
+
     private void invokeGenerator() throws SQLException, IOException {
         TopologyGenerator generator = TopologyGenerator.builder()
             .amountElements(this.amountElements)
@@ -74,11 +79,15 @@ public class GenerateTopologyCommand implements Action {
             .amountElements(this.amountElements)
             .amountSnmpInterfaces(amountSnmpInterfaces)
             .deleteExistingTolology(this.deleteExistingTolology)
-            .protocol(TopologyGenerator.Protocol.valueOf(this.protocol))
-            .topology(TopologyGenerator.Topology.valueOf(this.topology))
-            .persister(new TopologyPersister())
+            .protocol(toEnumOrNull(TopologyGenerator.Protocol.class, this.protocol))
+            .topology(toEnumOrNull(TopologyGenerator.Topology.class, this.topology))
+            .persister(new TopologyPersisterDao(nodeDao))
             .build();
         generator.createNetwork();
+    }
+
+    private <E extends Enum> E toEnumOrNull(Class<E> enumClass, String s ) {
+        return s == null ? null : (E) Enum.valueOf(enumClass, s);
     }
 
     /** Execute via Karaf. */

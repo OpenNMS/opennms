@@ -33,14 +33,11 @@ import static org.kohsuke.args4j.OptionHandlerFilter.ALL;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import org.apache.karaf.shell.api.action.Action;
-import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-import org.slf4j.Logger;
 
 @Command(scope="enlinkd", name="generate-topology", description="Creates a linkd topology")
 @Service
@@ -62,13 +59,13 @@ public class GenerateTopologyMain {
     private Integer amountIpInterfaces;
 
     @Option(name="--topology",usage="type of topology (complete | ring | random)")
-    private String topology = "random";
+    private String topology;
 
     @Option(name="--protocol",usage="type of protocol (cdp | isis | lldp | ospf)")
-    private String protocol = "cdp";
+    private String protocol;
 
     @Option(name="--delete", usage = "delete existing toplogogy (all OnmsNodes, CdpElements and CdpLinks)")
-    private boolean deleteExistingTolology = false;
+    private boolean deleteExistingTolology;
 
     private void invokeGenerator() throws SQLException, IOException {
         TopologyGenerator generator = TopologyGenerator.builder()
@@ -79,17 +76,16 @@ public class GenerateTopologyMain {
             .amountElements(this.amountElements)
             .amountSnmpInterfaces(amountSnmpInterfaces)
             .deleteExistingTolology(this.deleteExistingTolology)
-            .protocol(TopologyGenerator.Protocol.valueOf(this.protocol))
-            .topology(TopologyGenerator.Topology.valueOf(this.topology))
-            .persister(new TopologyPersister())
+            .protocol(toEnumOrNull(TopologyGenerator.Protocol.class, this.protocol))
+            .topology(toEnumOrNull(TopologyGenerator.Topology.class, this.topology))
+            .persister(new TopologyPersisterSql())
             .build();
         generator.createNetwork();
     }
 
-//    private Integer minusOneToNull() {
-//      // we ned to do this workaround
-//
-//    }
+    private <E extends Enum> E toEnumOrNull(Class<E> enumClass, String s ) {
+        return s == null ? null : (E) Enum.valueOf(enumClass, s);
+    }
 
     /** Execute via Standalone Java program. */
     public static void main(String args[]) throws Exception {
