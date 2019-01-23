@@ -60,7 +60,9 @@ public interface OnmsDao<T, K extends Serializable> {
     /**
      * Deletes all entities of this type - use with care!
      */
-    void deleteAll();
+    default void deleteAll(){
+      throw new UnsupportedOperationException("Not implemented yet");
+    }
 
     List<T> findAll();
     
