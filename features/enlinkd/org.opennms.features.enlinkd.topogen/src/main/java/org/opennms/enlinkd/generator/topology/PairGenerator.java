@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,16 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.enlinkd.topogen.util;
+package org.opennms.enlinkd.generator.topology;
 
-import com.google.common.net.InetAddresses;
-import java.net.InetAddress;
+import org.apache.commons.lang3.tuple.Pair;
 
-public class InetAddressGenerator {
-    private InetAddress last = InetAddresses.forString("0.0.0.0");
-    public InetAddress next() {
-        InetAddress address = InetAddresses.increment(last);
-        last = address;
-        return address;
-    }
+/**
+ * Generates an endless stream of Pairs
+ **/
+public interface PairGenerator<E> {
+    Pair<E, E> next();
 }

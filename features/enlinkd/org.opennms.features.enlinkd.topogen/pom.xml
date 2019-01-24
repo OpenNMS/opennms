@@ -7,12 +7,12 @@
     <version>24.0.0-SNAPSHOT</version>
   </parent>
   <properties>
-    <bundle.symbolicName>org.opennms.features.enlinkd.topogen</bundle.symbolicName>
-    <bundle.namespace>org.opennms.features.enlinkd.topogen</bundle.namespace>
+    <bundle.symbolicName>org.opennms.features.enlinkd.generator</bundle.symbolicName>
+    <bundle.namespace>org.opennms.features.enlinkd.generator</bundle.namespace>
   </properties>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.enlinkd</groupId>
-  <artifactId>org.opennms.features.enlinkd.topogen</artifactId>
+  <artifactId>org.opennms.features.enlinkd.generator</artifactId>
   <name>OpenNMS :: Features :: Enlinkd :: Topology Generator</name>
   <packaging>bundle</packaging>
   <build>
@@ -33,7 +33,7 @@
         <artifactId>features-maven-plugin</artifactId>
         <configuration>
           <bundles>
-            <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.topogen/${project.version}</bundle>
+            <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.generator/${project.version}</bundle>
           </bundles>
         </configuration>
       </plugin>

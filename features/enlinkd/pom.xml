@@ -18,6 +18,6 @@
     <module>daemon</module>
     <module>tests</module>
     <module>org.opennms.features.enlinkd.shell</module>
-    <module>org.opennms.features.enlinkd.topogen</module>
+    <module>org.opennms.features.enlinkd.generator</module>
   </modules>
 </project>

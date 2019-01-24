@@ -26,13 +26,44 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.enlinkd.topogen.topology;
+package org.opennms.enlinkd.generator.topology;
+
+import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-/**
- * Generates an endless stream of Pairs
- **/
-public interface PairGenerator<E> {
-    Pair<E, E> next();
+public class LinkedPairGenerator<E> implements PairGenerator<E> {
+
+    private final List<E> elements;
+    private final int lastIndexInList;
+    private int indexLeft = -1;
+    private int indexRight = 0;
+
+    @Override
+    public Pair<E, E> next() {
+        compute();
+        return Pair.of(elements.get(indexLeft), elements.get(indexRight));
+    }
+
+    public LinkedPairGenerator(List<E> elements) {
+        if (elements == null || elements.size() < 2) {
+            throw new IllegalArgumentException("Need at least 2 elements in list to make a pair");
+        }
+        this.elements = elements;
+        lastIndexInList = elements.size() - 1;
+
+    }
+
+    private void compute() {
+        indexLeft = next(indexLeft);
+        indexRight = next(indexRight);
+    }
+
+    private int next(int i) {
+        if (i == lastIndexInList) {
+            return 0;
+        }
+        return ++i;
+    }
+
 }

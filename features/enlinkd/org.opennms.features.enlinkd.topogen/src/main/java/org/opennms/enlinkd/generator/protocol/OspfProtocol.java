@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.enlinkd.topogen.protocol;
+package org.opennms.enlinkd.generator.protocol;
 
 import java.net.InetAddress;
 import java.sql.SQLException;
@@ -35,10 +35,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.opennms.enlinkd.topogen.TopologyContext;
-import org.opennms.enlinkd.topogen.TopologyGenerator;
-import org.opennms.enlinkd.topogen.topology.PairGenerator;
-import org.opennms.enlinkd.topogen.util.InetAddressGenerator;
+import org.opennms.enlinkd.generator.TopologyContext;
+import org.opennms.enlinkd.generator.TopologyGenerator;
+import org.opennms.enlinkd.generator.topology.PairGenerator;
+import org.opennms.enlinkd.generator.util.InetAddressGenerator;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.model.OnmsNode;

@@ -26,14 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.enlinkd.topogen;
+package org.opennms.enlinkd.generator;
 
 import java.sql.SQLException;
 
-import org.opennms.enlinkd.topogen.protocol.CdpProtocol;
-import org.opennms.enlinkd.topogen.protocol.IsIsProtocol;
-import org.opennms.enlinkd.topogen.protocol.LldpProtocol;
-import org.opennms.enlinkd.topogen.protocol.OspfProtocol;
+import org.opennms.enlinkd.generator.protocol.CdpProtocol;
+import org.opennms.enlinkd.generator.protocol.IsIsProtocol;
+import org.opennms.enlinkd.generator.protocol.LldpProtocol;
+import org.opennms.enlinkd.generator.protocol.OspfProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,7 +127,7 @@ public class TopologyGenerator {
         getProtocol().createAndPersistNetwork();
     }
 
-    private org.opennms.enlinkd.topogen.protocol.Protocol getProtocol() {
+    private org.opennms.enlinkd.generator.protocol.Protocol getProtocol() {
         if (Protocol.cdp == this.protocol) {
             return new CdpProtocol(this.topology,
                     amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, topologyContext);

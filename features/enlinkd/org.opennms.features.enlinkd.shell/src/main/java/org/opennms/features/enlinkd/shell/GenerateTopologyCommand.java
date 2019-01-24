@@ -36,8 +36,8 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.enlinkd.topogen.TopologyGenerator;
-import org.opennms.enlinkd.topogen.TopologyPersister;
+import org.opennms.enlinkd.generator.TopologyGenerator;
+import org.opennms.enlinkd.generator.TopologyPersister;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 
 @Command(scope = "enlinkd", name = "generate-topology", description = "Creates a linkd topology")

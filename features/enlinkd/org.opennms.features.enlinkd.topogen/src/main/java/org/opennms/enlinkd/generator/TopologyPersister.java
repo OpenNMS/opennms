@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.enlinkd.topogen;
+package org.opennms.enlinkd.generator;
 
 import java.sql.SQLException;
 import java.util.Arrays;

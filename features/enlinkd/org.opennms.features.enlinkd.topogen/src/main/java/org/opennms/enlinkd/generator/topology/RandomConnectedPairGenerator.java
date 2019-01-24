@@ -26,41 +26,47 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.enlinkd.topogen.topology;
+package org.opennms.enlinkd.generator.topology;
 
-import static org.junit.Assert.assertNotSame;
-import static org.opennms.enlinkd.topogen.Asserts.assertThrows;
-
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Test;
 
-public class RandomConnectedPairGeneratorTest {
+/**
+ * pairs elements randomly but not the same element to itself
+ */
+public class RandomConnectedPairGenerator<E> implements PairGenerator<E> {
+    private final List<E> elements;
+    private Random random = new Random(42);
 
-    @Test
-    public void shouldRejectListsWithLessThan2Elements() {
-        assertThrows(IllegalArgumentException.class, () -> new RandomConnectedPairGenerator<>(null));
-        assertThrows(IllegalArgumentException.class, () -> new RandomConnectedPairGenerator<>(Collections.emptyList()));
-    }
-
-
-    @Test
-    public void shouldRejectListsWichContainsOnlyTheSameElement() {
-        List<String> list = Arrays.asList("same", "same", "same");
-        assertThrows(IllegalArgumentException.class, () -> new RandomConnectedPairGenerator<>(list));
-    }
-
-    @Test
-    public void shouldNotPairElementsWithItself() {
-        List<String> list = Arrays.asList("1", "2", "3");
-        RandomConnectedPairGenerator generator = new RandomConnectedPairGenerator<>(list);
-        for (int i = 0; i < 10; i++) {
-            Pair pair = generator.next();
-            assertNotSame(pair.getLeft(), pair.getRight());
+    public RandomConnectedPairGenerator(List<E> elements) {
+        if (elements == null || elements.size() < 2) {
+            throw new IllegalArgumentException("Need at least 2 elements in list to make a pair");
         }
+        if (new HashSet<>(elements).size() < elements.size()) {
+            throw new IllegalArgumentException("List contains at least one duplicate");
+        }
+        this.elements = elements;
     }
 
+    @Override
+    public Pair<E, E> next() {
+        E leftElement = getRandomElement(elements);
+        E rightElement = getRandomElementButNotSame(elements, leftElement);
+        return Pair.of(leftElement, rightElement);
+    }
+
+    private E getRandomElementButNotSame(List<E> elements, E notSame) {
+        E value = getRandomElement(elements);
+        while (value.equals(notSame)) {
+            value = getRandomElement(elements);
+        }
+        return value;
+    }
+
+    private E getRandomElement(List<E> list) {
+        return list.get(random.nextInt(list.size()));
+    }
 }

@@ -26,24 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.enlinkd.topogen;
+package org.opennms.enlinkd.generator;
 
-import static org.junit.Assert.fail;
+public class TopologyContext {
 
-public class Asserts {
+    private final TopologyGenerator.ProgressCallback progressCallback;
 
-    /**
-     * Tests if the given Runnable threw the expected Throwable.
-     */
-    public static <T extends Throwable> void assertThrows(Class<T> expectedType, Runnable runnable) {
-        try {
-            runnable.run();
-        } catch (Throwable t) {
-            if (expectedType.isInstance(t)) {
-                return; // thrown Exception is of expected type
-            }
-            fail("Expected Exception " + expectedType.getName());
-        }
+    private final TopologyPersister topologyPersister;
+
+    TopologyContext(final TopologyGenerator.ProgressCallback progressCallback, TopologyPersister topologyPersister){
+        this.progressCallback = progressCallback;
+        this.topologyPersister = topologyPersister;
     }
 
+    public void currentProgress(String msg){
+        this.progressCallback.currentProgress(msg);
+    }
+
+    public void currentProgress(String msg, Object...args){
+        this.progressCallback.currentProgress(msg, args);
+    }
+
+    public TopologyPersister getTopologyPersister(){
+        return this.topologyPersister;
+    }
 }

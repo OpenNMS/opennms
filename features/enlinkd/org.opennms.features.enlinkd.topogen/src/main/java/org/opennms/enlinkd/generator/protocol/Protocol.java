@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.enlinkd.topogen.protocol;
+package org.opennms.enlinkd.generator.protocol;
 
 import java.net.InetAddress;
 import java.sql.SQLException;
@@ -34,15 +34,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.enlinkd.topogen.TopologyContext;
-import org.opennms.enlinkd.topogen.TopologyGenerator;
-import org.opennms.enlinkd.topogen.TopologyGenerator.Topology;
-import org.opennms.enlinkd.topogen.topology.LinkedPairGenerator;
-import org.opennms.enlinkd.topogen.topology.PairGenerator;
-import org.opennms.enlinkd.topogen.topology.RandomConnectedPairGenerator;
-import org.opennms.enlinkd.topogen.topology.UndirectedPairGenerator;
-import org.opennms.enlinkd.topogen.util.InetAddressGenerator;
-import org.opennms.enlinkd.topogen.util.RandomUtil;
+import org.opennms.enlinkd.generator.TopologyContext;
+import org.opennms.enlinkd.generator.TopologyGenerator;
+import org.opennms.enlinkd.generator.TopologyGenerator.Topology;
+import org.opennms.enlinkd.generator.topology.LinkedPairGenerator;
+import org.opennms.enlinkd.generator.topology.PairGenerator;
+import org.opennms.enlinkd.generator.topology.RandomConnectedPairGenerator;
+import org.opennms.enlinkd.generator.topology.UndirectedPairGenerator;
+import org.opennms.enlinkd.generator.util.InetAddressGenerator;
+import org.opennms.enlinkd.generator.util.RandomUtil;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;

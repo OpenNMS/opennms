@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.enlinkd.topogen.topology;
+package org.opennms.enlinkd.generator.topology;
 
 import java.util.List;
 

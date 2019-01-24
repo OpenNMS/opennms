@@ -26,10 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.enlinkd.topogen.topology;
+package org.opennms.enlinkd.generator.topology;
 
 import static org.junit.Assert.assertEquals;
-import static org.opennms.enlinkd.topogen.Asserts.assertThrows;
+import static org.opennms.enlinkd.generator.Asserts.assertThrows;
 
 import java.util.Arrays;
 import java.util.Collections;

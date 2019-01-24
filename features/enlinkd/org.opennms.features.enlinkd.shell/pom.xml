@@ -67,7 +67,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
-      <artifactId>org.opennms.features.enlinkd.topogen</artifactId>
+      <artifactId>org.opennms.features.enlinkd.generator</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!-- Test dependencies -->
