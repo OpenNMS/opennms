@@ -193,7 +193,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                    onmsTopologyUpdater.getInfo());
         onmsTopologyUpdater.setScheduler(m_scheduler);
         onmsTopologyUpdater.setPollInterval(getBridgeTopologyInterval());
-        onmsTopologyUpdater.setInitialSleepTime(getBridgeTopologyInterval()+getInitialSleepTime());
+        onmsTopologyUpdater.setInitialSleepTime(0L);
         onmsTopologyUpdater.schedule();
         onmsTopologyUpdater.register();
     }
