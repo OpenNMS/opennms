@@ -28,97 +28,33 @@
 
 package org.opennsm.features.graphs.simple;
 
-import java.util.Objects;
-
-import org.opennms.features.graph.api.Edge;
-import org.opennms.features.graph.api.Graph;
+import org.opennms.features.graph.api.AbstractEdge;
 import org.opennms.features.graph.api.generic.GenericEdge;
+import org.opennms.features.graph.api.generic.GenericProperties;
 
-public class SimpleEdge<V extends SimpleVertex> implements Edge<V> {
+public class SimpleEdge extends AbstractEdge<SimpleVertex> {
 
-    private final V source;
-    private final V target;
-    private String namespace;
-    private String id;
-    private String label;
-    private String tooltip;
-
-    // TODO MVR set namespace and id
-    public SimpleEdge(V source, V target) {
-        this.source = Objects.requireNonNull(source);
-        this.target = Objects.requireNonNull(target);
-        this.namespace = source.getNamespace();
-        this.id = source.getId() + "->" + target.getId();
+    public SimpleEdge(SimpleVertex source, SimpleVertex target) {
+        super(source, target);
     }
 
-    // Convenient method to add an adge from the given graph. Source and Target Vertices are looked up using the given sourceId/targetId
-    public SimpleEdge(Graph<V, SimpleEdge<V>> graph, String sourceId, String targetId) {
-        Objects.requireNonNull(graph);
-        this.source = Objects.requireNonNull(graph.getVertex(sourceId));
-        this.target = Objects.requireNonNull(graph.getVertex(targetId));
-        this.namespace = graph.getNamespace();
-        this.id = source.getId() + "->" + target.getId();
-    }
-
-    @Override
-    public String getNamespace() {
-        return namespace;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    // TODO MVR this should be handled automatically in some sort?!
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public V getSource() {
-        return source;
-    }
-
-    @Override
-    public V getTarget() {
-        return target;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public String getTooltip() {
-        return tooltip;
-    }
-
-    public void setTooltip(String tooltip) {
-        this.tooltip = tooltip;
+    public SimpleEdge(SimpleEdge e) {
+        super(e.getSource(), e.getTarget());
+        setLabel(e.getLabel());
     }
 
     @Override
     public GenericEdge asGenericEdge() {
-//        // TODO MVR set namespace and id
-//        final GenericEdge genericEdge = new GenericEdge(source, target);
-//        if (getLabel() != null) {
-//            genericEdge.setProperty(GenericProperties.LABEL, getLabel());
-//        } else {
-//            genericEdge.setProperty(GenericProperties.LABEL, String.format("connection:%s:%s", getSource().getId(), getTarget().getId()));
-//        }
+        final GenericEdge genericEdge = new GenericEdge(getSource(), getTarget());
+        if (getLabel() != null) {
+            genericEdge.setProperty(GenericProperties.LABEL, getLabel());
+        } else {
+            genericEdge.setProperty(GenericProperties.LABEL, String.format("connection:%s:%s", getSource().getId(), getTarget().getId()));
+        }
+        // TODO MVR Tooltip?
 //        if (getTooltip() != null) {
 //            genericEdge.setProperty(GenericProperties.TOOLTIP, getTooltip());
 //        }
-//        return genericEdge;
-        return null;
-    }
-
-    @Override
-    public String toString() {
-        return asGenericEdge().toString();
+        return genericEdge;
     }
 }

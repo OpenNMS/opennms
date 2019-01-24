@@ -34,37 +34,42 @@ import java.util.List;
 import org.opennms.features.graph.api.generic.GenericGraph;
 import org.opennms.features.graph.api.info.GraphInfo;
 
-public interface Graph<V extends Vertex, E extends Edge<V>> extends GraphInfo {
+public interface Graph<V extends Vertex, E extends Edge> extends GraphInfo {
+
     List<V> getVertices();
 
     List<E> getEdges();
 
-    String getNamespace();
-
     void addEdges(Collection<E> edges);
 
     void addVertices(Collection<V> vertices);
-
-    void addVertex(V vertex);
-    void addEdge(E edge);
-
-    void removeEdge(E edge);
-    void removeVertex(V vertex);
 
     // TODO MVR make this more generic...
     V getVertex(String id);
 
     E getEdge(String id);
 
+    void addVertex(V vertex);
+
+    void addEdge(E edge);
+
+    void removeEdge(E edge);
+
+    void removeVertex(V vertex);
+
     List<String> getVertexIds();
+
     List<String> getEdgeIds();
 
     // TODO MVR also provide List<String> vertexIds, int szl method
-    Graph<V,E> getSnapshot(Collection<V> verticesInFocus, int szl);
+    Graph<V, E> getSnapshot(Collection<V> verticesInFocus, int szl);
 
     List<V> resolveVertices(Collection<String> vertexIds);
+
     List<E> resolveEdges(Collection<String> edgeIds);
+
     Collection<V> getNeighbors(V eachVertex);
+
     Collection<E> getConnectingEdges(V eachVertex);
 
     List<Vertex> getDefaultFocus();

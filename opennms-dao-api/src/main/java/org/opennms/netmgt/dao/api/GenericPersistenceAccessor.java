@@ -51,6 +51,8 @@ public interface GenericPersistenceAccessor {
 
     <T> T save(T entity);
 
+    <T> void update(T entity);
+
     <T> void saveAll(Collection<T> entities);
 
     <T> void deleteAll(Class<T> clazz);

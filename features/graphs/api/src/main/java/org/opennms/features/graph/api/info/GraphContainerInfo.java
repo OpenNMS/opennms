@@ -42,8 +42,6 @@ public interface GraphContainerInfo {
 
     GraphInfo getGraphInfo(String namespace);
 
-    void addGraphInfo(GraphInfo graphInfo);
-
     GraphInfo getPrimaryGraphInfo();
 
 

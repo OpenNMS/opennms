@@ -31,13 +31,14 @@ package org.opennsm.features.graphs.simple;
 import org.opennms.features.graph.api.Vertex;
 import org.opennms.features.graph.api.aware.LocationAware;
 import org.opennms.features.graph.api.aware.NodeAware;
+import org.opennms.features.graph.api.generic.GenericProperties;
 import org.opennms.features.graph.api.generic.GenericVertex;
 import org.opennms.features.graph.api.info.NodeInfo;
 
 public class SimpleVertex implements Vertex, NodeAware, LocationAware {
 
-    private final String namespace;
     private final String id;
+    private String namespace; // TODO MVR this should be enforced, shouldn't it?
     private String iconKey; // TODO MVR remove me
     private String tooltip; // TODO MVR remove me
     private String label;
@@ -52,9 +53,22 @@ public class SimpleVertex implements Vertex, NodeAware, LocationAware {
         this.id = id;
     }
 
+    public SimpleVertex(SimpleVertex copyMe) {
+        this(copyMe.getNamespace(), copyMe.getId());
+        setLabel(copyMe.getLabel());
+        setIconKey(copyMe.getIconKey());
+        setNodeInfo(copyMe.getNodeInfo()); // TODO MVR also clone this
+        setNodeRefString(copyMe.getNodeRefString());
+        setTooltip(copyMe.getTooltip());
+    }
+
     @Override
     public String getNamespace() {
         return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     @Override
@@ -88,23 +102,22 @@ public class SimpleVertex implements Vertex, NodeAware, LocationAware {
 
     @Override
     public GenericVertex asGenericVertex() {
-//        final GenericVertex vertex = new GenericVertex();
-//        vertex.setId(getId());
-//        vertex.setNamespace(getNamespace());
-//        if (getLabel() != null) {
-//            vertex.setProperty(GenericProperties.LABEL, getLabel());
-//        }
-//        if (getTooltip() != null) {
-//            vertex.setProperty(GenericProperties.TOOLTIP, getTooltip());
-//        }
-//        if (getIconKey() != null) {
-//            vertex.setProperty(GenericProperties.ICON_KEY, getIconKey());
-//        }
-//        if (getNodeRefString() != null) {
-//            vertex.setProperty(GenericProperties.NODE_REF, getNodeRefString());
-//        }
-//        return vertex;
-        return null;
+        final GenericVertex vertex = new GenericVertex();
+        vertex.setId(getId());
+        vertex.setNamespace(getNamespace());
+        if (getLabel() != null) {
+            vertex.setProperty(GenericProperties.LABEL, getLabel());
+        }
+        if (getTooltip() != null) {
+            vertex.setProperty(GenericProperties.TOOLTIP, getTooltip());
+        }
+        if (getIconKey() != null) {
+            vertex.setProperty(GenericProperties.ICON_KEY, getIconKey());
+        }
+        if (getNodeRefString() != null) {
+            vertex.setProperty(GenericProperties.NODE_REF, getNodeRefString());
+        }
+        return vertex;
     }
 
     public NodeInfo getNodeInfo() {

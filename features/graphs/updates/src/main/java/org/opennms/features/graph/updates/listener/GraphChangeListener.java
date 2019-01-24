@@ -34,7 +34,7 @@ import org.opennms.features.graph.api.Edge;
 import org.opennms.features.graph.api.Vertex;
 import org.opennms.features.graph.api.info.GraphInfo;
 
-public interface GraphChangeListener<V extends Vertex, E extends Edge<V>> {
+public interface GraphChangeListener<V extends Vertex, E extends Edge> {
     void handleVerticesAdded(List<V> verticesAdded);
 
     void handleVerticesRemoved(List<V> verticesRemoved);

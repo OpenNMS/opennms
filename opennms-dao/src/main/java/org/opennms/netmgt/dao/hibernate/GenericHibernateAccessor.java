@@ -139,6 +139,11 @@ public class GenericHibernateAccessor extends HibernateDaoSupport implements Gen
     }
 
     @Override
+    public <T> void update(T entity) {
+        getHibernateTemplate().update(entity);
+    }
+
+    @Override
     public <T> void deleteAll(Class<T> clazz) {
         String sql = String.format("delete from %s entity", clazz.getSimpleName());
         getHibernateTemplate().bulkUpdate(sql);

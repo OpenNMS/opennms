@@ -8,7 +8,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.graphs</groupId>
-    <artifactId>org.opennms.features.graphs.rest</artifactId>
-    <name>OpenNMS :: Features :: Graph :: ReST</name>
+    <artifactId>org.opennms.features.graphs.providers</artifactId>
+    <name>OpenNMS :: Features :: Graph :: Providers</name>
     <packaging>pom</packaging>
+    <modules>
+        <module>graphml</module>
+    </modules>
 </project>

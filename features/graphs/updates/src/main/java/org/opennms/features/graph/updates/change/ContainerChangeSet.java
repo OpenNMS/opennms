@@ -84,7 +84,7 @@ public class ContainerChangeSet {
         }
     }
 
-    protected void detectChanges(GraphContainer oldGraphContainer, GraphContainer newGraphContainer) {
+    protected void detectChanges(GraphContainer<?, ?, ?> oldGraphContainer, GraphContainer<?, ?, ?> newGraphContainer) {
         // no old container exists, add all graphs
         if (oldGraphContainer == null && newGraphContainer != null) {
             newGraphContainer.getGraphs().forEach(g -> graphAdded(g));

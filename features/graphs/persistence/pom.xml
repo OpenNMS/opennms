@@ -11,4 +11,8 @@
     <artifactId>org.opennms.features.graphs.persistence</artifactId>
     <name>OpenNMS :: Features :: Graph :: Persistence</name>
     <packaging>pom</packaging>
+    <modules>
+        <module>api</module>
+        <module>hibernate</module>
+    </modules>
 </project>

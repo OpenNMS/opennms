@@ -41,7 +41,7 @@ import org.opennms.features.graph.api.info.GraphInfo;
 import org.opennms.features.graph.updates.listener.GraphChangeListener;
 import org.opennms.features.graph.updates.listener.GraphChangeSetListener;
 
-public class ChangeSet<G extends Graph<V, E>, V extends Vertex, E extends Edge<V>> {
+public class ChangeSet<G extends Graph<V, E>, V extends Vertex, E extends Edge> {
     private final String namespace;
     private final Date changeSetDate;
     private List<V> verticesAdded = new ArrayList<>();

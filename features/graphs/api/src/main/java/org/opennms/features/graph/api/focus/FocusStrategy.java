@@ -45,7 +45,7 @@ public class FocusStrategy {
     public static final Focus EMPTY = graphContext -> Lists.newArrayList();
 
     public static final Focus FIRST = graphContext -> {
-        Graph<Vertex, Edge<Vertex>> g = graphContext.getGraph();
+        final Graph<Vertex, Edge> g = graphContext.getGraph();
         if (g.getVertexIds().isEmpty()) {
             return new ArrayList<>();
         }

@@ -11,4 +11,16 @@
     <artifactId>org.opennms.features.graphs.api</artifactId>
     <name>OpenNMS :: Features :: Graph :: API</name>
     <packaging>bundle</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>net.sf.jung</groupId>
+            <artifactId>jung-api</artifactId>
+            <version>${jungVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.jung</groupId>
+            <artifactId>jung-graph-impl</artifactId>
+            <version>${jungVersion}</version>
+        </dependency>
+    </dependencies>
 </project>

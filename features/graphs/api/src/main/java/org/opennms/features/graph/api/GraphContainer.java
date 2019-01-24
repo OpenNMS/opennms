@@ -30,6 +30,7 @@ package org.opennms.features.graph.api;
 
 import java.util.List;
 
+import org.opennms.features.graph.api.generic.GenericGraphContainer;
 import org.opennms.features.graph.api.info.GraphContainerInfo;
 
 /**
@@ -54,7 +55,10 @@ import org.opennms.features.graph.api.info.GraphContainerInfo;
  *
  * Be aware, that a GraphContainer should always be fully populated (not enriched) when loaded by a provider.
  */
-public interface GraphContainer extends GraphContainerInfo {
-    List<Graph<?,?>> getGraphs();
-    Graph<?, ?> getGraph(String namespace);
+public interface GraphContainer<V extends Vertex, E extends Edge, G extends Graph<V, E>> extends GraphContainerInfo {
+    List<G> getGraphs();
+    G getGraph(String namespace);
+    void addGraph(G graph);
+    void removeGraph(String namespace);
+    GenericGraphContainer asGenericGraphContainer();
 }

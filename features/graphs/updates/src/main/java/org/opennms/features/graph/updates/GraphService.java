@@ -41,16 +41,17 @@ import org.opennms.features.graph.api.info.GraphInfo;
 public interface GraphService extends GraphNotificationService {
 
     List<GraphContainerInfo> getGraphContainerDetails();
+
     GraphContainerInfo getGraphContainerInfo(String containerId);
 
     GraphContainer getGraphContainer(String containerId);
 
     GraphInfo getGraphInfo(String graphNamespace);
 
-    <V extends Vertex, E extends Edge<V>> Graph<V, E> getGraph(String containerId, String graphNamespace);
+    <V extends Vertex, E extends Edge> Graph<V, E> getGraph(String containerId, String graphNamespace);
 
-    <V extends Vertex, E extends Edge<V>> Graph<V, E> getGraph(String namespace);
+    <V extends Vertex, E extends Edge> Graph<V, E> getGraph(String namespace);
 
-    <V extends Vertex, E extends Edge<V>> Graph<V, E> getSnapshot(Query query);
+    <V extends Vertex, E extends Edge> Graph<V, E> getSnapshot(Query query);
 
 }

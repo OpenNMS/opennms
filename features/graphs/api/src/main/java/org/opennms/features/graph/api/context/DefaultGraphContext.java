@@ -34,7 +34,8 @@ import org.opennms.features.graph.api.Edge;
 import org.opennms.features.graph.api.Graph;
 import org.opennms.features.graph.api.Vertex;
 
-public class DefaultGraphContext<V extends Vertex, E extends Edge<V>, G extends Graph<V, E>> implements GraphContext<V, E, G> {
+// TODO MVR it seems that the abstract -> simple/generic/<domain> naming is the best choice
+public class DefaultGraphContext<V extends Vertex, E extends Edge, G extends Graph<V, E>> implements GraphContext<V, E, G> {
 
     private final String containerId;
     private final String graphNamespace;

@@ -42,7 +42,7 @@ import org.opennms.features.graph.api.Vertex;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
-public class SemanticZoomLevelTransformer<V extends Vertex, E extends Edge<V>, G extends Graph<V, E>> {
+public class SemanticZoomLevelTransformer<V extends Vertex, E extends Edge, G extends Graph<V, E>> {
     private final Collection<V> verticesInFocus;
     private final int szl;
 
