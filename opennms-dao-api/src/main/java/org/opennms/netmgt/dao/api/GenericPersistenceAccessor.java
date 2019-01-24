@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.criteria.Criteria;
-import org.springframework.dao.DataAccessException;
 
 public interface GenericPersistenceAccessor {
     <T> List<T> find(String query);
