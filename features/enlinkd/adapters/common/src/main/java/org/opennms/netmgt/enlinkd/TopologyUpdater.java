@@ -221,9 +221,6 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
     
     @Override
     public OnmsTopology getTopology() {
-        if (!m_runned) {
-            runDiscovery();
-        }
         synchronized (m_topology) {
             return m_topology.clone();
         }

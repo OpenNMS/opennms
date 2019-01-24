@@ -113,7 +113,7 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater  {
 
     private static final Logger LOG = LoggerFactory.getLogger(BridgeOnmsTopologyUpdater.class);
 
-    protected final BridgeTopologyService m_bridgeTopologyService;
+    private final BridgeTopologyService m_bridgeTopologyService;
 
     public BridgeOnmsTopologyUpdater(
             OnmsTopologyDao topologyDao, BridgeTopologyService bridgeTopologyService, NodeTopologyService nodeTopologyService) {

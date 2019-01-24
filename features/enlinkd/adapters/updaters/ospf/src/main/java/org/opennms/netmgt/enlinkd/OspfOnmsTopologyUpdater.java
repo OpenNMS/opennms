@@ -74,7 +74,7 @@ public class OspfOnmsTopologyUpdater extends TopologyUpdater {
         return port;
     }
 
-    protected final OspfTopologyService m_ospfTopologyService;
+    private final OspfTopologyService m_ospfTopologyService;
 
     public OspfOnmsTopologyUpdater(
             OnmsTopologyDao topologyDao, OspfTopologyService ospfTopologyService, NodeTopologyService nodeTopologyService) {
