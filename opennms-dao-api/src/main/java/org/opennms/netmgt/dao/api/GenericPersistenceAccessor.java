@@ -46,6 +46,10 @@ public interface GenericPersistenceAccessor {
 
     List findMatching(Criteria criteria);
 
+    <T> void update(T entity);
+
+    <T> void save(T entity);
+
     /**
      * Executes a native SQL query.
      * Use with care.

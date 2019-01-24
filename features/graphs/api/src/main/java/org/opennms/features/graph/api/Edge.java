@@ -31,11 +31,10 @@ package org.opennms.features.graph.api;
 import org.opennms.features.graph.api.generic.GenericEdge;
 
 // TODO MVR noderef?!
-public interface Edge<V extends Vertex> {
+public interface Edge {
     String getNamespace();
     String getId();
-    V getSource();
-    V getTarget();
-
+    VertexRef getSource();
+    VertexRef getTarget();
     GenericEdge asGenericEdge();
 }

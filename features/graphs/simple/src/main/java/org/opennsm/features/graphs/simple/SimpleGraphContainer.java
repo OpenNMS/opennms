@@ -35,13 +35,14 @@ import java.util.stream.Collectors;
 
 import org.opennms.features.graph.api.Graph;
 import org.opennms.features.graph.api.GraphContainer;
+import org.opennms.features.graph.api.generic.GenericGraphContainer;
 import org.opennms.features.graph.api.info.GraphInfo;
 
 // TODO MVR probably implement ContainerGraphInfo instead of a property
+// TODO MVR make more type safe
 public class SimpleGraphContainer implements GraphContainer {
 
     private final String id;
-    private List<GraphInfo> graphInfos = new ArrayList<>();
     private String description;
     private String label;
     private List<Graph<?,?>> graphs = new ArrayList<>();
@@ -60,13 +61,22 @@ public class SimpleGraphContainer implements GraphContainer {
         return graphs.stream().filter(g -> g.getNamespace().equalsIgnoreCase(namespace)).findFirst().orElse(null);
     }
 
-    public void addGraph(Graph<?, ?> graph) {
-        this.addGraphInfo(graph);
+    @Override
+    public void addGraph(Graph graph) {
         this.graphs.add(graph);
     }
+
+    @Override
+    public void removeGraph(String namespace) {
+        graphs.stream()
+                .filter(g -> g.getNamespace().equalsIgnoreCase(namespace))
+                .findAny()
+                .ifPresent(graph -> this.graphs.remove(graph));
+    }
+
     @Override
     public List<String> getNamespaces() {
-        return graphInfos.stream().map(gi -> gi.getNamespace()).collect(Collectors.toList());
+        return graphs.stream().map(graph -> graph.getNamespace()).collect(Collectors.toList());
     }
 
     @Override
@@ -82,30 +92,17 @@ public class SimpleGraphContainer implements GraphContainer {
     @Override
     public GraphInfo getGraphInfo(String namespace) {
         Objects.requireNonNull(namespace);
-        return graphInfos.stream().filter(gi -> namespace.equalsIgnoreCase(gi.getNamespace())).findFirst().orElse(null);
-    }
-
-    @Override
-    public void addGraphInfo(GraphInfo graphInfo) {
-        graphInfos.add(graphInfo);
+        return graphs.stream().filter(gi -> namespace.equalsIgnoreCase(gi.getNamespace())).findFirst().orElse(null);
     }
 
     @Override
     public GraphInfo getPrimaryGraphInfo() {
-        return graphInfos.get(0);
+        return graphs.get(0);
     }
 
     @Override
     public String getId() {
         return id;
-    }
-
-    public List<GraphInfo> getGraphInfos() {
-        return graphInfos;
-    }
-
-    public void setGraphInfos(List<GraphInfo> graphInfos) {
-        this.graphInfos = graphInfos;
     }
 
     public void setDescription(String description) {
@@ -114,5 +111,22 @@ public class SimpleGraphContainer implements GraphContainer {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    // TODO MVR do we really want to use these methods?
+    public SimpleGraph g(String namespace) {
+        final SimpleGraph simpleGraph = new SimpleGraph(namespace);
+        addGraph(simpleGraph);
+        return simpleGraph;
+    }
+
+    @Override
+    public GenericGraphContainer asGenericGraphContainer() {
+        final GenericGraphContainer genericGraphContainer = new GenericGraphContainer();
+        genericGraphContainer.setId(id);
+        genericGraphContainer.setDescription(description);
+        genericGraphContainer.setLabel(label);
+        getGraphs().forEach(g -> genericGraphContainer.addGraph(g.asGenericGraph()));
+        return genericGraphContainer;
     }
 }

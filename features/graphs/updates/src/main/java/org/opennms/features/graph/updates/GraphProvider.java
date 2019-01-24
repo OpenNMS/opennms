@@ -42,7 +42,7 @@ import org.opennms.features.graph.api.info.GraphInfo;
  * @param <V>
  * @param <E>
  */
-public interface GraphProvider<V extends Vertex, E extends Edge<V>> extends GraphContainerProvider {
+public interface GraphProvider<V extends Vertex, E extends Edge> extends GraphContainerProvider {
 
 //    default GraphContainer loadGraphContainer() {
 //        final GraphContainerInfo info = getContainerInfo();

@@ -28,9 +28,36 @@
 
 package org.opennms.features.graph.api.generic;
 
-import org.opennms.features.graph.api.Edge;
+import java.util.HashMap;
+import java.util.Map;
 
-// TODO MVR the edge does not have a namespace
-public interface GenericEdge extends GenericElement, Edge<GenericVertex> {
+import org.opennms.features.graph.api.AbstractEdge;
+import org.opennms.features.graph.api.VertexRef;
 
+public class GenericEdge extends AbstractEdge<GenericVertex> {
+
+    private Map<String, Object> properties = new HashMap<>();
+
+    public GenericEdge(GenericVertex source, GenericVertex target) {
+        this((VertexRef) source, (VertexRef) target);
+    }
+
+    public GenericEdge(VertexRef source, VertexRef target) {
+        super(source, target);
+        properties.put(GenericProperties.LABEL, getLabel());
+        properties.put(GenericProperties.NAMESPACE, getNamespace());
+        properties.put(GenericProperties.ID, getId());
+    }
+
+    public Map<String, Object> getProperties() {
+        return new HashMap<>(properties);
+    }
+
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = new HashMap<>(properties);
+    }
+
+    public void setProperty(String key, Object value) {
+        properties.put(key, value);
+    }
 }

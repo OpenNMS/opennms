@@ -125,6 +125,16 @@ public class GenericHibernateAccessor extends HibernateDaoSupport implements Gen
         return getHibernateTemplate().execute(callback);
     }
 
+    @Override
+    public <T> void save(T entity) {
+        getHibernateTemplate().save(entity);
+    }
+
+    @Override
+    public <T> void update(T entity) {
+        getHibernateTemplate().update(entity);
+    }
+
     private void prepareQuery(Query queryObject) {
         if(getHibernateTemplate().isCacheQueries()) {
             queryObject.setCacheable(true);

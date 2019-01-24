@@ -46,6 +46,12 @@ public class DefaultGraphInfo implements GraphInfo {
         this.vertexType = Objects.requireNonNull(vertexType);
     }
 
+    public DefaultGraphInfo(GraphInfo copy) {
+        this(copy.getNamespace(), copy.getVertexType());
+        setLabel(copy.getLabel());
+        setDescription(copy.getDescription());
+    }
+
     @Override
     public String getNamespace() {
         return namespace;

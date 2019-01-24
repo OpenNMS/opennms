@@ -30,7 +30,7 @@ package org.opennms.features.graph.api.info;
 
 import org.opennms.features.graph.api.Vertex;
 
-public interface GraphInfo {
+public interface GraphInfo<V extends Vertex> {
 
     // The namespace of the graph. Should be unique overall Graphs
     String getNamespace();
@@ -47,5 +47,6 @@ public interface GraphInfo {
     // parent vertex. So if a provider must implement custom vertices, each vertex should inherit <namespace>Vertex, e.g. AbstractNodesVertex
     // Otherwise this concept does not work.
     // The vertex type is also relevant for implementing type safe search.
-    Class<? extends Vertex> getVertexType();
+    // TODO MVR the vertex type is weird
+    Class<V> getVertexType();
 }

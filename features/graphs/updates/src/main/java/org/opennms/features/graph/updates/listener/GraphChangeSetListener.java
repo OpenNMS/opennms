@@ -33,7 +33,7 @@ import org.opennms.features.graph.api.Graph;
 import org.opennms.features.graph.api.Vertex;
 import org.opennms.features.graph.updates.change.ChangeSet;
 
-public interface GraphChangeSetListener<G extends Graph<V, E>, V extends Vertex, E extends Edge<V>> {
+public interface GraphChangeSetListener<G extends Graph<V, E>, V extends Vertex, E extends Edge> {
 
     void graphChanged(ChangeSet<G, V, E> changeSet);
 }

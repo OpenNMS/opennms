@@ -28,18 +28,91 @@
 
 package org.opennms.features.graph.api.generic;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-public interface GenericElement {
-    void setProperty(String key, Object value);
-    <T> T getProperty(String key);
-    <T> T getProperty(String key, T defaultValue);
-    void setProperties(Map<String, Object> properties);
-    void setComputedProperty(String key, Object value);
-    Map<String, Object> getComputedProperties();
-    Map<String, Object> getProperties();
-    String getNamespace();
-    void setNamespace(String namespace);
-    String getId();
-    void setId(String id);
+import com.google.common.base.MoreObjects;
+
+public class GenericElement {
+    protected final Map<String, Object> properties = new HashMap<>();
+
+    protected final Map<String, Object> computedProperties = new HashMap<>();
+
+    public GenericElement() {
+
+    }
+
+    public GenericElement(String namespace, String id) {
+        setNamespace(namespace);
+        setId(id);
+    }
+
+    public void setProperty(String key, Object value) {
+        properties.put(key, value);
+    }
+
+    public <T> T getProperty(String key) {
+        return (T) properties.get(key);
+    }
+
+    public <T> T getProperty(String key, T defaultValue) {
+        return (T) properties.getOrDefault(key, defaultValue);
+    }
+
+    public void setProperties(Map<String, Object> properties) {
+        this.properties.clear();
+        this.properties.putAll(properties);
+    }
+
+    public void setComputedProperty(String key, Object value) {
+        computedProperties.put(key, value);
+    }
+
+    public Map<String, Object> getComputedProperties() {
+        return computedProperties;
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    public String getNamespace() {
+        return getProperty(GenericProperties.NAMESPACE);
+    }
+
+    public void setNamespace(String namespace) {
+        setProperty(GenericProperties.NAMESPACE, namespace);
+    }
+
+    public String getId() {
+        return getProperty(GenericProperties.ID);
+    }
+
+    public void setId(String id) {
+        setProperty(GenericProperties.ID, id);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final GenericElement that = (GenericElement) o;
+        return Objects.equals(properties, that.properties) &&
+                Objects.equals(computedProperties, that.computedProperties);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(properties, computedProperties);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .omitNullValues()
+                .add("properties", properties)
+                .add("computedProperties", computedProperties)
+                .toString();
+    }
 }

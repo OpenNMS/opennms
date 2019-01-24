@@ -30,6 +30,17 @@ package org.opennms.features.graph.api.generic;
 
 import org.opennms.features.graph.api.Vertex;
 
-public interface GenericVertex extends GenericElement, Vertex {
+public class GenericVertex extends GenericElement implements Vertex {
 
+    public GenericVertex() {
+    }
+
+    public GenericVertex(String namespace, String id) {
+        super(namespace, id);
+    }
+
+    @Override
+    public GenericVertex asGenericVertex() {
+        return this;
+    }
 }

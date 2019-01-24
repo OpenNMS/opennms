@@ -32,7 +32,7 @@ import org.opennms.features.graph.api.Edge;
 import org.opennms.features.graph.api.Graph;
 import org.opennms.features.graph.api.Vertex;
 
-public interface GraphContext<V extends Vertex, E extends Edge<V>, G extends Graph<V, E>> {
+public interface GraphContext<V extends Vertex, E extends Edge, G extends Graph<V, E>> {
     String getNamespace();
     String getContainerId();
     G getGraph(); // should load it at this point
