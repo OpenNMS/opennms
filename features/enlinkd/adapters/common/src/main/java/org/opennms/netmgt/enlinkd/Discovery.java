@@ -85,23 +85,25 @@ public abstract class Discovery implements ReadyRunnable {
     // run is called by a Thread for the runnable
     // execute is where you got the stuff made
     public void run() {
-        if (m_suspendCollection) {
-            LOG.info( "run: suspended {} discovery.", 
-                       getInfo());
-            
-        } else {
-            LOG.info( "run: start {} discovery.", 
-                      getInfo());
-            runDiscovery();            
-            LOG.info( "run: end {} discovery.", 
-                      getInfo());
-        }
+        //if unscheduled return
+        // not scheduling itself anymore
         if (m_unschedule) {
-            LOG.info( "run: unscheduled {} discovery.", 
+            LOG.info( "run: unscheduled {}", 
                       getInfo());
-        } else {
-            reschedule();
+            return;
         }
+        //if collection is suspended then
+        // schedule the collection
+        if (m_suspendCollection) {
+            LOG.info( "run: suspended {}", 
+                      getInfo());
+            schedule();
+            return;
+        }
+        LOG.info( "run: running {}", 
+                      getInfo());
+        runDiscovery();            
+        reschedule();
     }
     /**
      * <p>
@@ -157,15 +159,10 @@ public abstract class Discovery implements ReadyRunnable {
      * @return a boolean.
      */
     public boolean isReady() {
-        if (m_unschedule) {
-            return true;
-        }
-            
-        return !m_suspendCollection;
+        return true;
     }
 
     public void unschedule() {
-        m_suspendCollection = true;
         m_unschedule = true;
     }
     /**
