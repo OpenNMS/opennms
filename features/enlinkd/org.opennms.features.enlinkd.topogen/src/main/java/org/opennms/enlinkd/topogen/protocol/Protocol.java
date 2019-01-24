@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,7 +33,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.opennms.enlinkd.topogen.util.InetAddressGenerator;
+
 import org.opennms.enlinkd.topogen.TopologyGenerator;
 import org.opennms.enlinkd.topogen.TopologyGenerator.Topology;
 import org.opennms.enlinkd.topogen.TopologyPersister;
@@ -41,6 +41,7 @@ import org.opennms.enlinkd.topogen.topology.LinkedPairGenerator;
 import org.opennms.enlinkd.topogen.topology.PairGenerator;
 import org.opennms.enlinkd.topogen.topology.RandomConnectedPairGenerator;
 import org.opennms.enlinkd.topogen.topology.UndirectedPairGenerator;
+import org.opennms.enlinkd.topogen.util.InetAddressGenerator;
 import org.opennms.enlinkd.topogen.util.RandomUtil;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -54,17 +55,17 @@ public abstract class Protocol<Element> {
 
     private final static Logger LOG = LoggerFactory.getLogger(CdpProtocol.class);
 
-    protected final Topology topology;
+    final Topology topology;
     private final int amountNodes;
-    private final int amountLinks;
-    private final int amountElements;
-    private final int amountSnmpInterfaces;
-    private final int amountIpInterfaces;
-    private final TopologyPersister persister;
+    final int amountLinks;
+    final int amountElements;
+    final int amountSnmpInterfaces;
+    final int amountIpInterfaces;
+    final TopologyPersister persister;
     private final RandomUtil random = new RandomUtil();
 
     public Protocol(Topology topology, int amountNodes, int amountLinks, int amountElements,
-        int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersister persister) {
+                    int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersister persister) {
         this.topology = topology;
         this.amountNodes = amountNodes;
         this.amountLinks = amountLinks;
@@ -84,14 +85,14 @@ public abstract class Protocol<Element> {
                 this.amountSnmpInterfaces,
                 this.amountIpInterfaces);
         List<OnmsNode> nodes = createNodes(amountNodes);
-        persister.persistNodes(nodes);
+        persister.persist(nodes);
 
         createAndPersistProtocolSpecificEntities(nodes);
 
         List<OnmsSnmpInterface> snmpInterfaces = createSnmpInterfaces(nodes);
-        persister.persistOnmsInterfaces(snmpInterfaces);
+        persister.persist(snmpInterfaces);
         List<OnmsIpInterface> ipInterfaces = createIpInterfaces(snmpInterfaces);
-        persister.persistIpInterfaces(ipInterfaces);
+        persister.persist(ipInterfaces);
     }
 
     protected abstract void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) throws SQLException;
@@ -124,7 +125,7 @@ public abstract class Protocol<Element> {
 
     protected List<OnmsSnmpInterface> createSnmpInterfaces(List<OnmsNode> nodes) {
         ArrayList<OnmsSnmpInterface> interfaces = new ArrayList<>();
-        for (int i=0; i<this.amountSnmpInterfaces; i++) {
+        for (int i = 0; i < this.amountSnmpInterfaces; i++) {
             interfaces.add(createSnmpInterface(i, random.getRandom(nodes)));
         }
         return interfaces;
@@ -150,7 +151,7 @@ public abstract class Protocol<Element> {
     protected List<OnmsIpInterface> createIpInterfaces(List<OnmsSnmpInterface> snmps) {
         ArrayList<OnmsIpInterface> interfaces = new ArrayList<>();
         InetAddressGenerator inetGenerator = new InetAddressGenerator();
-        for(int i=0; i<this.amountIpInterfaces; i++){
+        for (int i = 0; i < this.amountIpInterfaces; i++) {
             interfaces.add(createIpInterface(i, random.getRandom(snmps), inetGenerator.next()));
         }
         return interfaces;
@@ -167,16 +168,15 @@ public abstract class Protocol<Element> {
     }
 
 
-
-    protected <E> PairGenerator<E> createPairGenerator(List<E> elements){
-        if(TopologyGenerator.Topology.complete == topology){
+    protected <E> PairGenerator<E> createPairGenerator(List<E> elements) {
+        if (TopologyGenerator.Topology.complete == topology) {
             return new UndirectedPairGenerator<>(elements);
-        } else if(TopologyGenerator.Topology.ring == topology) {
+        } else if (TopologyGenerator.Topology.ring == topology) {
             return new LinkedPairGenerator<>(elements);
-        } else if (TopologyGenerator.Topology.random == topology){
+        } else if (TopologyGenerator.Topology.random == topology) {
             return new RandomConnectedPairGenerator<>(elements);
         } else {
-            throw new IllegalArgumentException("unknown topology: "+ topology);
+            throw new IllegalArgumentException("unknown topology: " + topology);
         }
     }
 }

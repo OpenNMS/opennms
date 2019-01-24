@@ -554,12 +554,4 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         return null;
     }
 
-    @Override
-    public void deleteAll() {
-        // We need a specific implementation here since OnmsDao consists of 2 tables and the standard delete implementation
-        // doesn't seem to work...
-        List<OnmsNode> nodes = findAll();
-        deleteAll(nodes);
-    }
-
 }

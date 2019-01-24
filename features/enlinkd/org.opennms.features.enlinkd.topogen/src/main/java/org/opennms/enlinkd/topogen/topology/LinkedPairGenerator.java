@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,9 +29,10 @@
 package org.opennms.enlinkd.topogen.topology;
 
 import java.util.List;
+
 import org.apache.commons.lang3.tuple.Pair;
 
-public class LinkedPairGenerator<E> implements PairGenerator<E>{
+public class LinkedPairGenerator<E> implements PairGenerator<E> {
 
     private final List<E> elements;
     private final int lastIndexInList;
@@ -39,13 +40,13 @@ public class LinkedPairGenerator<E> implements PairGenerator<E>{
     private int indexRight = 0;
 
     @Override
-    public Pair<E, E> next(){
+    public Pair<E, E> next() {
         compute();
         return Pair.of(elements.get(indexLeft), elements.get(indexRight));
     }
 
-    public LinkedPairGenerator(List<E> elements){
-        if(elements == null || elements.size()<2){
+    public LinkedPairGenerator(List<E> elements) {
+        if (elements == null || elements.size() < 2) {
             throw new IllegalArgumentException("Need at least 2 elements in list to make a pair");
         }
         this.elements = elements;
@@ -58,8 +59,8 @@ public class LinkedPairGenerator<E> implements PairGenerator<E>{
         indexRight = next(indexRight);
     }
 
-    private int next(int i){
-        if(i==lastIndexInList){
+    private int next(int i) {
+        if (i == lastIndexInList) {
             return 0;
         }
         return ++i;

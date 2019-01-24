@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,33 +31,36 @@ package org.opennms.enlinkd.topogen.topology;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+
 import org.apache.commons.lang3.tuple.Pair;
 
-/** pairs elements randomly but not the same element to itself */
-public class RandomConnectedPairGenerator<E> implements PairGenerator<E>{
+/**
+ * pairs elements randomly but not the same element to itself
+ */
+public class RandomConnectedPairGenerator<E> implements PairGenerator<E> {
     private final List<E> elements;
     private Random random = new Random(42);
 
-    public RandomConnectedPairGenerator(List<E> elements){
-        if(elements == null || elements.size()<2){
+    public RandomConnectedPairGenerator(List<E> elements) {
+        if (elements == null || elements.size() < 2) {
             throw new IllegalArgumentException("Need at least 2 elements in list to make a pair");
         }
-        if(new HashSet<>(elements).size() < elements.size()){
+        if (new HashSet<>(elements).size() < elements.size()) {
             throw new IllegalArgumentException("List contains at least one duplicate");
         }
         this.elements = elements;
     }
 
     @Override
-    public Pair<E, E> next(){
+    public Pair<E, E> next() {
         E leftElement = getRandomElement(elements);
         E rightElement = getRandomElementButNotSame(elements, leftElement);
         return Pair.of(leftElement, rightElement);
     }
 
-    private E getRandomElementButNotSame(List<E> elements,  E notSame){
+    private E getRandomElementButNotSame(List<E> elements, E notSame) {
         E value = getRandomElement(elements);
-        while (value.equals(notSame)){
+        while (value.equals(notSame)) {
             value = getRandomElement(elements);
         }
         return value;

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.enlinkd.topogen.TopologyGenerator;
 import org.opennms.enlinkd.topogen.TopologyPersister;
@@ -50,14 +51,14 @@ public class OspfProtocol extends Protocol<OspfElement> {
     private InetAddressGenerator inetAddressCreator = new InetAddressGenerator();
 
     public OspfProtocol(TopologyGenerator.Topology topology, int amountNodes, int amountLinks,
-                        int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersister persister){
+                        int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersister persister) {
         super(topology, amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, persister);
     }
 
     @Override
     public void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) throws SQLException {
         List<OspfLink> links = createLinks(nodes);
-        persister.persistOspfLinks(links);
+        persister.persist(links);
     }
 
     private List<OspfLink> createLinks(List<OnmsNode> nodes) {
@@ -102,7 +103,6 @@ public class OspfProtocol extends Protocol<OspfElement> {
         link.setOspfRemRouterId(this.inetAddressCreator.next());
         link.setOspfRemAddressLessIndex(3);
         link.setOspfLinkLastPollTime(new Date());
-
 
 
         return link;

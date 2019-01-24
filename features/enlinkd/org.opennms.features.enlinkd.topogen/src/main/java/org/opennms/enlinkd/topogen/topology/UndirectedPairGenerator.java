@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,10 +29,13 @@
 package org.opennms.enlinkd.topogen.topology;
 
 import java.util.List;
+
 import org.apache.commons.lang3.tuple.Pair;
 
-/* Takes a list and generates pairs among its emelents. It tries to distribute the pairs equally as in as least same
-/* pairs as possible. Pair(a,b) counts as equal to Pair(b,a)  */
+/**
+ * Takes a list and generates pairs among its emelents. It tries to distribute the pairs equally as in as least same
+ * pairs as possible. Pair(a,b) counts as equal to Pair(b,a)
+ */
 public class UndirectedPairGenerator<E> implements PairGenerator<E> {
 
     private final List<E> elements;
@@ -41,47 +44,47 @@ public class UndirectedPairGenerator<E> implements PairGenerator<E> {
     private int indexRight = 0;
 
     @Override
-    public Pair<E, E> next(){
+    public Pair<E, E> next() {
         computeIndexForUnique();
         return Pair.of(elements.get(indexLeft), elements.get(indexRight));
     }
 
-    public UndirectedPairGenerator(List<E> elements){
-        if(elements == null || elements.size()<2){
+    public UndirectedPairGenerator(List<E> elements) {
+        if (elements == null || elements.size() < 2) {
             throw new IllegalArgumentException("Need at least 2 elements in list to make a pair");
         }
         this.elements = elements;
         lastIndexInList = elements.size() - 1;
     }
 
-    private void computeIndexForUnique(){
+    private void computeIndexForUnique() {
         computeIndex();
-        while(indexLeft >= indexRight) {
+        while (indexLeft >= indexRight) {
             computeIndex(); // jump over doubles
         }
     }
 
     private void computeIndex() {
-        if(indexLeft == lastIndexInList && this.indexRight == lastIndexInList-1){
+        if (indexLeft == lastIndexInList && this.indexRight == lastIndexInList - 1) {
             // start from beginning
             this.indexLeft = 0;
             this.indexRight = 0;
-        } else if(this.indexRight == lastIndexInList){
+        } else if (this.indexRight == lastIndexInList) {
             this.indexLeft = next(this.indexLeft);
         }
         this.indexRight = nextButNotSame(this.indexRight, this.indexLeft);
     }
 
-    private int nextButNotSame(int current, int notSame){
+    private int nextButNotSame(int current, int notSame) {
         int value = next(current);
-        if(value == notSame){
+        if (value == notSame) {
             value = next(value);
         }
         return value;
     }
 
-    private int next(int i){
-        if(i==lastIndexInList){
+    private int next(int i) {
+        if (i == lastIndexInList) {
             return 0;
         }
         return ++i;

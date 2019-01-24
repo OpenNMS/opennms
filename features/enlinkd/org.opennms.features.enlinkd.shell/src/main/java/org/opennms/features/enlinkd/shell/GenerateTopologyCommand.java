@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,17 +38,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.enlinkd.topogen.TopologyGenerator;
 import org.opennms.enlinkd.topogen.TopologyPersister;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
-import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
-import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
-import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
-import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
-import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
-import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
-import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
+import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 
 @Command(scope="enlinkd", name="generate-topology", description="Creates a linkd topology")
 @Service
@@ -79,37 +69,7 @@ public class GenerateTopologyCommand implements Action {
     private Boolean deleteExistingTolology;
 
     @Reference
-    private NodeDao nodeDao;
-
-    @Reference
-    private CdpElementDao cdpElementDao;
-
-    @Reference
-    private IsIsElementDao isIsElementDao;
-
-    @Reference
-    private LldpElementDao lldpElementDao;
-
-    @Reference
-    private OspfElementDao ospfElementDao;
-
-    @Reference
-    private CdpLinkDao cdpLinkDao;
-
-    @Reference
-    private IsIsLinkDao isIsLinkDao;
-
-    @Reference
-    private LldpLinkDao lldpLinkDao;
-
-    @Reference
-    private OspfLinkDao ospfLinkDao;
-
-    @Reference
-    private IpInterfaceDao ipInterfaceDao;
-
-    @Reference
-    private SnmpInterfaceDao snmpInterfaceDao;
+    private GenericPersistenceAccessor genericPersistenceAccessor;
 
     private void invokeGenerator() throws SQLException, IOException {
         TopologyGenerator generator = TopologyGenerator.builder()
@@ -122,25 +82,11 @@ public class GenerateTopologyCommand implements Action {
             .deleteExistingTolology(this.deleteExistingTolology)
             .protocol(toEnumOrNull(TopologyGenerator.Protocol.class, this.protocol))
             .topology(toEnumOrNull(TopologyGenerator.Topology.class, this.topology))
-            .persister(createTopologyPersisterDao())
+            .persister(new TopologyPersister(genericPersistenceAccessor))
             .build();
         generator.generateTopology();
     }
 
-    private TopologyPersister createTopologyPersisterDao() throws IOException {
-        return TopologyPersister.builder()
-                .nodeDao(nodeDao)
-                .cdpElementDao(cdpElementDao)
-                .isIsElementDao(isIsElementDao)
-                .lldpElementDao(lldpElementDao)
-                .cdpLinkDao(cdpLinkDao)
-                .isIsLinkDao(isIsLinkDao)
-                .lldpLinkDao(lldpLinkDao)
-                .ospfLinkDao(ospfLinkDao)
-                .ipInterfaceDao(ipInterfaceDao)
-                .snmpInterfaceDao(snmpInterfaceDao)
-                .build();
-    }
 
     private <E extends Enum> E toEnumOrNull(Class<E> enumClass, String s ) {
         return s == null ? null : (E) Enum.valueOf(enumClass, s);

@@ -33,7 +33,7 @@ import static org.junit.Assert.fail;
 public class Asserts {
 
     /**
-     * Tests if the given Runnable threw the expected Exception.
+     * Tests if the given Runnable threw the expected Throwable.
      */
     public static <T extends Throwable> void assertThrows(Class<T> expectedType, Runnable runnable) {
         try {

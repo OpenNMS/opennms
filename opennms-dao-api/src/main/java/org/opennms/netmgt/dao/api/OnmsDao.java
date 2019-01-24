@@ -57,13 +57,6 @@ public interface OnmsDao<T, K extends Serializable> {
 
     void delete(K key);
 
-    /**
-     * Deletes all entities of this type - use with care!
-     */
-    default void deleteAll(){
-      throw new UnsupportedOperationException("Not implemented yet");
-    }
-
     List<T> findAll();
     
     List<T> findMatching(Criteria criteria);

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,7 +47,7 @@ public class UndirectedPairGeneratorTest {
     }
 
     @Test
-    public void shouldProduceASequenceOfUniquePairs(){
+    public void shouldProduceASequenceOfUniquePairs() {
         List<String> list = Arrays.asList("1", "2", "3", "4", "5");
         UndirectedPairGenerator gen = new UndirectedPairGenerator<>(list);
         assertEquals(Pair.of("1", "2"), gen.next());
