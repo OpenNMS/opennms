@@ -43,13 +43,10 @@ import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TopologyPersister {
 
     private final static int BATCH_SIZE = 100;
-    private final static Logger LOG = LoggerFactory.getLogger(TopologyPersister.class);
 
     private GenericPersistenceAccessor genericPersistenceAccessor;
     private TopologyGenerator.ProgressCallback progressCallback;
@@ -64,18 +61,18 @@ public class TopologyPersister {
         if (elements.size() < 1) {
             return; // nothing do do
         }
-        progressCallback.currentProgress("starting to insert %s %ss", elements.size(), elements.get(0).getClass().getSimpleName());
+        progressCallback.currentProgress("  Inserting %s %ss:", elements.size(), elements.get(0).getClass().getSimpleName());
 
         for (int startBatch = 0; startBatch < elements.size(); startBatch = startBatch + BATCH_SIZE) {
             int endBatch = Math.min(startBatch + BATCH_SIZE, elements.size());
             List<E> batch = elements.subList(startBatch, endBatch);
             this.genericPersistenceAccessor.saveAll(batch);
-            progressCallback.currentProgress("inserting %s of %s %ss done.", endBatch, elements.size(), elements.get(0).getClass().getSimpleName());
+            progressCallback.currentProgress("    Inserting %s of %s %ss done.", endBatch, elements.size(), elements.get(0).getClass().getSimpleName());
         }
     }
 
     public void deleteTopology() throws SQLException {
-        progressCallback.currentProgress("deleting existing topology");
+        progressCallback.currentProgress("Deleting existing topology: ");
         // we need to delete in this order to avoid foreign key conflicts:
         List<Class<?>> deleteOperations = Arrays.asList(
                 CdpLink.class,
@@ -90,10 +87,10 @@ public class TopologyPersister {
 
         for (Class<?> clazz : deleteOperations) {
             this.genericPersistenceAccessor.deleteAll(clazz);
-            progressCallback.currentProgress("%ss deleted", clazz.getSimpleName());
+            progressCallback.currentProgress("  %ss deleted.", clazz.getSimpleName());
         }
         deleteNodes();
-        progressCallback.currentProgress("OnmsNodes deleted");
+        progressCallback.currentProgress("  OnmsNodes deleted.");
     }
 
     private void deleteNodes() {

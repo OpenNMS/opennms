@@ -97,7 +97,7 @@ public class GenerateTopologyCommand implements Action {
                 .build();
         generator.generateTopology();
     }
-    
+
     private <E extends Enum> E toEnumOrNull(Class<E> enumClass, String s) {
         return s == null ? null : (E) Enum.valueOf(enumClass, s);
     }

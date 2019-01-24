@@ -115,9 +115,9 @@ public class TopologyGenerator {
     }
 
     public void generateTopology() throws SQLException {
-        topologyContext.currentProgress("Creating a topology with the following settings: amountNodes=%s,"
-                        + "amountElements=%s, amountLinks=%s, amountSnmpInterfaces=%s, amountIpInterfaces=%s,"
-                        + "topology=%s, protocol=%s, deleteExistingTolology=%s", this.amountNodes, this.amountElements,
+        topologyContext.currentProgress("Generating a topology with the following settings:%n  amountNodes=%s,"
+                        + "%n  amountElements=%s,%n  amountLinks=%s,%n  amountSnmpInterfaces=%s,%n  amountIpInterfaces=%s,"
+                        + "%n  topology=%s,%n  protocol=%s,%n  deleteExistingTolology=%s", this.amountNodes, this.amountElements,
                 this.amountLinks, this.amountSnmpInterfaces, this.amountIpInterfaces, this.topology, this.protocol,
                 this.deleteExistingTolology);
 

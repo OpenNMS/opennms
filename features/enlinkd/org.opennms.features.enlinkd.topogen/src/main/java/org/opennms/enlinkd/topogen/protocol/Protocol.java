@@ -76,7 +76,7 @@ public abstract class Protocol<Element> {
     }
 
     public void createAndPersistNetwork() throws SQLException {
-        this.context.currentProgress("creating %s %s topology with %s Nodes, %s Elements, %s Links, %s SnmpInterfaces, %s IpInterfaces.",
+        this.context.currentProgress("Creating %s %s topology with %s Nodes, %s Elements, %s Links, %s SnmpInterfaces, %s IpInterfaces:",
                 this.topology,
                 this.getProtocol(),
                 this.amountNodes,
