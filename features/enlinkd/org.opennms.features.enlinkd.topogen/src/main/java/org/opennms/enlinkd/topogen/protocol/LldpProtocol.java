@@ -36,8 +36,8 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.core.utils.LldpUtils;
+import org.opennms.enlinkd.topogen.TopologyContext;
 import org.opennms.enlinkd.topogen.TopologyGenerator;
-import org.opennms.enlinkd.topogen.TopologyPersister;
 import org.opennms.enlinkd.topogen.topology.PairGenerator;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
@@ -50,16 +50,16 @@ public class LldpProtocol extends Protocol<LldpElement> {
     private TopologyGenerator.Protocol protocol = TopologyGenerator.Protocol.lldp;
 
     public LldpProtocol(TopologyGenerator.Topology topology, int amountNodes, int amountLinks,
-                        int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersister persister) {
-        super(topology, amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, persister);
+                        int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyContext context) {
+        super(topology, amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, context);
     }
 
     @Override
     public void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) throws SQLException {
         List<LldpElement> elements = createElements(nodes);
-        persister.persist(elements);
+        context.getTopologyPersister().persist(elements);
         List<LldpLink> links = createLinks(elements);
-        persister.persist(links);
+        context.getTopologyPersister().persist(links);
     }
 
     private List<LldpElement> createElements(List<OnmsNode> nodes) {

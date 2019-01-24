@@ -35,8 +35,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.opennms.enlinkd.topogen.TopologyContext;
 import org.opennms.enlinkd.topogen.TopologyGenerator;
-import org.opennms.enlinkd.topogen.TopologyPersister;
 import org.opennms.enlinkd.topogen.topology.PairGenerator;
 import org.opennms.enlinkd.topogen.util.InetAddressGenerator;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
@@ -51,14 +51,14 @@ public class OspfProtocol extends Protocol<OspfElement> {
     private InetAddressGenerator inetAddressCreator = new InetAddressGenerator();
 
     public OspfProtocol(TopologyGenerator.Topology topology, int amountNodes, int amountLinks,
-                        int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersister persister) {
-        super(topology, amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, persister);
+                        int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyContext context) {
+        super(topology, amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, context);
     }
 
     @Override
     public void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) throws SQLException {
         List<OspfLink> links = createLinks(nodes);
-        persister.persist(links);
+        context.getTopologyPersister().persist(links);
     }
 
     private List<OspfLink> createLinks(List<OnmsNode> nodes) {
@@ -85,7 +85,7 @@ public class OspfProtocol extends Protocol<OspfElement> {
                     ospfIpAddr
             );
             links.add(targetLink);
-            LOG.debug("Linked node {} with node {}", sourceNode.getLabel(), targetNode.getLabel());
+            context.currentProgress(String.format("Linked node %s with node %s", sourceNode.getLabel(), targetNode.getLabel()));
         }
         return links;
     }

@@ -35,8 +35,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.opennms.enlinkd.topogen.TopologyContext;
 import org.opennms.enlinkd.topogen.TopologyGenerator;
-import org.opennms.enlinkd.topogen.TopologyPersister;
 import org.opennms.enlinkd.topogen.topology.PairGenerator;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
@@ -50,16 +50,16 @@ public class CdpProtocol extends Protocol<CdpElement> {
     private TopologyGenerator.Protocol protocol = TopologyGenerator.Protocol.cdp;
 
     public CdpProtocol(TopologyGenerator.Topology topology, int amountNodes, int amountLinks,
-                       int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersister persister) {
-        super(topology, amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, persister);
+                       int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyContext context) {
+        super(topology, amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, context);
     }
 
     @Override
     public void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) throws SQLException {
         List<CdpElement> cdpElements = createCdpElements(nodes);
-        persister.persist(cdpElements);
+        context.getTopologyPersister().persist(cdpElements);
         List<CdpLink> links = createCdpLinks(cdpElements);
-        persister.persist(links);
+        context.getTopologyPersister().persist(links);
     }
 
     private List<CdpElement> createCdpElements(List<OnmsNode> nodes) {

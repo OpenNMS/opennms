@@ -34,9 +34,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.enlinkd.topogen.TopologyContext;
 import org.opennms.enlinkd.topogen.TopologyGenerator;
 import org.opennms.enlinkd.topogen.TopologyGenerator.Topology;
-import org.opennms.enlinkd.topogen.TopologyPersister;
 import org.opennms.enlinkd.topogen.topology.LinkedPairGenerator;
 import org.opennms.enlinkd.topogen.topology.PairGenerator;
 import org.opennms.enlinkd.topogen.topology.RandomConnectedPairGenerator;
@@ -61,22 +61,22 @@ public abstract class Protocol<Element> {
     final int amountElements;
     final int amountSnmpInterfaces;
     final int amountIpInterfaces;
-    final TopologyPersister persister;
+    final TopologyContext context;
     private final RandomUtil random = new RandomUtil();
 
     public Protocol(Topology topology, int amountNodes, int amountLinks, int amountElements,
-                    int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersister persister) {
+                    int amountSnmpInterfaces, int amountIpInterfaces, TopologyContext context) {
         this.topology = topology;
         this.amountNodes = amountNodes;
         this.amountLinks = amountLinks;
         this.amountElements = amountElements;
         this.amountSnmpInterfaces = amountSnmpInterfaces;
         this.amountIpInterfaces = amountIpInterfaces;
-        this.persister = persister;
+        this.context = context;
     }
 
     public void createAndPersistNetwork() throws SQLException {
-        LOG.info("creating {} {} topology with {} Nodes, {} Elements, {} Links, {} SnmpInterfaces, {} IpInterfaces.",
+        this.context.currentProgress("creating %s %s topology with %s Nodes, %s Elements, %s Links, %s SnmpInterfaces, %s IpInterfaces.",
                 this.topology,
                 this.getProtocol(),
                 this.amountNodes,
@@ -85,14 +85,14 @@ public abstract class Protocol<Element> {
                 this.amountSnmpInterfaces,
                 this.amountIpInterfaces);
         List<OnmsNode> nodes = createNodes(amountNodes);
-        persister.persist(nodes);
+        context.getTopologyPersister().persist(nodes);
 
         createAndPersistProtocolSpecificEntities(nodes);
 
         List<OnmsSnmpInterface> snmpInterfaces = createSnmpInterfaces(nodes);
-        persister.persist(snmpInterfaces);
+        context.getTopologyPersister().persist(snmpInterfaces);
         List<OnmsIpInterface> ipInterfaces = createIpInterfaces(snmpInterfaces);
-        persister.persist(ipInterfaces);
+        context.getTopologyPersister().persist(ipInterfaces);
     }
 
     protected abstract void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) throws SQLException;

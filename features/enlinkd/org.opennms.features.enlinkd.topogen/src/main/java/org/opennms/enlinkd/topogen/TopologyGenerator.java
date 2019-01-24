@@ -63,7 +63,7 @@ public class TopologyGenerator {
         cdp, isis, lldp, ospf
     }
 
-    private TopologyPersister persister;
+    private TopologyContext topologyContext;
 
     private final Integer amountNodes;
 
@@ -83,6 +83,7 @@ public class TopologyGenerator {
 
     private TopologyGenerator(
             TopologyPersister persister,
+            ProgressCallback progressCallback,
             Integer amountNodes,
             Integer amountElements,
             Integer amountLinks,
@@ -92,7 +93,7 @@ public class TopologyGenerator {
             Protocol protocol,
             Boolean deleteExistingTolology
     ) {
-        this.persister = persister;
+        this.topologyContext = new TopologyContext(progressCallback, persister);
         this.amountNodes = setToDefaultIfNotSet(amountNodes, 10);
         this.amountElements = setToDefaultIfNotSet(amountElements, this.amountNodes);
         this.amountLinks = setToDefaultIfNotSet(amountLinks, this.amountElements);
@@ -114,15 +115,14 @@ public class TopologyGenerator {
     }
 
     public void generateTopology() throws SQLException {
-        String msg = String.format("Creating a topology with the following settings: amountNodes=%s,"
+        topologyContext.currentProgress("Creating a topology with the following settings: amountNodes=%s,"
                         + "amountElements=%s, amountLinks=%s, amountSnmpInterfaces=%s, amountIpInterfaces=%s,"
                         + "topology=%s, protocol=%s, deleteExistingTolology=%s", this.amountNodes, this.amountElements,
                 this.amountLinks, this.amountSnmpInterfaces, this.amountIpInterfaces, this.topology, this.protocol,
                 this.deleteExistingTolology);
-        LOG.info(msg);
 
         if (deleteExistingTolology) {
-            this.persister.deleteTopology();
+            this.topologyContext.getTopologyPersister().deleteTopology();
         }
         getProtocol().createAndPersistNetwork();
     }
@@ -130,16 +130,16 @@ public class TopologyGenerator {
     private org.opennms.enlinkd.topogen.protocol.Protocol getProtocol() {
         if (Protocol.cdp == this.protocol) {
             return new CdpProtocol(this.topology,
-                    amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, persister);
+                    amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, topologyContext);
         } else if (Protocol.isis == this.protocol) {
             return new IsIsProtocol(this.topology,
-                    amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, persister);
+                    amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, topologyContext);
         } else if (Protocol.lldp == this.protocol) {
             return new LldpProtocol(this.topology,
-                    amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, persister);
+                    amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, topologyContext);
         } else if (Protocol.ospf == this.protocol) {
             return new OspfProtocol(this.topology,
-                    amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, persister);
+                    amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, topologyContext);
         } else {
             throw new IllegalArgumentException("Don't know this protocol: " + this.protocol);
         }
@@ -154,6 +154,7 @@ public class TopologyGenerator {
     public static class TopologyGeneratorBuilder {
 
         private TopologyPersister persister;
+        private ProgressCallback progressCallback;
         private Integer amountNodes;
         private Integer amountElements;
         private Integer amountLinks;
@@ -206,6 +207,11 @@ public class TopologyGenerator {
             return this;
         }
 
+        public TopologyGeneratorBuilder progressCallback(ProgressCallback progressCallback) {
+            this.progressCallback = progressCallback;
+            return this;
+        }
+
         public TopologyGeneratorBuilder deleteExistingTolology(
                 Boolean deleteExistingTolology) {
             this.deleteExistingTolology = deleteExistingTolology;
@@ -213,8 +219,28 @@ public class TopologyGenerator {
         }
 
         public TopologyGenerator build() {
-            return new TopologyGenerator(persister, amountNodes, amountElements, amountLinks,
+            if(progressCallback == null){
+                progressCallback = new ProgressCallback() {
+                    // Default: log the progress
+                    private Logger log = LoggerFactory.getLogger(TopologyGenerator.class);
+                    @Override
+                    public void currentProgress(String progress) {
+                        log.info(progress);
+                    }
+                };
+            }
+            return new TopologyGenerator(persister, progressCallback, amountNodes, amountElements, amountLinks,
                     amountSnmpInterfaces, amountIpInterfaces, topology, protocol, deleteExistingTolology);
+        }
+    }
+
+    /** Used to record the current progress of the generation. */
+    public abstract static class ProgressCallback {
+
+        public abstract void currentProgress(String progress);
+
+        void currentProgress(String progress, Object ... args) {
+            currentProgress(String.format(progress, args));
         }
     }
 }

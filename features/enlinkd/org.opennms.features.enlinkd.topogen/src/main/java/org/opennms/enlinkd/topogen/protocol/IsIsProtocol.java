@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.opennms.enlinkd.topogen.TopologyContext;
 import org.opennms.enlinkd.topogen.TopologyGenerator;
 import org.opennms.enlinkd.topogen.TopologyPersister;
 import org.opennms.enlinkd.topogen.topology.PairGenerator;
@@ -48,16 +49,16 @@ public class IsIsProtocol extends Protocol<IsIsElement> {
     private TopologyGenerator.Protocol protocol = TopologyGenerator.Protocol.isis;
 
     public IsIsProtocol(TopologyGenerator.Topology topology, int amountNodes, int amountLinks,
-                        int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersister persister) {
-        super(topology, amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, persister);
+                        int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyContext context) {
+        super(topology, amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, context);
     }
 
     @Override
     public void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) throws SQLException {
         List<IsIsElement> elements = createElements(nodes);
-        persister.persist(elements);
+        context.getTopologyPersister().persist(elements);
         List<IsIsLink> links = createLinks(elements);
-        persister.persist(links);
+        context.getTopologyPersister().persist(links);
     }
 
     private List<IsIsElement> createElements(List<OnmsNode> nodes) {

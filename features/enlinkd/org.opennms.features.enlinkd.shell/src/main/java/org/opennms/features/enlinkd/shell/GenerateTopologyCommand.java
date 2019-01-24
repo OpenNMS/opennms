@@ -40,59 +40,71 @@ import org.opennms.enlinkd.topogen.TopologyGenerator;
 import org.opennms.enlinkd.topogen.TopologyPersister;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 
-@Command(scope="enlinkd", name="generate-topology", description="Creates a linkd topology")
+@Command(scope = "enlinkd", name = "generate-topology", description = "Creates a linkd topology")
 @Service
 public class GenerateTopologyCommand implements Action {
 
-    @Option(name="--nodes", description="generate <N> OmnsNodes.")
+    @Option(name = "--nodes", description = "generate <N> OmnsNodes.")
     private Integer amountNodes;
 
-    @Option(name="--elements", description="generate <N> CdpElements")
+    @Option(name = "--elements", description = "generate <N> CdpElements")
     private Integer amountElements;
 
-    @Option(name="--links", description="generate <N> CdpLinks")
+    @Option(name = "--links", description = "generate <N> CdpLinks")
     private Integer amountLinks;
 
-    @Option(name="--snmpinterfaces", description="generate <N> SnmpInterfaces but not more than amount nodes")
+    @Option(name = "--snmpinterfaces", description = "generate <N> SnmpInterfaces but not more than amount nodes")
     private Integer amountSnmpInterfaces;
 
-    @Option(name="--ipinterfaces", description="generate <N> IpInterfaces but not more than amount snmp interfaces")
+    @Option(name = "--ipinterfaces", description = "generate <N> IpInterfaces but not more than amount snmp interfaces")
     private Integer amountIpInterfaces;
 
-    @Option(name="--topology", description="type of topology (complete | ring | random)")
+    @Option(name = "--topology", description = "type of topology (complete | ring | random)")
     private String topology;
 
-    @Option(name="--protocol", description="type of protocol (cdp | isis | lldp | ospf)")
+    @Option(name = "--protocol", description = "type of protocol (cdp | isis | lldp | ospf)")
     private String protocol;
 
-    @Option(name="--delete", description = "delete existing toplogogy (all OnmsNodes, CdpElements and CdpLinks)")
+    @Option(name = "--delete", description = "delete existing toplogogy (all OnmsNodes, CdpElements and CdpLinks)")
     private Boolean deleteExistingTolology;
 
     @Reference
     private GenericPersistenceAccessor genericPersistenceAccessor;
 
     private void invokeGenerator() throws SQLException, IOException {
+
+        // We print directly to the system out so it will appear in the console
+        TopologyGenerator.ProgressCallback progressCallback = new TopologyGenerator.ProgressCallback(){
+
+            @Override
+            public void currentProgress(String progress) {
+                System.out.println(progress);
+            }
+        };
+
         TopologyGenerator generator = TopologyGenerator.builder()
-            .amountElements(this.amountElements)
-            .amountIpInterfaces(this.amountIpInterfaces)
-            .amountLinks(this.amountLinks)
-            .amountNodes(this.amountNodes)
-            .amountElements(this.amountElements)
-            .amountSnmpInterfaces(amountSnmpInterfaces)
-            .deleteExistingTolology(this.deleteExistingTolology)
-            .protocol(toEnumOrNull(TopologyGenerator.Protocol.class, this.protocol))
-            .topology(toEnumOrNull(TopologyGenerator.Topology.class, this.topology))
-            .persister(new TopologyPersister(genericPersistenceAccessor))
-            .build();
+                .amountElements(this.amountElements)
+                .amountIpInterfaces(this.amountIpInterfaces)
+                .amountLinks(this.amountLinks)
+                .amountNodes(this.amountNodes)
+                .amountElements(this.amountElements)
+                .amountSnmpInterfaces(amountSnmpInterfaces)
+                .deleteExistingTolology(this.deleteExistingTolology)
+                .protocol(toEnumOrNull(TopologyGenerator.Protocol.class, this.protocol))
+                .topology(toEnumOrNull(TopologyGenerator.Topology.class, this.topology))
+                .persister(new TopologyPersister(genericPersistenceAccessor, progressCallback))
+                .progressCallback(progressCallback)
+                .build();
         generator.generateTopology();
     }
-
-
-    private <E extends Enum> E toEnumOrNull(Class<E> enumClass, String s ) {
+    
+    private <E extends Enum> E toEnumOrNull(Class<E> enumClass, String s) {
         return s == null ? null : (E) Enum.valueOf(enumClass, s);
     }
 
-    /** Execute via Karaf. */
+    /**
+     * Execute via Karaf.
+     */
     @Override
     public Object execute() throws Exception {
         invokeGenerator();

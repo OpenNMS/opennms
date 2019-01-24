@@ -52,27 +52,30 @@ public class TopologyPersister {
     private final static Logger LOG = LoggerFactory.getLogger(TopologyPersister.class);
 
     private GenericPersistenceAccessor genericPersistenceAccessor;
+    private TopologyGenerator.ProgressCallback progressCallback;
 
-    public TopologyPersister(final GenericPersistenceAccessor genericPersistenceAccessor) {
+    public TopologyPersister(final GenericPersistenceAccessor genericPersistenceAccessor,
+                             TopologyGenerator.ProgressCallback progressCallback) {
         this.genericPersistenceAccessor = genericPersistenceAccessor;
+        this.progressCallback = progressCallback;
     }
 
-    public <E> void persist(List<E> elements) throws SQLException {
+    public <E> void persist(List<E> elements) {
         if (elements.size() < 1) {
             return; // nothing do do
         }
-        LOG.info("starting to insert {} {}s", elements.size(), elements.get(0).getClass().getSimpleName());
+        progressCallback.currentProgress("starting to insert %s %ss", elements.size(), elements.get(0).getClass().getSimpleName());
 
         for (int startBatch = 0; startBatch < elements.size(); startBatch = startBatch + BATCH_SIZE) {
-            int endBatch = Math.min(startBatch + 1 + BATCH_SIZE, elements.size());
+            int endBatch = Math.min(startBatch + BATCH_SIZE, elements.size());
             List<E> batch = elements.subList(startBatch, endBatch);
             this.genericPersistenceAccessor.saveAll(batch);
-            LOG.info("inserting {} of {} {}s done.", endBatch, elements.size(), elements.get(0).getClass().getSimpleName());
+            progressCallback.currentProgress("inserting %s of %s %ss done.", endBatch, elements.size(), elements.get(0).getClass().getSimpleName());
         }
     }
 
     public void deleteTopology() throws SQLException {
-        LOG.info("deleting existing topology");
+        progressCallback.currentProgress("deleting existing topology");
         // we need to delete in this order to avoid foreign key conflicts:
         List<Class<?>> deleteOperations = Arrays.asList(
                 CdpLink.class,
@@ -87,12 +90,13 @@ public class TopologyPersister {
 
         for (Class<?> clazz : deleteOperations) {
             this.genericPersistenceAccessor.deleteAll(clazz);
-            LOG.info("{}s deleted", clazz.getSimpleName());
+            progressCallback.currentProgress("%ss deleted", clazz.getSimpleName());
         }
         deleteNodes();
+        progressCallback.currentProgress("OnmsNodes deleted");
     }
 
-    public void deleteNodes() {
+    private void deleteNodes() {
         // We need a specific implementation here since OnmsNode consists of 2 tables and the standard delete implementation
         // doesn't seem to work...
         List<OnmsNode> allNodes = this.genericPersistenceAccessor.findAll(OnmsNode.class);
