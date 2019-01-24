@@ -55,16 +55,14 @@ public abstract class Protocol<Element> {
     private final static Logger LOG = LoggerFactory.getLogger(CdpProtocol.class);
 
     protected final Topology topology;
-    protected final int amountNodes;
-    protected final int amountLinks;
-    protected final int amountElements;
+    private final int amountNodes;
+    private final int amountLinks;
+    private final int amountElements;
     private final int amountSnmpInterfaces;
     private final int amountIpInterfaces;
-    protected final TopologyPersister persister;
-    protected final RandomUtil random = new RandomUtil();
+    private final TopologyPersister persister;
+    private final RandomUtil random = new RandomUtil();
 
-    @java.beans.ConstructorProperties({"topology", "amountNodes", "amountLinks", "amountElements",
-        "amountSnmpInterfaces", "amountIpInterfaces", "persister"})
     public Protocol(Topology topology, int amountNodes, int amountLinks, int amountElements,
         int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersister persister) {
         this.topology = topology;
@@ -77,14 +75,14 @@ public abstract class Protocol<Element> {
     }
 
     public void createAndPersistNetwork() throws SQLException {
-        LOG.info("creating {} {} topology with {} {}, {} {}, {} {}, {} {}, {} {}.",
+        LOG.info("creating {} {} topology with {} Nodes, {} Elements, {} Links, {} SnmpInterfaces, {} IpInterfaces.",
                 this.topology,
                 this.getProtocol(),
-                this.amountNodes, "Nodes" ,
-                this.amountElements, "Elements",
-                this.amountLinks, "Links",
-                this.amountSnmpInterfaces, "SnmpInterfaces",
-                this.amountIpInterfaces, "IpInterfaces");
+                this.amountNodes,
+                this.amountElements,
+                this.amountLinks,
+                this.amountSnmpInterfaces,
+                this.amountIpInterfaces);
         List<OnmsNode> nodes = createNodes(amountNodes);
         persister.persistNodes(nodes);
 

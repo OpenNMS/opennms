@@ -215,14 +215,5 @@ public class TopologyGenerator {
       return new TopologyGenerator(persister, amountNodes, amountElements, amountLinks,
           amountSnmpInterfaces, amountIpInterfaces, topology, protocol, deleteExistingTolology);
     }
-
-    public String toString() {
-      return "TopologyGenerator.TopologyGeneratorBuilder(persister=" + this.persister
-          + ", amountNodes=" + this.amountNodes + ", amountElements=" + this.amountElements
-          + ", amountLinks=" + this.amountLinks + ", amountSnmpInterfaces="
-          + this.amountSnmpInterfaces + ", amountIpInterfaces=" + this.amountIpInterfaces
-          + ", topology=" + this.topology + ", protocol=" + this.protocol
-          + ", deleteExistingTolology=" + this.deleteExistingTolology + ")";
-    }
   }
 }

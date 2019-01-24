@@ -32,16 +32,18 @@ import static org.junit.Assert.fail;
 
 public class Asserts {
 
-  /* Taken from a newer jUnit Version */
-  public static <T extends Throwable> void assertThrows(Class<T> expectedType, Runnable executable) {
-    try {
-      executable.run();
-    } catch (Throwable t) {
-      if (expectedType.isInstance(t)) {
-        return; // all good
-      }
-      fail("Expected Exception " + expectedType.getName());
+    /**
+     * Tests if the given Runnable threw the expected Exception.
+     */
+    public static <T extends Throwable> void assertThrows(Class<T> expectedType, Runnable runnable) {
+        try {
+            runnable.run();
+        } catch (Throwable t) {
+            if (expectedType.isInstance(t)) {
+                return; // thrown Exception is of expected type
+            }
+            fail("Expected Exception " + expectedType.getName());
+        }
     }
-  }
 
 }

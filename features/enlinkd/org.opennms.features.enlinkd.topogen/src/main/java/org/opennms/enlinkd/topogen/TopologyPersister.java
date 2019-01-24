@@ -95,8 +95,8 @@ public class TopologyPersister {
         this.snmpInterfaceDao = snmpInterfaceDao;
     }
 
-    public static TopologyPersisterDaoBuilder builder() {
-        return new TopologyPersisterDaoBuilder();
+    public static TopologyPersisterBuilder builder() {
+        return new TopologyPersisterBuilder();
     }
 
     public void persistNodes(List<OnmsNode> nodes) throws SQLException {
@@ -174,7 +174,7 @@ public class TopologyPersister {
         }
     }
 
-    public static class TopologyPersisterDaoBuilder {
+    public static class TopologyPersisterBuilder {
         private NodeDao nodeDao;
         private CdpElementDao cdpElementDao;
         private IsIsElementDao isIsElementDao;
@@ -186,65 +186,61 @@ public class TopologyPersister {
         private IpInterfaceDao ipInterfaceDao;
         private SnmpInterfaceDao snmpInterfaceDao;
 
-        TopologyPersisterDaoBuilder() {
+        private TopologyPersisterBuilder() {
         }
 
-        public TopologyPersisterDaoBuilder nodeDao(NodeDao nodeDao) {
+        public TopologyPersisterBuilder nodeDao(NodeDao nodeDao) {
             this.nodeDao = nodeDao;
             return this;
         }
 
-        public TopologyPersisterDaoBuilder cdpElementDao(CdpElementDao cdpElementDao) {
+        public TopologyPersisterBuilder cdpElementDao(CdpElementDao cdpElementDao) {
             this.cdpElementDao = cdpElementDao;
             return this;
         }
 
-        public TopologyPersisterDaoBuilder isIsElementDao(IsIsElementDao isIsElementDao) {
+        public TopologyPersisterBuilder isIsElementDao(IsIsElementDao isIsElementDao) {
             this.isIsElementDao = isIsElementDao;
             return this;
         }
 
-        public TopologyPersisterDaoBuilder lldpElementDao(LldpElementDao lldpElementDao) {
+        public TopologyPersisterBuilder lldpElementDao(LldpElementDao lldpElementDao) {
             this.lldpElementDao = lldpElementDao;
             return this;
         }
 
-        public TopologyPersisterDaoBuilder cdpLinkDao(CdpLinkDao cdpLinkDao) {
+        public TopologyPersisterBuilder cdpLinkDao(CdpLinkDao cdpLinkDao) {
             this.cdpLinkDao = cdpLinkDao;
             return this;
         }
 
-        public TopologyPersisterDaoBuilder isIsLinkDao(IsIsLinkDao isIsLinkDao) {
+        public TopologyPersisterBuilder isIsLinkDao(IsIsLinkDao isIsLinkDao) {
             this.isIsLinkDao = isIsLinkDao;
             return this;
         }
 
-        public TopologyPersisterDaoBuilder lldpLinkDao(LldpLinkDao lldpLinkDao) {
+        public TopologyPersisterBuilder lldpLinkDao(LldpLinkDao lldpLinkDao) {
             this.lldpLinkDao = lldpLinkDao;
             return this;
         }
 
-        public TopologyPersisterDaoBuilder ospfLinkDao(OspfLinkDao ospfLinkDao) {
+        public TopologyPersisterBuilder ospfLinkDao(OspfLinkDao ospfLinkDao) {
             this.ospfLinkDao = ospfLinkDao;
             return this;
         }
 
-        public TopologyPersisterDaoBuilder ipInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        public TopologyPersisterBuilder ipInterfaceDao(IpInterfaceDao ipInterfaceDao) {
             this.ipInterfaceDao = ipInterfaceDao;
             return this;
         }
 
-        public TopologyPersisterDaoBuilder snmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
+        public TopologyPersisterBuilder snmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
             this.snmpInterfaceDao = snmpInterfaceDao;
             return this;
         }
 
         public TopologyPersister build() {
             return new TopologyPersister(nodeDao, cdpElementDao, isIsElementDao, lldpElementDao, cdpLinkDao, isIsLinkDao, lldpLinkDao, ospfLinkDao, ipInterfaceDao, snmpInterfaceDao);
-        }
-
-        public String toString() {
-            return "TopologyPersisterDao.TopologyPersisterDaoBuilder(nodeDao=" + this.nodeDao + ", cdpElementDao=" + this.cdpElementDao + ", isIsElementDao=" + this.isIsElementDao + ", lldpElementDao=" + this.lldpElementDao + ", cdpLinkDao=" + this.cdpLinkDao + ", isIsLinkDao=" + this.isIsLinkDao + ", lldpLinkDao=" + this.lldpLinkDao + ", ospfLinkDao=" + this.ospfLinkDao + ", ipInterfaceDao=" + this.ipInterfaceDao + ", snmpInterfaceDao=" + this.snmpInterfaceDao + ")";
         }
     }
 }
