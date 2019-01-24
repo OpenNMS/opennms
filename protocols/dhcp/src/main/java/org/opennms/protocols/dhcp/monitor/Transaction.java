@@ -58,6 +58,8 @@ public class Transaction {
     private int xid;
     private boolean success = false;
     private Response response;
+    private long startTime = -1;
+    private long endTime = -1;
 
     public Transaction(final String hostAddress, final String macAddress, final boolean relayMode, String myIpAddress, final boolean extendedMode, final String requestIpAddress, final int timeout) {
         this.hostAddress = InetAddressUtils.addr(hostAddress);
@@ -82,9 +84,24 @@ public class Transaction {
 
         if (this.success) {
             this.response = response;
+            this.endTime = System.currentTimeMillis();
         }
 
         return this.success;
+    }
+
+    public void updateStartTime() {
+        if (!this.isSuccess()) {
+            this.startTime = System.currentTimeMillis();
+        }
+    }
+
+    public long getResponseTime() {
+        if (isSuccess()) {
+            return this.endTime - this.startTime;
+        } else {
+            return -1;
+        }
     }
 
     public Response getResponse() {

@@ -57,30 +57,28 @@ public class Dhcpd {
     private final Set<Transaction> transactions = new HashSet<>();
     private int xid = new Random().nextInt();
     private boolean shutdown = false;
-
     private final Listener port67Listener = new Listener(this, BOOTP_REQUEST_PORT);
     private final Listener port68Listener = new Listener(this, BOOTP_REPLY_PORT);
 
     private Dhcpd() {
-        new Thread(this.port67Listener).start();
-        new Thread(this.port68Listener).start();
+        final Thread thread67 = new Thread(this.port67Listener);
+        thread67.start();
+
+        final Thread thread68 = new Thread(this.port68Listener);
+        thread68.start();
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
                 Dhcpd.this.shutdown = true;
 
-                while (transactions.size() > 0) {
-                    try {
-                        LOG.debug("Waiting for " + transactions.size() + " Dhcpd transactions to terminate...");
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
                 Dhcpd.this.port67Listener.stop();
                 Dhcpd.this.port68Listener.stop();
+
+                thread67.interrupt();
+                thread68.interrupt();
+
+                LOG.debug("Dhcpd terminated successfully.");
             }
         }));
     }
@@ -125,9 +123,9 @@ public class Dhcpd {
         return dhcpPacket;
     }
 
-    private void doTransaction(final Transaction transaction) throws IOException {
+    private long doTransaction(final Transaction transaction) throws IOException {
         if (shutdown) {
-            return;
+            return -1;
         }
 
         final int xid = nextXid();
@@ -146,10 +144,12 @@ public class Dhcpd {
             dhcpPackets.add(createPacket(xid, transaction, DHCPREQUEST));
         }
 
-        for(final DHCPPacket dhcpPacket : dhcpPackets) {
+        for (final DHCPPacket dhcpPacket : dhcpPackets) {
             final byte[] buf = dhcpPacket.serialize();
             final DatagramPacket discoverPacket = new DatagramPacket(buf, buf.length);
             discoverPacket.setAddress(transaction.getHostAddress());
+
+            transaction.updateStartTime();
 
             if (transaction.isRelayMode()) {
                 discoverPacket.setPort(BOOTP_REQUEST_PORT);
@@ -170,7 +170,7 @@ public class Dhcpd {
                     synchronized (this.transactions) {
                         this.transactions.remove(transaction);
                     }
-                    return ;
+                    return transaction.getResponseTime();
                 }
             }
         }
@@ -178,10 +178,12 @@ public class Dhcpd {
         synchronized (this.transactions) {
             this.transactions.remove(transaction);
         }
+
+        return -1;
     }
 
-    public static void addTransaction(final Transaction transaction) throws IOException {
-        INSTANCE.doTransaction(transaction);
+    public static long addTransaction(final Transaction transaction) throws IOException {
+        return INSTANCE.doTransaction(transaction);
     }
 
     void checkTransactions(final Response response) {
@@ -191,7 +193,7 @@ public class Dhcpd {
                 return;
             }
 
-            for(final Transaction transaction : this.transactions) {
+            for (final Transaction transaction : this.transactions) {
                 if (transaction.check(response)) {
                     return;
                 }

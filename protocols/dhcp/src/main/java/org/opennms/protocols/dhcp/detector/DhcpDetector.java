@@ -37,22 +37,18 @@ import org.opennms.protocols.dhcp.detector.response.DhcpResponse;
 import org.opennms.protocols.dhcp.monitor.DhcpMonitor;
 
 public class DhcpDetector extends BasicDetector<DhcpRequest, DhcpResponse> {
-
     String macAddress = DhcpMonitor.DEFAULT_MAC_ADDRESS;
     boolean relayMode = false;
     boolean extendedMode = false;
-    String myAddress = "127.0.0.1";
+    String myIpAddress = "127.0.0.1";
     String requestIpAddress = "127.0.0.1";
 
     public DhcpDetector() {
         super("DHCP", 0);
         setTimeout(DhcpMonitor.DEFAULT_TIMEOUT);
-        setRetries(DhcpMonitor.DEFAULT_RETRY);
+        setRetries(DhcpMonitor.DEFAULT_RETRIES);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void onInit() {
         expectBanner(responseTimeGreaterThan(-1));
@@ -67,13 +63,9 @@ public class DhcpDetector extends BasicDetector<DhcpRequest, DhcpResponse> {
         };
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Client<DhcpRequest, DhcpResponse> getClient() {
-        DhcpClient client = new DhcpClient();
-        client.setRetries(getRetries());
+        DhcpClient client = new DhcpClient(macAddress, relayMode, myIpAddress, extendedMode, requestIpAddress, getTimeout(), getRetries());
         return client;
     }
 
@@ -101,12 +93,12 @@ public class DhcpDetector extends BasicDetector<DhcpRequest, DhcpResponse> {
         this.extendedMode = extendedMode;
     }
 
-    public String getMyAddress() {
-        return myAddress;
+    public String getMyIpAddress() {
+        return myIpAddress;
     }
 
-    public void setMyAddress(String myAddress) {
-        this.myAddress = myAddress;
+    public void setMyIpAddress(String myIpAddress) {
+        this.myIpAddress = myIpAddress;
     }
 
     public String getRequestIpAddress() {

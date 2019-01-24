@@ -30,89 +30,68 @@ package org.opennms.protocols.dhcp.detector.client;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Collections;
 
-import org.opennms.netmgt.dhcpd.Dhcpd;
+import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.protocols.dhcp.detector.request.DhcpRequest;
 import org.opennms.protocols.dhcp.detector.response.DhcpResponse;
-import org.opennms.protocols.dhcp.monitor.DhcpMonitor;
+import org.opennms.protocols.dhcp.monitor.Dhcpd;
+import org.opennms.protocols.dhcp.monitor.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-/**
- * <p>DhcpClient class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(DhcpClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DhcpClient.class);
 
-    
     private int m_retries;
     private int m_timeout;
     private InetAddress m_address;
+    private final String m_macAddress;
+    private final String m_myIpAddress;
+    private final boolean m_extendedMode;
+    private final boolean m_relayMode;
+    private final String m_requestIpAddress;
 
-    /**
-     * <p>close</p>
-     */
-    @Override
-    public void close() {
-        
+    public DhcpClient(final String macAddress, final boolean relayMode, final String myIpAddress, final boolean extendedMode, final String requestIpAddress, final int timeout, final int retries) {
+        this.m_macAddress = macAddress;
+        this.m_relayMode = relayMode;
+        this.m_myIpAddress = myIpAddress;
+        this.m_extendedMode = extendedMode;
+        this.m_requestIpAddress = requestIpAddress;
+        this.m_timeout = timeout;
+        this.m_retries = retries;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
+    public void close() {
+    }
+
+    @Override
+    public void connect(InetAddress address, int port, int timeout) {
         m_address = address;
         m_timeout = timeout;
     }
 
-    /**
-     * <p>receiveBanner</p>
-     *
-     * @return a {@link org.opennms.protocols.dhcp.detector.response.DhcpResponse} object.
-     * @throws java.io.IOException if any.
-     * @throws java.lang.Exception if any.
-     */
     @Override
-    public DhcpResponse receiveBanner() throws IOException, Exception {
-        long responseTime = Dhcpd.isServer(m_address, m_timeout, getRetries());
-        LOG.debug("got a response from the server: {}", responseTime);
-        return new DhcpResponse(responseTime);
+    public DhcpResponse receiveBanner() {
+        final TimeoutTracker tracker = new TimeoutTracker(Collections.emptyMap(), m_retries, m_timeout);
+        final Transaction transaction = new Transaction(m_address.getHostAddress(), m_macAddress, m_relayMode, m_myIpAddress, m_extendedMode, m_requestIpAddress, m_timeout);
+        for (tracker.reset(); tracker.shouldRetry() && !transaction.isSuccess(); tracker.nextAttempt()) {
+            try {
+                LOG.error("Checking for Dhcp: {}", transaction);
+                Dhcpd.addTransaction(transaction);
+            } catch (IOException e) {
+                LOG.error("An unexpected exception occurred during DHCP detection", e);
+                return new DhcpResponse(-1);
+            }
+        }
+
+        return new DhcpResponse(transaction.getResponseTime());
     }
 
-    /**
-     * <p>sendRequest</p>
-     *
-     * @param request a {@link org.opennms.protocols.dhcp.detector.request.DhcpRequest} object.
-     * @return a {@link org.opennms.protocols.dhcp.detector.response.DhcpResponse} object.
-     * @throws java.io.IOException if any.
-     * @throws java.lang.Exception if any.
-     */
     @Override
     public DhcpResponse sendRequest(DhcpRequest request) throws IOException, Exception {
         return null;
     }
-    
-    /**
-     * <p>setRetries</p>
-     *
-     * @param retries a int.
-     */
-    public void setRetries(int retries) {
-        m_retries = retries;
-    }
-
-    /**
-     * <p>getRetries</p>
-     *
-     * @return a int.
-     */
-    public int getRetries() {
-        return m_retries;
-    }
-
 }

@@ -41,45 +41,18 @@ import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * This class is designed to be used by the service poller framework to test the
- * availability of the DHCP service on remote interfaces as defined by RFC 2131.
- *
- * This class relies on the DHCP API provided by dhcp4java.
- *
- * The class implements the ServiceMonitor interface that allows it to be used
- * along with other plug-ins by the service poller framework.
- *
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- */
 @Distributable(DistributionContext.DAEMON)
 public final class DhcpMonitor extends AbstractServiceMonitor {
 	private static final Logger LOG = LoggerFactory.getLogger(DhcpMonitor.class);
 
-    /**
-     * Default retries.
-     */
-    public static final int DEFAULT_RETRY = 0;
-
-    /**
-     * Default timeout. Specifies how long (in milliseconds) to block waiting
-     * for data from the monitored interface.
-     */
+    public static final int DEFAULT_RETRIES = 0;
     public static final int DEFAULT_TIMEOUT = 3000;
-
     public static final String DEFAULT_MAC_ADDRESS = "00:06:0D:BE:9C:B2";
 
-    /**
-     * {@inheritDoc}
-     *
-     * Poll the specified address for DHCP service availability.
-     */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-
         // common parameters
-        final int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+        final int retries = ParameterMap.getKeyedInteger(parameters, "retries", DEFAULT_RETRIES);
         final int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
 
         // DHCP-specific parameters
@@ -89,18 +62,17 @@ public final class DhcpMonitor extends AbstractServiceMonitor {
         final String myAddress = ParameterMap.getKeyedString(parameters, "myIpAddress", "127.0.0.1");
         final String requestIpAddress = ParameterMap.getKeyedString(parameters, "requestIpAddress", "127.0.0.1");
 
-        final TimeoutTracker tracker = new TimeoutTracker(parameters, retry, timeout);
+        final TimeoutTracker tracker = new TimeoutTracker(parameters, retries, timeout);
         final Transaction transaction = new Transaction(svc.getIpAddr(), macAddress, relayMode, myAddress, extendedMode, requestIpAddress, timeout);
         for (tracker.reset(); tracker.shouldRetry() && !transaction.isSuccess(); tracker.nextAttempt()) {
             try {
                 Dhcpd.addTransaction(transaction);
             } catch (IOException e) {
-                e.printStackTrace();
+                LOG.error("An unexpected exception occurred during DHCP polling", e);
                 return PollStatus.unavailable("An unexpected exception occurred during DHCP polling");
             }
         }
 
-        return transaction.isSuccess() ? PollStatus.available() : PollStatus.unavailable("DHCP service unavailable");
+        return transaction.isSuccess() ? PollStatus.available((double) transaction.getResponseTime()) : PollStatus.unavailable("DHCP service unavailable");
     }
-    
 }
