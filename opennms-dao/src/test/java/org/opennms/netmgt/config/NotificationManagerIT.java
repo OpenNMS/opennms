@@ -45,6 +45,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.mock.MockNotifdConfigManager;
 import org.opennms.netmgt.config.notifications.Notification;
+import org.opennms.netmgt.config.notifications.Rule;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -416,7 +417,9 @@ public class NotificationManagerIT implements InitializingBean {
     private void doTestNodeInterfaceServiceWithRule(String description, int nodeId, String intf, String svc, String rule, boolean matches) {
         Notification notif = new Notification();
         notif.setName("a notification");
-        notif.setRule(rule);
+        Rule filterRule = new Rule();
+        filterRule.setContent(rule);
+        notif.setRule(filterRule);
         
         EventBuilder builder = new EventBuilder("uei.opennms.org/doNotCareAboutTheUei", "Test.Event");
         builder.setNodeid(nodeId);

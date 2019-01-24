@@ -66,7 +66,7 @@
 
         <element maxOccurs="1" minOccurs="0" name="description" type="string"/>
 
-        <element maxOccurs="1" minOccurs="1" name="rule" type="string"/>
+        <element maxOccurs="1" minOccurs="1" ref="this:rule"/>
 
         <element maxOccurs="1" minOccurs="0" name="notice-queue" type="string"/>
 
@@ -100,6 +100,23 @@
       <attribute name="name" type="string" use="required"/>
 
       <attribute name="value" type="string" use="required"/>
+    </complexType>
+  </element>
+
+  <element name="rule">
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="strict" type="boolean" default="false">
+          <annotation>
+            <documentation>When strict is false, notice will be sent even if there is no node/interface info
+              as there is no way to validate filter rule. When true, notice will be dropped if there is no matching
+              node/interface.
+            </documentation>
+          </annotation>
+          </attribute>
+        </extension>
+      </simpleContent>
     </complexType>
   </element>
 
