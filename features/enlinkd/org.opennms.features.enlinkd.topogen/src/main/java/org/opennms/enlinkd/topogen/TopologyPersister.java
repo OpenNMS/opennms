@@ -31,6 +31,7 @@ package org.opennms.enlinkd.topogen;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OnmsDao;
@@ -48,7 +49,6 @@ import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
-import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -56,15 +56,14 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TopologyPersisterDao {
+public class TopologyPersister {
 
-    private final static Logger LOG = LoggerFactory.getLogger(TopologyPersisterDao.class);
+    private final static Logger LOG = LoggerFactory.getLogger(TopologyPersister.class);
 
     private NodeDao nodeDao;
     private CdpElementDao cdpElementDao;
     private IsIsElementDao isIsElementDao;
     private LldpElementDao lldpElementDao;
-    private OspfElementDao ospfElementDao;
     private CdpLinkDao cdpLinkDao;
     private IsIsLinkDao isIsLinkDao;
     private LldpLinkDao lldpLinkDao;
@@ -72,12 +71,11 @@ public class TopologyPersisterDao {
     private IpInterfaceDao ipInterfaceDao;
     private SnmpInterfaceDao snmpInterfaceDao;
 
-    public TopologyPersisterDao(
+    private TopologyPersister(
         final NodeDao nodeDao,
         final CdpElementDao cdpElementDao,
         final IsIsElementDao isIsElementDao,
         final LldpElementDao lldpElementDao,
-        final OspfElementDao ospfElementDao,
         final CdpLinkDao cdpLinkDao,
         final IsIsLinkDao isIsLinkDao,
         final LldpLinkDao lldpLinkDao,
@@ -89,13 +87,16 @@ public class TopologyPersisterDao {
         this.cdpElementDao = cdpElementDao;
         this.isIsElementDao = isIsElementDao;
         this.lldpElementDao = lldpElementDao;
-        this.ospfElementDao = ospfElementDao;
         this.cdpLinkDao = cdpLinkDao;
         this.isIsLinkDao = isIsLinkDao;
         this.lldpLinkDao = lldpLinkDao;
         this.ospfLinkDao = ospfLinkDao;
         this.ipInterfaceDao = ipInterfaceDao;
         this.snmpInterfaceDao = snmpInterfaceDao;
+    }
+
+    public static TopologyPersisterDaoBuilder builder() {
+        return new TopologyPersisterDaoBuilder();
     }
 
     public void persistNodes(List<OnmsNode> nodes) throws SQLException {
@@ -170,6 +171,80 @@ public class TopologyPersisterDao {
 
         for (OnmsDao dao : deleteOperations) {
             dao.deleteAll();
+        }
+    }
+
+    public static class TopologyPersisterDaoBuilder {
+        private NodeDao nodeDao;
+        private CdpElementDao cdpElementDao;
+        private IsIsElementDao isIsElementDao;
+        private LldpElementDao lldpElementDao;
+        private CdpLinkDao cdpLinkDao;
+        private IsIsLinkDao isIsLinkDao;
+        private LldpLinkDao lldpLinkDao;
+        private OspfLinkDao ospfLinkDao;
+        private IpInterfaceDao ipInterfaceDao;
+        private SnmpInterfaceDao snmpInterfaceDao;
+
+        TopologyPersisterDaoBuilder() {
+        }
+
+        public TopologyPersisterDaoBuilder nodeDao(NodeDao nodeDao) {
+            this.nodeDao = nodeDao;
+            return this;
+        }
+
+        public TopologyPersisterDaoBuilder cdpElementDao(CdpElementDao cdpElementDao) {
+            this.cdpElementDao = cdpElementDao;
+            return this;
+        }
+
+        public TopologyPersisterDaoBuilder isIsElementDao(IsIsElementDao isIsElementDao) {
+            this.isIsElementDao = isIsElementDao;
+            return this;
+        }
+
+        public TopologyPersisterDaoBuilder lldpElementDao(LldpElementDao lldpElementDao) {
+            this.lldpElementDao = lldpElementDao;
+            return this;
+        }
+
+        public TopologyPersisterDaoBuilder cdpLinkDao(CdpLinkDao cdpLinkDao) {
+            this.cdpLinkDao = cdpLinkDao;
+            return this;
+        }
+
+        public TopologyPersisterDaoBuilder isIsLinkDao(IsIsLinkDao isIsLinkDao) {
+            this.isIsLinkDao = isIsLinkDao;
+            return this;
+        }
+
+        public TopologyPersisterDaoBuilder lldpLinkDao(LldpLinkDao lldpLinkDao) {
+            this.lldpLinkDao = lldpLinkDao;
+            return this;
+        }
+
+        public TopologyPersisterDaoBuilder ospfLinkDao(OspfLinkDao ospfLinkDao) {
+            this.ospfLinkDao = ospfLinkDao;
+            return this;
+        }
+
+        public TopologyPersisterDaoBuilder ipInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+            this.ipInterfaceDao = ipInterfaceDao;
+            return this;
+        }
+
+        public TopologyPersisterDaoBuilder snmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
+            this.snmpInterfaceDao = snmpInterfaceDao;
+            return this;
+        }
+
+        public TopologyPersister build() {
+            return new TopologyPersister(nodeDao, cdpElementDao, isIsElementDao, lldpElementDao, cdpLinkDao, isIsLinkDao, lldpLinkDao, ospfLinkDao, ipInterfaceDao, snmpInterfaceDao);
+        }
+
+        public String toString() {
+            return "TopologyPersisterDao.TopologyPersisterDaoBuilder(nodeDao=" + this.nodeDao + ", cdpElementDao=" + this.cdpElementDao + ", isIsElementDao=" + this.isIsElementDao + ", lldpElementDao=" + this.lldpElementDao + ", cdpLinkDao=" + this.cdpLinkDao + ", isIsLinkDao=" + this.isIsLinkDao + ", lldpLinkDao=" + this.lldpLinkDao + ", ospfLinkDao=" + this.ospfLinkDao + ", ipInterfaceDao=" + this.ipInterfaceDao + ", snmpInterfaceDao=" + this.snmpInterfaceDao + ")";
         }
     }
 }

@@ -35,7 +35,7 @@ import java.util.Date;
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.enlinkd.topogen.TopologyGenerator;
-import org.opennms.enlinkd.topogen.TopologyPersisterDao;
+import org.opennms.enlinkd.topogen.TopologyPersister;
 import org.opennms.enlinkd.topogen.topology.PairGenerator;
 import org.opennms.enlinkd.topogen.util.InetAddressGenerator;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
@@ -50,7 +50,7 @@ public class OspfProtocol extends Protocol<OspfElement> {
     private InetAddressGenerator inetAddressCreator = new InetAddressGenerator();
 
     public OspfProtocol(TopologyGenerator.Topology topology, int amountNodes, int amountLinks,
-                        int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersisterDao persister){
+                        int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersister persister){
         super(topology, amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, persister);
     }
 

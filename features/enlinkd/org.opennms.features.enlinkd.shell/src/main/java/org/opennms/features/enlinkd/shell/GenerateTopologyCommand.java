@@ -30,13 +30,14 @@ package org.opennms.features.enlinkd.shell;
 
 import java.io.IOException;
 import java.sql.SQLException;
+
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.apache.karaf.shell.api.action.Option;
 import org.opennms.enlinkd.topogen.TopologyGenerator;
-import org.opennms.enlinkd.topogen.TopologyPersisterDao;
+import org.opennms.enlinkd.topogen.TopologyPersister;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -53,28 +54,28 @@ import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 @Service
 public class GenerateTopologyCommand implements Action {
 
-    @Option(name="nodes", description="generate <N> OmnsNodes.")
+    @Option(name="--nodes", description="generate <N> OmnsNodes.")
     private Integer amountNodes;
 
-    @Option(name="elements", description="generate <N> CdpElements")
+    @Option(name="--elements", description="generate <N> CdpElements")
     private Integer amountElements;
 
-    @Option(name="links", description="generate <N> CdpLinks")
+    @Option(name="--links", description="generate <N> CdpLinks")
     private Integer amountLinks;
 
-    @Option(name="snmpinterfaces", description="generate <N> SnmpInterfaces but not more than amount nodes")
+    @Option(name="--snmpinterfaces", description="generate <N> SnmpInterfaces but not more than amount nodes")
     private Integer amountSnmpInterfaces;
 
-    @Option(name="ipinterfaces", description="generate <N> IpInterfaces but not more than amount snmp interfaces")
+    @Option(name="--ipinterfaces", description="generate <N> IpInterfaces but not more than amount snmp interfaces")
     private Integer amountIpInterfaces;
 
-    @Option(name="topology", description="type of topology (complete | ring | random)")
+    @Option(name="--topology", description="type of topology (complete | ring | random)")
     private String topology;
 
-    @Option(name="protocol", description="type of protocol (cdp | isis | lldp | ospf)")
+    @Option(name="--protocol", description="type of protocol (cdp | isis | lldp | ospf)")
     private String protocol;
 
-    @Option(name="delete", description = "delete existing toplogogy (all OnmsNodes, CdpElements and CdpLinks)")
+    @Option(name="--delete", description = "delete existing toplogogy (all OnmsNodes, CdpElements and CdpLinks)")
     private Boolean deleteExistingTolology;
 
     @Reference
@@ -123,23 +124,22 @@ public class GenerateTopologyCommand implements Action {
             .topology(toEnumOrNull(TopologyGenerator.Topology.class, this.topology))
             .persister(createTopologyPersisterDao())
             .build();
-        generator.createNetwork();
+        generator.generateTopology();
     }
 
-    private TopologyPersisterDao createTopologyPersisterDao() throws IOException {
-        return new TopologyPersisterDao(
-            nodeDao,
-            cdpElementDao,
-            isIsElementDao,
-            lldpElementDao,
-            ospfElementDao,
-            cdpLinkDao,
-            isIsLinkDao,
-            lldpLinkDao,
-            ospfLinkDao,
-            ipInterfaceDao,
-            snmpInterfaceDao
-      );
+    private TopologyPersister createTopologyPersisterDao() throws IOException {
+        return TopologyPersister.builder()
+                .nodeDao(nodeDao)
+                .cdpElementDao(cdpElementDao)
+                .isIsElementDao(isIsElementDao)
+                .lldpElementDao(lldpElementDao)
+                .cdpLinkDao(cdpLinkDao)
+                .isIsLinkDao(isIsLinkDao)
+                .lldpLinkDao(lldpLinkDao)
+                .ospfLinkDao(ospfLinkDao)
+                .ipInterfaceDao(ipInterfaceDao)
+                .snmpInterfaceDao(snmpInterfaceDao)
+                .build();
     }
 
     private <E extends Enum> E toEnumOrNull(Class<E> enumClass, String s ) {

@@ -36,7 +36,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.core.utils.LldpUtils;
 import org.opennms.enlinkd.topogen.TopologyGenerator;
-import org.opennms.enlinkd.topogen.TopologyPersisterDao;
+import org.opennms.enlinkd.topogen.TopologyPersister;
 import org.opennms.enlinkd.topogen.topology.PairGenerator;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
@@ -48,7 +48,7 @@ public class LldpProtocol extends Protocol<LldpElement> {
     private final static Logger LOG = LoggerFactory.getLogger(IsIsProtocol.class);
     private TopologyGenerator.Protocol protocol = TopologyGenerator.Protocol.lldp;
     public LldpProtocol(TopologyGenerator.Topology topology, int amountNodes, int amountLinks,
-                        int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersisterDao persister){
+                        int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersister persister){
         super(topology, amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, persister);
     }
 

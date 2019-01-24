@@ -36,6 +36,17 @@ import org.opennms.enlinkd.topogen.protocol.OspfProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Can be used to generate a Linkd Topology for testing purposes.
+ * Usage:
+ * <code>
+ * TopologyGenerator generator = TopologyGenerator.builder()
+ *     .persister(topologyPersister)
+ *     ...
+ *     .build();
+ * generator.generateTopology();
+ * </code>
+ */
 public class TopologyGenerator {
   private final static Logger LOG = LoggerFactory.getLogger(TopologyGenerator.class);
 
@@ -51,7 +62,7 @@ public class TopologyGenerator {
     cdp, isis, lldp, ospf
   }
 
-  private TopologyPersisterDao persister;
+  private TopologyPersister persister;
 
   private final Integer amountNodes;
 
@@ -70,7 +81,7 @@ public class TopologyGenerator {
   private final boolean deleteExistingTolology;
 
   private TopologyGenerator(
-      TopologyPersisterDao persister,
+      TopologyPersister persister,
       Integer amountNodes,
       Integer amountElements,
       Integer amountLinks,
@@ -101,7 +112,7 @@ public class TopologyGenerator {
     return (value == null) ? defaultValue : value;
   }
 
-  public void createNetwork() throws SQLException {
+  public void generateTopology() throws SQLException {
     String msg = String.format("Creating a topology with the following settings: amountNodes=%s,"
             + "amountElements=%s, amountLinks=%s, amountSnmpInterfaces=%s, amountIpInterfaces=%s,"
             + "topology=%s, protocol=%s, deleteExistingTolology=%s", this.amountNodes, this.amountElements,
@@ -141,7 +152,7 @@ public class TopologyGenerator {
 
   public static class TopologyGeneratorBuilder {
 
-    private TopologyPersisterDao persister;
+    private TopologyPersister persister;
     private Integer amountNodes;
     private Integer amountElements;
     private Integer amountLinks;
@@ -154,7 +165,7 @@ public class TopologyGenerator {
     private TopologyGeneratorBuilder() {
     }
 
-    public TopologyGeneratorBuilder persister(TopologyPersisterDao persister) {
+    public TopologyGeneratorBuilder persister(TopologyPersister persister) {
       this.persister = persister;
       return this;
     }

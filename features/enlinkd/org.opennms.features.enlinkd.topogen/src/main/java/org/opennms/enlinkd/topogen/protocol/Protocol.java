@@ -36,7 +36,7 @@ import java.util.List;
 import org.opennms.enlinkd.topogen.util.InetAddressGenerator;
 import org.opennms.enlinkd.topogen.TopologyGenerator;
 import org.opennms.enlinkd.topogen.TopologyGenerator.Topology;
-import org.opennms.enlinkd.topogen.TopologyPersisterDao;
+import org.opennms.enlinkd.topogen.TopologyPersister;
 import org.opennms.enlinkd.topogen.topology.LinkedPairGenerator;
 import org.opennms.enlinkd.topogen.topology.PairGenerator;
 import org.opennms.enlinkd.topogen.topology.RandomConnectedPairGenerator;
@@ -60,13 +60,13 @@ public abstract class Protocol<Element> {
     protected final int amountElements;
     private final int amountSnmpInterfaces;
     private final int amountIpInterfaces;
-    protected final TopologyPersisterDao persister;
+    protected final TopologyPersister persister;
     protected final RandomUtil random = new RandomUtil();
 
     @java.beans.ConstructorProperties({"topology", "amountNodes", "amountLinks", "amountElements",
         "amountSnmpInterfaces", "amountIpInterfaces", "persister"})
     public Protocol(Topology topology, int amountNodes, int amountLinks, int amountElements,
-        int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersisterDao persister) {
+        int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersister persister) {
         this.topology = topology;
         this.amountNodes = amountNodes;
         this.amountLinks = amountLinks;

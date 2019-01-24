@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.UUID;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.enlinkd.topogen.TopologyGenerator;
-import org.opennms.enlinkd.topogen.TopologyPersisterDao;
+import org.opennms.enlinkd.topogen.TopologyPersister;
 import org.opennms.enlinkd.topogen.topology.PairGenerator;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
@@ -49,7 +49,7 @@ public class CdpProtocol extends Protocol<CdpElement> {
     private TopologyGenerator.Protocol protocol = TopologyGenerator.Protocol.cdp;
 
     public CdpProtocol(TopologyGenerator.Topology topology, int amountNodes, int amountLinks,
-                       int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersisterDao persister){
+                       int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyPersister persister){
         super(topology, amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, persister);
     }
 
