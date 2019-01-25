@@ -776,8 +776,8 @@
       <feature>opennms-core</feature>
       <feature>opennms-events-api</feature>
       <feature>opennms-model</feature>
+      <feature>opennms-config-api</feature>
       -->
-
       <bundle>mvn:org.opennms.features.events/org.opennms.features.events.commands/${project.version}</bundle>
     </feature>
 
