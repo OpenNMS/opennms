@@ -78,6 +78,18 @@ During the _EnLink_ discovery process informational and error output is logged t
 | `use-isis-discovery`   | _Boolean_ | `true`     | Enable or disable discovery based on _IS-IS_ information.
 |===
 
+
+Configuration changes are applied by restarting OpenNMS and Enlinkd. It is also possible to send an Event to Enlinkd reloading the configuration. An Event can be sent on the CLI or the Web User Interface.	
+
+.Send configuration reload event on CLI
+
+[source, shell]
+----
+cd $OPENNMS_HOME/bin
+./send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Enlinkd'
+----
+
+
 NOTE: If multiple protocols are enabled, the links will be discovered for each enabled discovery protocol.
       The topology WebUI will visualize _Links_ for each discovery protocol.
       For example if you start _CDP_ and _LLDP_ discovery, the WebUI will visualize a _CDP Link_ and an _LLDP Link_.
