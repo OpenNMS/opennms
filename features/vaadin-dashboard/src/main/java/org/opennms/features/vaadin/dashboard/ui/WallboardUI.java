@@ -28,10 +28,12 @@
 
 package org.opennms.features.vaadin.dashboard.ui;
 
+import com.google.common.base.Strings;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -101,14 +103,28 @@ public class WallboardUI extends UI implements DashletSelectorAccess {
         navigator.addView("dashboard", DashboardView.class);
         navigator.addView("wallboard", WallboardView.class);
 
-        navigator.navigateTo("wallboard");
+        navigator.addViewChangeListener(new ViewChangeListener() {
+            @Override
+            public void afterViewChange(ViewChangeEvent viewChangeEvent) {
+                headerLayout.setWallboard(viewChangeEvent.getParameters());
+            }
+
+            @Override
+            public boolean beforeViewChange(ViewChangeEvent viewChangeEvent) {
+                return true;
+            }
+        });
 
         BeanItemContainer<Wallboard> beanItemContainer = WallboardProvider.getInstance().getBeanContainer();
 
-        for (Wallboard wallboard : beanItemContainer.getItemIds()) {
-            if (wallboard.isDefault()) {
-                headerLayout.gotoWallboard(wallboard);
-                break;
+        if (Strings.isNullOrEmpty(navigator.getState())) {
+            navigator.navigateTo("wallboard");
+
+            for (Wallboard wallboard : beanItemContainer.getItemIds()) {
+                if (wallboard.isDefault()) {
+                    headerLayout.gotoWallboard(wallboard);
+                    break;
+                }
             }
         }
     }
