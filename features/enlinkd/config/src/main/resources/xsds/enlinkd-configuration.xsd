@@ -50,7 +50,7 @@
 				</annotation>
 			</attribute>
 			
-			<attribute name="bridge_topology_interval" type="long"
+			<attribute name="topology_interval" type="long"
 				use="optional" default="300000">
 				<annotation>
 					<documentation>
