@@ -8,11 +8,12 @@ The _Link Layer Discovery Protocol (LLDP)_ is a vendor-neutral link layer protoc
 It is used by network devices for advertising their identity, capabilities, and neighbors.
 _LLDP_ performs functions similar to several proprietary protocols, such as the _Cisco Discovery Protocol (CDP)_, _Extreme Discovery Protocol_, _Foundry Discovery Protocol (FDP)_, _Nortel Discovery Protocol (also known as SONMP)_, and _Microsoft's Link Layer Topology Discovery (LLTD)footnote:[Wikipedia LLDP: https://en.wikipedia.org/wiki/Link_Layer_Discovery_Protocol]_.
 
+
 NOTE: Only nodes with a running _LLDP_ process can be part of the link discovery.
       The data is similar to running a `show lldp neighbor` command on the device.
       Linux and Windows servers don't have an _LLDP_ process running by default and will not be part of the link discovery.
 
-The following OIDs are supported to discover and build the _LLDP_ network topology.
+The following OIDs are supported to discover and build the _LLDP_ network topology and are collected by the _LLDP Discovery Collector_.
 
 .Supported OIDs from LLDP-MIB
 [options="header, autowidth"]
@@ -76,3 +77,8 @@ Information gathered from these OIDs will be stored in the following database ta
 
 .Database tables related to LLDP discovery
 image::enlinkd/lldp-database.png[]
+
+
+_Lldp Topology Updater_ provide LLDP OnmsTopology consolidating lldp data collected by _LLDP Collector_ only full bidirectional connections between two Lldp supported devices become _Edges_.
+_Node A_  and _Node B_ are connected by an _LLDP Edge_ if and only if there is an LLDP MIB port connection in _Node A_ to _Node B_ and viceversa.
+
