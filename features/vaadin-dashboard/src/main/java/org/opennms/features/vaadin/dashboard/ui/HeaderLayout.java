@@ -156,6 +156,11 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
         UI.getCurrent().getNavigator().navigateTo("wallboard/" + wallboard.getTitle());
     }
 
+    public void setWallboard(final String wallboardName) {
+        final Wallboard wallboard = WallboardProvider.getInstance().getWallboard(wallboardName);
+        m_nativeSelect.setValue(wallboard);
+    }
+
     private void updatePauseButton() {
         if (m_wallboardView instanceof WallboardView) {
             if (((WallboardView) m_wallboardView).isPausable()) {
