@@ -47,7 +47,9 @@ If the node is not associated with both a _foreign source_ and _foreign id_, the
 
 ==== Topologies
 
-The _Kafka Producer_ listens for changes made to the current set of topologies (bridge, cdp, isis, lldp and ospf) and forwards the resulting messages to _Kafka_ topics. A topic is defined for Topology Vertex Update Message and another topic is defined for Topology Edge Update Message.
+The _Kafka Producer_ listens for changes made to the current set of topologies (bridge, cdp, isis, lldp and ospf) and forwards the resulting messages to _Kafka_ topics. A topic is defined either for Topology Vertex Update Message and another topic is defined for Topology Edge Update Message.
+The topologies are provided by the _enhanced linkd updaters_ via the OnmsTopology API. 
+An _Updater_ send OnmsTopologyMessage to the subscribers.  
 The records are keyed by _GPB_ encoded key of protocol and TopologyRef and contain a _GPB_ encoded model of the Vertex or Edge.
 When a Vertex or an Edge is deleted, a _null_ value is sent with the corresponding encoded _GBP_ key.
 Publishing records in this fashion allows the topic to be used as a link:https://docs.confluent.io/current/streams/concepts.html#ktable[KTable].
