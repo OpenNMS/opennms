@@ -411,7 +411,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
                 for (TemporaryDatabasePostgreSQL db : s_toDestroy) {
                     try {
-                        System.err.println("Blame for temporary database beng removed late: " + db.getBlame());
+                        System.err.println("Blame for temporary database being removed late: " + db.getBlame());
                         db.destroyTestDatabase();
                     } catch (Throwable e) {
                         e.printStackTrace();
