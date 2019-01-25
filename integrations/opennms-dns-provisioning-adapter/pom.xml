@@ -44,6 +44,11 @@
       <artifactId>spring-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.sysprops</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
