@@ -29,7 +29,7 @@
 package org.opennms.enlinkd.generator;
 
 public class TopologySettings {
-    private final Integer amountNodes;
+    private final int amountNodes;
 
     private final int amountElements;
 
@@ -78,7 +78,7 @@ public class TopologySettings {
         }
     }
 
-    public Integer getAmountNodes() {
+    public int getAmountNodes() {
         return amountNodes;
     }
 
