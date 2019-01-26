@@ -1333,5 +1333,6 @@
     <feature name="org.opennms.features.enlinkd.shell" description="OpenNMS :: Features :: Enlinkd :: Shell" version="${project.version}">
         <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.shell/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.generator/${project.version}</bundle>
+        <feature>opennms-dao</feature>
     </feature>
 </features>

@@ -28,15 +28,6 @@
           </instructions>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>features-maven-plugin</artifactId>
-        <configuration>
-          <bundles>
-            <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.shell/${project.version}</bundle>
-          </bundles>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 

@@ -41,6 +41,10 @@ import org.opennms.enlinkd.generator.TopologyPersister;
 import org.opennms.enlinkd.generator.TopologySettings;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 
+/**
+ * Generate a enlinkd topology via karaf command.
+ * Install: feature:install org.opennms.features.enlinkd.shell
+ */
 @Command(scope = "enlinkd", name = "generate-topology", description = "Creates a linkd topology")
 @Service
 public class GenerateTopologyCommand implements Action {
