@@ -79,12 +79,18 @@ public interface EnhancedLinkdConfig {
     long getRescanInterval();
 
     /**
+     * <p>getBridgeTopologyInterval</p>
+     *
+     * @return a long.
+     */
+    long getBridgeTopologyInterval();
+
+    /**
      * <p>getTopologyInterval</p>
      *
      * @return a long.
      */
     long getTopologyInterval();
-
 
     /**
      * <p>useCdpDiscovery</p>

@@ -55,7 +55,8 @@ During the _EnLink_ discovery process informational and error output is logged t
                      use-lldp-discovery="true"
                      use-ospf-discovery="true"
                      use-isis-discovery="true"
-                     topology_interval="300000"
+                     topology_interval="30000"
+                     bridge_topology_interval="300000"
                      max_bft="100"
                      discovery-bridge-threads="1"
                      />
@@ -68,7 +69,8 @@ During the _EnLink_ discovery process informational and error output is logged t
 | `threads`              | _Integer_ | `5`        | Number of parallel threads used by _Collectors_,  _Updaters_ and _Discovery_.
 | `initial_sleep_time`   | _Integer_ | `60000`    | Time in milliseconds to wait for start _Collectors_  after {opennms-product-name} is started.
 | `rescan_interval`      | _Integer_ | `86400000` | Interval in milliseconds for _Collectors_.
-| `topology_interval`    | _Integer_ | `300000`   | Interval in milliseconds for _Updaters_ and _Discovery_.
+| `topology_interval`    | _Integer_ | `30000`   | Interval in milliseconds for _Updaters_.
+| `bridge_topology_interval`    | _Integer_ | `300000`   | Interval in milliseconds for _Discovery_.
 | `max_bft`              | _Integer_ | `100`      | the max number of bft stored in memory for _Discovery_. 
 | `discovery-bridge-threads`| _Integer_ | `1`   | the number of threads used for _Discovery_.
 | `use-cdp-discovery`    | _Boolean_ | `true`     | Enable or disable discovery based on _CDP_ information.
@@ -78,7 +80,8 @@ During the _EnLink_ discovery process informational and error output is logged t
 | `use-isis-discovery`   | _Boolean_ | `true`     | Enable or disable discovery based on _IS-IS_ information.
 |===
 
-
+The _Discovery_ for bridge first start is scheduled at _initial_sleep_time + bridge_topology_interval_.
+The _Updaters_ first start are scheduled at _0L_.
 Configuration changes are applied by restarting OpenNMS and Enlinkd. It is also possible to send an Event to Enlinkd reloading the configuration. An Event can be sent on the CLI or the Web User Interface.	
 
 .Send configuration reload event on CLI

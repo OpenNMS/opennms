@@ -140,7 +140,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         //
         try {
             LOG.info("init: Creating EnhancedLinkd scheduler");
-            m_scheduler = new LegacyScheduler("EnhancedLinkd", getLinkdConfig().getThreads());
+            m_scheduler = new LegacyScheduler("EnhancedLinkd", m_linkdConfig.getThreads());
         } catch (RuntimeException e) {
             LOG.error("init: Failed to create EnhancedLinkd scheduler", e);
             throw e;
@@ -192,7 +192,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         LOG.info("scheduleOnmsTopologyUpdater: Scheduling {}",
                    onmsTopologyUpdater.getInfo());
         onmsTopologyUpdater.setScheduler(m_scheduler);
-        onmsTopologyUpdater.setPollInterval(getTopologyInterval());
+        onmsTopologyUpdater.setPollInterval(m_linkdConfig.getTopologyInterval());
         onmsTopologyUpdater.setInitialSleepTime(0L);
         onmsTopologyUpdater.schedule();
         onmsTopologyUpdater.register();
@@ -208,9 +208,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             LOG.info("scheduleDiscoveryBridgeDomain: Scheduling {}",
                      m_discoveryBridgeDomains.getInfo());
             m_discoveryBridgeDomains.setScheduler(m_scheduler);
-            m_discoveryBridgeDomains.setPollInterval(getTopologyInterval());
-            m_discoveryBridgeDomains.setInitialSleepTime(getTopologyInterval()+getInitialSleepTime());
-            m_discoveryBridgeDomains.setMaxthreads(getDiscoveryBridgeThreads());
+            m_discoveryBridgeDomains.setPollInterval(m_linkdConfig.getBridgeTopologyInterval());
+            m_discoveryBridgeDomains.setInitialSleepTime(m_linkdConfig.getBridgeTopologyInterval()+m_linkdConfig.getInitialSleepTime());
+            m_discoveryBridgeDomains.setMaxthreads(m_linkdConfig.getDiscoveryBridgeThreads());
             m_discoveryBridgeDomains.schedule();
     }
 
@@ -228,59 +228,59 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         if (m_linkdConfig.useLldpDiscovery()) {
             LOG.debug("getSnmpCollections: adding Lldp: {}",
                     node);
-            colls.add(new NodeDiscoveryLldp(getLldpTopologyService(),
-                                            getLocationAwareSnmpClient(), 
-                                            getRescanInterval(),
-                                            getInitialSleepTime(),
+            colls.add(new NodeDiscoveryLldp(m_lldpTopologyService,
+                                            m_locationAwareSnmpClient, 
+                                            m_linkdConfig.getRescanInterval(),
+                                            m_linkdConfig.getInitialSleepTime(),
                                              node));
         }
         
         if (m_linkdConfig.useCdpDiscovery()) {
             LOG.debug("getSnmpCollections: adding Cdp: {}",
                     node);
-             colls.add(new NodeDiscoveryCdp(getCdpTopologyService(),
-                                            getLocationAwareSnmpClient(), 
-                                            getRescanInterval(),
-                                            getInitialSleepTime(),
+             colls.add(new NodeDiscoveryCdp(m_cdpTopologyService,
+                                            m_locationAwareSnmpClient, 
+                                            m_linkdConfig.getRescanInterval(),
+                                            m_linkdConfig.getInitialSleepTime(),
                                             node));       
         }
         
         if (m_linkdConfig.useBridgeDiscovery()) {
                 LOG.debug("getSnmpCollections: adding IpNetToMedia: {}",
                     node);
-                colls.add(new NodeDiscoveryIpNetToMedia(getIpNetToMediaTopologyService(),
-                                                        getLocationAwareSnmpClient(), 
-                                                        getRescanInterval(),
-                                                        getInitialSleepTime(),
+                colls.add(new NodeDiscoveryIpNetToMedia(m_ipNetToMediaTopologyService,
+                                                        m_locationAwareSnmpClient, 
+                                                        m_linkdConfig.getRescanInterval(),
+                                                        m_linkdConfig.getInitialSleepTime(),
                                                         node));
                 
                 LOG.debug("getSnmpCollections: adding Bridge: {}",
                     node);
-                colls.add(new NodeDiscoveryBridge(getBridgeTopologyService(),
-                                                  getMaxbft(),
-                                                  getLocationAwareSnmpClient(), 
-                                                  getRescanInterval(),
-                                                  getInitialSleepTime(),
+                colls.add(new NodeDiscoveryBridge(m_bridgeTopologyService,
+                                                  m_linkdConfig.getMaxBft(),
+                                                  m_locationAwareSnmpClient, 
+                                                  m_linkdConfig.getRescanInterval(),
+                                                  m_linkdConfig.getInitialSleepTime(),
                                                   node));
         }
 
         if (m_linkdConfig.useOspfDiscovery()) {
             LOG.debug("getSnmpCollections: adding Ospf: {}",
                     node);
-                colls.add(new NodeDiscoveryOspf(getOspfTopologyService(),
-                                                getLocationAwareSnmpClient(), 
-                                                getRescanInterval(),
-                                                getInitialSleepTime(),
+                colls.add(new NodeDiscoveryOspf(m_ospfTopologyService,
+                                                m_locationAwareSnmpClient, 
+                                                m_linkdConfig.getRescanInterval(),
+                                                m_linkdConfig.getInitialSleepTime(),
                                                 node));
         }
 
         if (m_linkdConfig.useIsisDiscovery()) {
             LOG.debug("getSnmpCollections: adding Is-Is: {}",
                     node);
-                colls.add(new NodeDiscoveryIsis(getIsisTopologyService(),
-                                                getLocationAwareSnmpClient(), 
-                                                getRescanInterval(),
-                                                getInitialSleepTime(), 
+                colls.add(new NodeDiscoveryIsis(m_isisTopologyService,
+                                                m_locationAwareSnmpClient, 
+                                                m_linkdConfig.getRescanInterval(),
+                                                m_linkdConfig.getInitialSleepTime(), 
                                                 node));
         }
        
@@ -540,31 +540,12 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     public void setLinkdConfig(final EnhancedLinkdConfig config) {
         m_linkdConfig = config;
     }
-
     public String getSource() {
         return "enlinkd";
     }
-
-    public long getInitialSleepTime() {
-    	return m_linkdConfig.getInitialSleepTime();
-    }
-    public long getRescanInterval() {
-            return m_linkdConfig.getRescanInterval(); 
-    }
-    public long getTopologyInterval() {
-        return m_linkdConfig.getTopologyInterval();
-    }    
-    public int getDiscoveryBridgeThreads() {
-        return m_linkdConfig.getDiscoveryBridgeThreads();
-    }
     public LocationAwareSnmpClient getLocationAwareSnmpClient() {
         return m_locationAwareSnmpClient;
-    }
-    
-    public int getMaxbft() {
-    	return m_linkdConfig.getMaxBft();
-    }
-    
+    }        
     public BridgeTopologyService getBridgeTopologyService() {
         return m_bridgeTopologyService;
     }

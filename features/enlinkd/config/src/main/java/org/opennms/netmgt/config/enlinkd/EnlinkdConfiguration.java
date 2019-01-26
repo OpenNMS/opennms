@@ -70,6 +70,12 @@ public class EnlinkdConfiguration implements java.io.Serializable {
     private Long m_rescanInterval;
 
     /**
+     *  Bridge Topology Discovery Time interval in mill seconds.
+     */
+    @XmlAttribute(name = "bridge_topology_interval")
+    private Long m_bridgeTopologyInterval;
+
+    /**
      *  Topology Discovery Time interval in mill seconds.
      */
     @XmlAttribute(name = "topology_interval")
@@ -149,11 +155,19 @@ public class EnlinkdConfiguration implements java.io.Serializable {
         m_rescanInterval = rescanInterval;
     }
 
-    public Long getTopologyInterval() {
-        return m_topologyInterval == null? 300000l : m_topologyInterval;
+    public Long getBridgeTopologyInterval() {
+        return m_bridgeTopologyInterval == null? 300000l : m_bridgeTopologyInterval;
     }
 
-    public void setBridgeTopologyInterval(Long topologyInterval) {
+    public void setBridgeTopologyInterval(Long bridgeTopologyInterval) {
+        m_bridgeTopologyInterval = bridgeTopologyInterval;
+    }
+
+    public Long getTopologyInterval() {
+        return m_topologyInterval == null? 30000l : m_topologyInterval;
+    }
+
+    public void setTopologyInterval(Long topologyInterval) {
         m_topologyInterval = topologyInterval;
     }
 
@@ -219,6 +233,7 @@ public class EnlinkdConfiguration implements java.io.Serializable {
             m_threads, 
             m_initialSleepTime, 
             m_rescanInterval, 
+            m_bridgeTopologyInterval,
             m_topologyInterval,
             m_maxBft, 
             m_discoveryBridgeThreads,
@@ -241,6 +256,7 @@ public class EnlinkdConfiguration implements java.io.Serializable {
             return Objects.equals(this.m_threads, that.m_threads)
                 && Objects.equals(this.m_initialSleepTime, that.m_initialSleepTime)
                 && Objects.equals(this.m_rescanInterval, that.m_rescanInterval)
+                && Objects.equals(this.m_bridgeTopologyInterval, that.m_bridgeTopologyInterval)
                 && Objects.equals(this.m_topologyInterval, that.m_topologyInterval)
                 && Objects.equals(this.m_maxBft, that.m_maxBft)
                 && Objects.equals(this.m_discoveryBridgeThreads, that.m_discoveryBridgeThreads)
