@@ -54,7 +54,7 @@ public class IsIsProtocol extends Protocol<IsIsElement> {
     }
 
     @Override
-    public void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) throws SQLException {
+    public void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) {
         List<IsIsElement> elements = createElements(nodes);
         context.getTopologyPersister().persist(elements);
         List<IsIsLink> links = createLinks(elements);

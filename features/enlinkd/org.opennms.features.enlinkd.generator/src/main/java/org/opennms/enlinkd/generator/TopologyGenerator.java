@@ -47,9 +47,12 @@ import org.slf4j.LoggerFactory;
  * .build();
  * generator.generateTopology();
  * </code>
+ *
+ * The generated nodes will belong to the category "GeneratedNode".
  */
 public class TopologyGenerator {
-    private final static Logger LOG = LoggerFactory.getLogger(TopologyGenerator.class);
+
+    public static final String CATEGORY_NAME = "GeneratedNode";
 
     public static TopologyGeneratorBuilder builder() {
         return new TopologyGeneratorBuilder();
@@ -114,17 +117,19 @@ public class TopologyGenerator {
         return (value == null) ? defaultValue : value;
     }
 
-    public void generateTopology() throws SQLException {
+    public void generateTopology() {
         topologyContext.currentProgress("Generating a topology with the following settings:%n  amountNodes=%s,"
                         + "%n  amountElements=%s,%n  amountLinks=%s,%n  amountSnmpInterfaces=%s,%n  amountIpInterfaces=%s,"
                         + "%n  topology=%s,%n  protocol=%s,%n  deleteExistingTolology=%s", this.amountNodes, this.amountElements,
                 this.amountLinks, this.amountSnmpInterfaces, this.amountIpInterfaces, this.topology, this.protocol,
                 this.deleteExistingTolology);
 
-        if (deleteExistingTolology) {
-            this.topologyContext.getTopologyPersister().deleteTopology();
-        }
+        deleteTopology(); // Let's first get rid of old generated topologies
         getProtocol().createAndPersistNetwork();
+    }
+
+    public void deleteTopology() {
+        this.topologyContext.getTopologyPersister().deleteTopology();
     }
 
     private org.opennms.enlinkd.generator.protocol.Protocol getProtocol() {

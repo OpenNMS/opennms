@@ -56,7 +56,7 @@ public class OspfProtocol extends Protocol<OspfElement> {
     }
 
     @Override
-    public void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) throws SQLException {
+    public void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) {
         List<OspfLink> links = createLinks(nodes);
         context.getTopologyPersister().persist(links);
     }

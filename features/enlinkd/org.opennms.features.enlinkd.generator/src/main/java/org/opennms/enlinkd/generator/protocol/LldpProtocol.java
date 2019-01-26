@@ -55,7 +55,7 @@ public class LldpProtocol extends Protocol<LldpElement> {
     }
 
     @Override
-    public void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) throws SQLException {
+    public void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) {
         List<LldpElement> elements = createElements(nodes);
         context.getTopologyPersister().persist(elements);
         List<LldpLink> links = createLinks(elements);

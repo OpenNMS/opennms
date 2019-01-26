@@ -43,6 +43,7 @@ import org.opennms.enlinkd.generator.topology.RandomConnectedPairGenerator;
 import org.opennms.enlinkd.generator.topology.UndirectedPairGenerator;
 import org.opennms.enlinkd.generator.util.InetAddressGenerator;
 import org.opennms.enlinkd.generator.util.RandomUtil;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -75,7 +76,7 @@ public abstract class Protocol<Element> {
         this.context = context;
     }
 
-    public void createAndPersistNetwork() throws SQLException {
+    public void createAndPersistNetwork(){
         this.context.currentProgress("Creating %s %s topology with %s Nodes, %s Elements, %s Links, %s SnmpInterfaces, %s IpInterfaces:",
                 this.topology,
                 this.getProtocol(),
@@ -84,7 +85,9 @@ public abstract class Protocol<Element> {
                 this.amountLinks,
                 this.amountSnmpInterfaces,
                 this.amountIpInterfaces);
-        List<OnmsNode> nodes = createNodes(amountNodes);
+        OnmsCategory category = createCategory();
+        context.getTopologyPersister().persist(category);
+        List<OnmsNode> nodes = createNodes(amountNodes, category);
         context.getTopologyPersister().persist(nodes);
 
         createAndPersistProtocolSpecificEntities(nodes);
@@ -95,9 +98,15 @@ public abstract class Protocol<Element> {
         context.getTopologyPersister().persist(ipInterfaces);
     }
 
-    protected abstract void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) throws SQLException;
+    protected abstract void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes);
 
     protected abstract TopologyGenerator.Protocol getProtocol();
+
+    private OnmsCategory createCategory() {
+        OnmsCategory category = new OnmsCategory();
+        category.setName(TopologyGenerator.CATEGORY_NAME);
+        return category;
+    }
 
     private OnmsMonitoringLocation createMonitoringLocation() {
         OnmsMonitoringLocation location = new OnmsMonitoringLocation();
@@ -106,20 +115,21 @@ public abstract class Protocol<Element> {
         return location;
     }
 
-    protected List<OnmsNode> createNodes(int amountNodes) {
+    protected List<OnmsNode> createNodes(int amountNodes, OnmsCategory category) {
         OnmsMonitoringLocation location = createMonitoringLocation();
         ArrayList<OnmsNode> nodes = new ArrayList<>();
         for (int i = 0; i < amountNodes; i++) {
-            nodes.add(createNode(i, location));
+            nodes.add(createNode(i, location, category));
         }
         return nodes;
     }
 
-    protected OnmsNode createNode(int count, OnmsMonitoringLocation location) {
+    protected OnmsNode createNode(int count, OnmsMonitoringLocation location, OnmsCategory category) {
         OnmsNode node = new OnmsNode();
         node.setId(count); // we assume we have an empty database and can just generate the ids
         node.setLabel("Node" + count);
         node.setLocation(location);
+        node.addCategory(category);
         return node;
     }
 

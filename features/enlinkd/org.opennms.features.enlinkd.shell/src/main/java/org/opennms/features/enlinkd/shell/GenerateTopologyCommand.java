@@ -65,7 +65,7 @@ public class GenerateTopologyCommand implements Action {
     @Option(name = "--protocol", description = "type of protocol (cdp | isis | lldp | ospf)")
     private String protocol;
 
-    @Option(name = "--delete", description = "delete existing toplogogy (all OnmsNodes, CdpElements and CdpLinks)")
+    @Option(name = "--delete", description = "delete generated toplogogy (OnmsNodes, XxElements, XxLinks, SnmpInterfaces, IpInterfaces)")
     private Boolean deleteExistingTolology;
 
     @Reference
@@ -95,7 +95,11 @@ public class GenerateTopologyCommand implements Action {
                 .persister(new TopologyPersister(genericPersistenceAccessor, progressCallback))
                 .progressCallback(progressCallback)
                 .build();
-        generator.generateTopology();
+        if(deleteExistingTolology != null && deleteExistingTolology) {
+            generator.deleteTopology();
+        } else {
+            generator.generateTopology();
+        }
     }
 
     private <E extends Enum> E toEnumOrNull(Class<E> enumClass, String s) {

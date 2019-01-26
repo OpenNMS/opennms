@@ -55,7 +55,7 @@ public class CdpProtocol extends Protocol<CdpElement> {
     }
 
     @Override
-    public void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) throws SQLException {
+    public void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) {
         List<CdpElement> cdpElements = createCdpElements(nodes);
         context.getTopologyPersister().persist(cdpElements);
         List<CdpLink> links = createCdpLinks(cdpElements);

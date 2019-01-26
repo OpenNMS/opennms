@@ -40,6 +40,7 @@ import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -57,6 +58,12 @@ public class TopologyPersister {
         this.progressCallback = progressCallback;
     }
 
+    public <E> void persist(E entity) {
+        progressCallback.currentProgress("  Inserting %s:", entity.getClass().getSimpleName());
+        this.genericPersistenceAccessor.save(entity);
+        progressCallback.currentProgress("    Inserting of %s done.", entity.getClass().getSimpleName());
+    }
+
     public <E> void persist(List<E> elements) {
         if (elements.size() < 1) {
             return; // nothing do do
@@ -71,8 +78,8 @@ public class TopologyPersister {
         }
     }
 
-    public void deleteTopology() throws SQLException {
-        progressCallback.currentProgress("Deleting existing topology: ");
+    public void deleteTopology() {
+        progressCallback.currentProgress("Deleting existing generated topology if present: ");
         // we need to delete in this order to avoid foreign key conflicts:
         List<Class<?>> deleteOperations = Arrays.asList(
                 CdpLink.class,
@@ -86,18 +93,34 @@ public class TopologyPersister {
                 OnmsSnmpInterface.class);
 
         for (Class<?> clazz : deleteOperations) {
-            this.genericPersistenceAccessor.deleteAll(clazz);
-            progressCallback.currentProgress("  %ss deleted.", clazz.getSimpleName());
+            deleteEntities(clazz);
         }
         deleteNodes();
-        progressCallback.currentProgress("  OnmsNodes deleted.");
+        deleteCategory();
+    }
+
+    private void deleteEntities(Class<?> clazz) {
+        deleteEntities(
+                clazz,
+                String.format("SELECT e FROM %s e JOIN e.node n JOIN n.categories c WHERE c.name = '%s'", clazz.getSimpleName(), TopologyGenerator.CATEGORY_NAME));
     }
 
     private void deleteNodes() {
-        // We need a specific implementation here since OnmsNode consists of 2 tables and the standard delete implementation
-        // doesn't seem to work...
-        List<OnmsNode> allNodes = this.genericPersistenceAccessor.findAll(OnmsNode.class);
-        this.genericPersistenceAccessor.deleteAll(allNodes);
+        deleteEntities(
+                OnmsNode.class,
+                String.format("SELECT n FROM OnmsNode n JOIN n.categories c WHERE c.name = '%s'", TopologyGenerator.CATEGORY_NAME));
+    }
+
+    private void deleteCategory() {
+        deleteEntities(
+                OnmsCategory.class,
+                String.format("SELECT c FROM OnmsCategory c WHERE c.name = '%s'", TopologyGenerator.CATEGORY_NAME));
+    }
+
+    private <E> void deleteEntities(Class<?> clazz, String sql) {
+        List<?> entities = this.genericPersistenceAccessor.find(sql);
+        this.genericPersistenceAccessor.deleteAll(entities);
+        progressCallback.currentProgress("  %s %ss deleted.", entities.size(), clazz.getSimpleName());
     }
 
 }
