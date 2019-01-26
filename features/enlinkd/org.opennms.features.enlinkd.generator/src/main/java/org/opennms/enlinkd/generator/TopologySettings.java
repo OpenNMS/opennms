@@ -112,10 +112,10 @@ public class TopologySettings {
 
     public static class TopologySettingsBuilder {
         private Integer amountNodes;
-        private int amountElements;
-        private int amountLinks;
-        private int amountSnmpInterfaces;
-        private int amountIpInterfaces;
+        private Integer amountElements;
+        private Integer amountLinks;
+        private Integer amountSnmpInterfaces;
+        private Integer amountIpInterfaces;
         private TopologyGenerator.Topology topology;
         private TopologyGenerator.Protocol protocol;
 
@@ -127,22 +127,22 @@ public class TopologySettings {
             return this;
         }
 
-        public TopologySettingsBuilder amountElements(int amountElements) {
+        public TopologySettingsBuilder amountElements(Integer amountElements) {
             this.amountElements = amountElements;
             return this;
         }
 
-        public TopologySettingsBuilder amountLinks(int amountLinks) {
+        public TopologySettingsBuilder amountLinks(Integer amountLinks) {
             this.amountLinks = amountLinks;
             return this;
         }
 
-        public TopologySettingsBuilder amountSnmpInterfaces(int amountSnmpInterfaces) {
+        public TopologySettingsBuilder amountSnmpInterfaces(Integer amountSnmpInterfaces) {
             this.amountSnmpInterfaces = amountSnmpInterfaces;
             return this;
         }
 
-        public TopologySettingsBuilder amountIpInterfaces(int amountIpInterfaces) {
+        public TopologySettingsBuilder amountIpInterfaces(Integer amountIpInterfaces) {
             this.amountIpInterfaces = amountIpInterfaces;
             return this;
         }

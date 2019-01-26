@@ -61,7 +61,7 @@ public abstract class Protocol<Element> {
     }
 
     public void createAndPersistNetwork(){
-        this.context.currentProgress("Creating %s %s topology with %s Nodes, %s Elements, %s Links, %s SnmpInterfaces, %s IpInterfaces:",
+        this.context.currentProgress("%nCreating %s %s topology with %s Nodes, %s Elements, %s Links, %s SnmpInterfaces, %s IpInterfaces:",
                 topologySettings.getTopology(),
                 this.getProtocol(),
                 topologySettings.getAmountNodes(),

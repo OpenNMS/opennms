@@ -79,13 +79,6 @@ public class TopologyGenerator {
 
     public void generateTopology(TopologySettings topologySettings) {
         topologySettings.verify();
-        topologyContext.currentProgress("Generating a topology with the following settings:%n  amountNodes=%s,"
-                        + "%n  amountElements=%s,%n  amountLinks=%s,%n  amountSnmpInterfaces=%s,%n  amountIpInterfaces=%s,"
-                        + "%n  topology=%s,%n  protocol=%s,%n",
-                topologySettings.getAmountNodes(), topologySettings.getAmountElements(), topologySettings.getAmountLinks(),
-                topologySettings.getAmountSnmpInterfaces(), topologySettings.getAmountIpInterfaces(),
-                topologySettings.getTopology(), topologySettings.getProtocol());
-
         deleteTopology(); // Let's first get rid of old generated topologies
         getProtocol(topologySettings).createAndPersistNetwork();
     }

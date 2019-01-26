@@ -79,7 +79,7 @@ public class TopologyPersister {
     }
 
     public void deleteTopology() {
-        progressCallback.currentProgress("Deleting existing generated topology if present: ");
+        progressCallback.currentProgress("\nDeleting existing generated topology if present: ");
         // we need to delete in this order to avoid foreign key conflicts:
         List<Class<?>> deleteOperations = Arrays.asList(
                 CdpLink.class,
