@@ -33,8 +33,8 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
- * Takes a list and generates pairs among its emelents. It tries to distribute the pairs equally as in as least same
- * pairs as possible. Pair(a,b) counts as equal to Pair(b,a)
+ * Takes a list and generates pairs among its elements. It tries to distribute the pairs equally as in as least same
+ * pairs as possible. Pair(a,b) counts as equal to Pair(b,a).
  */
 public class UndirectedPairGenerator<E> implements PairGenerator<E> {
 

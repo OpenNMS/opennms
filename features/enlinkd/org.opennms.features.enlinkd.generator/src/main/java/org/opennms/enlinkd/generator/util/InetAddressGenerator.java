@@ -31,6 +31,7 @@ package org.opennms.enlinkd.generator.util;
 import com.google.common.net.InetAddresses;
 import java.net.InetAddress;
 
+/** Generates a sequence of InetAddresses, starting with 0.0.0.0. */
 public class InetAddressGenerator {
     private InetAddress last = InetAddresses.forString("0.0.0.0");
     public InetAddress next() {

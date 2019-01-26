@@ -28,7 +28,6 @@
 
 package org.opennms.enlinkd.generator.protocol;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,7 +35,7 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.enlinkd.generator.TopologyContext;
 import org.opennms.enlinkd.generator.TopologyGenerator;
-import org.opennms.enlinkd.generator.TopologyPersister;
+import org.opennms.enlinkd.generator.TopologySettings;
 import org.opennms.enlinkd.generator.topology.PairGenerator;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
@@ -48,9 +47,8 @@ public class IsIsProtocol extends Protocol<IsIsElement> {
     private final static Logger LOG = LoggerFactory.getLogger(IsIsProtocol.class);
     private TopologyGenerator.Protocol protocol = TopologyGenerator.Protocol.isis;
 
-    public IsIsProtocol(TopologyGenerator.Topology topology, int amountNodes, int amountLinks,
-                        int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyContext context) {
-        super(topology, amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, context);
+    public IsIsProtocol(TopologySettings topologySettings, TopologyContext context) {
+        super(topologySettings, context);
     }
 
     @Override
@@ -63,7 +61,7 @@ public class IsIsProtocol extends Protocol<IsIsElement> {
 
     private List<IsIsElement> createElements(List<OnmsNode> nodes) {
         ArrayList<IsIsElement> elements = new ArrayList<>();
-        for (int i = 0; i < amountElements; i++) {
+        for (int i = 0; i < topologySettings.getAmountElements(); i++) {
             OnmsNode node = nodes.get(i);
             elements.add(createElement(node));
         }
@@ -85,7 +83,7 @@ public class IsIsProtocol extends Protocol<IsIsElement> {
         List<IsIsLink> links = new ArrayList<>();
         Integer isisISAdjIndex = 0;
 
-        for (int i = 0; i < amountLinks; i++) {
+        for (int i = 0; i < topologySettings.getAmountLinks(); i++) {
 
             // We create 2 links that reference each other, see also LinkdToplologyProvider.match...Links()
             Pair<IsIsElement, IsIsElement> pair = pairs.next();

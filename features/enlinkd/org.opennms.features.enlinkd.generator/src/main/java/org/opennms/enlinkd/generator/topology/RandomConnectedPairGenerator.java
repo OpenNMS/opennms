@@ -35,7 +35,7 @@ import java.util.Random;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
- * pairs elements randomly but not the same element to itself
+ * Pairs elements randomly but not the same element to itself.
  */
 public class RandomConnectedPairGenerator<E> implements PairGenerator<E> {
     private final List<E> elements;

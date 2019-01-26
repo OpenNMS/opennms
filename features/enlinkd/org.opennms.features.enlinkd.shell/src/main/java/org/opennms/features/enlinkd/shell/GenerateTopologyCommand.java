@@ -38,6 +38,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.enlinkd.generator.TopologyGenerator;
 import org.opennms.enlinkd.generator.TopologyPersister;
+import org.opennms.enlinkd.generator.TopologySettings;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 
 @Command(scope = "enlinkd", name = "generate-topology", description = "Creates a linkd topology")
@@ -73,7 +74,7 @@ public class GenerateTopologyCommand implements Action {
 
     private void invokeGenerator() throws SQLException, IOException {
 
-        // We print directly to the system out so it will appear in the console
+        // We print directly to System.out so it will appear in the console
         TopologyGenerator.ProgressCallback progressCallback = new TopologyGenerator.ProgressCallback(){
 
             @Override
@@ -83,22 +84,22 @@ public class GenerateTopologyCommand implements Action {
         };
 
         TopologyGenerator generator = TopologyGenerator.builder()
-                .amountElements(this.amountElements)
-                .amountIpInterfaces(this.amountIpInterfaces)
-                .amountLinks(this.amountLinks)
-                .amountNodes(this.amountNodes)
-                .amountElements(this.amountElements)
-                .amountSnmpInterfaces(amountSnmpInterfaces)
-                .deleteExistingTolology(this.deleteExistingTolology)
-                .protocol(toEnumOrNull(TopologyGenerator.Protocol.class, this.protocol))
-                .topology(toEnumOrNull(TopologyGenerator.Topology.class, this.topology))
                 .persister(new TopologyPersister(genericPersistenceAccessor, progressCallback))
                 .progressCallback(progressCallback)
                 .build();
         if(deleteExistingTolology != null && deleteExistingTolology) {
             generator.deleteTopology();
         } else {
-            generator.generateTopology();
+            TopologySettings settings = TopologySettings.builder()
+                    .amountElements(this.amountElements)
+                    .amountIpInterfaces(this.amountIpInterfaces)
+                    .amountLinks(this.amountLinks)
+                    .amountNodes(this.amountNodes)
+                    .amountSnmpInterfaces(amountSnmpInterfaces)
+                    .protocol(toEnumOrNull(TopologyGenerator.Protocol.class, this.protocol))
+                    .topology(toEnumOrNull(TopologyGenerator.Topology.class, this.topology))
+                    .build();
+            generator.generateTopology(settings);
         }
     }
 

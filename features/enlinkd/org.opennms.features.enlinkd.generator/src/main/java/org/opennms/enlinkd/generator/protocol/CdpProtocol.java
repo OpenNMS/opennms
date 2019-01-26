@@ -28,7 +28,6 @@
 
 package org.opennms.enlinkd.generator.protocol;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -37,6 +36,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.enlinkd.generator.TopologyContext;
 import org.opennms.enlinkd.generator.TopologyGenerator;
+import org.opennms.enlinkd.generator.TopologySettings;
 import org.opennms.enlinkd.generator.topology.PairGenerator;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
@@ -49,9 +49,8 @@ public class CdpProtocol extends Protocol<CdpElement> {
     private final static Logger LOG = LoggerFactory.getLogger(CdpProtocol.class);
     private TopologyGenerator.Protocol protocol = TopologyGenerator.Protocol.cdp;
 
-    public CdpProtocol(TopologyGenerator.Topology topology, int amountNodes, int amountLinks,
-                       int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyContext context) {
-        super(topology, amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, context);
+    public CdpProtocol(TopologySettings topologySettings, TopologyContext context) {
+        super(topologySettings, context);
     }
 
     @Override
@@ -64,7 +63,7 @@ public class CdpProtocol extends Protocol<CdpElement> {
 
     private List<CdpElement> createCdpElements(List<OnmsNode> nodes) {
         ArrayList<CdpElement> cdpElements = new ArrayList<>();
-        for (int i = 0; i < amountElements; i++) {
+        for (int i = 0; i < topologySettings.getAmountElements(); i++) {
             OnmsNode node = nodes.get(i);
             cdpElements.add(createCdpElement(node));
         }
@@ -84,7 +83,7 @@ public class CdpProtocol extends Protocol<CdpElement> {
     private List<CdpLink> createCdpLinks(List<CdpElement> cdpElements) {
         PairGenerator<CdpElement> pairs = createPairGenerator(cdpElements);
         List<CdpLink> links = new ArrayList<>();
-        for (int i = 0; i < amountLinks; i++) {
+        for (int i = 0; i < topologySettings.getAmountLinks(); i++) {
 
             // We create 2 links that reference each other, see also LinkdToplologyProvider.matchCdpLinks()
             Pair<CdpElement, CdpElement> pair = pairs.next();

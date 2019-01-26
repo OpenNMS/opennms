@@ -29,7 +29,6 @@
 package org.opennms.enlinkd.generator.protocol;
 
 import java.net.InetAddress;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -37,22 +36,19 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.enlinkd.generator.TopologyContext;
 import org.opennms.enlinkd.generator.TopologyGenerator;
+import org.opennms.enlinkd.generator.TopologySettings;
 import org.opennms.enlinkd.generator.topology.PairGenerator;
 import org.opennms.enlinkd.generator.util.InetAddressGenerator;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.model.OnmsNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class OspfProtocol extends Protocol<OspfElement> {
-    private final static Logger LOG = LoggerFactory.getLogger(OspfProtocol.class);
     private TopologyGenerator.Protocol protocol = TopologyGenerator.Protocol.ospf;
     private InetAddressGenerator inetAddressCreator = new InetAddressGenerator();
 
-    public OspfProtocol(TopologyGenerator.Topology topology, int amountNodes, int amountLinks,
-                        int amountElements, int amountSnmpInterfaces, int amountIpInterfaces, TopologyContext context) {
-        super(topology, amountNodes, amountLinks, amountElements, amountSnmpInterfaces, amountIpInterfaces, context);
+    public OspfProtocol(TopologySettings topologySettings, TopologyContext context) {
+        super(topologySettings, context);
     }
 
     @Override
@@ -64,7 +60,7 @@ public class OspfProtocol extends Protocol<OspfElement> {
     private List<OspfLink> createLinks(List<OnmsNode> nodes) {
         PairGenerator<OnmsNode> pairs = createPairGenerator(nodes);
         List<OspfLink> links = new ArrayList<>();
-        for (int i = 0; i < amountLinks; i++) {
+        for (int i = 0; i < topologySettings.getAmountLinks(); i++) {
 
             // We create 2 links that reference each other, see also LinkdToplologyProvider.matchCdpLinks()
             Pair<OnmsNode, OnmsNode> pair = pairs.next();

@@ -32,6 +32,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+/**
+ * Creates Pairs from the given list where each element is linked to the next one in the list. The end of the list is
+ * connected to the beginning.
+ */
 public class LinkedPairGenerator<E> implements PairGenerator<E> {
 
     private final List<E> elements;

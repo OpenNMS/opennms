@@ -29,14 +29,13 @@
 package org.opennms.enlinkd.generator.protocol;
 
 import java.net.InetAddress;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.opennms.enlinkd.generator.TopologyContext;
 import org.opennms.enlinkd.generator.TopologyGenerator;
-import org.opennms.enlinkd.generator.TopologyGenerator.Topology;
+import org.opennms.enlinkd.generator.TopologySettings;
 import org.opennms.enlinkd.generator.topology.LinkedPairGenerator;
 import org.opennms.enlinkd.generator.topology.PairGenerator;
 import org.opennms.enlinkd.generator.topology.RandomConnectedPairGenerator;
@@ -48,46 +47,31 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 public abstract class Protocol<Element> {
 
-    private final static Logger LOG = LoggerFactory.getLogger(CdpProtocol.class);
-
-    final Topology topology;
-    private final int amountNodes;
-    final int amountLinks;
-    final int amountElements;
-    final int amountSnmpInterfaces;
-    final int amountIpInterfaces;
+    final TopologySettings topologySettings;
     final TopologyContext context;
     private final RandomUtil random = new RandomUtil();
 
-    public Protocol(Topology topology, int amountNodes, int amountLinks, int amountElements,
-                    int amountSnmpInterfaces, int amountIpInterfaces, TopologyContext context) {
-        this.topology = topology;
-        this.amountNodes = amountNodes;
-        this.amountLinks = amountLinks;
-        this.amountElements = amountElements;
-        this.amountSnmpInterfaces = amountSnmpInterfaces;
-        this.amountIpInterfaces = amountIpInterfaces;
+    public Protocol(TopologySettings topologySettings, TopologyContext context) {
+        this.topologySettings = topologySettings;
         this.context = context;
     }
 
     public void createAndPersistNetwork(){
         this.context.currentProgress("Creating %s %s topology with %s Nodes, %s Elements, %s Links, %s SnmpInterfaces, %s IpInterfaces:",
-                this.topology,
+                topologySettings.getTopology(),
                 this.getProtocol(),
-                this.amountNodes,
-                this.amountElements,
-                this.amountLinks,
-                this.amountSnmpInterfaces,
-                this.amountIpInterfaces);
+                topologySettings.getAmountNodes(),
+                topologySettings.getAmountElements(),
+                topologySettings.getAmountElements(),
+                topologySettings.getAmountSnmpInterfaces(),
+                topologySettings.getAmountIpInterfaces());
         OnmsCategory category = createCategory();
         context.getTopologyPersister().persist(category);
-        List<OnmsNode> nodes = createNodes(amountNodes, category);
+        List<OnmsNode> nodes = createNodes(topologySettings.getAmountNodes(), category);
         context.getTopologyPersister().persist(nodes);
 
         createAndPersistProtocolSpecificEntities(nodes);
@@ -135,7 +119,7 @@ public abstract class Protocol<Element> {
 
     protected List<OnmsSnmpInterface> createSnmpInterfaces(List<OnmsNode> nodes) {
         ArrayList<OnmsSnmpInterface> interfaces = new ArrayList<>();
-        for (int i = 0; i < this.amountSnmpInterfaces; i++) {
+        for (int i = 0; i < topologySettings.getAmountSnmpInterfaces(); i++) {
             interfaces.add(createSnmpInterface(i, random.getRandom(nodes)));
         }
         return interfaces;
@@ -161,7 +145,7 @@ public abstract class Protocol<Element> {
     protected List<OnmsIpInterface> createIpInterfaces(List<OnmsSnmpInterface> snmps) {
         ArrayList<OnmsIpInterface> interfaces = new ArrayList<>();
         InetAddressGenerator inetGenerator = new InetAddressGenerator();
-        for (int i = 0; i < this.amountIpInterfaces; i++) {
+        for (int i = 0; i < topologySettings.getAmountIpInterfaces(); i++) {
             interfaces.add(createIpInterface(i, random.getRandom(snmps), inetGenerator.next()));
         }
         return interfaces;
@@ -179,14 +163,14 @@ public abstract class Protocol<Element> {
 
 
     protected <E> PairGenerator<E> createPairGenerator(List<E> elements) {
-        if (TopologyGenerator.Topology.complete == topology) {
+        if (TopologyGenerator.Topology.complete == topologySettings.getTopology()) {
             return new UndirectedPairGenerator<>(elements);
-        } else if (TopologyGenerator.Topology.ring == topology) {
+        } else if (TopologyGenerator.Topology.ring == topologySettings.getTopology()) {
             return new LinkedPairGenerator<>(elements);
-        } else if (TopologyGenerator.Topology.random == topology) {
+        } else if (TopologyGenerator.Topology.random == topologySettings.getTopology()) {
             return new RandomConnectedPairGenerator<>(elements);
         } else {
-            throw new IllegalArgumentException("unknown topology: " + topology);
+            throw new IllegalArgumentException("unknown topology: " + topologySettings.getTopology());
         }
     }
 }
