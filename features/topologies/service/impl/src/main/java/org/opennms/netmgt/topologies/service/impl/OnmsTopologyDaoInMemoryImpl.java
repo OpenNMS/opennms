@@ -39,11 +39,13 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyUpdater;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 
 public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
 
-
+    Logger LOG = LoggerFactory.getLogger(OnmsTopologyDaoInMemoryImpl.class);
     private Map<OnmsTopologyProtocol,OnmsTopologyUpdater> m_updatersMap = new HashMap<OnmsTopologyProtocol, OnmsTopologyUpdater>();
     Set<OnmsTopologyConsumer> m_consumers = new HashSet<OnmsTopologyConsumer>();
 
@@ -126,5 +128,20 @@ public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
                 .filter(consumer ->  consumer.getProtocols().contains(protocol))
                 .forEach(consumer -> consumer.consume(message));            
         }
+    }
+
+    @Override
+    public void load(String protocol) {
+        OnmsTopologyProtocol onmsprotocol;
+        try {
+            onmsprotocol = OnmsTopologyProtocol.create(protocol);
+        } catch (OnmsTopologyException e) {
+            LOG.error("load: {}", e.getMessage());
+            return;
+        }
+        if (m_updatersMap.containsKey(onmsprotocol)) {
+            m_updatersMap.get(onmsprotocol).load();
+        }
+        
     }
 }

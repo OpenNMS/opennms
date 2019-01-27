@@ -31,6 +31,8 @@ package org.opennms.netmgt.topologies.service.api;
 public interface OnmsTopologyUpdater {
     
     OnmsTopology getTopology();
+
+    void load();
     
     OnmsTopologyProtocol getProtocol() throws OnmsTopologyException;
     
