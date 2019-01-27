@@ -201,6 +201,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     @Override
     public Defaults getDefaults() {
+        m_onmsTopologyDao.load(ProtocolSupported.NODES.name());
         return new Defaults()
                 .withSemanticZoomLevel(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL)
                 .withPreferredLayout("D3 Layout") // D3 Layout
