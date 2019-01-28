@@ -2,7 +2,7 @@
 <nav class="navbar navbar-expand-md navbar-dark bg-dark" id="header" role="navigation">
     <!-- Brand and toggle get grouped for better mobile display -->
     <a class="navbar-brand" href="${baseHref}index.jsp">
-        <img id="logo" src="${baseHref}images/o-green-trans.svg" alt="OpenNMS" onerror="this.src='${baseHref}images/o-green-trans.png'" />&nbsp;
+        <img id="logo" src="${baseHref}images/o-green-trans.svg" alt="OpenNMS" width="40px" height="40px" onerror="this.src='${baseHref}images/o-green-trans.png'" />&nbsp;
     </a>
     <button type="button" title="Toggle navigation" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
         <span class="navbar-toggler-icon"></span>
