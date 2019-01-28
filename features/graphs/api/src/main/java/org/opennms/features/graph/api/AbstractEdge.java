@@ -115,22 +115,39 @@ public class AbstractEdge<V extends Vertex> implements Edge {
 
     @Override
     public GenericEdge asGenericEdge() {
-//        // TODO MVR set namespace and id
-//        final GenericEdge genericEdge = new GenericEdge(source, target);
-//        if (getLabel() != null) {
-//            genericEdge.setProperty(GenericProperties.LABEL, getLabel());
-//        } else {
-//            genericEdge.setProperty(GenericProperties.LABEL, String.format("connection:%s:%s", getSource().getId(), getTarget().getId()));
-//        }
+        // TODO MVR set namespace and id
+        final GenericEdge genericEdge = new GenericEdge(source, target);
+        genericEdge.setLabel(getLabel());
+        genericEdge.setId(getId());
+        genericEdge.setNamespace(getNamespace());
+        // TODO MVR tooltip
 //        if (getTooltip() != null) {
 //            genericEdge.setProperty(GenericProperties.TOOLTIP, getTooltip());
 //        }
-//        return genericEdge;
-        return null;
+        return genericEdge;
     }
 
     @Override
     public String toString() {
         return asGenericEdge().toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractEdge<?> that = (AbstractEdge<?>) o;
+        return Objects.equals(source.getId(), that.source.getId())
+                && Objects.equals(source.getNamespace(), that.source.getNamespace())
+                && Objects.equals(target.getId(), that.target.getId())
+                && Objects.equals(target.getNamespace(), that.target.getNamespace())
+                && Objects.equals(namespace, that.namespace)
+                &&  Objects.equals(id, that.id)
+                && Objects.equals(label, that.label);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(source.getId(), source.getNamespace(), target.getId(), target.getNamespace(), namespace, id, label);
     }
 }

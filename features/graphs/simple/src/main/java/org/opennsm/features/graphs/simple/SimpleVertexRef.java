@@ -26,41 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.topology;
+package org.opennsm.features.graphs.simple;
 
-import javax.persistence.CascadeType;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import org.opennms.features.graph.api.VertexRef;
 
-@Entity
-@DiscriminatorValue("edge")
-public class EdgeEntity extends AbstractGraphEntity {
+public class SimpleVertexRef implements VertexRef {
 
-    // TODO MVR we don't need this. This could be a property instead (due to vertex-ref), so source or target may not exist in the table
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name="source_vertex_id", referencedColumnName = "id", nullable = false, updatable = true)
-    private VertexEntity source;
+    private final String namespace;
+    private final String id;
 
-    // TODO MVR we don't need this. This could be a property instead (due to vertex-ref)
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name="target_vertex_id", referencedColumnName = "id", nullable = false, updatable = true)
-    private VertexEntity target;
-
-    public VertexEntity getSource() {
-        return source;
+    public SimpleVertexRef(VertexRef ref) {
+        this(ref.getNamespace(), ref.getId());
     }
 
-    public void setSource(VertexEntity source) {
-        this.source = source;
+    public SimpleVertexRef(String namespace, String id) {
+        this.namespace = namespace;
+        this.id = id;
     }
 
-    public VertexEntity getTarget() {
-        return target;
+    @Override
+    public String getNamespace() {
+        return namespace;
     }
 
-    public void setTarget(VertexEntity target) {
-        this.target = target;
+    @Override
+    public String getId() {
+        return id;
     }
 }

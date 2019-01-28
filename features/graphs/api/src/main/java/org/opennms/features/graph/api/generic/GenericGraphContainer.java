@@ -119,4 +119,18 @@ public class GenericGraphContainer implements GraphContainer<GenericVertex, Gene
     public void setProperty(String key, Object value) {
         properties.put(key, value);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GenericGraphContainer that = (GenericGraphContainer) o;
+        return Objects.equals(graphs, that.graphs) &&
+                Objects.equals(properties, that.properties);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(graphs, properties);
+    }
 }

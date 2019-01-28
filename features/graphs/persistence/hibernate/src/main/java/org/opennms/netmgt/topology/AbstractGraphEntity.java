@@ -31,6 +31,7 @@ package org.opennms.netmgt.topology;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -64,7 +65,7 @@ public class AbstractGraphEntity {
     private String namespace;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "element_id", referencedColumnName = "id", nullable = false, updatable = false)
+    @JoinColumn(name = "element_id", referencedColumnName = "id", nullable = false, updatable = true)
     @BatchSize(size=1000)
     private List<PropertyEntity> properties = new ArrayList<>();
 
@@ -92,21 +93,50 @@ public class AbstractGraphEntity {
         this.properties = properties;
     }
 
-    protected void setProperty(String key, String value) {
-        PropertyEntity p = getProperty(key);
-        if (p == null) {
-            p = new PropertyEntity();
-            p.setName(key);
-            p.setValue(value);
-            p.setType(String.class);
-            properties.add(p);
-        } else {
-            p.setValue(value);
-            p.setType(String.class);
+    public PropertyEntity getProperty(String key) {
+        return properties.stream().filter(p -> p.getName().equalsIgnoreCase(key)).findFirst().orElse(null);
+    }
+
+    // TODO MVR we could simplyfy this b just removing all and then reinsert?
+    public void mergeProperties(List<PropertyEntity> propertyEntities) {
+        for (PropertyEntity propertyEntity : propertyEntities) {
+            final PropertyEntity alreadyExisting = getProperty(propertyEntity.getName());
+            if (alreadyExisting != null) {
+                alreadyExisting.setType(propertyEntity.getType());
+                alreadyExisting.setValue(propertyEntity.getValue());
+            } else {
+                getProperties().add(propertyEntity);
+            }
+        }
+        // This may be caused if a property name has changed. So we remove all non existing names
+        if (getProperties().size() != propertyEntities.size()) {
+            final List<String> newPropertyNames = propertyEntities.stream().map(pe -> pe.getName()).collect(Collectors.toList());
+            final List<String> allPropertyNames = getProperties().stream().map(pe -> pe.getName()).collect(Collectors.toList());
+            allPropertyNames.removeAll(newPropertyNames);
+            // Now remove all
+            allPropertyNames.forEach(propertyName -> getProperties().remove(getProperty(propertyName)));
         }
     }
 
-    public PropertyEntity getProperty(String key) {
-        return properties.stream().filter(p -> p.getName().equalsIgnoreCase(key)).findFirst().orElse(null);
+    public void setProperty(String key, Class<?> type, String stringValue) {
+        final PropertyEntity existingProperty = getProperty(key);
+        if (existingProperty != null) {
+            existingProperty.setType(type);
+            existingProperty.setValue(stringValue);
+        } else {
+            final PropertyEntity propertyEntity = new PropertyEntity();
+            propertyEntity.setType(type);
+            propertyEntity.setName(key);
+            propertyEntity.setValue(stringValue);
+            properties.add(propertyEntity);
+        }
+    }
+
+    protected String getPropertyValue(String key) {
+        final PropertyEntity property = getProperty(key);
+        if (property != null) {
+            return property.getValue();
+        }
+        return null;
     }
 }

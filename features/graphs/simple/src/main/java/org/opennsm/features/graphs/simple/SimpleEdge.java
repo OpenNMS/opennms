@@ -29,6 +29,7 @@
 package org.opennsm.features.graphs.simple;
 
 import org.opennms.features.graph.api.AbstractEdge;
+import org.opennms.features.graph.api.VertexRef;
 import org.opennms.features.graph.api.generic.GenericEdge;
 import org.opennms.features.graph.api.generic.GenericProperties;
 
@@ -38,9 +39,11 @@ public class SimpleEdge extends AbstractEdge<SimpleVertex> {
         super(source, target);
     }
 
-    public SimpleEdge(SimpleEdge e) {
-        super(e.getSource(), e.getTarget());
-        setLabel(e.getLabel());
+    public SimpleEdge(SimpleEdge copyMe) {
+        // We must copy the source and target as well, otherwise changing it's properties will change
+        // the "copyMe" properties as well
+        super(copyVertex(copyMe.getSource()), copyVertex(copyMe.getTarget()));
+        setLabel(copyMe.getLabel());
     }
 
     @Override
@@ -56,5 +59,12 @@ public class SimpleEdge extends AbstractEdge<SimpleVertex> {
 //            genericEdge.setProperty(GenericProperties.TOOLTIP, getTooltip());
 //        }
         return genericEdge;
+    }
+
+    private static VertexRef copyVertex(VertexRef ref) {
+        if (ref instanceof SimpleVertex) {
+            return new SimpleVertex((SimpleVertex) ref);
+        }
+        return new SimpleVertexRef(ref);
     }
 }

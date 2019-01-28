@@ -125,4 +125,20 @@ public class GenericGraph extends AbstractGraph<GenericVertex, GenericEdge> impl
     public Map<String, Object> getProperties() {
         return new HashMap<>(properties);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GenericGraph that = (GenericGraph) o;
+        final boolean equals = Objects.equals(properties, that.properties)
+                && Objects.equals(getVertices(), that.getVertices())
+                && Objects.equals(getEdges(), that.getEdges());
+        return equals;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(properties, getVertices(), getEdges());
+    }
 }

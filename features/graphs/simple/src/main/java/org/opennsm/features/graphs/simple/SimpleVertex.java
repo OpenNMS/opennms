@@ -28,6 +28,8 @@
 
 package org.opennsm.features.graphs.simple;
 
+import java.util.Objects;
+
 import org.opennms.features.graph.api.Vertex;
 import org.opennms.features.graph.api.aware.LocationAware;
 import org.opennms.features.graph.api.aware.NodeAware;
@@ -152,5 +154,24 @@ public class SimpleVertex implements Vertex, NodeAware, LocationAware {
             return getNodeInfo().getLocation();
         }
         return null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SimpleVertex that = (SimpleVertex) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(namespace, that.namespace) &&
+                Objects.equals(iconKey, that.iconKey) &&
+                Objects.equals(tooltip, that.tooltip) &&
+                Objects.equals(label, that.label) &&
+                Objects.equals(nodeRefString, that.nodeRefString) &&
+                Objects.equals(nodeInfo, that.nodeInfo);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, namespace, iconKey, tooltip, label, nodeRefString, nodeInfo);
     }
 }

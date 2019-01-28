@@ -30,6 +30,7 @@ package org.opennms.netmgt.topology;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
@@ -40,6 +41,7 @@ import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Where;
+import org.opennms.features.graph.api.generic.GenericProperties;
 
 @Entity
 @DiscriminatorValue("container")
@@ -47,8 +49,8 @@ public class GraphContainerEntity extends AbstractGraphEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(name = "graph_element_relations",
-            joinColumns = { @JoinColumn(name = "parent_id", referencedColumnName = "id", nullable = false, updatable = false) },
-            inverseJoinColumns = { @JoinColumn(name="child_id", referencedColumnName = "id", nullable = false, updatable = false) }
+            joinColumns = { @JoinColumn(name = "parent_id", referencedColumnName = "id", nullable = false, updatable = true) },
+            inverseJoinColumns = { @JoinColumn(name="child_id", referencedColumnName = "id", nullable = false, updatable = true) }
     )
     @Where(clause="TYPE='graph'")
     @BatchSize(size=1000)
@@ -60,5 +62,24 @@ public class GraphContainerEntity extends AbstractGraphEntity {
 
     public void setGraphs(List<GraphEntity> graphs) {
         this.graphs = graphs;
+    }
+
+    public GraphEntity getGraph(String namespace) {
+        return graphs.stream()
+                .filter(graphEntity -> graphEntity.getNamespace().equalsIgnoreCase(namespace))
+                .findAny().orElseThrow(() -> new NoSuchElementException("No graph with namespace '" + namespace + "' found"));
+    }
+
+    public String getLabel() {
+        return getPropertyValue(GenericProperties.LABEL);
+    }
+
+    public String getDescription() {
+        return getPropertyValue(GenericProperties.DESCRIPTION);
+    }
+
+    public void removeGraph(String namespace) {
+        final GraphEntity graphToRemove = getGraph(namespace);
+        getGraphs().remove(graphToRemove);
     }
 }

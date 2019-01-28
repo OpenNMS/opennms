@@ -34,8 +34,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.opennms.features.graph.api.generic.GenericEdge;
 import org.opennms.features.graph.api.generic.GenericGraph;
 import org.opennms.features.graph.api.generic.GenericGraphContainer;
+import org.opennms.features.graph.api.generic.GenericVertex;
 import org.opennms.features.graph.persistence.hibernate.converter.ConverterService;
 import org.opennms.netmgt.topology.EdgeEntity;
 import org.opennms.netmgt.topology.GraphContainerEntity;
@@ -65,34 +67,20 @@ public class GenericToEntityMapper {
         // Map Vertices
         long start = System.currentTimeMillis();
         System.out.println("\tConverting vertices");
-        final List<VertexEntity> vertexEntities = genericGraph.getVertices().stream().map(genericVertex -> {
-            final VertexEntity vertexEntity = new VertexEntity();
-            final List<PropertyEntity> vertexProperties = convertToPropertyEntities(genericVertex.getProperties());
-            vertexEntity.setNamespace(genericVertex.getNamespace());
-            vertexEntity.setProperties(vertexProperties);
-            return vertexEntity;
-        }).collect(Collectors.toList());
-        graphEntity.setVertices(vertexEntities);
+        final List<VertexEntity> vertexEntities = genericGraph.getVertices().stream().map(genericVertex -> toEntity(genericVertex)).collect(Collectors.toList());
+        graphEntity.addRelations(vertexEntities);
         System.out.println("\tDONE. Took " + (System.currentTimeMillis() - start) + "ms");
 
         // Map Edges
         start = System.currentTimeMillis();
         System.out.println("\tConverting edges");
-        final List<EdgeEntity> edgeEntities = genericGraph.getEdges().stream().map(genericEdge -> {
-            final EdgeEntity edgeEntity = new EdgeEntity();
-            edgeEntity.setSource(graphEntity.getVertexByVertexId(genericEdge.getSource().getId()));
-            edgeEntity.setTarget(graphEntity.getVertexByVertexId(genericEdge.getTarget().getId()));
-            edgeEntity.setNamespace(genericEdge.getNamespace());
-            final List<PropertyEntity> edgeProperties = convertToPropertyEntities(genericEdge.getProperties());
-            edgeEntity.setProperties(edgeProperties);
-            return edgeEntity;
-        }).collect(Collectors.toList());
-        graphEntity.setEdges(edgeEntities);
+        final List<EdgeEntity> edgeEntities = genericGraph.getEdges().stream().map(genericEdge -> toEntity(genericEdge, graphEntity)).collect(Collectors.toList());
+        graphEntity.addRelations(edgeEntities);
         System.out.println("\tDONE. Took " + (System.currentTimeMillis() - start) + "ms");
         return graphEntity;
     }
 
-    private List<PropertyEntity> convertToPropertyEntities(Map<String, Object> properties) {
+    public List<PropertyEntity> convertToPropertyEntities(Map<String, Object> properties) {
         Objects.requireNonNull(properties);
         final List<PropertyEntity> propertyEntities = new ArrayList<>();
         for(Map.Entry<String, Object> property : properties.entrySet()) {
@@ -112,5 +100,24 @@ public class GenericToEntityMapper {
             }
         }
         return propertyEntities;
+    }
+
+    public EdgeEntity toEntity(GenericEdge genericEdge, GraphEntity graphEntity) {
+        final EdgeEntity edgeEntity = new EdgeEntity();
+        // TODO MVR here we should just add the vertexRefs
+        edgeEntity.setSource(graphEntity.getVertexByVertexId(genericEdge.getSource().getId()));
+        edgeEntity.setTarget(graphEntity.getVertexByVertexId(genericEdge.getTarget().getId()));
+        edgeEntity.setNamespace(genericEdge.getNamespace());
+        final List<PropertyEntity> edgeProperties = convertToPropertyEntities(genericEdge.getProperties());
+        edgeEntity.setProperties(edgeProperties);
+        return edgeEntity;
+    }
+
+    public VertexEntity toEntity(GenericVertex genericVertex) {
+        final VertexEntity vertexEntity = new VertexEntity();
+        final List<PropertyEntity> vertexProperties = convertToPropertyEntities(genericVertex.getProperties());
+        vertexEntity.setNamespace(genericVertex.getNamespace());
+        vertexEntity.setProperties(vertexProperties);
+        return vertexEntity;
     }
 }
