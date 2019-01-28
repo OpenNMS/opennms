@@ -39,4 +39,12 @@
     </createView>
   </changeSet>
     
+  <!--Change the event_parameters table to use text instead of varchar for the parameter names. -->
+  <changeSet author="jwhite" id="foundation2018-event-parm-name-to-text">
+    <modifyDataType tableName="event_parameters" columnName="name" newDataType="text" />
+    <rollback>
+      <modifyDataType tableName="event_parameters" columnName="name" newDataType="varchar(256)" />
+    </rollback>
+  </changeSet>
+
 </databaseChangeLog>
