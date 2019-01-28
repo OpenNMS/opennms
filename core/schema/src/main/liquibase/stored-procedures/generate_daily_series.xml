@@ -7,12 +7,15 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-<changeSet runOnChange="true" author="thedesloge" id="generate_daily_series">
-<ext:createType name="daily_series">
-	<column name="ds" type="timestamp without time zone" />
-	<column name="de" type="timestamp without time zone" />
-	<column name="dow" type="integer" />
-</ext:createType>
+<changeSet runOnChange="false" author="thedesloge" id="generate_daily_series">
+	<validCheckSum>3:0d204277dd3aa194f43d827174b60797</validCheckSum>
+<sql>
+CREATE TYPE daily_series AS (
+	ds TIMESTAMP WITHOUT TIME ZONE,
+	de TIMESTAMP WITHOUT TIME ZONE,
+	dow INTEGER
+);
+</sql>
 <createProcedure>
 CREATE OR REPLACE FUNCTION generate_daily_series("start" timestamp without time zone, days integer)
   RETURNS SETOF daily_series AS

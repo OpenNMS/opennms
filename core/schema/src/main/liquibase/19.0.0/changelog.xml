@@ -17,11 +17,12 @@
   </changeSet>
 
   <changeSet author="seth" id="19.0.0-associate-nodes-with-monitoringlocation">
+    <validCheckSum>3:bfab5d017f22da87aaae6e385ff89d77</validCheckSum>
     <addColumn tableName="node">
       <column name="location" type="TEXT" value="localhost"/>
     </addColumn>
     <addNotNullConstraint tableName="node" columnName="location"/>
-    <addForeignKeyConstraint constraintName="fk_node_location" baseTableName="node" baseColumnNames="location" referencedTableName="monitoringlocations" referencedColumnNames="id" deleteCascade="true"/>
+    <addForeignKeyConstraint constraintName="fk_node_location" baseTableName="node" baseColumnNames="location" referencedTableName="monitoringlocations" referencedColumnNames="id" onDelete="CASCADE"/>
   </changeSet>
 
   <!-- Add fields for BSM reduce function: exponentatial propagate  -->
@@ -82,24 +83,25 @@
 
   <!-- Topology Layout Table -->
   <changeSet author="mvrueden" id="19.0.0-create-topology-layout-tables">
+      <validCheckSum>3:66309345c8560ad557744daff3139879</validCheckSum>
       <!-- The layout -->
       <createTable tableName="topo_layout" >
         <column name="id" type="text">
           <constraints nullable="false"/>
         </column>
-        <column name="created" type="DATETIME">
+        <column name="created" type="TIMESTAMP WITH TIME ZONE">
           <constraints nullable="false"/>
         </column>
         <column name="creator" type="text">
           <constraints nullable="false"/>
         </column>
-        <column name="updated" type="DATETIME">
+        <column name="updated" type="TIMESTAMP WITH TIME ZONE">
           <constraints nullable="false"/>
         </column>
         <column name="updator" type="text">
           <constraints nullable="false"/>
         </column>
-        <column name="last_used" type="DATETIME"/>
+        <column name="last_used" type="TIMESTAMP WITH TIME ZONE"/>
       </createTable>
       <addPrimaryKey tableName="topo_layout" columnNames="id" constraintName="topo_layout_pkey" />
 
