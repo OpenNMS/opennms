@@ -29,6 +29,7 @@
 package org.opennms.features.graph.persistence.hibernate;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 import org.opennms.features.graph.api.Graph;
@@ -88,7 +89,11 @@ public class DefaultGraphRepository implements GraphRepository {
 
     @Override
     public void deleteContainer(String containerId) {
-
+        final List<GraphContainerEntity> graphContainers = accessor.find("Select g from GraphContainerEntity g where g.namespace = ?", containerId);
+        if (graphContainers.isEmpty()) {
+            throw new NoSuchElementException("No container with id " + containerId + " found.");
+        }
+        accessor.delete(graphContainers.get(0));
     }
 
     @Override
@@ -124,26 +129,35 @@ public class DefaultGraphRepository implements GraphRepository {
                 // applied to the persistedEntity
                 containerChangeSet.getGraphsUpdated().forEach(changeSet -> {
                     final GraphEntity graphEntity = graphContainerEntity.getGraph(changeSet.getNamespace());
+
+                    // Update Graph details
+                    if (changeSet.getGraphInfo() != null) {
+                        graphEntity.apply(changeSet.getGraphInfo());
+                    }
+
+                    // Update Edges
                     changeSet.getEdgesRemoved().forEach(edge -> {
                         final EdgeEntity edgeEntity = graphEntity.getEdgeByProperty("id", edge.getId());
-                        graphEntity.getEdges().remove(edgeEntity);
+                        graphEntity.removeEdge(edgeEntity);
                     });
                     changeSet.getEdgesAdded().forEach(edge -> {
                         final EdgeEntity edgeEntity = genericToEntityMapper.toEntity((GenericEdge) edge, graphEntity);
-                        graphEntity.getEdges().add(edgeEntity);
+                        graphEntity.addEdge(edgeEntity);
                     });
                     changeSet.getEdgesUpdated().forEach(edge -> {
                         final EdgeEntity edgeEntity = graphEntity.getEdgeByProperty("id", edge.getId());
                         final List<PropertyEntity> propertyEntities = genericToEntityMapper.convertToPropertyEntities(((GenericEdge) edge).getProperties());
                         edgeEntity.mergeProperties(propertyEntities);
                     });
+
+                    // Update Vertices
                     changeSet.getVerticesRemoved().forEach(vertex -> {
                         final VertexEntity vertexEntity = graphEntity.getVertexByProperty("id", vertex.getId());
-                        graphEntity.getVertices().remove(vertexEntity);
+                        graphEntity.removeVertex(vertexEntity);
                     });
                     changeSet.getVerticesAdded().forEach(vertex -> {
                         final VertexEntity vertexEntity = genericToEntityMapper.toEntity((GenericVertex) vertex);
-                        graphEntity.getVertices().add(vertexEntity);
+                        graphEntity.addVertex(vertexEntity);
                     });
                     changeSet.getVerticesUpdated().forEach(vertex -> {
                         final VertexEntity vertexEntity = graphEntity.getVertexByProperty("id", vertex.getId());
