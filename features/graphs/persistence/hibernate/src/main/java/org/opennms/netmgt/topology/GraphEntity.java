@@ -46,6 +46,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.BatchSize;
 import org.opennms.features.graph.api.generic.GenericProperties;
+import org.opennms.features.graph.api.info.GraphInfo;
 
 @Entity
 @DiscriminatorValue("graph")
@@ -80,11 +81,12 @@ public class GraphEntity extends AbstractGraphEntity {
         return getElements(VertexEntity.class);
     }
 
-    // TODO MVR this is probably not instantiated properly
     public VertexEntity getVertexByVertexId(String id) {
         Objects.requireNonNull(id);
-        final VertexEntity vertexEntity = vertexIdMap.get(id);
-        return vertexEntity;
+        // TODO MVR this is not instantiated properly
+//        final VertexEntity vertexEntity = vertexIdMap.get(id);
+//        return vertexEntity;
+        return getVertexByProperty(GenericProperties.ID, id);
     }
 
     // TODO MVR this is very slow
@@ -97,16 +99,24 @@ public class GraphEntity extends AbstractGraphEntity {
         return getEntitiesByProperty(getVertices(), key, value);
     }
 
-    public <T extends AbstractGraphEntity> void addRelations(List<T> relations) {
-        relations.addAll(relations);
+    public <T extends AbstractGraphEntity> void addRelations(List<T> someRelations) {
+        relations.addAll(someRelations);
     }
 
     public void addVertex(VertexEntity vertexEntity) {
         relations.add(vertexEntity);
     }
 
+    public void removeVertex(VertexEntity vertexEntity) {
+        relations.remove(vertexEntity);
+    }
+
     public void addEdge(EdgeEntity edgeEntity) {
         relations.add(edgeEntity);
+    }
+
+    public void removeEdge(EdgeEntity edgeEntity) {
+        relations.remove(edgeEntity);
     }
 
     private <E extends AbstractGraphEntity> E getEntitiesByProperty(List<E> entities, String key, String value) {
@@ -124,5 +134,13 @@ public class GraphEntity extends AbstractGraphEntity {
                 .filter(type::isInstance)
                 .map(e -> (T)e)
                 .collect(Collectors.toList()));
+    }
+
+    public void apply(GraphInfo graphInfo) {
+        // TODO MVR what about vertex type
+        setProperty(GenericProperties.NAMESPACE, String.class, graphInfo.getNamespace());
+        setProperty(GenericProperties.LABEL, String.class, graphInfo.getLabel());
+        setProperty(GenericProperties.DESCRIPTION, String.class, graphInfo.getDescription());
+        // TODO MVR may add setNamespace(...), setLabel(...) etc.
     }
 }

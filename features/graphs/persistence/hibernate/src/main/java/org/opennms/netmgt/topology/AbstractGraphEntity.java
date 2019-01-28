@@ -121,9 +121,13 @@ public class AbstractGraphEntity {
     public void setProperty(String key, Class<?> type, String stringValue) {
         final PropertyEntity existingProperty = getProperty(key);
         if (existingProperty != null) {
-            existingProperty.setType(type);
-            existingProperty.setValue(stringValue);
-        } else {
+            if (stringValue == null) { // We must remove the property
+                properties.remove(existingProperty);
+            } else { // Update property
+                existingProperty.setType(type);
+                existingProperty.setValue(stringValue);
+            }
+        } else if (stringValue != null) { // only persist if value is not null
             final PropertyEntity propertyEntity = new PropertyEntity();
             propertyEntity.setType(type);
             propertyEntity.setName(key);
