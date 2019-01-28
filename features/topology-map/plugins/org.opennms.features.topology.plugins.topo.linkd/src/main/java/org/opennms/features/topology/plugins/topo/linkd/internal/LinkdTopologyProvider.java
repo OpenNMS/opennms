@@ -159,6 +159,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     private void loadTopology(ProtocolSupported protocol) throws OnmsTopologyException {
+        m_onmsTopologyDao.load(protocol.name());
+
         OnmsTopology topology =   m_onmsTopologyDao.getTopology(protocol.name());
         
         final Map<String, LinkdVertex> vmap = new HashMap<>();
@@ -216,6 +218,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     
     private void doRefresh() {        
         Timer.Context vcontext = m_loadVerticesTimer.time();
+        m_onmsTopologyDao.load(ProtocolSupported.NODES.name());
         try {
             for (OnmsTopologyVertex tvertex : m_onmsTopologyDao.getTopology(ProtocolSupported.NODES.name()).getVertices()) {
                 addVertices(LinkdVertex.create(tvertex));
