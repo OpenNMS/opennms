@@ -303,19 +303,6 @@ div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.
   margin-bottom: $spacer * 1.5; // equivalent of mb-4
 }
 
-// The bootstrap4 blows up the whole UI. The padding is reduced to have more compact layout.
-.card-header {
-  padding: 0.25rem;
-}
-
-.card-body {
-  padding: 0.5rem;
-}
-
-.card-footer {
-  padding: 0.5rem;
-}
-
 // requisition ui uses bootbox for modals, however it is not yet bootstrap 4 compatible
 // (bootbox v5 will be, release is imminent), see https://github.com/makeusabrew/bootbox/issues/566
 // Until then use this hack
