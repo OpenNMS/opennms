@@ -9,7 +9,7 @@
     </button>
 
     <#if request.remoteUser?has_content >
-      <div id="headerinfo" style="position: absolute; top: 0; right: 0" class="text-muted mr-4">
+      <div id="headerinfo" style="position: absolute; top: 0; right: 0" class="text-light mr-4">
           ${formattedTime}
           <span class="fa-stack" style="text-shadow:none">
         <#if noticeStatus = 'Unknown'>
