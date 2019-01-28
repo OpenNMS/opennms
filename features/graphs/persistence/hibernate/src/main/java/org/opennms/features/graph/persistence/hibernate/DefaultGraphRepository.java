@@ -29,7 +29,6 @@
 package org.opennms.features.graph.persistence.hibernate;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Function;
 
 import org.opennms.features.graph.api.Graph;
@@ -39,12 +38,15 @@ import org.opennms.features.graph.api.generic.GenericGraph;
 import org.opennms.features.graph.api.generic.GenericGraphContainer;
 import org.opennms.features.graph.api.generic.GenericVertex;
 import org.opennms.features.graph.persistence.api.GraphRepository;
-import org.opennms.netmgt.topology.GraphContainerEntity;
-import org.opennms.netmgt.topology.GraphEntity;
 import org.opennms.features.graph.persistence.hibernate.mapper.EntityToGenericMapper;
 import org.opennms.features.graph.persistence.hibernate.mapper.GenericToEntityMapper;
-import org.opennms.features.graph.updates.change.ChangeSet;
+import org.opennms.features.graph.updates.change.ContainerChangeSet;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
+import org.opennms.netmgt.topology.EdgeEntity;
+import org.opennms.netmgt.topology.GraphContainerEntity;
+import org.opennms.netmgt.topology.GraphEntity;
+import org.opennms.netmgt.topology.PropertyEntity;
+import org.opennms.netmgt.topology.VertexEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +63,7 @@ public class DefaultGraphRepository implements GraphRepository {
     private GenericPersistenceAccessor accessor;
 
     private EntityToGenericMapper entityToGenericMapper = new EntityToGenericMapper();
+
     private GenericToEntityMapper genericToEntityMapper = new GenericToEntityMapper();
 
     @Override
@@ -89,17 +92,68 @@ public class DefaultGraphRepository implements GraphRepository {
     }
 
     @Override
-    public void save(GraphContainer graphContainer) {
-        GraphContainer container = findContainerById(graphContainer.getId());
-        if (container == null) {
+    public void save(final GraphContainer graphContainer) {
+        final GenericGraphContainer persistedGraphContainer = findContainerById(graphContainer.getId());
+        final GenericGraphContainer genericGraphContainer = graphContainer.asGenericGraphContainer();
+        if (persistedGraphContainer == null) {
             LOG.debug("Graph Container (id: {}) is new. Persisting...", graphContainer.getId());
-            final GenericGraphContainer genericGraphContainer = graphContainer.asGenericGraphContainer();
             final GraphContainerEntity graphContainerEntity = genericToEntityMapper.toEntity(genericGraphContainer);
             accessor.save(graphContainerEntity);
             LOG.debug("Graph Container (id: {}) persisted.", graphContainer.getId());
         } else {
             LOG.debug("Graph Container (id: {}) exists. Calculating change set...", graphContainer.getId());
-            // TODO MVR implement
+
+            // The Changes are calculated on the Generic conversion of the input and persisted graph
+            // In order to apply the changes here, they must again be converted to the actual implementation of the persisted graph (entity).
+            ContainerChangeSet containerChangeSet = new ContainerChangeSet(persistedGraphContainer, genericGraphContainer);
+            if (containerChangeSet.hasChanges()) {
+                // TODO MVR ...
+                final GraphContainerEntity graphContainerEntity = (GraphContainerEntity) accessor.find("Select g from GraphContainerEntity g where g.namespace = ?", graphContainer.getId()).get(0);
+
+                // Graph removal and addition is easy, simply remove or delete
+                containerChangeSet.getGraphsRemoved().forEach(genericGraph -> {
+                    GraphEntity entity = graphContainerEntity.getGraph(genericGraph.getNamespace());
+                    graphContainerEntity.getGraphs().remove(entity);
+                });
+                containerChangeSet.getGraphsAdded().forEach(genericGraph -> {
+                    final GraphEntity newGraphEntity = genericToEntityMapper.toEntity((GenericGraph) genericGraph);
+                    graphContainerEntity.getGraphs().add(newGraphEntity);
+                });
+
+                // Graph updates are more complex, as the changes were calculated on the generic version and now must be
+                // applied to the persistedEntity
+                containerChangeSet.getGraphsUpdated().forEach(changeSet -> {
+                    final GraphEntity graphEntity = graphContainerEntity.getGraph(changeSet.getNamespace());
+                    changeSet.getEdgesRemoved().forEach(edge -> {
+                        final EdgeEntity edgeEntity = graphEntity.getEdgeByProperty("id", edge.getId());
+                        graphEntity.getEdges().remove(edgeEntity);
+                    });
+                    changeSet.getEdgesAdded().forEach(edge -> {
+                        final EdgeEntity edgeEntity = genericToEntityMapper.toEntity((GenericEdge) edge, graphEntity);
+                        graphEntity.getEdges().add(edgeEntity);
+                    });
+                    changeSet.getEdgesUpdated().forEach(edge -> {
+                        final EdgeEntity edgeEntity = graphEntity.getEdgeByProperty("id", edge.getId());
+                        final List<PropertyEntity> propertyEntities = genericToEntityMapper.convertToPropertyEntities(((GenericEdge) edge).getProperties());
+                        edgeEntity.mergeProperties(propertyEntities);
+                    });
+                    changeSet.getVerticesRemoved().forEach(vertex -> {
+                        final VertexEntity vertexEntity = graphEntity.getVertexByProperty("id", vertex.getId());
+                        graphEntity.getVertices().remove(vertexEntity);
+                    });
+                    changeSet.getVerticesAdded().forEach(vertex -> {
+                        final VertexEntity vertexEntity = genericToEntityMapper.toEntity((GenericVertex) vertex);
+                        graphEntity.getVertices().add(vertexEntity);
+                    });
+                    changeSet.getVerticesUpdated().forEach(vertex -> {
+                        final VertexEntity vertexEntity = graphEntity.getVertexByProperty("id", vertex.getId());
+                        final List<PropertyEntity> propertyEntities = genericToEntityMapper.convertToPropertyEntities(((GenericVertex) vertex).getProperties());
+                        vertexEntity.mergeProperties(propertyEntities);
+                    });
+                });
+                accessor.update(graphContainerEntity);
+            }
+            LOG.debug("Graph Container (id: {}) updated.", graphContainer.getId());
         }
     }
 
@@ -115,43 +169,43 @@ public class DefaultGraphRepository implements GraphRepository {
 
     @Override
     public void save(Graph graph) {
-        Objects.requireNonNull(graph);
-        long start = System.currentTimeMillis();
-        System.out.println("Converting graph to generic graph");
-        final GenericGraph genericGraph = graph.asGenericGraph();
-        System.out.println("DONE. Took " + (System.currentTimeMillis() - start) + "ms");
-        start = System.currentTimeMillis();
-        System.out.println("Converting to graph entity");
-        final GraphEntity graphEntity = genericToEntityMapper.toEntity(genericGraph);
-        System.out.println("DONE. Took " + (System.currentTimeMillis() - start) + "ms");
-
-        // Here we detect if a graph must be updated or persisted
-        // This way we always detect changes even if the entity persisted was not received from the persistence context
-        // in the first place.
-        final GenericGraph persistedGraph = findGraphByNamespace(graph.getNamespace());
-        if (persistedGraph == null) {
-            System.out.println("ACTUALLY START PERSISTING NOW... WIU WIU WIU");
-            start = System.currentTimeMillis();
-            accessor.save(graphEntity);
-            System.out.println("DONE. Took " + (System.currentTimeMillis() - start) + "ms");
-        } else {
-            final ChangeSet<GenericGraph, GenericVertex, GenericEdge> changeSet = new ChangeSet<>(persistedGraph, genericGraph);
-            if (changeSet.hasChanges()) {
-                changeSet.getEdgesRemoved().forEach(edge -> persistedGraph.removeEdge(edge));
-                changeSet.getEdgesAdded().forEach(edge -> persistedGraph.addEdge(edge));
-                changeSet.getEdgesUpdated().forEach(edge -> {
-                    final GenericEdge persistedEdge = persistedGraph.getEdge(edge.getId());
-                    persistedEdge.setProperties(edge.getProperties());
-                });
-                changeSet.getVerticesRemoved().forEach(vertex -> persistedGraph.removeVertex(vertex));
-                changeSet.getVerticesAdded().forEach(vertex -> persistedGraph.addVertex(vertex));
-                changeSet.getVerticesUpdated().forEach(vertex -> {
-                    final GenericVertex persistedVertex = persistedGraph.getVertex(vertex.getId());
-                    persistedVertex.setProperties(vertex.getProperties());
-                });
-                accessor.save(persistedGraph);
-            }
-        }
+//        Objects.requireNonNull(graph);
+//        long start = System.currentTimeMillis();
+//        System.out.println("Converting graph to generic graph");
+//        final GenericGraph genericGraph = graph.asGenericGraph();
+//        System.out.println("DONE. Took " + (System.currentTimeMillis() - start) + "ms");
+//        start = System.currentTimeMillis();
+//        System.out.println("Converting to graph entity");
+//        final GraphEntity graphEntity = genericToEntityMapper.toEntity(genericGraph);
+//        System.out.println("DONE. Took " + (System.currentTimeMillis() - start) + "ms");
+//
+//        // Here we detect if a graph must be updated or persisted
+//        // This way we always detect changes even if the entity persisted was not received from the persistence context
+//        // in the first place.
+//        final GenericGraph persistedGraph = findGraphByNamespace(graph.getNamespace());
+//        if (persistedGraph == null) {
+//            System.out.println("ACTUALLY START PERSISTING NOW... WIU WIU WIU");
+//            start = System.currentTimeMillis();
+//            accessor.save(graphEntity);
+//            System.out.println("DONE. Took " + (System.currentTimeMillis() - start) + "ms");
+//        } else {
+//            final ChangeSet<GenericGraph, GenericVertex, GenericEdge> changeSet = new ChangeSet<>(persistedGraph, genericGraph);
+//            if (changeSet.hasChanges()) {
+//                changeSet.getEdgesRemoved().forEach(edge -> persistedGraph.removeEdge(edge));
+//                changeSet.getEdgesAdded().forEach(edge -> persistedGraph.addEdge(edge));
+//                changeSet.getEdgesUpdated().forEach(edge -> {
+//                    final GenericEdge persistedEdge = persistedGraph.getEdge(edge.getId());
+//                    persistedEdge.setProperties(edge.getProperties());
+//                });
+//                changeSet.getVerticesRemoved().forEach(vertex -> persistedGraph.removeVertex(vertex));
+//                changeSet.getVerticesAdded().forEach(vertex -> persistedGraph.addVertex(vertex));
+//                changeSet.getVerticesUpdated().forEach(vertex -> {
+//                    final GenericVertex persistedVertex = persistedGraph.getVertex(vertex.getId());
+//                    persistedVertex.setProperties(vertex.getProperties());
+//                });
+//                accessor.save(persistedGraph);
+//            }
+//        }
     }
 
 //    @Override

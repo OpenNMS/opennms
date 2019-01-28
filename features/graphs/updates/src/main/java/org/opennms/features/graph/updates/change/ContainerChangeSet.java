@@ -39,6 +39,7 @@ import org.opennms.features.graph.updates.listener.GraphContainerChangeListener;
 import org.opennms.features.graph.updates.listener.GraphContainerChangeSetListener;
 
 // TODO MVR detect info changes
+// TODO MVR enforce graph type
 public class ContainerChangeSet {
 
     private final Date changeSetDate;
@@ -84,6 +85,10 @@ public class ContainerChangeSet {
         }
     }
 
+    public boolean hasChanges() {
+        return !addedGraphs.isEmpty() || !removedGraphs.isEmpty() || !graphChanges.isEmpty();
+    }
+
     protected void detectChanges(GraphContainer<?, ?, ?> oldGraphContainer, GraphContainer<?, ?, ?> newGraphContainer) {
         // no old container exists, add all graphs
         if (oldGraphContainer == null && newGraphContainer != null) {
@@ -120,7 +125,7 @@ public class ContainerChangeSet {
             // Detect changes
             final List<String> sharedNamespaces = new ArrayList<>(newNamespaces);
             sharedNamespaces.removeAll(addedNamespaces);
-            sharedNamespaces.addAll(removedNamespaces);
+            sharedNamespaces.removeAll(removedNamespaces);
             sharedNamespaces.forEach(ns -> {
                 final Graph oldGraph = oldGraphContainer.getGraph(ns);
                 final Graph newGraph = newGraphContainer.getGraph(ns);
@@ -130,10 +135,6 @@ public class ContainerChangeSet {
                 }
             });
         }
-    }
-
-    protected boolean hasChanges() {
-        return !addedGraphs.isEmpty() || !removedGraphs.isEmpty() || !graphChanges.isEmpty();
     }
 
     private void graphAdded(Graph<?, ?> newGraph) {

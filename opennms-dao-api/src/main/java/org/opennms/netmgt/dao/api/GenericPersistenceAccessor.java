@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.api;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -42,13 +43,15 @@ public interface GenericPersistenceAccessor {
 
     <T> List<T> findUsingNamedParameters(final String query, String[] paramNames, Object[] values, Integer offset, Integer limit);
 
-    <T> T get(Class<T> entityType, int entityId);
+    <T> T get(Class<T> entityType, Serializable entityId);
 
     List findMatching(Criteria criteria);
 
     <T> void update(T entity);
 
     <T> void save(T entity);
+
+    <T> void delete(T entity);
 
     /**
      * Executes a native SQL query.

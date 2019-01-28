@@ -30,6 +30,7 @@ package org.opennms.features.graph.api.generic;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.opennms.features.graph.api.AbstractEdge;
 import org.opennms.features.graph.api.VertexRef;
@@ -59,5 +60,19 @@ public class GenericEdge extends AbstractEdge<GenericVertex> {
 
     public void setProperty(String key, Object value) {
         properties.put(key, value);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        GenericEdge that = (GenericEdge) o;
+        return Objects.equals(properties, that.properties);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), properties);
     }
 }

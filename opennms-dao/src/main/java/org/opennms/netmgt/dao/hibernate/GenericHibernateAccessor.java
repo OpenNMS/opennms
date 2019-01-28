@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
@@ -109,7 +110,7 @@ public class GenericHibernateAccessor extends HibernateDaoSupport implements Gen
     }
 
     @Override
-    public <T> T get(Class<T> entityType, int entityId) {
+    public <T> T get(Class<T> entityType, Serializable entityId) {
         return getHibernateTemplate().get(entityType, entityId);
     }
 
@@ -133,6 +134,11 @@ public class GenericHibernateAccessor extends HibernateDaoSupport implements Gen
     @Override
     public <T> void update(T entity) {
         getHibernateTemplate().update(entity);
+    }
+
+    @Override
+    public <T> void delete(T entity) {
+        getHibernateTemplate().delete(entity);
     }
 
     private void prepareQuery(Query queryObject) {

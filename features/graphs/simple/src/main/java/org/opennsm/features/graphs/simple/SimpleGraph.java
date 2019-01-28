@@ -93,7 +93,15 @@ public class SimpleGraph extends AbstractGraph<SimpleVertex, SimpleEdge> impleme
     public void setNamespace(String namespace) {
         ((DefaultGraphInfo) graphInfo).setNamespace(namespace);
         getVertices().forEach(v -> v.setNamespace(namespace));
-        getEdges().forEach(e -> e.setNamespace(namespace));
+        getEdges().forEach(e -> {
+            if (e.getSource().getNamespace().equalsIgnoreCase(e.getNamespace())) {
+                ((SimpleVertex) e.getSource()).setNamespace(namespace);
+            }
+            if (e.getTarget().getNamespace().equalsIgnoreCase(e.getNamespace())) {
+                ((SimpleVertex) e.getTarget()).setNamespace(namespace);
+            }
+            e.setNamespace(namespace);
+        });
     }
 
     public SimpleVertex createVertex(String id) {

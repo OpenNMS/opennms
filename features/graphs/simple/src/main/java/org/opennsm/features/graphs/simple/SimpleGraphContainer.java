@@ -129,4 +129,20 @@ public class SimpleGraphContainer implements GraphContainer {
         getGraphs().forEach(g -> genericGraphContainer.addGraph(g.asGenericGraph()));
         return genericGraphContainer;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SimpleGraphContainer that = (SimpleGraphContainer) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(label, that.label) &&
+                Objects.equals(graphs, that.graphs);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, description, label, graphs);
+    }
 }

@@ -296,5 +296,23 @@ public class AbstractGraph<V extends Vertex, E extends Edge> implements Graph<V,
 //        return asGenericGraph().toString();
 //    }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractGraph<?, ?> that = (AbstractGraph<?, ?>) o;
+        return Objects.equals(getLabel(), that.getLabel()) // TODO MVR this needs a bit more fine-tuning
+                && Objects.equals(getNamespace(), that.getNamespace())
+                && Objects.equals(getDescription(), that.getDescription())
+                && Objects.equals(getDefaultFocus(), that.getDefaultFocus())
+                && Objects.equals(getVertices(), that.getVertices())
+                && Objects.equals(getEdges(), that.getEdges());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getLabel(), getNamespace(), getDescription(), getDefaultFocus(), getVertices(), getEdges());
+    }
 }
 
