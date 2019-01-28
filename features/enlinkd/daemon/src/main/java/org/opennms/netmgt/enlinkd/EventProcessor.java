@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.enlinkd;
 
+import static org.opennms.netmgt.events.api.EventConstants.PARAM_TOPOLOGY_NAMESPACE;
+
 import java.util.List;
 
 import org.opennms.core.utils.InsufficientInformationException;
@@ -35,6 +37,7 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
+import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 
@@ -142,12 +145,12 @@ public final class EventProcessor {
     
 
     /**
-     * <p>handleForceRescan</p>
+     * <p>handleRealodDaemonconfig</p>
      *
      * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void handleReloadDaemonconfig(Event e) {
+    public void handleReloadDaemonConfig(Event e) {
         List<Parm> parmCollection = e.getParmCollection();
 
         for (Parm parm : parmCollection) {
@@ -158,5 +161,12 @@ public final class EventProcessor {
         }
     }
     
+    @EventHandler(uei = EventConstants.RELOAD_TOPOLOGY_UEI)
+    public void handleReloadTopology(Event e) {
+        final String topologyNamespace = EventUtils.getParm(e, PARAM_TOPOLOGY_NAMESPACE);
+        if (topologyNamespace == null || "all".equalsIgnoreCase(topologyNamespace) || OnmsTopology.TOPOLOGY_NAMESPACE_LINKD.equalsIgnoreCase(topologyNamespace)) {
+            m_linkd.reloadTopology();
+        }
+    }
 
 } // end class

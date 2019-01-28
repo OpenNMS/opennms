@@ -129,19 +129,4 @@ public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
                 .forEach(consumer -> consumer.consume(message));            
         }
     }
-
-    @Override
-    public void load(String protocol) {
-        OnmsTopologyProtocol onmsprotocol;
-        try {
-            onmsprotocol = OnmsTopologyProtocol.create(protocol);
-        } catch (OnmsTopologyException e) {
-            LOG.error("load: {}", e.getMessage());
-            return;
-        }
-        if (m_updatersMap.containsKey(onmsprotocol)) {
-            m_updatersMap.get(onmsprotocol).load();
-        }
-        
-    }
 }

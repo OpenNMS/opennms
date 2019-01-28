@@ -44,6 +44,7 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 
 import com.google.common.collect.Maps;
 
@@ -89,7 +90,7 @@ public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
 
     @Override
     public String getNamespace() {
-        return LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
+        return OnmsTopology.TOPOLOGY_NAMESPACE_LINKD;
     }
 
     @Override
@@ -126,7 +127,7 @@ EDGES:        for (EdgeRef edgeRef : edges) {
 
     @Override
     public boolean contributesTo(String namespace) {
-        return namespace.equals(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD);
+        return namespace.equals(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD);
     }
 
     public AlarmDao getAlarmDao() {

@@ -39,6 +39,7 @@ public class OnmsTopology {
     public final static String TOOLTIP_TEXT = "tooltipText";
     public final static String SOURCE_IFINDEX= "sourceifindex";
     public final static String TARGET_IFINDEX= "targetifindex";
+    public static final String TOPOLOGY_NAMESPACE_LINKD = "nodes";
     
     private Set<OnmsTopologyVertex> m_vertices;
     private Set<OnmsTopologyEdge> m_edges;

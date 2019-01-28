@@ -68,12 +68,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private final Timer m_loadVerticesTimer;
     private final Timer m_loadEdgesTimer;
 
-    public static final String TOPOLOGY_NAMESPACE_LINKD = "nodes";
-    
     private SelectionAware selectionAwareDelegate = new LinkdSelectionAware();
 
     public LinkdTopologyProvider(MetricRegistry registry) {
-        super(TOPOLOGY_NAMESPACE_LINKD);
+        super(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD);
         Objects.requireNonNull(registry);
         m_loadFullTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "full"));
         m_loadLldpLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "lldp"));
@@ -159,13 +157,11 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     private void loadTopology(ProtocolSupported protocol) throws OnmsTopologyException {
-        m_onmsTopologyDao.load(protocol.name());
-
         OnmsTopology topology =   m_onmsTopologyDao.getTopology(protocol.name());
         
         final Map<String, LinkdVertex> vmap = new HashMap<>();
         topology.getVertices().stream().forEach(tvertex -> {
-            LinkdVertex vertex = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, tvertex.getId());
+            LinkdVertex vertex = (LinkdVertex) getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, tvertex.getId());
             if (vertex == null) {
                 vertex = LinkdVertex.create(tvertex);
                 addVertices(vertex);
@@ -198,27 +194,27 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             return null;
         }
         LOG.info("getDefaultVertex: default node found: [{}]:{}", node.getId(), node.getLabel());
-        return getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getId());
+        return getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, node.getId());
     }
 
     @Override
     public Defaults getDefaults() {
-        m_onmsTopologyDao.load(ProtocolSupported.NODES.name());
         return new Defaults()
                 .withSemanticZoomLevel(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL)
                 .withPreferredLayout("D3 Layout") // D3 Layout
                 .withCriteria(() -> { 
                     final Vertex defaultVertex = getDefaultVertex();
                     if (defaultVertex != null) {
+                        LOG.info("getDefaults: default vertex found: [{}]:{}", defaultVertex.getId(), defaultVertex.getLabel());
                         return Lists.newArrayList(LinkdHopCriteria.createCriteria(defaultVertex.getId(), defaultVertex.getLabel()));
                     }
+                    LOG.info("getDefaults: default vertex not found");
                     return Lists.newArrayList();
         });
     }
     
     private void doRefresh() {        
         Timer.Context vcontext = m_loadVerticesTimer.time();
-        m_onmsTopologyDao.load(ProtocolSupported.NODES.name());
         try {
             for (OnmsTopologyVertex tvertex : m_onmsTopologyDao.getTopology(ProtocolSupported.NODES.name()).getVertices()) {
                 addVertices(LinkdVertex.create(tvertex));

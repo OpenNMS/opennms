@@ -33,6 +33,7 @@ import java.util.Set;
 
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
+import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 public class LinkdVertex extends SimpleLeafVertex {
@@ -50,7 +51,7 @@ public class LinkdVertex extends SimpleLeafVertex {
     private Set<ProtocolSupported> m_protocolSupported = EnumSet.noneOf(ProtocolSupported.class);
 
     public LinkdVertex(String id) {
-        super(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, id, 0, 0);
+        super(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, id, 0, 0);
     }
     
     

@@ -33,7 +33,7 @@ import java.util.Set;
 public interface OnmsTopologyDao {
 
     OnmsTopology getTopology(String protocol) throws OnmsTopologyException;
-    void load(String protocol);
+
     Set<String> getSupportedProtocols();
 
     void register(OnmsTopologyUpdater updater) throws OnmsTopologyException;

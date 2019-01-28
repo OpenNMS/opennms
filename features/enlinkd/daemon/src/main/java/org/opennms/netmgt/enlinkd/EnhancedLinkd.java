@@ -382,23 +382,33 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     public void runTopologyUpdater(ProtocolSupported proto) {
         switch (proto) {
             case CDP:
-                m_cdpTopologyUpdater.runDiscovery();
+                if (m_linkdConfig.useCdpDiscovery()) {
+                    m_cdpTopologyUpdater.runDiscovery();
+                }
                 break;
       
             case LLDP:
-                m_lldpTopologyUpdater.runDiscovery();
+                if (m_linkdConfig.useLldpDiscovery()) {
+                    m_lldpTopologyUpdater.runDiscovery();
+                }
                 break;
             
             case ISIS:
-                m_isisTopologyUpdater.runDiscovery();
+                if (m_linkdConfig.useIsisDiscovery()) {
+                    m_isisTopologyUpdater.runDiscovery();
+                }
                 break;
             
             case OSPF:
-                m_ospfTopologyUpdater.runDiscovery();
+                if (m_linkdConfig.useOspfDiscovery()) {
+                    m_ospfTopologyUpdater.runDiscovery();
+                }
                 break;
             
             case BRIDGE:
-                m_bridgeTopologyUpdater.runDiscovery();
+                if (m_linkdConfig.useBridgeDiscovery()) {
+                    m_bridgeTopologyUpdater.runDiscovery();
+                }
                 break;
 
             case NODES:
@@ -713,5 +723,12 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             return;
         }
         reload();
+    }
+
+    public void reloadTopology() {
+        LOG.info("reloadTopology: reload enlinkd topology updaters");
+               for (ProtocolSupported protocol :ProtocolSupported.values()) {
+            runTopologyUpdater(protocol);
+        }
     }
 }

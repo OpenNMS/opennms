@@ -46,6 +46,8 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Criteria.ElementType;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
@@ -61,6 +63,7 @@ import org.opennms.netmgt.enlinkd.OspfOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
+import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -117,61 +120,49 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @Test
     public void testGetDefaultsOnmsException() {
-        System.err.println("start unregister");
         m_nodesOnmsTopologyUpdater.unregister();
-        System.err.println("stop unregister");
-        System.err.println("start getDefaults");
         Defaults defaults = m_topologyProvider.getDefaults();
-        System.err.println("end getDefaults");
-        assertNotNull(defaults.getSemanticZoomLevel());
-        assertNotNull(defaults.getPreferredLayout());
-        assertNotNull(defaults.getCriteria());
         assertEquals(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL, defaults.getSemanticZoomLevel());
         assertEquals("D3 Layout", defaults.getPreferredLayout());
         assertEquals(0, defaults.getCriteria().size());
     }
 
     @Test
-    public void testGetDefaults() {
-        System.err.println("start getDefaults");
+    public void testGetDefaultsNoTopologyLoaded() {
         Defaults defaults = m_topologyProvider.getDefaults();
-        System.err.println("end getDefaults");
-        assertNotNull(defaults.getSemanticZoomLevel());
-        assertNotNull(defaults.getPreferredLayout());
-        assertNotNull(defaults.getCriteria());
         assertEquals(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL, defaults.getSemanticZoomLevel());
         assertEquals("D3 Layout", defaults.getPreferredLayout());
         assertEquals(0, defaults.getCriteria().size());
     }
     
     @Test
-    public void testGetDefaultWithRefresh() {
+    public void testGetDefaultTopologyLoaded() {
         m_topologyProvider.refresh();
-        System.err.println("start getDefaults");
         Defaults defaults = m_topologyProvider.getDefaults();
-        System.err.println("end getDefaults");
-        assertNotNull(defaults.getSemanticZoomLevel());
-        assertNotNull(defaults.getPreferredLayout());
-        assertNotNull(defaults.getCriteria());
         assertEquals(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL, defaults.getSemanticZoomLevel());
         assertEquals("D3 Layout", defaults.getPreferredLayout());
-        assertEquals(1, defaults.getCriteria().size());
-        LinkdHopCriteria criteria = (LinkdHopCriteria) defaults.getCriteria().get(0);
+        List<Criteria> criteria = defaults.getCriteria();
         assertNotNull(criteria);
-        
+        assertEquals(1, criteria.size());
+        LinkdHopCriteria vertex1criteria = (LinkdHopCriteria)criteria.get(0);
+        assertEquals("1",vertex1criteria.getId());
+        assertEquals(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, vertex1criteria.getNamespace());
+        assertEquals(ElementType.VERTEX, vertex1criteria.getType());
+        assertEquals(m_databasePopulator.getNode(1).getLabel(), vertex1criteria.getLabel());
+        assertEquals(1, vertex1criteria.getVertices().size());
     }
 
     @Test
     public void testGetIcon() {
         m_topologyProvider.refresh();
-        Vertex vertex1 = m_topologyProvider.getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "1");
-        Vertex vertex2 = m_topologyProvider.getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "2");
-        Vertex vertex3 = m_topologyProvider.getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "3");
-        Vertex vertex4 = m_topologyProvider.getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "4");
-        Vertex vertex5 = m_topologyProvider.getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "5");
-        Vertex vertex6 = m_topologyProvider.getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "6");
-        Vertex vertex7 = m_topologyProvider.getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "7");
-        Vertex vertex8 = m_topologyProvider.getVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "8");
+        Vertex vertex1 = m_topologyProvider.getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, "1");
+        Vertex vertex2 = m_topologyProvider.getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, "2");
+        Vertex vertex3 = m_topologyProvider.getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, "3");
+        Vertex vertex4 = m_topologyProvider.getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, "4");
+        Vertex vertex5 = m_topologyProvider.getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, "5");
+        Vertex vertex6 = m_topologyProvider.getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, "6");
+        Vertex vertex7 = m_topologyProvider.getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, "7");
+        Vertex vertex8 = m_topologyProvider.getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, "8");
         Assert.assertTrue("linkd.system.snmp.1.3.6.1.4.1.5813.1.25".equals(vertex1.getIconKey()));
         Assert.assertTrue("linkd.system".equals(vertex2.getIconKey()));
         Assert.assertTrue("linkd.system".equals(vertex3.getIconKey()));
