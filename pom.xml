@@ -1296,6 +1296,7 @@
     <ecjVersion>4.4.2</ecjVersion>
     <eclipseGeminiVersion>2.0.0.RELEASE</eclipseGeminiVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
+    <elasticsearchNettyVersion>4.1.30.Final</elasticsearchNettyVersion>
     <fopVersion>1.0</fopVersion>
     <freemarkerVersion>2.3.23</freemarkerVersion>
     <geronimoVersion>1.1.1</geronimoVersion>

@@ -30,13 +30,30 @@ package org.opennms.plugins.elasticsearch.rest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
+import org.opennms.core.test.elastic.ElasticSearchRule;
+import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 
 import io.searchbox.client.JestClient;
 
 public abstract class AbstractEventToIndexTest {
 
+    private static final String HTTP_PORT = "9200";
+    private static final String HTTP_TRANSPORT_PORT = "9300";
+
     protected JestClient jestClient;
     protected EventToIndex eventToIndex;
+
+    @Rule
+    public ElasticSearchRule elasticServerRule = new ElasticSearchRule(
+            new ElasticSearchServerConfig()
+                    .withDefaults()
+                    .withSetting("http.enabled", true)
+                    .withSetting("http.port", HTTP_PORT)
+                    .withSetting("http.type", "netty4")
+                    .withSetting("transport.type", "netty4")
+                    .withSetting("transport.tcp.port", HTTP_TRANSPORT_PORT)
+    );
 
     @Before
     public void setUp() throws Exception {
