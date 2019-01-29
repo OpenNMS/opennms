@@ -61,9 +61,11 @@ public class GraphmlRepositoryImplTest {
 
         // Verify cfg
         Properties properties = new Properties();
-        properties.load(new FileInputStream(GraphmlRepositoryImpl.buildCfgFilepath(NAME)));
+        properties.load(new FileInputStream(GraphmlRepositoryImpl.buildTopologyCfgFilepath(NAME)));
         Assert.assertEquals("Label *yay*", properties.get(GraphmlRepositoryImpl.LABEL));
         Assert.assertEquals(GraphmlRepositoryImpl.buildGraphmlFilepath(NAME), properties.get(GraphmlRepositoryImpl.TOPOLOGY_LOCATION));
+
+        // TODO MVR verify graph service cfg as well?
 
         // Read
         GraphmlType byName = graphmlRepository.findByName(NAME);

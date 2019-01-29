@@ -28,6 +28,10 @@
 
 package org.opennms.features.graph.providers.graphml;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -63,6 +67,20 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
 
     public GraphmlGraphContainerProvider(GraphML graphML) {
         this.graphML = Objects.requireNonNull(graphML);
+        // This should not be invoked at this point, however it is static anyways and in order
+        // to know the graph infos we must read the data.
+        // Maybe we can just read it partially at some point, however this is how it is implemented for now
+        loadGraphContainer();
+    }
+
+    public GraphmlGraphContainerProvider(String location) throws IOException, InvalidGraphException {
+        if (!new File(location).exists()) {
+            throw new FileNotFoundException(location);
+        }
+        try (InputStream input = new FileInputStream(location)) {
+            this.graphML = GraphMLReader.read(input);
+        }
+        // TODO MVR duplicated comment
         // This should not be invoked at this point, however it is static anyways and in order
         // to know the graph infos we must read the data.
         // Maybe we can just read it partially at some point, however this is how it is implemented for now
@@ -119,8 +137,9 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
                 .stream().map(n -> {
                     // In case of GraphML each vertex does not have a namespace, but it is inherited from the graph
                     // Therefore here we have to manually set it
-                    final GenericVertex v = new GenericVertex(); // n.getProperties());
+                    final GenericVertex v = new GenericVertex();
                     v.setNamespace(graph.getNamespace());
+                    v.setProperties(n.getProperties());
                     return v;
                 })
                 .collect(Collectors.toList());
@@ -132,7 +151,7 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
             final GenericVertex source = new GenericVertex(sourceNamespace, e.getSource().getId());
             final GenericVertex target = new GenericVertex(targetNamespace, e.getTarget().getId());
             final GenericEdge edge = new GenericEdge(source, target);
-//            edge.setProperties(e.getProperties());
+            edge.setProperties(e.getProperties());
 
             // In case of GraphML each edge does not have a namespace, but it is inherited from the graph
             // Therefore here we have to manually set it
@@ -143,6 +162,7 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
         return graph;
     }
 
+    // TODO MVR FocusStrategy or Focus concept is not fully implemented yet
     private static Focus getFocusStrategy(GraphMLGraph graph) {
         final String strategy = graph.getProperty(GenericProperties.FOCUS_STRATEGY);
         if (strategy != null) {
