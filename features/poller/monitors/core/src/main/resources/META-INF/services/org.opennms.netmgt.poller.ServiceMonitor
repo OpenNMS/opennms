@@ -4,6 +4,7 @@ org.opennms.netmgt.poller.monitors.BSFMonitor
 org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor
 org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor
 org.opennms.netmgt.poller.monitors.CitrixMonitor
+org.opennms.netmgt.poller.monitors.DhcpMonitor
 org.opennms.netmgt.poller.monitors.DiskUsageMonitor
 org.opennms.netmgt.poller.monitors.DnsMonitor
 org.opennms.netmgt.poller.monitors.DNSResolutionMonitor

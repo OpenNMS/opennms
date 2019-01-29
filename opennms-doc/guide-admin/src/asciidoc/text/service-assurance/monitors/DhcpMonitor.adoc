@@ -33,7 +33,7 @@ CAUTION: Make sure no DHCP client is running on the _{opennms-product-name}_ ser
 
 [options="autowidth"]
 |===
-| Class Name     | `org.opennms.protocols.dhcp.monitor.DhcpMonitor`
+| Class Name     | `org.opennms.netmgt.poller.monitors.DhcpMonitor`
 | Remote Enabled | false
 |===
 
@@ -106,7 +106,7 @@ The monitor will try to send in maximum 3 _DISCOVER_ messages and waits 3 second
  <parameter key="ds-name" value="dhcp" />
 </service>
 
-<monitor service="DHCP" class-name="org.opennms.protocols.dhcp.monitor.DhcpMonitor"/>
+<monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor"/>
 ----
 
 .Step 2: Enable the {opennms-product-name} _Dhcpd_ daemon in `service-configuration.xml`

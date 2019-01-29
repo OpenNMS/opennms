@@ -56,6 +56,13 @@
 		</service-properties>
 	</service>
 
+	<bean id="dhcpMonitor" class="org.opennms.netmgt.poller.monitors.DhcpMonitor" />
+	<service ref="dhcpMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.DhcpMonitor" />
+		</service-properties>
+	</service>
+
 	<bean id="diskUsageMonitor" class="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
 	<service ref="diskUsageMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
 		<service-properties>

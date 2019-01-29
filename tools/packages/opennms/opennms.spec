@@ -235,8 +235,6 @@ Requires(pre):	%{name}-plugin-ticketer-rt
 Requires:	%{name}-plugin-ticketer-rt
 Requires(pre):	%{name}-plugin-protocol-cifs
 Requires:	%{name}-plugin-protocol-cifs
-Requires(pre):	%{name}-plugin-protocol-dhcp
-Requires:	%{name}-plugin-protocol-dhcp
 Requires(pre):	%{name}-plugin-protocol-nsclient
 Requires:	%{name}-plugin-protocol-nsclient
 Requires(pre):	%{name}-plugin-protocol-radius
@@ -406,20 +404,6 @@ Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-protocol-cifs
 The CIFS protocol plugin provides a poller monitor for CIFS network shares.
-
-%{extrainfo}
-%{extrainfo2}
-
-
-%package plugin-protocol-dhcp
-Summary:	DHCP Poller and Detector Plugin
-Group:		Applications/System
-Requires(pre):	%{name}-core = %{version}-%{release}
-Requires:	%{name}-core = %{version}-%{release}
-
-%description plugin-protocol-dhcp
-The DHCP protocol plugin provides a daemon, provisioning detector, capsd plugin, and
-poller monitor for DHCP.
 
 %{extrainfo}
 %{extrainfo2}
@@ -679,7 +663,6 @@ find %{buildroot}%{instprefix}/contrib ! -type d | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/lib ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
-	grep -v 'dhcp4java' | \
 	grep -v 'jradius' | \
 	grep -v 'opennms-alarm-northbounder-jms' | \
 	grep -v 'opennms-integration-otrs' | \
@@ -687,7 +670,6 @@ find %{buildroot}%{instprefix}/lib ! -type d | \
 	grep -v 'opennms_jmx_config_generator' | \
 	grep -v 'org.opennms.features.juniper-tca-collector' | \
 	grep -v 'org.opennms.protocols.cifs' | \
-	grep -v 'org.opennms.protocols.dhcp' | \
 	grep -v 'org.opennms.protocols.nsclient' | \
 	grep -v 'org.opennms.protocols.radius' | \
 	grep -v 'org.opennms.protocols.xmp' | \
@@ -833,11 +815,6 @@ rm -rf %{buildroot}
 %{instprefix}/lib/opennms-integration-rt-*.jar
 %config(noreplace) %{instprefix}/etc/rt.properties
 %{sharedir}/etc-pristine/rt.properties
-
-%files plugin-protocol-dhcp
-%defattr(664 root root 775)
-%{instprefix}/lib/dhcp4java-*.jar
-%{instprefix}/lib/org.opennms.protocols.dhcp*.jar
 
 %files plugin-protocol-nsclient
 %defattr(664 root root 775)
