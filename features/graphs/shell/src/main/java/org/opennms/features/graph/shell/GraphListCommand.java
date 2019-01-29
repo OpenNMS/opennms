@@ -71,7 +71,7 @@ public class GraphListCommand implements Action {
             System.out.println("Registered Graphs:");
             final List<GraphInfo> graphInfos = graphContainerInfoList.stream().flatMap(ci -> ci.getGraphInfos().stream()).collect(Collectors.toList());
             final int maxNamespaceLength = graphInfos.stream().mapToInt(gi -> gi.getNamespace().length()).max().getAsInt();
-            final int maxGraphLabelLength = graphInfos.stream().mapToInt(gi -> gi.getLabel().length()).max().getAsInt();
+            final int maxGraphLabelLength = graphInfos.stream().mapToInt(gi -> gi.getLabel() != null ? gi.getLabel().length() : 0).max().getAsInt();
             final String GraphRowFormat = String.format(GRAPH_ROW_TEMPLATE, maxNamespaceLength > "Namespace".length() ? maxNamespaceLength : "Namespace".length(), maxGraphLabelLength, MAX_DESCRIPTION_LENGTH);
             for (GraphContainerInfo eachContainerInfo : graphContainerInfoList) {
                 System.out.println(String.format(GraphRowFormat, "Namespace", "Label", "Description", "Container ID"));
@@ -87,7 +87,7 @@ public class GraphListCommand implements Action {
     }
 
     private static String cutString(String input) {
-        if (input.length() > MAX_DESCRIPTION_LENGTH) {
+        if (input != null && input.length() > MAX_DESCRIPTION_LENGTH) {
             return input.substring(0, MAX_DESCRIPTION_LENGTH - 3) + "...";
         }
         return input;

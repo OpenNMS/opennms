@@ -13,7 +13,7 @@
     <service ref="defaultGraphService" interface="org.opennms.features.graph.api.service.GraphService">
     </service>
 
-    <reference-list interface="org.opennms.features.graph.api.service.GraphContainerProvider" availability="mandatory">
+    <reference-list interface="org.opennms.features.graph.api.service.GraphContainerProvider" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="defaultGraphService" />
     </reference-list>
 

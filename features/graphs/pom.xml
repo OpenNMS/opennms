@@ -29,6 +29,7 @@
     </build>
     <modules>
         <module>api</module>
+        <module>jung</module>
         <module>persistence</module>
         <module>providers</module>
         <module>rest</module>
