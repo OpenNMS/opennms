@@ -26,32 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.graph.updates;
+package org.opennms.features.graph.api.service;
 
-import java.util.List;
-
-import org.opennms.features.graph.api.Edge;
-import org.opennms.features.graph.api.Graph;
 import org.opennms.features.graph.api.GraphContainer;
-import org.opennms.features.graph.updates.search.Query;
-import org.opennms.features.graph.api.Vertex;
 import org.opennms.features.graph.api.info.GraphContainerInfo;
-import org.opennms.features.graph.api.info.GraphInfo;
 
-public interface GraphService extends GraphNotificationService {
+public interface GraphContainerProvider {
+    // TODO MVR we have to implement this somehow
+//    /**
+//     * The provider may need to inform about graph changes.
+//     * Whith this method the {@link GraphNotificationService} is passed to the provider.
+//     * @param notificationService
+//     */
+//    void setNotificationService(GraphNotificationService notificationService);
 
-    List<GraphContainerInfo> getGraphContainerDetails();
+    GraphContainer loadGraphContainer();
 
-    GraphContainerInfo getGraphContainerInfo(String containerId);
-
-    GraphContainer getGraphContainer(String containerId);
-
-    GraphInfo getGraphInfo(String graphNamespace);
-
-    <V extends Vertex, E extends Edge> Graph<V, E> getGraph(String containerId, String graphNamespace);
-
-    <V extends Vertex, E extends Edge> Graph<V, E> getGraph(String namespace);
-
-    <V extends Vertex, E extends Edge> Graph<V, E> getSnapshot(Query query);
-
+    GraphContainerInfo getContainerInfo();
 }

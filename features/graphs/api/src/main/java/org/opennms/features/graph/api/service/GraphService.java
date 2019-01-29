@@ -26,56 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.graph.updates.search;
-
+package org.opennms.features.graph.api.service;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
+import org.opennms.features.graph.api.Edge;
+import org.opennms.features.graph.api.Graph;
+import org.opennms.features.graph.api.GraphContainer;
+import org.opennms.features.graph.api.Vertex;
+import org.opennms.features.graph.api.info.GraphContainerInfo;
+import org.opennms.features.graph.api.info.GraphInfo;
 
-public class Query {
+public interface GraphService {
 
-    // selected container
-    private String containerId;
+    List<GraphContainerInfo> getGraphContainerInfos();
 
-    // graph namespace
-    // TODO MVR each SearchCriteria already has a namespace, however, we apply it here again, as we may require it
-    // and may not have a SearchCriteria defined
-    private String namespace;
+    GraphContainerInfo getGraphContainerInfo(String containerId);
 
-    private int szl = 1; // default is always 1
+    GraphContainer getGraphContainer(String containerId);
 
-    private List<SearchCriteria> searchCriteria = Lists.newArrayList();
+    GraphInfo getGraphInfo(String graphNamespace);
 
-    public int getSzl() {
-        return szl;
-    }
+    <V extends Vertex, E extends Edge> Graph<V, E> getGraph(String containerId, String graphNamespace);
 
-    public void setSzl(int szl) {
-        this.szl = szl;
-    }
+    <V extends Vertex, E extends Edge> Graph<V, E> getGraph(String namespace);
 
-    public String getContainerId() {
-        return containerId;
-    }
-
-    public void setContainerId(String containerId) {
-        this.containerId = containerId;
-    }
-
-    public String getNamespace() {
-        return namespace;
-    }
-
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
-    }
-
-    public List<SearchCriteria> getSearchCriteria() {
-        return searchCriteria;
-    }
-
-    public void setSearchCriteria(List<SearchCriteria> searchCriteria) {
-        this.searchCriteria = searchCriteria;
-    }
 }

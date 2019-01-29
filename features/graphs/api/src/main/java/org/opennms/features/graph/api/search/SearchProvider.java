@@ -26,12 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.graph.updates.search;
+package org.opennms.features.graph.api.search;
 
 import java.util.List;
 
 import org.opennms.features.graph.api.Vertex;
-import org.opennms.features.graph.updates.GraphService;
+import org.opennms.features.graph.api.service.GraphService;
 
 public interface SearchProvider {
 

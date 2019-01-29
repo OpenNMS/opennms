@@ -44,5 +44,5 @@ public interface GraphContainerInfo {
 
     GraphInfo getPrimaryGraphInfo();
 
-
+    List<GraphInfo> getGraphInfos();
 }

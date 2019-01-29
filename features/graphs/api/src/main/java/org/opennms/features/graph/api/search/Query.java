@@ -26,43 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.graph.updates.search;
+package org.opennms.features.graph.api.search;
 
-/**
- * After the user selected a Suggestion, this is converted to a {@link SearchCriteria}.
- * Theoretically they are identically, but differ only by name in order to distinguish the different use-cases.
- */
-public class SearchCriteria {
 
-    // The provider to use for search (e.g. from the SearchSuggestion)
-    private String providerId;
+import java.util.List;
 
-    // The namespace of the graph, the search was triggered for
+import com.google.common.collect.Lists;
+
+public class Query {
+
+    // selected container
+    private String containerId;
+
+    // graph namespace
+    // TODO MVR each SearchCriteria already has a namespace, however, we apply it here again, as we may require it
+    // and may not have a SearchCriteria defined
     private String namespace;
 
-    // The search criteria, usually the label of the SearchSuggestion
-    private String criteria;
+    private int szl = 1; // default is always 1
 
-    // The context
-    private String context;
+    private List<SearchCriteria> searchCriteria = Lists.newArrayList();
 
-    public SearchCriteria() {
-
+    public int getSzl() {
+        return szl;
     }
 
-    public SearchCriteria(final SearchSuggestion suggestion, final String namespace) {
-        this.providerId = suggestion.getProvider();
-        this.context = suggestion.getContext();
-        this.criteria = suggestion.getLabel();
-        this.namespace = namespace;
+    public void setSzl(int szl) {
+        this.szl = szl;
     }
 
-    public String getProviderId() {
-        return providerId;
+    public String getContainerId() {
+        return containerId;
     }
 
-    public void setProviderId(String providerId) {
-        this.providerId = providerId;
+    public void setContainerId(String containerId) {
+        this.containerId = containerId;
     }
 
     public String getNamespace() {
@@ -73,19 +71,11 @@ public class SearchCriteria {
         this.namespace = namespace;
     }
 
-    public String getCriteria() {
-        return criteria;
+    public List<SearchCriteria> getSearchCriteria() {
+        return searchCriteria;
     }
 
-    public void setCriteria(String criteria) {
-        this.criteria = criteria;
-    }
-
-    public String getContext() {
-        return context;
-    }
-
-    public void setContext(String context) {
-        this.context = context;
+    public void setSearchCriteria(List<SearchCriteria> searchCriteria) {
+        this.searchCriteria = searchCriteria;
     }
 }

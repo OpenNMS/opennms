@@ -26,20 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.graph.updates;
+package org.opennms.features.graph.api.search;
 
-import org.opennms.features.graph.api.GraphContainer;
-import org.opennms.features.graph.api.info.GraphContainerInfo;
+import java.util.List;
 
-public interface GraphContainerProvider {
+import org.opennms.features.graph.api.Vertex;
+
+/**
+ * Service to search all graphs
+ */
+public interface GraphSearchService {
+
     /**
-     * The provider may need to inform about graph changes.
-     * Whith this method the {@link GraphNotificationService} is passed to the provider.
-     * @param notificationService
+     * Returns a list of suggestions for the given namespace and input, where input may only be a
+     * snippet of the whole data, e.g. for type ahead support.
+     *
+     * @param namespace The namespace to search in
+     * @param input The "thing" to search
+     * @return A list of results, the user may select from
      */
-    void setNotificationService(GraphNotificationService notificationService);
+    List<SearchSuggestion> getSuggestions(String namespace, String input);
 
-    GraphContainer loadGraphContainer();
-
-    GraphContainerInfo getContainerInfo();
+    List<Vertex> search(SearchCriteria searchCriteria);
 }

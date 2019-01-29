@@ -37,6 +37,7 @@ import org.opennms.features.graph.api.Vertex;
 import org.opennms.features.graph.api.generic.GenericGraph;
 import org.opennms.features.graph.api.generic.GenericProperties;
 import org.opennms.features.graph.api.info.DefaultGraphInfo;
+import org.opennms.features.graph.api.info.GraphInfo;
 
 // TODO MVR enforce namespace
 // TODO MVR this is basically a copy of GenericGraph :'(
@@ -69,6 +70,10 @@ public class SimpleGraph extends AbstractGraph<SimpleVertex, SimpleEdge> impleme
             clonedEdge.setNamespace(getNamespace());
             addEdge(clonedEdge); // TODO MVR ... gnaaa, this is wrong
         });
+    }
+
+    public SimpleGraph(GraphInfo graphInfo) {
+        super(graphInfo);
     }
 
     @Override

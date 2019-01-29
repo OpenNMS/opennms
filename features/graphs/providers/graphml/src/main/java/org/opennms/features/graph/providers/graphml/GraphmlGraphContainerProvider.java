@@ -43,8 +43,7 @@ import org.opennms.features.graph.api.generic.GenericGraphContainer;
 import org.opennms.features.graph.api.generic.GenericProperties;
 import org.opennms.features.graph.api.generic.GenericVertex;
 import org.opennms.features.graph.api.info.GraphContainerInfo;
-import org.opennms.features.graph.updates.GraphContainerProvider;
-import org.opennms.features.graph.updates.GraphNotificationService;
+import org.opennms.features.graph.api.service.GraphContainerProvider;
 import org.opennms.features.graphml.model.GraphML;
 import org.opennms.features.graphml.model.GraphMLGraph;
 import org.opennms.features.graphml.model.GraphMLReader;
@@ -70,10 +69,10 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
         loadGraphContainer();
     }
 
-    @Override
-    public void setNotificationService(GraphNotificationService notificationService) {
-
-    }
+//    @Override
+//    public void setNotificationService(GraphNotificationService notificationService) {
+//
+//    }
 
     @Override
     public GraphContainer loadGraphContainer() {

@@ -1329,4 +1329,34 @@
         <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
         <bundle>mvn:org.opennms.features/org.opennms.features.api-layer/${project.version}</bundle>
     </feature>
+
+    <!-- TODO MVR may split in several features , e.g. API / IMPL, etc.-->
+    <feature name="opennms-graphs" description="OpenNMS :: Features :: Graphs" version="${project.version}">
+        <feature>guava</feature>
+
+        <!-- TODO MVR topology is embedding this, maybe we should do the same here? -->
+        <bundle>wrap:mvn:net.sf.jung/jung-api/${jungVersion}</bundle>
+        <bundle>wrap:mvn:net.sf.jung/jung-graph-impl/${jungVersion}</bundle>
+
+        <bundle>mvn:org.opennms.features.graphs/org.opennms.features.graphs.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.graphs/org.opennms.features.graphs.simple/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.graphs/org.opennms.features.graphs.updates/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.graphs/org.opennms.features.graphs.service/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.graphs/org.opennms.features.graphs.shell/${project.version}</bundle>
+
+        <!-- TODO MVR Graph persistence ??? -->
+    </feature>
+
+    <!-- Providers -->
+    <feature name="opennms-graph-provider-dummy" description="OpenNMS :: Features :: Graphs :: Provider :: Dummy" version="${project.version}">
+        <feature>opennms-graphs</feature>
+        <bundle>mvn:org.opennms.features.graphs.providers/org.opennms.features.graphs.providers.dummy/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-graph-provider-graphml" description="OpenNMS :: Features :: Graphs :: Provider :: GraphML" version="${project.version}">
+        <feature>opennms-core</feature>
+        <feature>opennms-graphs</feature>
+        <bundle>mvn:org.opennms.feature/org.opennms.features.graphml/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.graphs.providers/org.opennms.features.graphs.providers.graphml/${project.version}</bundle>
+    </feature>
 </features>

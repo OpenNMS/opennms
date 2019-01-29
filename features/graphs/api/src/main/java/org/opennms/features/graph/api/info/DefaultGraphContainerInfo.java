@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+// TODO MVR the location is weird. Some of the stuff is named default, others is simple, but there is also a simple module... so what is it going to be?
 public class DefaultGraphContainerInfo implements GraphContainerInfo {
 
     private final String id;
@@ -80,6 +81,7 @@ public class DefaultGraphContainerInfo implements GraphContainerInfo {
         return id;
     }
 
+    @Override
     public List<GraphInfo> getGraphInfos() {
         return graphInfos;
     }

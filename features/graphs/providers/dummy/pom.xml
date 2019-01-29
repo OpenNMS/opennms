@@ -8,8 +8,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.graphs.providers</groupId>
-    <artifactId>org.opennms.features.graphs.providers.graphml</artifactId>
-    <name>OpenNMS :: Features :: Graph :: Providers :: GraphML</name>
+    <artifactId>org.opennms.features.graphs.providers.dummy</artifactId>
+    <name>OpenNMS :: Features :: Graph :: Providers :: Dummy</name>
     <packaging>bundle</packaging>
     <dependencies>
         <dependency>
@@ -17,21 +17,10 @@
             <artifactId>org.opennms.features.graphs.api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.opennms.features</groupId>
-            <artifactId>org.opennms.features.graphml</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <!-- TODO MVR this is still weird -->
         <dependency>
             <groupId>org.opennms.features.graphs</groupId>
             <artifactId>org.opennms.features.graphs.simple</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <!-- TODO MVR this is still weird -->
-        <dependency>
-            <groupId>org.opennms.features.graphs</groupId>
-            <artifactId>org.opennms.features.graphs.updates</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
