@@ -12,4 +12,11 @@
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
 		<bean class="org.opennms.protocols.dhcp.detector.DhcpDetectorFactory" />
 	</service>
+
+	<bean id="dhcpMonitor" class="org.opennms.protocols.dhcp.monitor.DhcpMonitor" />
+	<service ref="dhcpMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.protocols.dhcp.monitor.DhcpMonitor" />
+		</service-properties>
+	</service>
 </blueprint>
