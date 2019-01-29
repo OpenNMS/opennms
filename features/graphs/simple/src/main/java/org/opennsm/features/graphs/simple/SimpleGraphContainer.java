@@ -36,10 +36,12 @@ import java.util.stream.Collectors;
 import org.opennms.features.graph.api.Graph;
 import org.opennms.features.graph.api.GraphContainer;
 import org.opennms.features.graph.api.generic.GenericGraphContainer;
+import org.opennms.features.graph.api.info.GraphContainerInfo;
 import org.opennms.features.graph.api.info.GraphInfo;
 
 // TODO MVR probably implement ContainerGraphInfo instead of a property
 // TODO MVR make more type safe
+// TODO MVR why is there a DefaultGraphContainerInfo, but no SimpleGraphContainerInfo... this is weird
 public class SimpleGraphContainer implements GraphContainer {
 
     private final String id;
@@ -49,6 +51,12 @@ public class SimpleGraphContainer implements GraphContainer {
 
     public SimpleGraphContainer(String containerId) {
         this.id = Objects.requireNonNull(containerId);
+    }
+
+    public SimpleGraphContainer(GraphContainerInfo containerInfo) {
+        this(containerInfo.getId());
+        setLabel(containerInfo.getLabel());
+        setDescription(containerInfo.getDescription());
     }
 
     @Override
@@ -98,6 +106,11 @@ public class SimpleGraphContainer implements GraphContainer {
     @Override
     public GraphInfo getPrimaryGraphInfo() {
         return graphs.get(0);
+    }
+
+    @Override
+    public List<GraphInfo> getGraphInfos() {
+        return new ArrayList<>(graphs);
     }
 
     @Override

@@ -112,6 +112,11 @@ public class GenericGraphContainer implements GraphContainer<GenericVertex, Gene
         return graphs.get(0);
     }
 
+    @Override
+    public List<GraphInfo> getGraphInfos() {
+        return new ArrayList<>(graphs);
+    }
+
     public Map<String, Object> getProperties() {
         return new HashMap<>(properties);
     }

@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>org.opennms.features.graphs</groupId>
-        <artifactId>org.opennms.features.graphs.providers</artifactId>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.graphs</artifactId>
         <version>24.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.opennms.features.graphs.providers</groupId>
-    <artifactId>org.opennms.features.graphs.providers.graphml</artifactId>
-    <name>OpenNMS :: Features :: Graph :: Providers :: GraphML</name>
+    <groupId>org.opennms.features.graphs</groupId>
+    <artifactId>org.opennms.features.graphs.service</artifactId>
+    <name>OpenNMS :: Features :: Graph :: Service</name>
     <packaging>bundle</packaging>
     <dependencies>
         <dependency>
@@ -17,18 +17,6 @@
             <artifactId>org.opennms.features.graphs.api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.opennms.features</groupId>
-            <artifactId>org.opennms.features.graphml</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <!-- TODO MVR this is still weird -->
-        <dependency>
-            <groupId>org.opennms.features.graphs</groupId>
-            <artifactId>org.opennms.features.graphs.simple</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <!-- TODO MVR this is still weird -->
         <dependency>
             <groupId>org.opennms.features.graphs</groupId>
             <artifactId>org.opennms.features.graphs.updates</artifactId>

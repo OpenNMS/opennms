@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.graph.updates;
+package org.opennms.features.graph.api.service;
 
 // TODO MVR the provider must provide information such as namespace, label, descriptin, etc. even if the graph itself is not loaded yet.
 // TODO MVR the graph provider should probably return multiple graphs (e.g. graphml)

@@ -12,6 +12,7 @@
     <name>OpenNMS :: Features :: Graph :: Providers</name>
     <packaging>pom</packaging>
     <modules>
+        <module>dummy</module>
         <module>graphml</module>
     </modules>
 </project>

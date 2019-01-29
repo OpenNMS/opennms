@@ -26,26 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.graph.updates.search;
+package org.opennms.netmgt.topology;
 
-import java.util.List;
+import javax.persistence.Embeddable;
 
-import org.opennms.features.graph.api.Vertex;
+@Embeddable
+public class VertexRefEntity {
 
-/**
- * Service to search all graphs
- */
-public interface GraphSearchService {
+    private String namespace;
 
-    /**
-     * Returns a list of suggestions for the given namespace and input, where input may only be a
-     * snippet of the whole data, e.g. for type ahead support.
-     *
-     * @param namespace The namespace to search in
-     * @param input The "thing" to search
-     * @return A list of results, the user may select from
-     */
-    List<SearchSuggestion> getSuggestions(String namespace, String input);
+    private String id;
 
-    List<Vertex> search(SearchCriteria searchCriteria);
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }
