@@ -70,7 +70,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
             Assert.assertEquals(new Select(findElementById("lookup_location")).getOptions().size(), locationCount);
             Assert.assertEquals(new Select(findElementById("location")).getOptions().size(), locationCount);
 
-            // create new location
+            // creating the location "ABC" because "ABC" < "Default" alphabetically, see issue NMS-10514
             sendPost("/api/v2/monitoringLocations", "<location location-name=\"ABC\" monitoring-area=\"ABC\" priority=\"100\"/>", 201);
             created = true;
 
