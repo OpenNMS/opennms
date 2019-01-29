@@ -44,7 +44,6 @@ import org.apache.commons.io.IOUtils;
 import org.dhcp4java.DHCPConstants;
 import org.dhcp4java.DHCPOption;
 import org.dhcp4java.DHCPPacket;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,8 +52,6 @@ import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.dhcpd.DhcpdConfigFactory;
-import org.opennms.netmgt.dhcpd.Dhcpd;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,8 +78,6 @@ public class DhcpDetectorTest implements InitializingBean {
     public DhcpDetectorFactory m_detectorFactory;
     
     public DhcpDetector m_detector;
-
-    private Dhcpd m_dhcpd;
 
     private Thread m_dhcpdThread = null;
 
@@ -111,22 +106,7 @@ public class DhcpDetectorTest implements InitializingBean {
                 "        requestIpAddress=\"" + MY_IP + "\">\n" + 
                 "</DhcpdConfiguration>");
 
-        DhcpdConfigFactory.init();
         m_detector = m_detectorFactory.createDetector(new HashMap<>());
-        m_dhcpd = Dhcpd.getInstance();
-        m_dhcpd.init();
-
-        if (m_extendedTests) {
-            // binds on port 68, hardcoded  :P
-            m_dhcpd.start();
-        }
-    }
-
-    @After
-    public void tearDown(){
-        if (m_extendedTests) {
-            m_dhcpd.stop();
-        }
     }
 
     @Test(timeout=90000)

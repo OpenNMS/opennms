@@ -625,7 +625,6 @@ find %{buildroot}%{instprefix}/etc ! -type d | \
 	sed -e "s,^%{buildroot},%config(noreplace) ," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
-	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'jira.properties' | \
 	grep -v 'jms-northbounder-configuration.xml' | \
 	grep -v 'juniper-tca' | \
@@ -645,7 +644,6 @@ find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
 	sed -e "s,^%{buildroot},," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
-	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'jira.properties' | \
 	grep -v 'jms-northbounder-configuration.xml' | \
 	grep -v 'juniper-tca' | \
@@ -838,11 +836,8 @@ rm -rf %{buildroot}
 
 %files plugin-protocol-dhcp
 %defattr(664 root root 775)
-%config(noreplace) %{instprefix}/etc/dhcp*.xml
 %{instprefix}/lib/dhcp4java-*.jar
 %{instprefix}/lib/org.opennms.protocols.dhcp*.jar
-%{sharedir}/etc-pristine/dhcp*.xml
-%{sharedir}/xsds/dhcp*.xsd
 
 %files plugin-protocol-nsclient
 %defattr(664 root root 775)
