@@ -10,6 +10,12 @@
 
 === Breaking Changes
 
+==== Reloadable Flag in service-configuration.xml
+
+Starting with the newest OpenNMS release, there will be a reloadable Flag in the `service-configuration.xml`, which indicates whether a daemon is reloadable or not.
+If the flag is not set, the property defaults to `false`.
+This should help the manual work with the `Opennms-deamons`, and will also be used by the newly added Daemon-Configuration Page, which allows to reload (reloadable) Daemons via the GUI.
+
 === New Features
 
 === Other Improvements
