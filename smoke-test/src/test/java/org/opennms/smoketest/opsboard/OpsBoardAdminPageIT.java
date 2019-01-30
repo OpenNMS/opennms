@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -97,13 +97,8 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumTestCase {
                 .withDuration(300).build());
 
         adminPage.open("/vaadin-wallboard#!wallboard/My-Wallboard");
-
-        try {
-            setImplicitWait(1, TimeUnit.SECONDS);
-            new WebDriverWait(m_driver, 5).until(pageContainsText("Alarms: My-Alarms"));
-        } finally {
-            setImplicitWait();
-        }
+        waitUntil(pageContainsText("Ops Panel"));
+        waitUntil(pageContainsText("Alarms: My-Alarms"));
     }
 
     private static class OpsBoardAdminPage extends AbstractPage {
