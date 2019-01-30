@@ -41,7 +41,9 @@ import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
  * Install: feature:install opennms-enlinkd-shell
  * Usage: typpe enlinkd:delete-topology in karaf console
  */
-@Command(scope = "enlinkd", name = "delete-topology", description = "Creates a linkd topology")
+@Command(scope = "enlinkd", name = "delete-topology",
+        description = "Delete generated topology (OnmsNodes, XxElements, XxLinks, SnmpInterfaces, IpInterfaces." +
+                "The topology is identified as it belongs to the category 'GeneratedNode'")
 @Service
 public class DeleteTopologyCommand implements Action {
 

@@ -50,10 +50,10 @@ public class GenerateTopologyCommand implements Action {
     @Option(name = "--nodes", description = "generate <N> OmnsNodes. Default: 10")
     private Integer amountNodes;
 
-    @Option(name = "--elements", description = "generate <N> (Cdp | IsIs | Lldp | Ospf ) Elements. Default: amount nodes.")
+    @Option(name = "--elements", description = "generate <N> (Cdp | IsIs | Lldp | Ospf ) Elements, depending on protocol. Default: amount nodes.")
     private Integer amountElements;
 
-    @Option(name = "--links", description = "generate <N> (Cdp | IsIs | Lldp | Ospf ) CdpLinks. Default: amount elements.")
+    @Option(name = "--links", description = "generate <N> (Cdp | IsIs | Lldp | Ospf ) Links, depending on protocol. Default: amount elements.")
     private Integer amountLinks;
 
     @Option(name = "--snmpinterfaces", description = "generate <N> SnmpInterfaces but not more than amount nodes. Default: amount nodes * 18.")
