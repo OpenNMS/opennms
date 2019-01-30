@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.protocols.dhcp.detector;
+package org.opennms.netmgt.provision.detector.dhcp;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
