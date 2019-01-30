@@ -21,3 +21,7 @@ $theme-colors: (
 // The UI looks very bloated, so we reduce it
 $card-spacer-y:                     .25rem !default;
 $card-spacer-x:                     .42rem !default;
+
+// Breadcrumbs take up a lot of space, so we reduce the default padding a bit
+$breadcrumb-padding-y:              .5rem !default;
+$breadcrumb-padding-x:              .5rem !default;
