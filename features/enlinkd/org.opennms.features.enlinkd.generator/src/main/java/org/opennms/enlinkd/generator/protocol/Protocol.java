@@ -110,10 +110,10 @@ public abstract class Protocol<Element> {
 
     protected OnmsNode createNode(int count, OnmsMonitoringLocation location, OnmsCategory category) {
         OnmsNode node = new OnmsNode();
-        node.setId(count); // we assume we have an empty database and can just generate the ids
         node.setLabel("Node" + count);
         node.setLocation(location);
         node.addCategory(category);
+        node.setType(OnmsNode.NodeType.ACTIVE);
         return node;
     }
 
@@ -125,12 +125,11 @@ public abstract class Protocol<Element> {
         return interfaces;
     }
 
-    private OnmsSnmpInterface createSnmpInterface(int id, OnmsNode node) {
+    private OnmsSnmpInterface createSnmpInterface(int ifIndex, OnmsNode node) {
         OnmsSnmpInterface onmsSnmpInterface = new OnmsSnmpInterface();
-        onmsSnmpInterface.setId(id);
         onmsSnmpInterface.setNode(node);
 
-        onmsSnmpInterface.setIfIndex(id);
+        onmsSnmpInterface.setIfIndex(ifIndex);
         onmsSnmpInterface.setIfType(4);
         onmsSnmpInterface.setIfSpeed(5L);
         onmsSnmpInterface.setIfAdminStatus(6);
@@ -146,21 +145,19 @@ public abstract class Protocol<Element> {
         ArrayList<OnmsIpInterface> interfaces = new ArrayList<>();
         InetAddressGenerator inetGenerator = new InetAddressGenerator();
         for (int i = 0; i < topologySettings.getAmountIpInterfaces(); i++) {
-            interfaces.add(createIpInterface(i, random.getRandom(snmps), inetGenerator.next()));
+            interfaces.add(createIpInterface(random.getRandom(snmps), inetGenerator.next()));
         }
         return interfaces;
     }
 
-    private OnmsIpInterface createIpInterface(int id, OnmsSnmpInterface snmp, InetAddress inetAddress) {
+    private OnmsIpInterface createIpInterface(OnmsSnmpInterface snmp, InetAddress inetAddress) {
         OnmsIpInterface ip = new OnmsIpInterface();
-        ip.setId(id);
         ip.setSnmpInterface(snmp);
         ip.setIpLastCapsdPoll(new Date());
         ip.setNode(snmp.getNode());
         ip.setIpAddress(inetAddress);
         return ip;
     }
-
 
     protected <E> PairGenerator<E> createPairGenerator(List<E> elements) {
         if (TopologyGenerator.Topology.complete == topologySettings.getTopology()) {

@@ -72,7 +72,6 @@ public class CdpProtocol extends Protocol<CdpElement> {
 
     private CdpElement createCdpElement(OnmsNode node) {
         CdpElement cdpElement = new CdpElement();
-        cdpElement.setId(node.getId()); // we use the same id for simplicity
         cdpElement.setNode(node);
         cdpElement.setCdpGlobalDeviceId("CdpElementForNode" + node.getId());
         cdpElement.setCdpGlobalRun(OspfElement.TruthValue.FALSE);
@@ -89,7 +88,7 @@ public class CdpProtocol extends Protocol<CdpElement> {
             Pair<CdpElement, CdpElement> pair = pairs.next();
             CdpElement sourceCdpElement = pair.getLeft();
             CdpElement targetCdpElement = pair.getRight();
-            CdpLink sourceLink = createCdpLink(i,
+            CdpLink sourceLink = createCdpLink(
                     sourceCdpElement.getNode(),
                     UUID.randomUUID().toString(),
                     UUID.randomUUID().toString(),
@@ -100,7 +99,7 @@ public class CdpProtocol extends Protocol<CdpElement> {
             String targetCdpCacheDevicePort = sourceLink.getCdpInterfaceName();
             String targetCdpInterfaceName = sourceLink.getCdpCacheDevicePort();
             String targetCdpGlobalDeviceId = sourceCdpElement.getCdpGlobalDeviceId();
-            CdpLink targetLink = createCdpLink(++i,
+            CdpLink targetLink = createCdpLink(
                     targetCdpElement.getNode(),
                     targetCdpInterfaceName,
                     targetCdpCacheDevicePort,
@@ -112,10 +111,9 @@ public class CdpProtocol extends Protocol<CdpElement> {
         return links;
     }
 
-    private CdpLink createCdpLink(int id, OnmsNode node, String cdpInterfaceName, String cdpCacheDevicePort,
+    private CdpLink createCdpLink(OnmsNode node, String cdpInterfaceName, String cdpCacheDevicePort,
                                   String cdpCacheDeviceId) {
         CdpLink link = new CdpLink();
-        link.setId(id);
         link.setCdpCacheDeviceId(cdpCacheDeviceId);
         link.setCdpInterfaceName(cdpInterfaceName);
         link.setCdpCacheDevicePort(cdpCacheDevicePort);

@@ -70,7 +70,6 @@ public class IsIsProtocol extends Protocol<IsIsElement> {
 
     private IsIsElement createElement(OnmsNode node) {
         IsIsElement element = new IsIsElement();
-        element.setId(node.getId()); // we use the same id for simplicity
         element.setNode(node);
         element.setIsisSysID("IsIsElementForNode" + node.getId());
         element.setIsisSysAdminState(IsIsElement.IsisAdminState.on);
@@ -109,7 +108,6 @@ public class IsIsProtocol extends Protocol<IsIsElement> {
 
     private IsIsLink createLink(int id, OnmsNode node, Integer isisISAdjIndex, String isisISAdjNeighSysID) {
         IsIsLink link = new IsIsLink();
-        link.setId(id);
         link.setIsisISAdjIndex(isisISAdjIndex);
         link.setIsisISAdjNeighSysID(isisISAdjNeighSysID);
         link.setNode(node);

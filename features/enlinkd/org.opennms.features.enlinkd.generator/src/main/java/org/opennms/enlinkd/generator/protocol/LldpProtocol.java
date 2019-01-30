@@ -73,7 +73,6 @@ public class LldpProtocol extends Protocol<LldpElement> {
 
     private LldpElement createElement(OnmsNode node, String lLdpChassisId) {
         LldpElement element = new LldpElement();
-        element.setId(node.getId());
         element.setNode(node);
         element.setLldpChassisId(lLdpChassisId);
         element.setLldpChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_CHASSISCOMPONENT);
@@ -118,7 +117,6 @@ public class LldpProtocol extends Protocol<LldpElement> {
     private LldpLink createLink(int id, OnmsNode node, String portId, LldpUtils.LldpPortIdSubType portIdSubType
             , String remotePortId, LldpUtils.LldpPortIdSubType remotePortIdSubType, String remoteChassisId) {
         LldpLink link = new LldpLink();
-        link.setId(id);
         link.setLldpPortId(portId);
         link.setLldpPortIdSubType(portIdSubType);
         link.setLldpRemPortId(remotePortId);

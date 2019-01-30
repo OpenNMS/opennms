@@ -88,7 +88,6 @@ public class OspfProtocol extends Protocol<OspfElement> {
 
     private OspfLink createLink(int id, OnmsNode node, InetAddress ipAddress, InetAddress remoteAddress) {
         OspfLink link = new OspfLink();
-        link.setId(id);
         link.setNode(node);
         link.setOspfIpAddr(ipAddress);
         link.setOspfRemIpAddr(remoteAddress);

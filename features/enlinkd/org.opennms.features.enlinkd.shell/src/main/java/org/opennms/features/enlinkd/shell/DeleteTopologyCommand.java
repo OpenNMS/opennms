@@ -30,50 +30,26 @@ package org.opennms.features.enlinkd.shell;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
-import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.enlinkd.generator.TopologyGenerator;
 import org.opennms.enlinkd.generator.TopologyPersister;
-import org.opennms.enlinkd.generator.TopologySettings;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 
 /**
- * Generate a enlinkd topology via karaf command.
+ * Deletes the generated topology via karaf command. The topology is identified as it belongs to the category "GeneratedNode"
  * Install: feature:install opennms-enlinkd-shell
- * Usage: type 'enlinkd:generate-topology' in karaf console
+ * Usage: typpe enlinkd:delete-topology in karaf console
  */
-@Command(scope = "enlinkd", name = "generate-topology", description = "Creates a linkd topology")
+@Command(scope = "enlinkd", name = "delete-topology", description = "Creates a linkd topology")
 @Service
-public class GenerateTopologyCommand implements Action {
-
-    @Option(name = "--nodes", description = "generate <N> OmnsNodes. Default: 10")
-    private Integer amountNodes;
-
-    @Option(name = "--elements", description = "generate <N> (Cdp | IsIs | Lldp | Ospf ) Elements. Default: amount nodes.")
-    private Integer amountElements;
-
-    @Option(name = "--links", description = "generate <N> (Cdp | IsIs | Lldp | Ospf ) CdpLinks. Default: amount elements.")
-    private Integer amountLinks;
-
-    @Option(name = "--snmpinterfaces", description = "generate <N> SnmpInterfaces but not more than amount nodes. Default: amount nodes * 18.")
-    private Integer amountSnmpInterfaces;
-
-    @Option(name = "--ipinterfaces", description = "generate <N> IpInterfaces but not more than amount snmp interfaces. Default: amount nodes * 2.")
-    private Integer amountIpInterfaces;
-
-    @Option(name = "--topology", description = "type of topology (complete | ring | random). Default: random.")
-    private String topology;
-
-    @Option(name = "--protocol", description = "type of protocol (cdp | isis | lldp | ospf). Default: cdp.")
-    private String protocol;
+public class DeleteTopologyCommand implements Action {
 
     @Reference
     private GenericPersistenceAccessor genericPersistenceAccessor;
 
     @Override
-    public Object execute() {
-
+    public Object execute() throws Exception {
         // We print directly to System.out so it will appear in the console
         TopologyGenerator.ProgressCallback progressCallback = new TopologyGenerator.ProgressCallback(){
 
@@ -87,20 +63,7 @@ public class GenerateTopologyCommand implements Action {
                 .persister(new TopologyPersister(genericPersistenceAccessor, progressCallback))
                 .progressCallback(progressCallback)
                 .build();
-        TopologySettings settings = TopologySettings.builder()
-                .amountElements(this.amountElements)
-                .amountIpInterfaces(this.amountIpInterfaces)
-                .amountLinks(this.amountLinks)
-                .amountNodes(this.amountNodes)
-                .amountSnmpInterfaces(amountSnmpInterfaces)
-                .protocol(toEnumOrNull(TopologyGenerator.Protocol.class, this.protocol))
-                .topology(toEnumOrNull(TopologyGenerator.Topology.class, this.topology))
-                .build();
-        generator.generateTopology(settings);
+        generator.deleteTopology();
         return null;
-    }
-
-    private <E extends Enum> E toEnumOrNull(Class<E> enumClass, String s) {
-        return s == null ? null : (E) Enum.valueOf(enumClass, s);
     }
 }
