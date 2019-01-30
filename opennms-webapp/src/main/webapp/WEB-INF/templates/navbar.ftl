@@ -10,7 +10,7 @@
 
 
 
-    <div style="margin-top: auto" id="navbar" class="navbar-collapse collapse">
+    <div id="navbar" class="navbar-collapse collapse">
         <#if request.remoteUser?has_content >
             <div id="headerinfo" style="position: absolute; top: 0; right: 0" class="text-light mr-4">
                 ${formattedTime}
