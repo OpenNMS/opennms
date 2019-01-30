@@ -17,3 +17,8 @@ $theme-colors: (
     // Additional colors may be added here, e.g. "severity-normal"
     // to allow alerts, badges, buttons, etc to be colored accordingly
 );
+
+// Spacing of cards is a bit too much by default.
+// The UI looks very bloated, so we reduce it
+$card-spacer-y:                     .25rem !default;
+$card-spacer-x:                     .42rem !default;

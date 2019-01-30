@@ -304,7 +304,8 @@ div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.
 }
 
 .card {
-  margin-bottom: $spacer * 1.5; // equivalent of mb-4
+  margin-bottom: $spacer * 1.0; // equivalent of mb-3
+  //margin-bottom: $spacer * 1.5; // equivalent of mb-4
 }
 
 // requisition ui uses bootbox for modals, however it is not yet bootstrap 4 compatible
