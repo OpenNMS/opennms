@@ -270,7 +270,7 @@ public class SurveillanceView extends CssLayout implements UIEvents.PollListener
      */
     @Override
     protected String getCss(Component c) {
-        return "padding-left: 0px;";
+        return "padding-left: 0px; vertical-align: top";
     }
 
     /**
