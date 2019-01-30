@@ -83,8 +83,6 @@ public class DhcpDetectorTest implements InitializingBean {
 
     private Thread m_dhcpdThread = null;
 
-    private String m_onmsHome;
-
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -93,21 +91,6 @@ public class DhcpDetectorTest implements InitializingBean {
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
-
-        File etc = new File("target/test-work-dir/etc");
-        etc.mkdirs();
-        m_onmsHome = etc.getParent();
-        System.setProperty("opennms.home", m_onmsHome);
-        ConfigurationTestUtils.setRelativeHomeDirectory(m_onmsHome);
-        File dhcpConfig = new File(etc, "dhcpd-configuration.xml");
-        FileUtils.writeStringToFile(dhcpConfig, "<DhcpdConfiguration\n" + 
-                "        port=\"5818\"\n" + 
-                "        macAddress=\"" + MY_MAC + "\"\n" + 
-                "        myIpAddress=\"" + MY_IP + "\"\n" + 
-                "        extendedMode=\"false\"\n" + 
-                "        requestIpAddress=\"" + MY_IP + "\">\n" + 
-                "</DhcpdConfiguration>");
-
         m_detector = m_detectorFactory.createDetector(new HashMap<>());
     }
 
