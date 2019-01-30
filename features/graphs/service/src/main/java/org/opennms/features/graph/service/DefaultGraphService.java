@@ -78,7 +78,11 @@ public class DefaultGraphService implements GraphService {
 
     @Override
     public <V extends Vertex, E extends Edge> Graph<V, E> getGraph(String containerId, String graphNamespace) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        final GraphContainer graphContainer = getGraphContainer(containerId);
+        if (graphContainer != null) {
+            return graphContainer.getGraph(graphNamespace);
+        }
+        return null;
     }
 
     @Override

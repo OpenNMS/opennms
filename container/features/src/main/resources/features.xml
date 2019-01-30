@@ -1331,6 +1331,7 @@
     </feature>
 
     <!-- TODO MVR may split in several features , e.g. API / IMPL, etc.-->
+    <!-- TODO MVR redefine me -->
     <feature name="opennms-graphs" description="OpenNMS :: Features :: Graphs" version="${project.version}">
         <feature>guava</feature>
 
@@ -1347,15 +1348,24 @@
     </feature>
 
     <!-- Providers -->
+    <!-- TODO MVR redefine me -->
     <feature name="opennms-graph-provider-dummy" description="OpenNMS :: Features :: Graphs :: Provider :: Dummy" version="${project.version}">
         <feature>opennms-graphs</feature>
         <bundle>mvn:org.opennms.features.graphs.providers/org.opennms.features.graphs.providers.dummy/${project.version}</bundle>
     </feature>
 
+    <!-- TODO MVR redefine me -->
     <feature name="opennms-graph-provider-graphml" description="OpenNMS :: Features :: Graphs :: Provider :: GraphML" version="${project.version}">
         <feature>opennms-core</feature>
         <feature>opennms-graphs</feature>
         <bundle>mvn:org.opennms.features/org.opennms.features.graphml/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.graphs.providers/org.opennms.features.graphs.providers.graphml/${project.version}</bundle>
+    </feature>
+
+    <!-- TODO MVR redefine me -->
+    <feature name="opennms-graph-provider-bsm" description="OpenNMS :: Features :: Graphs :: Provider :: Business Services" version="${project.version}">
+        <feature>opennms-model</feature>
+        <feature>opennms-graphs</feature>
+        <bundle>mvn:org.opennms.features.graphs.providers/org.opennms.features.graphs.providers.bsm/${project.version}</bundle>
     </feature>
 </features>
