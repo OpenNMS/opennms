@@ -369,7 +369,10 @@ public class DestinationWizardServlet extends HttpServlet {
     }
 
     private static void saveOutlineForm(Path path, HttpServletRequest request) {
-        path.setName(request.getParameter("name"));
+        String name = request.getParameter("name");
+        if(!name.isEmpty()) {
+            path.setName(name);
+        }
         Escalate[] escalations = path.getEscalates().toArray(new Escalate[0]);
 
         for (int i = 0; i < escalations.length; i++) {
