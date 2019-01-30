@@ -68,7 +68,7 @@ public class GraphMLGraphProviderIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws IOException, InterruptedException {
         // Install features
-        karafShell = new KarafShell(getTestEnvironment().getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8101));
+        karafShell = new KarafShell(getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8101));
         karafShell.runCommand("feature:install opennms-graphs");
         karafShell.runCommand("feature:install opennms-graph-provider-graphml");
         karafShell.runCommand("feature:list -i", output -> output.contains("opennms-graphs") && output.contains("opennms-graph-provider-graphml"));
