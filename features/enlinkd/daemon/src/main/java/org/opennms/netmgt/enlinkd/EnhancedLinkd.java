@@ -189,11 +189,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     }
 
     public void scheduleAndRegisterOnmsTopologyUpdater(TopologyUpdater onmsTopologyUpdater) {
-        LOG.info("scheduleOnmsTopologyUpdater: Scheduling {}",
-                   onmsTopologyUpdater.getInfo());
         onmsTopologyUpdater.setScheduler(m_scheduler);
         onmsTopologyUpdater.setPollInterval(m_linkdConfig.getTopologyInterval());
         onmsTopologyUpdater.setInitialSleepTime(0L);
+        LOG.info("scheduleOnmsTopologyUpdater: Scheduling {}",
+                 onmsTopologyUpdater.getInfo());
         onmsTopologyUpdater.schedule();
         onmsTopologyUpdater.register();
     }
@@ -205,12 +205,12 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     }
     
     public void scheduleDiscoveryBridgeDomain() {
-            LOG.info("scheduleDiscoveryBridgeDomain: Scheduling {}",
-                     m_discoveryBridgeDomains.getInfo());
             m_discoveryBridgeDomains.setScheduler(m_scheduler);
             m_discoveryBridgeDomains.setPollInterval(m_linkdConfig.getBridgeTopologyInterval());
             m_discoveryBridgeDomains.setInitialSleepTime(m_linkdConfig.getBridgeTopologyInterval()+m_linkdConfig.getInitialSleepTime());
             m_discoveryBridgeDomains.setMaxthreads(m_linkdConfig.getDiscoveryBridgeThreads());
+            LOG.info("scheduleDiscoveryBridgeDomain: Scheduling {}",
+                     m_discoveryBridgeDomains.getInfo());
             m_discoveryBridgeDomains.schedule();
     }
 

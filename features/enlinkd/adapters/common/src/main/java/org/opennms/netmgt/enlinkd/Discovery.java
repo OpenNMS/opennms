@@ -191,7 +191,7 @@ public abstract class Discovery implements ReadyRunnable {
      * @return a {@link java.lang.String} object.
      */
     public String getInfo() {
-        return  getName() + " initial:" + m_initial_sleep_time + "interval:" + m_poll_interval;  
+        return  getName() + " initial:" + m_initial_sleep_time + " interval:" + m_poll_interval;  
     }
 
     /**
