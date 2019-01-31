@@ -8,8 +8,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features</groupId>
-    <artifactId>org.opennms.features.graphs</artifactId>
-    <name>OpenNMS :: Features :: Graphs</name>
+    <artifactId>org.opennms.features.graph</artifactId>
+    <name>OpenNMS :: Features :: Graph (Parent)</name>
     <packaging>pom</packaging>
     <build>
         <plugins>
@@ -31,7 +31,7 @@
         <module>api</module>
         <module>jung</module>
         <module>persistence</module>
-        <module>providers</module>
+        <module>provider</module>
         <module>rest</module>
         <module>service</module>
         <module>shell</module>

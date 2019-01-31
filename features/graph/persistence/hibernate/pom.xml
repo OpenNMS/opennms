@@ -2,19 +2,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>org.opennms.features.graphs</groupId>
-        <artifactId>org.opennms.features.graphs.persistence</artifactId>
+        <groupId>org.opennms.features.graph</groupId>
+        <artifactId>org.opennms.features.graph.persistence</artifactId>
         <version>24.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.opennms.features.graphs.persistence</groupId>
-    <artifactId>org.opennms.features.graphs.persistence.hibernate</artifactId>
+    <groupId>org.opennms.features.graph.persistence</groupId>
+    <artifactId>org.opennms.features.graph.persistence.hibernate</artifactId>
     <name>OpenNMS :: Features :: Graph :: Persistence :: Hibernate</name>
     <packaging>bundle</packaging>
     <dependencies>
         <dependency>
-            <groupId>org.opennms.features.graphs.persistence</groupId>
-            <artifactId>org.opennms.features.graphs.persistence.api</artifactId>
+            <groupId>org.opennms.features.graph.persistence</groupId>
+            <artifactId>org.opennms.features.graph.persistence.api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -23,14 +23,14 @@
         </dependency>
         <!-- TODO MVR this should probably live in API instead ? -->
         <dependency>
-            <groupId>org.opennms.features.graphs</groupId>
-            <artifactId>org.opennms.features.graphs.updates</artifactId>
+            <groupId>org.opennms.features.graph</groupId>
+            <artifactId>org.opennms.features.graph.updates</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- TODO MVR this should probably live in API instead. Probably going to add this TODO a lot ^^ -->
         <dependency>
-            <groupId>org.opennms.features.graphs</groupId>
-            <artifactId>org.opennms.features.graphs.simple</artifactId>
+            <groupId>org.opennms.features.graph</groupId>
+            <artifactId>org.opennms.features.graph.simple</artifactId>
             <version>${project.version}</version>
         </dependency>
 
