@@ -73,13 +73,12 @@ public abstract class Protocol<Element> {
         context.getTopologyPersister().persist(category);
         List<OnmsNode> nodes = createNodes(topologySettings.getAmountNodes(), category);
         context.getTopologyPersister().persist(nodes);
-
-        createAndPersistProtocolSpecificEntities(nodes);
-
         List<OnmsSnmpInterface> snmpInterfaces = createSnmpInterfaces(nodes);
         context.getTopologyPersister().persist(snmpInterfaces);
         List<OnmsIpInterface> ipInterfaces = createIpInterfaces(snmpInterfaces);
         context.getTopologyPersister().persist(ipInterfaces);
+
+        createAndPersistProtocolSpecificEntities(nodes);
     }
 
     protected abstract void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes);
@@ -128,7 +127,6 @@ public abstract class Protocol<Element> {
     private OnmsSnmpInterface createSnmpInterface(int ifIndex, OnmsNode node) {
         OnmsSnmpInterface onmsSnmpInterface = new OnmsSnmpInterface();
         onmsSnmpInterface.setNode(node);
-
         onmsSnmpInterface.setIfIndex(ifIndex);
         onmsSnmpInterface.setIfType(4);
         onmsSnmpInterface.setIfSpeed(5L);
@@ -136,7 +134,6 @@ public abstract class Protocol<Element> {
         onmsSnmpInterface.setIfOperStatus(7);
         onmsSnmpInterface.setLastCapsdPoll(new Date());
         onmsSnmpInterface.setLastSnmpPoll(new Date());
-
 
         return onmsSnmpInterface;
     }

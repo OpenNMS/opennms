@@ -82,31 +82,33 @@ public class IsIsProtocol extends Protocol<IsIsElement> {
         List<IsIsLink> links = new ArrayList<>();
         Integer isisISAdjIndex = 0;
 
-        for (int i = 0; i < topologySettings.getAmountLinks(); i++) {
+        for (int i = 0; i < topologySettings.getAmountLinks()*2; i++) {
 
             // We create 2 links that reference each other, see also LinkdToplologyProvider.match...Links()
             Pair<IsIsElement, IsIsElement> pair = pairs.next();
             IsIsElement sourceElement = pair.getLeft();
             IsIsElement targetElement = pair.getRight();
             isisISAdjIndex++;
-            IsIsLink sourceLink = createLink(i,
+
+            IsIsLink sourceLink = createLink(
                     sourceElement.getNode(),
                     isisISAdjIndex, targetElement.getIsisSysID()
             );
             links.add(sourceLink);
 
-            IsIsLink targetLink = createLink(++i,
+            IsIsLink targetLink = createLink(
                     targetElement.getNode(),
                     isisISAdjIndex,
                     sourceElement.getIsisSysID()
             );
             links.add(targetLink);
+
             LOG.debug("Linked node {} with node {}", sourceElement.getNode().getLabel(), targetElement.getNode().getLabel());
         }
         return links;
     }
 
-    private IsIsLink createLink(int id, OnmsNode node, Integer isisISAdjIndex, String isisISAdjNeighSysID) {
+    private IsIsLink createLink(OnmsNode node, Integer isisISAdjIndex, String isisISAdjNeighSysID) {
         IsIsLink link = new IsIsLink();
         link.setIsisISAdjIndex(isisISAdjIndex);
         link.setIsisISAdjNeighSysID(isisISAdjNeighSysID);

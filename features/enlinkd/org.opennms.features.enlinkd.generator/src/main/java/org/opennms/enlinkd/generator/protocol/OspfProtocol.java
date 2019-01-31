@@ -60,7 +60,7 @@ public class OspfProtocol extends Protocol<OspfElement> {
     private List<OspfLink> createLinks(List<OnmsNode> nodes) {
         PairGenerator<OnmsNode> pairs = createPairGenerator(nodes);
         List<OspfLink> links = new ArrayList<>();
-        for (int i = 0; i < topologySettings.getAmountLinks(); i++) {
+        for (int i = 0; i < topologySettings.getAmountLinks()*2; i++) {
 
             // We create 2 links that reference each other, see also LinkdToplologyProvider.matchCdpLinks()
             Pair<OnmsNode, OnmsNode> pair = pairs.next();
@@ -68,14 +68,15 @@ public class OspfProtocol extends Protocol<OspfElement> {
             OnmsNode targetNode = pair.getRight();
             InetAddress ospfIpAddr = inetAddressCreator.next();
             InetAddress ospfRemIpAddr = inetAddressCreator.next();
-            OspfLink sourceLink = createLink(i,
+
+            OspfLink sourceLink = createLink(
                     sourceNode,
                     ospfIpAddr,
                     ospfRemIpAddr
             );
             links.add(sourceLink);
 
-            OspfLink targetLink = createLink(++i,
+            OspfLink targetLink = createLink(
                     targetNode,
                     ospfRemIpAddr,
                     ospfIpAddr
@@ -86,7 +87,7 @@ public class OspfProtocol extends Protocol<OspfElement> {
         return links;
     }
 
-    private OspfLink createLink(int id, OnmsNode node, InetAddress ipAddress, InetAddress remoteAddress) {
+    private OspfLink createLink(OnmsNode node, InetAddress ipAddress, InetAddress remoteAddress) {
         OspfLink link = new OspfLink();
         link.setNode(node);
         link.setOspfIpAddr(ipAddress);
@@ -98,7 +99,6 @@ public class OspfProtocol extends Protocol<OspfElement> {
         link.setOspfRemRouterId(this.inetAddressCreator.next());
         link.setOspfRemAddressLessIndex(3);
         link.setOspfLinkLastPollTime(new Date());
-
 
         return link;
     }

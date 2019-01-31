@@ -82,7 +82,7 @@ public class CdpProtocol extends Protocol<CdpElement> {
     private List<CdpLink> createCdpLinks(List<CdpElement> cdpElements) {
         PairGenerator<CdpElement> pairs = createPairGenerator(cdpElements);
         List<CdpLink> links = new ArrayList<>();
-        for (int i = 0; i < topologySettings.getAmountLinks(); i++) {
+        for (int i = 0; i < topologySettings.getAmountLinks() * 2; i++) {
 
             // We create 2 links that reference each other, see also LinkdToplologyProvider.matchCdpLinks()
             Pair<CdpElement, CdpElement> pair = pairs.next();
