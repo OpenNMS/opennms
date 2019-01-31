@@ -8,18 +8,25 @@
 </style>
 <div class="panel panel-default">
     <div class="panel-body">
-        <span class="lead navbar-left">List of Daemons</span>
-        <div class="navbar-form navbar-right">
-            <button type="button" ng-click="refreshDaemonList()" class="btn btn-default">
-                <i class="fa fa-refresh fa-lg"></i> Refresh
-            </button>
+        <span class="lead navbar-left">List of Daemons *</span>
+
+       <div class="navbar-form navbar-right">
+           <div class="btn-group">
+               <label class="btn btn-default" ng-model="filter" uib-btn-radio="0">Reloadable</label>
+               <label class="btn btn-default" ng-model="filter" uib-btn-radio="1">All</label>
+           </div>
+           <div class="btn-group">
+               <button type="button" ng-click="refreshDaemonList()" class="btn btn-default">
+                    <i class="fa fa-refresh fa-lg"></i> Refresh
+               </button>
+           </div>
         </div>
         <div ng-show="daemons.length == 0">No daemons available.</div>
         <table ng-show="daemons.length > 0" class="table table-hover table-bordered table-striped table-condensed">
             <thead>
             <tr>
                 <th class="col-md-6 text-nowrap">Name</th>
-                <th class="col-md-1 text-nowrap text-center">Status</th>
+                <th class="col-md-1 text-nowrap text-center">Enabled</th>
                 <th class="col-md-1 text-nowrap text-center">Actions</th>
                 <th class="col-md-4 text-nowrap">Result</th>
             </tr>
@@ -28,9 +35,7 @@
             <tr ng-repeat="d in daemons">
                 <td>{{d.name}}</td>
                 <td class="text-center">
-                    <label ng-class="{'label label-success' : d.enabled, 'label label-danger' : !d.enabled}">
-                        <i ng-class="{'fa fa-pause' : !d.enabled, 'fa fa-play' : d.enabled}" title="{{d.enabled ? 'running' : 'not running'}}"/>
-                    </label>
+                    <i ng-class="{'fa fa-times text-danger' : !d.enabled, 'fa fa-check text-success' : d.enabled}" title="{{d.enabled ? 'Daemon is enabled' : 'Daemon is disabled'}}"/>
                 </td>
                 <td class="text-center">
                     <div ng-if="d.reloadable && d.enabled">
@@ -79,5 +84,7 @@
             </tr>
             </tbody>
         </table>
+        <span class="text-muted" ng-if="filter==0">All reloadable and enabled daemons are shown</span>
+        <span class="text-muted" ng-if="filter==1">All daemons defined in service-configuration.xml are shown</span>
     </div>
 </div>

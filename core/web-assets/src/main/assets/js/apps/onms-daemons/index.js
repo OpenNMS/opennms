@@ -38,7 +38,7 @@ const indexTemplate = require('./index.html');
 
             // This is used for the curl command-string in the view
             $scope.serverUrl = location.protocol + '//' + location.hostname+(location.port ? ':'+location.port: '');
-
+            $scope.filter = 0; // filter for enabled and reloadable
             $scope.daemons = [];
 
             $scope.lookupDaemonState = function (daemon) {
@@ -81,12 +81,20 @@ const indexTemplate = require('./index.html');
                     $scope.daemons = response.data
                         .filter(
                             function (element) {
+                                if ($scope.filter == 0) {
+                                    return !element.internal && element.enabled && element.reloadable;
+                                }
                                 return !element.internal;
                             });
                 });
             };
 
             $scope.refreshDaemonList();
+
+            // If the filter changes, we refresh the daemon list
+            $scope.$watchCollection('filter', function () {
+                $scope.refreshDaemonList();
+            });
         }])
     ;
 }());
