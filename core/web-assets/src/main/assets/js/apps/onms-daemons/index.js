@@ -44,7 +44,7 @@ const indexTemplate = require('./index.html');
             $scope.lookupDaemonState = function (daemon) {
                 if (daemon.reloadCount > 5) {
                     daemon.isReloading = false;
-                    daemon.reloadNote = "Undefined";
+                    daemon.reloadState = "Undefined";
                     return;
                 }
                 daemon.reloadCount = daemon.reloadCount + 1;
@@ -52,10 +52,10 @@ const indexTemplate = require('./index.html');
                 $http.get('rest/daemons/reload/' + daemon.name + '/').then(function (response) {
                     if (response.data.reloadState === "Success") {
                         daemon.isReloading = false;
-                        daemon.reloadNote = response.data.reloadState;
+                        daemon.reloadState = response.data.reloadState;
                     } else if (response.data.reloadState === "Failed") {
                         daemon.isReloading = false;
-                        daemon.reloadNote = response.data.reloadState;
+                        daemon.reloadState = response.data.reloadState;
                     } else {
                         $timeout($scope.lookupDaemonState, 1000, true, daemon);
                     }
@@ -70,7 +70,7 @@ const indexTemplate = require('./index.html');
                             daemon.reloadTime = now.getTime() + (now.getTimezoneOffset() * 60000);
                             daemon.isReloading = true;
                             daemon.reloadCount = 0;
-                            daemon.reloadNote = "Reloading...";
+                            daemon.reloadState = "Reloading";
                             $timeout($scope.lookupDaemonState, 1000, true, daemon);
                         }
                     });

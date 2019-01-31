@@ -10,75 +10,74 @@
     <div class="panel-body">
         <span class="lead navbar-left">List of Daemons</span>
         <div class="navbar-form navbar-right">
-            <button type="button" ng-click="refreshDaemonList()" class="btn btn-primary">
+            <button type="button" ng-click="refreshDaemonList()" class="btn btn-default">
                 <i class="fa fa-refresh fa-lg"></i> Refresh
             </button>
         </div>
         <div ng-show="daemons.length == 0">No daemons available.</div>
-        <table ng-show="daemons.length > 0" class="table table-hover table-bordered table-striped">
+        <table ng-show="daemons.length > 0" class="table table-hover table-bordered table-striped table-condensed">
             <thead>
             <tr>
-                <th class="col-md-5 text-nowrap">Name</th>
-                <th class="col-md-1 text-nowrap">Status</th>
-                <th class="col-md-1 text-nowrap">Reload</th>
+                <th class="col-md-6 text-nowrap">Name</th>
+                <th class="col-md-1 text-nowrap text-center">Status</th>
+                <th class="col-md-1 text-nowrap text-center">Actions</th>
+                <th class="col-md-4 text-nowrap">Result</th>
             </tr>
             </thead>
             <tbody>
             <tr ng-repeat="d in daemons">
                 <td>{{d.name}}</td>
-                <td>
-                    <label ng-class="{'label label-primary' : d.enabled, 'label label-default' : !d.enabled}">
-                        {{d.enabled ? "running" : "not running"}}
+                <td class="text-center">
+                    <label ng-class="{'label label-success' : d.enabled, 'label label-danger' : !d.enabled}">
+                        <i ng-class="{'fa fa-pause' : !d.enabled, 'fa fa-play' : d.enabled}" title="{{d.enabled ? 'running' : 'not running'}}"/>
                     </label>
                 </td>
-
-                <td>
+                <td class="text-center">
                     <div ng-if="d.reloadable && d.enabled">
-                        <button ng-disabled="d.isReloading" type="button" ng-click="reloadDaemon(d)"
-                                class="btn btn-sm">
-                            <i
-                                    class="fa fa-repeat fa-lg">
-                            </i>
-                            Reload
+                        <button ng-disabled="d.isReloading" type="button" ng-click="reloadDaemon(d)" class="btn btn-sm" title="Reload daemon configuration">
+                            <i class="fa fa-repeat fa-lg"/>
                         </button>
-                        <span>
-                            <span style="margin-left: 4pt; margin-right: 4pt" class="fa fa-times-circle fa-lg" ng-show="d.reloadNote == 'Failed'"></span>
-                            <span style="margin-left: 4pt; margin-right: 4pt" class="fa fa-check-circle fa-lg" ng-show="d.reloadNote == 'Success'"></span>
-                            <span style="margin-left: 4pt; margin-right: 4pt" class="fa fa-question-circle fa-lg" ng-show="d.reloadNote == 'Undefined'"></span>
-                            <span style="margin-left: 4pt; margin-right: 4pt" class="fa fa-spinner fa-spin fa-lg" ng-show="d.reloadNote == 'Reloading...'"></span>
-                            {{d.reloadNote}}
-                        </span>
-                        <span class="pull-right">
-                            <button type="button" class="btn" data-toggle="modal" data-target="#curlModal_{{d.name}}">
-                                <i class="fa fa-terminal fa-lg"></i>
-                            </button>
-                        </span>
+                        <button type="button" class="btn" data-toggle="modal" data-target="#curlModal_{{d.name}}" title="Show curl command to reload the configuration">
+                            <i class="fa fa-terminal fa-lg"></i>
+                        </button>
+                    </div>
+                </td>
+                <td>
+                    <span class="text-danger" ng-if="d.reloadState == 'Failed'"><i class="fa fa-times-circle"/></span>
+                    <span class="small" ng-if="d.reloadState == 'Failed'">An error occurred while processing the reload event</span>
 
-                        <!-- Modal -->
-                        <div class="modal" id="curlModal_{{d.name}}" tabindex="-1" role="dialog" aria-labelledby="curlModalLabel">
-                            <div class="modal-dialog modal-lg" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                        <h4 class="modal-title">Curl command</h4>
-                                    </div>
-                                    <div class="modal-body">
-                                        <pre>curl --request POST -u USERNAME:PASSWORD -url {{serverUrl}}/opennms/rest/daemons/reload/{{d.name}}/</pre>
-                                        <h6>Hint: This Server-url is generated from the current session</h6>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
+                    <span class="text-success" ng-if="d.reloadState == 'Success'"><i class="fa fa-check-circle"/></span>
+                    <span class="small" ng-if="d.reloadState == 'Success'">The daemon processed the reload event successfully</span>
+
+                    <span class="text-warning" ng-if="d.reloadState == 'Undefined'"><i class="fa fa-question-circle"/></span>
+                    <span class="small" ng-if="d.reloadState == 'Undefined'">It is unclear if the reload event was processed successfully</span>
+
+                    <span class="text-muted" ng-if="d.reloadState == 'Reloading'"><i class="fa fa-spinner fa-spin"/></span>
+                    <span class="small" ng-if="d.reloadState == 'Reloading'">Reloading...</span>
+                </td>
+
+                <!-- Modal -->
+                <div class="modal" id="curlModal_{{d.name}}" tabindex="-1" role="dialog" aria-labelledby="curlModalLabel">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h4 class="modal-title">Curl command</h4>
+                            </div>
+                            <div class="modal-body">
+                                <pre>curl --request POST -u USERNAME:PASSWORD -url {{serverUrl}}/opennms/rest/daemons/reload/{{d.name}}/</pre>
+                                <h6>Hint: The server url is generated from the browser's location</h6>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                             </div>
                         </div>
                     </div>
-                </td>
+                </div>
             </tr>
             </tbody>
         </table>
-        <a href="/" role="button" class="btn btn-info" role="button">Back</a>
     </div>
 </div>
