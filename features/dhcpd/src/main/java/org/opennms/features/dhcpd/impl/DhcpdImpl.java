@@ -55,14 +55,13 @@ import org.slf4j.LoggerFactory;
 
 public class DhcpdImpl implements Dhcpd {
     private static final Logger LOG = LoggerFactory.getLogger(DhcpdImpl.class);
-    private Dhcpd INSTANCE = new DhcpdImpl();
     private final Set<Transaction> transactions = new HashSet<>();
     private int xid = new Random().nextInt();
     private boolean shutdown = false;
     private final Listener port67Listener = new Listener(this, BOOTP_REQUEST_PORT);
     private final Listener port68Listener = new Listener(this, BOOTP_REPLY_PORT);
 
-    private DhcpdImpl() {
+    public DhcpdImpl() {
         final Thread thread67 = new Thread(this.port67Listener);;
         thread67.start();
 
@@ -83,10 +82,6 @@ public class DhcpdImpl implements Dhcpd {
                 LOG.debug("Dhcpd terminated successfully.");
             }
         }));
-    }
-
-    public Dhcpd getInstance() {
-        return INSTANCE;
     }
 
     private synchronized int nextXid() {

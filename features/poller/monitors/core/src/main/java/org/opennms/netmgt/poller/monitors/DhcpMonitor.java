@@ -42,6 +42,7 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Distributable(DistributionContext.DAEMON)
 public final class DhcpMonitor extends AbstractServiceMonitor {
@@ -50,6 +51,7 @@ public final class DhcpMonitor extends AbstractServiceMonitor {
     public static final String DEFAULT_MAC_ADDRESS = "00:06:0D:BE:9C:B2";
     private static final Logger LOG = LoggerFactory.getLogger(DhcpMonitor.class);
 
+    @Autowired(required = false)
     private Dhcpd dhcpd;
 
     public void setDhcpd(Dhcpd dhcpd) {

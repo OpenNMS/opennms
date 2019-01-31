@@ -32,10 +32,12 @@ import java.util.Map;
 
 import org.opennms.features.dhcpd.Dhcpd;
 import org.opennms.netmgt.provision.support.GenericServiceDetectorFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DhcpDetectorFactory extends GenericServiceDetectorFactory<DhcpDetector> {
+    @Autowired(required=false)
     private Dhcpd dhcpd;
 
     public DhcpDetectorFactory() {

@@ -9,7 +9,7 @@
 		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd">
 
-    <bean id="dhcpd" class="org.opennms.features.dhcpd.impl.DhcpdImpl" factory-method="getInstance"/>
+    <bean id="dhcpd" class="org.opennms.features.dhcpd.impl.DhcpdImpl"/>
     <service ref="dhcpd" interface="org.opennms.features.dhcpd.Dhcpd"/>
 
 </blueprint>
