@@ -76,18 +76,14 @@ public class DaemonConfigPageIT extends OpenNMSSeleniumTestCase {
         setImplicitWait();
     }
 
-    private int expectedDaemonCount;
-
     @Test
     public void verifyDaemonListIsShown() {
         given().get().then()
                 .assertThat().statusCode(200)
                 .assertThat().contentType(ContentType.HTML);
 
-        expectedDaemonCount = 30;
-
         DaemonReloadPage page = new DaemonReloadPage().open();
-        Assert.assertThat(page.getDaemonRows(), hasSize(30));
+        Assert.assertThat(page.getDaemonRows(), hasSize(30)); // Expected daemon count is 30
 
         Daemon eventd = page.getDaemon("Eventd");
 
@@ -231,7 +227,6 @@ public class DaemonConfigPageIT extends OpenNMSSeleniumTestCase {
 
         public DaemonReloadPage open() {
             m_driver.get(baseURI + "opennms/admin/daemons/index.jsp");
-            new WebDriverWait(m_driver, 5).until((Predicate<WebDriver>) (driver) -> getDaemonRows().size() == expectedDaemonCount);
             return this;
         }
 
