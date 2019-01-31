@@ -9,11 +9,11 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
-    <bean id="defaultGraphService" class="org.opennms.features.graph.service.DefaultGraphService" />
-    <service ref="defaultGraphService" interface="org.opennms.features.graph.api.service.GraphService">
+    <bean id="defaultGraphService" class="org.opennms.netmgt.graph.service.DefaultGraphService" />
+    <service ref="defaultGraphService" interface="org.opennms.netmgt.graph.api.service.GraphService">
     </service>
 
-    <reference-list interface="org.opennms.features.graph.api.service.GraphContainerProvider" availability="optional">
+    <reference-list interface="org.opennms.netmgt.graph.api.service.GraphContainerProvider" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="defaultGraphService" />
     </reference-list>
 

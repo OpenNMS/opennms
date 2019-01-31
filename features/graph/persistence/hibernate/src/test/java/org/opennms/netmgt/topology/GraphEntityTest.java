@@ -30,7 +30,7 @@ package org.opennms.netmgt.topology;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.features.graph.api.generic.GenericProperties;
+import org.opennms.netmgt.graph.api.generic.GenericProperties;
 
 public class GraphEntityTest {
 

@@ -11,12 +11,12 @@
 
     <!-- GraphMLContainerProviders are exposed by the factory, because they are dynamically created by the GraphmlRepository -->
     <!-- TODO MVR probably need to change this -->
-    <bean id="graphMLContainerProviderServiceFactory" class="org.opennms.features.graph.providers.graphml.GraphMLContainerProviderServiceFactory">
+    <bean id="graphMLContainerProviderServiceFactory" class="org.opennms.netmgt.graph.provider.graphml.GraphMLContainerProviderServiceFactory">
         <argument ref="blueprintBundleContext" />
     </bean>
     <service interface="org.osgi.service.cm.ManagedServiceFactory" ref="graphMLContainerProviderServiceFactory">
         <service-properties>
-            <entry key="service.pid" value="org.opennms.features.graph.providers.graphml"/>
+            <entry key="service.pid" value="org.opennms.netmgt.graph.provider.graphml"/>
         </service-properties>
     </service>
 

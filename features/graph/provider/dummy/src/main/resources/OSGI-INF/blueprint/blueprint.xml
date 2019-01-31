@@ -9,8 +9,8 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
-    <service interface="org.opennms.features.graph.api.service.GraphContainerProvider">
-        <bean class="org.opennms.features.graph.providers.dummy.DummyGraphContainerProvider" />
+    <service interface="org.opennms.netmgt.graph.api.service.GraphContainerProvider">
+        <bean class="org.opennms.netmgt.graph.provider.dummy.DummyGraphContainerProvider" />
     </service>
 
 </blueprint>
