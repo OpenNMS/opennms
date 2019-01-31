@@ -14,6 +14,7 @@
     <modules>
         <module>bsm</module>
         <module>dummy</module>
+        <module>enlinkd</module>
         <module>graphml</module>
     </modules>
 </project>
