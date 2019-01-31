@@ -3,12 +3,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.graphs</artifactId>
+        <artifactId>org.opennms.features.graph</artifactId>
         <version>24.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.opennms.features.graphs</groupId>
-    <artifactId>org.opennms.features.graphs.shell</artifactId>
+    <groupId>org.opennms.features.graph</groupId>
+    <artifactId>org.opennms.features.graph.shell</artifactId>
     <name>OpenNMS :: Features :: Graph :: Shell Commands</name>
     <packaging>bundle</packaging>
     <build>
@@ -30,8 +30,8 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.opennms.features.graphs</groupId>
-            <artifactId>org.opennms.features.graphs.api</artifactId>
+            <groupId>org.opennms.features.graph</groupId>
+            <artifactId>org.opennms.features.graph.api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -15,7 +15,7 @@
     <module>enlinkd</module>
 
     <!-- Graphs -->
-    <module>graphs</module>
+    <module>graph</module>
 
     <!-- ActiveMQ broker -->
     <module>activemq</module>
