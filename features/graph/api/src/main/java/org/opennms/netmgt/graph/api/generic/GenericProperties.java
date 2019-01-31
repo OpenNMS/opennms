@@ -29,6 +29,7 @@
 package org.opennms.netmgt.graph.api.generic;
 
 // Very similar to the ones from OpenNMS, but only generic ones, no special meaning can be found here
+// TODO MVR decide which properties we still want to support and which can be removed
 public interface GenericProperties {
     String ID = "id";
     String DESCRIPTION = "description";

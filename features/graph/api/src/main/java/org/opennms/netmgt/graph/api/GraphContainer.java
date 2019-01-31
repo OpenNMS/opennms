@@ -55,6 +55,7 @@ import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
  *
  * Be aware, that a GraphContainer should always be fully populated (not enriched) when loaded by a provider.
  */
+// TODO MVR rework the javadoc
 public interface GraphContainer<V extends Vertex, E extends Edge, G extends Graph<V, E>> extends GraphContainerInfo {
     List<G> getGraphs();
     G getGraph(String namespace);

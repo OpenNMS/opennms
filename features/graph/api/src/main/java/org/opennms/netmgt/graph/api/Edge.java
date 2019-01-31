@@ -30,7 +30,6 @@ package org.opennms.netmgt.graph.api;
 
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 
-// TODO MVR noderef?!
 public interface Edge {
     String getNamespace();
     String getId();

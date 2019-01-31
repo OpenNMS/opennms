@@ -31,11 +31,7 @@ package org.opennms.netmgt.graph.simple;
 import java.util.Objects;
 
 import org.opennms.netmgt.graph.api.AbstractGraph;
-import org.opennms.netmgt.graph.api.Edge;
 import org.opennms.netmgt.graph.api.Graph;
-import org.opennms.netmgt.graph.api.Vertex;
-import org.opennms.netmgt.graph.api.generic.GenericGraph;
-import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
@@ -74,17 +70,6 @@ public class SimpleGraph extends AbstractGraph<SimpleVertex, SimpleEdge> impleme
 
     public SimpleGraph(GraphInfo graphInfo) {
         super(graphInfo);
-    }
-
-    @Override
-    public GenericGraph asGenericGraph() {
-        final GenericGraph graph = new GenericGraph();
-        graph.setProperty(GenericProperties.NAMESPACE, getNamespace());
-        graph.setProperty(GenericProperties.LABEL, getLabel());
-        graph.setProperty(GenericProperties.DESCRIPTION, getDescription());
-        getVertices().stream().map(Vertex::asGenericVertex).forEach(graph::addVertex);
-        getEdges().stream().map(Edge::asGenericEdge).forEach(graph::addEdge);
-        return graph;
     }
 
     public void setLabel(String label) {

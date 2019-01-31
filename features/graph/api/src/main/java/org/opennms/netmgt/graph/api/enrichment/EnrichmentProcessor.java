@@ -34,6 +34,8 @@ import java.util.Map;
 import org.opennms.netmgt.graph.api.Vertex;
 
 // TODO MVR make it namespace aware and probably also return the type?
+// TODO MVR The enrichmentprocessors should be exposed via osgi
+// TODO MVR We need a "NullValue" in order to not enrich fields with null all the time
 
 /**
  * Interface for concrete enrichment implementations, e.g. NodeInfo enrichment.

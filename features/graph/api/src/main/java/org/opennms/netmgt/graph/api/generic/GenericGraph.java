@@ -34,11 +34,10 @@ import java.util.Objects;
 
 import org.opennms.netmgt.graph.api.AbstractGraph;
 import org.opennms.netmgt.graph.api.Graph;
-import org.opennms.netmgt.graph.api.aware.LocationAware;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
 // TODO MVR enforce namespace
-public class GenericGraph extends AbstractGraph<GenericVertex, GenericEdge> implements Graph<GenericVertex, GenericEdge>, LocationAware {
+public class GenericGraph extends AbstractGraph<GenericVertex, GenericEdge> implements Graph<GenericVertex, GenericEdge> {
 
     private class GenericGraphInfo implements GraphInfo<GenericVertex> {
 
@@ -82,12 +81,6 @@ public class GenericGraph extends AbstractGraph<GenericVertex, GenericEdge> impl
     @Override
     public GenericGraph asGenericGraph() {
         return this;
-    }
-
-
-    @Override
-    public String getLocation() {
-        return null;
     }
 
     public void setProperty(String key, Object value) {

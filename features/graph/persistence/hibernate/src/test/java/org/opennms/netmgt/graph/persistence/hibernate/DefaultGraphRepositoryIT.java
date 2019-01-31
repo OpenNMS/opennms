@@ -28,23 +28,16 @@
 
 package org.opennms.netmgt.graph.persistence.hibernate;
 
-import java.util.Objects;
-import java.util.function.Function;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.graph.api.generic.GenericGraph;
-import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
-import org.opennms.netmgt.graph.api.generic.GenericProperties;
-import org.opennms.netmgt.graph.api.info.NodeInfo;
 import org.opennms.netmgt.graph.persistence.api.GraphRepository;
-import org.opennms.netmgt.graph.simple.SimpleEdge;
 import org.opennms.netmgt.graph.simple.SimpleGraph;
 import org.opennms.netmgt.graph.simple.SimpleGraphContainer;
 import org.opennms.netmgt.graph.simple.SimpleVertex;
+import org.opennms.netmgt.graph.simple.transformer.GenericGraphContainerToSimpleGraphContainerTransformer;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -100,7 +93,7 @@ public class DefaultGraphRepositoryIT {
         graphRepository.save(originalContainer);
 
         // Verify
-        verifyEquals(originalContainer, graphRepository.findContainerById(CONTAINER_ID, new Y()));
+        verifyEquals(originalContainer, graphRepository.findContainerById(CONTAINER_ID, new GenericGraphContainerToSimpleGraphContainerTransformer()));
 
         /*
          * Update
@@ -122,13 +115,13 @@ public class DefaultGraphRepositoryIT {
         graphRepository.save(originalContainer);
 
         // Verify
-        verifyEquals(originalContainer, graphRepository.findContainerById(CONTAINER_ID, new Y()));
+        verifyEquals(originalContainer, graphRepository.findContainerById(CONTAINER_ID, new GenericGraphContainerToSimpleGraphContainerTransformer()));
 
         /*
          * Delete
          */
         graphRepository.deleteContainer(CONTAINER_ID);
-        Assert.assertNull(graphRepository.findContainerById(CONTAINER_ID, new Y()));
+        Assert.assertNull(graphRepository.findContainerById(CONTAINER_ID, new GenericGraphContainerToSimpleGraphContainerTransformer()));
     }
 
     private void verifyEquals(SimpleGraphContainer originalContainer, SimpleGraphContainer persistedContainer) {
@@ -139,54 +132,4 @@ public class DefaultGraphRepositoryIT {
         Assert.assertEquals(originalContainer, persistedContainer);
     }
 
-    // TODO MVR name me
-    private static class Y implements Function<GenericGraphContainer, SimpleGraphContainer> {
-        @Override
-        public SimpleGraphContainer apply(GenericGraphContainer genericGraphContainer) {
-            Objects.requireNonNull(genericGraphContainer);
-            final SimpleGraphContainer simpleGraphContainer = new SimpleGraphContainer(genericGraphContainer.getId());
-            simpleGraphContainer.setLabel(genericGraphContainer.getLabel());
-            simpleGraphContainer.setDescription(genericGraphContainer.getDescription());
-            genericGraphContainer.getGraphs().forEach(genericGrah -> {
-                final SimpleGraph simpleGraph = new X().apply((GenericGraph) genericGrah); // TODO MVR this should not be necessary
-                simpleGraphContainer.addGraph(simpleGraph);
-            });
-            return simpleGraphContainer;
-        }
-    }
-
-    // TODO MVR name me and fully implement
-    private static class X implements Function<GenericGraph, SimpleGraph> {
-
-        @Override
-        public SimpleGraph apply(GenericGraph genericGraph) {
-                final SimpleGraph simpleGraph = new SimpleGraph(genericGraph.getNamespace(), SimpleVertex.class);
-                simpleGraph.setLabel(genericGraph.getLabel());
-                simpleGraph.setDescription(genericGraph.getDescription());
-
-                genericGraph.getVertices().forEach(genericVertex -> {
-                    try {
-                        // TODO MVR we should use the factory instead
-//                        final SimpleVertex eachSimpleVertex = vertexFactory.createVertex(SimpleVertex.class, simpleGraph.getNamespace(), genericVertex.getId());
-                        final SimpleVertex eachSimpleVertex = new SimpleVertex(simpleGraph.getNamespace(), genericVertex.getId());
-                        eachSimpleVertex.setLabel(genericVertex.getProperty(GenericProperties.LABEL));
-                        eachSimpleVertex.setIconKey(genericVertex.getProperty(GenericProperties.ICON_KEY));
-                        eachSimpleVertex.setTooltip(genericVertex.getProperty(GenericProperties.TOOLTIP));
-                        eachSimpleVertex.setNodeRefString(genericVertex.getProperty(GenericProperties.NODE_REF));
-                        eachSimpleVertex.setNodeInfo((NodeInfo) genericVertex.getComputedProperties().get("node"));
-                        simpleGraph.addVertex(eachSimpleVertex);
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
-                    }
-                });
-
-                genericGraph.getEdges().forEach(genericEdge -> {
-                    final SimpleVertex sourceVertex = simpleGraph.getVertex(genericEdge.getSource().getId());
-                    final SimpleVertex targetVertex = simpleGraph.getVertex(genericEdge.getTarget().getId());
-                    final SimpleEdge eachSimpleEdge = new SimpleEdge(sourceVertex, targetVertex);
-                    simpleGraph.addEdge(eachSimpleEdge);
-                });
-                return simpleGraph;
-            }
-    }
 }
