@@ -44,18 +44,16 @@ public class ConversationKeyUtilsTest {
         flowIn.setLocation("SomeLoc");
         flowIn.setProtocol(1);
         flowIn.setSrcAddr("1.1.1.1");
-        flowIn.setSrcPort(9999);
         flowIn.setDstAddr("2.2.2.2");
-        flowIn.setDstPort(10000);
+        flowIn.setApplication("ulf");
 
         FlowDocument flowOut = new FlowDocument();
         flowOut.setDirection(Direction.EGRESS);
         flowOut.setLocation(flowIn.getLocation());
         flowOut.setProtocol(flowIn.getProtocol());
         flowOut.setSrcAddr(flowIn.getDstAddr());
-        flowOut.setSrcPort(flowIn.getDstPort());
         flowOut.setDstAddr(flowIn.getSrcAddr());
-        flowOut.setDstPort(flowIn.getSrcPort());
+        flowOut.setApplication(flowIn.getApplication());
 
         String inKey = ConversationKeyUtils.getConvoKeyAsJsonString(flowIn);
         String outKey = ConversationKeyUtils.getConvoKeyAsJsonString(flowOut);
@@ -68,9 +66,8 @@ public class ConversationKeyUtilsTest {
                 flowIn.getLocation(),
                 flowIn.getProtocol(),
                 flowIn.getSrcAddr(),
-                flowIn.getSrcPort(),
                 flowIn.getDstAddr(),
-                flowIn.getDstPort());
+                flowIn.getApplication());
         ConversationKey actualKey = ConversationKeyUtils.fromJsonString(inKey);
         assertThat(actualKey, equalTo(expectedKey));
     }

@@ -33,13 +33,15 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import org.opennms.core.sysprops.SystemProperties;
+
 public class ServiceLookupBuilder<C, F> {
 
-    public static final long GRACE_PERIOD_MS = Long.getLong("org.opennms.core.soa.lookup.gracePeriodMs", TimeUnit.MINUTES.toMillis(5));
+public static final long GRACE_PERIOD_MS = SystemProperties.getLong("org.opennms.core.soa.lookup.gracePeriodMs", TimeUnit.MINUTES.toMillis(5));
 
-    public static final long WAIT_PERIOD_MS = Long.getLong("org.opennms.core.soa.lookup.gracePeriodMs", TimeUnit.MINUTES.toMillis(1));
+    public static final long WAIT_PERIOD_MS = SystemProperties.getLong("org.opennms.core.soa.lookup.gracePeriodMs", TimeUnit.MINUTES.toMillis(1));
 
-    public static final long LOOKUP_DELAY_MS = Long.getLong("org.opennms.core.soa.lookup.lookupDelayMs", TimeUnit.SECONDS.toMillis(5));
+    public static final long LOOKUP_DELAY_MS = SystemProperties.getLong("org.opennms.core.soa.lookup.lookupDelayMs", TimeUnit.SECONDS.toMillis(5));
 
     private final ServiceLookup<C, F> serviceProvider;
     private long gracePeriodInMs;

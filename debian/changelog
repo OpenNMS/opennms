@@ -1,3 +1,14 @@
+opennms (23.0.2-1) stable; urgency=low
+
+  * New stable release.  It contains a number of bug fixes and enhancements,
+    including performance improvements to topology maps, many fixes and
+    improvements to Kafka support, and a bunch of correlation and alarm updates.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/23.0.2/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 17 Jan 2019 11:05:30 -0500
+
 opennms (23.0.1-1) stable; urgency=low
 
   * New stable release.  It contains a number of bug fixes and enhancements,

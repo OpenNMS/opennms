@@ -93,13 +93,6 @@
       <artifactId>org.opennms.features.topology.netutils</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>org.opennms.features.topology</groupId>
-      <artifactId>org.opennms.features.topology.ssh</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.opennms.features.topology.themes</groupId>
       <artifactId>org.opennms.features.topology.themes.default-theme</artifactId>
