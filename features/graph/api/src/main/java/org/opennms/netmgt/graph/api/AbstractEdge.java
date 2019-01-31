@@ -59,22 +59,6 @@ public class AbstractEdge<V extends Vertex> implements Edge {
         this.id = owning.getId() + "->" + target.getId();
     }
 
-    // TODO MVR do we still need this ???
-//    // Convenient method to add an edge from the given graph. Source and Target Vertices are looked up using the given sourceId/targetId
-//    public SimpleEdge(Graph<V, SimpleEdge<V>> graph, String sourceId, String targetId) {
-//        Objects.requireNonNull(graph);
-//        this.source = Objects.requireNonNull(graph.getVertex(sourceId));
-//        this.target = Objects.requireNonNull(graph.getVertex(targetId));
-//        this.namespace = graph.getNamespace();
-//        this.id = source.getId() + "->" + target.getId();
-//    }
-
-//    // Clone constructor
-//    // Cloning the edge is a bit more complicated as we have to find the source and target vertices first
-//    public <E extends SimpleEdge> SimpleEdge(E e, SimpleGraph<V, E> clone) {
-//        this(clone.getVertex(e.getSource().getId()), clone.getVertex(e.getTarget().getId()));
-//    }
-
     @Override
     public String getNamespace() {
         return namespace;
@@ -139,7 +123,7 @@ public class AbstractEdge<V extends Vertex> implements Edge {
                 && Objects.equals(target.getId(), that.target.getId())
                 && Objects.equals(target.getNamespace(), that.target.getNamespace())
                 && Objects.equals(namespace, that.namespace)
-                &&  Objects.equals(id, that.id)
+                && Objects.equals(id, that.id)
                 && Objects.equals(label, that.label);
     }
 

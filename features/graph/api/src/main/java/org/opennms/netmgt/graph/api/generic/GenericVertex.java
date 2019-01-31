@@ -29,10 +29,11 @@
 package org.opennms.netmgt.graph.api.generic;
 
 import org.opennms.netmgt.graph.api.Vertex;
+import org.opennms.netmgt.graph.api.aware.LocationAware;
 import org.opennms.netmgt.graph.api.aware.NodeAware;
 import org.opennms.netmgt.graph.api.info.NodeInfo;
 
-public class GenericVertex extends GenericElement implements Vertex, NodeAware {
+public class GenericVertex extends GenericElement implements Vertex, NodeAware, LocationAware {
 
     public GenericVertex() {
     }
@@ -56,6 +57,7 @@ public class GenericVertex extends GenericElement implements Vertex, NodeAware {
 //        return null;
 //    }
 
+    // TODO MVR implement me
     @Override
     public NodeInfo getNodeInfo() {
         return null;
@@ -69,5 +71,11 @@ public class GenericVertex extends GenericElement implements Vertex, NodeAware {
     @Override
     public GenericVertex asGenericVertex() {
         return this;
+    }
+
+    // TODO MVR implement me
+    @Override
+    public String getLocation() {
+        return null;
     }
 }

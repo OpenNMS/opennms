@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 import org.opennms.netmgt.graph.api.context.DefaultGraphContext;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
@@ -228,6 +229,7 @@ public class AbstractGraph<V extends Vertex, E extends Edge> implements Graph<V,
 
     @Override
     public Graph<V, E> getSnapshot(Collection<V> verticesInFocus, int szl) {
+        // TODO MVR implement me
 //        return new SemanticZoomLevelTransformer(verticesInFocus, szl).transform(this, () -> {
 //            final SimpleGraph<SimpleVertex, SimpleEdge<SimpleVertex>> snapshotGraph = new SimpleGraph<>(getNamespace());
 //            applyInfo(SimpleGraph.this);
@@ -238,34 +240,20 @@ public class AbstractGraph<V extends Vertex, E extends Edge> implements Graph<V,
 
     @Override
     public GenericGraph asGenericGraph() {
-//        final GenericGraph graph = new GenericGraph();
-//        graph.setNamespace(getNamespace());
-//        graph.setProperty(GenericProperties.LABEL, getLabel());
-//        graph.setProperty(GenericProperties.DESCRIPTION, getDescription());
-//        getVertices().stream().map(Vertex::asGenericVertex).forEach(graph::addVertex);
-//        getEdges().stream().map(Edge::asGenericEdge).forEach(graph::addEdge);
-//        return graph;
-        return null;
+        final GenericGraph graph = new GenericGraph();
+        graph.setProperty(GenericProperties.NAMESPACE, getNamespace());
+        graph.setProperty(GenericProperties.LABEL, getLabel());
+        graph.setProperty(GenericProperties.DESCRIPTION, getDescription());
+        getVertices().stream().map(Vertex::asGenericVertex).forEach(graph::addVertex);
+        getEdges().stream().map(Edge::asGenericEdge).forEach(graph::addEdge);
+        return graph;
     }
-//
-//    public SimpleVertex v(String id) {
-//        final SimpleVertex vertex = new SimpleVertex(getNamespace(), id);
-//        addVertex((V) vertex);
-//        return vertex;
-//    }
-//
-//    public SimpleEdge e(V v1, V v2) {
-//        final SimpleEdge edge = new SimpleEdge(v1, v2);
-//        addEdge((E) edge);
-//        return edge;
-//    }
 
     // TODO MVR
 //    @Override
 //    public String toString() {
 //        return asGenericGraph().toString();
 //    }
-
 
     @Override
     public boolean equals(Object o) {

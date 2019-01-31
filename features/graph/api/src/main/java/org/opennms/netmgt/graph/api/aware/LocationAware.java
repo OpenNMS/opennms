@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.graph.api.aware;
 
+// TODO MVR implement me
 public interface LocationAware {
     String getLocation();
 }

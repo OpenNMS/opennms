@@ -59,8 +59,7 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-// TODO MVR rename test
-public class GraphDaoIT {
+public class GraphEntityPersistenceIT {
 
     private static final String CONTAINER_ID = "unique-container-id";
     private static final String CONTAINER_DESCRIPTION = "Container for '" + CONTAINER_ID + "' graph";

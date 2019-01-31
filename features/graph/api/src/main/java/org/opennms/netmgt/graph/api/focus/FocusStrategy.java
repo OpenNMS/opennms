@@ -39,6 +39,7 @@ import org.opennms.netmgt.graph.api.VertexRef;
 
 import com.google.common.collect.Lists;
 
+// TODO MVR make this persistable
 public class FocusStrategy {
     public static final Focus ALL = graphContext -> graphContext.getGraph().getVertices();
 

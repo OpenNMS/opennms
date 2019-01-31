@@ -33,6 +33,7 @@ import java.util.List;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.context.GraphContext;
 
+// TODO MVR this is not persistable
 public interface Focus {
 
     List<VertexRef> getFocus(GraphContext graphContext);

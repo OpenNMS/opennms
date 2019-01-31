@@ -342,19 +342,6 @@
   </changeSet>
 
   <changeSet author="mvrueden" id="24.0.0-graph-tables">
-    <!--
-       create table graph_elements (
-         id        bigint primary key,
-         type      varchar not null,
-         namespace varchar,
-         source_vertex_id bigint,
-         target_vertex_id bigint
-       );
-       alter table graph_elements add constraint fk_source_vertices foreign key (source_vertex_id) REFERENCES graph_elements (id) ON DELETE CASCADE ON UPDATE CASCADE;
-       alter table graph_elements add constraint fk_target_vertices foreign key (target_vertex_id) REFERENCES graph_elements (id) ON DELETE CASCADE ON UPDATE CASCADE;
-       CREATE INDEX idx_fk_source_vertices ON graph_elements (source_vertex_id);
-       CREATE INDEX idx_fk_target_vertices ON graph_elements (target_vertex_id);
-     -->
     <createTable tableName="graph_elements" remarks="contains vertices, edges, graphs and containers">
       <column name="id" type="bigint">
         <constraints nullable="false"/>
@@ -370,7 +357,7 @@
       <column name="target_vertex_id" type="bigint"></column>
     </createTable>
     <addPrimaryKey tableName="graph_elements" columnNames="id" constraintName="graph_elements_pkey" />
-    <!-- TODO MVR verify index creation for foreign keys. If not created by liquibase, create manually -->
+    <!-- TODO MVR decide if we need foreign keys for these -->
     <addForeignKeyConstraint constraintName="fk_graph_elements_source_vertex_id"
                              baseTableName="graph_elements" baseColumnNames="source_vertex_id"
                              referencedTableName="graph_elements" referencedColumnNames="id" onDelete="CASCADE"/>
@@ -378,17 +365,6 @@
                              baseTableName="graph_elements" baseColumnNames="target_vertex_id"
                              referencedTableName="graph_elements" referencedColumnNames="id" onDelete="CASCADE"/>
 
-    <!--
-      create table graph_attributes (
-        id bigint primary key,
-        name varchar not null,
-        type varchar not null,
-        value varchar,
-        element_id bigint
-      );
-      alter table graph_attributes add constraint fk_graph_attributes_element_id foreign key (element_id) REFERENCES graph_elements (id) ON DELETE CASCADE ON UPDATE CASCADE;
-      CREATE INDEX idx_fk_graph_attributes_element_id ON graph_attributes (element_id);
-    -->
     <createTable tableName="graph_attributes" remarks="attributes for each graph_element">
       <column name="id" type="bigint">
         <constraints nullable="false"/>
@@ -401,30 +377,20 @@
       </column>
       <column name="value" type="text" remarks="the text representation of the property's value" />
       <column name="element_id" type="bigint" remarks="the element this property is associated with" />
-      <!-- TODO MVR add unique constraint for name,element_id. -->
-      <!-- TODO MVR add unique constraint from above also to hibernate -->
     </createTable>
     <addPrimaryKey tableName="graph_attributes" columnNames="id" constraintName="graph_attributes_pkey" />
 
-    <!-- TODO MVR verify index creation for foreign keys. If not created by liquibase, create manually -->
+    <!-- TODO MVR decide if we need foreign keys for these -->
     <addForeignKeyConstraint constraintName="fk_graph_attributes_element_id"
                              baseTableName="graph_attributes" baseColumnNames="element_id"
                              referencedTableName="graph_elements" referencedColumnNames="id" onDelete="CASCADE"/>
 
     <!-- attributes are (key,value)-pairs. This means the attribute name is unique for each element_id. -->
+    <!-- TODO MVR define unique constraint for this also in hibernate -->
     <addUniqueConstraint tableName="graph_attributes" columnNames="name,element_id" />
 
-    <!--
-      create table graph_element_relations (
-        parent_id bigint ,
-        element_id bigint,
-        PRIMARY KEY(graph_id, element_id)
-      );
-      alter table graph_element_relations add constraint fk_graph_element_relations_graph_id foreign key (graph_id) REFERENCES graph_elements (id) ON DELETE CASCADE ON UPDATE CASCADE;
-      alter table graph_element_relations add constraint fk_graph_element_relations_element_id foreign key (element_id) REFERENCES graph_elements (id) ON DELETE CASCADE ON UPDATE CASCADE;
-      CREATE INDEX idx_fk_graph_element_relations_graph_id ON graph_element_relations (graph_id);
-      CREATE INDEX idx_fk_graph_element_relations_element_id ON graph_element_relations (element_id);
-    -->
+    <!-- TODO MVR Technically there is no need for a relations table, as the relation is clear due to the namespace -->
+    <!-- TODO MVR also this does not encounter for detached edges, e.g. pointing to a vertex which is not persisted as a vertex, which is a valid use case) -->
     <createTable tableName="graph_element_relations" remarks="Association for graph -> vertices/edge and container -> graph relation">
       <column name="parent_id" type="bigint" remarks="the owning side of the relation (e.g. graph or container)">
         <constraints nullable="false"/>
@@ -435,7 +401,7 @@
     </createTable>
     <addPrimaryKey tableName="graph_element_relations" columnNames="parent_id, child_id" constraintName="graph_element_relations_pkey" />
 
-    <!-- TODO MVR verify index creation for foreign keys. If not created by liquibase, create manually -->
+    <!-- TODO MVR decide if we need foreign keys for these -->
     <addForeignKeyConstraint constraintName="fk_graph_element_relations_parent_id"
                              baseTableName="graph_element_relations" baseColumnNames="parent_id"
                              referencedTableName="graph_elements" referencedColumnNames="id" onDelete="CASCADE"/>
