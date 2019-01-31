@@ -45,8 +45,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.BatchSize;
-import org.opennms.features.graph.api.generic.GenericProperties;
-import org.opennms.features.graph.api.info.GraphInfo;
+import org.opennms.netmgt.graph.api.generic.GenericProperties;
+import org.opennms.netmgt.graph.api.info.GraphInfo;
 
 @Entity
 @DiscriminatorValue("graph")

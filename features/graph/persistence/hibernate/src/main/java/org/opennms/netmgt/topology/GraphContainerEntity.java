@@ -41,7 +41,7 @@ import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Where;
-import org.opennms.features.graph.api.generic.GenericProperties;
+import org.opennms.netmgt.graph.api.generic.GenericProperties;
 
 @Entity
 @DiscriminatorValue("container")

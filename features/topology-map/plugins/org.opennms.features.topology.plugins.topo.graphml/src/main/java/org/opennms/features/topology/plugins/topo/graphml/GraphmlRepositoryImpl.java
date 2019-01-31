@@ -48,7 +48,7 @@ import com.google.common.base.Preconditions;
 public class GraphmlRepositoryImpl implements GraphmlRepository {
 
     protected static final String TOPOLOGY_CFG_FILE_PREFIX = "org.opennms.features.topology.plugins.topo.graphml";
-    protected static final String GRAPH_CFG_FILE_PREFIX = "org.opennms.features.graph.providers.graphml";
+    protected static final String GRAPH_CFG_FILE_PREFIX = "org.opennms.netmgt.graph.provider.graphml";
     protected static final String TOPOLOGY_LOCATION = "topologyLocation";
     protected static final String LABEL = "label";
 
