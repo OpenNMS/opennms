@@ -64,36 +64,6 @@ public class AbstractGraph<V extends Vertex, E extends Edge> implements Graph<V,
         this.graphInfo = Objects.requireNonNull(graphInfo);
     }
 
-//    public AbstractGraph(Class<V> vertexType) {
-//        this.vertexType = Objects.requireNonNull(vertexType);
-//    }
-
-//    // Copy constructor
-//    public AbstractGraph(AbstractGraph<V, E> copyMe) {
-//        this(copyMe.getNamespace(), copyMe);
-//    }
-//
-//    // Copy constructor with new namespace
-//    public AbstractGraph(String namespace, AbstractGraph<V, E> copyMe) {
-//        Objects.requireNonNull(copyMe);
-//        vertexType = copyMe.getVertexType();
-//        setLabel(copyMe.getLabel());
-//        setDescription(copyMe.getDescription());
-//        // TODO MVR copy focus strategy? :(
-//
-////        copyMe.getVertices().forEach(v -> {
-////            final SimpleVertex clonedVertex = new SimpleVertex(v);
-////            clonedVertex.setNamespace(namespace);
-////            addVertex((V) clonedVertex); // TODO MVR ... gnaaa, this is wrong
-////        });
-////
-////        copyMe.getEdges().forEach(e -> {
-////            final SimpleEdge clonedEdge = new SimpleEdge(e, this);
-////            clonedEdge.setNamespace(namespace);
-////            addEdge((E) clonedEdge); // TODO MVR ... gnaaa, this is wrong
-////        });
-//    }
-
     @Override
     public List<V> getVertices() {
         // TODO MVR use junggraph.getVetices instead. However addEdge is adding the edges if not in same namespace

@@ -29,14 +29,41 @@
 package org.opennms.netmgt.graph.api.generic;
 
 import org.opennms.netmgt.graph.api.Vertex;
+import org.opennms.netmgt.graph.api.aware.NodeAware;
+import org.opennms.netmgt.graph.api.info.NodeInfo;
 
-public class GenericVertex extends GenericElement implements Vertex {
+public class GenericVertex extends GenericElement implements Vertex, NodeAware {
 
     public GenericVertex() {
     }
 
     public GenericVertex(String namespace, String id) {
         super(namespace, id);
+    }
+
+
+//    // TODO MVR implement me
+//    @Override
+//    public NodeRef getNodeRef() {
+//        String nodeId = getProperty(GenericProperties.NODE_ID);
+//        String foreignSource = getProperty(GenericProperties.FOREIGN_SOURCE);
+//        String foreignId = getProperty(GenericProperties.FOREIGN_ID);
+//        if (nodeId != null) {
+//            return NodeRefs.from(nodeId);
+//        } else if (foreignSource != null && foreignId != null) {
+//            return NodeRefs.from(foreignSource + ":" + foreignId);
+//        }
+//        return null;
+//    }
+
+    @Override
+    public NodeInfo getNodeInfo() {
+        return null;
+//        final Optional<Object> first = graphProperties.getProperties().values().stream().filter(v -> v instanceof NodeInfo).findFirst();
+//        if (first.isPresent()) {
+//            return (NodeInfo) first.get();
+//        }
+//        return (NodeInfo) graphProperties.getComputedProperties().values().stream().filter(v -> v instanceof NodeInfo).findFirst().orElse(null);
     }
 
     @Override
