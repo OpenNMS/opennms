@@ -32,7 +32,7 @@ package org.opennms.netmgt.graph.api.aware;
 import org.opennms.netmgt.graph.api.info.NodeInfo;
 
 public interface NodeAware {
-    // TODO MVR ...
+    // TODO MVR implement me
 //    NodeRef getNodeRef();
     NodeInfo getNodeInfo();
 }

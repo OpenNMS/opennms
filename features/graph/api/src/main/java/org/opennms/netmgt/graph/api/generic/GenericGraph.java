@@ -35,12 +35,10 @@ import java.util.Objects;
 import org.opennms.netmgt.graph.api.AbstractGraph;
 import org.opennms.netmgt.graph.api.Graph;
 import org.opennms.netmgt.graph.api.aware.LocationAware;
-import org.opennms.netmgt.graph.api.aware.NodeAware;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
-import org.opennms.netmgt.graph.api.info.NodeInfo;
 
 // TODO MVR enforce namespace
-public class GenericGraph extends AbstractGraph<GenericVertex, GenericEdge> implements Graph<GenericVertex, GenericEdge>, NodeAware, LocationAware {
+public class GenericGraph extends AbstractGraph<GenericVertex, GenericEdge> implements Graph<GenericVertex, GenericEdge>, LocationAware {
 
     private class GenericGraphInfo implements GraphInfo<GenericVertex> {
 
@@ -80,32 +78,6 @@ public class GenericGraph extends AbstractGraph<GenericVertex, GenericEdge> impl
 //    public Vertex getVertex(NodeRef nodeRef) {
 //        return nodeRefMap.get(nodeRef);
 //    }
-
-
-    // TODO MVR implement me
-//    @Override
-//    public NodeRef getNodeRef() {
-//        String nodeId = getProperty(GenericProperties.NODE_ID);
-//        String foreignSource = getProperty(GenericProperties.FOREIGN_SOURCE);
-//        String foreignId = getProperty(GenericProperties.FOREIGN_ID);
-//        if (nodeId != null) {
-//            return NodeRefs.from(nodeId);
-//        } else if (foreignSource != null && foreignId != null) {
-//            return NodeRefs.from(foreignSource + ":" + foreignId);
-//        }
-//        return null;
-//    }
-
-    @Override
-    public NodeInfo getNodeInfo() {
-        return null;
-//        final Optional<Object> first = graphProperties.getProperties().values().stream().filter(v -> v instanceof NodeInfo).findFirst();
-//        if (first.isPresent()) {
-//            return (NodeInfo) first.get();
-//        }
-//        return (NodeInfo) graphProperties.getComputedProperties().values().stream().filter(v -> v instanceof NodeInfo).findFirst().orElse(null);
-    }
-
 
     @Override
     public GenericGraph asGenericGraph() {

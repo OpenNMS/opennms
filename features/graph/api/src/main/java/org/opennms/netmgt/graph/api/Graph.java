@@ -44,7 +44,6 @@ public interface Graph<V extends Vertex, E extends Edge> extends GraphInfo {
 
     void addVertices(Collection<V> vertices);
 
-    // TODO MVR make this more generic...
     V getVertex(String id);
 
     E getEdge(String id);

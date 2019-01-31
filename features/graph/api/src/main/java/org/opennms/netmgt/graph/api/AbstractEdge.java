@@ -40,7 +40,6 @@ public class AbstractEdge<V extends Vertex> implements Edge {
     private String id;
     private String label;
 
-    // TODO MVR set namespace and id
     public AbstractEdge(V source, V target) {
         this((VertexRef) source, (VertexRef) target);
     }
@@ -90,7 +89,6 @@ public class AbstractEdge<V extends Vertex> implements Edge {
         return id;
     }
 
-    // TODO MVR this should be handled automatically in some sort?!
     public void setId(String id) {
         this.id = id;
     }
@@ -115,7 +113,6 @@ public class AbstractEdge<V extends Vertex> implements Edge {
 
     @Override
     public GenericEdge asGenericEdge() {
-        // TODO MVR set namespace and id
         final GenericEdge genericEdge = new GenericEdge(source, target);
         genericEdge.setLabel(getLabel());
         genericEdge.setId(getId());
