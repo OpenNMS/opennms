@@ -21,7 +21,7 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.opennms.netmgt.provision.detector.generic.*;version="${project.version}"</Export-Package>
+            <Export-Package>org.opennms.netmgt.provision.detector.dhcp.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -29,12 +29,12 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>com.helger</groupId>
-      <artifactId>dhcp4java</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.dhcpd</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

@@ -181,6 +181,7 @@ public class Test implements Action {
                 }
             } catch (Exception e) {
                 System.err.println("Error: Can't execute the monitor. " + e.getMessage());
+                e.printStackTrace(System.err);
                 return null;
             }
         } else {

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.provision.detector.dhcp;
 
+import org.opennms.features.dhcpd.Dhcpd;
 import org.opennms.netmgt.provision.detector.dhcp.client.DhcpClient;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
@@ -46,10 +47,16 @@ public class DhcpDetector extends BasicDetector<DhcpRequest, DhcpResponse> {
     String myIpAddress = "127.0.0.1";
     String requestIpAddress = "127.0.0.1";
 
+    private Dhcpd dhcpd;
+
     public DhcpDetector() {
         super("DHCP", 0);
         setTimeout(DEFAULT_TIMEOUT);
         setRetries(DEFAULT_RETRIES);
+    }
+
+    public void setDhcpd(Dhcpd dhcpd) {
+        this.dhcpd = dhcpd;
     }
 
     @Override
@@ -68,7 +75,7 @@ public class DhcpDetector extends BasicDetector<DhcpRequest, DhcpResponse> {
 
     @Override
     protected Client<DhcpRequest, DhcpResponse> getClient() {
-        DhcpClient client = new DhcpClient(macAddress, relayMode, myIpAddress, extendedMode, requestIpAddress, getTimeout(), getRetries());
+        DhcpClient client = new DhcpClient(macAddress, relayMode, myIpAddress, extendedMode, requestIpAddress, getTimeout(), getRetries(), dhcpd);
         return client;
     }
 

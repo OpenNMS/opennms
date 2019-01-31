@@ -26,26 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.dhcp.dhcpd;
+package org.opennms.features.dhcpd;
 
-import java.net.InetAddress;
+import java.io.IOException;
 
-import org.dhcp4java.DHCPPacket;
-
-public class Response {
-    private final InetAddress address;
-    private final DHCPPacket dhcpPacket;
-
-    public InetAddress getAddress() {
-        return address;
-    }
-
-    public DHCPPacket getDhcpPacket() {
-        return dhcpPacket;
-    }
-
-    public Response(final InetAddress address, final DHCPPacket dhcpPacket) {
-        this.address = address;
-        this.dhcpPacket = dhcpPacket;
-    }
+public interface Dhcpd {
+    long addTransaction(final Transaction transaction) throws IOException;
 }

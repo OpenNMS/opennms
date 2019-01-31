@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -21,35 +21,31 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.dhcp;
+package org.opennms.features.dhcpd;
 
-import java.util.Map;
+import java.net.InetAddress;
 
-import org.opennms.features.dhcpd.Dhcpd;
-import org.opennms.netmgt.provision.support.GenericServiceDetectorFactory;
-import org.springframework.stereotype.Component;
+import org.dhcp4java.DHCPPacket;
 
-@Component
-public class DhcpDetectorFactory extends GenericServiceDetectorFactory<DhcpDetector> {
-    private Dhcpd dhcpd;
+public class Response {
+    private final InetAddress address;
+    private final DHCPPacket dhcpPacket;
 
-    public DhcpDetectorFactory() {
-        super(DhcpDetector.class);
+    public InetAddress getAddress() {
+        return address;
     }
 
-    public void setDhcpd(Dhcpd dhcpd) {
-        this.dhcpd = dhcpd;
+    public DHCPPacket getDhcpPacket() {
+        return dhcpPacket;
     }
 
-    @Override
-    public DhcpDetector createDetector(Map<String, String> properties) {
-        DhcpDetector dhcpDetector = super.createDetector(properties);
-        dhcpDetector.setDhcpd(dhcpd);
-        return dhcpDetector;
+    public Response(final InetAddress address, final DHCPPacket dhcpPacket) {
+        this.address = address;
+        this.dhcpPacket = dhcpPacket;
     }
 }

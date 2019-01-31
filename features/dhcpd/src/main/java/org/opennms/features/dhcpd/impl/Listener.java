@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.dhcp.dhcpd;
+package org.opennms.features.dhcpd.impl;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -34,6 +34,8 @@ import java.net.DatagramSocket;
 import java.net.SocketTimeoutException;
 
 import org.dhcp4java.DHCPPacket;
+import org.opennms.features.dhcpd.Dhcpd;
+import org.opennms.features.dhcpd.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,10 +44,10 @@ public class Listener implements Runnable {
     private boolean shutdown = false;
 
     private final int port;
-    private final Dhcpd dhcpd;
+    private final DhcpdImpl dhcpd;
     private DatagramSocket datagramSocket;
 
-    public Listener(final Dhcpd dhcpd, int port) {
+    public Listener(final DhcpdImpl dhcpd, int port) {
         this.dhcpd = dhcpd;
         this.port = port;
     }

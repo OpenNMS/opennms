@@ -22,6 +22,9 @@
     <!-- AMQP Event Gateway and Alarm Northbounder -->
     <module>amqp</module>
 
+    <!-- DHCP integration -->
+    <module>dhcpd</module>
+
     <!-- OpenNMS Provisioning API and implementations -->
     <module>provisioning</module>
 

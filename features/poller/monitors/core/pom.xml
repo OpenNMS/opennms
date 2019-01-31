@@ -59,8 +59,8 @@
       <artifactId>jolokia-client-java</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-detector-dhcp</artifactId>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.dhcpd</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

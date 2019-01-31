@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.dhcp.dhcpd;
+package org.opennms.features.dhcpd.impl;
 
 import static org.dhcp4java.DHCPConstants.BOOTP_REPLY_PORT;
 import static org.dhcp4java.DHCPConstants.BOOTP_REQUEST_PORT;
@@ -47,33 +47,35 @@ import java.util.Set;
 
 import org.dhcp4java.DHCPOption;
 import org.dhcp4java.DHCPPacket;
+import org.opennms.features.dhcpd.Dhcpd;
+import org.opennms.features.dhcpd.Response;
+import org.opennms.features.dhcpd.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Dhcpd {
-    private static final Logger LOG = LoggerFactory.getLogger(Dhcpd.class);
-
-    private final static Dhcpd INSTANCE = new Dhcpd();
+public class DhcpdImpl implements Dhcpd {
+    private static final Logger LOG = LoggerFactory.getLogger(DhcpdImpl.class);
+    private Dhcpd INSTANCE = new DhcpdImpl();
     private final Set<Transaction> transactions = new HashSet<>();
     private int xid = new Random().nextInt();
     private boolean shutdown = false;
     private final Listener port67Listener = new Listener(this, BOOTP_REQUEST_PORT);
     private final Listener port68Listener = new Listener(this, BOOTP_REPLY_PORT);
 
-    private Dhcpd() {
-        final Thread thread67 = new Thread(this.port67Listener);
+    private DhcpdImpl() {
+        final Thread thread67 = new Thread(this.port67Listener);;
         thread67.start();
 
-        final Thread thread68 = new Thread(this.port68Listener);
+        final Thread thread68 = new Thread(this.port68Listener);;
         thread68.start();
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
-                Dhcpd.this.shutdown = true;
+                DhcpdImpl.this.shutdown = true;
 
-                Dhcpd.this.port67Listener.stop();
-                Dhcpd.this.port68Listener.stop();
+                DhcpdImpl.this.port67Listener.stop();
+                DhcpdImpl.this.port68Listener.stop();
 
                 thread67.interrupt();
                 thread68.interrupt();
@@ -81,6 +83,10 @@ public class Dhcpd {
                 LOG.debug("Dhcpd terminated successfully.");
             }
         }));
+    }
+
+    public Dhcpd getInstance() {
+        return INSTANCE;
     }
 
     private synchronized int nextXid() {
@@ -182,11 +188,11 @@ public class Dhcpd {
         return -1;
     }
 
-    public static long addTransaction(final Transaction transaction) throws IOException {
-        return INSTANCE.doTransaction(transaction);
+    public long addTransaction(final Transaction transaction) throws IOException {
+        return doTransaction(transaction);
     }
 
-    void checkTransactions(final Response response) {
+    public void checkTransactions(final Response response) {
         synchronized (this.transactions) {
             if (this.transactions.isEmpty()) {
                 LOG.debug("No polling request is waiting for response.");

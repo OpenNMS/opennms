@@ -1893,6 +1893,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.dhcpd</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.discovery</artifactId>
         <version>${project.version}</version>
       </dependency>

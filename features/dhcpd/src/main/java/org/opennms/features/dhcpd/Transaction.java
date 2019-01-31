@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.dhcp.dhcpd;
+package org.opennms.features.dhcpd;
 
 import java.net.InetAddress;
 import java.util.Set;

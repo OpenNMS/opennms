@@ -33,29 +33,37 @@ import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.features.dhcpd.Dhcpd;
+import org.opennms.features.dhcpd.Transaction;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
-import org.opennms.netmgt.provision.detector.dhcp.DhcpDetector;
-import org.opennms.netmgt.provision.detector.dhcp.dhcpd.Dhcpd;
-import org.opennms.netmgt.provision.detector.dhcp.dhcpd.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Distributable(DistributionContext.DAEMON)
 public final class DhcpMonitor extends AbstractServiceMonitor {
-	private static final Logger LOG = LoggerFactory.getLogger(DhcpMonitor.class);
+    public static final int DEFAULT_RETRIES = 0;
+    public static final int DEFAULT_TIMEOUT = 3000;
+    public static final String DEFAULT_MAC_ADDRESS = "00:06:0D:BE:9C:B2";
+    private static final Logger LOG = LoggerFactory.getLogger(DhcpMonitor.class);
+
+    private Dhcpd dhcpd;
+
+    public void setDhcpd(Dhcpd dhcpd) {
+        this.dhcpd = dhcpd;
+    }
 
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         // common parameters
-        final int retries = ParameterMap.getKeyedInteger(parameters, "retries", DhcpDetector.DEFAULT_RETRIES);
-        final int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DhcpDetector.DEFAULT_TIMEOUT);
+        final int retries = ParameterMap.getKeyedInteger(parameters, "retries", DEFAULT_RETRIES);
+        final int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
 
         // DHCP-specific parameters
-        final String macAddress = ParameterMap.getKeyedString(parameters, "macAddress", DhcpDetector.DEFAULT_MAC_ADDRESS);
+        final String macAddress = ParameterMap.getKeyedString(parameters, "macAddress", DEFAULT_MAC_ADDRESS);
         final boolean relayMode = ParameterMap.getKeyedBoolean(parameters, "relayMode", false);
         final boolean extendedMode = ParameterMap.getKeyedBoolean(parameters, "extendedMode", false);
         final String myAddress = ParameterMap.getKeyedString(parameters, "myIpAddress", "127.0.0.1");
@@ -65,7 +73,7 @@ public final class DhcpMonitor extends AbstractServiceMonitor {
         final Transaction transaction = new Transaction(svc.getIpAddr(), macAddress, relayMode, myAddress, extendedMode, requestIpAddress, timeout);
         for (tracker.reset(); tracker.shouldRetry() && !transaction.isSuccess(); tracker.nextAttempt()) {
             try {
-                Dhcpd.addTransaction(transaction);
+                dhcpd.addTransaction(transaction);
             } catch (IOException e) {
                 LOG.error("An unexpected exception occurred during DHCP polling", e);
                 return PollStatus.unavailable("An unexpected exception occurred during DHCP polling");

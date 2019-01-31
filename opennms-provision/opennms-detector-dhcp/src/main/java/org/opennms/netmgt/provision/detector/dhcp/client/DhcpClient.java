@@ -33,11 +33,12 @@ import java.net.InetAddress;
 import java.util.Collections;
 
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.provision.detector.dhcp.dhcpd.Transaction;
+
+import org.opennms.features.dhcpd.Dhcpd;
+import org.opennms.features.dhcpd.Transaction;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.detector.dhcp.request.DhcpRequest;
 import org.opennms.netmgt.provision.detector.dhcp.response.DhcpResponse;
-import org.opennms.netmgt.provision.detector.dhcp.dhcpd.Dhcpd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,9 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
     private final boolean m_relayMode;
     private final String m_requestIpAddress;
 
-    public DhcpClient(final String macAddress, final boolean relayMode, final String myIpAddress, final boolean extendedMode, final String requestIpAddress, final int timeout, final int retries) {
+    private Dhcpd m_dhcpd;
+
+    public DhcpClient(final String macAddress, final boolean relayMode, final String myIpAddress, final boolean extendedMode, final String requestIpAddress, final int timeout, final int retries, final Dhcpd dhcpd) {
         this.m_macAddress = macAddress;
         this.m_relayMode = relayMode;
         this.m_myIpAddress = myIpAddress;
@@ -61,6 +64,7 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
         this.m_requestIpAddress = requestIpAddress;
         this.m_timeout = timeout;
         this.m_retries = retries;
+        this.m_dhcpd = dhcpd;
     }
 
     @Override
@@ -80,7 +84,7 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
         for (tracker.reset(); tracker.shouldRetry() && !transaction.isSuccess(); tracker.nextAttempt()) {
             try {
                 LOG.error("Checking for Dhcp: {}", transaction);
-                Dhcpd.addTransaction(transaction);
+                m_dhcpd.addTransaction(transaction);
             } catch (IOException e) {
                 LOG.error("An unexpected exception occurred during DHCP detection", e);
                 return new DhcpResponse(-1);
