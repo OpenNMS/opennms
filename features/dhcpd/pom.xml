@@ -29,14 +29,10 @@
                 <groupId>org.opennms.maven.plugins</groupId>
                 <artifactId>features-maven-plugin</artifactId>
                 <configuration>
-                    <name>dhcp-integration</name>
+                    <name>dhcpd</name>
                     <bundles>
                         <bundle>mvn:org.opennms.features/org.opennms.features.dhcpd/${project.version}</bundle>
                     </bundles>
-                    <features>
-                        <feature>opennms-dao-api</feature>
-                        <feature>guava</feature>
-                    </features>
                 </configuration>
             </plugin>
         </plugins>
