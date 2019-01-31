@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.api;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +50,7 @@ public interface GenericPersistenceAccessor {
 
     <T> void update(T entity);
 
-    <T> void save(T entity);
+    <T> T save(T entity);
 
     <T> void delete(T entity);
 
@@ -63,4 +64,15 @@ public interface GenericPersistenceAccessor {
      * @return The result.
      */
     <T> List<T> executeNativeQuery(String sql, Map<String, Object> parameterMap);
+
+
+    <T> List<T> findAll(Class<T> entityClass);
+
+    <T> void saveAll(Collection<T> entities);
+
+    <T> void deleteAll(Class<T> clazz);
+
+    <T> void deleteAll(Collection<T> entities);
+
+
 }
