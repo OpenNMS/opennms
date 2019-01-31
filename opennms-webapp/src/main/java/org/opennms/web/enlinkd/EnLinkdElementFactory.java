@@ -349,8 +349,8 @@ public class EnLinkdElementFactory implements InitializingBean,
                                                null));
         
         OnmsSnmpInterface snmpiface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeid, link.getCdpCacheIfIndex());
-        Set<OnmsIpInterface> ipifaces = snmpiface.getIpInterfaces();
         if (snmpiface != null) {
+        Set<OnmsIpInterface> ipifaces = snmpiface.getIpInterfaces();
             if (ipifaces.isEmpty() || ipifaces.size() > 1) {
                 linknode.setCdpLocalPort(getPortString(snmpiface,null,null));
             } else {
