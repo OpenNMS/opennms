@@ -17,7 +17,7 @@
     <module>adapters</module>
     <module>daemon</module>
     <module>tests</module>
-    <module>org.opennms.features.enlinkd.shell</module>
-    <module>org.opennms.features.enlinkd.generator</module>
+    <module>shell</module>
+    <module>generator</module>
   </modules>
 </project>
