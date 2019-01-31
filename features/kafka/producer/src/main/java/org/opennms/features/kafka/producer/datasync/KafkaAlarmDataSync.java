@@ -60,10 +60,12 @@ import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
+import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.features.kafka.producer.AlarmEqualityChecker;
 import org.opennms.features.kafka.producer.OpennmsKafkaProducer;
 import org.opennms.features.kafka.producer.ProtobufMapper;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
+import org.opennms.netmgt.alarmd.api.AlarmCallbackStateTracker;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -87,6 +89,7 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
 
     private String alarmTopic;
     private boolean alarmSync;
+    private boolean startWithCleanState = false;
 
     private KafkaStreams streams;
     private ScheduledExecutorService scheduler;
@@ -121,15 +124,11 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
                 Materialized.as(ALARM_STORE_NAME));
 
         final Topology topology = builder.build();
-        final ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-        try {
-            // Use the class-loader for the KStream class, since the kafka-client bundle
-            // does not import the required classes from the kafka-streams bundle
-            Thread.currentThread().setContextClassLoader(KStream.class.getClassLoader());
-            streams = new KafkaStreams(topology, streamProperties);
-        } finally {
-            Thread.currentThread().setContextClassLoader(currentClassLoader);
-        }
+
+        // Use the class-loader for the KStream class, since the kafka-client bundle
+        // does not import the required classes from the kafka-streams bundle
+        streams = Utils.runWithGivenClassLoader(() -> new KafkaStreams(topology, streamProperties), KStream.class.getClassLoader());
+
         streams.setUncaughtExceptionHandler((t, e) -> LOG.error(
                 String.format("Stream error on thread: %s", t.getName()), e));
 
@@ -156,6 +155,10 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
         }
 
         try {
+            if (startWithCleanState) {
+                LOG.info("Performing stream state cleanup.");
+                streams.cleanUp();
+            }
             LOG.info("Starting alarm datasync stream.");
             streams.start();
             LOG.info("Starting alarm datasync started.");
@@ -204,7 +207,8 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
 
             final Set<String> reductionKeysInKtable = alarmsInKtableByReductionKey.keySet();
 
-            // Retrieve all of the alarms from the database and apply the filter (if any) to these
+            // Use the given alarms and apply the filter (if any) to these
+            // This represents the set of alarms that should be in the ktable at the given timestamp
             final List<OnmsAlarm> alarmsInDb = alarms.stream()
                     .filter(kafkaProducer::shouldForwardAlarm)
                     .collect(Collectors.toList());
@@ -213,18 +217,32 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
                     .collect(Collectors.toMap(OnmsAlarm::getReductionKey, a -> a));
             final Set<String> reductionKeysInDb = alarmsInDbByReductionKey.keySet();
 
+            // Grab a reference to the state tracker
+            final AlarmCallbackStateTracker stateTracker = kafkaProducer.getAlarmCallbackStateTracker();
+
             // Push deletes for keys that are in the ktable, but not in the database
-            final Set<String> reductionKeysNotInDb = Sets.difference(reductionKeysInKtable, reductionKeysInDb);
-            reductionKeysNotInDb.forEach(kafkaProducer::handleDeletedAlarm);
+            final Set<String> reductionKeysNotInDb = Sets.difference(reductionKeysInKtable, reductionKeysInDb).stream()
+                    // Only remove it if the alarm we have dates before the snapshot
+                    .filter(reductionKey -> !stateTracker.wasAlarmWithReductionKeyUpdated(reductionKey))
+                    .collect(Collectors.toSet());
+            reductionKeysNotInDb.forEach(rkey -> kafkaProducer.handleDeletedAlarm((int)alarmsInKtableByReductionKey.get(rkey).getId(), rkey));
 
             // Push new entries for keys that are in the database, but not in the ktable
-            final Set<String> reductionKeysNotInKtable = Sets.difference(reductionKeysInDb, reductionKeysInKtable);
+            final Set<String> reductionKeysNotInKtable = Sets.difference(reductionKeysInDb, reductionKeysInKtable).stream()
+                    // Unless we've deleted the alarm after the snapshot time
+                    .filter(reductionKey -> !stateTracker.wasAlarmWithReductionKeyDeleted(reductionKey))
+                    .collect(Collectors.toSet());
             reductionKeysNotInKtable.forEach(rkey -> kafkaProducer.handleNewOrUpdatedAlarm(alarmsInDbByReductionKey.get(rkey)));
 
             // Handle Updates
             final Set<String> reductionKeysUpdated = new LinkedHashSet<>();
             final Set<String> commonReductionKeys = Sets.intersection(reductionKeysInKtable, reductionKeysInDb);
             commonReductionKeys.forEach(rkey -> {
+                // Don't bother updating the alarm if the one we we have is more recent than the snapshot
+                if (stateTracker.wasAlarmWithReductionKeyUpdated(rkey)) {
+                    return;
+                }
+
                 final OnmsAlarm dbAlarm = alarmsInDbByReductionKey.get(rkey);
                 final OpennmsModelProtos.Alarm.Builder mappedDbAlarm = protobufMapper.toAlarm(dbAlarm);
                 final OpennmsModelProtos.Alarm alarmFromKtable = alarmsInKtableByReductionKey.get(rkey);
@@ -292,6 +310,11 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
 
     public void setAlarmSync(boolean alarmSync) {
         this.alarmSync = alarmSync;
+    }
+
+    @Override
+    public void setStartWithCleanState(boolean startWithCleanState) {
+        this.startWithCleanState = startWithCleanState;
     }
 
     private ReadOnlyKeyValueStore<String, byte[]> getAlarmTableNow() throws InvalidStateStoreException {

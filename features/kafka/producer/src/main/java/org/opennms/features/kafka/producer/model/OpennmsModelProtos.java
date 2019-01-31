@@ -7232,6 +7232,1351 @@ public final class OpennmsModelProtos {
 
   }
 
+  public interface AlarmFeedbackOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:AlarmFeedback)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string situation_key = 1;</code>
+     */
+    java.lang.String getSituationKey();
+    /**
+     * <code>string situation_key = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getSituationKeyBytes();
+
+    /**
+     * <code>string situation_fingerprint = 2;</code>
+     */
+    java.lang.String getSituationFingerprint();
+    /**
+     * <code>string situation_fingerprint = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getSituationFingerprintBytes();
+
+    /**
+     * <code>string alarm_key = 3;</code>
+     */
+    java.lang.String getAlarmKey();
+    /**
+     * <code>string alarm_key = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getAlarmKeyBytes();
+
+    /**
+     * <code>.AlarmFeedback.FeedbackType feedback_type = 4;</code>
+     */
+    int getFeedbackTypeValue();
+    /**
+     * <code>.AlarmFeedback.FeedbackType feedback_type = 4;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType getFeedbackType();
+
+    /**
+     * <code>string reason = 5;</code>
+     */
+    java.lang.String getReason();
+    /**
+     * <code>string reason = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getReasonBytes();
+
+    /**
+     * <code>string user = 6;</code>
+     */
+    java.lang.String getUser();
+    /**
+     * <code>string user = 6;</code>
+     */
+    com.google.protobuf.ByteString
+        getUserBytes();
+
+    /**
+     * <code>uint64 timestamp = 7;</code>
+     */
+    long getTimestamp();
+  }
+  /**
+   * Protobuf type {@code AlarmFeedback}
+   */
+  public  static final class AlarmFeedback extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:AlarmFeedback)
+      AlarmFeedbackOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use AlarmFeedback.newBuilder() to construct.
+    private AlarmFeedback(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private AlarmFeedback() {
+      situationKey_ = "";
+      situationFingerprint_ = "";
+      alarmKey_ = "";
+      feedbackType_ = 0;
+      reason_ = "";
+      user_ = "";
+      timestamp_ = 0L;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private AlarmFeedback(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              situationKey_ = s;
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              situationFingerprint_ = s;
+              break;
+            }
+            case 26: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              alarmKey_ = s;
+              break;
+            }
+            case 32: {
+              int rawValue = input.readEnum();
+
+              feedbackType_ = rawValue;
+              break;
+            }
+            case 42: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              reason_ = s;
+              break;
+            }
+            case 50: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              user_ = s;
+              break;
+            }
+            case 56: {
+
+              timestamp_ = input.readUInt64();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_AlarmFeedback_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_AlarmFeedback_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.class, org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.Builder.class);
+    }
+
+    /**
+     * Protobuf enum {@code AlarmFeedback.FeedbackType}
+     */
+    public enum FeedbackType
+        implements com.google.protobuf.ProtocolMessageEnum {
+      /**
+       * <code>FALSE_POSITIVE = 0;</code>
+       */
+      FALSE_POSITIVE(0),
+      /**
+       * <code>FALSE_NEGATIVE = 1;</code>
+       */
+      FALSE_NEGATIVE(1),
+      /**
+       * <code>CORRECT = 2;</code>
+       */
+      CORRECT(2),
+      /**
+       * <code>UNKNOWN = 3;</code>
+       */
+      UNKNOWN(3),
+      UNRECOGNIZED(-1),
+      ;
+
+      /**
+       * <code>FALSE_POSITIVE = 0;</code>
+       */
+      public static final int FALSE_POSITIVE_VALUE = 0;
+      /**
+       * <code>FALSE_NEGATIVE = 1;</code>
+       */
+      public static final int FALSE_NEGATIVE_VALUE = 1;
+      /**
+       * <code>CORRECT = 2;</code>
+       */
+      public static final int CORRECT_VALUE = 2;
+      /**
+       * <code>UNKNOWN = 3;</code>
+       */
+      public static final int UNKNOWN_VALUE = 3;
+
+
+      public final int getNumber() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalArgumentException(
+              "Can't get the number of an unknown enum value.");
+        }
+        return value;
+      }
+
+      /**
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static FeedbackType valueOf(int value) {
+        return forNumber(value);
+      }
+
+      public static FeedbackType forNumber(int value) {
+        switch (value) {
+          case 0: return FALSE_POSITIVE;
+          case 1: return FALSE_NEGATIVE;
+          case 2: return CORRECT;
+          case 3: return UNKNOWN;
+          default: return null;
+        }
+      }
+
+      public static com.google.protobuf.Internal.EnumLiteMap<FeedbackType>
+          internalGetValueMap() {
+        return internalValueMap;
+      }
+      private static final com.google.protobuf.Internal.EnumLiteMap<
+          FeedbackType> internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<FeedbackType>() {
+              public FeedbackType findValueByNumber(int number) {
+                return FeedbackType.forNumber(number);
+              }
+            };
+
+      public final com.google.protobuf.Descriptors.EnumValueDescriptor
+          getValueDescriptor() {
+        return getDescriptor().getValues().get(ordinal());
+      }
+      public final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptorForType() {
+        return getDescriptor();
+      }
+      public static final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptor() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.getDescriptor().getEnumTypes().get(0);
+      }
+
+      private static final FeedbackType[] VALUES = values();
+
+      public static FeedbackType valueOf(
+          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+        if (desc.getType() != getDescriptor()) {
+          throw new java.lang.IllegalArgumentException(
+            "EnumValueDescriptor is not for this type.");
+        }
+        if (desc.getIndex() == -1) {
+          return UNRECOGNIZED;
+        }
+        return VALUES[desc.getIndex()];
+      }
+
+      private final int value;
+
+      private FeedbackType(int value) {
+        this.value = value;
+      }
+
+      // @@protoc_insertion_point(enum_scope:AlarmFeedback.FeedbackType)
+    }
+
+    public static final int SITUATION_KEY_FIELD_NUMBER = 1;
+    private volatile java.lang.Object situationKey_;
+    /**
+     * <code>string situation_key = 1;</code>
+     */
+    public java.lang.String getSituationKey() {
+      java.lang.Object ref = situationKey_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        situationKey_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string situation_key = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSituationKeyBytes() {
+      java.lang.Object ref = situationKey_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        situationKey_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int SITUATION_FINGERPRINT_FIELD_NUMBER = 2;
+    private volatile java.lang.Object situationFingerprint_;
+    /**
+     * <code>string situation_fingerprint = 2;</code>
+     */
+    public java.lang.String getSituationFingerprint() {
+      java.lang.Object ref = situationFingerprint_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        situationFingerprint_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string situation_fingerprint = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSituationFingerprintBytes() {
+      java.lang.Object ref = situationFingerprint_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        situationFingerprint_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int ALARM_KEY_FIELD_NUMBER = 3;
+    private volatile java.lang.Object alarmKey_;
+    /**
+     * <code>string alarm_key = 3;</code>
+     */
+    public java.lang.String getAlarmKey() {
+      java.lang.Object ref = alarmKey_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        alarmKey_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string alarm_key = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getAlarmKeyBytes() {
+      java.lang.Object ref = alarmKey_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        alarmKey_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int FEEDBACK_TYPE_FIELD_NUMBER = 4;
+    private int feedbackType_;
+    /**
+     * <code>.AlarmFeedback.FeedbackType feedback_type = 4;</code>
+     */
+    public int getFeedbackTypeValue() {
+      return feedbackType_;
+    }
+    /**
+     * <code>.AlarmFeedback.FeedbackType feedback_type = 4;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType getFeedbackType() {
+      org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType result = org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType.valueOf(feedbackType_);
+      return result == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType.UNRECOGNIZED : result;
+    }
+
+    public static final int REASON_FIELD_NUMBER = 5;
+    private volatile java.lang.Object reason_;
+    /**
+     * <code>string reason = 5;</code>
+     */
+    public java.lang.String getReason() {
+      java.lang.Object ref = reason_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        reason_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string reason = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getReasonBytes() {
+      java.lang.Object ref = reason_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        reason_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int USER_FIELD_NUMBER = 6;
+    private volatile java.lang.Object user_;
+    /**
+     * <code>string user = 6;</code>
+     */
+    public java.lang.String getUser() {
+      java.lang.Object ref = user_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        user_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string user = 6;</code>
+     */
+    public com.google.protobuf.ByteString
+        getUserBytes() {
+      java.lang.Object ref = user_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        user_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TIMESTAMP_FIELD_NUMBER = 7;
+    private long timestamp_;
+    /**
+     * <code>uint64 timestamp = 7;</code>
+     */
+    public long getTimestamp() {
+      return timestamp_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!getSituationKeyBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, situationKey_);
+      }
+      if (!getSituationFingerprintBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, situationFingerprint_);
+      }
+      if (!getAlarmKeyBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, alarmKey_);
+      }
+      if (feedbackType_ != org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType.FALSE_POSITIVE.getNumber()) {
+        output.writeEnum(4, feedbackType_);
+      }
+      if (!getReasonBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, reason_);
+      }
+      if (!getUserBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 6, user_);
+      }
+      if (timestamp_ != 0L) {
+        output.writeUInt64(7, timestamp_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!getSituationKeyBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, situationKey_);
+      }
+      if (!getSituationFingerprintBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, situationFingerprint_);
+      }
+      if (!getAlarmKeyBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, alarmKey_);
+      }
+      if (feedbackType_ != org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType.FALSE_POSITIVE.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(4, feedbackType_);
+      }
+      if (!getReasonBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, reason_);
+      }
+      if (!getUserBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, user_);
+      }
+      if (timestamp_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(7, timestamp_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback)) {
+        return super.equals(obj);
+      }
+      org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback other = (org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback) obj;
+
+      boolean result = true;
+      result = result && getSituationKey()
+          .equals(other.getSituationKey());
+      result = result && getSituationFingerprint()
+          .equals(other.getSituationFingerprint());
+      result = result && getAlarmKey()
+          .equals(other.getAlarmKey());
+      result = result && feedbackType_ == other.feedbackType_;
+      result = result && getReason()
+          .equals(other.getReason());
+      result = result && getUser()
+          .equals(other.getUser());
+      result = result && (getTimestamp()
+          == other.getTimestamp());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + SITUATION_KEY_FIELD_NUMBER;
+      hash = (53 * hash) + getSituationKey().hashCode();
+      hash = (37 * hash) + SITUATION_FINGERPRINT_FIELD_NUMBER;
+      hash = (53 * hash) + getSituationFingerprint().hashCode();
+      hash = (37 * hash) + ALARM_KEY_FIELD_NUMBER;
+      hash = (53 * hash) + getAlarmKey().hashCode();
+      hash = (37 * hash) + FEEDBACK_TYPE_FIELD_NUMBER;
+      hash = (53 * hash) + feedbackType_;
+      hash = (37 * hash) + REASON_FIELD_NUMBER;
+      hash = (53 * hash) + getReason().hashCode();
+      hash = (37 * hash) + USER_FIELD_NUMBER;
+      hash = (53 * hash) + getUser().hashCode();
+      hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getTimestamp());
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code AlarmFeedback}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:AlarmFeedback)
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedbackOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_AlarmFeedback_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_AlarmFeedback_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.class, org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.Builder.class);
+      }
+
+      // Construct using org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        situationKey_ = "";
+
+        situationFingerprint_ = "";
+
+        alarmKey_ = "";
+
+        feedbackType_ = 0;
+
+        reason_ = "";
+
+        user_ = "";
+
+        timestamp_ = 0L;
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.internal_static_AlarmFeedback_descriptor;
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback getDefaultInstanceForType() {
+        return org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.getDefaultInstance();
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback build() {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback buildPartial() {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback result = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback(this);
+        result.situationKey_ = situationKey_;
+        result.situationFingerprint_ = situationFingerprint_;
+        result.alarmKey_ = alarmKey_;
+        result.feedbackType_ = feedbackType_;
+        result.reason_ = reason_;
+        result.user_ = user_;
+        result.timestamp_ = timestamp_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback) {
+          return mergeFrom((org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback other) {
+        if (other == org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.getDefaultInstance()) return this;
+        if (!other.getSituationKey().isEmpty()) {
+          situationKey_ = other.situationKey_;
+          onChanged();
+        }
+        if (!other.getSituationFingerprint().isEmpty()) {
+          situationFingerprint_ = other.situationFingerprint_;
+          onChanged();
+        }
+        if (!other.getAlarmKey().isEmpty()) {
+          alarmKey_ = other.alarmKey_;
+          onChanged();
+        }
+        if (other.feedbackType_ != 0) {
+          setFeedbackTypeValue(other.getFeedbackTypeValue());
+        }
+        if (!other.getReason().isEmpty()) {
+          reason_ = other.reason_;
+          onChanged();
+        }
+        if (!other.getUser().isEmpty()) {
+          user_ = other.user_;
+          onChanged();
+        }
+        if (other.getTimestamp() != 0L) {
+          setTimestamp(other.getTimestamp());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private java.lang.Object situationKey_ = "";
+      /**
+       * <code>string situation_key = 1;</code>
+       */
+      public java.lang.String getSituationKey() {
+        java.lang.Object ref = situationKey_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          situationKey_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string situation_key = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSituationKeyBytes() {
+        java.lang.Object ref = situationKey_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          situationKey_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string situation_key = 1;</code>
+       */
+      public Builder setSituationKey(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        situationKey_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string situation_key = 1;</code>
+       */
+      public Builder clearSituationKey() {
+        
+        situationKey_ = getDefaultInstance().getSituationKey();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string situation_key = 1;</code>
+       */
+      public Builder setSituationKeyBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        situationKey_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object situationFingerprint_ = "";
+      /**
+       * <code>string situation_fingerprint = 2;</code>
+       */
+      public java.lang.String getSituationFingerprint() {
+        java.lang.Object ref = situationFingerprint_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          situationFingerprint_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string situation_fingerprint = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSituationFingerprintBytes() {
+        java.lang.Object ref = situationFingerprint_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          situationFingerprint_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string situation_fingerprint = 2;</code>
+       */
+      public Builder setSituationFingerprint(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        situationFingerprint_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string situation_fingerprint = 2;</code>
+       */
+      public Builder clearSituationFingerprint() {
+        
+        situationFingerprint_ = getDefaultInstance().getSituationFingerprint();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string situation_fingerprint = 2;</code>
+       */
+      public Builder setSituationFingerprintBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        situationFingerprint_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object alarmKey_ = "";
+      /**
+       * <code>string alarm_key = 3;</code>
+       */
+      public java.lang.String getAlarmKey() {
+        java.lang.Object ref = alarmKey_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          alarmKey_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string alarm_key = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getAlarmKeyBytes() {
+        java.lang.Object ref = alarmKey_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          alarmKey_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string alarm_key = 3;</code>
+       */
+      public Builder setAlarmKey(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        alarmKey_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string alarm_key = 3;</code>
+       */
+      public Builder clearAlarmKey() {
+        
+        alarmKey_ = getDefaultInstance().getAlarmKey();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string alarm_key = 3;</code>
+       */
+      public Builder setAlarmKeyBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        alarmKey_ = value;
+        onChanged();
+        return this;
+      }
+
+      private int feedbackType_ = 0;
+      /**
+       * <code>.AlarmFeedback.FeedbackType feedback_type = 4;</code>
+       */
+      public int getFeedbackTypeValue() {
+        return feedbackType_;
+      }
+      /**
+       * <code>.AlarmFeedback.FeedbackType feedback_type = 4;</code>
+       */
+      public Builder setFeedbackTypeValue(int value) {
+        feedbackType_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.AlarmFeedback.FeedbackType feedback_type = 4;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType getFeedbackType() {
+        org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType result = org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType.valueOf(feedbackType_);
+        return result == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.AlarmFeedback.FeedbackType feedback_type = 4;</code>
+       */
+      public Builder setFeedbackType(org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback.FeedbackType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        
+        feedbackType_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.AlarmFeedback.FeedbackType feedback_type = 4;</code>
+       */
+      public Builder clearFeedbackType() {
+        
+        feedbackType_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object reason_ = "";
+      /**
+       * <code>string reason = 5;</code>
+       */
+      public java.lang.String getReason() {
+        java.lang.Object ref = reason_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          reason_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string reason = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getReasonBytes() {
+        java.lang.Object ref = reason_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          reason_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string reason = 5;</code>
+       */
+      public Builder setReason(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        reason_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string reason = 5;</code>
+       */
+      public Builder clearReason() {
+        
+        reason_ = getDefaultInstance().getReason();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string reason = 5;</code>
+       */
+      public Builder setReasonBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        reason_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object user_ = "";
+      /**
+       * <code>string user = 6;</code>
+       */
+      public java.lang.String getUser() {
+        java.lang.Object ref = user_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          user_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string user = 6;</code>
+       */
+      public com.google.protobuf.ByteString
+          getUserBytes() {
+        java.lang.Object ref = user_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          user_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string user = 6;</code>
+       */
+      public Builder setUser(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        user_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string user = 6;</code>
+       */
+      public Builder clearUser() {
+        
+        user_ = getDefaultInstance().getUser();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string user = 6;</code>
+       */
+      public Builder setUserBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        user_ = value;
+        onChanged();
+        return this;
+      }
+
+      private long timestamp_ ;
+      /**
+       * <code>uint64 timestamp = 7;</code>
+       */
+      public long getTimestamp() {
+        return timestamp_;
+      }
+      /**
+       * <code>uint64 timestamp = 7;</code>
+       */
+      public Builder setTimestamp(long value) {
+        
+        timestamp_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint64 timestamp = 7;</code>
+       */
+      public Builder clearTimestamp() {
+        
+        timestamp_ = 0L;
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:AlarmFeedback)
+    }
+
+    // @@protoc_insertion_point(class_scope:AlarmFeedback)
+    private static final org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback();
+    }
+
+    public static org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<AlarmFeedback>
+        PARSER = new com.google.protobuf.AbstractParser<AlarmFeedback>() {
+      public AlarmFeedback parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new AlarmFeedback(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<AlarmFeedback> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<AlarmFeedback> getParserForType() {
+      return PARSER;
+    }
+
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.AlarmFeedback getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface IpInterfaceOrBuilder extends
       // @@protoc_insertion_point(interface_extends:IpInterface)
       com.google.protobuf.MessageOrBuilder {
@@ -14664,6 +16009,11 @@ public final class OpennmsModelProtos {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_Alarm_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_AlarmFeedback_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_AlarmFeedback_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_IpInterface_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -14697,63 +16047,70 @@ public final class OpennmsModelProtos {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n+src/main/proto/opennms-kafka-producer." +
-      "proto\"F\n\014NodeCriteria\022\n\n\002id\030\001 \001(\004\022\026\n\016for" +
-      "eign_source\030\002 \001(\t\022\022\n\nforeign_id\030\003 \001(\t\";\n" +
-      "\016EventParameter\022\014\n\004name\030\001 \001(\t\022\r\n\005value\030\002" +
-      " \001(\t\022\014\n\004type\030\003 \001(\t\"\245\002\n\005Event\022\n\n\002id\030\001 \001(\004" +
-      "\022\013\n\003uei\030\002 \001(\t\022\r\n\005label\030\003 \001(\t\022\014\n\004time\030\004 \001" +
-      "(\004\022\016\n\006source\030\005 \001(\t\022\"\n\tparameter\030\006 \003(\0132\017." +
-      "EventParameter\022\023\n\013create_time\030\007 \001(\004\022\023\n\013d" +
-      "escription\030\010 \001(\t\022\023\n\013log_message\030\t \001(\t\022\033\n" +
-      "\010severity\030\n \001(\0162\t.Severity\022\013\n\003log\030\013 \001(\010\022" +
-      "\017\n\007display\030\014 \001(\010\022$\n\rnode_criteria\030\r \001(\0132" +
-      "\r.NodeCriteria\022\022\n\nip_address\030\016 \001(\t\"\321\004\n\005A" +
-      "larm\022\n\n\002id\030\001 \001(\004\022\013\n\003uei\030\002 \001(\t\022$\n\rnode_cr" +
-      "iteria\030\003 \001(\0132\r.NodeCriteria\022\022\n\nip_addres" +
-      "s\030\004 \001(\t\022\024\n\014service_name\030\005 \001(\t\022\025\n\rreducti" +
-      "on_key\030\006 \001(\t\022\031\n\004type\030\007 \001(\0162\013.Alarm.Type\022" +
-      "\r\n\005count\030\010 \001(\004\022\033\n\010severity\030\t \001(\0162\t.Sever" +
-      "ity\022\030\n\020first_event_time\030\n \001(\004\022\023\n\013descrip" +
-      "tion\030\013 \001(\t\022\023\n\013log_message\030\014 \001(\t\022\020\n\010ack_u" +
-      "ser\030\r \001(\t\022\020\n\010ack_time\030\016 \001(\004\022\032\n\nlast_even" +
-      "t\030\017 \001(\0132\006.Event\022\027\n\017last_event_time\030\020 \001(\004" +
-      "\022\020\n\010if_index\030\021 \001(\r\022\035\n\025operator_instructi" +
-      "ons\030\022 \001(\t\022\021\n\tclear_key\030\023 \001(\t\022\037\n\027managed_" +
-      "object_instance\030\024 \001(\t\022\033\n\023managed_object_" +
-      "type\030\025 \001(\t\022\034\n\014relatedAlarm\030\026 \003(\0132\006.Alarm" +
-      "\"D\n\004Type\022\026\n\022PROBLEM_WITH_CLEAR\020\000\022\t\n\005CLEA" +
-      "R\020\001\022\031\n\025PROBLEM_WITHOUT_CLEAR\020\002\"\275\001\n\013IpInt" +
-      "erface\022\n\n\002id\030\001 \001(\004\022\022\n\nip_address\030\002 \001(\t\022\020" +
-      "\n\010if_index\030\003 \001(\r\022.\n\014primary_type\030\004 \001(\0162\030" +
-      ".IpInterface.PrimaryType\022\017\n\007service\030\005 \003(" +
-      "\t\";\n\013PrimaryType\022\013\n\007PRIMARY\020\000\022\r\n\tSECONDA" +
-      "RY\020\001\022\020\n\014NOT_ELIGIBLE\020\002\"\317\001\n\rSnmpInterface" +
-      "\022\n\n\002id\030\001 \001(\004\022\020\n\010if_index\030\002 \001(\r\022\020\n\010if_des" +
-      "cr\030\003 \001(\t\022\017\n\007if_type\030\004 \001(\r\022\017\n\007if_name\030\005 \001" +
-      "(\t\022\020\n\010if_speed\030\006 \001(\004\022\027\n\017if_phys_address\030" +
-      "\007 \001(\t\022\027\n\017if_admin_status\030\010 \001(\r\022\026\n\016if_ope" +
-      "r_status\030\t \001(\r\022\020\n\010if_alias\030\n \001(\t\"%\n\007HwAl" +
-      "ias\022\r\n\005index\030\001 \001(\r\022\013\n\003oid\030\002 \001(\t\"\210\002\n\010HwEn" +
-      "tity\022\032\n\022ent_physical_index\030\001 \001(\r\022\021\n\tenti" +
-      "ty_id\030\002 \001(\r\022\032\n\022ent_physical_class\030\003 \001(\t\022" +
-      "\032\n\022ent_physical_descr\030\004 \001(\t\022\033\n\023ent_physi" +
-      "cal_is_fru\030\005 \001(\010\022\031\n\021ent_physical_name\030\006 " +
-      "\001(\t\022 \n\030ent_physical_vendor_type\030\007 \001(\t\022\036\n" +
-      "\014ent_hw_alias\030\010 \003(\0132\010.HwAlias\022\033\n\010childre" +
-      "n\030\t \003(\0132\t.HwEntity\"\270\002\n\004Node\022\n\n\002id\030\001 \001(\004\022" +
-      "\026\n\016foreign_source\030\002 \001(\t\022\022\n\nforeign_id\030\003 " +
-      "\001(\t\022\020\n\010location\030\004 \001(\t\022\020\n\010category\030\005 \003(\t\022" +
-      "\r\n\005label\030\006 \001(\t\022\023\n\013create_time\030\007 \001(\004\022\023\n\013s" +
-      "ys_contact\030\010 \001(\t\022\027\n\017sys_description\030\t \001(" +
-      "\t\022\025\n\rsys_object_id\030\n \001(\t\022\"\n\014ip_interface" +
-      "\030\013 \003(\0132\014.IpInterface\022&\n\016snmp_interface\030\014" +
-      " \003(\0132\016.SnmpInterface\022\037\n\014hw_inventory\030\r \001" +
-      "(\0132\t.HwEntity*g\n\010Severity\022\021\n\rINDETERMINA" +
-      "TE\020\000\022\013\n\007CLEARED\020\001\022\n\n\006NORMAL\020\002\022\013\n\007WARNING" +
-      "\020\003\022\t\n\005MINOR\020\004\022\t\n\005MAJOR\020\005\022\014\n\010CRITICAL\020\006B?" +
-      "\n)org.opennms.features.kafka.producer.mo" +
-      "delB\022OpennmsModelProtosb\006proto3"
+      "\n\034opennms-kafka-producer.proto\"F\n\014NodeCr" +
+      "iteria\022\n\n\002id\030\001 \001(\004\022\026\n\016foreign_source\030\002 \001" +
+      "(\t\022\022\n\nforeign_id\030\003 \001(\t\";\n\016EventParameter" +
+      "\022\014\n\004name\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\022\014\n\004type\030\003 " +
+      "\001(\t\"\245\002\n\005Event\022\n\n\002id\030\001 \001(\004\022\013\n\003uei\030\002 \001(\t\022\r" +
+      "\n\005label\030\003 \001(\t\022\014\n\004time\030\004 \001(\004\022\016\n\006source\030\005 " +
+      "\001(\t\022\"\n\tparameter\030\006 \003(\0132\017.EventParameter\022" +
+      "\023\n\013create_time\030\007 \001(\004\022\023\n\013description\030\010 \001(" +
+      "\t\022\023\n\013log_message\030\t \001(\t\022\033\n\010severity\030\n \001(\016" +
+      "2\t.Severity\022\013\n\003log\030\013 \001(\010\022\017\n\007display\030\014 \001(" +
+      "\010\022$\n\rnode_criteria\030\r \001(\0132\r.NodeCriteria\022" +
+      "\022\n\nip_address\030\016 \001(\t\"\321\004\n\005Alarm\022\n\n\002id\030\001 \001(" +
+      "\004\022\013\n\003uei\030\002 \001(\t\022$\n\rnode_criteria\030\003 \001(\0132\r." +
+      "NodeCriteria\022\022\n\nip_address\030\004 \001(\t\022\024\n\014serv" +
+      "ice_name\030\005 \001(\t\022\025\n\rreduction_key\030\006 \001(\t\022\031\n" +
+      "\004type\030\007 \001(\0162\013.Alarm.Type\022\r\n\005count\030\010 \001(\004\022" +
+      "\033\n\010severity\030\t \001(\0162\t.Severity\022\030\n\020first_ev" +
+      "ent_time\030\n \001(\004\022\023\n\013description\030\013 \001(\t\022\023\n\013l" +
+      "og_message\030\014 \001(\t\022\020\n\010ack_user\030\r \001(\t\022\020\n\010ac" +
+      "k_time\030\016 \001(\004\022\032\n\nlast_event\030\017 \001(\0132\006.Event" +
+      "\022\027\n\017last_event_time\030\020 \001(\004\022\020\n\010if_index\030\021 " +
+      "\001(\r\022\035\n\025operator_instructions\030\022 \001(\t\022\021\n\tcl" +
+      "ear_key\030\023 \001(\t\022\037\n\027managed_object_instance" +
+      "\030\024 \001(\t\022\033\n\023managed_object_type\030\025 \001(\t\022\034\n\014r" +
+      "elatedAlarm\030\026 \003(\0132\006.Alarm\"D\n\004Type\022\026\n\022PRO" +
+      "BLEM_WITH_CLEAR\020\000\022\t\n\005CLEAR\020\001\022\031\n\025PROBLEM_" +
+      "WITHOUT_CLEAR\020\002\"\217\002\n\rAlarmFeedback\022\025\n\rsit" +
+      "uation_key\030\001 \001(\t\022\035\n\025situation_fingerprin" +
+      "t\030\002 \001(\t\022\021\n\talarm_key\030\003 \001(\t\0222\n\rfeedback_t" +
+      "ype\030\004 \001(\0162\033.AlarmFeedback.FeedbackType\022\016" +
+      "\n\006reason\030\005 \001(\t\022\014\n\004user\030\006 \001(\t\022\021\n\ttimestam" +
+      "p\030\007 \001(\004\"P\n\014FeedbackType\022\022\n\016FALSE_POSITIV" +
+      "E\020\000\022\022\n\016FALSE_NEGATIVE\020\001\022\013\n\007CORRECT\020\002\022\013\n\007" +
+      "UNKNOWN\020\003\"\275\001\n\013IpInterface\022\n\n\002id\030\001 \001(\004\022\022\n" +
+      "\nip_address\030\002 \001(\t\022\020\n\010if_index\030\003 \001(\r\022.\n\014p" +
+      "rimary_type\030\004 \001(\0162\030.IpInterface.PrimaryT" +
+      "ype\022\017\n\007service\030\005 \003(\t\";\n\013PrimaryType\022\013\n\007P" +
+      "RIMARY\020\000\022\r\n\tSECONDARY\020\001\022\020\n\014NOT_ELIGIBLE\020" +
+      "\002\"\317\001\n\rSnmpInterface\022\n\n\002id\030\001 \001(\004\022\020\n\010if_in" +
+      "dex\030\002 \001(\r\022\020\n\010if_descr\030\003 \001(\t\022\017\n\007if_type\030\004" +
+      " \001(\r\022\017\n\007if_name\030\005 \001(\t\022\020\n\010if_speed\030\006 \001(\004\022" +
+      "\027\n\017if_phys_address\030\007 \001(\t\022\027\n\017if_admin_sta" +
+      "tus\030\010 \001(\r\022\026\n\016if_oper_status\030\t \001(\r\022\020\n\010if_" +
+      "alias\030\n \001(\t\"%\n\007HwAlias\022\r\n\005index\030\001 \001(\r\022\013\n" +
+      "\003oid\030\002 \001(\t\"\210\002\n\010HwEntity\022\032\n\022ent_physical_" +
+      "index\030\001 \001(\r\022\021\n\tentity_id\030\002 \001(\r\022\032\n\022ent_ph" +
+      "ysical_class\030\003 \001(\t\022\032\n\022ent_physical_descr" +
+      "\030\004 \001(\t\022\033\n\023ent_physical_is_fru\030\005 \001(\010\022\031\n\021e" +
+      "nt_physical_name\030\006 \001(\t\022 \n\030ent_physical_v" +
+      "endor_type\030\007 \001(\t\022\036\n\014ent_hw_alias\030\010 \003(\0132\010" +
+      ".HwAlias\022\033\n\010children\030\t \003(\0132\t.HwEntity\"\270\002" +
+      "\n\004Node\022\n\n\002id\030\001 \001(\004\022\026\n\016foreign_source\030\002 \001" +
+      "(\t\022\022\n\nforeign_id\030\003 \001(\t\022\020\n\010location\030\004 \001(\t" +
+      "\022\020\n\010category\030\005 \003(\t\022\r\n\005label\030\006 \001(\t\022\023\n\013cre" +
+      "ate_time\030\007 \001(\004\022\023\n\013sys_contact\030\010 \001(\t\022\027\n\017s" +
+      "ys_description\030\t \001(\t\022\025\n\rsys_object_id\030\n " +
+      "\001(\t\022\"\n\014ip_interface\030\013 \003(\0132\014.IpInterface\022" +
+      "&\n\016snmp_interface\030\014 \003(\0132\016.SnmpInterface\022" +
+      "\037\n\014hw_inventory\030\r \001(\0132\t.HwEntity*g\n\010Seve" +
+      "rity\022\021\n\rINDETERMINATE\020\000\022\013\n\007CLEARED\020\001\022\n\n\006" +
+      "NORMAL\020\002\022\013\n\007WARNING\020\003\022\t\n\005MINOR\020\004\022\t\n\005MAJO" +
+      "R\020\005\022\014\n\010CRITICAL\020\006B?\n)org.opennms.feature" +
+      "s.kafka.producer.modelB\022OpennmsModelProt" +
+      "osb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -14791,32 +16148,38 @@ public final class OpennmsModelProtos {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Alarm_descriptor,
         new java.lang.String[] { "Id", "Uei", "NodeCriteria", "IpAddress", "ServiceName", "ReductionKey", "Type", "Count", "Severity", "FirstEventTime", "Description", "LogMessage", "AckUser", "AckTime", "LastEvent", "LastEventTime", "IfIndex", "OperatorInstructions", "ClearKey", "ManagedObjectInstance", "ManagedObjectType", "RelatedAlarm", });
-    internal_static_IpInterface_descriptor =
+    internal_static_AlarmFeedback_descriptor =
       getDescriptor().getMessageTypes().get(4);
+    internal_static_AlarmFeedback_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_AlarmFeedback_descriptor,
+        new java.lang.String[] { "SituationKey", "SituationFingerprint", "AlarmKey", "FeedbackType", "Reason", "User", "Timestamp", });
+    internal_static_IpInterface_descriptor =
+      getDescriptor().getMessageTypes().get(5);
     internal_static_IpInterface_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_IpInterface_descriptor,
         new java.lang.String[] { "Id", "IpAddress", "IfIndex", "PrimaryType", "Service", });
     internal_static_SnmpInterface_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_SnmpInterface_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_SnmpInterface_descriptor,
         new java.lang.String[] { "Id", "IfIndex", "IfDescr", "IfType", "IfName", "IfSpeed", "IfPhysAddress", "IfAdminStatus", "IfOperStatus", "IfAlias", });
     internal_static_HwAlias_descriptor =
-      getDescriptor().getMessageTypes().get(6);
+      getDescriptor().getMessageTypes().get(7);
     internal_static_HwAlias_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_HwAlias_descriptor,
         new java.lang.String[] { "Index", "Oid", });
     internal_static_HwEntity_descriptor =
-      getDescriptor().getMessageTypes().get(7);
+      getDescriptor().getMessageTypes().get(8);
     internal_static_HwEntity_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_HwEntity_descriptor,
         new java.lang.String[] { "EntPhysicalIndex", "EntityId", "EntPhysicalClass", "EntPhysicalDescr", "EntPhysicalIsFru", "EntPhysicalName", "EntPhysicalVendorType", "EntHwAlias", "Children", });
     internal_static_Node_descriptor =
-      getDescriptor().getMessageTypes().get(8);
+      getDescriptor().getMessageTypes().get(9);
     internal_static_Node_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Node_descriptor,

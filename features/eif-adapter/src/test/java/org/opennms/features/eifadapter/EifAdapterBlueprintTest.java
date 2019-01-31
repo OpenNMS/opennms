@@ -33,10 +33,9 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 import com.google.common.collect.Lists;
 
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
@@ -137,6 +136,38 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
             assertTrue("UEI must match regex.", event.getUei().matches("^uei.opennms.org/vendor/IBM/EIF/EIF_TEST_EVENT_TYPE_\\w$"));
             assertTrue("situation_name must match regex.",event.getParm("situation_name").getValue().getContent().
                     matches("^Situation \\d{2}"));
+        }
+    }
+
+   @Test
+    public void testCanParseEifWith36ByteOffset() throws Exception {
+        // Register an event listener
+        final List<Event> receivedEvents = Lists.newArrayList();
+        eventIpcManager.addEventListener(new EventListener() {
+            @Override
+            public String getName() {
+                return "test";
+            }
+
+            @Override
+            public void onEvent(Event e) {
+                receivedEvents.add(e);
+            }
+        });
+        BufferedReader eifPacketCapture = new BufferedReader(
+                new InputStreamReader(
+                        new FileInputStream(new File("src/test/resources/eif_36_byte_offset_test.dat")), StandardCharsets.UTF_8
+                )
+        );
+        Socket clientSocket = new Socket(InetAddrUtils.getLocalHostAddress(), 1828);
+        DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+        outToServer.write( IOUtils.toByteArray(eifPacketCapture) );
+        outToServer.flush();
+        clientSocket.close();
+
+        await().atMost(15, SECONDS).until(() -> receivedEvents.size() == 1);
+        for (Event event : receivedEvents) {
+            assertTrue("UEI must match regex.", event.getUei().matches("^uei.opennms.org/vendor/IBM/EIF/EIF_TEST_EVENT_TYPE_G$"));
         }
     }
 }

@@ -1,0 +1,105 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+">
+	<reference id="flowRepository" interface="org.opennms.netmgt.flows.api.FlowRepository" availability="mandatory" />
+
+	<!-- Netflow5 Factory and Adapter -->
+	<bean id="netflow5Factory" class="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5AdapterFactory">
+		<property name="metricRegistry" ref="netflow5MetricRegistry"/>
+		<property name="flowRepository" ref="flowRepository" />
+	</bean>
+	<service ref="netflow5Factory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
+		<service-properties>
+			<entry key="registration.export" value="true" />
+		</service-properties>
+	</service>
+
+	<!-- Netflow9 Factory and Adapter -->
+	<bean id="netflow9Factory" class="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9AdapterFactory">
+		<property name="metricRegistry" ref="netflow9MetricRegistry"/>
+		<property name="flowRepository" ref="flowRepository" />
+	</bean>
+	<service ref="netflow9Factory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
+		<service-properties>
+			<entry key="registration.export" value="true" />
+		</service-properties>
+	</service>
+
+	<!-- IPFix Factory and Adapter -->
+	<bean id="ipfixFactory" class="org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapterFactory">
+		<property name="metricRegistry" ref="ipfixMetricRegistry"/>
+		<property name="flowRepository" ref="flowRepository" />
+	</bean>
+	<service ref="ipfixFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
+		<service-properties>
+			<entry key="registration.export" value="true" />
+		</service-properties>
+	</service>
+
+	<!-- Metrics v5 -->
+	<bean id="netflow5MetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+	<service ref="netflow5MetricRegistry" interface="com.codahale.metrics.MetricSet">
+		<service-properties>
+			<entry key="name" value="Netflow v5" />
+			<entry key="description" value="Consolidated metrics for all adapters processing Netflow v5 flows" />
+		</service-properties>
+	</service>
+	<bean id="netflow5MetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+		<argument ref="netflow5MetricRegistry"/>
+	</bean>
+	<bean id="netflow5MetricRegistryDomainedJmxReporterBuilder" factory-ref="netflow5MetricRegistryJmxReporterBuilder" factory-method="inDomain">
+		<argument value="org.opennms.netmgt.telemetry.protocols.netflow5"/>
+	</bean>
+	<bean id="netflow5MetricRegistryJmxReporter"
+		  factory-ref="netflow5MetricRegistryJmxReporterBuilder"
+		  factory-method="build"
+		  init-method="start"
+		  destroy-method="stop" />
+
+	<!-- Metrics v9 -->
+	<bean id="netflow9MetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+	<service ref="netflow9MetricRegistry" interface="com.codahale.metrics.MetricSet">
+		<service-properties>
+			<entry key="name" value="Netflow v9" />
+			<entry key="description" value="Consolidated metrics for all adapters processing Netflow v9 flows" />
+		</service-properties>
+	</service>
+	<bean id="netflow9MetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+		<argument ref="netflow9MetricRegistry"/>
+	</bean>
+	<bean id="netflow9MetricRegistryDomainedJmxReporterBuilder" factory-ref="netflow9MetricRegistryJmxReporterBuilder" factory-method="inDomain">
+		<argument value="org.opennms.netmgt.telemetry.protocols.netflow9"/>
+	</bean>
+	<bean id="netflow9MetricRegistryJmxReporter"
+		  factory-ref="netflow9MetricRegistryDomainedJmxReporterBuilder"
+		  factory-method="build"
+		  init-method="start"
+		  destroy-method="stop" />
+
+	<!-- Metrics IPFix -->
+	<bean id="ipfixMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+	<service ref="ipfixMetricRegistry" interface="com.codahale.metrics.MetricSet">
+		<service-properties>
+			<entry key="name" value="IPFix" />
+			<entry key="description" value="Consolidated metrics for all adapters processing IPFix flows" />
+		</service-properties>
+	</service>
+	<bean id="ipfixMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+		<argument ref="ipfixMetricRegistry"/>
+	</bean>
+	<bean id="ipfixMetricRegistryDomainedJmxReporterBuilder" factory-ref="ipfixMetricRegistryJmxReporterBuilder" factory-method="inDomain">
+		<argument value="org.opennms.netmgt.telemetry.protocols.ipfix"/>
+	</bean>
+	<bean id="ipfixMetricRegistryJmxReporter"
+		  factory-ref="ipfixMetricRegistryJmxReporterBuilder"
+		  factory-method="build"
+		  init-method="start"
+		  destroy-method="stop" />
+</blueprint>

@@ -33,21 +33,21 @@ import org.opennms.features.vaadin.jmxconfiggenerator.JmxConfigGeneratorUI;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.MetaConfigModel;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.ServiceConfig;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.converter.Converter;
-import com.vaadin.data.validator.RegexpValidator;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.data.util.BeanItem;
+import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.data.validator.RegexpValidator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Field;
+import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.PasswordField;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.PasswordField;
+import com.vaadin.v7.ui.TextField;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * This form handles editing of a {@link ServiceConfig} model.
@@ -71,7 +71,6 @@ public class ConfigView extends VerticalLayout implements View, Button.ClickList
 			initFields();
 			updateAuthenticationFields(false); // default -> hide those fields
 
-			setImmediate(true);
 			setMargin(true);
 			setSpacing(true);
 		}

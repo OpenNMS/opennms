@@ -31,12 +31,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import javax.ws.rs.WebApplicationException;
 
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
-import org.opennms.features.situationfeedback.api.AlarmFeedback.FeedbackType;
 import org.opennms.features.situationfeedback.api.FeedbackException;
 import org.opennms.features.situationfeedback.api.FeedbackRepository;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -44,12 +42,11 @@ import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
 public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestService {
 
-    private static final Logger Log = LoggerFactory.getLogger(SituationFeedbackRestServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SituationFeedbackRestServiceImpl.class);
 
     private final AlarmDao alarmDao;
 
@@ -71,7 +68,7 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
         try {
             return repository.getFeedback(getReductionKey(situationId));
         } catch (FeedbackException e) {
-            Log.error("Error retrieving alarm correlation feedback for [{}]: {}", situationId, e.getMessage());
+            LOG.error("Error retrieving alarm correlation feedback for [{}]: {}", situationId, e.getMessage());
             return Collections.emptyList();
         }
     }
@@ -86,51 +83,10 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
 
     @Override
     public void setFeedback(int situationId, List<AlarmFeedback> feedback) {
-        runInTransaction(status -> {
-            // Update Situation in case of false_neg and false_pos
-            feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_NEGATIVE)).forEach(c -> addCorrelation(c, alarmDao, alarmEntityNotifier));
-            feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_POSITIVE)).forEach(c -> removeCorrelation(c, alarmDao, alarmEntityNotifier));
-            try {
-                repository.persist(feedback);
-            } catch (Exception e) {
-                throw new WebApplicationException("Failed to execute query: " + e.getMessage(), e);
-            }
-            return null;
-        });
-    }
-
-    protected static void removeCorrelation(AlarmFeedback feedback, AlarmDao alarmDao, AlarmEntityNotifier alarmEntityNotifier) {
-        OnmsAlarm situation = alarmDao.findByReductionKey(feedback.getSituationKey());
-        OnmsAlarm alarm = alarmDao.findByReductionKey(feedback.getAlarmKey());
-        if (situation == null || alarm == null) {
-            return;
+        try {
+            repository.persist(feedback);
+        } catch (Exception e) {
+            throw new WebApplicationException("Failed to execute query: " + e.getMessage(), e);
         }
-        Set<OnmsAlarm> previousRelatedAlarms = situation.getRelatedAlarms();
-        Log.debug("removing alarm {} from situation {}.", alarm, situation);
-        situation.removeRelatedAlarm(alarm);
-        alarmDao.saveOrUpdate(situation);
-        Log.debug("removed alarm {} from situation {}.", alarm, situation);
-        // Update AlarmEntityNotifier
-        alarmEntityNotifier.didUpdateRelatedAlarms(situation, previousRelatedAlarms);
     }
-
-    protected static void addCorrelation(AlarmFeedback feedback, AlarmDao alarmDao, AlarmEntityNotifier alarmEntityNotifier) {
-        OnmsAlarm situation = alarmDao.findByReductionKey(feedback.getSituationKey());
-        OnmsAlarm alarm = alarmDao.findByReductionKey(feedback.getAlarmKey());
-        if (situation == null || alarm == null) {
-            return;
-        }
-        Set<OnmsAlarm> previousRelatedAlarms = situation.getRelatedAlarms();
-        Log.debug("adding alarm {} to situation {}.", alarm, situation);
-        situation.addRelatedAlarm(alarm);
-        alarmDao.saveOrUpdate(situation);
-        Log.debug("added alarm {} to situation {}.", alarm, situation);
-        // Update AlarmChangeNotifier
-        alarmEntityNotifier.didUpdateRelatedAlarms(situation, previousRelatedAlarms);
-    }
-
-    private <T> T runInTransaction(TransactionCallback<T> callback) {
-        return transactionTemplate.execute(callback);
-    }
-
 }

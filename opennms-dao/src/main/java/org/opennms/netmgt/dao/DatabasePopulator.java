@@ -153,7 +153,7 @@ public class DatabasePopulator {
     private LocationMonitorDao m_locationMonitorDao;
     private AcknowledgmentDao m_acknowledgmentDao;
     private TransactionOperations m_transOperation;
-    
+
     private OnmsNode m_node1;
     private OnmsNode m_node2;
     private OnmsNode m_node3;
@@ -336,7 +336,7 @@ public class DatabasePopulator {
         getNodeDao().save(node6);
         getNodeDao().flush();
         setNode6(node6);
-        
+
         final OnmsEvent event = buildEvent(builder.getDistPoller());
         event.setEventCreateTime(new Date(1436881548292L));
         event.setEventTime(new Date(1436881548292L));
@@ -689,7 +689,6 @@ public class DatabasePopulator {
     public void setNodeDao(final NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
-
 
     public NotificationDao getNotificationDao() {
         return m_notificationDao;

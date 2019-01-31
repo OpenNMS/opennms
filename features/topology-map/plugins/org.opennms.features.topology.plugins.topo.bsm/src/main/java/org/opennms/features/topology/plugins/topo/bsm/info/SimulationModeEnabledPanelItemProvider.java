@@ -38,8 +38,8 @@ import org.opennms.features.topology.plugins.topo.bsm.simulate.SimulationAwareSt
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
 
 public class SimulationModeEnabledPanelItemProvider implements InfoPanelItemProvider {
 

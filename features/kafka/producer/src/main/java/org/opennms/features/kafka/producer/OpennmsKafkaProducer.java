@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,7 +43,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -52,8 +50,12 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.joda.time.Duration;
+import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
+import org.opennms.features.situationfeedback.api.AlarmFeedback;
+import org.opennms.features.situationfeedback.api.AlarmFeedbackListener;
+import org.opennms.netmgt.alarmd.api.AlarmCallbackStateTracker;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
@@ -70,7 +72,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
-public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListener {
+public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListener, AlarmFeedbackListener {
     private static final Logger LOG = LoggerFactory.getLogger(OpennmsKafkaProducer.class);
     private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
@@ -89,9 +91,11 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private String eventTopic;
     private String alarmTopic;
     private String nodeTopic;
+    private String alarmFeedbackTopic;
 
     private boolean forwardEvents;
     private boolean forwardAlarms;
+    private boolean forwardAlarmFeedback;
     private boolean suppressIncrementalAlarms;
     private boolean forwardNodes;
     private Expression eventFilterExpression;
@@ -100,12 +104,15 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private final CountDownLatch forwardedEvent = new CountDownLatch(1);
     private final CountDownLatch forwardedAlarm = new CountDownLatch(1);
     private final CountDownLatch forwardedNode = new CountDownLatch(1);
+    private final CountDownLatch forwardedAlarmFeedback = new CountDownLatch(1);
 
     private KafkaProducer<String, byte[]> producer;
     
     private final Map<String, OpennmsModelProtos.Alarm> outstandingAlarms = new ConcurrentHashMap<>();
     private final AlarmEqualityChecker alarmEqualityChecker =
             AlarmEqualityChecker.with(AlarmEqualityChecker.Exclusions::defaultExclusions);
+
+    private final AlarmCallbackStateTracker stateTracker = new AlarmCallbackStateTracker();
 
     private int kafkaSendQueueCapacity;
     private BlockingQueue<KafkaRecord> kafkaSendQueue;
@@ -134,16 +141,8 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         // Overwrite the serializers, since we rely on these
         producerConfig.put("key.serializer", StringSerializer.class.getCanonicalName());
         producerConfig.put("value.serializer", ByteArraySerializer.class.getCanonicalName());
-
-        final ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-        try {
-            // Class-loader hack for accessing the org.apache.kafka.common.serialization.*
-            Thread.currentThread().setContextClassLoader(null);
-            producer = new KafkaProducer<>(producerConfig);
-        } finally {
-            Thread.currentThread().setContextClassLoader(currentClassLoader);
-        }
-
+        // Class-loader hack for accessing the kafka classes when initializing producer.
+        producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(producerConfig), KafkaProducer.class.getClassLoader());
         // Start processing records that have been queued for sending
         if(kafkaSendQueueCapacity <= 0) {
             kafkaSendQueueCapacity = 1000;
@@ -377,14 +376,17 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             // Ignore
             return;
         }
-        
-        // Remove any outstanding alarms that are not present in the snapshot
-        Set<String> reductionKeysInSnapshot = alarms.stream()
-                .map(OnmsAlarm::getReductionKey)
-                .collect(Collectors.toSet());
-        outstandingAlarms.keySet().removeIf(reductionKey -> !reductionKeysInSnapshot.contains(reductionKey));
-
         dataSync.handleAlarmSnapshot(alarms);
+    }
+
+    @Override
+    public void preHandleAlarmSnapshot() {
+        stateTracker.startTrackingAlarms();
+    }
+
+    @Override
+    public void postHandleAlarmSnapshot() {
+        stateTracker.resetStateAndStopTrackingAlarms();
     }
 
     @Override
@@ -394,6 +396,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             return;
         }
         updateAlarm(alarm.getReductionKey(), alarm);
+        stateTracker.trackNewOrUpdatedAlarm(alarm.getId(), alarm.getReductionKey());
     }
 
     @Override
@@ -403,9 +406,10 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             return;
         }
         handleDeletedAlarm(reductionKey);
+        stateTracker.trackDeletedAlarm(alarmId, reductionKey);
     }
 
-    public void handleDeletedAlarm(String reductionKey) {
+    private void handleDeletedAlarm(String reductionKey) {
         updateAlarm(reductionKey, null);
     }
 
@@ -434,6 +438,11 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         forwardNodes = !Strings.isNullOrEmpty(nodeTopic);
     }
 
+    public void setAlarmFeedbackTopic(String alarmFeedbackTopic) {
+        this.alarmFeedbackTopic = alarmFeedbackTopic;
+        forwardAlarmFeedback = !Strings.isNullOrEmpty(alarmFeedbackTopic);
+    }
+
     public void setEventFilter(String eventFilter) {
         if (Strings.isNullOrEmpty(eventFilter)) {
             eventFilterExpression = null;
@@ -455,6 +464,25 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         return this;
     }
 
+    @Override
+    public void handleAlarmFeedback(List<AlarmFeedback> alarmFeedback) {
+        if (!forwardAlarmFeedback) {
+            return;
+        }
+
+        // NOTE: This will currently block while waiting for Kafka metadata if Kafka is not available.
+        alarmFeedback.forEach(feedback -> sendRecord(() -> {
+            LOG.debug("Sending alarm feedback with key: {}", feedback.getAlarmKey());
+
+            return new ProducerRecord<>(alarmFeedbackTopic, feedback.getAlarmKey(),
+                    protobufMapper.toAlarmFeedback(feedback).build().toByteArray());
+        }, recordMetadata -> {
+            // We've got an ACK from the server that the alarm feedback was forwarded
+            // Let other threads know when we've successfully forwarded an alarm feedback
+            forwardedAlarmFeedback.countDown();
+        }));
+    }
+
     public boolean isForwardingAlarms() {
         return forwardAlarms;
     }
@@ -470,6 +498,10 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     public CountDownLatch getNodeForwardedLatch() {
         return forwardedNode;
     }
+    
+    public CountDownLatch getAlarmFeedbackForwardedLatch() {
+        return forwardedAlarmFeedback;
+    }
 
     public void setSuppressIncrementalAlarms(boolean suppressIncrementalAlarms) {
         this.suppressIncrementalAlarms = suppressIncrementalAlarms;
@@ -478,6 +510,10 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     @VisibleForTesting
     KafkaAlarmDataSync getDataSync() {
         return dataSync;
+    }
+
+    public AlarmCallbackStateTracker getAlarmCallbackStateTracker() {
+        return stateTracker;
     }
 
     public void setKafkaSendQueueCapacity(int kafkaSendQueueCapacity) {

@@ -40,11 +40,11 @@ import org.vaadin.dialogs.ConfirmDialog;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomField;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.v7.ui.CustomField;
+import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 
 /**
@@ -81,8 +81,7 @@ public class IncludeCollectionField extends CustomField<List<IncludeCollection>>
         table.setEditable(!isReadOnly());
         table.setSelectable(true);
         table.setImmediate(true);
-        table.setHeight("125px");
-        table.setWidth("100%");
+        table.setSizeFull();
         final Button add = new Button("Add", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {

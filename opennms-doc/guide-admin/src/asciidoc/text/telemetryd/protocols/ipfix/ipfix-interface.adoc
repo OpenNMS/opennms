@@ -1,5 +1,0 @@
-
-==== IPFIX Interface
-
-The _IP Flow Information Export (IPFIX)_ protocol is a vendor neutral standard standard for transmitting Traffic Flow information.
-See <<ga-flow-support, Flow Support>> for details on flow support in _{opennms-product-name}_.

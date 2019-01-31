@@ -29,7 +29,9 @@
 package org.opennms.features.kafka.producer;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -71,6 +73,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.streams.StreamsConfig;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -85,6 +88,7 @@ import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
+import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.netmgt.alarmd.AlarmLifecycleListenerManager;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.DatabasePopulator.DaoSupport;
@@ -130,6 +134,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     private static final String ALARM_TOPIC_NAME = "test-alarms";
     private static final String NODE_TOPIC_NAME = "test-nodes";
     private static final String METRIC_TOPIC_NAME = "test-metrics";
+    private static final String ALARM_FEEDBACK_TOPIC_NAME = "test-alarm-feedback";
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -226,6 +231,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         // Don't forward newSuspect events
         kafkaProducer.setEventFilter("!getUei().equals(\"" + EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI + "\")");
         kafkaProducer.setAlarmTopic(ALARM_TOPIC_NAME);
+        kafkaProducer.setAlarmFeedbackTopic(ALARM_FEEDBACK_TOPIC_NAME);
         // No alarm filtering
         kafkaProducer.setAlarmFilter(null);
         kafkaProducer.setNodeTopic(NODE_TOPIC_NAME);
@@ -241,7 +247,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     }
 
     @Test
-    public void canProducerAndConsumeMessages() throws Exception {
+    public void canProduceAndConsumeMessages() throws Exception {
         // Send a node down event (should be forwarded)
         eventdIpcMgr.sendNow(MockEventUtil.createNodeDownEventBuilder("test", databasePopulator.getNode1()).getEvent());
         // Create and trigger the associated alarm
@@ -259,6 +265,9 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
         // Send a node up (should be forwarded)
         eventdIpcMgr.sendNow(MockEventUtil.createNodeUpEventBuilder("test", databasePopulator.getNode2()).getEvent());
+        
+        AlarmFeedback alarmFeedback = createTestalarmFeedback();
+        kafkaProducer.handleAlarmFeedback(Collections.singletonList(alarmFeedback));
 
         if (!kafkaProducer.getEventForwardedLatch().await(1, TimeUnit.MINUTES)) {
             throw new Exception("No events were successfully forwarded in time!");
@@ -268,6 +277,9 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         }
         if (!kafkaProducer.getAlarmForwardedLatch().await(1, TimeUnit.MINUTES)) {
             throw new Exception("No alarm were successfully forwarded in time!");
+        }
+        if (!kafkaProducer.getAlarmFeedbackForwardedLatch().await(1, TimeUnit.MINUTES)) {
+            throw new Exception("No alarm feedback was successfully forwarded in time!");
         }
 
         // Fire up the consumer
@@ -282,9 +294,15 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
                 databasePopulator.getNode1().getId(), databasePopulator.getNode2().getId()));
         // Wait for the alarms to be consumed
         await().atMost(1, TimeUnit.MINUTES).until(() -> kafkaConsumer.getAlarmByReductionKey(alarmReductionKey), not(nullValue()));
+        // Wait for alarm feedback to be consumed
+        await().atMost(1, TimeUnit.MINUTES).until(() -> kafkaConsumer.getAlarmFeedback(), not(empty()));
 
         // Events, nodes and alarms were forwarded and consumed!
 
+        // Verify the alarm feedback consumed
+        OpennmsModelProtos.AlarmFeedback consumedAlarmFeedback = kafkaConsumer.getAlarmFeedback().get(0);
+        assertThat(consumedAlarmFeedback.getSituationKey(), is(equalTo(alarmFeedback.getSituationKey())));
+        
         // Ensure that we have some events with a fs:fid
 
         List<OpennmsModelProtos.Event> eventsWithFsAndFid = kafkaConsumer.getEvents().stream()
@@ -455,6 +473,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         private List<OpennmsModelProtos.Event> events = new ArrayList<>();
         private List<OpennmsModelProtos.Node> nodes = new ArrayList<>();
         private List<OpennmsModelProtos.Alarm> alarms = new ArrayList<>();
+        private List<OpennmsModelProtos.AlarmFeedback> alarmFeedback = new ArrayList<>();
         private CollectionSetProtos.CollectionSet collectionSet = null;
         private Map<String, OpennmsModelProtos.Alarm> alarmsByReductionKey = new LinkedHashMap<>();
         private AtomicInteger numRecordsConsumed = new AtomicInteger(0);
@@ -475,7 +494,8 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
             props.put(ConsumerConfig.METADATA_MAX_AGE_CONFIG, "1000");
             props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
             consumer = new KafkaConsumer<>(props);
-            consumer.subscribe(Arrays.asList(EVENT_TOPIC_NAME, NODE_TOPIC_NAME, ALARM_TOPIC_NAME, METRIC_TOPIC_NAME));
+            consumer.subscribe(Arrays.asList(EVENT_TOPIC_NAME, NODE_TOPIC_NAME, ALARM_TOPIC_NAME, METRIC_TOPIC_NAME,
+                    ALARM_FEEDBACK_TOPIC_NAME));
 
             while (!closed.get()) {
                 ConsumerRecords<String, byte[]> records = consumer.poll(1000);
@@ -497,6 +517,11 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
                                 break;
                             case METRIC_TOPIC_NAME :
                                 collectionSet = CollectionSetProtos.CollectionSet.parseFrom(record.value());
+                                break;
+                            case ALARM_FEEDBACK_TOPIC_NAME:
+                                final OpennmsModelProtos.AlarmFeedback alarmFeedbackRecord = record.value() != null ?
+                                        OpennmsModelProtos.AlarmFeedback.parseFrom(record.value()) : null;
+                                alarmFeedback.add(alarmFeedbackRecord);
                                 break;
                         }
                         numRecordsConsumed.incrementAndGet();
@@ -530,6 +555,10 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
         public OpennmsModelProtos.Alarm getAlarmByReductionKey(String reductionKey) {
             return alarmsByReductionKey.get(reductionKey);
+        }
+        
+        public List<OpennmsModelProtos.AlarmFeedback> getAlarmFeedback() {
+            return alarmFeedback;
         }
 
         public void shutdown() {
@@ -602,6 +631,17 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         port.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.10.253");
         port.setEntAliases(new TreeSet<>(Arrays.asList(new OnmsHwEntityAlias(0, ".1.3.6.1.2.1.2.2.1.1.10104"))));
         return port;
+    }
+    
+    private AlarmFeedback createTestalarmFeedback() {
+        return AlarmFeedback.newBuilder()
+                .withSituationKey("test.situationKey")
+                .withSituationFingerprint("test.fingerprint")
+                .withAlarmKey("test.alarmKey")
+                .withFeedbackType(AlarmFeedback.FeedbackType.FALSE_POSITIVE)
+                .withReason("reason")
+                .withUser("user")
+                .build();
     }
 
     @After

@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
  * <li>MONTH: 3-character English month abbreviation.</li>
  * <li>NOSPACE: String that contains no whitespace.</li>
  * <li>STRING: String. Because this matches any character, it must be followed by a delimiter in the pattern string.</li>
+ * <li>WHITESPACE: String that contains only whitespace (spaces and/or tabs).</li>
  * </ul>
  * 
  * @author Seth
@@ -77,7 +78,8 @@ public abstract class GrokParserStageSequenceBuilder {
 		IPADDRESS,
 		MONTH,
 		NOSPACE,
-		STRING
+		STRING,
+		WHITESPACE
 	}
 
 	/**
@@ -217,6 +219,11 @@ public abstract class GrokParserStageSequenceBuilder {
 	private static final String PARAMETER_PREFIX = "parm";
 
 	/**
+	 * Used to ignore the value for the matched field.
+	 */
+	private static final String IGNORE_FIELD = "ignore";
+
+	/**
 	 * This function maps {@link SyslogSemanticType} values of type int to fields in the parser
 	 * state.
 	 * 
@@ -307,6 +314,11 @@ public abstract class GrokParserStageSequenceBuilder {
 	 * @return
 	 */
 	private static BiConsumer<ParserState,String> semanticStringToField(String semanticString) {
+		// Discard this match
+		if (semanticString.equalsIgnoreCase(IGNORE_FIELD)) {
+			return (s, v) -> {};
+		}
+
 		if (semanticString.startsWith(PARAMETER_PREFIX)) {
 			return (s, v) -> s.message.addParameter(semanticString.substring(PARAMETER_PREFIX.length()), v);
 		}
@@ -487,6 +499,8 @@ public abstract class GrokParserStageSequenceBuilder {
 						// factory.character(c);
 						// break;
 						throw new UnsupportedOperationException("Cannot support escape sequence directly after a NOSPACE pattern yet");
+					case WHITESPACE:
+						throw new UnsupportedOperationException("Cannot support escape sequence directly after a WHITESPACE pattern yet");
 					case STRING:
 						// TODO: We need to peek forward to the escaped character and then do the same as the default case
 						// factory.stringUntil(String.valueOf(c), semanticStringToEventBuilder(semanticString));
@@ -512,6 +526,9 @@ public abstract class GrokParserStageSequenceBuilder {
 						factory.stringUntilWhitespace(semanticStringToField(semanticString));
 						factory.whitespace();
 						break;
+					case WHITESPACE:
+						factory.stringUntilNonWhitespace(semanticStringToField(semanticString));
+						break;
 					case STRING:
 					case HOSTNAME:
 					case HOSTNAMEORIP:
@@ -536,6 +553,8 @@ public abstract class GrokParserStageSequenceBuilder {
 						factory.stringUntilWhitespace(semanticStringToField(semanticString));
 						factory.whitespace();
 						break;
+					case WHITESPACE:
+						factory.stringUntilNonWhitespace(semanticStringToField(semanticString));
 					case HOSTNAME:
 					case HOSTNAMEORIP:
 					case IPADDRESS:
@@ -556,6 +575,10 @@ public abstract class GrokParserStageSequenceBuilder {
 					switch(patternType) {
 					case NOSPACE:
 						factory.stringUntil(MatchUntil.WHITESPACE + c, semanticStringToField(semanticString));
+						factory.character(c);
+						break;
+					case WHITESPACE:
+						factory.stringUntilNonWhitespace(semanticStringToField(semanticString));
 						factory.character(c);
 						break;
 					case STRING:
@@ -594,6 +617,7 @@ public abstract class GrokParserStageSequenceBuilder {
 
 			switch(patternType) {
 			case NOSPACE:
+			case WHITESPACE:
 			case STRING:
 				factory.terminal().string(semanticStringToField(semanticString));
 				break;

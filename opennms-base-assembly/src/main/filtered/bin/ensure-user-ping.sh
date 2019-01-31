@@ -3,8 +3,15 @@
 PING_USER="$1"
 
 log_error() {
-	# shellcheck disable=SC2059
-	>&2 printf "$@"
+	case "$QUIET" in
+		1|[Tt][Rr][Uu][Ee])
+			# do nothing in quiet mode
+			;;
+		*)
+			# shellcheck disable=SC2059
+			>&2 printf "$@"
+			;;
+	esac
 }
 
 fail() {
@@ -14,6 +21,10 @@ fail() {
 
 if [ "$(id -u)" -gt 0 ]; then
 	fail 'You must run this script as root!\n'
+fi
+
+if [ -z "$PING_USER" ]; then
+	fail 'usage: %s <user>\n' "$0"
 fi
 
 PING_USER_UID="$(id -u "${PING_USER}")"
@@ -83,12 +94,16 @@ configure_permissions() {
 	fi
 	
 	if [ "${group_end}" -eq 0 ]; then
-		rm /etc/sysctl.d/99-opennms-non-root-icmp.conf
+		rm -f /etc/sysctl.d/99-opennms-non-root-icmp.conf || :
 	else
+		install -d -m 755 /etc/sysctl.d
 		echo "net.ipv4.ping_group_range=${group_start} ${group_end}" > /etc/sysctl.d/99-opennms-non-root-icmp.conf
 	fi
 	
-	sysctl -w "net.ipv4.ping_group_range=${group_start} ${group_end}" >/dev/null
+	if ! sysctl -w "net.ipv4.ping_group_range=${group_start} ${group_end}" >/tmp/$$.sysctlout 2>&1; then
+		log_error "$(cat /tmp/$$.sysctlout)"
+	fi
+	rm -f /tmp/$$.sysctlout || :
 }
 
 configure_permissions

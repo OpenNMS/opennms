@@ -127,6 +127,16 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     }
 
     @Override
+    public void preHandleAlarmSnapshot() {
+        // pass, nothing to do here
+    }
+
+    @Override
+    public void postHandleAlarmSnapshot() {
+        // pass, nothing to do here
+    }
+
+    @Override
     public void handleNewOrUpdatedAlarm(OnmsAlarm alarm) {
         final AlarmWrapperImpl alarmWrapper = new AlarmWrapperImpl(alarm);
         LOG.debug("Handling alarm with id: {}, reduction key: {} and severity: {} and status: {}", alarm.getId(), alarm.getReductionKey(), alarm.getSeverity(), alarmWrapper.getStatus());

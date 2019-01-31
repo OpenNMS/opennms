@@ -58,6 +58,11 @@
       <artifactId>org.opennms.core.lib</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.ipc.common</groupId>
+      <artifactId>org.opennms.core.ipc.common.kafka</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-api</artifactId>
     </dependency>
@@ -104,6 +109,11 @@
       <groupId>com.swrve</groupId>
       <artifactId>rate-limited-logger</artifactId>
       <version>${rateLimitedLoggerVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.situation-feedback</groupId>
+      <artifactId>org.opennms.features.situation-feedback.api</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
     <!-- Test -->

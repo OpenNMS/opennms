@@ -11,7 +11,7 @@
         <!-- Configure an JTI Adapter to persist samples to Newts-->
         <config name="org.opennms.features.telemetry.adapters-jti">
             name = JTI
-            class-name = org.opennms.netmgt.telemetry.adapters.jti.JtiGpbAdapter
+            class-name = org.opennms.netmgt.telemetry.protocols.jti.adapter.JtiGpbAdapter
             parameters.script = /opt/sentinel/etc/junos-telemetry-interface.groovy
         </config>
         <!-- Point sentinel to the correct elastic endpoint -->

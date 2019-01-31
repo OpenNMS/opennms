@@ -47,7 +47,7 @@ public interface DaemonService {
      * @param daemonName Case insensitive name of the daemon
      * @throws {@link java.util.NoSuchElementException} if a daemon for <code>daemonName</code> does not exist
      */
-    void reload(String daemonName) throws DaemonReloadException;
+    void triggerReload(String daemonName) throws DaemonReloadException;
 
     /**
      * Returns the {@link DaemonReloadInfo} of the provided daemon.

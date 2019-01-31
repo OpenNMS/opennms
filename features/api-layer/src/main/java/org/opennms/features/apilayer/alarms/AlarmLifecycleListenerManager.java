@@ -53,6 +53,16 @@ public class AlarmLifecycleListenerManager extends InterfaceMapper<org.opennms.i
             }
 
             @Override
+            public void preHandleAlarmSnapshot() {
+                // pass
+            }
+
+            @Override
+            public void postHandleAlarmSnapshot() {
+                // pass
+            }
+
+            @Override
             public void handleNewOrUpdatedAlarm(OnmsAlarm alarm) {
                 ext.handleNewOrUpdatedAlarm(ModelMappers.toAlarm(alarm));
             }

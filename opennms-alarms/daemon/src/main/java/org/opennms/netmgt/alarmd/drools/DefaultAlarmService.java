@@ -29,14 +29,21 @@
 package org.opennms.netmgt.alarmd.drools;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +62,9 @@ public class DefaultAlarmService implements AlarmService {
 
     @Autowired
     private AlarmEntityNotifier alarmEntityNotifier;
+
+    @Autowired
+    private EventForwarder eventForwarder;
 
     @Override
     @Transactional
@@ -81,7 +91,18 @@ public class DefaultAlarmService implements AlarmService {
             LOG.warn("Alarm disappeared: {}. Skipping delete.", alarm);
             return;
         }
+        // If alarm was in Situation, calculate notifications for the Situation
+        Map<OnmsAlarm, Set<OnmsAlarm>> priorRelatedAlarms = new HashMap<>();
+        if (alarmInTrans.isPartOfSituation()) {
+            for (OnmsAlarm situation : alarmInTrans.getRelatedSituations()) {
+                priorRelatedAlarms.put(situation, new HashSet<OnmsAlarm>(situation.getRelatedAlarms()));
+            }
+        }
         alarmDao.delete(alarmInTrans);
+        // fire notifications after alarm has been deleted
+        for (Entry<OnmsAlarm, Set<OnmsAlarm>> entry : priorRelatedAlarms.entrySet()) {
+            alarmEntityNotifier.didUpdateRelatedAlarms(entry.getKey(), entry.getValue());
+        }
         alarmEntityNotifier.didDeleteAlarm(alarmInTrans);
     }
 
@@ -161,6 +182,11 @@ public class DefaultAlarmService implements AlarmService {
         alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
     }
 
+    @Override
+    public void sendEvent(Event e) {
+        eventForwarder.sendNow(e);
+    }
+
     private static void updateAutomationTime(OnmsAlarm alarm, Date now) {
         if (alarm.getFirstAutomationTime() == null) {
             alarm.setFirstAutomationTime(now);
@@ -190,5 +216,9 @@ public class DefaultAlarmService implements AlarmService {
 
     public void warn(String message, Object... objects) {
         LOG.warn(message, objects);
+    }
+
+    public void setEventForwarder(EventForwarder eventForwarder) {
+        this.eventForwarder = eventForwarder;
     }
 }

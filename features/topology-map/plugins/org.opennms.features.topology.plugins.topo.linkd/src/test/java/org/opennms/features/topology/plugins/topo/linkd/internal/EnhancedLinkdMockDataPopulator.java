@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.easymock.EasyMock;
 import org.junit.Assert;
@@ -52,12 +53,18 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
+import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
@@ -66,6 +73,7 @@ import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
@@ -103,6 +111,9 @@ public class EnhancedLinkdMockDataPopulator {
 
     @Autowired
     private NodeDao m_nodeDao;
+
+    @Autowired
+    private TopologyEntityCache m_topologyEntityCache;
 
     @Autowired
     private SnmpInterfaceDao m_snmpInterfaceDao;
@@ -411,6 +422,16 @@ public class EnhancedLinkdMockDataPopulator {
         EasyMock.expect(m_lldpElementDao.findAll()).andReturn(getLldpElements()).anyTimes();
         EasyMock.expect(m_lldpLinkDao.findAll()).andReturn(getLinks()).anyTimes();
         EasyMock.expect(m_ospfLinkDao.findAll()).andReturn(getOspfLinks()).anyTimes();
+        EasyMock.expect(m_topologyEntityCache.getNodeTopolgyEntities()).andReturn(getVertices()).anyTimes();
+        EasyMock.expect(m_topologyEntityCache.getCdpLinkTopologyEntities()).andReturn(new ArrayList<>()).anyTimes();
+        EasyMock.expect(m_topologyEntityCache.getOspfLinkTopologyEntities()).andReturn(convertToOspf(getOspfLinks())).anyTimes();
+        EasyMock.expect(m_topologyEntityCache.getLldpLinkTopologyEntities()).andReturn(convertToLldp(getLinks())).anyTimes();
+        EasyMock.expect(m_topologyEntityCache.getIsIsLinkTopologyEntities()).andReturn(new ArrayList<>()).anyTimes();
+        EasyMock.expect(m_topologyEntityCache.getCdpElementTopologyEntities()).andReturn(new ArrayList<>()).anyTimes();
+        EasyMock.expect(m_topologyEntityCache.getIsIsElementTopologyEntities()).andReturn(new ArrayList<>()).anyTimes();
+        EasyMock.expect(m_topologyEntityCache.getLldpElementTopologyEntities()).andReturn(convertToLldpElements(getLldpElements())).anyTimes();
+        EasyMock.expect(m_topologyEntityCache.getSnmpInterfaceTopologyEntities()).andReturn(getSnmpInterfaceTopologyEntities()).anyTimes();
+        EasyMock.expect(m_topologyEntityCache.getIpInterfaceTopologyEntities()).andReturn(getIpInterfaceTopologyEntities()).anyTimes();
         EasyMock.expect(m_nodeDao.getAllLabelsById());
         EasyMock.expectLastCall().andReturn(getNodeLabelsById()).anyTimes();
         
@@ -428,9 +449,22 @@ public class EnhancedLinkdMockDataPopulator {
         EasyMock.replay(m_isisElementDao);
         EasyMock.replay(m_ospfLinkDao);
         EasyMock.replay(m_nodeDao);
+        EasyMock.replay(m_topologyEntityCache);
         EasyMock.replay(m_snmpInterfaceDao);
         EasyMock.replay(m_ipInterfaceDao);
         EasyMock.replay(m_ipNetToMediaDao);
+    }
+
+    private List<LldpElementTopologyEntity> convertToLldpElements(List<LldpElement> lldpElements) {
+        return lldpElements.stream().map(LldpElementTopologyEntity::create).collect(Collectors.toList());
+    }
+
+    private List<OspfLinkTopologyEntity> convertToOspf(List<OspfLink> links) {
+        return links.stream().map(OspfLinkTopologyEntity::create).collect(Collectors.toList());
+    }
+
+    private List<LldpLinkTopologyEntity> convertToLldp(List<LldpLink> links) {
+        return links.stream().map(LldpLinkTopologyEntity::create).collect(Collectors.toList());
     }
 
     public void tearDown() {
@@ -441,6 +475,7 @@ public class EnhancedLinkdMockDataPopulator {
         EasyMock.reset(m_lldpLinkDao);
         EasyMock.reset(m_ospfLinkDao);
         EasyMock.reset(m_nodeDao);
+        EasyMock.reset(m_topologyEntityCache);
         EasyMock.reset(m_snmpInterfaceDao);
         EasyMock.reset(m_ipInterfaceDao);
         EasyMock.reset(m_ipNetToMediaDao);
@@ -665,24 +700,51 @@ public class EnhancedLinkdMockDataPopulator {
         return m_nodes;
     }
 
+    public List<NodeTopologyEntity> getVertices() {
+        List<NodeTopologyEntity> vertices = new ArrayList();
+        for(OnmsNode node : m_nodes){
+            vertices.add(NodeTopologyEntity.toNodeTopologyInfo(node));
+        }
+        return vertices;
+    }
+
     public List<LldpElement> getLldpElements() {
         return m_lldpnodes;
     }
     
     public List<OnmsIpInterface> getOnmsIpInterfaces() {
         List<OnmsIpInterface> elements = new ArrayList<>();
-        for (OnmsNode node: m_nodes) 
+        for (OnmsNode node: m_nodes)
             elements.addAll(node.getIpInterfaces());
         return elements;
-        
     }
-    
+
+    public List<IpInterfaceTopologyEntity> getIpInterfaceTopologyEntities() {
+        List<IpInterfaceTopologyEntity> elements = new ArrayList<>();
+        for (OnmsIpInterface ipInterface : getOnmsIpInterfaces()) {
+            elements.add(IpInterfaceTopologyEntity.create(ipInterface));
+        }
+        return elements;
+    }
+
     public List<OnmsSnmpInterface> getOnmsSnmpInterfaces() {
         List<OnmsSnmpInterface> elements = new ArrayList<>();
         for (OnmsNode node: m_nodes) 
             elements.addAll(node.getSnmpInterfaces());
         return elements;
         
+    }
+
+    private List<SnmpInterfaceTopologyEntity> getSnmpInterfaceTopologyEntities(){
+        List<SnmpInterfaceTopologyEntity> elements = new ArrayList<>();
+        for (OnmsSnmpInterface ipInterface : getOnmsSnmpInterfaces()) {
+            elements.add(SnmpInterfaceTopologyEntity.create(ipInterface));
+        }
+        return elements;
+    }
+
+    public void setNodes(List<OnmsNode> nodes) {
+        m_nodes = nodes;
     }
 
     public OperationContext getOperationContext() {

@@ -45,7 +45,7 @@ import org.opennms.osgi.EventConsumer;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.EventProxyAware;
 
-import com.vaadin.ui.Table;
+import com.vaadin.v7.ui.Table;
 
 public class SelectionAwareTable extends Table implements VerticesUpdateManager.VerticesUpdateListener, EventProxyAware, SelectionChangedListener, GraphContainer.ChangeListener {
 

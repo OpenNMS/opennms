@@ -48,8 +48,8 @@ import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
 import org.opennms.netmgt.config.collectd.jmx.CompMember;
 import org.opennms.netmgt.config.collectd.jmx.Mbean;
 
-import com.vaadin.ui.Field;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.TextField;
 
 /**
  * Created by mvrueden on 14/07/15.

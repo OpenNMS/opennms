@@ -44,6 +44,21 @@
           </features>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+            <instructions>
+                <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
+                <Bundle-Version>${project.version}</Bundle-Version>
+                <Export-Package>!${bundle.namespace}.internal.*,${bundle.namespace}.*;version="${project.version}"</Export-Package>
+                <Private-Package>${bundle.namespace}.internal.*</Private-Package>
+                <Vaadin-Package-Version>1</Vaadin-Package-Version>
+                <Vaadin-Widgetsets>org.opennms.vaadin.DefaultWidgetset</Vaadin-Widgetsets>
+                <Include-Resource>{maven-resources}</Include-Resource>
+            </instructions>
+        </configuration>
+       </plugin>
     </plugins>
   </build>
     <dependencies>
@@ -56,6 +71,11 @@
         <dependency>
             <groupId>org.opennms.features.vaadin-components</groupId>
             <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>widgetset</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

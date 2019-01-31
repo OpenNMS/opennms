@@ -25,6 +25,7 @@
                     <instructions>
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                         <Vaadin-Package-Version>1</Vaadin-Package-Version>
+                        <Vaadin-Widgetsets>org.opennms.vaadin.DefaultWidgetset</Vaadin-Widgetsets>
                     </instructions>
                 </configuration>
             </plugin>
@@ -54,6 +55,11 @@
         <dependency>
             <groupId>org.opennms.features.vaadin-components</groupId>
             <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>widgetset</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -49,7 +49,7 @@ echo "=== Building checkstyle & root POM ==="
 "${TOPDIR}/compile.pl" $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY --projects org.opennms:org.opennms.checkstyle,org.opennms:opennms install
 
 get_maven_artifact() {
-	xsltproc "${MYDIR}/get-id.xsl" "$1/pom.xml"
+	xsltproc "${MYDIR}/get-id.xsl" "$1/pom.xml" || exit 1
 }
 
 get_maven_artifacts() {

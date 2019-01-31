@@ -36,6 +36,8 @@ import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.AbstractComponentConnector;
 import com.vaadin.shared.ui.Connect;
+import com.vaadin.shared.ui.ContentMode;
+
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 
 @Connect(org.opennms.features.topology.app.internal.TopologyComponent.class)
@@ -93,10 +95,10 @@ public class TopologyComponentConnector extends AbstractComponentConnector{
            // Don't try and find a tooltip
         } else if(className.equals("svgIconOverlay")) {
             GWTVertex vertex = getVertexForSelection(D3.d3().select(element));
-            tooltipInfo = new TooltipInfo(vertex.getTooltipText());
+            tooltipInfo = new TooltipInfo(vertex.getTooltipText(), ContentMode.HTML);
         } else if(className.contains("edge")){
             GWTEdge edge = getEdgeForSelection(D3.d3().select(element));
-            tooltipInfo = new TooltipInfo(edge.getTooltipText());
+            tooltipInfo = new TooltipInfo(edge.getTooltipText(), ContentMode.HTML);
         }
 
         return tooltipInfo;

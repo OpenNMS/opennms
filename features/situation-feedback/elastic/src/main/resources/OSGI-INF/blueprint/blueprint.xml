@@ -93,5 +93,9 @@
 		<argument ref="elasticFeedbackRepositoryInitializer" />
     </bean>
     <service interface="org.opennms.features.situationfeedback.api.FeedbackRepository" ref="elasticFeedbackRepository" />
+    <reference-list interface="org.opennms.features.situationfeedback.api.AlarmFeedbackListener"
+                    availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="elasticFeedbackRepository"/>
+    </reference-list>
 
 </blueprint>

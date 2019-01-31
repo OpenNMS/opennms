@@ -21,6 +21,7 @@
     <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="bsmAdminPageApplicationFactory">
         <service-properties>
             <entry key="alias" value="/admin/bsm-admin-page" />
+            <entry key="init.widgetset" value="org.opennms.vaadin.DefaultWidgetset" />
         </service-properties>
     </service>
     <service interface="org.opennms.web.navigate.PageNavEntry" ref="bsmAdminPageUi">

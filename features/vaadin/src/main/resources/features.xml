@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features name="vaadin" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
+    <feature name="vaadin" version="${project.version}" description="OpenNMS :: Features :: Vaadin + Dependencies">
+        <details>The Vaadin web application framework including some addons and osgi related packages.</details>
+        <feature>http-whiteboard</feature>
+        <bundle>wrap:mvn:com.google.gwt/gwt-elemental/${gwtVersion}</bundle>
+        <bundle>wrap:mvn:com.google.gwt/gwt-user/${gwtVersion}/$Export-Package=com.google.*</bundle>
+        <bundle>mvn:com.vaadin/vaadin-context-menu/${vaadinAddonContextMenuVersion}</bundle>
+        <bundle>wrap:mvn:org.vaadin.addon/confirmdialog/${vaadinAddonConfirmDialogVersion}</bundle>
+        <bundle>wrap:mvn:com.vaadin/vaadin-compatibility-server/${vaadinVersion}</bundle>
+        <bundle>wrap:mvn:com.vaadin/vaadin-compatibility-client-compiled/${vaadinVersion}</bundle>
+        <bundle>wrap:mvn:com.vaadin/vaadin-compatibility-client/${vaadinVersion}</bundle>
+        <bundle>wrap:mvn:com.vaadin/vaadin-compatibility-themes/${vaadinVersion}</bundle>
+        <bundle>wrap:mvn:com.vaadin/vaadin-compatibility-shared/${vaadinVersion}</bundle>
+        <bundle>mvn:com.vaadin/vaadin-server/${vaadinVersion}</bundle>
+        <bundle>mvn:com.vaadin/vaadin-client-compiled/${vaadinVersion}</bundle>
+        <bundle>mvn:com.vaadin/vaadin-client/${vaadinVersion}</bundle>
+        <bundle>mvn:com.vaadin/vaadin-themes/${vaadinVersion}</bundle>
+        <bundle>mvn:com.vaadin/vaadin-shared/${vaadinVersion}</bundle>
+        <bundle>mvn:com.vaadin.external/gentyref/${vaadinGentyrefVersion}</bundle>
+        <bundle>mvn:org.jsoup/jsoup/${vaadinJsoupVersion}</bundle>
+        <bundle>mvn:org.opennms.features.vaadin-components/extender-service/${project.version}</bundle>
+        <bundle>mvn:com.google.guava/guava/${guavaVersion}</bundle>
+        <bundle>mvn:org.json/json/${jsonVersion}</bundle>
+        <bundle>mvn:org.opennms.osgi/opennms-osgi-core/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.themes/onms-default-theme/${project.version}</bundle>
+    </feature>
+</features>

@@ -28,14 +28,22 @@
 
 package org.opennms.features.vaadin.dashboard.config.ui;
 
-import com.vaadin.data.Container;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.ui.*;
+import java.util.Map;
+
 import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
 import org.opennms.features.vaadin.dashboard.model.DashletFactory;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
-import java.util.Map;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.ui.DefaultFieldFactory;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * Class representing the properties window used for editing dashlet parameters.
@@ -56,7 +64,6 @@ public class PropertiesWindow extends DashletConfigurationWindow {
          */
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setMargin(true);
-        //verticalLayout.addStyleName("debug");
         verticalLayout.setSizeFull();
         verticalLayout.setHeight(100, Unit.PERCENTAGE);
 
@@ -91,7 +98,7 @@ public class PropertiesWindow extends DashletConfigurationWindow {
         final Map<String, String> requiredParameters = dashletFactory.getRequiredParameters();
 
         for (Map.Entry<String, String> entry : requiredParameters.entrySet()) {
-            table.addItem(new Object[]{entry.getKey(), dashletSpec.getParameters().get(entry.getKey())}, entry.getKey());
+            table.addItem(new Object[]{entry.getKey(), dashletSpec.getParameters().containsKey(entry.getKey()) ? dashletSpec.getParameters().get(entry.getKey()) : ""}, entry.getKey());
         }
 
         table.setColumnWidth("Key", 100);

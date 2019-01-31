@@ -16,4 +16,4 @@ minion-provisiond-requisitions
 minion-poller
 minion-collection
 minion-icmp-proxy
-minion-telemetryd-listeners
+minion-telemetryd-receivers

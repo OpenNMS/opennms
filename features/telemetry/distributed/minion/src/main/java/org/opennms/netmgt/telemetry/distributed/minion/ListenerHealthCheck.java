@@ -29,7 +29,7 @@
 package org.opennms.netmgt.telemetry.distributed.minion;
 
 import org.opennms.core.health.api.SimpleHealthCheck;
-import org.opennms.netmgt.telemetry.listeners.api.ListenerDefinition;
+import org.opennms.netmgt.telemetry.config.api.ListenerDefinition;
 
 public class ListenerHealthCheck extends SimpleHealthCheck {
 

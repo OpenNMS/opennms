@@ -38,56 +38,11 @@
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Vaadin-Package-Version>1</Vaadin-Package-Version>
-                        <Vaadin-Widgetsets>org.opennms.features.vaadin.surveillanceviews.SurveillanceViewsWidgetSet</Vaadin-Widgetsets>
-                        <Include-Resource>{maven-resources},target/gwt/</Include-Resource>
+                        <Vaadin-Widgetsets>org.opennms.vaadin.DefaultWidgetset</Vaadin-Widgetsets>
+                        <Include-Resource>{maven-resources}</Include-Resource>
                     </instructions>
                 </configuration>
             </plugin>
-
-            <plugin>
-                <groupId>com.vaadin</groupId>
-                <artifactId>vaadin-maven-plugin</artifactId>
-                <version>${vaadin.plugin.version}</version>
-                <configuration>
-                    <extraJvmArgs>-XX:MaxMetaspaceSize=256m -Xmx1g -Xss1024k</extraJvmArgs>
-                    <webappDirectory>${basedir}/target/gwt/VAADIN/widgetsets</webappDirectory>
-                    <hostedWebapp>${basedir}/target/gwt/VAADIN/widgetsets</hostedWebapp>
-                    <noServer>true</noServer>
-                    <draftCompile>false</draftCompile>
-                    <compileReport>false</compileReport>
-                    <style>OBF</style>
-                    <strict>true</strict>
-                    <runTarget>http://localhost:8980/opennms/vaadin-surveillance-views</runTarget>
-                    <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
-                </configuration>
-                <executions>
-                    <execution>
-                        <configuration>
-                            <!-- if you don't specify any modules, the plugin will find them -->
-                            <!-- <modules> <module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module>
-                                </modules> -->
-                        </configuration>
-                        <goals>
-                            <goal>resources</goal>
-                            <goal>update-widgetset</goal>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.google.gwt</groupId>
-                        <artifactId>gwt-dev</artifactId>
-                        <version>${gwtVersion}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.google.gwt</groupId>
-                        <artifactId>gwt-user</artifactId>
-                        <version>${gwtVersion}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-
             <plugin>
                 <groupId>org.opennms.maven.plugins</groupId>
                 <artifactId>features-maven-plugin</artifactId>
@@ -141,6 +96,11 @@
         <dependency>
             <groupId>org.opennms.features.vaadin-components</groupId>
             <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>widgetset</artifactId>
             <version>${project.version}</version>
         </dependency>
 

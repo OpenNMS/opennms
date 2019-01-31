@@ -235,7 +235,7 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
             // Tick
             m_droolsAlarmContext.getClock().advanceTime(tickLength, TimeUnit.MILLISECONDS);
             m_droolsAlarmContext.tick();
-            results.addAlarms(now, m_transactionTemplate.execute((t) -> {
+            results.addAlarms(now + tickLength, m_transactionTemplate.execute((t) -> {
                 final List<OnmsAlarm> alarms = m_alarmDao.findAll();
                 alarms.forEach(a -> {
                     Hibernate.initialize(a.getAssociatedAlarms());

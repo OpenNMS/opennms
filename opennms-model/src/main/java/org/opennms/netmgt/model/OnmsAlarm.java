@@ -68,9 +68,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
-import org.springframework.core.style.ToStringCreator;
+import com.google.common.base.MoreObjects;
 
 /**
  * <p>OnmsAlarm class.</p>
@@ -204,6 +205,10 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     private Set<AlarmAssociation> m_associatedAlarms = new HashSet<>();
 
     private Set<OnmsAlarm> m_relatedSituations = new HashSet<>();
+
+    private boolean m_situation;
+
+    private boolean m_partOfSituation;
 
     /**
      * default constructor
@@ -816,12 +821,12 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      */
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-            .append("alarmid", getId())
-            .append("distPoller", getDistPoller())
-            .append("uei", getUei())
-            .append("severity", getSeverity())
-            .append("lastEventTime",getLastEventTime())
+        return MoreObjects.toStringHelper(this)
+            .add("alarmid", getId())
+            .add("distPoller", getDistPoller())
+            .add("uei", getUei())
+            .add("severity", getSeverity())
+            .add("lastEventTime",getLastEventTime())
             .toString();
     }
 
@@ -1204,32 +1209,54 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 
     public void setAssociatedAlarms(Set<AlarmAssociation> alarms) {
         m_associatedAlarms = alarms;
+        m_situation = !m_associatedAlarms.isEmpty();
     }
 
-    /**
-     * <p>setDetails</p>
-     *
-     * @param alarms a {@link java.util.Set} object.
-     */
     public void setRelatedAlarms(Set<OnmsAlarm> alarms) {
         m_associatedAlarms.clear();
         alarms.forEach(relatedAlarm -> m_associatedAlarms.add(new AlarmAssociation(this, relatedAlarm)));
+        m_situation = !m_associatedAlarms.isEmpty();
+    }
+
+    public void setRelatedAlarms(Set<OnmsAlarm> alarms, Date associationEventTime) {
+        m_associatedAlarms.clear();
+        alarms.forEach(relatedAlarm -> m_associatedAlarms.add(new AlarmAssociation(this, relatedAlarm, associationEventTime)));
+        m_situation = !m_associatedAlarms.isEmpty();
     }
 
     public void addRelatedAlarm(OnmsAlarm alarm) {
         m_associatedAlarms.add(new AlarmAssociation(this, alarm));
+        m_situation = !m_associatedAlarms.isEmpty();
     }
 
     public void removeRelatedAlarm(OnmsAlarm alarm) {
         m_associatedAlarms.removeIf(associatedAlarm -> associatedAlarm.getRelatedAlarm().getId().equals(alarm.getId()));
+        m_situation = !m_associatedAlarms.isEmpty();
     }
 
+    public void removeRelatedAlarmWithId(Integer relatedAlarmId) {
+        m_associatedAlarms.removeIf(associatedAlarm -> associatedAlarm.getRelatedAlarm().getId().equals(relatedAlarmId));
+        m_situation = !m_associatedAlarms.isEmpty();
+    }
 
-    // Any alarm with related alarms is a 'Situation'
-    @Transient
     @XmlTransient
+    @Formula(value = "(SELECT COUNT(*)>0 FROM ALARM_SITUATIONS S WHERE S.SITUATION_ID=ALARMID)")
     public boolean isSituation() {
-        return !m_associatedAlarms.isEmpty();
+        return m_situation;
+    }
+
+    public void setSituation(final boolean situation) {
+        m_situation = situation;
+    }
+
+    @XmlTransient
+    @Formula(value = "(SELECT COUNT(*)>0 FROM ALARM_SITUATIONS S WHERE S.RELATED_ALARM_ID=ALARMID)")
+    public boolean isPartOfSituation() {
+        return m_partOfSituation;
+    }
+
+    public void setPartOfSituation(final boolean partOfSituation) {
+        m_partOfSituation = partOfSituation;
     }
 
     @XmlTransient
@@ -1248,14 +1275,9 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
                 .collect(Collectors.toSet());
     }
 
-    @Transient
-    @XmlTransient
-    public boolean isPartOfSituation() {
-        return !m_relatedSituations.isEmpty();
-    }
-
     public void setRelatedSituations(Set<OnmsAlarm> alarms) {
         m_relatedSituations = alarms;
+        m_partOfSituation = !m_relatedSituations.isEmpty();
     }
 
     @Transient

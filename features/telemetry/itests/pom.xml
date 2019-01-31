@@ -33,12 +33,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.telemetry.adapters</groupId>
-      <artifactId>org.opennms.features.telemetry.adapters.jti</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
@@ -102,13 +96,33 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.telemetry.listeners</groupId>
-      <artifactId>org.opennms.features.telemetry.listeners.udp</artifactId>
+      <groupId>org.opennms.features.telemetry</groupId>
+      <artifactId>org.opennms.features.telemetry.listeners</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.telemetry.listeners</groupId>
-      <artifactId>org.opennms.features.telemetry.listeners.flow</artifactId>
+      <groupId>org.opennms.features.telemetry.protocols.netflow</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.netflow.adapter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.netflow</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.netflow.parser</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.sflow</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.sflow.adapter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.sflow</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.sflow.parser</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.jti</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.jti.adapter</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

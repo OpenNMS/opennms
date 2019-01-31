@@ -57,6 +57,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.support.TransactionOperations;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Striped;
 
@@ -138,11 +139,18 @@ public class AlarmPersisterImpl implements AlarmPersister {
         String key = reductionKey;
         String clearKey = event.getAlarmData().getClearKey();
         
+        boolean didSwapReductionKeyWithClearKey = false;
         if (!m_legacyAlarmState && clearKey != null && isResolutionEvent(event)) {
             key = clearKey;
+            didSwapReductionKeyWithClearKey = true;
         }
 
         OnmsAlarm alarm = m_alarmDao.findByReductionKey(key);
+
+        if (alarm == null && didSwapReductionKeyWithClearKey) {
+            // if the clearKey returns null, still need to check the reductionKey
+            alarm = m_alarmDao.findByReductionKey(reductionKey);
+        }
 
         if (alarm == null || (m_createNewAlarmIfClearedAlarmExists && OnmsSeverity.CLEARED.equals(alarm.getSeverity()))) {
             if (LOG.isDebugEnabled()) {
@@ -288,19 +296,40 @@ public class AlarmPersisterImpl implements AlarmPersister {
             }
         }
 
-        Set<OnmsAlarm> relatedAlarms = getRelatedAlarms(event.getParmCollection());
-        if (relatedAlarms != null && !relatedAlarms.isEmpty()) {
-            // alarm.relatedAlarms becomes the union of any existing alarms and any in the event.
-            for (OnmsAlarm related : relatedAlarms) {
-                if (!formingCyclicGraph(alarm, related)) {
-                    alarm.addRelatedAlarm(related);
-                } else {
-                    LOG.warn("Alarm with id '{}' , reductionKey '{}' is not added as related alarm for id '{}' as it is forming cyclic graph ", related.getId(), related.getReductionKey(), alarm.getId());
-                }
-            }
-        }
+        updateRelatedAlarms(alarm, event);
 
         persistedEvent.setAlarm(alarm);
+    }
+    
+    private void updateRelatedAlarms(OnmsAlarm alarm, Event event) {
+        // Retrieve the related alarms as given by the event parameters
+        final Set<OnmsAlarm> relatedAlarms = getRelatedAlarms(event.getParmCollection());
+        // Index these by id
+        final Map<Integer, OnmsAlarm> relatedAlarmsByIds = relatedAlarms.stream()
+                .collect(Collectors.toMap(OnmsAlarm::getId, a -> a));
+
+        // Build sets of the related alarm ids for easy comparison
+        final Set<Integer> relatedAlarmIdsFromEvent = ImmutableSet.copyOf(relatedAlarmsByIds.keySet());
+        final Set<Integer> relatedAlarmIdsFromExistingAlarm = ImmutableSet.copyOf(alarm.getRelatedAlarmIds());
+
+        // Remove alarms that are not referenced in the event -  we treat the event as an
+        // authoritative source of the related alarms rather than using the union of the previously known related alarms
+        // and the event's related alarms
+        Sets.difference(relatedAlarmIdsFromExistingAlarm, relatedAlarmIdsFromEvent)
+                .forEach(alarm::removeRelatedAlarmWithId);
+        // Add new alarms that are referenced in the event, but are not already associated
+        Sets.difference(relatedAlarmIdsFromEvent, relatedAlarmIdsFromExistingAlarm)
+                .forEach(relatedAlarmIdToAdd -> {
+                    final OnmsAlarm related = relatedAlarmsByIds.get(relatedAlarmIdToAdd);
+                    if (related != null) {
+                        if (!formingCyclicGraph(alarm, related)) {
+                            alarm.addRelatedAlarm(related);
+                        } else {
+                            LOG.warn("Alarm with id '{}' , reductionKey '{}' is not added as related alarm for id '{}' as it is forming cyclic graph ",
+                                    related.getId(), related.getReductionKey(), alarm.getId());
+                        }
+                    }
+                });
     }
 
     private void resetAlarmSeverity(OnmsEvent persistedEvent, OnmsAlarm alarm) {
@@ -322,7 +351,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private OnmsAlarm createNewAlarm(OnmsEvent e, Event event) {
         OnmsAlarm alarm = new OnmsAlarm();
         // Situations are denoted by the existance of related-reductionKeys
-        alarm.setRelatedAlarms(getRelatedAlarms(event.getParmCollection()));
+        alarm.setRelatedAlarms(getRelatedAlarms(event.getParmCollection()), event.getTime());
         alarm.setAlarmType(event.getAlarmData().getAlarmType());
         alarm.setClearKey(event.getAlarmData().getClearKey());
         alarm.setCounter(1);

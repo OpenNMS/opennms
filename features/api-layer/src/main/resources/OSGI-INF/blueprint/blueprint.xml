@@ -1,5 +1,6 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
@@ -31,6 +32,26 @@
   <service interface="org.opennms.integration.api.v1.dao.SnmpInterfaceDao" >
     <bean class="org.opennms.features.apilayer.dao.SnmpInterfaceDaoImpl">
       <argument ref="snmpInterfaceDao"/>
+      <argument ref="sessionUtils"/>
+    </bean>
+  </service>
+
+  <!-- Configuration properties for the API layer -->
+  <cm:property-placeholder id="org.opennms.features.apilayer"
+                           persistent-id="org.opennms.features.apilayer"
+                           update-strategy="reload">
+    <cm:default-properties>
+      <cm:property name="alarmFeedback.gracePeriodInMs" value="5000"/>
+      <cm:property name="alarmFeedback.sleepTimeInMs" value="1000"/>
+      <cm:property name="alarmFeedback.waitTimeMs" value="500"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <service interface="org.opennms.integration.api.v1.dao.AlarmFeedbackDao">
+    <bean class="org.opennms.features.apilayer.dao.AlarmFeedbackDaoImpl">
+      <argument value="${alarmFeedback.gracePeriodInMs}"/>
+      <argument value="${alarmFeedback.sleepTimeInMs}"/>
+      <argument value="${alarmFeedback.waitTimeMs}"/>
     </bean>
   </service>
 
@@ -97,5 +118,28 @@
   <reference-list interface="org.opennms.integration.api.v1.health.HealthCheck" availability="optional">
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="healthCheckManager" />
   </reference-list>
+
+  <!-- Alarm Feedback Listener -->
+  <bean id="alarmFeedbackListener" class="org.opennms.features.apilayer.feedback.AlarmFeedbackListenerManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.feedback.AlarmFeedbackListener" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="alarmFeedbackListener" />
+  </reference-list>
+
+  <!-- Detectors -->
+  <bean id="detectorManager" class="org.opennms.features.apilayer.detectors.DetectorManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.detectors.ServiceDetectorFactory" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="detectorManager" />
+  </reference-list>
+
+  <reference id="locationAwareDetectorClient" interface="org.opennms.netmgt.provision.LocationAwareDetectorClient"/>
+  <service ref="detectorClient" interface="org.opennms.integration.api.v1.detectors.DetectorClient" >
+  </service>
+  <bean id="detectorClient" class="org.opennms.features.apilayer.detectors.DetectorClientImpl">
+    <argument ref="locationAwareDetectorClient"/>
+  </bean>
 
 </blueprint>

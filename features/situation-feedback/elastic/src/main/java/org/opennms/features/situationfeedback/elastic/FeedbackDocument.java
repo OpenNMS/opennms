@@ -128,7 +128,7 @@ public class FeedbackDocument {
 
     public static FeedbackDocument from(AlarmFeedback feedback) {
         FeedbackDocument doc = new FeedbackDocument();
-        doc.setTimestamp(System.currentTimeMillis());
+        doc.setTimestamp(feedback.getTimestamp());
         doc.setAlarmKey(feedback.getAlarmKey());
         doc.setFeedbackType(feedback.getFeedbackType().toString());
         doc.setReason(feedback.getReason());
@@ -139,7 +139,14 @@ public class FeedbackDocument {
     }
 
     public static AlarmFeedback toAlarmFeedback(FeedbackDocument doc) {
-        return new AlarmFeedback(doc.situationKey, doc.situationFingerprint, doc.alarmKey, FeedbackType.getType(doc.feedbackType), doc.reason, doc.user,
-                                 doc.timestamp);
+        return AlarmFeedback.newBuilder()
+                .withSituationKey(doc.situationKey)
+                .withSituationFingerprint(doc.situationFingerprint)
+                .withAlarmKey(doc.alarmKey)
+                .withFeedbackType(FeedbackType.valueOfOrUnknown(doc.feedbackType))
+                .withReason(doc.reason)
+                .withUser(doc.user)
+                .withTimestamp(doc.timestamp)
+                .build();
     }
 }

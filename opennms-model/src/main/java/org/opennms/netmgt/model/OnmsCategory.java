@@ -47,7 +47,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.Filter;
-import org.springframework.core.style.ToStringCreator;
+
+import com.google.common.base.MoreObjects;
 
 /**
  * <p>OnmsCategory class.</p>
@@ -201,11 +202,11 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
      */
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-            .append("id", getId())
-            .append("name", getName())
-            .append("description", getDescription())
-            .append("authorizedGroups", getAuthorizedGroups())
+        return MoreObjects.toStringHelper(this)
+            .add("id", getId())
+            .add("name", getName())
+            .add("description", getDescription())
+            .add("authorizedGroups", getAuthorizedGroups())
             .toString();
     }
 
