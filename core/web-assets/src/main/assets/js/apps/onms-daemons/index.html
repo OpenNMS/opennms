@@ -3,6 +3,9 @@
         <span class="lead navbar-left">List of Daemons *</span>
 
        <div class="navbar-form navbar-right">
+           <div class="alert alert-danger" ng-if="error">
+               {{error}}
+           </div>
            <div class="btn-group">
                <label class="btn btn-default" ng-model="filter" uib-btn-radio="0">Reloadable</label>
                <label class="btn btn-default" ng-model="filter" uib-btn-radio="1">All</label>
@@ -46,8 +49,8 @@
                     <span class="text-success" ng-if="d.reloadState == 'Success'"><i class="fa fa-check-circle"/></span>
                     <span class="small" ng-if="d.reloadState == 'Success'">The daemon processed the reload event successfully</span>
 
-                    <span class="text-warning" ng-if="d.reloadState == 'Undefined'"><i class="fa fa-question-circle"/></span>
-                    <span class="small" ng-if="d.reloadState == 'Undefined'">It is unclear if the reload event was processed successfully</span>
+                    <span class="text-warning" ng-if="d.reloadState == 'Unknown'"><i class="fa fa-question-circle"/></span>
+                    <span class="small" ng-if="d.reloadState == 'Unknown'">It is unclear if the reload event was processed successfully</span>
 
                     <span class="text-muted" ng-if="d.reloadState == 'Reloading'"><i class="fa fa-spinner fa-spin"/></span>
                     <span class="small" ng-if="d.reloadState == 'Reloading'">Reloading...</span>

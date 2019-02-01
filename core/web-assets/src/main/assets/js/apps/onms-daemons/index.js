@@ -40,38 +40,43 @@ const curlModalTemplate  = require('./curl-modal.html');
             $scope.daemons = [];
 
             $scope.lookupDaemonState = function (daemon) {
+                console.log("Checking daemon state");
                 if (daemon.reloadCount > 5) {
                     daemon.isReloading = false;
-                    daemon.reloadState = "Undefined";
+                    daemon.reloadState = "Unknown";
                     return;
                 }
                 daemon.reloadCount = daemon.reloadCount + 1;
 
-                $http.get('rest/daemons/reload/' + daemon.name + '/').then(function (response) {
-                    if (response.data.reloadState === "Success") {
-                        daemon.isReloading = false;
-                        daemon.reloadState = response.data.reloadState;
-                    } else if (response.data.reloadState === "Failed") {
-                        daemon.isReloading = false;
-                        daemon.reloadState = response.data.reloadState;
-                    } else {
+                $http.get('rest/daemons/reload/' + daemon.name + '/', {timeout: 1000})
+                    .then(function (response) {
+                        if (response.data.reloadState === "Success") {
+                            daemon.isReloading = false;
+                            daemon.reloadState = response.data.reloadState;
+                        } else if (response.data.reloadState === "Failed") {
+                            daemon.isReloading = false;
+                            daemon.reloadState = response.data.reloadState;
+                        } else {
+                            $timeout($scope.lookupDaemonState, 1000, true, daemon);
+                        }
+                    }, function() {
                         $timeout($scope.lookupDaemonState, 1000, true, daemon);
-                    }
-                });
+                    });
             };
 
             $scope.reloadDaemon = function (daemon) {
-                $http.post('rest/daemons/reload/' + daemon.name + '/')
-                    .success(function (data, status) {
-                        if (status === 204) {
-                            var now = new Date();
-                            daemon.reloadTime = now.getTime() + (now.getTimezoneOffset() * 60000);
-                            daemon.isReloading = true;
-                            daemon.reloadCount = 0;
-                            daemon.reloadState = "Reloading";
-                            $timeout($scope.lookupDaemonState, 1000, true, daemon);
-                        }
-                    });
+                // Update state
+                var now = new Date();
+                daemon.reloadTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+                daemon.isReloading = true;
+                daemon.reloadCount = 0;
+                daemon.reloadState = "Reloading";
+
+                // Trigger reload
+                $http.post('rest/daemons/reload/' + daemon.name + '/', {}, {timeout : 5000});
+
+                // Check each seconds for an update
+                $timeout($scope.lookupDaemonState, 1000, true, daemon);
             };
 
             $scope.showCurlCommand = function(daemon) {
@@ -86,16 +91,22 @@ const curlModalTemplate  = require('./curl-modal.html');
             };
 
             $scope.refreshDaemonList = function () {
-                $http.get('rest/daemons').then(function (response) {
-                    $scope.daemons = response.data
-                        .filter(
-                            function (element) {
-                                if ($scope.filter == 0) {
-                                    return !element.internal && element.enabled && element.reloadable;
-                                }
-                                return !element.internal;
-                            });
-                });
+                $http.get('rest/daemons')
+                    .then(function (response) {
+                        $scope.error = undefined;
+                        $scope.daemons = response.data
+                            .filter(
+                                function (element) {
+                                    // internal elements should not be shown to the user in any case
+                                    if ($scope.filter == 0) {
+                                        return !element.internal && element.enabled && element.reloadable;
+                                    }
+                                    return !element.internal;
+                                });
+                    },
+                    function(response) {
+                        $scope.error = "An unexpected error occurred while refreshing the daemon list.";
+                    });
             };
 
             $scope.refreshDaemonList();
