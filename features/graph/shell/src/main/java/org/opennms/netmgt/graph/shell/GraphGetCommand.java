@@ -47,9 +47,11 @@ public class GraphGetCommand implements Action {
     @Reference
     private GraphService graphService;
 
+    // TODO MVR implement autocompletion
     @Option(name="--container", description="The id of the container", required=true)
     private String containerId;
 
+    // TODO MVR implement autocompletion
     @Option(name="--namespace", description="The namespace of the graph", required = true)
     private String namespace;
 
