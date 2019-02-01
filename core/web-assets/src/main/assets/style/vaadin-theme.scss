@@ -25,6 +25,9 @@ The finished CSS file will include this line, directly:
 @import "ionicons.scss";
 @import "font-awesome.scss";
 
+/*  --------------------------------------------------
+    :: Header and other Custom Vaadin styles
+    -------------------------------------------------- */
 .navbar-brand {
   padding: 0px;
 }
@@ -39,6 +42,19 @@ The finished CSS file will include this line, directly:
 
 .onmsheader #navbar {
   margin-top: 13px;
+}
+
+.onmsheader .dropdown-menu {
+  /* Change z-index so it is not hidden by some vaadin components */
+  z-index: 9999;
+}
+
+.onmsheader .dropdown-item {
+  box-sizing: border-box;
+}
+
+.onmsheader button.navbar-toggler {
+  font-size: $navbar-toggler-font-size;
 }
 
 .v-absolutelayout-wrapper {

@@ -280,7 +280,7 @@
 	</div> <!-- col-md-10 -->
 
 	<div class="col-md-2">
-	<div id="results-sidebar" class="resource-graphs-sidebar hidden-print hidden-xs hidden-sm sidebar-fixed">
+	<div id="results-sidebar" class="resource-graphs-sidebar d-print-none d-none d-sm-block d-md-block sidebar-fixed">
         <ul class="nav flex-column">
             <c:forEach var="resourceType" items="${results.resourceTypes}">
             <li class="nav-item">
