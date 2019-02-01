@@ -9,6 +9,7 @@ require('angular-bootstrap-toggle/dist/angular-bootstrap-toggle.css');
 require('angular-ui-router');
 
 const indexTemplate = require('./index.html');
+const curlModalTemplate  = require('./curl-modal.html');
 
 (function () {
     'use strict';
@@ -34,10 +35,7 @@ const indexTemplate = require('./index.html');
                     templateUrl: indexTemplate
                 });
         }])
-        .controller('ListController', ['$scope', '$http', '$timeout', function ($scope, $http, $timeout) {
-
-            // This is used for the curl command-string in the view
-            $scope.serverUrl = location.protocol + '//' + location.hostname+(location.port ? ':'+location.port: '');
+        .controller('ListController', ['$scope', '$http', '$timeout', '$uibModal', function ($scope, $http, $timeout, $uibModal) {
             $scope.filter = 0; // filter for enabled and reloadable
             $scope.daemons = [];
 
@@ -74,6 +72,17 @@ const indexTemplate = require('./index.html');
                             $timeout($scope.lookupDaemonState, 1000, true, daemon);
                         }
                     });
+            };
+
+            $scope.showCurlCommand = function(daemon) {
+                var modalInstance = $uibModal.open({
+                    size: 'lg',
+                    templateUrl: curlModalTemplate,
+                    controller: function($scope) {
+                        $scope.serverUrl = location.protocol + '//' + location.hostname+(location.port ? ':'+location.port: '');
+                        $scope.daemon = daemon;
+                    },
+                });
             };
 
             $scope.refreshDaemonList = function () {
