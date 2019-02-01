@@ -31,6 +31,7 @@ package org.opennms.netmgt.graph.api.service;
 import org.opennms.netmgt.graph.api.GraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 
+// TODO MVR implement me
 public interface GraphContainerProvider {
     // TODO MVR we have to implement this somehow
 //    /**
@@ -40,7 +41,23 @@ public interface GraphContainerProvider {
 //     */
 //    void setNotificationService(GraphNotificationService notificationService);
 
+    /**
+     * Populates the whole container with all its graphs.
+     * The provider should not initialize the container and does not need to cache it.
+     * Invoking this call and also implement proper caching strategies is the {@link GraphService}'s responsibility.
+     * May be slow.
+     *
+     * TODO MVR We may need to add eviction strategies or custom caching strategies, e.g. for bsm or vmware, etc.
+     * @return The populated container
+     */
     GraphContainer loadGraphContainer();
 
+    /**
+     * Invoking {@link #loadGraphContainer()} may take some time, so it is not feasable to invoke it, if only the meta data
+     * of the container or its graph is requested. Therefore the {@link #getContainerInfo()} should return very quick
+     * with the meta data of the container and its graphs
+     *
+     * @return The container's meta data
+     */
     GraphContainerInfo getContainerInfo();
 }
