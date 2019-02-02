@@ -86,7 +86,7 @@ public class ForceRescanState {
 
         bldr.setInterface(m_agent.getAddress());
         
-        bldr.setService(SnmpCollector.SERVICE_NAME);
+        bldr.setService(AbstractSnmpCollector.SERVICE_NAME);
         
         bldr.setHost(InetAddressUtils.getLocalHostName());
 
@@ -105,11 +105,6 @@ public class ForceRescanState {
     /**
      * This method is responsible for building a Capsd forceRescan event object
      * and sending it out over the EventProxy.
-     * @param eventProxy
-     *            proxy over which an event may be sent to eventd
-     * @param ifAddress
-     *            interface address to which this event pertains
-     * @param nodeId TODO
      */
     void sendForceRescanEvent() {
         // Log4j category

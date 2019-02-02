@@ -420,6 +420,7 @@
       <bundle>mvn:org.opennms.core/org.opennms.core.logging/${project.version}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.soa/${project.version}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.spring/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.xml/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-util/${project.version}</bundle>
     </feature>
@@ -777,8 +778,8 @@
       <feature>opennms-core</feature>
       <feature>opennms-events-api</feature>
       <feature>opennms-model</feature>
+      <feature>opennms-config-api</feature>
       -->
-
       <bundle>mvn:org.opennms.features.events/org.opennms.features.events.commands/${project.version}</bundle>
     </feature>
 
@@ -903,6 +904,7 @@
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.implementations.snmp4j/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.joesnmp/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-snmp-commands" description="OpenNMS :: Core :: SNMP :: Commands" version="${project.version}">
@@ -1008,9 +1010,9 @@
 
       <!-- The version of Xerces, Xalan and BCEL declared here should match the
            versions declared in the parent pom of the corresponding CXF version -->
-      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xerces/2.11.0_1</bundle>
-      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.bcel/5.2_4</bundle>
-      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan/2.7.2_3</bundle>
+      <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xerces/2.11.0_1</bundle>
+      <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.bcel/5.2_4</bundle>
+      <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan/2.7.2_3</bundle>
       <feature version="${cxfVersion}">cxf-jaxws</feature>
       <feature version="${cxfVersion}">cxf-ws-addr</feature>
 
@@ -1329,5 +1331,11 @@
         <feature dependency="true">opennms-situation-feedback-api</feature>
         <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
         <bundle>mvn:org.opennms.features/org.opennms.features.api-layer/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-enlinkd-shell" description="OpenNMS :: Features :: Enlinkd :: Shell" version="${project.version}">
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.shell/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.generator/${project.version}</bundle>
+        <feature>opennms-dao</feature>
     </feature>
 </features>

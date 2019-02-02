@@ -35,10 +35,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,7 +146,7 @@ public class DNSResolutionMonitor extends ParameterSubstitutingMonitor {
                     final String port = nameserver.substring(pos + 1);
                     LOG.debug("nameserver: hostname={}, port={}", hostname, port);
                     resolver = new SimpleResolver(hostname);
-                    resolver.setPort(Integer.getInteger(port));
+                    resolver.setPort(SystemProperties.getInteger(port));
 
                 } else {
                     // hostname or ip address

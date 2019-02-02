@@ -703,7 +703,7 @@ public class EnhancedLinkdMockDataPopulator {
     public List<NodeTopologyEntity> getVertices() {
         List<NodeTopologyEntity> vertices = new ArrayList();
         for(OnmsNode node : m_nodes){
-            vertices.add(NodeTopologyEntity.toNodeTopologyInfo(node));
+            vertices.add(NodeTopologyEntity.create(node));
         }
         return vertices;
     }

@@ -227,6 +227,11 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
     public TimeZone getTimeZone() {
         return m_config.getConfiguration().getTimeZone().orElse(null);
     }
+    
+    @Override
+    public boolean shouldIncludeRawSyslogmessage() {
+        return m_config.getConfiguration().shouldIncludeRawSyslogmessage();
+    }
 
     /**
      * Parse import-file tags and add all uei-matchs and hide-messages.

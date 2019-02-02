@@ -152,6 +152,9 @@ public class Configuration implements Serializable {
     @XmlAttribute(name = "timezone")
     private String timeZone;
 
+    @XmlAttribute(name = "includeRawSyslogmessage")
+    private Boolean includeRawSyslogmessage;
+
     public Optional<String> getListenAddress() {
         return Optional.ofNullable(m_listenAddress);
     }
@@ -264,6 +267,14 @@ public class Configuration implements Serializable {
         this.timeZone = timeZone;
     }
 
+    public boolean shouldIncludeRawSyslogmessage() {
+        return includeRawSyslogmessage == null ? false : includeRawSyslogmessage;
+    }
+
+    public void setIncludeRawSyslogmessage(boolean includeRawSyslogmessage) {
+        this.includeRawSyslogmessage = includeRawSyslogmessage;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(m_listenAddress, 
@@ -278,7 +289,8 @@ public class Configuration implements Serializable {
                             m_queueSize, 
                             m_batchSize, 
                             m_batchInterval,
-                            timeZone);
+                            timeZone,
+                            includeRawSyslogmessage);
     }
 
     /**
@@ -307,7 +319,8 @@ public class Configuration implements Serializable {
                     && Objects.equals(this.m_queueSize, that.m_queueSize)
                     && Objects.equals(this.m_batchSize, that.m_batchSize)
                     && Objects.equals(this.m_batchInterval, that.m_batchInterval)
-                    && Objects.equals(this.timeZone, that.timeZone);
+                    && Objects.equals(this.timeZone, that.timeZone)
+                    && Objects.equals(this.includeRawSyslogmessage, that.includeRawSyslogmessage);
         }
         return false;
     }

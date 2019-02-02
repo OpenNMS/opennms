@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,7 +31,9 @@ package org.opennms.netmgt.measurements.api;
 import java.util.Arrays;
 import java.util.Map;
 
-import com.google.common.base.Objects;
+import org.opennms.netmgt.measurements.model.QueryMetadata;
+
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.RowSortedTable;
@@ -52,7 +54,9 @@ public class FetchResults {
 
     private final Map<String, Object> m_constants;
 
-    public FetchResults(final long[] timestamps, Map<String, double[]> columns, final long step, final Map<String, Object> constants) {
+    private final QueryMetadata m_metadata;
+
+    public FetchResults(final long[] timestamps, Map<String, double[]> columns, final long step, final Map<String, Object> constants, final QueryMetadata metadata) {
         Preconditions.checkNotNull(timestamps, "timestamps argument");
         Preconditions.checkNotNull(columns, "columns argument");
         Preconditions.checkNotNull(constants, "constants argument");
@@ -61,17 +65,19 @@ public class FetchResults {
         m_columns = columns;
         m_step = step;
         m_constants = constants;
+        m_metadata = metadata;
     }
 
     /**
      * Used when applying filters.
      */
-    public FetchResults(final RowSortedTable<Long, String, Double> table, final long step, final Map<String, Object> constants) {
+    public FetchResults(final RowSortedTable<Long, String, Double> table, final long step, final Map<String, Object> constants, final QueryMetadata metadata) {
         Preconditions.checkNotNull(table, "table argument");
         Preconditions.checkNotNull(constants, "constants argument");
 
         m_step = step;
         m_constants = constants;
+        m_metadata = metadata;
 
         if (table.size() < 1) {
             // No rows
@@ -136,12 +142,17 @@ public class FetchResults {
         return m_constants;
     }
 
+    public QueryMetadata getMetadata() {
+        return m_metadata;
+    }
+
     public String toString() {
-       return Objects.toStringHelper(this.getClass())
+       return MoreObjects.toStringHelper(this.getClass())
             .add("timestamps", Arrays.toString(m_timestamps))
             .add("columns", m_columns)
             .add("step", m_step)
             .add("constants", m_constants)
+            .add("metadata", m_metadata)
             .toString();
     }
 

@@ -10,6 +10,31 @@
 
 === Breaking Changes
 
+* Flows are grouped by conversations using applications instead of ports.
+  This changes the way statistics about flows are presented and grouped.
+  Therefore the elasticsearch storage has changed and old data must be converted to the new format.
+  To adopt existing flows, the following command can be used (please be aware that this can take a long time and put your CPU and disk under high stress):
+```
+curl -v -X POST -H 'Content-Type: application/json' "http://${ES_HOST}:${ES_PORT}/netflow-*/_update_by_query?refresh=true" -d @- << EOF
+{
+  "script": {
+    "lang": "painless",
+    "source": "ctx._source['netflow.convo_key'] = '[\"' + ctx._source['location'] + '\",' + ctx._source['netflow.protocol'] + ',\"' + ((Objects.compare(ctx._source['netflow.src_addr'], ctx._source['netflow.src_addr'], String::compareTo) < 0) ? ctx._source['netflow.src_addr'] : ctx._source['netflow.dst_addr']) + '\",\"' + ((Objects.compare(ctx._source['netflow.src_addr'], ctx._source['netflow.src_addr'], String::compareTo) < 0) ? ctx._source['netflow.dst_addr'] : ctx._source['netflow.src_addr']) + '\",' + ((ctx._source['netflow.application'] != null) ? ('\"' + ctx._source['netflow.application'] + '\"') : 'null') + ']'"
+  },
+  "query": {
+    "match_all": {}
+  }
+}
+EOF
+```
+
+==== Manage Daemons Page
+    It is now possible to see a daemon's status and also reload its configuration via the "Manage Daemons" page from the Admin menu.
+    To support this each damon has now a `reloadable` flag in the `service-configuration.xml` indicating if the daemon can be reloaded from the UI.
+    If this value is not set, it defaults to `false`.
+
+    Besides this each daemon can now be reloaded using the `uei.opennms.org/internal/reloadDaemonConfig` UEI (in the past some used a different UEI).
+
 === New Features
 
 === Other Improvements

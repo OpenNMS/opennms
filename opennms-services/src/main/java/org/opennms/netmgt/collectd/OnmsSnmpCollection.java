@@ -294,7 +294,7 @@ public class OnmsSnmpCollection {
         String storageFlag = getDataCollectionConfigDao().getSnmpStorageFlag(collectionName);
         if (storageFlag == null) {
             LOG.warn("getStorageFlag: Configuration error, failed to retrieve SNMP storage flag for collection: {}", collectionName);
-            storageFlag = SnmpCollector.SNMP_STORAGE_PRIMARY;
+            storageFlag = AbstractSnmpCollector.SNMP_STORAGE_PRIMARY;
         }
         return storageFlag;
     }
@@ -517,7 +517,7 @@ public class OnmsSnmpCollection {
     }
 
     boolean isSelectCollectionOnly() {
-        if (getStorageFlag().equals(SnmpCollector.SNMP_STORAGE_PRIMARY) || getStorageFlag().equals(SnmpCollector.SNMP_STORAGE_SELECT)) {
+        if (getStorageFlag().equals(AbstractSnmpCollector.SNMP_STORAGE_PRIMARY) || getStorageFlag().equals(AbstractSnmpCollector.SNMP_STORAGE_SELECT)) {
             return true;
         }
 
@@ -560,5 +560,8 @@ public class OnmsSnmpCollection {
         return m_aliasAttributeTypes;
     }
 
+    LocationAwareSnmpClient getClient(){
+       return m_client;
+    }
 
 }
