@@ -34,7 +34,6 @@ import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -176,9 +175,7 @@ public class SyslogParser {
 
                 // ...BUT, if the calendar entry is in the future, assume the year
                 // should be the previous year.
-                if (now.atZone(ZoneId.systemDefault()).toInstant().isBefore(c.toInstant())) {
-                    c.set(Calendar.YEAR, currentYear - 1);
-                }
+                SyslogTimeStamp.adjustYear(c, now);
 
                 return c.getTime();
             }
