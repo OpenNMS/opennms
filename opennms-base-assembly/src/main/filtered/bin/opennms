@@ -533,12 +533,14 @@ doKill(){
 
 	pid="$(getPid)"
 	if [ x"$pid" != x"" ]; then
-		if /bin/ps -p "$pid" | grep "^$RUNAS" > /dev/null; then
+		if [ "$(/bin/ps -p "$pid" 2>/dev/null | wc -l /dev/null)" -gt 0 ]; then
 			kill -9 "$pid" > /dev/null 2>&1
+			return $?
 		fi
 	fi
 
 	echo "" > "$OPENNMS_PIDFILE"
+	return 0
 }
 
 doStatus(){
@@ -856,11 +858,6 @@ case "$COMMAND" in
 		## running or not, start it again.
 		"$OPENNMS_HOME/bin/opennms" stop && \
 		"$OPENNMS_HOME/bin/opennms" start
-		ret=$?
-
-		if [ -f /etc/SuSE-release ]; then
-			rc_failed $ret
-		fi
 		;;
 
 	status)
@@ -875,8 +872,7 @@ case "$COMMAND" in
 			rc_status -v
 		else
 			doStatus "$@"
-			ret=$?
-			case $ret in
+			case $? in
 				0)
 					echo "${NAME} is running"
 					;;
@@ -932,10 +928,3 @@ case "$COMMAND" in
 		exit 2
 		;;
 esac
-
-
-if [ -f /etc/SuSE-release ]; then
-	rc_exit
-else
-	exit $ret
-fi

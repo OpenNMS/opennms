@@ -26,46 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.api;
+package org.opennms.enlinkd.generator.util;
 
-import java.util.Objects;
+import com.google.common.net.InetAddresses;
+import java.net.InetAddress;
 
-public class Conversation {
-    private final ConversationKey key;
-    private final String application;
-
-    public Conversation(ConversationKey key, String application) {
-        this.key = Objects.requireNonNull(key);
-        this.application = application;
-    }
-
-    public ConversationKey getKey() {
-        return key;
-    }
-
-    public String getApplication() {
-        return application;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Conversation that = (Conversation) o;
-        return Objects.equals(key, that.key) &&
-                Objects.equals(application, that.application);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(key, application);
-    }
-
-    @Override
-    public String toString() {
-        return "Conversation{" +
-                "key=" + key +
-                ", application='" + application + '\'' +
-                '}';
+/** Generates a sequence of InetAddresses, starting with 0.0.0.0. */
+public class InetAddressGenerator {
+    private InetAddress last = InetAddresses.forString("0.0.0.0");
+    public InetAddress next() {
+        InetAddress address = InetAddresses.increment(last);
+        last = address;
+        return address;
     }
 }

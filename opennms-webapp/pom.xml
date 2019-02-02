@@ -425,6 +425,12 @@
                   </exclusion>
                 </exclusions>
               </dependency>
+              <dependency>
+                <groupId>org.opennms.dependencies</groupId>
+                <artifactId>jstl-dependencies</artifactId>
+                <type>pom</type>
+                <version>${project.version}</version>
+              </dependency>
             </dependencies>
           </plugin>
         </plugins>
@@ -512,6 +518,12 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.db</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.sysprops</artifactId>
+      <version>${project.version}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
