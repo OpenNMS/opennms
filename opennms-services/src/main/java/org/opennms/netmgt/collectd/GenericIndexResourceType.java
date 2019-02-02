@@ -51,6 +51,7 @@ public class GenericIndexResourceType extends ResourceType {
     private String m_name;
     private PersistenceSelectorStrategy m_persistenceSelectorStrategy;
     private StorageStrategy m_storageStrategy;
+    private org.opennms.netmgt.config.datacollection.ResourceType m_resourceType;
 
     private Map<SnmpInstId, GenericIndexResource> m_resourceMap = new HashMap<SnmpInstId, GenericIndexResource>();
 
@@ -71,6 +72,11 @@ public class GenericIndexResourceType extends ResourceType {
         instantiateStorageStrategy(resourceType.getStorageStrategy().getClazz());
         m_storageStrategy.setParameters(resourceType.getStorageStrategy().getParameters());
         m_persistenceSelectorStrategy.setParameters(resourceType.getPersistenceSelectorStrategy().getParameters());
+        m_resourceType = resourceType;
+    }
+
+    org.opennms.netmgt.config.datacollection.ResourceType getResourceType(){
+        return m_resourceType;
     }
 
     private void instantiatePersistenceSelectorStrategy(String className) {

@@ -30,7 +30,10 @@ package org.opennms.plugins.elasticsearch.rest;
 
 import java.time.Instant;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.opennms.core.test.elastic.ElasticSearchRule;
+import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +46,19 @@ import io.searchbox.core.SearchResult;
 
 public class ClientRecoveryTest {
 	private static final Logger LOG = LoggerFactory.getLogger(ClientRecoveryTest .class);
+	private static final String HTTP_PORT = "9200";
+	private static final String HTTP_TRANSPORT_PORT = "9300";
+
+	@Rule
+	public ElasticSearchRule elasticServerRule = new ElasticSearchRule(
+			new ElasticSearchServerConfig()
+					.withDefaults()
+					.withSetting("http.enabled", true)
+					.withSetting("http.port", HTTP_PORT)
+					.withSetting("http.type", "netty4")
+					.withSetting("transport.type", "netty4")
+					.withSetting("transport.tcp.port", HTTP_TRANSPORT_PORT)
+	);
 
 	@Test
 	public void test() {

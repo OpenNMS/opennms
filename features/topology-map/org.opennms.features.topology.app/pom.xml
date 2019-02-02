@@ -225,6 +225,11 @@
             <version>2.1.0</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.sysprops</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     <repositories>
         <repository>

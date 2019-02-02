@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,7 @@
 package org.opennms.netmgt.measurements.impl;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -42,13 +43,19 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
+import org.opennms.netmgt.measurements.model.QueryMetadata;
+import org.opennms.netmgt.measurements.model.QueryNode;
+import org.opennms.netmgt.measurements.model.QueryResource;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.measurements.utils.Utils;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceId;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Duration;
@@ -65,6 +72,7 @@ import org.opennms.newts.api.query.StandardAggregationFunctions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.ObjectRetrievalFailureException;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
@@ -92,13 +100,13 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
     private static final Logger LOG = LoggerFactory.getLogger(NewtsFetchStrategy.class);
 
-    public static final long MIN_STEP_MS = Long.getLong("org.opennms.newts.query.minimum_step", 5L * 60L * 1000L);
+    public static final long MIN_STEP_MS = SystemProperties.getLong("org.opennms.newts.query.minimum_step", 5L * 60L * 1000L);
 
-    public static final int INTERVAL_DIVIDER = Integer.getInteger("org.opennms.newts.query.interval_divider", 2);
+    public static final int INTERVAL_DIVIDER = SystemProperties.getInteger("org.opennms.newts.query.interval_divider", 2);
 
-    public static final long DEFAULT_HEARTBEAT_MS = Long.getLong("org.opennms.newts.query.heartbeat", 450L * 1000L);
+    public static final long DEFAULT_HEARTBEAT_MS = SystemProperties.getLong("org.opennms.newts.query.heartbeat", 450L * 1000L);
 
-    public static final int PARALLELISM = Integer.getInteger("org.opennms.newts.query.parallelism", Runtime.getRuntime().availableProcessors());
+    public static final int PARALLELISM = SystemProperties.getInteger("org.opennms.newts.query.parallelism", Runtime.getRuntime().availableProcessors());
 
     @Autowired
     private Context m_context;
@@ -122,6 +130,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
         final Optional<Timestamp> startTs = Optional.of(Timestamp.fromEpochMillis(start));
         final Optional<Timestamp> endTs = Optional.of(Timestamp.fromEpochMillis(end));
         final Map<String, Object> constants = Maps.newHashMap();
+        final List<QueryResource> resources = new ArrayList<>();
 
         // Group the sources by resource id to avoid calling the ResourceDao
         // multiple times for the same resource
@@ -157,6 +166,8 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
             for (Source source : entry.getValue()) {
                 // Gather the values from strings.properties
                 Utils.convertStringAttributesToConstants(source.getLabel(), resource.getStringPropertyAttributes(), constants);
+
+                resources.add(getResourceInfo(resource, source));
 
                 // Grab the attribute that matches the source
                 RrdGraphAttribute rrdGraphAttribute = resource.getRrdGraphAttributes().get(source.getAttribute());
@@ -235,7 +246,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
             }
         }
 
-        FetchResults fetchResults = new FetchResults(timestamps, columns, lag.getStep(), constants);
+        FetchResults fetchResults = new FetchResults(timestamps, columns, lag.getStep(), constants, new QueryMetadata(resources));
         if (relaxed) {
             Utils.fillMissingValues(fetchResults, sources);
         }
@@ -410,5 +421,30 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
     @VisibleForTesting
     protected void setContext(Context context) {
         m_context = context;
+    }
+
+    private OnmsNode getNode(final OnmsResource resource, final Source source) {
+        OnmsNode node = null;
+        try {
+            node = ResourceTypeUtils.getNodeFromResourceRoot(resource);
+        } catch (final ObjectRetrievalFailureException e) {
+        }
+        if (node == null) {
+            final OnmsResource otherResource = m_resourceDao.getResourceById(ResourceId.fromString(source.getResourceId()).getParent());
+            node = ResourceTypeUtils.getNodeFromResource(otherResource);
+        }
+        return node;
+    }
+
+    private QueryResource getResourceInfo(final OnmsResource resource, final Source source) {
+        if (resource == null) return null;
+        final OnmsNode node = getNode(resource, source);
+        return new QueryResource(
+                                resource.getId().toString(),
+                                resource.getParent() == null? null : resource.getParent().getId().toString(),
+                                resource.getLabel(),
+                                resource.getName(),
+                                node == null? null : new QueryNode(node.getId(), node.getForeignSource(), node.getForeignId(), node.getLabel())
+                );
     }
 }

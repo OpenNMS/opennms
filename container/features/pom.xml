@@ -321,6 +321,7 @@
             <feature>opennms-topology-runtime-pathoutage</feature>
             <feature>opennms-topology-runtime-asset</feature>
             <feature>org.opennms.features.topology.shell</feature>
+            <feature>opennms-enlinkd-shell</feature>
             <feature>vaadin</feature>
             <feature>vaadin-dashboard</feature>
             <feature>vaadin-jmxconfiggenerator</feature>
@@ -616,6 +617,12 @@
       <artifactId>org.opennms.features.topology.shell</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.shell</artifactId>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

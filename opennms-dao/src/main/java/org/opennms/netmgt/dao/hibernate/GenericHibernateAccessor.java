@@ -39,6 +39,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -139,6 +140,28 @@ public class GenericHibernateAccessor extends HibernateDaoSupport implements Gen
     @Override
     public <T> void delete(T entity) {
         getHibernateTemplate().delete(entity);
+    }
+
+    public <T> void saveAll(Collection<T> entities) {
+        for(T entity : entities){
+            save(entity);
+        }
+    }
+
+    @Override
+    public <T> void deleteAll(Class<T> clazz) {
+        String sql = String.format("delete from %s entity", clazz.getSimpleName());
+        getHibernateTemplate().bulkUpdate(sql);
+    }
+
+    @Override
+    public <T> void deleteAll(final Collection<T> entities) {
+        getHibernateTemplate().deleteAll(entities);
+    }
+
+    @Override
+    public <T> List<T> findAll(Class<T> entityClass) throws DataAccessException {
+        return getHibernateTemplate().loadAll(entityClass);
     }
 
     private void prepareQuery(Query queryObject) {
