@@ -334,7 +334,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                         // Let's log an error, and return some date for sanity
                         final LocalDateTime oneMonthAgoLdt = LocalDateTime.now().minusMonths(1);
                         final Date oneMonthAgo = Date.from(oneMonthAgoLdt.atZone(ZoneId.systemDefault()).toInstant());
-                        LOG.error("Could not find minimum alarm creation time for alarms: {}. Using: {}", oneMonthAgo);
+                        LOG.error("Could not find minimum alarm creation time for alarms: {}. Using: {}", alarms, oneMonthAgo);
                         return oneMonthAgo;
                     });
             acks.addAll(acknowledgmentDao.findLatestAcks(earliestAlarm));
