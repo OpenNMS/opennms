@@ -28,7 +28,7 @@
 
 package org.opennms.enlinkd.generator;
 
-import java.sql.SQLException;
+import java.util.function.Consumer;
 
 import org.opennms.enlinkd.generator.protocol.CdpProtocol;
 import org.opennms.enlinkd.generator.protocol.IsIsProtocol;
@@ -121,27 +121,31 @@ public class TopologyGenerator {
         }
 
         public TopologyGenerator build() {
-            if(progressCallback == null){
-                progressCallback = new ProgressCallback() {
-                    // Default: log the progress
-                    private Logger log = LoggerFactory.getLogger(TopologyGenerator.class);
-                    @Override
-                    public void currentProgress(String progress) {
-                        log.info(progress);
-                    }
-                };
+            if(progressCallback == null) {
+                // Default: use a logger
+                Logger log = LoggerFactory.getLogger(TopologyGenerator.class);
+                progressCallback = new ProgressCallback(log::info);
             }
             return new TopologyGenerator(persister, progressCallback);
         }
     }
 
     /** Used to record the current progress of the generation. */
-    public abstract static class ProgressCallback {
+    public static class ProgressCallback {
 
-        public abstract void currentProgress(String progress);
+        private Consumer<String> consumer;
 
-        void currentProgress(String progress, Object ... args) {
+        public ProgressCallback(Consumer<String> consumer){
+            this.consumer = consumer;
+        }
+
+        public void currentProgress(String progress){
+            consumer.accept(progress);
+        }
+
+        public void currentProgress(String progress, Object ... args) {
             currentProgress(String.format(progress, args));
         }
+
     }
 }

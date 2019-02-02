@@ -60,7 +60,7 @@ public class OspfProtocol extends Protocol<OspfElement> {
     private List<OspfLink> createLinks(List<OnmsNode> nodes) {
         PairGenerator<OnmsNode> pairs = createPairGenerator(nodes);
         List<OspfLink> links = new ArrayList<>();
-        for (int i = 0; i < topologySettings.getAmountLinks()*2; i++) {
+        for (int i = 0; i < topologySettings.getAmountLinks()/2; i++) {
 
             // We create 2 links that reference each other, see also LinkdToplologyProvider.matchCdpLinks()
             Pair<OnmsNode, OnmsNode> pair = pairs.next();
