@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.mock;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -71,7 +72,7 @@ public class MockAcknowledgmentDao extends AbstractMockDao<OnmsAcknowledgment, I
     }
 
     @Override
-    public List<OnmsAcknowledgment> findLatestAcks() {
+    public List<OnmsAcknowledgment> findLatestAcks(Date from) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
