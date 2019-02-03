@@ -82,15 +82,15 @@ public class SnmpTrapNorthbounderManager implements InitializingBean, Northbound
         m_registrations.put(getName(), m_serviceRegistry.register(this, Northbounder.class));
 
         // Registering each destination as a northbounder
-        registerNorthnounders();
+        registerNorthbounders();
     }
 
     /**
-     * Register northnounders.
+     * Register northbounders.
      *
      * @throws Exception the exception
      */
-    private void registerNorthnounders() throws Exception {
+    private void registerNorthbounders() throws Exception {
         if (! m_configDao.getConfig().isEnabled()) {
             LOG.warn("The SNMP Trap NBI is globally disabled, the destinations won't be registered which means all the alarms will be rejected.");
             return;
@@ -168,7 +168,7 @@ public class SnmpTrapNorthbounderManager implements InitializingBean, Northbound
         try {
             m_configDao.reload();
             m_registrations.forEach((k,v) -> { if (k != getName()) v.unregister();});
-            registerNorthnounders();
+            registerNorthbounders();
         } catch (Exception e) {
             throw new NorthbounderException("Can't reload the SNMP trap northbound configuration", e);
         }
