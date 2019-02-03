@@ -51,7 +51,7 @@ public final class DhcpMonitor extends AbstractServiceMonitor {
     public static final String DEFAULT_MAC_ADDRESS = "00:06:0D:BE:9C:B2";
     private static final Logger LOG = LoggerFactory.getLogger(DhcpMonitor.class);
 
-    @Autowired(required = false)
+    @Autowired
     private Dhcpd dhcpd;
 
     public void setDhcpd(Dhcpd dhcpd) {

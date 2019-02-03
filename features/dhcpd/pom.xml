@@ -11,6 +11,7 @@
     <artifactId>org.opennms.features.dhcpd</artifactId>
     <name>OpenNMS :: Features :: DHCP Integration</name>
     <packaging>bundle</packaging>
+
     <build>
         <plugins>
             <plugin>
@@ -22,17 +23,8 @@
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
+                        <Private-Package>org.opennms.features.dhcpd.impl.*</Private-Package>
                     </instructions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.opennms.maven.plugins</groupId>
-                <artifactId>features-maven-plugin</artifactId>
-                <configuration>
-                    <name>dhcpd</name>
-                    <bundles>
-                        <bundle>mvn:org.opennms.features/org.opennms.features.dhcpd/${project.version}</bundle>
-                    </bundles>
                 </configuration>
             </plugin>
         </plugins>
@@ -42,6 +34,11 @@
         <dependency>
             <groupId>com.helger</groupId>
             <artifactId>dhcp4java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>spring-dependencies</artifactId>
+            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

@@ -37,7 +37,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DhcpDetectorFactory extends GenericServiceDetectorFactory<DhcpDetector> {
-    @Autowired(required=false)
+    @Autowired(required = false)
     private Dhcpd dhcpd;
 
     public DhcpDetectorFactory() {
