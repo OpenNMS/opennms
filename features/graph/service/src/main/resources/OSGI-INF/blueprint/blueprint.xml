@@ -9,12 +9,19 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
+    <!-- Listen for GraphContainerProviders -->
     <bean id="defaultGraphService" class="org.opennms.netmgt.graph.service.DefaultGraphService" />
     <service ref="defaultGraphService" interface="org.opennms.netmgt.graph.api.service.GraphService">
     </service>
-
     <reference-list interface="org.opennms.netmgt.graph.api.service.GraphContainerProvider" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="defaultGraphService" />
     </reference-list>
 
+    <!-- Listen for GraphProviders and expose them as GraphContainerProvider -->
+    <bean id="graphProviderManager" class="org.opennms.netmgt.graph.service.GraphProviderManager" >
+        <argument ref="blueprintBundleContext" />
+    </bean>
+    <reference-list interface="org.opennms.netmgt.graph.api.service.GraphProvider" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="graphProviderManager" />
+    </reference-list>
 </blueprint>

@@ -47,6 +47,7 @@ public class DeleteGeneratedHierarchiesShellCommand implements Action {
         businessServiceManager.getAllBusinessServices().stream()
             .filter(b -> "true".equals(b.getAttributes().get("generated")))
             .forEach(b -> businessServiceManager.deleteBusinessService(b));
+        businessServiceManager.triggerDaemonReload();
         return null;
     }
 }

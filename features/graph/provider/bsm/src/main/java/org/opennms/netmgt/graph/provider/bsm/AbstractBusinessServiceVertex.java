@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.graph.provider.bsm;
 
-import static org.opennms.netmgt.graph.provider.bsm.BusinessServiceGraphContainerProvider.NAMESPACE;
+import static org.opennms.netmgt.graph.provider.bsm.BusinessServiceGraphProvider.NAMESPACE;
 
 import java.util.Set;
 

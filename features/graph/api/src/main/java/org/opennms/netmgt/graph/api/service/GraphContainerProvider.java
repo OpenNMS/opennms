@@ -53,7 +53,7 @@ public interface GraphContainerProvider {
     GraphContainer loadGraphContainer();
 
     /**
-     * Invoking {@link #loadGraphContainer()} may take some time, so it is not feasable to invoke it, if only the meta data
+     * Invoking {@link #loadGraphContainer()} may take some time, so it is not feasible to invoke it, if only the meta data
      * of the container or its graph is requested. Therefore the {@link #getContainerInfo()} should return very quick
      * with the meta data of the container and its graphs
      *
