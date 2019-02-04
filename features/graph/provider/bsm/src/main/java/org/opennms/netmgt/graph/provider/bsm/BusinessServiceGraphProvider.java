@@ -31,11 +31,6 @@ package org.opennms.netmgt.graph.provider.bsm;
 import java.util.List;
 import java.util.Objects;
 
-import org.opennms.netmgt.graph.api.GraphContainer;
-import org.opennms.netmgt.graph.api.info.DefaultGraphContainerInfo;
-import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
-import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
-import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
@@ -43,18 +38,21 @@ import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
-import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
+import org.opennms.netmgt.graph.api.info.GraphInfo;
+import org.opennms.netmgt.graph.api.service.GraphProvider;
 import org.opennms.netmgt.graph.simple.SimpleEdge;
 import org.opennms.netmgt.graph.simple.SimpleGraph;
-import org.opennms.netmgt.graph.simple.SimpleGraphContainer;
 import org.opennms.netmgt.graph.simple.SimpleVertex;
+import org.opennms.netmgt.model.events.EventUtils;
+import org.opennms.netmgt.xml.event.Event;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 // TODO MVR this looks like a copy of BusinessServiceTopologyProvider
-public class BusinessServiceGraphContainerProvider implements GraphContainerProvider, EventListener {
+public class BusinessServiceGraphProvider implements GraphProvider, EventListener {
 
     protected static final String NAMESPACE = "bsm";
 
@@ -67,49 +65,39 @@ public class BusinessServiceGraphContainerProvider implements GraphContainerProv
 
     private boolean initialized = false;
 
-    private GraphContainer graphContainer;
+    private Graph graph;
 
-    public BusinessServiceGraphContainerProvider(BusinessServiceManager businessServiceManager, EventIpcManager eventIpcManager) {
+    public BusinessServiceGraphProvider(BusinessServiceManager businessServiceManager, EventIpcManager eventIpcManager) {
         this.businessServiceManager = Objects.requireNonNull(businessServiceManager);
         this.eventIpcManager = Objects.requireNonNull(eventIpcManager);
     }
 
     // TODO MVR We may need some kind of caching strategyg implemenetation allowing each provider to deal with reloads individually if they so choose
     @Override
-    public GraphContainer loadGraphContainer() {
+    public Graph<?, ?> loadGraph() {
         // TODO MVR this is not thread safe
         if (!initialized) {
-            graphContainer = createContainer();
+            graph = createGraph();
             initialized = true;
         }
-        return graphContainer;
+        return graph;
     }
 
     @Override
-    public GraphContainerInfo getContainerInfo() {
-        final DefaultGraphContainerInfo containerInfo = new DefaultGraphContainerInfo(NAMESPACE);
-        containerInfo.setLabel("BSM Topology Provider"); // Business Services
-        containerInfo.setDescription("This Topology Provider displays the hierarchy of the defined Business Services and their computed operational states.");
-
-        final DefaultGraphInfo defaultGraphInfo = new DefaultGraphInfo(containerInfo.getId(), SimpleVertex.class);
-        defaultGraphInfo.setLabel(containerInfo.getLabel());
-        defaultGraphInfo.setDescription(containerInfo.getDescription());
-
-        containerInfo.getGraphInfos().add(defaultGraphInfo);
-        return containerInfo;
+    public GraphInfo<?> getGraphInfo() {
+        final DefaultGraphInfo graphInfo = new DefaultGraphInfo(NAMESPACE, SimpleVertex.class);
+        graphInfo.setLabel("Business Service Graph"); // Business Services
+        graphInfo.setDescription("This Topology Provider displays the hierarchy of the defined Business Services and their computed operational states.");
+        return graphInfo;
     }
 
-    private GraphContainer createContainer() {
-        final SimpleGraphContainer simpleGraphContainer = new SimpleGraphContainer(getContainerInfo());
-        final SimpleGraph targetGraph = new SimpleGraph(NAMESPACE);
-        targetGraph.setLabel(simpleGraphContainer.getLabel());
-        targetGraph.setDescription(simpleGraphContainer.getDescription());
+    private Graph<?, ?> createGraph() {
+        final SimpleGraph bsmGraph = new SimpleGraph(getGraphInfo());
         final BusinessServiceGraph sourceGraph = businessServiceManager.getGraph();
         for (GraphVertex topLevelBusinessService : sourceGraph.getVerticesByLevel(0)) {
-            addVertex(targetGraph, sourceGraph, topLevelBusinessService, null);
+            addVertex(bsmGraph, sourceGraph, topLevelBusinessService, null);
         }
-        simpleGraphContainer.addGraph(targetGraph);
-        return simpleGraphContainer;
+        return bsmGraph;
     }
 
     private void addVertex(SimpleGraph targetGraph, BusinessServiceGraph sourceGraph, GraphVertex graphVertex, AbstractBusinessServiceVertex topologyVertex) {
@@ -156,7 +144,7 @@ public class BusinessServiceGraphContainerProvider implements GraphContainerProv
         if (e.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI)) {
             String daemonName = EventUtils.getParm(e, EventConstants.PARM_DAEMON_NAME);
             if (daemonName != null && "bsmd".equalsIgnoreCase(daemonName)) {
-                graphContainer = createContainer();
+                graph = createGraph();
             }
         }
     }

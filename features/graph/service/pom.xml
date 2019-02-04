@@ -13,6 +13,11 @@
     <packaging>bundle</packaging>
     <dependencies>
         <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.graph</groupId>
             <artifactId>org.opennms.features.graph.api</artifactId>
             <version>${project.version}</version>
@@ -20,6 +25,12 @@
         <dependency>
             <groupId>org.opennms.features.graph</groupId>
             <artifactId>org.opennms.features.graph.updates</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- TODO MVR dependency ?? -->
+        <dependency>
+            <groupId>org.opennms.features.graph</groupId>
+            <artifactId>org.opennms.features.graph.simple</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

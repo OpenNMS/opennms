@@ -31,43 +31,28 @@ package org.opennms.netmgt.graph.api.service;
 // TODO MVR the provider must provide information such as namespace, label, descriptin, etc. even if the graph itself is not loaded yet.
 // TODO MVR the graph provider should probably return multiple graphs (e.g. graphml)
 
-import org.opennms.netmgt.graph.api.Edge;
 import org.opennms.netmgt.graph.api.Graph;
-import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
 /**
- * Convenient interface if a provider only provides a single graph
+ * Convenient interface if a {@link GraphContainerProvider} only provides a single graph.
+ *
+ * Internally a {@link GraphProvider} will be converted to a {@link GraphContainerProvider} which provides a single graph.
+ *
  * @author mvrueden
- * @param <V>
- * @param <E>
  */
 // TODO MVR implement me properly
-public interface GraphProvider<V extends Vertex, E extends Edge> extends GraphContainerProvider {
-
-//    default GraphContainer loadGraphContainer() {
-//        final GraphContainerInfo info = getContainerInfo();
-//        final DefaultGraphContainer graphContainer = new DefaultGraphContainer(info);
-//        graphContainer.addGraph(loadGraph());
-//        return graphContainer;
-//    }
-//
-//    default GraphContainerInfo getContainerInfo() {
-//        final GraphInfo graphInfo = getGraphInfo();
-//        final DefaultGraphContainerInfo containerInfo = new DefaultGraphContainerInfo(graphInfo.getNamespace());
-//        containerInfo.setDescription(graphInfo.getDescription());
-//        containerInfo.setLabel(graphInfo.getLabel());
-//        containerInfo.addGraphInfo(graphInfo);
-//        return containerInfo;
-//    }
+public interface GraphProvider {
 
     /**
      * Loads the graph, this {@link GraphProvider} handles.
      * Loading may be performed very quickly, but also may take some time.
      *
-     * @return
+     * The provider should not initialize the container and does not need to cache it.
+     *
+     * @return The populated graph.
      */
-    Graph<V, E> loadGraph();
+    Graph<?, ?> loadGraph();
 
     /**
      * The {@link GraphInfo} should be used to provide details of the graph's nature, e.g. the namespace, label or description
@@ -76,5 +61,5 @@ public interface GraphProvider<V extends Vertex, E extends Edge> extends GraphCo
      * graph itself may change (e.g. different vertices/edges and properties (besides the ones defining the info)).
      * @return
      */
-    GraphInfo getGraphInfo();
+    GraphInfo<?> getGraphInfo();
 }

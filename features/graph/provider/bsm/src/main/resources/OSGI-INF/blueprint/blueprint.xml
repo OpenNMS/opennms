@@ -12,12 +12,12 @@
     <reference id="businessServiceManager" interface="org.opennms.netmgt.bsm.service.BusinessServiceManager" availability="mandatory" />
     <reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventIpcManager" availability="mandatory"/>
 
-    <bean id="bsmGraphContainerProvider" class="org.opennms.netmgt.graph.provider.bsm.BusinessServiceGraphContainerProvider" init-method="init" destroy-method="destroy">
+    <bean id="bsmGraphProvider" class="org.opennms.netmgt.graph.provider.bsm.BusinessServiceGraphProvider" init-method="init" destroy-method="destroy">
         <argument ref="businessServiceManager" />
         <argument ref="eventIpcManager" />
     </bean>
 
-    <service interface="org.opennms.netmgt.graph.api.service.GraphContainerProvider" ref="bsmGraphContainerProvider">
+    <service interface="org.opennms.netmgt.graph.api.service.GraphProvider" ref="bsmGraphProvider">
 
     </service>
 
