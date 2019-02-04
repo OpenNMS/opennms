@@ -71,6 +71,7 @@ public class DaemonConfigPageIT extends OpenNMSSeleniumTestCase {
         final DaemonReloadPage page = new DaemonReloadPage().open();
         Assert.assertThat(page.getDaemonRows(), hasSize(16)); // Expected daemon count
 
+        // Verify existence of some reloadable and enabled daemons
         final Daemon eventd = page.getDaemon("Eventd");
         Assert.assertThat(eventd.getName(), is("Eventd"));
         Assert.assertThat(eventd.isEnabled(), is(true));
@@ -83,6 +84,9 @@ public class DaemonConfigPageIT extends OpenNMSSeleniumTestCase {
 
         // Switch to all
         page.showAll();
+        Assert.assertThat(page.getDaemonRows(), hasSize(30)); // Expected daemon count
+
+        // Verify existence of non reloadable and/or enabled daemons
         final Daemon snmppoller = page.getDaemon("SnmpPoller");
         Assert.assertThat(snmppoller.getName(), is("SnmpPoller"));
         Assert.assertThat(snmppoller.isEnabled(), is(false));
@@ -95,13 +99,13 @@ public class DaemonConfigPageIT extends OpenNMSSeleniumTestCase {
 
         // Verify reloading
         Assert.assertThat(eventd.reload(5), is(true));
-        Assert.assertThat(eventd.getCurlString(), is(getExceptedCurlStringForDaemonName(eventd.getName())));
+        Assert.assertThat(eventd.getCurlString(), is(createExceptedCurlString(eventd.getName())));
 
         Assert.assertThat(alarmd.reload(5), is(true));
-        Assert.assertThat(alarmd.getCurlString(), is(getExceptedCurlStringForDaemonName(alarmd.getName())));
+        Assert.assertThat(alarmd.getCurlString(), is(createExceptedCurlString(alarmd.getName())));
     }
 
-    private String getExceptedCurlStringForDaemonName(String name){
+    private String createExceptedCurlString(String name){
         return String.format("curl --request POST -u USERNAME:PASSWORD -url %sopennms/rest/daemons/reload/%s/", getBaseUrl(), name);
     }
 
@@ -146,7 +150,7 @@ public class DaemonConfigPageIT extends OpenNMSSeleniumTestCase {
             Assert.assertThat(reloadButton.isEnabled(), is(true));
             reloadButton.click();
 
-            //Check Ui State while reloading is taking place
+            // Check Ui State while reloading is taking place
             reloadButton = getReloadButton();
             Assert.assertThat(reloadButton.isDisplayed(), is(true));
             Assert.assertThat(reloadButton.isEnabled(), is(false));
