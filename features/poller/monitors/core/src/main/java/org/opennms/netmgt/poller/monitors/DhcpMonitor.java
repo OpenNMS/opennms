@@ -31,6 +31,10 @@ package org.opennms.netmgt.poller.monitors;
 import java.io.IOException;
 import java.util.Map;
 
+import org.opennms.core.soa.lookup.ServiceLookup;
+import org.opennms.core.soa.lookup.ServiceLookupBuilder;
+import org.opennms.core.soa.lookup.ServiceRegistryLookup;
+import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.features.dhcpd.Dhcpd;
@@ -42,7 +46,6 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Distributable(DistributionContext.DAEMON)
 public final class DhcpMonitor extends AbstractServiceMonitor {
@@ -51,7 +54,10 @@ public final class DhcpMonitor extends AbstractServiceMonitor {
     public static final String DEFAULT_MAC_ADDRESS = "00:06:0D:BE:9C:B2";
     private static final Logger LOG = LoggerFactory.getLogger(DhcpMonitor.class);
 
-    @Autowired
+    private final ServiceLookup<Class<?>, String> SERVICE_LOOKUP = new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
+            .blocking()
+            .build();
+
     private Dhcpd dhcpd;
 
     public void setDhcpd(Dhcpd dhcpd) {
@@ -60,8 +66,12 @@ public final class DhcpMonitor extends AbstractServiceMonitor {
 
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+        if (dhcpd == null) {
+            dhcpd = SERVICE_LOOKUP.lookup(Dhcpd.class, null);
+        }
+
         // common parameters
-        final int retries = ParameterMap.getKeyedInteger(parameters, "retries", DEFAULT_RETRIES);
+        final int retries = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRIES);
         final int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
 
         // DHCP-specific parameters
@@ -72,14 +82,19 @@ public final class DhcpMonitor extends AbstractServiceMonitor {
         final String requestIpAddress = ParameterMap.getKeyedString(parameters, "requestIpAddress", "127.0.0.1");
 
         final TimeoutTracker tracker = new TimeoutTracker(parameters, retries, timeout);
-        final Transaction transaction = new Transaction(svc.getIpAddr(), macAddress, relayMode, myAddress, extendedMode, requestIpAddress, timeout);
-        for (tracker.reset(); tracker.shouldRetry() && !transaction.isSuccess(); tracker.nextAttempt()) {
+
+        Transaction transaction = null;
+
+        tracker.reset();
+
+        while (tracker.shouldRetry() && (transaction == null || !transaction.isSuccess())) {
             try {
-                dhcpd.addTransaction(transaction);
+                transaction = dhcpd.executeTransaction(svc.getIpAddr(), macAddress, relayMode, myAddress, extendedMode, requestIpAddress, timeout);
             } catch (IOException e) {
                 LOG.error("An unexpected exception occurred during DHCP polling", e);
                 return PollStatus.unavailable("An unexpected exception occurred during DHCP polling");
             }
+            tracker.nextAttempt();
         }
 
         return transaction.isSuccess() ? PollStatus.available((double) transaction.getResponseTime()) : PollStatus.unavailable("DHCP service unavailable");

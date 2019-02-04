@@ -626,7 +626,7 @@
       <rra>RRA:MIN:0.5:288:366</rra>
     </rrd>
     <service name="DHCP" interval="300000" user-defined="false" status="on">
-      <parameter key="retries" value="2" />
+      <parameter key="retry" value="2" />
       <parameter key="timeout" value="3000" />
       <parameter key="macAddress" value="00:06:0D:BE:9C:B2"/>
       <parameter key="myIpAddress" value="127.0.0.1"/>

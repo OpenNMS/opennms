@@ -48,26 +48,21 @@ import java.util.Set;
 import org.dhcp4java.DHCPOption;
 import org.dhcp4java.DHCPPacket;
 import org.opennms.features.dhcpd.Dhcpd;
-import org.opennms.features.dhcpd.Response;
 import org.opennms.features.dhcpd.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DhcpdImpl implements Dhcpd {
     private static final Logger LOG = LoggerFactory.getLogger(DhcpdImpl.class);
-    private final Set<Transaction> transactions = new HashSet<>();
+    private final Set<TransactionImpl> transactions = new HashSet<>();
     private int xid = new Random().nextInt();
     private boolean shutdown = false;
     private final Listener port67Listener = new Listener(this, BOOTP_REQUEST_PORT);
     private final Listener port68Listener = new Listener(this, BOOTP_REPLY_PORT);
+    final Thread thread67 = new Thread(this.port67Listener);
+    final Thread thread68 = new Thread(this.port68Listener);
 
     public DhcpdImpl() {
-        final Thread thread67 = new Thread(this.port67Listener);;
-        thread67.start();
-
-        final Thread thread68 = new Thread(this.port68Listener);;
-        thread68.start();
-
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
@@ -88,7 +83,7 @@ public class DhcpdImpl implements Dhcpd {
         return xid++;
     }
 
-    private DHCPPacket createPacket(int xid, Transaction transaction, byte messageType) {
+    private DHCPPacket createPacket(int xid, TransactionImpl transaction, byte messageType) {
         final DHCPPacket dhcpPacket = new DHCPPacket();
 
         dhcpPacket.setOp(BOOTREQUEST);
@@ -124,9 +119,9 @@ public class DhcpdImpl implements Dhcpd {
         return dhcpPacket;
     }
 
-    private long doTransaction(final Transaction transaction) throws IOException {
+    private void executeAndWait(final TransactionImpl transaction) throws IOException {
         if (shutdown) {
-            return -1;
+            return;
         }
 
         final int xid = nextXid();
@@ -171,7 +166,7 @@ public class DhcpdImpl implements Dhcpd {
                     synchronized (this.transactions) {
                         this.transactions.remove(transaction);
                     }
-                    return transaction.getResponseTime();
+                    return;
                 }
             }
         }
@@ -179,22 +174,31 @@ public class DhcpdImpl implements Dhcpd {
         synchronized (this.transactions) {
             this.transactions.remove(transaction);
         }
-
-        return -1;
     }
 
-    public long addTransaction(final Transaction transaction) throws IOException {
-        return doTransaction(transaction);
+    @Override
+    public Transaction executeTransaction(final String hostAddress, final String macAddress, final boolean relayMode, final String myIpAddress, final boolean extendedMode, final String requestIpAddress, final int timeout) throws IOException {
+        if (!thread67.isAlive()) {
+            thread67.start();
+        }
+
+        if (!thread68.isAlive()) {
+            thread68.start();
+        }
+
+        final TransactionImpl transaction = new TransactionImpl(hostAddress, macAddress, relayMode, myIpAddress, extendedMode, requestIpAddress, timeout);
+        executeAndWait(transaction);
+        return transaction;
     }
 
-    public void checkTransactions(final Response response) {
+    protected void checkTransactions(final Response response) {
         synchronized (this.transactions) {
             if (this.transactions.isEmpty()) {
                 LOG.debug("No polling request is waiting for response.");
                 return;
             }
 
-            for (final Transaction transaction : this.transactions) {
+            for (final TransactionImpl transaction : this.transactions) {
                 if (transaction.check(response)) {
                     return;
                 }

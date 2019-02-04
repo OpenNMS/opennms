@@ -34,8 +34,6 @@ import java.net.DatagramSocket;
 import java.net.SocketTimeoutException;
 
 import org.dhcp4java.DHCPPacket;
-import org.opennms.features.dhcpd.Dhcpd;
-import org.opennms.features.dhcpd.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

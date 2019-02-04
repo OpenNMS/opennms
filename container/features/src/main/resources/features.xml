@@ -1148,7 +1148,8 @@
       <!-- We really just need org.apache.httpcomponents out of here -->
       <feature>opennms-core-web</feature>
       <feature>opennms-core-ipc-rpc-api</feature>
-      <feature>opennms-icmp-api</feature> 
+      <feature>opennms-dhcpd</feature>
+      <feature>opennms-icmp-api</feature>
       <feature>opennms-poller-api</feature>
       <feature>opennms-dao-api</feature>
       <feature>opennms-config</feature>

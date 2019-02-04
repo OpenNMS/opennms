@@ -80,15 +80,19 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
     @Override
     public DhcpResponse receiveBanner() {
         final TimeoutTracker tracker = new TimeoutTracker(Collections.emptyMap(), m_retries, m_timeout);
-        final Transaction transaction = new Transaction(m_address.getHostAddress(), m_macAddress, m_relayMode, m_myIpAddress, m_extendedMode, m_requestIpAddress, m_timeout);
-        for (tracker.reset(); tracker.shouldRetry() && !transaction.isSuccess(); tracker.nextAttempt()) {
+        Transaction transaction = null;
+
+        tracker.reset();
+
+        while (tracker.shouldRetry() && (transaction == null || !transaction.isSuccess())) {
             try {
                 LOG.error("Checking for Dhcp: {}", transaction);
-                m_dhcpd.addTransaction(transaction);
+                transaction = m_dhcpd.executeTransaction(m_address.getHostAddress(), m_macAddress, m_relayMode, m_myIpAddress, m_extendedMode, m_requestIpAddress, m_timeout);
             } catch (IOException e) {
                 LOG.error("An unexpected exception occurred during DHCP detection", e);
                 return new DhcpResponse(-1);
             }
+            tracker.nextAttempt();
         }
 
         return new DhcpResponse(transaction.getResponseTime());
