@@ -28,8 +28,12 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +46,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.enlinkd.generator.TopologyGenerator;
 import org.opennms.enlinkd.generator.TopologyPersister;
 import org.opennms.enlinkd.generator.TopologySettings;
+import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -96,25 +101,30 @@ public class LinkdTopologyProviderTestIT {
     @Test
     @Transactional
     public void testCdp() {
-        testAmounts(TopologyGenerator.Protocol.cdp);
+        test(TopologyGenerator.Protocol.cdp);
     }
 
     @Test
     @Transactional
     public void testLldp() {
-        testAmounts(TopologyGenerator.Protocol.lldp);
+        test(TopologyGenerator.Protocol.lldp);
     }
 
     @Test
     @Transactional
     public void testIsis() {
-        testAmounts(TopologyGenerator.Protocol.isis);
+        test(TopologyGenerator.Protocol.isis);
     }
 
     @Test
     @Transactional
     public void testOspf() {
-        testAmounts(TopologyGenerator.Protocol.ospf);
+        test(TopologyGenerator.Protocol.ospf);
+    }
+
+    private void test(TopologyGenerator.Protocol protocol){
+        testAmounts(protocol);
+        testLinks(protocol);
     }
 
     private void testAmounts(TopologyGenerator.Protocol protocol) {
@@ -153,6 +163,76 @@ public class LinkdTopologyProviderTestIT {
         int expectedAmountOfEdges = settings.getAmountLinks() / 2;
         assertEquals(expectedAmountOfEdges, linkdTopologyProvider.getEdgeTotalCount());
         assertEquals(expectedAmountOfEdges, allEdges.size());
+    }
+
+    private void generateTopologyAndRefreshCaches(TopologySettings settings){
+        generator.generateTopology(settings);
+        entityCache.refresh();
+        linkdTopologyProvider.refresh();
+    }
+
+    /**
+     * Generates a ring topology and verifies that each Vertex is connected to it's neighbors.
+     */
+    private void testLinks(TopologyGenerator.Protocol protocol) {
+
+        // 1.) Generate Topology
+        TopologySettings settings = TopologySettings.builder()
+                .protocol(protocol)
+                .amountNodes(10) // use 10 so that the label names remain in the single digits => makes sorting easier
+                .amountLinks(20) // one edge is composed of 2 links
+                .topology(TopologyGenerator.Topology.ring) // deterministic behaviour: each node is connected to its neighbors
+                .build();
+        generateTopologyAndRefreshCaches(settings);
+        assertEquals(settings.getAmountNodes(), linkdTopologyProvider.getVerticesWithoutGroups().size());
+
+        // 1.) sort the nodes by it's label name.
+        List<Vertex> vertices = linkdTopologyProvider.getVerticesWithoutGroups();
+        Vertex[] verticesArray = vertices.toArray(new Vertex[vertices.size()]);
+        Arrays.sort(verticesArray, Comparator.comparing(Vertex::getLabel).thenComparing(Vertex::getNodeID));
+        vertices = Arrays.asList(verticesArray);
+
+        for(int i = 0; i < vertices.size(); i++){
+            VertexRef left = vertices.get(i);
+            VertexRef right = vertices.get(nextIndexInList(i, vertices.size()-1));
+            verifyLink(left, right);
+        }
+    }
+
+    private void verifyLink(VertexRef left, VertexRef right) {
+
+        // 1.) get the EdgeRef that connects the 2 vertices
+        List<EdgeRef> leftRefs = Arrays.asList(this.linkdTopologyProvider.getEdgeIdsForVertex(left));
+        List<EdgeRef>  rightRefs = Arrays.asList(this.linkdTopologyProvider.getEdgeIdsForVertex(right));
+        Set<EdgeRef> intersection = intersect(leftRefs, rightRefs);
+        assertEquals(1, intersection.size());
+        EdgeRef ref = intersection.iterator().next();
+
+        // 2.) get the Edge and check if it really connects the 2 Vertices
+        Edge edge = this.linkdTopologyProvider.getEdge(ref);
+        // we don't know the direction it is connected so we have to test both ways:
+        assertTrue(
+                (edge.getSource().getVertex().equals(left) || edge.getSource().getVertex().equals(right))
+                        && (edge.getTarget().getVertex().equals(left) || edge.getTarget().getVertex().equals(right))
+                        && !edge.getSource().getVertex().equals(edge.getTarget().getVertex()));
+    }
+
+    /**
+     * Gives back the intersection between the 2 collections, as in:
+     * - only elements that are contained in both collections will be retained
+     * - double elements are removed
+     */
+    private <E> Set<E> intersect(final Collection<E> left, final Collection<E> right){
+        Set<E> set = new HashSet<>(left);
+        set.retainAll(new HashSet<>(right));
+        return set;
+    }
+
+    private int nextIndexInList(int current, int lastIndexInList) {
+        if (current == lastIndexInList) {
+            return 0;
+        }
+        return ++current;
     }
 
 }
