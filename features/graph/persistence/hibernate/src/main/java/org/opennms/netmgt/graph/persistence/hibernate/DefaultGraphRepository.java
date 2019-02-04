@@ -30,8 +30,10 @@ package org.opennms.netmgt.graph.persistence.hibernate;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.Function;
 
+import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.graph.api.Graph;
 import org.opennms.netmgt.graph.api.GraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
@@ -42,7 +44,6 @@ import org.opennms.netmgt.graph.persistence.api.GraphRepository;
 import org.opennms.netmgt.graph.persistence.hibernate.mapper.EntityToGenericMapper;
 import org.opennms.netmgt.graph.persistence.hibernate.mapper.GenericToEntityMapper;
 import org.opennms.netmgt.graph.updates.change.ContainerChangeSet;
-import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.topology.EdgeEntity;
 import org.opennms.netmgt.topology.GraphContainerEntity;
 import org.opennms.netmgt.topology.GraphEntity;
@@ -50,7 +51,6 @@ import org.opennms.netmgt.topology.PropertyEntity;
 import org.opennms.netmgt.topology.VertexEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,12 +60,15 @@ public class DefaultGraphRepository implements GraphRepository {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultGraphRepository.class);
 
-    @Autowired
-    private GenericPersistenceAccessor accessor;
+    private final EntityToGenericMapper entityToGenericMapper = new EntityToGenericMapper();
 
-    private EntityToGenericMapper entityToGenericMapper = new EntityToGenericMapper();
+    private final GenericToEntityMapper genericToEntityMapper = new GenericToEntityMapper();
 
-    private GenericToEntityMapper genericToEntityMapper = new GenericToEntityMapper();
+    private final GenericPersistenceAccessor accessor;
+
+    public DefaultGraphRepository(GenericPersistenceAccessor genericPersistenceAccessor) {
+        this.accessor = Objects.requireNonNull(genericPersistenceAccessor);
+    }
 
     @Override
     public <C extends GraphContainer> C findContainerById(String containerId, Function<GenericGraphContainer, C> transformer) {

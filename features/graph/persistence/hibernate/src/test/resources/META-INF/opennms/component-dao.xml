@@ -7,7 +7,8 @@
 		http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd		
 	">
 
-	<!-- Just define the bean, @Autowired, etc. will take care of the rest -->
-	<bean name="graphRepository" class="org.opennms.netmgt.graph.persistence.hibernate.DefaultGraphRepository" />
+	<bean name="graphRepository" class="org.opennms.netmgt.graph.persistence.hibernate.DefaultGraphRepository" >
+		<constructor-arg ref="genericHibernateAccessor" />
+	</bean>
 
 </beans>
