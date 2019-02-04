@@ -28,6 +28,11 @@
 
 package org.opennms.netmgt.collection.client.rpc;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+
 import org.opennms.core.rpc.api.RpcTarget;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
@@ -35,11 +40,6 @@ import org.opennms.netmgt.collection.api.CollectorRequestBuilder;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.dto.CollectionAgentDTO;
 import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
 
@@ -54,6 +54,8 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
     private ServiceCollector serviceCollector;
 
     private Long ttlInMs;
+
+    private String className;
 
     public CollectorRequestBuilderImpl(LocationAwareCollectorClientImpl client) {
         this.client = Objects.requireNonNull(client);
@@ -79,6 +81,7 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
 
     @Override
     public CollectorRequestBuilder withCollectorClassName(String className) {
+        this.className = className;
         this.serviceCollector = client.getRegistry().getCollectorByClassName(className);
         return this;
     }
@@ -120,7 +123,7 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
         CollectorRequestDTO request = new CollectorRequestDTO();
         request.setLocation(target.getLocation());
         request.setSystemId(target.getSystemId());
-        request.setClassName(serviceCollector.getClass().getCanonicalName());
+        request.setClassName(className != null ? className : serviceCollector.getClass().getCanonicalName());
         request.setTimeToLiveMs(ttlInMs);
 
         // Retrieve the runtime attributes, which may include attributes

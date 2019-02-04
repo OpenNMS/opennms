@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,46 +26,42 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.apilayer.pollers;
+package org.opennms.features.apilayer.collectors;
 
 import java.util.Hashtable;
 import java.util.Map;
 
 import org.opennms.features.apilayer.utils.InterfaceMapper;
-import org.opennms.integration.api.v1.pollers.ServicePollerFactory;
-import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.integration.api.v1.collectors.ServiceCollectorFactory;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Manager to plug the service pollers that implement integration-api to the default service poller registry.
- */
-public class ServicePollerManager extends InterfaceMapper<ServicePollerFactory, ServiceMonitor> {
+public class ServiceCollectorManager extends InterfaceMapper<ServiceCollectorFactory, ServiceCollector> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ServicePollerManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ServiceCollectorManager.class);
 
-    public ServicePollerManager(BundleContext bundleContext) {
-        super(ServiceMonitor.class, bundleContext);
+    public ServiceCollectorManager(BundleContext bundleContext) {
+        super(ServiceCollector.class, bundleContext);
     }
 
     @Override
-    public ServiceMonitor map(ServicePollerFactory ext) {
-        return new ServicePollerImpl(ext);
+    public ServiceCollector map(ServiceCollectorFactory ext) {
+        return new ServiceCollectorImpl(ext);
     }
 
-    // Need to override as registry needs poller class name in properties.
-    @Override
-    public synchronized void onBind(ServicePollerFactory extension, Map properties) {
+    // Need to override as registry needs collector class name in properties.
+    public synchronized void onBind(ServiceCollectorFactory extension, Map properties) {
         LOG.debug("bind called with {}: {}", extension, properties);
         if (extension != null) {
             extServiceRegistrationMap.computeIfAbsent(extension, (ext) -> {
-                final ServiceMonitor mappedExt = map(ext);
+                final ServiceCollector mappedExt = map(ext);
                 final Hashtable<String, Object> props = new Hashtable<>();
                 // Make the service available to any Spring-based listeners
                 props.put("registration.export", Boolean.TRUE.toString());
-                // Registry needs type of poller class.
-                props.put("type", ext.getPollerClassName());
+                // Registry needs type of collector class.
+                props.put("type", ext.getCollectorClassName());
                 return bundleContext.registerService(clazz, mappedExt, props);
             });
         }

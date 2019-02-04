@@ -146,7 +146,7 @@ public class CollectCommand implements Action {
         final CompletableFuture<CollectionSet> future = locationAwareCollectorClient.collect()
                 .withAgent(agent)
                 .withSystemId(systemId)
-                .withCollector(collector)
+                .withCollectorClassName(className)
                 .withTimeToLive(ttlInMs)
                 .withAttributes(parse(attributes))
                 .execute();
