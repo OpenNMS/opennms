@@ -1337,4 +1337,44 @@
         <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.generator/${project.version}</bundle>
         <feature>opennms-dao</feature>
     </feature>
+
+    <!-- TODO MVR may split in several features , e.g. API / IMPL, etc.-->
+    <!-- TODO MVR redefine me -->
+    <!-- TODO MVR automatically install all opennms-graph related features (featuresBoot) -->
+    <feature name="opennms-graphs" description="OpenNMS :: Features :: Graph" version="${project.version}">
+        <feature>guava</feature>
+
+        <!-- TODO MVR topology is embedding this, maybe we should do the same here? -->
+        <!-- TODO MVR this depends on commons-collections, verify via headers:<bundle> to see if everything can be imported -->
+        <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.jung/${jungVersion}</bundle>
+        <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.simple/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.updates/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.service/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.shell/${project.version}</bundle>
+
+        <!-- TODO MVR Graph persistence ??? -->
+    </feature>
+
+    <!-- Providers -->
+    <!-- TODO MVR redefine me -->
+    <feature name="opennms-graph-provider-dummy" description="OpenNMS :: Features :: Graph :: Provider :: Dummy" version="${project.version}">
+        <feature>opennms-graphs</feature>
+        <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.dummy/${project.version}</bundle>
+    </feature>
+
+    <!-- TODO MVR redefine me -->
+    <feature name="opennms-graph-provider-graphml" description="OpenNMS :: Features :: Graph :: Provider :: GraphML" version="${project.version}">
+        <feature>opennms-core</feature>
+        <feature>opennms-graphs</feature>
+        <bundle>mvn:org.opennms.features/org.opennms.features.graphml/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.graphml/${project.version}</bundle>
+    </feature>
+
+    <!-- TODO MVR redefine me -->
+    <feature name="opennms-graph-provider-bsm" description="OpenNMS :: Features :: Graph :: Provider :: Business Services" version="${project.version}">
+        <feature>opennms-model</feature>
+        <feature>opennms-graphs</feature>
+        <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.bsm/${project.version}</bundle>
+    </feature>
 </features>

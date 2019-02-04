@@ -357,6 +357,13 @@
             <!-- Flows -->
             <feature>opennms-flows</feature>
 
+            <!-- Graph Service -->
+            <!-- TODO MVR were do we add the dependencies, so they end up in system? -->
+            <feature>opennms-graphs</feature>
+            <feature>opennms-graph-provider-bsm</feature>
+            <feature>opennms-graph-provider-dummy</feature> <!-- TODO MVR remove at some point -->
+            <feature>opennms-graph-provider-graphml</feature>
+
 	    <!-- Integration API -->
 	    <feature>opennms-api-layer</feature>
 
