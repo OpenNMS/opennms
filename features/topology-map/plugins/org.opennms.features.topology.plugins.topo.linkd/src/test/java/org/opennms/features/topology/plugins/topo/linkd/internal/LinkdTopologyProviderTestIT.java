@@ -124,7 +124,7 @@ public class LinkdTopologyProviderTestIT {
 
     private void test(TopologyGenerator.Protocol protocol){
         testAmounts(protocol);
-        testLinks(protocol);
+        testLinkingBetweenNodes(protocol);
     }
 
     private void testAmounts(TopologyGenerator.Protocol protocol) {
@@ -174,7 +174,7 @@ public class LinkdTopologyProviderTestIT {
     /**
      * Generates a ring topology and verifies that each Vertex is connected to it's neighbors.
      */
-    private void testLinks(TopologyGenerator.Protocol protocol) {
+    private void testLinkingBetweenNodes(TopologyGenerator.Protocol protocol) {
 
         // 1.) Generate Topology
         TopologySettings settings = TopologySettings.builder()
@@ -186,20 +186,21 @@ public class LinkdTopologyProviderTestIT {
         generateTopologyAndRefreshCaches(settings);
         assertEquals(settings.getAmountNodes(), linkdTopologyProvider.getVerticesWithoutGroups().size());
 
-        // 1.) sort the nodes by it's label name.
+        // 2.) sort the nodes by it's label name.
         List<Vertex> vertices = linkdTopologyProvider.getVerticesWithoutGroups();
         Vertex[] verticesArray = vertices.toArray(new Vertex[vertices.size()]);
         Arrays.sort(verticesArray, Comparator.comparing(Vertex::getLabel).thenComparing(Vertex::getNodeID));
         vertices = Arrays.asList(verticesArray);
 
+        // 3.) test the linking between each node and its next neighbor
         for(int i = 0; i < vertices.size(); i++){
             VertexRef left = vertices.get(i);
             VertexRef right = vertices.get(nextIndexInList(i, vertices.size()-1));
-            verifyLink(left, right);
+            verifyLinkingBetweenNodes(left, right);
         }
     }
 
-    private void verifyLink(VertexRef left, VertexRef right) {
+    private void verifyLinkingBetweenNodes(VertexRef left, VertexRef right) {
 
         // 1.) get the EdgeRef that connects the 2 vertices
         List<EdgeRef> leftRefs = Arrays.asList(this.linkdTopologyProvider.getEdgeIdsForVertex(left));
@@ -212,9 +213,9 @@ public class LinkdTopologyProviderTestIT {
         Edge edge = this.linkdTopologyProvider.getEdge(ref);
         // we don't know the direction it is connected so we have to test both ways:
         assertTrue(
-                (edge.getSource().getVertex().equals(left) || edge.getSource().getVertex().equals(right))
-                        && (edge.getTarget().getVertex().equals(left) || edge.getTarget().getVertex().equals(right))
-                        && !edge.getSource().getVertex().equals(edge.getTarget().getVertex()));
+                (edge.getSource().getVertex().equals(left) || edge.getSource().getVertex().equals(right)) // source side
+                        && (edge.getTarget().getVertex().equals(left) || edge.getTarget().getVertex().equals(right)) // target side
+                        && !edge.getSource().getVertex().equals(edge.getTarget().getVertex())); // make sure it doesn't connect the same node
     }
 
     /**
