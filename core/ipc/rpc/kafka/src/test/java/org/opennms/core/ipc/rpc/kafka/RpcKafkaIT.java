@@ -28,6 +28,11 @@
 
 package org.opennms.core.ipc.rpc.kafka;
 
+import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -35,10 +40,9 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.hamcrest.Matchers.lessThan;
-import static com.jayway.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.equalTo;
+import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.DEFAULT_TTL_PROPERTY;
+import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.MAX_BUFFER_SIZE_PROPERTY;
+
 import java.util.Hashtable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -70,13 +74,17 @@ import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 
+import com.google.common.base.Strings;
+
 public class RpcKafkaIT {
 
     private static final String KAFKA_CONFIG_PID = "org.opennms.core.ipc.rpc.kafka.";
     public static final String REMOTE_LOCATION_NAME = "remote";
+    public static final String MAX_BUFFER_SIZE = "1000000";
 
     static {
-        System.setProperty(String.format("%sttl", KAFKA_CONFIG_PID), "10000");
+        System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, DEFAULT_TTL_PROPERTY), "20000");
+        System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, MAX_BUFFER_SIZE_PROPERTY), MAX_BUFFER_SIZE);
     }
 
     @Rule
@@ -99,14 +107,13 @@ public class RpcKafkaIT {
 
     @Before
     public void setup() throws Exception {
-        System.setProperty(String.format("%sbootstrap.servers", KAFKA_CONFIG_PID), kafkaServer.getKafkaConnectString());
-        System.setProperty(String.format("%sauto.offset.reset", KAFKA_CONFIG_PID), "earliest");
+        System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG), kafkaServer.getKafkaConnectString());
+        System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "earliest");
         rpcClient = new KafkaRpcClientFactory();
         echoClient = new MockEchoClient(rpcClient);
         rpcClient.start();
         kafkaConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
         kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        kafkaConfig.put("rpcid.cache.config", "maximumSize=1000,expireAfterWrite=15s");
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(KafkaRpcConstants.KAFKA_CONFIG_PID).getProperties())
                 .thenReturn(kafkaConfig);
@@ -257,17 +264,38 @@ public class RpcKafkaIT {
         });
         await().atMost(45, TimeUnit.SECONDS).untilAtomic(count, equalTo(maxRequests));
         await().atMost(45, TimeUnit.SECONDS).untilAtomic(messageCount, equalTo(maxRequests));
-        await().atMost(45, TimeUnit.SECONDS).pollDelay(15, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() ->   {
-            // In real world scenario, this will be done by cache in read/write operations. Don't need explicit cleanUp.
-            kafkaRpcServer.getRpcIdCache().cleanUp();
-            return kafkaRpcServer.getRpcIdCache().size() == 0;
-        } );
+        await().atMost(45, TimeUnit.SECONDS).until(() -> kafkaRpcServer.getRpcIdQueue().size(), is(0));
         closed.set(true);
+    }
+
+
+    @Test(timeout = 45000)
+    public void testLargeMessages() throws ExecutionException, InterruptedException {
+        final EchoRequest request = new EchoRequest();
+        request.setLocation(REMOTE_LOCATION_NAME);
+        String message = Strings.repeat("*", Integer.parseInt(MAX_BUFFER_SIZE));
+        request.setBody(message);
+        EchoResponse expectedResponse = new EchoResponse();
+        expectedResponse.setBody(message);
+        EchoResponse actualResponse = echoClient.execute(request).get();
+        assertEquals(expectedResponse, actualResponse);
+    }
+
+    @Test(timeout = 45000)
+    public void testLargeMessagesWithSystemId() throws ExecutionException, InterruptedException {
+        final EchoRequest request = new EchoRequest();
+        request.setLocation(REMOTE_LOCATION_NAME);
+        request.setSystemId(minionIdentity.getId());
+        String message = Strings.repeat("*", Integer.parseInt(MAX_BUFFER_SIZE));
+        request.setBody(message);
+        EchoResponse expectedResponse = new EchoResponse();
+        expectedResponse.setBody(message);
+        EchoResponse actualResponse = echoClient.execute(request).get();
+        assertEquals(expectedResponse, actualResponse);
     }
 
     private void sendRequestAndVerifyResponse(EchoRequest request, long ttl) {
         request.setTimeToLiveMs(ttl);
-        System.out.printf("request = %s ", request.toString());
         echoClient.execute(request).whenComplete((response, e) -> {
             if (e != null) {
                 long responseTime = System.currentTimeMillis() - request.getId();

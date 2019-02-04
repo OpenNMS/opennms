@@ -851,7 +851,7 @@ create index events_nodeid_display_ackuser on events(nodeid, eventdisplay, event
 
 create table event_parameters (
 	eventID			integer not null,
-	name        varchar(256) not null,
+	name                text not null,
 	value		    text not null,
 	type		    varchar(256) not null,
 
@@ -1773,6 +1773,7 @@ CREATE TABLE acks (
 
 create index ack_time_idx on acks(ackTime);
 create index ack_user_idx on acks(ackUser);
+create index ack_refid_idx on acks(refId);
 
 --########################################################################
 --#

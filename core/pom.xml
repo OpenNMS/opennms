@@ -46,6 +46,7 @@
     <module>soa</module>
     <module>spring</module>
     <module>spring-web</module>
+    <module>sysprops</module>
     <module>tasks</module>
     <module>test-api</module>
     <module>upgrade</module>

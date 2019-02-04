@@ -177,6 +177,20 @@ public class BSMTopologyIT extends OpenNMSSeleniumTestCase {
         Assert.assertEquals(Boolean.TRUE, topologyUiPage.isSimulationModeEnabled());
     }
 
+    // See NMS-10529
+    @Test
+    public void canShowBusinessServiceStatus() {
+        // Remove any existing vertices from focus
+        topologyUiPage.clearFocus();
+
+        // Search for and select the first business service in our list and select it
+        final String businessServiceName = businessServiceNames.get(0);
+        topologyUiPage.search(businessServiceName.substring(0,  12)).selectItemThatContains(businessServiceName);
+
+        // Now ensure that the "Business Service Status" is visible in the info panel
+        pageContainsText("Business Service Status");
+    }
+
     private List<String> createChainOfBusinessServices(int length) throws InterruptedException {
         // Create a series of business services
         bsmAdminPage.open();

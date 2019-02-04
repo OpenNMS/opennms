@@ -288,5 +288,16 @@
                              referencedTableName="applications" referencedColumnNames="id" onDelete="CASCADE"/>
   </changeSet>
 
+  <changeSet author="jwhite" id="24.0.0-create-refid-index-on-acks">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="acks"/>
+    </preConditions>
+
+    <!-- Create index-->
+    <sql>
+      CREATE INDEX ack_refid_idx ON acks USING btree (refid);
+    </sql>
+  </changeSet>
+
 </databaseChangeLog>
 

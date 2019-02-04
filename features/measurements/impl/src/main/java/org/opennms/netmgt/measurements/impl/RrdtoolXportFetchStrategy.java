@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,6 +45,7 @@ import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.lang.StringUtils;
 import org.jrobin.core.RrdException;
 import org.opennms.netmgt.measurements.api.FetchResults;
+import org.opennms.netmgt.measurements.model.QueryMetadata;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.rrd.model.RrdXport;
 import org.opennms.netmgt.rrd.model.XRow;
@@ -82,7 +83,7 @@ public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
      */
     @Override
     protected FetchResults fetchMeasurements(long start, long end, long step, int maxrows,
-            Map<Source, String> rrdsBySource, Map<String, Object> constants) throws RrdException {
+            Map<Source, String> rrdsBySource, Map<String, Object> constants, QueryMetadata metadata) throws RrdException {
 
         String rrdBinary = System.getProperty("rrd.binary");
         if (rrdBinary == null) {
@@ -196,7 +197,7 @@ public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
             columns.put(labelMap.get(label), values[i++]);
         }
 
-        return new FetchResults(timestamps, columns, xportStepInMs, constants);
+        return new FetchResults(timestamps, columns, xportStepInMs, constants, metadata);
     }
 
 }

@@ -431,6 +431,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		installFeature("opennms-core"); // System classpath
 		installFeature("opennms-events-api"); // System classpath
 		installFeature("opennms-model"); // System classpath
+		installFeature("opennms-config-api"); // System classpath
 		installFeature("opennms-events-commands");
 		System.out.println(executeCommand("feature:list -i"));
 	}
