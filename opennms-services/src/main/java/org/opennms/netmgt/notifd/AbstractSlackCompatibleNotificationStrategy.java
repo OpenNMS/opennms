@@ -143,7 +143,7 @@ public abstract class AbstractSlackCompatibleNotificationStrategy implements Not
 	}
 
 	protected String getUrl() {
-		String url = getValueFromSwitchOrProp("Webhook URL", "url", getUrlPropertyName());
+		String url = getValueFromSwitchOrProp("Webhook URL", "-url", getUrlPropertyName());
 	
 		if (url == null) {
 			LOG.error("No webhook URL specified as a notification command switch or via system property {}. Cannot continue.", getUrlPropertyName());
@@ -152,7 +152,7 @@ public abstract class AbstractSlackCompatibleNotificationStrategy implements Not
 	}
 
 	protected String getUsername() {
-		String username = getValueFromSwitchOrProp("Bot username", "username", getUsernamePropertyName());
+		String username = getValueFromSwitchOrProp("Bot username", "-username", getUsernamePropertyName());
 		
 		if (username == null) {
 			LOG.warn("No bot username specified as a notification command switch or via system property {}. Using default value opennms.", getUsernamePropertyName());
@@ -162,7 +162,7 @@ public abstract class AbstractSlackCompatibleNotificationStrategy implements Not
 	}
 
 	protected String getIconUrl() {
-		String iconurl = getValueFromSwitchOrProp("Icon URL", "iconurl", getIconUrlPropertyName());
+		String iconurl = getValueFromSwitchOrProp("Icon URL", "-iconurl", getIconUrlPropertyName());
 		
 		if (iconurl == null) {
 			LOG.info("No icon URL specified as a notification command switch or via system property {}. Not setting one.", getIconUrlPropertyName());
@@ -171,7 +171,7 @@ public abstract class AbstractSlackCompatibleNotificationStrategy implements Not
 	}
 
 	protected String getIconEmoji() {
-		String iconemoji = getValueFromSwitchOrProp("Icon Emoji", "iconemoji", getIconEmojiPropertyName());
+		String iconemoji = getValueFromSwitchOrProp("Icon Emoji", "-iconemoji", getIconEmojiPropertyName());
 		
 		if (iconemoji == null) {
 			LOG.info("No icon emoji specified as a notification command switch or via system property {}. Not setting one.", getIconEmojiPropertyName());
@@ -183,7 +183,7 @@ public abstract class AbstractSlackCompatibleNotificationStrategy implements Not
 	}
 
 	protected String getChannel() {
-		String channel = getValueFromSwitchOrProp("Channel name", "channel", getChannelPropertyName());
+		String channel = getValueFromSwitchOrProp("Channel name", "-channel", getChannelPropertyName());
 		
 		if (channel == null) {
 			LOG.info("No channel specified as a notification command switch or via system property {}. Not setting one.", getChannelPropertyName());
@@ -192,6 +192,9 @@ public abstract class AbstractSlackCompatibleNotificationStrategy implements Not
 	}
 
 	protected String getValueFromSwitchOrProp(String what, String switchName, String propName) {
+		if (switchName != null && ! switchName.startsWith("-")) {
+			LOG.warn("Specifying switch names (e.g. '{}') without a leading dash is no longer supported. You must update your notification command definitions. See https://issues.opennms.org/browse/NMS-10552", switchName);
+		}
 		LOG.debug("Trying to get {} from notification switch {}", what, switchName);
 		String val = getSwitchValue(switchName);
 		if (val != null) {
