@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -193,7 +193,8 @@ public abstract class AbstractSlackCompatibleNotificationStrategy implements Not
 
 	protected String getValueFromSwitchOrProp(String what, String switchName, String propName) {
 		if (switchName != null && ! switchName.startsWith("-")) {
-			LOG.warn("Specifying switch names (e.g. '{}') without a leading dash is no longer supported. You must update your notification command definitions. See https://issues.opennms.org/browse/NMS-10552", switchName);
+			switchName = "-" + switchName;
+			LOG.warn("Specifying switch names (e.g. '{}') without a leading dash is deprecated. Please update your notification command definition to use '-{}' instead. See https://issues.opennms.org/browse/NMS-10552", switchName, switchName);
 		}
 		LOG.debug("Trying to get {} from notification switch {}", what, switchName);
 		String val = getSwitchValue(switchName);
