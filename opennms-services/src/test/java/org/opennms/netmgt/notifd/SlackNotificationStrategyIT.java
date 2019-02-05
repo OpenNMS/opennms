@@ -85,11 +85,11 @@ public class SlackNotificationStrategyIT {
             System.setProperty("org.opennms.netmgt.notifd.slack.iconEmoji", ":shipitXX:");
             System.setProperty("org.opennms.netmgt.notifd.slack.username", "opennmsXX");
 
-            arguments.add(new Argument("url", null, "http://localhost:" + port + "/hooks/abunchofstuffthatidentifiesawebhook", false));
-            arguments.add(new Argument("channel", null, "integrationtests", false));
-            arguments.add(new Argument("username", null, "opennms", false));
-            arguments.add(new Argument("iconurl", null, "http://opennms.org/logo.png", false));
-            arguments.add(new Argument("iconemoji", null, ":shipit:", false));
+            arguments.add(new Argument("-url", null, "http://localhost:" + port + "/hooks/abunchofstuffthatidentifiesawebhook", false));
+            arguments.add(new Argument("-channel", null, "integrationtests", false));
+            arguments.add(new Argument("-username", null, "opennms", false));
+            arguments.add(new Argument("-iconurl", null, "http://opennms.org/logo.png", false));
+            arguments.add(new Argument("-iconemoji", null, ":shipit:", false));
             arguments.add(new Argument("-subject", null, "Test", false));
             arguments.add(new Argument("-tm", null, "This is only a test", false));
             
