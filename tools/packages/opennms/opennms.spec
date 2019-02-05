@@ -97,6 +97,8 @@ Requires:	%{jdk}
 Obsoletes:	opennms < 1.3.11
 Provides:	%{name}-plugin-protocol-xml = %{version}-%{release}
 Obsoletes:	%{name}-plugin-protocol-xml < %{version}
+Provides:	%{name}-plugin-protocol-dhcp = %{version}-%{release}
+Obsoletes:	%{name}-plugin-protocol-dhcp < %{version}
 
 %description core
 The core backend.  This package contains the main daemon responsible
