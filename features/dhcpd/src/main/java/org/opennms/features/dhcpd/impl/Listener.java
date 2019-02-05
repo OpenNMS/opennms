@@ -44,6 +44,7 @@ public class Listener implements Runnable {
     private final int port;
     private final DhcpdImpl dhcpd;
     private DatagramSocket datagramSocket;
+    private Thread thread;
 
     public Listener(final DhcpdImpl dhcpd, int port) {
         this.dhcpd = dhcpd;
@@ -54,22 +55,45 @@ public class Listener implements Runnable {
         this.datagramSocket.send(message);
     }
 
-    @Override
-    public void run() {
+    public synchronized boolean start() {
+        if (shutdown) {
+            return false;
+        }
+
+        if (thread != null && thread.isAlive()) {
+            return true;
+        }
+
         try {
             this.datagramSocket = new DatagramSocket(this.port);
             this.datagramSocket.setBroadcast(true);
             this.datagramSocket.setSoTimeout(1000);
         } catch (Exception e) {
             LOG.error("Error opening datagram socket for port {}, DHCP Monitor will not work", this.port);
-            return;
+            return false;
         }
 
+        this.thread = new Thread(this);
+        this.thread.start();
+
+        return true;
+    }
+
+    public synchronized void stop() {
+        this.shutdown = true;
+
+        if (this.thread != null && this.thread.isAlive()) {
+            this.thread.interrupt();
+        }
+    }
+
+    @Override
+    public void run() {
         byte[] dgbuf = new byte[2048];
 
         while (!this.shutdown) {
             try {
-                DatagramPacket pkt = new DatagramPacket(dgbuf, dgbuf.length);
+                final DatagramPacket pkt = new DatagramPacket(dgbuf, dgbuf.length);
                 this.datagramSocket.receive(pkt);
                 final Response response = new Response(pkt.getAddress(), DHCPPacket.getPacket(pkt));
 
@@ -86,9 +110,5 @@ public class Listener implements Runnable {
                 LOG.warn("Undeclared throwable caught", t);
             }
         }
-    }
-
-    public void stop() {
-        this.shutdown = true;
     }
 }

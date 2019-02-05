@@ -60,7 +60,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath*:/META-INF/opennms/detectors.xml"})
+@ContextConfiguration(locations={"classpath*:/META-INF/opennms/detectors.xml","classpath:/META-INF/opennms/applicationContext-soa.xml"})
 @JUnitConfigurationEnvironment
 public class DhcpDetectorTest implements InitializingBean {
 
@@ -108,7 +108,7 @@ public class DhcpDetectorTest implements InitializingBean {
     }
 
     @Test(timeout=90000)
-    public void testJdhcp() throws IOException {
+    public void testDhcp4Java() throws IOException {
         assumeTrue(m_extendedTests);
 
         final DatagramSocket mySocket = new DatagramSocket(DHCPConstants.BOOTP_REPLY_PORT);
@@ -170,6 +170,4 @@ public class DhcpDetectorTest implements InitializingBean {
     public Thread getDhcpdThread() {
         return m_dhcpdThread;
     }
-
-
 }

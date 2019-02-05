@@ -59,8 +59,6 @@ public class DhcpdImpl implements Dhcpd {
     private boolean shutdown = false;
     private final Listener port67Listener = new Listener(this, BOOTP_REQUEST_PORT);
     private final Listener port68Listener = new Listener(this, BOOTP_REPLY_PORT);
-    final Thread thread67 = new Thread(this.port67Listener);
-    final Thread thread68 = new Thread(this.port68Listener);
 
     public DhcpdImpl() {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
@@ -70,9 +68,6 @@ public class DhcpdImpl implements Dhcpd {
 
                 DhcpdImpl.this.port67Listener.stop();
                 DhcpdImpl.this.port68Listener.stop();
-
-                thread67.interrupt();
-                thread68.interrupt();
 
                 LOG.debug("Dhcpd terminated successfully.");
             }
@@ -178,16 +173,12 @@ public class DhcpdImpl implements Dhcpd {
 
     @Override
     public Transaction executeTransaction(final String hostAddress, final String macAddress, final boolean relayMode, final String myIpAddress, final boolean extendedMode, final String requestIpAddress, final int timeout) throws IOException {
-        if (!thread67.isAlive()) {
-            thread67.start();
-        }
-
-        if (!thread68.isAlive()) {
-            thread68.start();
-        }
-
         final TransactionImpl transaction = new TransactionImpl(hostAddress, macAddress, relayMode, myIpAddress, extendedMode, requestIpAddress, timeout);
-        executeAndWait(transaction);
+
+        if (port67Listener.start() && port68Listener.start()) {
+            executeAndWait(transaction);
+        }
+
         return transaction;
     }
 
