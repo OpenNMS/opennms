@@ -29,7 +29,10 @@
 package org.opennms.features.graphml.model;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -61,18 +64,22 @@ public class GraphMLWriter {
     }
 
     public static void write(GraphML graphML, File file, ProcessHook... hooks) throws InvalidGraphException {
+        try {
+            write(graphML, new FileOutputStream(file), hooks);
+        } catch (IOException e) {
+            LOG.error("Unable to write GraphML to {}", file, e);
+            throw new InvalidGraphException(e);
+        }
+    }
+
+    public static void write(GraphML graphML, OutputStream outputStream, ProcessHook... hooks) throws InvalidGraphException {
         GraphmlType graphmlType = convert(graphML);
         if (hooks != null) {
             for (ProcessHook eachHook : hooks) {
                 eachHook.process(graphML, graphmlType);
             }
         }
-        try {
-            JaxbUtils.marshal(graphmlType, file);
-        } catch (final IOException e) {
-            LOG.error("Unable to write GraphML to {}", file, e);
-            throw new InvalidGraphException(e);
-        }
+        JaxbUtils.marshal(graphmlType, new OutputStreamWriter(outputStream));
     }
 
     public static GraphmlType convert(GraphML graphML) throws InvalidGraphException {
