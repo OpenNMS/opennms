@@ -128,11 +128,11 @@
   </div>
 
 <table class="table table-sm severity">
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
-        <th class="col-md-1">Severity</th>
-        <td class="col-md3 bright"><%=alarm.getSeverity().getLabel()%></td>
-        <th class="col-md-1">Node</th>
-        <td class="col-md-3">
+    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+        <th class="col-2">Severity</th>
+        <td class="col-4 bright"><%=alarm.getSeverity().getLabel()%></td>
+        <th class="col-2">Node</th>
+        <td class="col-4">
             <% if (alarm.getNodeId() != null && alarm.getNodeId() > 0) {%>
             <c:url var="nodeLink" value="element/node.jsp">
                 <c:param name="node" value="<%=String.valueOf(alarm.getNodeId())%>"/>
@@ -143,11 +143,11 @@
             <% }%>
         </td>
     </tr>
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
-        <th class="col-md-1">Last&nbsp;Event</th>
-        <td class="col-md-3"><span title="Event <%= alarm.getLastEvent().getId()%>"><a href="event/detail.jsp?id=<%= alarm.getLastEvent().getId()%>"><onms:datetime date="<%=alarm.getLastEventTime()%>" /></a></span></td>
-        <th class="col-md-1">Interface</th>
-        <td class="col-md-3">
+    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+        <th class="col-2">Last&nbsp;Event</th>
+        <td class="col-4"><span title="Event <%= alarm.getLastEvent().getId()%>"><a href="event/detail.jsp?id=<%= alarm.getLastEvent().getId()%>"><onms:datetime date="<%=alarm.getLastEventTime()%>" /></a></span></td>
+        <th class="col-2">Interface</th>
+        <td class="col-4">
             <% if (alarm.getIpAddr() != null) {%>
             <% if (alarm.getNodeId() != null && alarm.getNodeId() > 0) {%>
             <c:url var="interfaceLink" value="element/interface.jsp">
@@ -163,11 +163,11 @@
             <% }%>
         </td>
     </tr>
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
-        <th class="col-md-1">First&nbsp;Event</th>
-        <td class="col-md-3"><onms:datetime date="<%=alarm.getFirstEventTime()%>" /></td>
-        <th class="col-md-1">Service</th>
-        <td class="col-md-3">
+    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+        <th class="col-2">First&nbsp;Event</th>
+        <td class="col-4"><onms:datetime date="<%=alarm.getFirstEventTime()%>" /></td>
+        <th class="col-2">Service</th>
+        <td class="col-4">
             <% if (alarm.getServiceType() != null) {%>
             <% if (alarm.getIpAddr() != null && alarm.getNodeId() > 0) {%>
             <c:url var="serviceLink" value="element/service.jsp">
@@ -184,17 +184,17 @@
             <% }%>
         </td>
     </tr> 
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
-        <th class="col-md-1">Event Source Location</th>
-        <td class="col-md-3"><%= eventLocation == null? "&nbsp;" : eventLocation %>
-        <th class="col-md-1">Node Location</th>
-        <td class="col-md-3"><%= nodeLocation == null? "&nbsp;" : nodeLocation %>
+    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+        <th class="col-2">Event Source Location</th>
+        <td class="col-4"><%= eventLocation == null? "&nbsp;" : eventLocation %>
+        <th class="col-2">Node Location</th>
+        <td class="col-4"><%= nodeLocation == null? "&nbsp;" : nodeLocation %>
     </tr>
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
-        <th class="col-md-1">Count</th>
-        <td class="col-md-3"><%=alarm.getCounter()%></td>
-        <th class="col-md-1">UEI</th>
-        <td class="col-md-3">
+    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+        <th class="col-2">Count</th>
+        <td class="col-4"><%=alarm.getCounter()%></td>
+        <th class="col-2">UEI</th>
+        <td class="col-4">
             <% if (alarm.getUei() != null) {%>
             <%=alarm.getUei()%>
             <% } else {%>
@@ -202,25 +202,25 @@
             <% }%>
         </td>
     </tr>
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
-        <th class="col-md-1">Ticket&nbsp;ID</th>
-        <td class="col-md-3"><% if (alarm.getTTicketId() == null) {%>
+    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+        <th class="col-2">Ticket&nbsp;ID</th>
+        <td class="col-4"><% if (alarm.getTTicketId() == null) {%>
             &nbsp;
             <% } else {%>
             <%= alarmTicketLink(alarm)%> 
             <% }%>
         </td>
-        <th class="col-md-1">Ticket&nbsp;State</th>
-        <td class="col-md-3"><% if (alarm.getTTicketState() == null) {%>
+        <th class="col-2">Ticket&nbsp;State</th>
+        <td class="col-4"><% if (alarm.getTTicketState() == null) {%>
             &nbsp;
             <% } else {%>
             <%= alarm.getTTicketState()%> 
             <% }%>
         </td>
     </tr>
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
-        <th class="col-md-1">Reduction&nbsp;Key</th>
-        <td class="col-md-11" colspan="3">
+    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+        <th class="col-2">Reduction&nbsp;Key</th>
+        <td class="col-10" colspan="3">
             <% if (alarm.getReductionKey() != null) {%>
             <%=alarm.getReductionKey()%>
             <% } else {%>
@@ -512,7 +512,7 @@
                 <form class="form-inline" method="post" action="alarm/changeSeverity">
                     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
                     <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />	  
-                    <select class="form-control" name="actionCode">
+                    <select class="form-control custom-select" name="actionCode">
                         <%if (showEscalate) {%>
                         <option value="<%=escalateAction%>">Escalate this alarm</option>
                         <% }%>
