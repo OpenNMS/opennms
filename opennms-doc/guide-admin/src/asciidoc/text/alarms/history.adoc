@@ -3,7 +3,7 @@
 
 The _Alarm History_ feature integrates with _Elasticsearch_ to provide long term storage and maintain a history of alarm state changes.
 
-When enabled, alarms are indexed in _Elasticsearch_ when they are created, deleted, or when any of the "interesting" fields on the alarm are updated (more on this bellow.)
+When enabled, alarms are indexed in _Elasticsearch_ when they are created, deleted, or when any of the "interesting" fields on the alarm are updated (more on this below.)
 
 Alarms are indexed in such a fashion that allows operators to answer the following questions:
 
