@@ -58,6 +58,7 @@ import org.opennms.netmgt.config.mock.MockNotificationStrategy;
 import org.opennms.netmgt.config.mock.MockUserManager;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
+import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
@@ -94,6 +95,9 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
 
     @Autowired
     protected EventUtil m_eventUtil;
+
+    @Autowired
+    protected NotificationDao m_notificationDao;
 
     protected MockEventIpcManager m_eventMgr;
     protected MockNotifdConfigManager m_notifdConfig;
