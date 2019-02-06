@@ -533,7 +533,7 @@ doKill(){
 
 	pid="$(getPid)"
 	if [ x"$pid" != x"" ]; then
-		if [ "$(/bin/ps -p "$pid" 2>/dev/null | wc -l /dev/null)" -gt 0 ]; then
+		if [ "$(/bin/ps -p "$pid" 2>/dev/null | wc -l 2>/dev/null)" -gt 0 ]; then
 			kill -9 "$pid" > /dev/null 2>&1
 			return $?
 		fi
