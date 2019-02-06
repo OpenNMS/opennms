@@ -289,10 +289,6 @@ div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.
 }
 /* Resource Graph sidebar classes inspired by Bootstrap Docs: End */
 
-#content {
-  padding-top: 15px;
-}
-
 #navbar {
   margin-top: auto;
 }
@@ -322,4 +318,22 @@ div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.
 iframe.vaadin-fullscreen {
   height: calc(100vh - 67px /* header */- 63px /* footer */ - 46px /* navbar */ - 30px /* padding */);
   width:100%;
+}
+
+#content {
+  padding-top: 15px;
+
+  // Revert padding as growl added this, which was required in bootstrap 3 but is
+  // no longer required, so without this the padding to the right is too much
+  .growl-container > .growl-item {
+    padding: $alert-padding-y $alert-padding-x;
+  }
+
+  // Also revert manual positioning of the background image to make it align correctly
+  // with the same spacing as the content
+  .growl-container > div.growl-item {
+    background-position: $alert-padding-x center;
+    background-repeat: no-repeat;
+
+  }
 }
