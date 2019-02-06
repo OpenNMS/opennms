@@ -123,6 +123,8 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
         CollectorRequestDTO request = new CollectorRequestDTO();
         request.setLocation(target.getLocation());
         request.setSystemId(target.getSystemId());
+        // For Service collectors that implement integration api will have proxy collectors.
+        // fetching class name from proxy won't match with class name in collector registry so prefer clasName if it present.
         request.setClassName(className != null ? className : serviceCollector.getClass().getCanonicalName());
         request.setTimeToLiveMs(ttlInMs);
 

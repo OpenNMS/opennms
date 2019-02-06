@@ -28,7 +28,7 @@
 
 package org.opennms.features.apilayer.collectors;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.features.apilayer.utils.InterfaceMapper;
@@ -51,19 +51,11 @@ public class ServiceCollectorManager extends InterfaceMapper<ServiceCollectorFac
         return new ServiceCollectorImpl(ext);
     }
 
-    // Need to override as registry needs collector class name in properties.
-    public synchronized void onBind(ServiceCollectorFactory extension, Map properties) {
-        LOG.debug("bind called with {}: {}", extension, properties);
-        if (extension != null) {
-            extServiceRegistrationMap.computeIfAbsent(extension, (ext) -> {
-                final ServiceCollector mappedExt = map(ext);
-                final Hashtable<String, Object> props = new Hashtable<>();
-                // Make the service available to any Spring-based listeners
-                props.put("registration.export", Boolean.TRUE.toString());
-                // Registry needs type of collector class.
-                props.put("type", ext.getCollectorClassName());
-                return bundleContext.registerService(clazz, mappedExt, props);
-            });
-        }
+    // override as registry needs collector class name in properties.
+    @Override
+    public Map<String, Object> getServiceProperties(ServiceCollectorFactory extension) {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("type", extension.getCollectorClassName());
+        return properties;
     }
 }

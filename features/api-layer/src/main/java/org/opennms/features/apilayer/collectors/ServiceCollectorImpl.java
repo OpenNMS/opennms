@@ -30,7 +30,6 @@ package org.opennms.features.apilayer.collectors;
 
 import java.net.InetAddress;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -39,25 +38,13 @@ import org.opennms.integration.api.v1.collectors.CollectionRequest;
 import org.opennms.integration.api.v1.collectors.CollectionSet;
 import org.opennms.integration.api.v1.collectors.ServiceCollector;
 import org.opennms.integration.api.v1.collectors.ServiceCollectorFactory;
-import org.opennms.integration.api.v1.collectors.resource.CollectionSetResource;
-import org.opennms.integration.api.v1.collectors.resource.GenericTypeResource;
-import org.opennms.integration.api.v1.collectors.resource.IpInterfaceResource;
-import org.opennms.integration.api.v1.collectors.resource.NodeResource;
-import org.opennms.integration.api.v1.collectors.resource.NumericAttribute;
-import org.opennms.integration.api.v1.collectors.resource.Resource;
-import org.opennms.integration.api.v1.collectors.resource.StringAttribute;
-import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
-import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
-import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Enums;
 
 public class ServiceCollectorImpl<T extends ServiceCollector> implements org.opennms.netmgt.collection.api.ServiceCollector {
 
@@ -82,58 +69,25 @@ public class ServiceCollectorImpl<T extends ServiceCollector> implements org.ope
 
     @Override
     public org.opennms.netmgt.collection.api.CollectionSet collect(org.opennms.netmgt.collection.api.CollectionAgent agent, Map<String, Object> parameters) throws CollectionException {
+        // Instantiate a new collector each time there is a call to collect.
         ServiceCollector serviceCollector = serviceCollectorFactory.createCollector();
         serviceCollector.initialize();
-        CollectionRequest collectionRequest = new CollectionRequestImpl(agent);
-        CompletableFuture<CollectionSet> future = serviceCollector.collect(collectionRequest, parameters);
-        CollectionSetBuilder builder = new CollectionSetBuilder(agent);
         try {
+            // build collection request for service collector
+            CollectionRequest collectionRequest = new CollectionRequestImpl(agent);
+            // Call collect on Service collector that implements integration api.
+            CompletableFuture<CollectionSet> future = serviceCollector.collect(collectionRequest, parameters);
+            CollectionSetBuilder builder = new CollectionSetBuilder(agent);
             CollectionSet collectionSet = future.get();
             if (collectionSet.getStatus().equals(CollectionSet.Status.FAILED)) {
                 return  builder.withTimestamp(new Date(collectionSet.getTimeStamp()))
                         .withStatus(CollectionStatus.FAILED).build();
             }
-            for (CollectionSetResource collectionSetResource : collectionSet.getCollectionSetResources()) {
-                Resource resource = collectionSetResource.getResource();
-                if (resource == null) {
-                    continue;
-                }
-                if (resource.getResourceType().equals(Resource.Type.NODE)) {
-                    NodeResource nodeResource = (NodeResource) resource;
-                    NodeLevelResource nodeLevelResource = new NodeLevelResource(nodeResource.getNodeId());
-                    addAttributes(collectionSetResource, builder, nodeLevelResource);
-                } else if (resource.getResourceType().equals(Resource.Type.INTERFACE)) {
-                    IpInterfaceResource ipResource = (IpInterfaceResource) resource;
-                    NodeLevelResource nodeLevelResource = new NodeLevelResource(ipResource.getNodeResource().getNodeId());
-                    InterfaceLevelResource interfaceLevelResource = new InterfaceLevelResource(nodeLevelResource, ipResource.getInstance());
-                    addAttributes(collectionSetResource, builder, interfaceLevelResource);
-                } else if (resource.getResourceType().equals(Resource.Type.GENERIC)) {
-                    GenericTypeResource genericTypeResource = (GenericTypeResource) resource;
-                    NodeLevelResource nodeLevelResource = new NodeLevelResource(genericTypeResource.getNodeResource().getNodeId());
-                    // TODO: Get ResourceType from ResourceTypesDao
-                    org.opennms.netmgt.collection.support.builder.GenericTypeResource genericResource =
-                            new org.opennms.netmgt.collection.support.builder.GenericTypeResource(nodeLevelResource, null, genericTypeResource.getInstance());
-                    addAttributes(collectionSetResource, builder, genericResource);
-                }
-            }
-            builder.withTimestamp(new Date(collectionSet.getTimeStamp()));
-            return builder.build();
-
+            // Map CollectionSet from Integration API and build CollectionSet.
+            return CollectionSetMapper.buildCollectionSet(builder, collectionSet);
         } catch (InterruptedException | ExecutionException e) {
-            LOG.error("collect failed with ", e);
-        }
-        return builder.withStatus(CollectionStatus.UNKNOWN).build();
-    }
-
-    public void addAttributes(CollectionSetResource collectionSetResource, CollectionSetBuilder builder, org.opennms.netmgt.collection.support.builder.Resource resource) {
-        List<NumericAttribute> numericAttributes = collectionSetResource.getNumericAttributes();
-        for (NumericAttribute numericAttribute : numericAttributes) {
-            AttributeType attributeType = Enums.getIfPresent(AttributeType.class, numericAttribute.getType().name()).or(AttributeType.GAUGE);
-            builder.withNumericAttribute(resource, numericAttribute.getGroup(), numericAttribute.getName(), numericAttribute.getValue(), attributeType);
-        }
-        List<StringAttribute> stringAttributes = collectionSetResource.getStringAttributes();
-        for (StringAttribute stringAttribute : stringAttributes) {
-            builder.withStringAttribute(resource, stringAttribute.getGroup(), stringAttribute.getName(), stringAttribute.getValue());
+            LOG.error("Collection failed", e);
+            throw new CollectionException("Collection failed", e);
         }
     }
 
