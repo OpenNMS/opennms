@@ -17,6 +17,11 @@
             <artifactId>org.opennms.features.graph.api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.graph.persistence</groupId>
+            <artifactId>org.opennms.features.graph.persistence.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- TODO MVR this is still weird -->
         <dependency>
             <groupId>org.opennms.features.graph</groupId>

@@ -34,15 +34,19 @@ import java.util.Objects;
 import java.util.function.Function;
 
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
-import org.opennms.netmgt.graph.api.Graph;
 import org.opennms.netmgt.graph.api.GraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
+import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.info.DefaultGraphContainerInfo;
+import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
+import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.persistence.api.GraphRepository;
 import org.opennms.netmgt.graph.persistence.hibernate.mapper.EntityToGenericMapper;
 import org.opennms.netmgt.graph.persistence.hibernate.mapper.GenericToEntityMapper;
+import org.opennms.netmgt.graph.simple.SimpleVertex;
 import org.opennms.netmgt.graph.updates.change.ContainerChangeSet;
 import org.opennms.netmgt.topology.EdgeEntity;
 import org.opennms.netmgt.topology.GraphContainerEntity;
@@ -72,11 +76,7 @@ public class DefaultGraphRepository implements GraphRepository {
 
     @Override
     public <C extends GraphContainer> C findContainerById(String containerId, Function<GenericGraphContainer, C> transformer) {
-        final List<GraphContainerEntity> graphContainers = accessor.find("Select g from GraphContainerEntity g where g.namespace = ?", containerId);
-        if (graphContainers.isEmpty()) {
-            return null;
-        }
-        final GraphContainerEntity entity = graphContainers.get(0);
+        final GraphContainerEntity entity = findContainerEntity(containerId);
         if (entity != null) {
             final GenericGraphContainer genericGraphContainer = entityToGenericMapper.fromEntity(entity);
             final C convertedGraphContainer = transformer.apply(genericGraphContainer);
@@ -91,12 +91,36 @@ public class DefaultGraphRepository implements GraphRepository {
     }
 
     @Override
+    public GraphContainerInfo findContainerInfoById(String containerId) {
+        // Fetch all meta data of the container and graphs (no vertices and edges) with one select
+        // We load the container and all its graph entities as well as the related properties.
+        // This may load unnecessary properties, but is probably neglectable at the moment.
+        // Vertices and Edges are not loaded, as they are lazy loaded.
+        final List<GraphContainerEntity> graphContainerEntities = accessor.find("select distinct ge from GraphContainerEntity ge join ge.properties join ge.graphs as graphs join graphs.properties where ge.namespace = ?", containerId);
+        if (graphContainerEntities.isEmpty()) {
+            return null;
+        }
+        // Now convert
+        final GraphContainerEntity containerEntity =  graphContainerEntities.get(0);
+        final DefaultGraphContainerInfo containerInfo = new DefaultGraphContainerInfo(containerEntity.getNamespace());
+        containerInfo.setLabel(containerEntity.getLabel());
+        containerInfo.setDescription(containerEntity.getDescription());
+        containerEntity.getGraphs().forEach(graphEntity -> {
+            final DefaultGraphInfo graphInfo = new DefaultGraphInfo(graphEntity.getNamespace(), SimpleVertex.class /* TODO MVR this is not correct */);
+            graphInfo.setLabel(graphEntity.getLabel());
+            graphInfo.setDescription(graphEntity.getDescription());
+            containerInfo.getGraphInfos().add(graphInfo);
+        });
+        return containerInfo;
+    }
+
+    @Override
     public void deleteContainer(String containerId) {
-        final List<GraphContainerEntity> graphContainers = accessor.find("Select g from GraphContainerEntity g where g.namespace = ?", containerId);
-        if (graphContainers.isEmpty()) {
+        final GraphContainerEntity containerEntity = findContainerEntity(containerId);
+        if (containerEntity == null) {
             throw new NoSuchElementException("No container with id " + containerId + " found.");
         }
-        accessor.delete(graphContainers.get(0));
+        accessor.delete(containerEntity);
     }
 
     @Override
@@ -115,8 +139,7 @@ public class DefaultGraphRepository implements GraphRepository {
             // In order to apply the changes here, they must again be converted to the actual implementation of the persisted graph (entity).
             ContainerChangeSet containerChangeSet = new ContainerChangeSet(persistedGraphContainer, genericGraphContainer);
             if (containerChangeSet.hasChanges()) {
-                // TODO MVR ...
-                final GraphContainerEntity graphContainerEntity = (GraphContainerEntity) accessor.find("Select g from GraphContainerEntity g where g.namespace = ?", graphContainer.getId()).get(0);
+                final GraphContainerEntity graphContainerEntity = findContainerEntity(graphContainer.getId());
 
                 // Graph removal and addition is easy, simply remove or delete
                 containerChangeSet.getGraphsRemoved().forEach(genericGraph -> {
@@ -174,108 +197,28 @@ public class DefaultGraphRepository implements GraphRepository {
         }
     }
 
-    private GenericGraph findGraphByNamespace(String namespace) {
-        final List<GraphEntity> graphs = accessor.find("Select g from GraphEntity g where g.namespace = ?", namespace);
-        if (graphs.isEmpty()) {
+    @Override
+    public void save(GraphContainerInfo containerInfo) {
+        // We simply convert to a container and persist it
+        final GenericGraphContainer genericGraphContainer = new GenericGraphContainer();
+        genericGraphContainer.setDescription(containerInfo.getDescription());
+        genericGraphContainer.setLabel(containerInfo.getLabel());
+        genericGraphContainer.setId(containerInfo.getId());
+        containerInfo.getGraphInfos().forEach(graphInfo -> {
+            final GenericGraph genericGraph = new GenericGraph();
+            genericGraph.setProperty(GenericProperties.NAMESPACE, graphInfo.getNamespace());
+            genericGraph.setProperty(GenericProperties.LABEL, graphInfo.getLabel());
+            genericGraph.setProperty(GenericProperties.DESCRIPTION, graphInfo.getDescription());
+            genericGraphContainer.addGraph(genericGraph);
+        });
+        save(genericGraphContainer);
+    }
+
+    private GraphContainerEntity findContainerEntity(String containerId) {
+        final List<GraphContainerEntity> containers = accessor.find("Select g from GraphContainerEntity g where g.namespace = ?", containerId);
+        if (containers.isEmpty()) {
             return null;
         }
-        final GraphEntity graphEntity = graphs.get(0);
-        final GenericGraph genericGraph = entityToGenericMapper.fromEntity(graphEntity);
-        return genericGraph;
+        return containers.get(0);
     }
-
-    @Override
-    public void save(Graph graph) {
-//        Objects.requireNonNull(graph);
-//        long start = System.currentTimeMillis();
-//        System.out.println("Converting graph to generic graph");
-//        final GenericGraph genericGraph = graph.asGenericGraph();
-//        System.out.println("DONE. Took " + (System.currentTimeMillis() - start) + "ms");
-//        start = System.currentTimeMillis();
-//        System.out.println("Converting to graph entity");
-//        final GraphEntity graphEntity = genericToEntityMapper.toEntity(genericGraph);
-//        System.out.println("DONE. Took " + (System.currentTimeMillis() - start) + "ms");
-//
-//        // Here we detect if a graph must be updated or persisted
-//        // This way we always detect changes even if the entity persisted was not received from the persistence context
-//        // in the first place.
-//        final GenericGraph persistedGraph = findGraphByNamespace(graph.getNamespace());
-//        if (persistedGraph == null) {
-//            System.out.println("ACTUALLY START PERSISTING NOW... WIU WIU WIU");
-//            start = System.currentTimeMillis();
-//            accessor.save(graphEntity);
-//            System.out.println("DONE. Took " + (System.currentTimeMillis() - start) + "ms");
-//        } else {
-//            final ChangeSet<GenericGraph, GenericVertex, GenericEdge> changeSet = new ChangeSet<>(persistedGraph, genericGraph);
-//            if (changeSet.hasChanges()) {
-//                changeSet.getEdgesRemoved().forEach(edge -> persistedGraph.removeEdge(edge));
-//                changeSet.getEdgesAdded().forEach(edge -> persistedGraph.addEdge(edge));
-//                changeSet.getEdgesUpdated().forEach(edge -> {
-//                    final GenericEdge persistedEdge = persistedGraph.getEdge(edge.getId());
-//                    persistedEdge.setProperties(edge.getProperties());
-//                });
-//                changeSet.getVerticesRemoved().forEach(vertex -> persistedGraph.removeVertex(vertex));
-//                changeSet.getVerticesAdded().forEach(vertex -> persistedGraph.addVertex(vertex));
-//                changeSet.getVerticesUpdated().forEach(vertex -> {
-//                    final GenericVertex persistedVertex = persistedGraph.getVertex(vertex.getId());
-//                    persistedVertex.setProperties(vertex.getProperties());
-//                });
-//                accessor.save(persistedGraph);
-//            }
-//        }
-    }
-
-//    @Override
-//    public GenericGraph findByNamespace(String namespace) {
-//        final List<GraphEntity> graphs = accessor.find("Select g from GraphEntity g where g.namespace = ?", namespace);
-//        if (graphs.isEmpty()) {
-//            return null;
-//        }
-//        final GraphEntity graphEntity = graphs.get(0);
-//        final GenericGraph genericGraph = fromEntity(graphEntity);
-//        return genericGraph;
-//    }
-//
-//    @Override
-//    public GraphInfo findGraphInfo(String namespace) {
-//        List<GraphEntity> graphEntities = accessor.find("select ge from GraphEntity ge where ge.namespace = ?", namespace);
-//        if (graphEntities == null || graphEntities.isEmpty()) {
-//            return null;
-//        }
-//        return convert(graphEntities.get(0));
-//    }
-//
-//    @Override
-//    public <G extends Graph<V, E>, V extends Vertex, E extends Edge<V>> G findByNamespace(String namespace, Function<GenericGraph, G> transformer) {
-//        Objects.requireNonNull(namespace);
-//        Objects.requireNonNull(transformer);
-//        final GenericGraph genericGraph = findByNamespace(namespace);
-//        if (genericGraph != null) {
-//            final G convertedGraph = transformer.apply(genericGraph);
-//            return convertedGraph;
-//        }
-//        return null;
-//    }
-//
-//    @Override
-//    public List<GraphInfo> findAll() {
-//        final List<GraphEntity> graphs = accessor.find("Select g from GraphEntity g");
-//        final List<GraphInfo> graphInfos = graphs.stream().map(g -> convert(g)).collect(Collectors.toList());
-//        return graphInfos;
-//    }
-//
-//    @Override
-//    public void deleteByNamespace(String namespace) {
-//        // TODO MVR implement delete cascade automatically
-//        final GenericGraph graph = findByNamespace(namespace);
-//        if (graph != null) {
-//            // TODO MVR implement me
-////            accessor.delete(graph);
-//        }
-//    }
-
-
-
-
-
 }

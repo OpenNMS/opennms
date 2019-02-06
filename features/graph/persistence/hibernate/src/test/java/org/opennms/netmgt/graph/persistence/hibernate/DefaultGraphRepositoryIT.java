@@ -33,6 +33,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.graph.api.info.DefaultGraphContainerInfo;
+import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.persistence.api.GraphRepository;
 import org.opennms.netmgt.graph.simple.SimpleGraph;
 import org.opennms.netmgt.graph.simple.SimpleGraphContainer;
@@ -122,6 +124,23 @@ public class DefaultGraphRepositoryIT {
          */
         graphRepository.deleteContainer(CONTAINER_ID);
         Assert.assertNull(graphRepository.findContainerById(CONTAINER_ID, new GenericGraphContainerToSimpleGraphContainerTransformer()));
+    }
+
+    @Test
+    public void verifyContainerInfo() {
+        final DefaultGraphContainerInfo originalContainerInfo = new DefaultGraphContainerInfo(CONTAINER_ID);
+        originalContainerInfo.setLabel("Container for 'unique-id' graph");
+        originalContainerInfo.setDescription("I am soooo unique \\o/");
+
+        final DefaultGraphInfo graph1 = new DefaultGraphInfo(NAMESPACE, SimpleVertex.class);
+        graph1.setLabel("Dummy Graph");
+        graph1.setDescription("I am not so unique, I may be replaced at any time :(");
+
+        originalContainerInfo.getGraphInfos().add(graph1);
+
+        graphRepository.save(originalContainerInfo);
+
+        Assert.assertEquals(originalContainerInfo, graphRepository.findContainerInfoById(CONTAINER_ID));
     }
 
     private void verifyEquals(SimpleGraphContainer originalContainer, SimpleGraphContainer persistedContainer) {

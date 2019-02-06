@@ -26,36 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.persistence.api;
-
-import java.util.function.Function;
-
-import org.opennms.netmgt.graph.api.GraphContainer;
-import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
-import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
-
-// Graph Persistence... only for access of underlying persistence (hibernate)
-// To access all graphs (GraphProviders), use the GraphService
-public interface GraphRepository {
-
-    void save(GraphContainer graphContainer);
-
-    void save(GraphContainerInfo containerInfo);
-
-    <C extends GraphContainer> C findContainerById(String containerId, Function<GenericGraphContainer, C> transformer);
-
-    GenericGraphContainer findContainerById(String containerId);
-
-    GraphContainerInfo findContainerInfoById(String containerId);
-
-    void deleteContainer(String containerId);
-
-//    <V extends Vertex, E extends Edge<V>, G extends Graph<V, E>> void save(G graph);
-//
-//    GenericGraph findByNamespace(String namespace);
-//
-//    GraphInfo findGraphInfo(String namespace);
-//
-//    <G extends Graph<V, E>, V extends Vertex, E extends Edge<V>> G findByNamespace(final String namespace, final Function<GenericGraph, G> transformer);
-
-}
+/**
+ * This package should be named <code>org.opennms.netmgt.graph.*</code>, but is named topology instead.
+ * The main reason for this is to not change the applicationContext-dao.xml setting up the SessionFactory.
+ * If the entities are all in this package, they will automatically detected without any changes.
+ *
+ * @author mvrueden
+ */
+package org.opennms.netmgt.topology;

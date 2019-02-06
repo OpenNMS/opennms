@@ -97,4 +97,20 @@ public class DefaultGraphContainerInfo implements GraphContainerInfo {
     public void setLabel(String label) {
         this.label = label;
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, graphInfos, description, label);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DefaultGraphContainerInfo that = (DefaultGraphContainerInfo) o;
+        return Objects.equals(id, that.id)
+                && Objects.equals(graphInfos, that.graphInfos)
+                && Objects.equals(description, that.description)
+                && Objects.equals(label, that.label);
+    }
 }
