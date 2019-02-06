@@ -49,6 +49,16 @@
         <input class="form-control" type="text" id="rule.dstPort" name="dstPort" placeholder="80,8080" ng-model="classification.dstPort"/>
         <p class="help-block">{{error.dstPort}}</p>
       </div>
+      <div class="form-group" ng-class="{ 'has-error' : ruleForm.omnidirectional.$invalid || error.omnidirectional }">
+        <label class="control-label" for="rule.omnidirectional">Omnidirectional</label>
+        <div class="checkbox" style="margin-top: 0px;">
+          <label>
+            <input class="form-control" type="checkbox" id="rule.omnidirectional" name="omnidirectional" ng-model="classification.omnidirectional" style="width:auto; display:inline-block;margin-top: -8px;">
+            Enable matching independent of the flow direction.
+          </label>
+        </div>
+        <p class="help-block">{{error.omnidirectional}}</p>
+      </div>
       <div class="form-group" ng-class="{ 'has-error' : ruleForm.exporterFilter.$invalid || error.exporterFilter }">
         <label class="control-label" for="rule.exporterFilter">Exporter Filter</label>
         <button class="btn-link"
