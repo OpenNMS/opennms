@@ -56,7 +56,7 @@ public class XmlGraphRenderer implements GraphRenderer {
 
     @Override
     public String render(List<GraphContainerInfo> containerInfos) {
-        final JaxbListWrapper<GraphContainerInfoDTO> list = new GraphContainerInfoListWrapper();
+        final JaxbListWrapper<GraphContainerInfoDTO> list = new GraphContainerInfoDTOListWrapper();
         containerInfos.forEach(containerInfo -> {
             GraphContainerInfoDTO containerInfoDTO = new GraphContainerInfoDTO();
             containerInfoDTO.setId(containerInfo.getId());
@@ -79,6 +79,7 @@ public class XmlGraphRenderer implements GraphRenderer {
     }
 
     // TODO MVR collection properties are not convertable to graphml :-/
+    // TODO MVR verify id of all elements (see docs for this). vertex id (namespace + id) or just the id?
     @Override
     public String render(GraphContainer graphContainer) {
         // Container

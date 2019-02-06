@@ -28,22 +28,43 @@
 
 package org.opennms.netmgt.graph.rest.impl.renderer.xml;
 
-import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+@XmlAccessorType(XmlAccessType.NONE)
+public class GraphInfoDTO {
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonRootName;
-import org.opennms.core.config.api.JaxbListWrapper;
+    @XmlAttribute(name="namespace", required=true)
+    private String namespace;
 
-@XmlRootElement(name="containers")
-@JsonRootName("containers")
-public class GraphContainerInfoListWrapper extends JaxbListWrapper<GraphContainerInfoDTO> {
+    @XmlAttribute(name="label")
+    private String label;
 
-    @XmlElement(name="container")
-    @JsonProperty("container")
-    public List<GraphContainerInfoDTO> getObjects() {
-        return super.getObjects();
+    @XmlAttribute(name="description")
+    private String description;
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
