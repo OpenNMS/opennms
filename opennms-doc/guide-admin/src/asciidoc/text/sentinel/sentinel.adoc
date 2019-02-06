@@ -435,7 +435,7 @@ config:property-set adapters.2.parameters.script /opt/sentinel/etc/sflow-host.gr
 config:update
 ----
 
-Please note, that in both cases the file `/opt/sentinel/etc/sflow-host.groofy` must be provided manually, e.g. by manually copying it over from _{opennms-product-name}_.
+Please note, that in both cases the file `/opt/sentinel/etc/sflow-host.groovy` must be provided manually, e.g. by manually copying it over from _{opennms-product-name}_.
 
 ===== NxosGpbAdapter
 
