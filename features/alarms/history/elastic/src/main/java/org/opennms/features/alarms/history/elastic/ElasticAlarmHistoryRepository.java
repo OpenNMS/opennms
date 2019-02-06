@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -62,32 +63,28 @@ public class ElasticAlarmHistoryRepository implements AlarmHistoryRepository {
 
     private final IndexSelector indexSelector;
 
-    private final IndexStrategy indexStrategy;
-
     private final QueryProvider queryProvider = new QueryProvider();
 
     private long lookbackPeriodMs = DEFAULT_LOOKBACK_PERIOD_MS;
 
     public ElasticAlarmHistoryRepository(JestClient client, IndexStrategy indexStrategy) {
         this.client = Objects.requireNonNull(client);
-        this.indexStrategy = Objects.requireNonNull(indexStrategy);
+        Objects.requireNonNull(indexStrategy);
         this.indexSelector = new IndexSelector(ElasticAlarmIndexer.INDEX_PREFIX, indexStrategy, 0);
     }
 
     @Override
-    public AlarmState getAlarmWithDbIdAt(long id, long time) {
+    public Optional<AlarmState> getAlarmWithDbIdAt(long id, long time) {
         final TimeRange timeRange = getTimeRange(time);
         return findAlarms(queryProvider.getAlarmByDbIdAt(id, timeRange), timeRange)
-                .stream().findFirst()
-                .orElse(null);
+                .stream().findFirst().map(a -> a);
     }
 
     @Override
-    public AlarmState getAlarmWithReductionKeyIdAt(String reductionKey, long time) {
+    public Optional<AlarmState> getAlarmWithReductionKeyIdAt(String reductionKey, long time) {
         final TimeRange timeRange = getTimeRange(time);
         return findAlarms(queryProvider.getAlarmByReductionKeyAt(reductionKey, timeRange), timeRange)
-                .stream().findFirst()
-                .orElse(null);
+                .stream().findFirst().map(a -> a);
     }
 
     @Override

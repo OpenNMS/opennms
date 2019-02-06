@@ -57,9 +57,9 @@ public class AlarmHistoryRestServiceImpl implements AlarmHistoryRestService {
     public AlarmState getAlarm(String alarmId, String matchType, Long time) {
         long timestampInMillis = time == null ? System.currentTimeMillis() : time;
         if (REDUCTION_KEY_MATCH_TYPE.equals(matchType)) {
-            return alarmHistoryRepository.getAlarmWithReductionKeyIdAt(alarmId, timestampInMillis);
+            return alarmHistoryRepository.getAlarmWithReductionKeyIdAt(alarmId, timestampInMillis).orElse(null);
         }
-        return alarmHistoryRepository.getAlarmWithDbIdAt(Integer.valueOf(alarmId), timestampInMillis);
+        return alarmHistoryRepository.getAlarmWithDbIdAt(Integer.valueOf(alarmId), timestampInMillis).orElse(null);
     }
 
     @Override
