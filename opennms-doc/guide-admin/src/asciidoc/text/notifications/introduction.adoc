@@ -8,6 +8,7 @@
 _{opennms-product-name}_ uses notifications to make users aware of an event.
 Common notification methods are email and paging, but notification mechanisms also exist for:
 
+* Browser based desktop notifications
 * Arbitrary HTTP GET and POST operations
 * Arbitrary external commands
 * Asterisk call origination

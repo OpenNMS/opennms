@@ -1,6 +1,9 @@
 [[releasenotes-24]]
 == What's New in OpenNMS Horizon 24
 
+* Added support for browser notifications to notifd.
+  The browser notification can be added to a notification path and desktop notifications will pop-up for currently logged in users if a notice is delivered.
+
 === System Requirements
 
 * *Java 8*: OpenNMS Horizon 24 requires Java 8 as the runtime environment.

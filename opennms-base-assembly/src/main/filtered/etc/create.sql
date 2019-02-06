@@ -1773,6 +1773,7 @@ CREATE TABLE acks (
 
 create index ack_time_idx on acks(ackTime);
 create index ack_user_idx on acks(ackUser);
+create index ack_refid_idx on acks(refId);
 
 --########################################################################
 --#

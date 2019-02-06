@@ -17,5 +17,7 @@
     <module>adapters</module>
     <module>daemon</module>
     <module>tests</module>
+    <module>shell</module>
+    <module>generator</module>
   </modules>
 </project>

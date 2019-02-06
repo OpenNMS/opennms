@@ -30,7 +30,11 @@ package org.opennms.netmgt.alarmd.drools;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -319,7 +323,21 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                     .getId())
                     .ifPresent(acks::add);
         } else {
-            acks.addAll(acknowledgmentDao.findLatestAcks());
+            // Calculate the creation time of the earliest alarm
+            final Date earliestAlarm  = alarms.stream()
+                    .map(OnmsAlarm::getFirstEventTime)
+                    .filter(Objects::nonNull)
+                    .min(Comparator.naturalOrder())
+                    .orElseGet(() -> {
+                        // We didn't find any dates - either the set is empty (in which case this function
+                        // wouldn't be called) or all the dates are null (which they shouldn't be.)
+                        // Let's log an error, and return some date for sanity
+                        final LocalDateTime oneMonthAgoLdt = LocalDateTime.now().minusMonths(1);
+                        final Date oneMonthAgo = Date.from(oneMonthAgoLdt.atZone(ZoneId.systemDefault()).toInstant());
+                        LOG.error("Could not find minimum alarm creation time for alarms: {}. Using: {}", alarms, oneMonthAgo);
+                        return oneMonthAgo;
+                    });
+            acks.addAll(acknowledgmentDao.findLatestAcks(earliestAlarm));
         }
 
         // Handle all the alarms for which an ack could be found

@@ -596,7 +596,7 @@ public class DroolsAlarmContextIT {
         OnmsAlarm alarm1 = generateAlarm(1);
         OnmsAlarm alarm2 = generateAlarm(2);
         dac.handleAlarmSnapshot(Arrays.asList(alarm1, alarm2));
-        verify(acknowledgmentDao, times(1)).findLatestAcks();
+        verify(acknowledgmentDao, times(1)).findLatestAcks(any(Date.class));
         assertThat(dac.getAckByAlarmId(alarm1.getId()).getAckAction(), equalTo(AckAction.UNACKNOWLEDGE));
         assertThat(dac.getAckByAlarmId(alarm2.getId()).getAckAction(), equalTo(AckAction.UNACKNOWLEDGE));
 
@@ -619,9 +619,9 @@ public class DroolsAlarmContextIT {
                 alarm2.getFirstEventTime());
         ack2.setAckAction(AckAction.ESCALATE);
 
-        when(acknowledgmentDao.findLatestAcks()).thenReturn(Arrays.asList(ack1, ack2));
+        when(acknowledgmentDao.findLatestAcks(any(Date.class))).thenReturn(Arrays.asList(ack1, ack2));
         dac.handleAlarmSnapshot(Arrays.asList(alarm1, alarm2));
-        verify(acknowledgmentDao, times(1)).findLatestAcks();
+        verify(acknowledgmentDao, times(1)).findLatestAcks(any(Date.class));
         assertThat(dac.getAckByAlarmId(alarm1.getId()).getAckAction(), equalTo(ack1.getAckAction()));
         assertThat(dac.getAckByAlarmId(alarm2.getId()).getAckAction(), equalTo(ack2.getAckAction()));
 
