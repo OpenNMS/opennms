@@ -60,12 +60,12 @@ public final class DhcpMonitor extends AbstractServiceMonitor {
 
     private Dhcpd dhcpd;
 
-    public void setDhcpd(Dhcpd dhcpd) {
+    public void setDhcpd(final Dhcpd dhcpd) {
         this.dhcpd = dhcpd;
     }
 
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+    public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameters) {
         if (dhcpd == null) {
             dhcpd = SERVICE_LOOKUP.lookup(Dhcpd.class, null);
         }

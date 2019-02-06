@@ -45,26 +45,26 @@ import org.slf4j.LoggerFactory;
 public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
     private static final Logger LOG = LoggerFactory.getLogger(DhcpClient.class);
 
-    private int m_retries;
-    private int m_timeout;
-    private InetAddress m_address;
-    private final String m_macAddress;
-    private final String m_myIpAddress;
-    private final boolean m_extendedMode;
-    private final boolean m_relayMode;
-    private final String m_requestIpAddress;
+    private int retries;
+    private int timeout;
+    private InetAddress address;
+    private final String macAddress;
+    private final String myIpAddress;
+    private final boolean extendedMode;
+    private final boolean relayMode;
+    private final String requestIpAddress;
 
-    private Dhcpd m_dhcpd;
+    private Dhcpd dhcpd;
 
     public DhcpClient(final String macAddress, final boolean relayMode, final String myIpAddress, final boolean extendedMode, final String requestIpAddress, final int timeout, final int retries, final Dhcpd dhcpd) {
-        this.m_macAddress = macAddress;
-        this.m_relayMode = relayMode;
-        this.m_myIpAddress = myIpAddress;
-        this.m_extendedMode = extendedMode;
-        this.m_requestIpAddress = requestIpAddress;
-        this.m_timeout = timeout;
-        this.m_retries = retries;
-        this.m_dhcpd = dhcpd;
+        this.macAddress = macAddress;
+        this.relayMode = relayMode;
+        this.myIpAddress = myIpAddress;
+        this.extendedMode = extendedMode;
+        this.requestIpAddress = requestIpAddress;
+        this.timeout = timeout;
+        this.retries = retries;
+        this.dhcpd = dhcpd;
     }
 
     @Override
@@ -72,14 +72,14 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
     }
 
     @Override
-    public void connect(InetAddress address, int port, int timeout) {
-        m_address = address;
-        m_timeout = timeout;
+    public void connect(final InetAddress address, final int port, final int timeout) {
+        this.address = address;
+        this.timeout = timeout;
     }
 
     @Override
     public DhcpResponse receiveBanner() {
-        final TimeoutTracker tracker = new TimeoutTracker(Collections.emptyMap(), m_retries, m_timeout);
+        final TimeoutTracker tracker = new TimeoutTracker(Collections.emptyMap(), retries, timeout);
         Transaction transaction = null;
 
         tracker.reset();
@@ -87,7 +87,7 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
         while (tracker.shouldRetry() && (transaction == null || !transaction.isSuccess())) {
             try {
                 LOG.error("Checking for Dhcp: {}", transaction);
-                transaction = m_dhcpd.executeTransaction(m_address.getHostAddress(), m_macAddress, m_relayMode, m_myIpAddress, m_extendedMode, m_requestIpAddress, m_timeout);
+                transaction = dhcpd.executeTransaction(address.getHostAddress(), macAddress, relayMode, myIpAddress, extendedMode, requestIpAddress, timeout);
             } catch (IOException e) {
                 LOG.error("An unexpected exception occurred during DHCP detection", e);
                 return new DhcpResponse(-1);
@@ -99,7 +99,7 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
     }
 
     @Override
-    public DhcpResponse sendRequest(DhcpRequest request) throws IOException, Exception {
+    public DhcpResponse sendRequest(final DhcpRequest request) throws IOException, Exception {
         return null;
     }
 }

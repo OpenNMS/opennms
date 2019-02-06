@@ -29,13 +29,13 @@
 package org.opennms.netmgt.provision.detector.dhcp.response;
 
 public class DhcpResponse {
-    private long m_responseTime;
+    private long responseTime;
     
-    public DhcpResponse(long responseTime){
-        m_responseTime = responseTime;
+    public DhcpResponse(final long responseTime){
+        this.responseTime = responseTime;
     }
     
-    public boolean validate(long num) {
-        return m_responseTime > num;
+    public boolean validate(final long num) {
+        return this.responseTime > num;
     }
 }

@@ -34,4 +34,5 @@ import org.opennms.features.dhcpd.impl.TransactionImpl;
 
 public interface Dhcpd {
     Transaction executeTransaction(final String hostAddress, final String macAddress, final boolean relayMode, String myIpAddress, final boolean extendedMode, final String requestIpAddress, final int timeout) throws IOException;
+    void shutdown();
 }

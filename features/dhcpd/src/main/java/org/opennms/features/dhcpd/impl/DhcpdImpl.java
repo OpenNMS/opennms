@@ -61,17 +61,6 @@ public class DhcpdImpl implements Dhcpd {
     private final Listener port68Listener = new Listener(this, BOOTP_REPLY_PORT);
 
     public DhcpdImpl() {
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                DhcpdImpl.this.shutdown = true;
-
-                DhcpdImpl.this.port67Listener.stop();
-                DhcpdImpl.this.port68Listener.stop();
-
-                LOG.debug("Dhcpd terminated successfully.");
-            }
-        }));
     }
 
     private synchronized int nextXid() {
@@ -115,7 +104,7 @@ public class DhcpdImpl implements Dhcpd {
     }
 
     private void executeAndWait(final TransactionImpl transaction) throws IOException {
-        if (shutdown) {
+        if (shutdown || !port67Listener.start() || !port68Listener.start()) {
             return;
         }
 
@@ -174,11 +163,7 @@ public class DhcpdImpl implements Dhcpd {
     @Override
     public Transaction executeTransaction(final String hostAddress, final String macAddress, final boolean relayMode, final String myIpAddress, final boolean extendedMode, final String requestIpAddress, final int timeout) throws IOException {
         final TransactionImpl transaction = new TransactionImpl(hostAddress, macAddress, relayMode, myIpAddress, extendedMode, requestIpAddress, timeout);
-
-        if (port67Listener.start() && port68Listener.start()) {
-            executeAndWait(transaction);
-        }
-
+        executeAndWait(transaction);
         return transaction;
     }
 
@@ -195,5 +180,13 @@ public class DhcpdImpl implements Dhcpd {
                 }
             }
         }
+    }
+
+    @Override
+    public void shutdown() {
+        this.shutdown = true;
+        this.port67Listener.stop();
+        this.port68Listener.stop();
+        LOG.debug("Dhcpd terminated successfully.");
     }
 }

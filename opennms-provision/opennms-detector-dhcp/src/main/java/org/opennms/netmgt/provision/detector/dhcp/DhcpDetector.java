@@ -41,11 +41,11 @@ public class DhcpDetector extends BasicDetector<DhcpRequest, DhcpResponse> {
     public static final int DEFAULT_TIMEOUT = 3000;
     public static final String DEFAULT_MAC_ADDRESS = "00:06:0D:BE:9C:B2";
 
-    String macAddress = DEFAULT_MAC_ADDRESS;
-    boolean relayMode = false;
-    boolean extendedMode = false;
-    String myIpAddress = "127.0.0.1";
-    String requestIpAddress = "127.0.0.1";
+    private String macAddress = DEFAULT_MAC_ADDRESS;
+    private boolean relayMode = false;
+    private boolean extendedMode = false;
+    private String myIpAddress = "127.0.0.1";
+    private String requestIpAddress = "127.0.0.1";
 
     private Dhcpd dhcpd;
 
@@ -55,7 +55,7 @@ public class DhcpDetector extends BasicDetector<DhcpRequest, DhcpResponse> {
         setRetries(DEFAULT_RETRIES);
     }
 
-    public void setDhcpd(Dhcpd dhcpd) {
+    public void setDhcpd(final Dhcpd dhcpd) {
         this.dhcpd = dhcpd;
     }
 
@@ -75,47 +75,46 @@ public class DhcpDetector extends BasicDetector<DhcpRequest, DhcpResponse> {
 
     @Override
     protected Client<DhcpRequest, DhcpResponse> getClient() {
-        DhcpClient client = new DhcpClient(macAddress, relayMode, myIpAddress, extendedMode, requestIpAddress, getTimeout(), getRetries(), dhcpd);
-        return client;
+        return new DhcpClient(this.macAddress, this.relayMode, this.myIpAddress, this.extendedMode, this.requestIpAddress, getTimeout(), getRetries(), this.dhcpd);
     }
 
     public String getMacAddress() {
-        return macAddress;
+        return this.macAddress;
     }
 
-    public void setMacAddress(String macAddress) {
+    public void setMacAddress(final String macAddress) {
         this.macAddress = macAddress;
     }
 
     public boolean isRelayMode() {
-        return relayMode;
+        return this.relayMode;
     }
 
-    public void setRelayMode(boolean relayMode) {
+    public void setRelayMode(final boolean relayMode) {
         this.relayMode = relayMode;
     }
 
     public boolean isExtendedMode() {
-        return extendedMode;
+        return this.extendedMode;
     }
 
-    public void setExtendedMode(boolean extendedMode) {
+    public void setExtendedMode(final boolean extendedMode) {
         this.extendedMode = extendedMode;
     }
 
     public String getMyIpAddress() {
-        return myIpAddress;
+        return this.myIpAddress;
     }
 
-    public void setMyIpAddress(String myIpAddress) {
+    public void setMyIpAddress(final String myIpAddress) {
         this.myIpAddress = myIpAddress;
     }
 
     public String getRequestIpAddress() {
-        return requestIpAddress;
+        return this.requestIpAddress;
     }
 
-    public void setRequestIpAddress(String requestIpAddress) {
+    public void setRequestIpAddress(final String requestIpAddress) {
         this.requestIpAddress = requestIpAddress;
     }
 }

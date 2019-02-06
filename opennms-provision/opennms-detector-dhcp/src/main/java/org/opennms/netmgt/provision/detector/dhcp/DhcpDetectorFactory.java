@@ -44,14 +44,14 @@ public class DhcpDetectorFactory extends GenericServiceDetectorFactory<DhcpDetec
         super(DhcpDetector.class);
     }
 
-    public void setDhcpd(Dhcpd dhcpd) {
+    public void setDhcpd(final Dhcpd dhcpd) {
         this.dhcpd = dhcpd;
     }
 
     @Override
     public DhcpDetector createDetector(Map<String, String> properties) {
         DhcpDetector dhcpDetector = super.createDetector(properties);
-        dhcpDetector.setDhcpd(dhcpd);
+        dhcpDetector.setDhcpd(this.dhcpd);
         return dhcpDetector;
     }
 }
