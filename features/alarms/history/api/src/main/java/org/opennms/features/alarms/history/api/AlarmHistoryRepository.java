@@ -61,7 +61,7 @@ public interface AlarmHistoryRepository {
      * Retrieves all the known states for the alarm with the given database id.
      *
      * @param id database id of the alarm to query
-     * @return the last known state of the alarm, or {@code null} if none was found
+     * @return all the known states for the alarm, or an empty list if none were found
      */
     List<AlarmState> getStatesForAlarmWithDbId(long id);
 
@@ -69,7 +69,7 @@ public interface AlarmHistoryRepository {
      * Retrieves all the known states for the alarm with the given database reduction key.
      *
      * @param reductionKey reduction key of the alarm to query
-     * @return the last known state of the alarm, or {@code null} if none was found
+     * @return all the known states for the alarm, or an empty list if none were found
      */
     List<AlarmState> getStatesForAlarmWithReductionKey(String reductionKey);
 

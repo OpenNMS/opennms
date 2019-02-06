@@ -40,33 +40,46 @@ import javax.ws.rs.core.MediaType;
 import org.opennms.features.alarms.history.api.AlarmState;
 
 /**
- * * Full journal of an alarm, given it's ID or reduction key
- * * Set of alarms at some point in time, now or given timestamp
- *
- *
- * /alarm/history    -> all as of now
- * /alarm/history/9  -> specific alarm now
- * /alarm/history/9/journal -> journal history of alarm #9
- *
- * ?match-type=alarm-id   (default to =reduction-key)
- * ?at=3423842384834      (default to =$now)
+ * Query the alarm history and state changes stored in
+ * the {@link org.opennms.features.alarms.history.api.AlarmHistoryRepository}.
  */
 @Path("alarms/history")
 public interface AlarmHistoryRestService {
 
+    /**
+     * Retrieve the complete set of state changes for the given alarm.
+     *
+     * @param alarmId alarm id to query
+     * @param matchType when set the 'reduction-key', lookup by reduction key instead of alarm id
+     * @return state changes
+     */
     @GET
-    @Path("{alarmId}/journal")
+    @Path("{alarmId}/states")
     @Produces(MediaType.APPLICATION_JSON)
     Collection<AlarmState> getStatesForAlarm(@PathParam("alarmId") String alarmId,
             @QueryParam("matchType") String matchType);
 
+    /**
+     * Retrieve the last known state of an alarm at the given time.
+     *
+     * @param alarmId alarm id to query
+     * @param matchType when set the 'reduction-key', lookup by reduction key instead of alarm id
+     * @param timestampInMillis timestamp in milliseconds - defaults to "now" when null
+     * @return last known state
+     */
     @GET
     @Path("{alarmId}")
     @Produces(MediaType.APPLICATION_JSON)
     AlarmState getAlarm(@PathParam("alarmId") String alarmId,
             @QueryParam("matchType") String matchType,
-            @QueryParam("at") Long time);
+            @QueryParam("at") Long timestampInMillis);
 
+    /**
+     * Retrieve the last known state of all alarms which were active at the given time.
+     *
+     * @param timestampInMillis timestamp in milliseconds
+     * @return last known state of all alarms which were active at the given time - defaults to "now" when null
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     Collection<AlarmState> getActiveAlarmsAt(@QueryParam("at") Long timestampInMillis);

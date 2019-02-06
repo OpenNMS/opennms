@@ -37,6 +37,8 @@ import org.opennms.features.alarms.history.rest.api.AlarmHistoryRestService;
 
 public class AlarmHistoryRestServiceImpl implements AlarmHistoryRestService {
 
+    public static final String REDUCTION_KEY_MATCH_TYPE = "reduction-key";
+
     private final AlarmHistoryRepository alarmHistoryRepository;
 
     public AlarmHistoryRestServiceImpl(AlarmHistoryRepository alarmHistoryRepository) {
@@ -45,19 +47,19 @@ public class AlarmHistoryRestServiceImpl implements AlarmHistoryRestService {
 
     @Override
     public Collection<AlarmState> getStatesForAlarm(String alarmId, String matchType) {
-        if ("alarm-id".equals(matchType)) {
-            return alarmHistoryRepository.getStatesForAlarmWithDbId(Integer.valueOf(alarmId));
+        if (REDUCTION_KEY_MATCH_TYPE.equals(matchType)) {
+            return alarmHistoryRepository.getStatesForAlarmWithReductionKey(matchType);
         }
-        return alarmHistoryRepository.getStatesForAlarmWithReductionKey(alarmId);
+        return alarmHistoryRepository.getStatesForAlarmWithDbId(Integer.valueOf(alarmId));
     }
 
     @Override
     public AlarmState getAlarm(String alarmId, String matchType, Long time) {
         long timestampInMillis = time == null ? System.currentTimeMillis() : time;
-        if ("alarm-id".equals(matchType)) {
-            return alarmHistoryRepository.getAlarmWithDbIdAt(Integer.valueOf(alarmId), timestampInMillis);
+        if (REDUCTION_KEY_MATCH_TYPE.equals(matchType)) {
+            return alarmHistoryRepository.getAlarmWithReductionKeyIdAt(alarmId, timestampInMillis);
         }
-        return alarmHistoryRepository.getAlarmWithReductionKeyIdAt(alarmId, timestampInMillis);
+        return alarmHistoryRepository.getAlarmWithDbIdAt(Integer.valueOf(alarmId), timestampInMillis);
     }
 
     @Override
