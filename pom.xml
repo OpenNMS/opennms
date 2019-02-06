@@ -228,18 +228,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>features-maven-plugin</artifactId>
-        <version>1.2.0</version>
-        <executions>
-          <execution>
-            <id>features.xml</id>
-            <phase>process-resources</phase>
-            <goals><goal>generate-features-xml</goal></goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
         <version>${gwtPluginVersion}</version>
@@ -682,19 +670,6 @@
                   <versionRange>[2.5.1,)</versionRange>
                   <goals>
                     <goal>resources</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <ignore/>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>org.opennms.maven.plugins</groupId>
-                  <artifactId>features-maven-plugin</artifactId>
-                  <versionRange>[1.0-SNAPSHOT,)</versionRange>
-                  <goals>
-                    <goal>generate-features-xml</goal>
                   </goals>
                 </pluginExecutionFilter>
                 <action>

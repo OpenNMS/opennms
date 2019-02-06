@@ -215,33 +215,6 @@
           </instructions>
         </configuration>
       </plugin>
-
-      <!-- used to generate opennms style features.xml for this plugin -->
-      <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>features-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>features.xml</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>generate-features-xml</goal>
-            </goals>
-            <configuration>
-              <!-- so that licence manager feature starts before this module -->
-              <repositories>
-                <repository>mvn:org.opennms.plugins/org.opennms.plugin.licencemanager/${licencemanagerVersion}/xml/features</repository>
-              </repositories>
-              <features>
-                <feature>org.opennms.plugin.licencemanager</feature>
-              </features>
-              <bundles>
-                <bundle>mvn:${project.groupId}/${project.artifactId}/${project.version}</bundle>
-              </bundles>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
 
   </build>

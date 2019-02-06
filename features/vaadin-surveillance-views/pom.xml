@@ -43,19 +43,6 @@
                     </instructions>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.opennms.maven.plugins</groupId>
-                <artifactId>features-maven-plugin</artifactId>
-                <configuration>
-                    <bundles>
-                        <bundle>mvn:org.opennms.features/vaadin-surveillance-views/${project.version}</bundle>
-                    </bundles>
-                    <features>
-                        <feature>opennms-core</feature>
-                        <feature>vaadin</feature>
-                    </features>
-                </configuration>
-            </plugin>
         </plugins>
 
     </build>
