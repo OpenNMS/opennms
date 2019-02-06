@@ -49,22 +49,21 @@ The patterns should be arranged in the file from most specific to least specific
 
 [options="header, autowidth"]
 |===
-| Semantic Token | Description
-| `day` | 2-digit day of month (1-31).
+| Semantic Token     | Description
+| `day`              | 2-digit day of month (1-31).
 | `facilityPriority` | Facility-priority integer.
-| `hostname` | String hostname (unqualified or FQDN), IPv4 address, or IPv6 address.
-| `hour` | 2-digit hour of day (0-23).
-| `message` | Remaining string message.
-| `messageId` | String message ID.
-| `minute` | 2-digit minute (0-59).
-| `month` | 2-digit month (1-12).
-| `parm*` | String generic parameter where the parameter's key is the identifier following "parm" in the semantic token (e.x. parmComponentId maps to a string parameter with key "ComponentId").
-| `processId` | String process ID.
-| `processName` | String process name.
-| `second` | 2-digit second (0-59).
-| `secondFraction` | 1- to 6-digit fractional second value as a string.
-| `timezone` | String timezone value.
-| `version` | Version.
-| `year` | 4-digit year.
+| `hostname`         | String hostname (unqualified or FQDN), IPv4 address, or IPv6 address.
+| `hour`             | 2-digit hour of day (0-23).
+| `message`          | Remaining string message.
+| `messageId`        | String message ID.
+| `minute`           | 2-digit minute (0-59).
+| `month`            | 2-digit month (1-12).
+| `parm*`            | String generic parameter where the parameter's key is the identifier following "parm" in the semantic token (e.x. parmComponentId maps to a string parameter with key "ComponentId").
+| `processId`        | String process ID.
+| `processName`      | String process name.
+| `second`           | 2-digit second (0-59).
+| `secondFraction`   | 1- to 6-digit fractional second value as a string.
+| `timezone`         | String timezone value.
+| `version`          | Version.
+| `year`             | 4-digit year.
 |===
-
