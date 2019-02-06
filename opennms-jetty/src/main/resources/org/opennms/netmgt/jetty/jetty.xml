@@ -124,7 +124,7 @@
           <New id="header" class="org.eclipse.jetty.rewrite.handler.HeaderPatternRule">
             <Set name="pattern">*</Set>
             <Set name="name">X-Frame-Options</Set>
-            <Set name="value">DENY</Set>
+            <Set name="value">SAMEORIGIN</Set>
           </New>
         </Item>
       </Array>
