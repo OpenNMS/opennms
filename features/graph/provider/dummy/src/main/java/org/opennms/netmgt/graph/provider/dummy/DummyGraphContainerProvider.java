@@ -44,7 +44,7 @@ public class DummyGraphContainerProvider implements GraphContainerProvider {
     public GraphContainer loadGraphContainer() {
         final GraphContainerInfo containerInfo = getContainerInfo();
         final SimpleGraphContainer container = new SimpleGraphContainer(containerInfo);
-        final SimpleGraph graph = new SimpleGraph(containerInfo.getGraphInfo("dummy1"));
+        final SimpleGraph graph = new SimpleGraph(containerInfo.getGraphInfo("graph1"));
         final SimpleVertex v1 = new SimpleVertex(graph.getNamespace(), "v1");
         final SimpleVertex v2 = new SimpleVertex(graph.getNamespace(), "v2");
         final SimpleEdge e1 = new SimpleEdge(v1, v2);
