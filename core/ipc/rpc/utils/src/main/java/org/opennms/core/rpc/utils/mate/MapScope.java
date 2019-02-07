@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class MapScope implements Scope {
     private final Map<ContextKey, String> values;
@@ -48,5 +49,14 @@ public class MapScope implements Scope {
     @Override
     public Set<ContextKey> keys() {
         return this.values.keySet();
+    }
+
+    public static MapScope singeContext(final String context, final Map<String, String> values) {
+        return new MapScope(
+                values.entrySet().stream()
+                .collect(Collectors.toMap(
+                        e -> new ContextKey(context, e.getKey()),
+                        e -> e.getValue())
+                ));
     }
 }

@@ -49,6 +49,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.network.IpListFromUrl;
@@ -73,6 +74,8 @@ import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 import org.opennms.netmgt.poller.support.DefaultServiceMonitorRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 /**
  * <p>Abstract PollerConfigManager class.</p>
@@ -607,6 +610,17 @@ abstract public class PollerConfigManager implements PollerConfig {
                 if (svc.getName().equalsIgnoreCase(svcName)) {
                     // Ok its in the package. Now check the
                     // status of the service
+                    final String status = svc.getStatus();
+                    if (status == null || status.equals("on")) {
+                        return true;
+                    }
+                }
+            }
+
+            // Find service by pattern
+            for(final Service svc : services(pkg)) {
+                if (!Strings.isNullOrEmpty(svc.getPattern())
+                        && Pattern.matches(svc.getPattern(), svcName)) {
                     final String status = svc.getStatus();
                     if (status == null || status.equals("on")) {
                         return true;

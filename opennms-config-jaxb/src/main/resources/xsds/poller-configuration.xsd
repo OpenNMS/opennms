@@ -399,6 +399,12 @@
           </restriction>
         </simpleType>
       </attribute>
+
+      <attribute name="pattern" type="string" use="optional">
+        <annotation>
+          <documentation>Pattern to match service names mapped to this service config.</documentation>
+        </annotation>
+      </attribute>
     </complexType>
   </element>
 

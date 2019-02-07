@@ -78,6 +78,9 @@ public class Service implements Serializable {
     @XmlAttribute(name="status")
     private String m_status = "on";
 
+    @XmlAttribute(name="pattern")
+    private String m_pattern = null;
+
     /**
      * Parameters to be used for polling this service. E.g.: for polling HTTP,
      * the URL to hit is configurable via a parameter. Parameters are specific
@@ -163,6 +166,14 @@ public class Service implements Serializable {
 
     public void setStatus(final String status) {
         m_status = status;
+    }
+
+    public String getPattern() {
+        return m_pattern;
+    }
+
+    public void setPattern(final String pattern) {
+        m_pattern = pattern;
     }
 
     public List<Parameter> getParameters() {

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,30 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller;
+package org.opennms.core.rpc.utils.mate;
 
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
 
-public interface PollerRequestBuilder {
+public class PatternScope implements Scope {
+    private final String context;
+    private final Matcher matcher;
 
-    PollerRequestBuilder withService(MonitoredService service);
+    public PatternScope(final String context, final Matcher matcher) {
+        this.context = Objects.requireNonNull(context);
+        this.matcher = Objects.requireNonNull(matcher);
+    }
 
-    PollerRequestBuilder withSystemId(String systemId);
+    @Override
+    public Optional<String> get(final ContextKey contextKey) {
+        if (Objects.equals(this.context, contextKey.context)) {
 
-    PollerRequestBuilder withMonitor(ServiceMonitor serviceMonitor);
+        }
 
-    PollerRequestBuilder withMonitorClassName(String className);
+        return Optional.empty();
+    }
 
-    PollerRequestBuilder withTimeToLive(Long ttlInMs);
-
-    PollerRequestBuilder withAttribute(String key, Object value);
-
-    PollerRequestBuilder withAttributes(Map<String, Object> attributes);
-
-    PollerRequestBuilder withAdaptor(ServiceMonitorAdaptor adaptor);
-
-    PollerRequestBuilder withPatternVariables(Map<String, String> patterns);
-
-    CompletableFuture<PollerResponse> execute();
+    @Override
+    public Set<ContextKey> keys() {
+        // We can't figure out the available keys here...
+        return Collections.emptySet();
+    }
 }
