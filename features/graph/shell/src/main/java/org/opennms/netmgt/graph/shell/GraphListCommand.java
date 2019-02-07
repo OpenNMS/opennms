@@ -73,8 +73,8 @@ public class GraphListCommand implements Action {
             final int maxNamespaceLength = graphInfos.stream().mapToInt(gi -> gi.getNamespace().length()).max().getAsInt();
             final int maxGraphLabelLength = graphInfos.stream().mapToInt(gi -> gi.getLabel() != null ? gi.getLabel().length() : 0).max().getAsInt();
             final String GraphRowFormat = String.format(GRAPH_ROW_TEMPLATE, maxNamespaceLength > "Namespace".length() ? maxNamespaceLength : "Namespace".length(), maxGraphLabelLength, MAX_DESCRIPTION_LENGTH);
+            System.out.println(String.format(GraphRowFormat, "Namespace", "Label", "Description", "Container ID"));
             for (GraphContainerInfo eachContainerInfo : graphContainerInfoList) {
-                System.out.println(String.format(GraphRowFormat, "Namespace", "Label", "Description", "Container ID"));
                 for (GraphInfo eachGraphInfo : eachContainerInfo.getGraphInfos()) {
                     final String description = cutString(eachGraphInfo.getDescription());
                     System.out.println(String.format(GraphRowFormat, eachGraphInfo.getNamespace(), eachGraphInfo.getLabel(), description, eachContainerInfo.getId()));

@@ -8,9 +8,13 @@
         http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
-
+    <reference id="graphRepository" interface="org.opennms.netmgt.graph.api.persistence.GraphRepository" availability="mandatory" />
     <service interface="org.opennms.netmgt.graph.api.service.GraphContainerProvider">
-        <bean class="org.opennms.netmgt.graph.provider.dummy.DummyGraphContainerProvider" />
+        <bean class="org.opennms.netmgt.graph.provider.dummy.DummyGraphContainerProvider"/>
     </service>
-
+    <service interface="org.opennms.netmgt.graph.api.service.GraphContainerProvider">
+        <bean class="org.opennms.netmgt.graph.provider.dummy.PersistentDummyGraphContainerProvider" init-method="init">
+            <argument ref="graphRepository" />
+        </bean>
+    </service>
 </blueprint>

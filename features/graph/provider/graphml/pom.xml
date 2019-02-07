@@ -19,12 +19,10 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Version>${project.version}</Bundle-Version>
                         <!-- TODO MVR this package does not find classes from package edu.uci.ics.jung.graph, but should :( -->
                         <Import-Package>*,edu.uci.ics.jung.graph</Import-Package>
-                        <!--<DynamicImport-Package>*</DynamicImport-Package>-->
+                        <Private-Package>{local-packages}</Private-Package>
+                        <Export-Package></Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

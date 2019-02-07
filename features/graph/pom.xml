@@ -29,8 +29,8 @@
     </build>
     <modules>
         <module>api</module>
+        <module>dao</module>
         <module>jung</module>
-        <module>persistence</module>
         <module>provider</module>
         <module>rest</module>
         <module>service</module>

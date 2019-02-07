@@ -746,6 +746,16 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.graph.dao</groupId>
+      <artifactId>org.opennms.features.graph.dao.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.graph.dao</groupId>
+      <artifactId>org.opennms.features.graph.dao.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.timeformat</groupId>
       <artifactId>org.opennms.features.timeformat.api</artifactId>
       <version>${project.version}</version>

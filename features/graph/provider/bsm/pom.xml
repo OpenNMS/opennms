@@ -11,6 +11,20 @@
     <artifactId>org.opennms.features.graph.provider.bsm</artifactId>
     <name>OpenNMS :: Features :: Graph :: Provider :: Business Services</name>
     <packaging>bundle</packaging>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Private-Package>{local-packages}</Private-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>org.opennms.features.graph</groupId>
