@@ -360,11 +360,15 @@ public abstract class NotificationManager {
             if ("MATCH-ANY-UEI".equals(notif.getUei())) {
                 // TODO: Trim parentheses from the filter and trim whitespace from inside the
                 // filter statement. This comparison is very brittle as it is.
-                if ("ipaddr != '0.0.0.0'".equals(notif.getRule().toLowerCase()) || "ipaddr iplike *.*.*.*".equals(notif.getRule().toLowerCase())) {
+                if ("ipaddr != '0.0.0.0'".equals(notif.getRule().getContent().toLowerCase()) || "ipaddr iplike *.*.*.*".equals(notif.getRule().getContent().toLowerCase())) {
                     return true;
                 } else {
                     return false;
                 }
+            }
+            // When rule is enforced to be strict and there is no nodeId, interface or service, discard the notice.
+            if(notif.getRule().getStrict() != null && notif.getRule().getStrict()) {
+                return false;
             }
             return true;
         }
@@ -382,7 +386,7 @@ public abstract class NotificationManager {
             }
         }
 
-        String rule = "((" + notif.getRule() + ")" + constraints + ")";
+        String rule = "((" + notif.getRule().getContent() + ")" + constraints + ")";
 
         return isRuleMatchingFilter(notif, rule);
     }
@@ -391,7 +395,7 @@ public abstract class NotificationManager {
         try {
             return FilterDaoFactory.getInstance().isRuleMatching(rule);
         } catch (FilterParseException e) {
-            LOG.error("Invalid filter rule for notification {}: {}", notif.getName(), notif.getRule(), e);
+            LOG.error("Invalid filter rule for notification {}: {}", notif.getName(), notif.getRule().getContent(), e);
             throw e;
         }
     }
@@ -654,7 +658,7 @@ public abstract class NotificationManager {
      * <p>acknowledgeNoticeBasedOnAlarms</p>
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     * @return a {@link java.utilCollection} object.
+     * @return a {@link java.util.Collection} object.
      * @throws java.sql.SQLException if any.
      * @throws java.io.IOException if any.
      */
@@ -1242,7 +1246,7 @@ public abstract class NotificationManager {
      * <p>forEachUserNotification</p>
      *
      * @param notifId a int.
-     * @param rp a {@link org.opennms.netmgt.utils.RowProcessor} object.
+     * @param rp a {@link org.opennms.core.utils.RowProcessor} object.
      */
     public void forEachUserNotification(final int notifId, final RowProcessor rp) {
         final Querier querier = new Querier(m_dataSource, "select * from usersNotified where notifyId = ? order by notifytime", rp);
