@@ -40,9 +40,7 @@ public class SimpleTest {
         final SimpleVertex original = createVertex("dummy", "1");
         final SimpleVertex copy = new SimpleVertex(original);
         Assert.assertEquals(original.getId(), copy.getId());
-        Assert.assertEquals(original.getIconKey(), copy.getIconKey());
         Assert.assertEquals(original.getLabel(), copy.getLabel());
-        Assert.assertEquals(original.getTooltip(), copy.getTooltip());
         Assert.assertEquals(original.getNamespace(), copy.getNamespace());
         Assert.assertEquals(original, copy);
     }
@@ -65,8 +63,6 @@ public class SimpleTest {
         Objects.requireNonNull(namespace);
         Objects.requireNonNull(id);
         final SimpleVertex vertex = new SimpleVertex(namespace, id);
-        vertex.setTooltip("tooltip");
-        vertex.setIconKey("iconKey");
         vertex.setLabel("label");
         return vertex;
     }

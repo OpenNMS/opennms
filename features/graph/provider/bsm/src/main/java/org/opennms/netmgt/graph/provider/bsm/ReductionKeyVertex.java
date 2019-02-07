@@ -50,8 +50,6 @@ public class ReductionKeyVertex extends AbstractBusinessServiceVertex {
     public ReductionKeyVertex(String reductionKey, int level) {
         super(Type.ReductionKey + ":" + reductionKey, getLabelFromReductionKey(reductionKey), level);
         this.reductionKey = reductionKey;
-        setTooltip(String.format("Reduction Key '%s'", reductionKey));
-        setIconKey("bsm.reduction-key");
     }
 
     protected static String getLabelFromReductionKey(String reductionKey) {

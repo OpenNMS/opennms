@@ -164,26 +164,29 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
 
     // TODO MVR FocusStrategy or Focus concept is not fully implemented yet
     private static Focus getFocusStrategy(GraphMLGraph graph) {
-        final String strategy = graph.getProperty(GenericProperties.FOCUS_STRATEGY);
-        if (strategy != null) {
-            if ("all".equalsIgnoreCase(strategy)) return FocusStrategy.ALL;
-            if ("first".equals(strategy)) return FocusStrategy.FIRST;
-            if ("empty".equals(strategy)) return FocusStrategy.EMPTY;
-            if ("specific".equalsIgnoreCase(strategy)) {
-                final List<String> focusIds = getFocusIds(graph);
-                return FocusStrategy.SPECIFIC(focusIds);
-            }
-
-        }
-        return FocusStrategy.FIRST;
+//        final String strategy = graph.getProperty(GenericProperties.FOCUS_STRATEGY);
+//        if (strategy != null) {
+//            if ("all".equalsIgnoreCase(strategy)) return FocusStrategy.ALL;
+//            if ("first".equals(strategy)) return FocusStrategy.FIRST;
+//            if ("empty".equals(strategy)) return FocusStrategy.EMPTY;
+//            if ("specific".equalsIgnoreCase(strategy)) {
+//                final List<String> focusIds = getFocusIds(graph);
+//                return FocusStrategy.SPECIFIC(focusIds);
+//            }
+//
+//        }
+//        return FocusStrategy.FIRST;
+        // TODO MVR implement me fully
+        return FocusStrategy.EMPTY;
     }
 
+    // TODO MVR impelment me
     private static List<String> getFocusIds(GraphMLGraph graph) {
-        final String property = graph.getProperty(GenericProperties.FOCUS_IDS);
-        if (property != null) {
-            String[] split = property.split(",");
-            return Lists.newArrayList(split);
-        }
+//        final String property = graph.getProperty(GenericProperties.FOCUS_IDS);
+//        if (property != null) {
+//            String[] split = property.split(",");
+//            return Lists.newArrayList(split);
+//        }
         return Lists.newArrayList();
     }
 

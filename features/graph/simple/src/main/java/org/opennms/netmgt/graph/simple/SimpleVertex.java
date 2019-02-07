@@ -58,10 +58,8 @@ public class SimpleVertex implements Vertex, NodeAware, LocationAware {
     public SimpleVertex(SimpleVertex copyMe) {
         this(copyMe.getNamespace(), copyMe.getId());
         setLabel(copyMe.getLabel());
-        setIconKey(copyMe.getIconKey());
         setNodeInfo(copyMe.getNodeInfo()); // TODO MVR also clone this
         setNodeRefString(copyMe.getNodeRefString());
-        setTooltip(copyMe.getTooltip());
     }
 
     @Override
@@ -76,22 +74,6 @@ public class SimpleVertex implements Vertex, NodeAware, LocationAware {
     @Override
     public String getId() {
         return id;
-    }
-
-    public String getIconKey() {
-        return iconKey;
-    }
-
-    public void setIconKey(String iconKey) {
-        this.iconKey = iconKey;
-    }
-
-    public String getTooltip() {
-        return tooltip;
-    }
-
-    public void setTooltip(String tooltip) {
-        this.tooltip = tooltip;
     }
 
     public String getLabel() {
@@ -109,12 +91,6 @@ public class SimpleVertex implements Vertex, NodeAware, LocationAware {
         vertex.setNamespace(getNamespace());
         if (getLabel() != null) {
             vertex.setProperty(GenericProperties.LABEL, getLabel());
-        }
-        if (getTooltip() != null) {
-            vertex.setProperty(GenericProperties.TOOLTIP, getTooltip());
-        }
-        if (getIconKey() != null) {
-            vertex.setProperty(GenericProperties.ICON_KEY, getIconKey());
         }
         if (getNodeRefString() != null) {
             vertex.setProperty(GenericProperties.NODE_REF, getNodeRefString());

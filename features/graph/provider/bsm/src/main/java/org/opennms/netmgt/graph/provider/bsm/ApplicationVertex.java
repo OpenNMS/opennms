@@ -54,8 +54,6 @@ public class ApplicationVertex extends AbstractBusinessServiceVertex {
         super(Type.Application + ":" + applicationId, applicationName, level);
         this.applicationId = applicationId;
         this.reductionKeys = reductionKeys;
-        setTooltip(String.format("Application '%s'", applicationName));
-        setIconKey("bsm.application");
     }
 
     public Integer getApplicationId() {

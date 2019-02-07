@@ -48,11 +48,9 @@ public class GenericGraphToSimpleGraphTransformer implements Function<GenericGra
             genericGraph.getVertices().forEach(genericVertex -> {
                 try {
                     // TODO MVR we should use the factory instead
-//                        final SimpleVertex eachSimpleVertex = vertexFactory.createVertex(SimpleVertex.class, simpleGraph.getNamespace(), genericVertex.getId());
+//                  final SimpleVertex eachSimpleVertex = vertexFactory.createVertex(SimpleVertex.class, simpleGraph.getNamespace(), genericVertex.getId());
                     final SimpleVertex eachSimpleVertex = new SimpleVertex(simpleGraph.getNamespace(), genericVertex.getId());
                     eachSimpleVertex.setLabel(genericVertex.getProperty(GenericProperties.LABEL));
-                    eachSimpleVertex.setIconKey(genericVertex.getProperty(GenericProperties.ICON_KEY));
-                    eachSimpleVertex.setTooltip(genericVertex.getProperty(GenericProperties.TOOLTIP));
                     eachSimpleVertex.setNodeRefString(genericVertex.getProperty(GenericProperties.NODE_REF));
                     eachSimpleVertex.setNodeInfo((NodeInfo) genericVertex.getComputedProperties().get("node"));
                     simpleGraph.addVertex(eachSimpleVertex);

@@ -58,8 +58,6 @@ public class IpServiceVertex extends AbstractBusinessServiceVertex {
         this.reductionKeys = reductionKeys;
 //        setIpAddress(ipAddress); // TODO MVR this is not yet supported. Maybe IpRef or something like this could be added
         setLabel(ipServiceName);
-        setTooltip(String.format("IP Service '%s' on %s", ipServiceName, ipAddress));
-        setIconKey("bsm.ip-service");
         setNodeRefString(Integer.toString(nodeId));
     }
 

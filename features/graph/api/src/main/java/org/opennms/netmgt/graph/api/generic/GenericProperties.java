@@ -30,36 +30,25 @@ package org.opennms.netmgt.graph.api.generic;
 
 // Very similar to the ones from OpenNMS, but only generic ones, no special meaning can be found here
 // TODO MVR decide which properties we still want to support and which can be removed
-public interface GenericProperties {
-    String ID = "id";
-    String DESCRIPTION = "description";
-    String NAMESPACE = "namespace";
-    @Deprecated
-    String ICON_KEY = "iconKey";
-    String IP_ADDRESS = "ipAddr";
-    String LABEL = "label";
-    String LOCKED = "locked";
-    String NODE_ID = "nodeID";
-    String FOREIGN_SOURCE = "foreignSource";
-    String FOREIGN_ID = "foreignID";
-    @Deprecated
-    String SELECTED = "selected";
-    @Deprecated
-    String STYLE_NAME = "styleName";
-    @Deprecated
-    String TOOLTIP = "tooltip";
-    String X = "x";
-    String Y = "y";
-    String PREFERRED_LAYOUT = "preferred-layout";
-    String FOCUS_STRATEGY = "focus-strategy";
-    String FOCUS_IDS = "focus-ids";
-    String SEMANTIC_ZOOM_LEVEL = "semantic-zoom-level";
-    String VERTEX_STATUS_PROVIDER = "vertex-status-provider";
-    String LEVEL = "level";
-    String EDGE_PATH_OFFSET = "edge-path-offset";
-    String BREADCRUMB_STRATEGY = "breadcrumb-strategy";
-    String LOCATION = "location";
 
-    // Reference to a node, either the id, or a <foreignSource>:<foreignId> statement
+/**
+ * These properties are generally supported and may be used to persist as values to the {@link GenericElement#setProperty(String, Object)}.
+ *
+ * @author mvrueden
+ */
+public interface GenericProperties {
+    /** The id of the element */
+    String ID = "id";
+
+    /** The namespace of the element. */
+    String NAMESPACE = "namespace";
+
+    /** The description of the element */
+    String DESCRIPTION = "description";
+
+    /** The label of the element */
+    String LABEL = "label";
+
+    /** Reference to a node, either the id, or a <foreignSource>:<foreignId> statement */
     String NODE_REF = "nodeRef";
 }

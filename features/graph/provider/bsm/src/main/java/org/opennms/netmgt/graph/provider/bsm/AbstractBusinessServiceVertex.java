@@ -55,7 +55,6 @@ public abstract class AbstractBusinessServiceVertex extends SimpleVertex {
     protected AbstractBusinessServiceVertex(String id, String label, int level) {
         super(NAMESPACE, id);
         setLabel(label);
-        setIconKey(null);
         this.level = level;
     }
 

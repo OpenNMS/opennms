@@ -52,8 +52,6 @@ public class BusinessServiceVertex extends AbstractBusinessServiceVertex {
         super(Type.BusinessService + ":" + serviceId, name, level);
         this.serviceId = serviceId;
         setLabel(name);
-        setTooltip(String.format("Business Service '%s'", name));
-        setIconKey("bsm.business-service");
     }
 
     public Long getServiceId() {
