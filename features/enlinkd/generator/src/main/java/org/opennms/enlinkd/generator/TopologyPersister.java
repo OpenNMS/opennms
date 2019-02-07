@@ -28,7 +28,6 @@
 
 package org.opennms.enlinkd.generator;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
