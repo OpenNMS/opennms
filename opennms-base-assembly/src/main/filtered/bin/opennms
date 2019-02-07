@@ -350,7 +350,7 @@ doStart(){
 	fi
 
 	if [ "$SERVICE" = "" ]; then
-		APP_VM_PARMS=("${JPDA[@]}" "$MANAGER_OPTIONS")
+		APP_VM_PARMS=("${JPDA[@]}" "${MANAGER_OPTIONS[@]}")
 		APP_PARMS_BEFORE=("start")
 
 	else
