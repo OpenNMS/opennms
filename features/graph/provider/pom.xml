@@ -10,6 +10,7 @@
     <groupId>org.opennms.features.graph</groupId>
     <artifactId>org.opennms.features.graph.provider</artifactId>
     <name>OpenNMS :: Features :: Graph :: Provider (Parent)</name>
+    <!-- TODO MVR rename this to providers -->
     <packaging>pom</packaging>
     <modules>
         <module>bsm</module>

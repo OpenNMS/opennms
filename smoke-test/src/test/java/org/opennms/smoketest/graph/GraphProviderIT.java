@@ -49,20 +49,27 @@ public class GraphProviderIT extends OpenNMSSeleniumTestCase {
         // Install features
         karafShell = new KarafShell(getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8101));
         karafShell.runCommand("feature:install opennms-graphs");
-        karafShell.runCommand("feature:install opennms-graph-provider-bsm");
-        karafShell.runCommand("feature:list -i", output -> output.contains("opennms-graphs") && output.contains("opennms-graph-provider-bsm"));
-    }
-
-    @After
-    public void tearDown() throws IOException, InterruptedException {
-        karafShell.runCommand("bsm:delete-generated-hierarchies");
     }
 
     // Here we verify that the graph provider is exposed correctly
     @Test
     public void canExposeGraphProvider() throws IOException, InterruptedException {
-        karafShell.runCommand("bsm:generate-hierarchies 5 2");
-        karafShell.runCommand("graph:get --container bsm --namespace bsm", output ->
-                output.contains("label => Business Service Graph") && output.contains("Vertex Details (5)"));
+        try {
+            karafShell.runCommand("feature:install opennms-graph-provider-bsm");
+            karafShell.runCommand("feature:list -i", output -> output.contains("opennms-graphs") && output.contains("opennms-graph-provider-bsm"));
+            karafShell.runCommand("bsm:generate-hierarchies 5 2");
+            karafShell.runCommand("graph:get --container bsm --namespace bsm", output ->
+                    output.contains("label => Business Service Graph") && output.contains("Vertex Details (5)"));
+        } finally {
+            karafShell.runCommand("bsm:delete-generated-hierarchies");
+        }
+    }
+
+    @Test
+    public void canImportGraphRepository() {
+        karafShell.runCommand("feature:install opennms-graph-provider-dummy");
+        karafShell.runCommand("feature:list -i", output -> output.contains("opennms-graphs") && output.contains("opennms-graph-provider-dummy"));
+        karafShell.runCommand("graph:get --container persistent-dummy --namespace persistent-dummy.graph",
+                output -> output.contains("Vertex Details (0)"));
     }
 }

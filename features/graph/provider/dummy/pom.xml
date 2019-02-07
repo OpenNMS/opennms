@@ -32,8 +32,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.graph.persistence</groupId>
-            <artifactId>org.opennms.features.graph.persistence.api</artifactId>
+            <groupId>org.opennms.features.graph.dao</groupId>
+            <artifactId>org.opennms.features.graph.dao.api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- TODO MVR this is still weird -->
