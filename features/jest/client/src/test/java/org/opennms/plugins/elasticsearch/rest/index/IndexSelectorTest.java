@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic.index;
+package org.opennms.plugins.elasticsearch.rest.index;
 
 import static org.junit.Assert.assertEquals;
 
@@ -39,8 +39,6 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.junit.Test;
-import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 
 public class IndexSelectorTest {
 
@@ -316,12 +314,10 @@ public class IndexSelectorTest {
             Date start = format.parse(from);
             Date end = format.parse(to);
 
-            TimeRangeFilter filter = new TimeRangeFilter(start.getTime(), end.getTime());
-
             List<String> expectedList = Arrays.asList(expected);
             long expandTimeRangeInMs = 2 * 60 * 1000; // 2 min
             assertEquals(String.format("Test failed for strategy %s from %s to %s", this.strategy.name(), this.from, this.to)
-                    , expectedList, new IndexSelector("prefix", strategy, expandTimeRangeInMs).getIndexNames(filter));
+                         , expectedList, new IndexSelector("prefix", strategy, expandTimeRangeInMs).getIndexNames(start.getTime(), end.getTime()));
         }
     }
 }

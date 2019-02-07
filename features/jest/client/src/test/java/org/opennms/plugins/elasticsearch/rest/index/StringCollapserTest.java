@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic.index;
+package org.opennms.plugins.elasticsearch.rest.index;
 
 import static org.junit.Assert.*;
 

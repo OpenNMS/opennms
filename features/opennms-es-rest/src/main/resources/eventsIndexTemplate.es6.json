@@ -771,6 +771,22 @@
             "x733probablecause": {
                "index": true,
                "type": "short"
+            },
+            "eventcreationtime": {
+               "index": true,
+               "type": "date"
+            },
+            "alarmtype": {
+               "index": true,
+               "type": "short"
+            },
+            "alarmreductionkey": {
+               "index": true,
+               "type": "keyword"
+            },
+            "alarmclearkey": {
+               "index": true,
+               "type": "keyword"
             }
          },
          "_all": {
