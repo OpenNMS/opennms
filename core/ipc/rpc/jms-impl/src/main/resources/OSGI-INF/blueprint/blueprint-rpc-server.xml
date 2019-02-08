@@ -48,4 +48,12 @@
     <reference-list id="rpcModulesRef" interface="org.opennms.core.rpc.api.RpcModule" availability="optional">
         <reference-listener bind-method="bind" unbind-method="unbind" ref="jmsRpcServerRouteManager"/>
     </reference-list>
+
+    <!-- JMS HealthCheck -->
+    <service interface="org.opennms.core.health.api.HealthCheck">
+        <bean class="org.opennms.distributed.jms.impl.JmsConnectionHealthCheck" >
+            <argument ref="blueprintBundleContext"/>
+            <argument value="RPC" />
+        </bean>
+    </service>
 </blueprint>

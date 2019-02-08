@@ -47,4 +47,12 @@
       </route>
     </camelContext>
 
+    <!-- JMS HealthCheck -->
+    <service interface="org.opennms.core.health.api.HealthCheck">
+      <bean class="org.opennms.distributed.jms.impl.JmsConnectionHealthCheck" >
+        <argument ref="blueprintBundleContext"/>
+        <argument value="Sink" />
+      </bean>
+    </service>
+
 </blueprint>

@@ -53,14 +53,16 @@ import org.osgi.framework.ServiceReference;
 public class JmsConnectionHealthCheck implements HealthCheck {
 
     private final BundleContext bundleContext;
+    private final String type;
 
-    public JmsConnectionHealthCheck(BundleContext bundleContext) {
+    public JmsConnectionHealthCheck(BundleContext bundleContext, String type) {
         this.bundleContext = Objects.requireNonNull(bundleContext);
+        this.type = type;
     }
 
     @Override
     public String getDescription() {
-        return "Connecting to JMS Broker";
+        return "Connecting to JMS Broker from " + type;
     }
 
     @Override
