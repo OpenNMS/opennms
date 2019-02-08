@@ -54,6 +54,7 @@ import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.mock.MockNotifdConfigManager;
 import org.opennms.netmgt.config.notifications.Notification;
+import org.opennms.netmgt.config.notifications.Rule;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
@@ -557,7 +558,9 @@ public class NotificationManagerIT implements InitializingBean {
     private void doTestNodeInterfaceServiceWithRule(String description, int nodeId, String intf, String svc, String rule, boolean matches) {
         Notification notif = new Notification();
         notif.setName("a notification");
-        notif.setRule(rule);
+        Rule filterRule = new Rule();
+        filterRule.setContent(rule);
+        notif.setRule(filterRule);
         
         EventBuilder builder = new EventBuilder("uei.opennms.org/doNotCareAboutTheUei", "Test.Event");
         builder.setNodeid(nodeId);
