@@ -58,7 +58,7 @@ public class CsvServiceTest {
 
         // Verify output
         assertThat(rows.length, is(2));
-        assertThat(rows[1], is("dummy;;;;;;"));
+        assertThat(rows[1], is("dummy;;;;;;;false"));
     }
 
     @Test
@@ -71,13 +71,14 @@ public class CsvServiceTest {
                 .withDstPort("80,1234").withDstAddress("8.8.8.8")
                 .withSrcPort("55555").withSrcAddress("10.0.0.1")
                 .withExporterFilter("categoryName = 'Databases'")
+                .withOmnidirectional(true)
                 .build();
         final String response = csvService.createCSV(Lists.newArrayList(rule));
         final String[] rows = response.split("\n");
 
         // Verify output
         assertThat(rows.length, is(2));
-        assertThat(rows[1], is("dummy;tcp,udp,icmp;10.0.0.1;55555;8.8.8.8;80,1234;categoryName = 'Databases'"));
+        assertThat(rows[1], is("dummy;tcp,udp,icmp;10.0.0.1;55555;8.8.8.8;80,1234;categoryName = 'Databases';true"));
     }
 
     @Test
@@ -85,7 +86,7 @@ public class CsvServiceTest {
         final CsvService csvService = new CsvServiceImpl(createNiceMock(RuleValidator.class));
         final List<Rule> rules = csvService.parseCSV(
                 new ByteArrayInputStream(
-                        "dummy;tcp,udp,icmp;10.0.0.1;55555;8.8.8.8;80,1234;categoryName = 'Databases'".getBytes()),
+                        "dummy;tcp,udp,icmp;10.0.0.1;55555;8.8.8.8;80,1234;categoryName = 'Databases';true".getBytes()),
                 false
                 ).getRules();
         assertThat(rules, hasSize(1));
@@ -98,13 +99,14 @@ public class CsvServiceTest {
         assertThat(rule.getSrcPort(), is("55555"));
         assertThat(rule.getSrcAddress(), is("10.0.0.1"));
         assertThat(rule.getExporterFilter(), is("categoryName = 'Databases'"));
+        assertThat(rule.isOmnidirectional(), is(true));
     }
 
     @Test
     public void verifyParsingEmpty() {
         final CsvService csvService = new CsvServiceImpl(createNiceMock(RuleValidator.class));
 
-        final List<Rule> rules = csvService.parseCSV(new ByteArrayInputStream(";;;;;;".getBytes()), false).getRules();
+        final List<Rule> rules = csvService.parseCSV(new ByteArrayInputStream(";;;;;;;".getBytes()), false).getRules();
         assertThat(rules, hasSize(1));
         final Rule rule = rules.get(0);
         assertThat(rule.getId(), is(nullValue()));
@@ -112,6 +114,7 @@ public class CsvServiceTest {
         assertThat(rule.getName(), is(nullValue()));
         assertThat(rule.getProtocol(), is(nullValue()));
         assertThat(rule.getDstAddress(), is(nullValue()));
+        assertThat(rule.isOmnidirectional(), is(false));
     }
 
     @Test

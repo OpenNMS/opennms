@@ -89,8 +89,10 @@
                "description":{
                   "index":"analyzed",
                   "type":"string"
+               },
+               "alarmtype": {
+                  "type": "short"
                }
-               
             },
             "_all":{
                "enabled":true

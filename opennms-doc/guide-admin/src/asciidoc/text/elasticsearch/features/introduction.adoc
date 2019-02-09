@@ -25,4 +25,9 @@ Therefore the following table provides a version overview.
 | no
 | `opennms-situation-feedback`
 
+| Alarm History
+| >= 6.3.0
+| yes
+| `opennms-alarm-history-elastic`
+
 |===

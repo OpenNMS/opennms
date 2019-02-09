@@ -457,8 +457,19 @@
     <!-- these should all be <scope>${onmsLibScope}</scope> and also included in opennms-base-assembly -->
 
     <dependency>
+      <groupId>org.eclipse.jetty.websocket</groupId>
+      <artifactId>websocket-servlet</artifactId>
+      <version>${jettyVersion}</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>

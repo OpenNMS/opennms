@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic.index;
+package org.opennms.plugins.elasticsearch.rest.index;
 
 import static org.opennms.plugins.elasticsearch.rest.index.IndexStrategy.DAILY;
 import static org.opennms.plugins.elasticsearch.rest.index.IndexStrategy.HOURLY;
@@ -46,11 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-
 public class IndexSelector {
-
 
     private final static ZoneId UTC = TimeZone.getTimeZone("UTC").toZoneId();
     private final static Map<IndexStrategy, TemporalUnit> UNIT_MAP;
@@ -90,11 +86,11 @@ public class IndexSelector {
      * We need to be aware that the indexes are part of the GET URL and therefor we can't have too many, it will result
      * in  a HTTP 400 from elasticsearch. Therefor we collapse the indexes with wildcards where applicable</p>
      */
-    public List<String> getIndexNames(TimeRangeFilter timeRange) {
+    public List<String> getIndexNames(long start, long end) {
         List<String> all = new ArrayList<>();
         // we expand the time range by a bit in order to be sure to find all relevant events:
-        Instant endDate = adjustEndTime(new Date(timeRange.getEnd()+expandTimeRangeInMs));
-        Instant startDate = Instant.ofEpochMilli(timeRange.getStart()-expandTimeRangeInMs);
+        Instant endDate = adjustEndTime(new Date(end + expandTimeRangeInMs));
+        Instant startDate = Instant.ofEpochMilli(start - expandTimeRangeInMs);
         Instant currentDate = startDate;
 
         while (currentDate.isBefore(endDate)) {

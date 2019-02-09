@@ -75,13 +75,7 @@ public class GenerateTopologyCommand implements Action {
     public Object execute() {
 
         // We print directly to System.out so it will appear in the console
-        TopologyGenerator.ProgressCallback progressCallback = new TopologyGenerator.ProgressCallback(){
-
-            @Override
-            public void currentProgress(String progress) {
-                System.out.println(progress);
-            }
-        };
+        TopologyGenerator.ProgressCallback progressCallback = new TopologyGenerator.ProgressCallback(System.out::println);
 
         TopologyGenerator generator = TopologyGenerator.builder()
                 .persister(new TopologyPersister(genericPersistenceAccessor, progressCallback))

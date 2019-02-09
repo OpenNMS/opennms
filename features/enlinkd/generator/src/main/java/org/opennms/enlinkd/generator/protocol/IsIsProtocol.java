@@ -82,7 +82,7 @@ public class IsIsProtocol extends Protocol<IsIsElement> {
         List<IsIsLink> links = new ArrayList<>();
         Integer isisISAdjIndex = 0;
 
-        for (int i = 0; i < topologySettings.getAmountLinks()*2; i++) {
+        for (int i = 0; i < topologySettings.getAmountLinks()/2; i++) {
 
             // We create 2 links that reference each other, see also LinkdToplologyProvider.match...Links()
             Pair<IsIsElement, IsIsElement> pair = pairs.next();

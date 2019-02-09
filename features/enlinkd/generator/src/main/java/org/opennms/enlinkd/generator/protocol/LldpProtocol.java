@@ -85,7 +85,7 @@ public class LldpProtocol extends Protocol<LldpElement> {
     private List<LldpLink> createLinks(List<LldpElement> elements) {
         PairGenerator<LldpElement> pairs = createPairGenerator(elements);
         List<LldpLink> links = new ArrayList<>();
-        for (int i = 0; i < topologySettings.getAmountLinks()*2; i++) {
+        for (int i = 0; i < topologySettings.getAmountLinks()/2; i++) {
 
             // We create 2 links that reference each other, see also LinkdToplologyProvider.match...Links()
             Pair<LldpElement, LldpElement> pair = pairs.next();

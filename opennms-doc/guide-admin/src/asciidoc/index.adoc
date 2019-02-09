@@ -191,6 +191,7 @@ include::text/alarms/alarmd.adoc[]
 include::text/alarms/configuring-alarms.adoc[]
 include::text/alarms/alarm-notes.adoc[]
 include::text/alarms/alarm-sound-flash.adoc[]
+include::text/alarms/history.adoc[]
 
 [[ga-notifications]]
 == Notifications
@@ -372,6 +373,7 @@ include::text/elasticsearch/features/alarm-event-forwarder-mapping.adoc[]
 include::text/elasticsearch/features/alarm-event-forwarder-mapping-table.adoc[]
 include::text/elasticsearch/features/flows.adoc[]
 include::text/elasticsearch/features/situation-feedback.adoc[]
+include::text/elasticsearch/features/alarm-history.adoc[]
 
 [[ga-flow-support]]
 == Flow Support
