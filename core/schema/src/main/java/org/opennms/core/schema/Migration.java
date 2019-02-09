@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,17 +28,11 @@
 
 package org.opennms.core.schema;
 
-import liquibase.resource.ResourceAccessor;
+import java.io.IOException;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.springframework.core.io.Resource;
 
-
-/**
- * <p>Migration class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public class Migration {
     private String m_jdbcUrl;
     private String m_jdbcDriver = "org.postgresql.Driver";
@@ -50,7 +44,6 @@ public class Migration {
     private String m_adminUser;
     private String m_adminPassword;
     private String m_changeLog;
-    private ResourceAccessor m_accessor;
 
     /**
      * Get the JDBC connection URL.  Defaults to jdbc:postgresql://host/database.
@@ -215,13 +208,9 @@ public class Migration {
     public void setChangeLog(String changeLog) {
         m_changeLog = changeLog;
     }
-    
-    public ResourceAccessor getAccessor() {
-        return m_accessor;
-    }
 
-    public void setAccessor(final ResourceAccessor accessor) {
-        m_accessor = accessor;
+    public void setChangeLog(final Resource resource) throws IOException {
+        m_changeLog = resource.getURI().toString();
     }
 
     /**
@@ -240,7 +229,6 @@ public class Migration {
             .append("admin-user", m_adminUser)
             .append("user", m_databasePassword)
             .append("changelog", m_changeLog)
-            .append("accessor", m_accessor)
             .toString();
     }
 }
