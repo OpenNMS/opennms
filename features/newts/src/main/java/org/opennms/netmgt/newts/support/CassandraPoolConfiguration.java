@@ -64,7 +64,7 @@ public class CassandraPoolConfiguration {
         try {
             return Integer.parseInt(val);
         } catch (NumberFormatException e) {
-            LOG.error("Failed to parse value of system property {}='{}' to an integer. Using default value.");
+            LOG.error("Failed to parse value of system property {}='{}' to an integer. Using default value.", sysProp, val);
             return null;
         }
     }
