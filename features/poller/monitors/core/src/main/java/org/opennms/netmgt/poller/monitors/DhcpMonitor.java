@@ -92,11 +92,16 @@ public final class DhcpMonitor extends AbstractServiceMonitor {
                 transaction = dhcpd.executeTransaction(svc.getIpAddr(), macAddress, relayMode, myAddress, extendedMode, requestIpAddress, timeout);
             } catch (IOException e) {
                 LOG.error("An unexpected exception occurred during DHCP polling", e);
-                return PollStatus.unavailable("An unexpected exception occurred during DHCP polling");
+                return PollStatus.unavailable("An unexpected exception occurred during DHCP polling: " + e.getMessage());
             }
             tracker.nextAttempt();
         }
 
-        return transaction.isSuccess() ? PollStatus.available((double) transaction.getResponseTime()) : PollStatus.unavailable("DHCP service unavailable");
+        return transaction.isSuccess() ?
+                PollStatus.available((double) transaction.getResponseTime()) :
+                PollStatus.unavailable("DHCP service unavailable: " +
+                        "No response received from " + svc.getIpAddr() + " within " + timeout + " and " + retries + " attempt(s). " +
+                        "Relay Mode: " + relayMode + ", Extended Mode " + extendedMode + ", Relay IP address: " + myAddress +
+                        ", Request IP address: " + requestIpAddress + ", MAC address: " + macAddress + ". ");
     }
 }
