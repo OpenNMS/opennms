@@ -1304,6 +1304,7 @@
 
         <bundle dependency="true">mvn:com.google.guava/guava/18.0</bundle>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.soa/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
         <bundle>mvn:org.opennms.container/spring-extender/${project.version}</bundle>
     </feature>
 
