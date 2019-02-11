@@ -52,7 +52,7 @@ public class GraphProviderIT extends OpenNMSSeleniumTestCase {
 
     // Here we verify that the graph provider is exposed correctly
     @Test
-    public void canExposeGraphProvider() throws IOException, InterruptedException {
+    public void canExposeGraphProvider() {
         try {
             karafShell.runCommand("feature:install opennms-graph-provider-bsm");
             karafShell.runCommand("feature:list -i", output -> output.contains("opennms-graphs") && output.contains("opennms-graph-provider-bsm"));
@@ -68,7 +68,6 @@ public class GraphProviderIT extends OpenNMSSeleniumTestCase {
     public void canImportGraphRepository() {
         karafShell.runCommand("feature:install opennms-graph-provider-dummy");
         karafShell.runCommand("feature:list -i", output -> output.contains("opennms-graphs") && output.contains("opennms-graph-provider-dummy"));
-        karafShell.runCommand("graph:get --container persistent-dummy --namespace persistent-dummy.graph",
-                output -> output.contains("No Vertices"));
+        karafShell.runCommand("graph:get --container persistent-dummy --namespace persistent-dummy.graph", output -> output.contains("No Vertices"));
     }
 }
