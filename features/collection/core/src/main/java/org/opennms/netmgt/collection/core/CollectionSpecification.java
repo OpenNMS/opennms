@@ -309,7 +309,8 @@ public class CollectionSpecification {
                     } else if (t.getCause() != null && t.getCause() instanceof CollectionException) {
                         return (CollectionException)t.getCause();
                     }
-                    return new CollectionException("Collection failed.", t);
+                    return new CollectionException("Collection failed : " + t.getClass().getName() +
+                            ": " + t.getMessage(), t);
                 }
             });
             m_instrumentation.reportCollectionException(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName, ce);
@@ -357,7 +358,7 @@ public class CollectionSpecification {
     /**
      * <p>refresh</p>
      *
-     * @param collectorConfigDao a {@link org.opennms.netmgt.dao.api.CollectorConfigDao} object.
+     * @param collectorConfigDao a {@link org.opennms.netmgt.config.CollectdConfigFactory} object.
      */
     public void refresh(CollectdConfigFactory collectorConfigDao) {
         Package refreshedPackage = collectorConfigDao.getPackage(getPackageName());

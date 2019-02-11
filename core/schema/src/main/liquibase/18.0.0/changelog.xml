@@ -5,6 +5,7 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
 
   <changeSet author="ranger" id="18.0.0-add-scanreports-tables">
+    <validCheckSum>3:81f9dd9561351a79ecbc2b55578f7642</validCheckSum>
     <createTable tableName="scanreports">
       <column name="id" type="TEXT">
         <constraints nullable="false" primaryKey="true" primaryKeyName="scanreports_pkey" />
@@ -13,7 +14,7 @@
         <constraints nullable="false" foreignKeyName="scanreports_monitoringlocations_fkey" references="monitoringlocations(id)" deleteCascade="true"/>
       </column>
       <column name="locale" type="TEXT"/>
-      <column name="timestamp" type="DATETIME"/>
+      <column name="timestamp" type="TIMESTAMP WITH TIME ZONE"/>
     </createTable>
 
     <sql>
@@ -60,7 +61,7 @@
       <column name="statuscode" type="INTEGER">
         <constraints nullable="false" />
       </column>
-      <column name="statustime" type="DATETIME"/>
+      <column name="statustime" type="TIMESTAMP WITH TIME ZONE"/>
     </createTable>
 
     <sql>

@@ -8,6 +8,7 @@
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<changeSet author="rangerrick" id="1.6.0-statisticsreport">
+		<validCheckSum>3:0deafb6ff85f4fa7843adc728b94ec8f</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="statisticsreport" /></not>
 		</preConditions> 
@@ -18,10 +19,10 @@
 			<column name="id" type="integer">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_statisticsreport_id" />
 			</column>
-			<column name="startdate" type="DATETIME">
+			<column name="startdate" type="TIMESTAMP WITH TIME ZONE">
 				<constraints nullable="false" />
 			</column>
-			<column name="enddate" type="DATETIME">
+			<column name="enddate" type="TIMESTAMP WITH TIME ZONE">
 				<constraints nullable="false" />
 			</column>
 			<column name="name" type="varchar(63)">
@@ -30,13 +31,13 @@
 			<column name="description" type="varchar(256)">
 				<constraints nullable="false" />
 			</column>
-			<column name="jobstarteddate" type="DATETIME">
+			<column name="jobstarteddate" type="TIMESTAMP WITH TIME ZONE">
 				<constraints nullable="false" />
 			</column>
-			<column name="jobcompleteddate" type="DATETIME">
+			<column name="jobcompleteddate" type="TIMESTAMP WITH TIME ZONE">
 				<constraints nullable="false" />
 			</column>
-			<column name="purgedate" type="DATETIME">
+			<column name="purgedate" type="TIMESTAMP WITH TIME ZONE">
 				<constraints nullable="false" />
 			</column>
 		</createTable>

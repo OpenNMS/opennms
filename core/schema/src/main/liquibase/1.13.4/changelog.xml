@@ -9,7 +9,7 @@
   ">
 
   <changeSet author="ranger@opennms.org" id="1.13.4-minion-base">
-
+    <validCheckSum>3:fa3cb3da56b2c345440316ad72f3c212</validCheckSum>
     <createTable tableName="minions">
       <column name="id" type="varchar(36)">
         <constraints nullable="false" primaryKey="true" primaryKeyName="pk_minions" />
@@ -18,7 +18,7 @@
         <constraints nullable="false" />
       </column>
       <column name="status" type="text" />
-      <column name="last_updated" type="DATETIME" defaultValueDate="CURRENT_TIMESTAMP" />
+      <column name="last_updated" type="TIMESTAMP WITH TIME ZONE" defaultValueDate="CURRENT_TIMESTAMP" />
     </createTable>
 
     <createTable tableName="minions_properties">
