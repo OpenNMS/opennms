@@ -5,10 +5,10 @@
 ==== DhcpMonitor
 
 This monitor is used to check the availability and functionality of http://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol[DHCP servers].
-The monitor class _DhcpMonitor_ is executed by _Pollerd_ and opens the background _Dhcpd_ daemon listening for incoming DHCP responses.
+The monitor class _DhcpMonitor_ is executed by _Pollerd_ and opens the background process listening for incoming DHCP responses.
 A DHCP server is tested by sending a _DISCOVER_ message.
 If the DHCP server responds with an _OFFER_ the service is marked as up.
-The _Dhcpd_ background daemon is only started if the _DhcpMonitor_ is used.
+The background listening process is only started if the _DhcpMonitor_ is used.
 The behavior for testing the DHCP server can be modified in the `poller-configuration.xml` configuration file.
 
 CAUTION: Make sure no DHCP client is running on the _{opennms-product-name}_ server and using port UDP/67 and UDP/68.
@@ -31,9 +31,9 @@ CAUTION: Make sure no DHCP client is running on the _{opennms-product-name}_ ser
 
 This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== _Dhcpd_ configuration
+===== _DhcpMonitor_ configuration
 
-._Dhcpd_ parameters in `poller-configuration.xml`.
+._DhcpMonitor_ parameters in `poller-configuration.xml`.
 [options="autowidth"]
 |===
 | Parameter          | Description                                                                                  | Required | Default value
@@ -88,7 +88,7 @@ The monitor will try to send in maximum 3 _DISCOVER_ messages and waits 3 second
 
 You can use the same monitor in `poller-configuration.xml` as in the example above.
 
-.Configure _Dhcpd_ to test DHCP server in a different subnet. The OFFER from the DHCP server is sent to `myIpAddress`.
+.Configure _DhcpMonitor_ to test DHCP server in a different subnet. The OFFER from the DHCP server is sent to `myIpAddress`.
 [source, xml]
 ----
 <service name="DHCP" interval="300000" user-defined="false" status="on">
