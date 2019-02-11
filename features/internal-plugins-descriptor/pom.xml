@@ -78,8 +78,7 @@
                 <!-- Please define the features containing the plugin product descriptors which -->
                 <!-- you want to include in the 'available plugins' list here -->
                 <!-- <descriptor>mvn:${project.groupId}/${productName}/${project.version}/xml/features</descriptor> -->
-                <descriptor>mvn:org.opennms.plugins/alarm-change-notifier/${project.version}/xml/features</descriptor>
-                <descriptor>mvn:org.opennms.features.jest/opennms-jest/${project.version}/xml/features</descriptor>
+                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
               </descriptors>
               <features>
                 <!-- <feature>${productName}/${project.version}</feature> -->
@@ -227,15 +226,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.plugins</groupId>
-      <artifactId>alarm-change-notifier</artifactId>
-      <version>${project.version}</version>
-      <type>xml</type>
-      <classifier>features</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.jest</groupId>
-      <artifactId>opennms-jest</artifactId>
+      <groupId>org.opennms.karaf</groupId>
+      <artifactId>opennms</artifactId>
       <version>${project.version}</version>
       <type>xml</type>
       <classifier>features</classifier>

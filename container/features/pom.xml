@@ -434,13 +434,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.plugins</groupId>
-      <artifactId>internal-plugins-descriptor</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.eif-adapter</artifactId>
       <version>${project.version}</version>
