@@ -31,8 +31,10 @@
 #
 # put an '@' here so we don't break maven substition
 
+# shellcheck disable=SC2016
 opennms_home='${install.dir}'
 if [ ! -d "${opennms_home}" ]; then
+    # shellcheck disable=SC2153
     opennms_home="$OPENNMS_HOME"
 fi
 
@@ -41,7 +43,7 @@ searchdirs="/usr/lib/jvm /usr/java /System/Library/Java/JavaVirtualMachines /Lib
 dryrun=0
 
 java_conf="$opennms_home/etc/java.conf"
-basename="`basename $0`"
+basename="$(basename "$0")"
 
 die(){
     echo "${basename}: $*" >&2
@@ -61,7 +63,7 @@ tell(){
 #
 printHelp() {
     echo "usage: $basename [-f] [-n] [-q]"
-    echo "       {-s | -S <JRE path> | -c | -r <java options> | -h}"
+    echo "       {-s | -S <JRE path> | -c | -r <java options> | -p | -h}"
     echo ""
     echo "Exactly one of the following options is required:"
     echo ""
@@ -70,6 +72,8 @@ printHelp() {
     echo "      with <java options>."
     echo ""
     echo "  -s  Search for a suitable JRE and configure it, if found."
+    echo ""
+    echo "  -p  Print the currently-configured Java version."
     echo ""
     echo "  -S <JRE path>"
     echo "      Store the JRE at <JRE path> as the configured JRE."
@@ -104,6 +108,24 @@ printHelp() {
 }
 
 #
+# Function: parseVersionLine(version)
+# This function parses and returns the version string from
+# the "version" line of a `java -version` output.
+parseVersionLine() {
+    echo "$1" | sed -e 's/^.* version \"//;s/\".*$//' -e 's,^1\.,,' -e 's,_,.,g' | cut -d. -f1-3
+}
+
+#
+# Function: printVersion()
+# Requires: varible $JP (java path)
+# This function prints the (parsed) version of the current
+# JDK defined in $JP.
+printVersion() {
+    ver="$("$JP" -version 2>&1 | grep ' version \"')"
+    parseVersionLine "$ver"
+}
+
+#
 # Function: javaCheck()
 # Requires: varible $JP (java path)
 # This function verifies the version of the java
@@ -111,27 +133,27 @@ printHelp() {
 # javaFind() functions.
 #
 javaCheck() {
-        if [ -z "$OPENJDK_MINIMUM_BUILD" ]; then
-                OPENJDK_MINIMUM_BUILD=14
-        fi
+    if [ -z "$OPENJDK_MINIMUM_BUILD" ]; then
+        OPENJDK_MINIMUM_BUILD=14
+    fi
 
-    ret="`$JP -version 2>&1 | grep ' version \"' | sed 's/^.* version \"//;s/\".*$//'`"
-    if echo "$ret" | egrep '^1\.[8-9]\.' > /dev/null; then
+    ret="$(printVersion)"
+    if echo "$ret" | grep -E '^([8-9]|1[0-9])\b' > /dev/null; then
         # Check for Sun Java
-        if $JP -version 2>&1 | egrep '^(Diablo )?Java\(TM\)' > /dev/null; then
+        if "$JP" -version 2>&1 | grep -E '^(Diablo )?Java\(TM\)' > /dev/null; then
             return 0
         fi
-        if $JP -version 2>&1 | egrep 'OpenJDK .* VM' >/dev/null; then
-                build="`$JP -version 2>&1 | egrep '^OpenJDK .* VM' | sed -e 's,^.*build ,,' -e 's,\..*$,,'`"
-                if [ $build -ge $OPENJDK_MINIMUM_BUILD ]; then
+        if "$JP" -version 2>&1 | grep -E 'OpenJDK .* VM' >/dev/null; then
+                build="$("$JP" -version 2>&1 | grep -E '^OpenJDK .* VM' | sed -e 's,^.*build ,,' -e 's,\..*$,,')"
+                if [ "$build" -ge "$OPENJDK_MINIMUM_BUILD" ]; then
                         return 0
                 else
                         tell "OpenNMS is only known to work with OpenJDK build $OPENJDK_MINIMUM_BUILD and later."
                         return 1
                 fi
         fi
-        
-        if [ $run -eq 0 ] && [ $force -eq 0 ]; then
+
+        if [ "$run" -eq 0 ] && [ "$force" -eq 0 ]; then
             tell "$JP is not a Sun JVM and only Sun JVMs are supported."
             tell "You can use the '-f' option to ignore this check, but you will be on your own for support."
             return 1
@@ -173,10 +195,10 @@ javaPaths() {
                 # We search "j2*" for the Sun-supplied Java packages ("j2sdk"),
                 # "java" for the Java installation shipped with SuSE, and "Home"
                 # to catch /Library/Java/Home on Mac OS X.
-                jdirs="`find \"$searchdir\" -maxdepth 3 \\( -name \"j2*\" -o -name \"jdk*\" -o -name \"java\" -o -name \"Home\" \\) -print 2>/dev/null`"
-                for jdir in $searchdir/java/default $searchdir/java/latest $jdirs; do
-                        if [ -x $jdir/bin/java ]; then
-                                JP=$jdir/bin/java
+                jdirs="$(find "$searchdir" -maxdepth 3 \( -name "j2*" -o -name "jdk*" -o -name "java" -o -name "Home" \) -print 2>/dev/null)"
+                for jdir in "$searchdir/java/default" "$searchdir/java/latest" $jdirs; do
+                        if [ -x "$jdir/bin/java" ]; then
+                                JP="$jdir/bin/java"
                                 javaCheck && return 0
                         fi
                 done
@@ -199,7 +221,7 @@ checkJavaHome() {
         tell "skipping... JAVA_HOME (\"$JAVA_HOME\") is not a directory"
         return 1
     fi
-    
+
     if [ ! -x "$JAVA_HOME/bin/java" ]; then
         tell "skipping... \"$JAVA_HOME/bin/java\" does not exist or is not executable"
         return 1
@@ -220,8 +242,8 @@ checkJavaHome() {
 # Checks for a JRE in our path, using which(1).
 #
 checkPath() {
-    JP="`which java`"
-    if [ $? -eq 1 ]; then
+    JP="$(command -v java || :)"
+    if [ "$?" -eq 1 ]; then
         tell "did not find a JRE in user's path"
         return 1
     fi
@@ -239,7 +261,7 @@ checkPath() {
 #
 # Function: findJava()
 # A wrapper around javaPaths to give the user a clue about what is going on.
-# 
+#
 findJava() {
     tell "searching for a good JRE..."
     if javaPaths; then
@@ -279,19 +301,19 @@ javaFind() {
 # Is quiet and returns 0 if things look good.
 #
 checkConfiguredJava() {
-    local verbose="$1"
+    _verbose="$1"
     mantra="run \"$opennms_home/bin/runjava -s\" to setup java.conf"
 
-    if [ ! -f $java_conf ]; then
+    if [ ! -f "$java_conf" ]; then
         warn "error: $java_conf file not found"
         warn "$mantra"
 
         return 1
     fi
 
-    JP="`cat $java_conf`"
+    JP="$(cat "$java_conf")"
 
-    if [ ! -x $JP ]; then
+    if [ -z "$JP" ] || [ ! -x "$JP" ]; then
         warn "error: configured Java runtime environment not found"
         warn "\"$JP\" does not exist or is not executable"
         warn "$mantra"
@@ -299,9 +321,7 @@ checkConfiguredJava() {
         return 1
     fi
 
-    javaCheck
-
-    if [ $? -ne 0 ]; then
+    if ! javaCheck; then
         warn "error: bad version or vendor for configured Java runtime environment"
         warn "\"$JP -version\" does not report that is version 1.8+ and a compatible JDK."
         warn "$mantra"
@@ -309,7 +329,7 @@ checkConfiguredJava() {
         return 1
     fi
 
-    if [ $verbose ]; then
+    if [ "$_verbose" ]; then
         echo "$JP"
     fi
 
@@ -322,16 +342,15 @@ checkConfiguredJava() {
 # execs it with the command-line arguments passed to us.
 #
 runJava() {
-    checkConfiguredJava
-    if [ $? -ne 0 ]; then
-        if [ $force -gt 0 ]; then
+    if ! checkConfiguredJava; then
+        if [ "$force" -gt 0 ]; then
             warn "Ignoring Java warning due to '-f' option being used"
         else
             return 1
         fi
     fi
 
-    if [ $dryrun -eq 0 ]; then
+    if [ "$dryrun" -eq 0 ]; then
         add_ld_path
         exec "$JP" "$@"
     else
@@ -344,7 +363,7 @@ runJava() {
 # Adds $opennms_home/lib to the linker path.
 #
 add_ld_path () {
-    case "`uname`" in
+    case "$(uname)" in
         Darwin)
             if echo "$DYLD_LIBRARY_PATH" | \
                 grep -v "$opennms_home/lib" >/dev/null; then
@@ -361,7 +380,7 @@ add_ld_path () {
                 export LD_LIBRARY_PATH
             fi
 
-            case "`uname -p`" in
+            case "$(uname -p)" in
                 x86_64)
                     if echo "$LD_LIBRARY_PATH" | \
                         grep -v "$opennms_home/lib/linux64" >/dev/null; then
@@ -391,7 +410,7 @@ add_ld_path () {
             return
             ;;
     esac
-    
+
     return 1
 }
 
@@ -420,9 +439,8 @@ setJava() {
     if [ ! -x "$JP" ]; then
         die "specified JRE \"$JP\" does not exist or is not executable"
     fi
-    javaCheck
-    if [ $? -ne 0 ]; then
-        if [ $force -gt 0 ]; then
+    if ! javaCheck; then
+        if [ "$force" -gt 0 ]; then
             warn "JRE is not an appropriate version and/or vendor"
             warn "Ignoring Java warning due to '-f' option being used"
         else
@@ -438,8 +456,7 @@ setJava() {
 
 saveJava() {
     if [ $dryrun -eq 0 ]; then
-        echo "$JP" > $java_conf
-        if [ $? -ne 0 ]; then
+        if ! echo "$JP" > "$java_conf"; then
             warn "error saving JRE to configuration file"
             warn "configuration file: $java_conf"
             die "exiting..."
@@ -454,103 +471,115 @@ saveJava() {
 
 parseArgsAndDoStuff() {
     exclusive=0
-    
+
     verbose=0
     check=0
     force=0
+    print_version=0
     quiet=0
     run=0
     search=0
     location=""
-    
-    while getopts vcfhnqrsS: c
+
+    while getopts vcfhnpqrsS: c
     do
       case $c in
           c)
               check=1
-              exclusive=`expr $exclusive + 1`
+              exclusive="$((exclusive + 1))"
               ;;
-    
+
           f)
               force=1
-          ;;
-    
+              ;;
+
           h)
               printHelp
               exit 0
               ;;
-    
+
           n)
               dryrun=1
               ;;
-    
+
+          p)
+              print_version=1
+              exclusive="$((exclusive + 1))"
+              ;;
+
           q)
               quiet=1
               ;;
-    
+
           r)
               run=1
-              exclusive=`expr $exclusive + 1`
+              exclusive="$((exclusive + 1))"
               ;;
-    
+
           s)
               search=1
-              exclusive=`expr $exclusive + 1`
+              exclusive="$((exclusive + 1))"
               ;;
 
           S)
               location="$OPTARG"
-              exclusive=`expr $exclusive + 1`
+              exclusive="$((exclusive + 1))"
               ;;
-    
+
           v)
               verbose=1
               ;;
-    
+
           \?)
               die "Invalid option.  Use \"-h\" for help."
               ;;
       esac
     done
-    shift `expr $OPTIND - 1`
-    
+    shift "$((OPTIND - 1))"
+
     if [ $exclusive -eq 0 ]; then
         warn "You must choose one of the command-line options."
         die "Use \"-h\" for help."
     fi
-    
+
     if [ $exclusive -gt 1 ]; then
         warn "You must choose only one of the command-line options."
         die "Use \"-h\" for help."
     fi
-    
+
     if [ $quiet -gt 0 ]; then
         exec 3>/dev/null
     else
         exec 3>&1
     fi
-    
+
     if [ $check -gt 0 ]; then
-        checkConfiguredJava $verbose
+        checkConfiguredJava "$verbose"
         exit $?
     fi
-    
+
     if [ x"$location" != x"" ]; then
         JP="$location"
         setJava
         exit $?
     fi
-    
+
     if [ $run -gt 0 ]; then
         runJava "$@"
         exit $?
     fi
-    
+
     if [ $search -gt 0 ]; then
         setupJava
         exit $?
     fi
-    
+
+    if [ $print_version -gt 0 ]; then
+        checkConfiguredJava "$verbose" >/dev/null
+        printVersion
+        exit $?
+    fi
+
     die "internal error... got to end of script and shouldn't have"
 }
 

@@ -82,8 +82,6 @@ view the header in each file:
 * core/soa/src/main/java/org/opennms/core/soa/support/OnmsOSGiBridgeActivator.java
 * core/test-api/dns/src/main/java/org/opennms/core/test/dns/DNSServer.java
 * features/nrtg/config.properties
-* features/topology-map/plugins/org.opennms.features.topology.plugins.ssh/src/main/java/org/opennms/features/topology/ssh/internal/SSHTerminal.java
-* features/topology-map/plugins/org.opennms.features.topology.plugins.ssh/src/main/java/org/opennms/features/topology/ssh/internal/Terminal.java
 * integrations/opennms-vmware/src/main/java/org/opennms/netmgt/collectd/VmwareCimCollector.java
 * integrations/opennms-vmware/src/main/java/org/opennms/netmgt/poller/monitors/VmwareCimMonitor.java
 * integrations/opennms-vmware/src/main/java/org/opennms/protocols/vmware/VmwareViJavaAccess.java

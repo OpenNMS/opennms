@@ -615,4 +615,8 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
 		this.m_timestamp = m_timestamp;
 	}
 
+	protected SnmpCollectionAgent getAgent(){
+        return m_agent;
+  }
+
 }

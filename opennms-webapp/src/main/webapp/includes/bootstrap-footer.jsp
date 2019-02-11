@@ -44,6 +44,7 @@
         contentType="text/html"
         session="true"
         import="java.io.File,
+                org.opennms.web.api.Util,
                 org.opennms.core.resource.Vault,
                 org.opennms.web.api.HtmlInjectHandler,
                 org.opennms.web.servlet.XssRequestWrapper"
@@ -80,6 +81,14 @@
                 %>
             </p>
         </footer>
+
+        <% if (req.getUserPrincipal() != null) { %>
+            <!-- Browser notifications -->
+            <jsp:include page="/assets/load-assets.jsp" flush="false">
+                <jsp:param name="asset" value="notifications" />
+                <jsp:param name="asset-defer" value="true" />
+            </jsp:include>
+        <% } %>
     </c:otherwise>
 </c:choose>
 

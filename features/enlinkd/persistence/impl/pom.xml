@@ -47,6 +47,11 @@
       <artifactId>opennms-dao</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.sysprops</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- Test dependencies -->
     <dependency>
       <groupId>junit</groupId>

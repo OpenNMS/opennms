@@ -37,6 +37,7 @@ import java.util.Objects;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.BooleanUtils;
 import org.opennms.netmgt.flows.classification.csv.CsvImportResult;
 import org.opennms.netmgt.flows.classification.csv.CsvService;
 import org.opennms.netmgt.flows.classification.error.Error;
@@ -49,7 +50,7 @@ import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
 public class CsvServiceImpl implements CsvService {
 
-    public static final String[] HEADERS = {"name","protocol","srcAddress","srcPort", "dstAddress", "dstPort", "exporterFilter"};
+    public static final String[] HEADERS = {"name","protocol","srcAddress","srcPort", "dstAddress", "dstPort", "exporterFilter", "omnidirectional"};
 
     public static final String HEADERS_STRING = String.join(";", HEADERS) + "\n";
 
@@ -82,6 +83,7 @@ public class CsvServiceImpl implements CsvService {
                 final String dstAddress = record.get(4);
                 final String dstPort = record.get(5);
                 final String exportFilter = record.get(6);
+                final String omnidirectional = record.get(7);
 
                 // Set values
                 final Rule rule = new Rule();
@@ -92,6 +94,7 @@ public class CsvServiceImpl implements CsvService {
                 rule.setSrcAddress("".equals(srcAddress) ? null : srcAddress);
                 rule.setProtocol("".equals(protocol) ? null : protocol);
                 rule.setExporterFilter("".equals(exportFilter) ? null : exportFilter);
+                rule.setOmnidirectional(BooleanUtils.toBoolean(omnidirectional));
 
                 // Ensure it is a valid rule
                 try {

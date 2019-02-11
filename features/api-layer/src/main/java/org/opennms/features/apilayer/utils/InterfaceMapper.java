@@ -49,10 +49,10 @@ import org.slf4j.LoggerFactory;
 public abstract class InterfaceMapper<S,T> {
     private static final Logger LOG = LoggerFactory.getLogger(InterfaceMapper.class);
 
-    private final Class<T> clazz;
-    private final BundleContext bundleContext;
+    protected final Class<T> clazz;
+    protected final BundleContext bundleContext;
 
-    private final Map<S, ServiceRegistration<T>> extServiceRegistrationMap = new LinkedHashMap<>();
+    protected final Map<S, ServiceRegistration<T>> extServiceRegistrationMap = new LinkedHashMap<>();
 
     public InterfaceMapper(Class<T> clazz, BundleContext bundleContext) {
         this.clazz = Objects.requireNonNull(clazz);

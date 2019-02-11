@@ -1,6 +1,9 @@
 [[releasenotes-24]]
 == What's New in OpenNMS Horizon 24
 
+* Added support for browser notifications to notifd.
+  The browser notification can be added to a notification path and desktop notifications will pop-up for currently logged in users if a notice is delivered.
+
 === System Requirements
 
 * *Java 8*: OpenNMS Horizon 24 requires Java 8 as the runtime environment.
@@ -10,8 +13,25 @@
 
 === Breaking Changes
 
-* *Dhcpd*: The Dhcpd plugin (and its configuration) was removed in favor of a Minion-capable implementation.
-  The new DhcpMonitor options can be set in the `poller-configuration.xml` file.
+* Flows are grouped by conversations using applications instead of ports.
+  This changes the way statistics about flows are presented and grouped.
+  Therefore the elasticsearch storage has changed and old data must be converted to the new format.
+  To adopt existing flows, the following command can be used (please be aware that this can take a long time and put your CPU and disk under high stress):
+```
+curl -v -X POST -H 'Content-Type: application/json' "http://${ES_HOST}:${ES_PORT}/netflow-*/_update_by_query?refresh=true" -d @- << EOF
+{
+  "script": {
+    "lang": "painless",
+    "source": "ctx._source['netflow.convo_key'] = '[\"' + ctx._source['location'] + '\",' + ctx._source['netflow.protocol'] + ',\"' + ((Objects.compare(ctx._source['netflow.src_addr'], ctx._source['netflow.src_addr'], String::compareTo) < 0) ? ctx._source['netflow.src_addr'] : ctx._source['netflow.dst_addr']) + '\",\"' + ((Objects.compare(ctx._source['netflow.src_addr'], ctx._source['netflow.src_addr'], String::compareTo) < 0) ? ctx._source['netflow.dst_addr'] : ctx._source['netflow.src_addr']) + '\",' + ((ctx._source['netflow.application'] != null) ? ('\"' + ctx._source['netflow.application'] + '\"') : 'null') + ']'"
+  },
+  "query": {
+    "match_all": {}
+  }
+}
+EOF
+```
+* *Dhcpd*: The *Dhcpd* plugin (and its configuration) was removed in favor of a Minion-capable implementation.
+  The new *DhcpMonitor* options can be set in the `poller-configuration.xml` file.
 
 === New Features
 

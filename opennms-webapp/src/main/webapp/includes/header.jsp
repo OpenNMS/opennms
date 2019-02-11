@@ -51,8 +51,9 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.api.Util,org.opennms.netmgt.config.NotifdConfigFactory"
-%>
+	import="org.opennms.web.api.Util,org.opennms.netmgt.config.NotifdConfigFactory,
+	org.owasp.encoder.Encode
+"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="onms" %>
@@ -110,8 +111,7 @@ final String baseHref = Util.calculateUrlBase( request );
   <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
 
   <!-- Set GWT property to get browsers locale -->
-  <meta name="gwt:property" content="locale=<%=request.getLocale()%>">
-
+  <meta name="gwt:property" content="locale=<%= Encode.forHtmlAttribute(request.getLocale().toString()) %>">
   <c:forEach var="meta" items="${paramValues.meta}">
     <c:out value="${meta}" escapeXml="false"/>
   </c:forEach>

@@ -8,6 +8,7 @@
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<changeSet author="rangerrick" id="1.6.0-distPoller">
+		<validCheckSum>3:caf30968b035f0091f4feb7e3af973f1</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="distpoller" /></not>
 		</preConditions> 
@@ -27,11 +28,11 @@
 			<!-- Numeric representation of percentage of interface speed available to discovery process.  See documentation for "bandwidth troll" -->
 			<column name="dpdisclimit" type="decimal(5,2)" />
 			<!-- Time of last pull of new nodes from the DP -->
-			<column name="dplastnodepull" type="DATETIME" />
+			<column name="dplastnodepull" type="TIMESTAMP WITH TIME ZONE" />
 			<!-- Time of last pull of events from the DP -->
-			<column name="dplasteventpull" type="DATETIME" />
+			<column name="dplasteventpull" type="TIMESTAMP WITH TIME ZONE" />
 			<!-- Time of last push of Package (config) to the DP -->
-			<column name="dplastpackagepush" type="DATETIME" />
+			<column name="dplastpackagepush" type="TIMESTAMP WITH TIME ZONE" />
 			<!-- Reflects desired state for this distributed poller.
 				1 = Up, 0 = Down -->
 			<column name="dpadminstate" type="integer" />
