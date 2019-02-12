@@ -84,6 +84,9 @@ printHelp() {
     echo ""
     echo "Optional options:"
     echo ""
+    echo "  -j  java.conf location.  Sets the java.conf directory.  If not"
+    echo "      configured, it will be written to \$OPENNMS_HOME/etc/."
+    echo ""
     echo "  -f  Force mode.  Ignores the JRE version check.  This option"
     echo "      only makes sense with the -r and -S options."
     echo ""
@@ -481,7 +484,7 @@ parseArgsAndDoStuff() {
     search=0
     location=""
 
-    while getopts vcfhnpqrsS: c
+    while getopts vcfhnpqrsS:j: c
     do
       case $c in
           c)
@@ -496,6 +499,10 @@ parseArgsAndDoStuff() {
           h)
               printHelp
               exit 0
+              ;;
+
+          j)
+              java_conf="$OPTARG/java.conf"
               ;;
 
           n)
