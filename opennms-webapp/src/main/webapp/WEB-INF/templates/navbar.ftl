@@ -2,38 +2,34 @@
 <nav class="navbar navbar-expand-md navbar-dark bg-dark" id="header" role="navigation">
     <!-- Brand and toggle get grouped for better mobile display -->
     <a class="navbar-brand" href="${baseHref}index.jsp">
-        <img id="logo" src="${baseHref}images/o-green-trans.svg" alt="OpenNMS" width="40px" height="40px" onerror="this.src='${baseHref}images/o-green-trans.png'" />&nbsp;
+        <img id="logo" src="${baseHref}images/o-green-trans.svg" alt="OpenNMS Horizon Logo" width="20px" height="20px" onerror="this.src='${baseHref}images/o-green-trans.png'" />
+        <span style="vertical-align: middle" class="text-horizon ml-2">Horizon</span>
     </a>
     <button type="button" title="Toggle navigation" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
         <span class="navbar-toggler-icon"></span>
     </button>
 
-
-
     <div id="navbar" class="navbar-collapse collapse">
         <#if request.remoteUser?has_content >
-            <div id="headerinfo" style="position: absolute; top: 0; right: 0" class="text-light mr-4 d-none d-md-block">
-                ${formattedTime}
-                <span class="fa-stack" style="text-shadow:none">
-                    <#if noticeStatus = 'Unknown'>
-                        <!-- Gray circle with bell inside -->
-                        <i class="fa fa-circle fa-stack-2x text-muted"></i>
-                        <i class="fa fa-circle-thin fa-stack-2x"></i>
-                        <i class="fa fa-bell fa-stack-1x"></i>
-                    </#if>
-                    <#if noticeStatus = 'Off'>
-                        <!-- Bell with red slash over it -->
-                        <i class="fa fa-bell fa-stack-1x"></i>
-                        <i class="fa fa-ban fa-stack-2x text-danger"></i>
-                    </#if>
-                    <#if noticeStatus = 'On'>
-                        <!-- Green circle with bell inside -->
-                        <i class="fa fa-circle fa-stack-2x text-success"></i>
-                        <i class="fa fa-circle-thin fa-stack-2x"></i>
-                        <i class="fa fa-bell fa-stack-1x"></i>
-                    </#if>
-                </span>
-            </div>
+            <ul class="navbar-nav ml-1">
+                <li class="nav-item">
+                    <span class="navbar-text">${formattedTime}</span>
+                </li>
+                <li class="nav-item">
+                    <span class="navbar-text ml-1">
+                        <#if noticeStatus = 'Unknown'>
+                            <!-- Gray circle with bell inside -->
+                            <i class="fa fa-bell text-secondary"></i>
+                        </#if>
+                        <#if noticeStatus = 'Off'>
+                            <i class="fa fa-bell-slash text-danger"></i>
+                        </#if>
+                        <#if noticeStatus = 'On'>
+                            <i class="fa fa-bell text-horizon"></i>
+                        </#if>
+                    </span>
+                </li>
+            </ul>
         </#if>
         <ul class="navbar-nav ml-auto">
 		<#if request.remoteUser?has_content >
