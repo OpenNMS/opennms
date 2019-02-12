@@ -109,7 +109,7 @@
                 <td>{{rule['dstAddress']}}</td>
                 <td>{{rule['dstPort']}}</td>
                 <td>{{rule['exporterFilter']}}</td>
-                <td><span class="glyphicon glyphicon-transfer" ng-if="rule['omnidirectional'] === true" aria-hidden="true"></span></td>
+                <td><span class="fa fa-exchange" ng-if="rule['omnidirectional'] === true" aria-hidden="true"></span></td>
                 <td ng-if="group.readOnly === false">
                     <div class="pull-right">
                         <button id="action.{{rule.position}}.edit" class="btn btn-sm btn-secondary" ng-click="editRule(rule)" title="edit rule"><i class="fa fa-edit"></i></button>
