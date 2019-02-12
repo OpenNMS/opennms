@@ -304,6 +304,11 @@ div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.
   //margin-bottom: $spacer * 1.5; // equivalent of mb-4
 }
 
+// To make headers a bit more distinguishable between other components, the font is increased slightly
+.card-header {
+  font-size: 110%;
+}
+
 // requisition ui uses bootbox for modals, however it is not yet bootstrap 4 compatible
 // (bootbox v5 will be, release is imminent), see https://github.com/makeusabrew/bootbox/issues/566
 // Until then use this hack
