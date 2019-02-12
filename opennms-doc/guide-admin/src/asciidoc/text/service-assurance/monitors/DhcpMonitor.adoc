@@ -23,12 +23,6 @@ CAUTION: Make sure no DHCP client is running on the _{opennms-product-name}_ ser
 | Remote Enabled | true
 |===
 
-.Service monitor parameters configured in `poller-configuration.xml`
-[options="header, autowidth"]
-|===
-| Parameter        | Description                                                                                    | Required | Default value
-|===
-
 This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== _DhcpMonitor_ configuration
