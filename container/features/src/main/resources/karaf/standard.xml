@@ -618,15 +618,15 @@ org.apache.felix.http.port=8181
         <feature>opennms-bridge-http-service</feature>
 
         <bundle dependency="true" start-level="20">mvn:org.ow2.asm/asm-all/5.0.2</bundle>
-        <bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-bundleutils/4.1</bundle>
-        <bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-reflect/4.1</bundle>
-        <bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-finder/4.1</bundle>
+        <bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-bundleutils/4.6</bundle>
+        <bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-reflect/4.6</bundle>
+        <bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-finder/4.6</bundle>
         <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-api/${paxWebVersion}</bundle>
         <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-spi/${paxWebVersion}</bundle>
         <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-runtime/${paxWebVersion}</bundle>
         <!-- <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jetty/${paxWebVersion}</bundle> -->
 
-        <bundle dependency="true" start-level="30">mvn:org.eclipse.jdt.core.compiler/ecj/4.4</bundle>
+        <bundle dependency="true" start-level="30">mvn:org.eclipse.jdt.core.compiler/ecj/4.5.1</bundle>
         <bundle start-level="30" dependency="true">mvn:javax.el/javax.el-api/3.0.0</bundle>
         <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jsp/${paxWebVersion}</bundle>
         <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/${paxWebVersion}</bundle>
@@ -645,7 +645,7 @@ org.apache.felix.http.port=8181
         <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-war/${paxWebVersion}</bundle>
         <bundle start-level="30"> mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/${paxWebVersion}</bundle>
         <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-deployer/${paxWebVersion}</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.url/pax-url-war/2.5.0/jar/uber</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.url/pax-url-war/2.5.2/jar/uber</bundle>
     </feature>
 
     <!-- ################ END OPENNMS CUSTOMIZATION ############## -->
