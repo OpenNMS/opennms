@@ -63,6 +63,8 @@ public final class BridgeActivator extends AbstractActivator
         // Http Session event dispatcher
         props = new Hashtable<String, Object>();
         props.put("http.felix.dispatcher", getEventDispatcher().getClass().getName());
+        props.put("osgi.http.whiteboard.listener", true); // Refer to https://osgi.org/specification/osgi.cmpn/7.0.0/service.http.whiteboard.html#d0e121585
+                                                          // for more details
         props.put(Constants.SERVICE_DESCRIPTION, "Dispatcher for bridged HttpSession events");
         props.put(Constants.SERVICE_VENDOR, "The OpenNMS Group, Inc.");
         getBundleContext().registerService(EventListener.class, getEventDispatcher(), props);
