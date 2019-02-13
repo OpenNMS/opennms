@@ -1,4 +1,4 @@
-#!/bin/sh -
+#!/bin/bash -
 #
 # Wrapper script for starting a JRE within OpenNMS.
 # DJ Gregor
@@ -38,7 +38,10 @@ if [ ! -d "${opennms_home}" ]; then
     opennms_home="$OPENNMS_HOME"
 fi
 
-searchdirs="/usr/lib/jvm /usr/java /System/Library/Java/JavaVirtualMachines /Library/Java/JavaVirtualMachines /Library/Java/Home /usr /opt"
+minimum_version="1.8.0"
+maximum_version="1.8.9999"
+
+searchdirs=("/usr/lib/jvm" "/usr/java" "/System/Library/Java/JavaVirtualMachines" "/Library/Java/JavaVirtualMachines" "/Library/Java/Home" "/usr" "/opt")
 
 dryrun=0
 
@@ -84,6 +87,8 @@ printHelp() {
     echo ""
     echo "Optional options:"
     echo ""
+    echo "  -a  Add a directory to the search path."
+    echo ""
     echo "  -j  java.conf location.  Sets the java.conf directory.  If not"
     echo "      configured, it will be written to \$OPENNMS_HOME/etc/."
     echo ""
@@ -103,7 +108,8 @@ printHelp() {
     echo "  2) If \"which java\" returns an appropriate JRE, it will be used."
     echo ""
     echo "  3) Lastly, a few directories are searched to find an"
-    echo "     appropriate JRE: \"$searchdirs\"."
+    echo "     appropriate JRE:" "${searchdirs[@]}"
+    echo "     If you have passed -a, that directory will be searched as well."
     echo ""
     echo "If none of the above options work or if they don't find the JRE"
     echo "you want OpenNMS to use, use \"-S <JRE>\" to specify the JRE you"
@@ -140,6 +146,24 @@ javaCheck() {
         OPENJDK_MINIMUM_BUILD=14
     fi
 
+    if [ -x "${opennms_home}/bin/find-java.sh" ]; then
+        found="$("${opennms_home}/bin/find-java.sh" "${minimum_version}" "${maximum_version}" "$JP")"
+        if [ -n "$found" ] && [ -d "$found" ] && [ -x "$found/bin/java" ]; then
+            return 0
+        else
+            if [ "$run" -eq 0 ] && [ "$force" -eq 0 ]; then
+                tell "$JP is not a supported JVM."
+                tell "You can use the '-f' option to ignore this check, but you will be on your own for support."
+                return 1
+            else
+                warn "$JP is not a supported JVM.  Using it anyways."
+                return 0
+            fi
+        fi
+    else
+        warn "find-java.sh was not found in \$OPENNMS_HOME/bin.  Falling back to the old check algorithm."
+    fi
+
     ret="$(printVersion)"
     if echo "$ret" | grep -E '^([8-9]|1[0-9])\b' > /dev/null; then
         # Check for Sun Java
@@ -165,7 +189,7 @@ javaCheck() {
             return 0
         fi
     else
-        tell "$JP is not Java 1.8 or newer."
+        tell "$JP is not Java ${minimum_version} or newer."
         return 1
     fi
 }
@@ -182,7 +206,7 @@ javaCheck() {
 #
 javaPaths() {
         if [ -x "${opennms_home}/bin/find-java.sh" ]; then
-                found="$("${opennms_home}/bin/find-java.sh" 1.8.0 1.8.9999)"
+                found="$("${opennms_home}/bin/find-java.sh" "${minimum_version}" "${maximum_version}")"
                 if [ -d "${found}" ] && [ -x "${found}/bin/java" ]; then
                         JP="${found}/bin/java"
                         return 0
@@ -190,7 +214,7 @@ javaPaths() {
         fi
 
         warn "${opennms_home}/bin/find-java.sh failed to find a valid JDK. Falling back to the old algorithm."
-        for searchdir in $searchdirs; do
+        for searchdir in "${searchdirs[@]}"; do
                 if [ ! -d "$searchdir" ]; then
                         continue;
                 fi
@@ -240,6 +264,17 @@ checkJavaHome() {
     fi
 }
 
+get_real_path_if_possible() {
+	unresolved="$1"
+	readlink="$(command -v readlink 2>/dev/null)"
+	if [ -n "$readlink" ] && [ -n "$unresolved" ] && [ -x "$unresolved" ]; then
+		"$readlink" "$unresolved" || echo "$unresolved"
+	else
+		echo "$unresolved"
+	fi
+}
+
+
 #
 # Function: checkPath()
 # Checks for a JRE in our path, using which(1).
@@ -249,6 +284,11 @@ checkPath() {
     if [ "$?" -eq 1 ]; then
         tell "did not find a JRE in user's path"
         return 1
+    fi
+
+	readlink="$(command -v readlink 2>/dev/null)"
+    if [ -n "$readlink" ] && [ -n "$JP" ]; then
+        JP="$(readlink "$JP")"
     fi
 
     tell "Checking JRE in user's path: \"$JP\"..."
@@ -484,9 +524,13 @@ parseArgsAndDoStuff() {
     search=0
     location=""
 
-    while getopts vcfhnpqrsS:j: c
+    while getopts vcfhnpqrsS:j:a: c
     do
       case $c in
+          a)
+              searchdirs=("$OPTARG" "${searchdirs[@]}");
+              ;;
+
           c)
               check=1
               exclusive="$((exclusive + 1))"

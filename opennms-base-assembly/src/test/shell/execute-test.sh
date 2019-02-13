@@ -6,5 +6,5 @@ DIRNAME="$(dirname "$TESTFILE")"
 
 cd "$DIRNAME" || exit 1
 
-echo "=== running $TESTNAME ==="
+echo "=== running test: $TESTNAME ==="
 exec "$TESTFILE"

@@ -13,7 +13,7 @@ oneTimeSetUp() {
 }
 
 setUp() {
-	for FILE in opennms runjava; do
+	for FILE in opennms runjava find-java.sh; do
 		sed -e "s,\${install.dir},${INSTPREFIX},g" \
 			-e "s,\${install.pid.file},${INSTPREFIX}/run/opennms.pid,g" \
 			-e "s,\${install.package.description},OpenNMS Shell Test,g" \
@@ -28,7 +28,7 @@ setUp() {
 	done
 
 	"$INSTPREFIX/bin/runjava" "-q" "-s"
-	assertEquals 'runjava should have succeeded' 0 "$?"
+	assertEquals 'runjava should have succeeded' "$?" 0
 
 	touch "$INSTPREFIX/etc/configured"
 	echo "STATUS_WAIT=1" > "$INSTPREFIX/etc/opennms.conf"
