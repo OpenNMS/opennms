@@ -30,6 +30,8 @@ curl -v -X POST -H 'Content-Type: application/json' "http://${ES_HOST}:${ES_PORT
 }
 EOF
 ```
+* *Dhcpd*: The *Dhcpd* plugin (and its configuration) was removed in favor of a Minion-capable implementation.
+  The new *DhcpMonitor* options can be set in the `poller-configuration.xml` file.
 
 === New Features
 
