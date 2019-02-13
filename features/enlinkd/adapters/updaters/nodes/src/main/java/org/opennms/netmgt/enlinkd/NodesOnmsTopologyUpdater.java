@@ -36,7 +36,6 @@ import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 
 public class NodesOnmsTopologyUpdater extends TopologyUpdater {
@@ -60,7 +59,7 @@ public class NodesOnmsTopologyUpdater extends TopologyUpdater {
     }
 
     @Override
-    public OnmsTopology buildTopology() throws OnmsTopologyException {
+    public OnmsTopology buildTopology() {
         Map<Integer, IpInterfaceTopologyEntity> ipMap= getIpPrimaryMap();
         OnmsTopology topology = new OnmsTopology();
         for (NodeTopologyEntity element: getNodeMap().values()) {
@@ -74,9 +73,9 @@ public class NodesOnmsTopologyUpdater extends TopologyUpdater {
     }
 
     @Override
-    public OnmsTopologyProtocol getProtocol() throws OnmsTopologyException {
+    public OnmsTopologyProtocol getProtocol() {
         return create(ProtocolSupported.NODES);
     }
-            
+
 }
 

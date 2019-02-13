@@ -990,9 +990,10 @@
         <bundle>mvn:org.opennms.features/org.opennms.features.api-layer/${project.version}</bundle>
     </feature>
     <feature name="opennms-enlinkd-shell" version="${project.version}" description="OpenNMS :: Features :: Enlinkd :: Shell">
-        <feature>opennms-dao</feature>
         <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.shell/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.generator/${project.version}</bundle>
+        <feature>opennms-dao</feature>
+        <feature>org.opennms.features.enlinkd.service.api</feature>
     </feature>
     <feature name="karaf-extender" version="${project.version}" description="Karaf Extender">
         <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>

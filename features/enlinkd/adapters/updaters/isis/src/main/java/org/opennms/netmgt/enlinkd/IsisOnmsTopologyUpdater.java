@@ -43,7 +43,6 @@ import org.opennms.netmgt.enlinkd.service.api.TopologyConnection;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
@@ -63,7 +62,7 @@ public class IsisOnmsTopologyUpdater extends TopologyUpdater {
     public static OnmsTopologyPort create(OnmsTopologyVertex source,
             IsIsLinkTopologyEntity sourceLink,
             IsIsLinkTopologyEntity targetLink,
-            SnmpInterfaceTopologyEntity snmpiface) throws OnmsTopologyException {
+            SnmpInterfaceTopologyEntity snmpiface) {
         OnmsTopologyPort port= OnmsTopologyPort.create(sourceLink.getId().toString(),source, targetLink.getIsisISAdjIndex());
         port.setIfindex(sourceLink.getIsisCircIfIndex());
         if (snmpiface != null) {
@@ -90,7 +89,7 @@ public class IsisOnmsTopologyUpdater extends TopologyUpdater {
     }
 
     @Override
-    public OnmsTopology buildTopology() throws OnmsTopologyException {
+    public OnmsTopology buildTopology() {
         Map<Integer, NodeTopologyEntity> nodeMap= getNodeMap();
         Map<Integer, IpInterfaceTopologyEntity> ipMap= getIpPrimaryMap();
         Table<Integer, Integer,SnmpInterfaceTopologyEntity> nodeToOnmsSnmpTable = getSnmpInterfaceTable();
@@ -122,13 +121,13 @@ public class IsisOnmsTopologyUpdater extends TopologyUpdater {
     }
 
     @Override
-    public OnmsTopologyProtocol getProtocol() throws OnmsTopologyException {
+    public OnmsTopologyProtocol getProtocol() {
         return create(ProtocolSupported.ISIS);
     }
 
     public IsisTopologyService getIsisTopologyService() {
         return m_isisTopologyService;
     }
-            
+
 }
 

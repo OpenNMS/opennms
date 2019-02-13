@@ -86,4 +86,6 @@
     	</onmsgi:service-properties>
     </onmsgi:service>
 
+	<onmsgi:service interface="org.opennms.netmgt.enlinkd.api.ReloadableTopologyDaemon" ref="daemon"/>
+
 </beans>

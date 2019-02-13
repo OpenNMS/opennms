@@ -41,6 +41,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.enlinkd.api.ReloadableTopologyDaemon;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
@@ -65,7 +66,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author ranger
  * @version $Id: $
  */
-public class EnhancedLinkd extends AbstractServiceDaemon {
+public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTopologyDaemon {
 
     private final static Logger LOG = LoggerFactory.getLogger(EnhancedLinkd.class);
     /**
@@ -768,6 +769,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         reload();
     }
 
+    @Override
     public void reloadTopology() {
         LOG.info("reloadTopology: reload enlinkd topology updaters");
         for (ProtocolSupported protocol :ProtocolSupported.values()) {

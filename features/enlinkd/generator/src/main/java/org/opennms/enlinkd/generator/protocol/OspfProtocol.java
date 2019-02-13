@@ -60,7 +60,7 @@ public class OspfProtocol extends Protocol<OspfElement> {
     private List<OspfLink> createLinks(List<OnmsNode> nodes) {
         PairGenerator<OnmsNode> pairs = createPairGenerator(nodes);
         List<OspfLink> links = new ArrayList<>();
-        for (int i = 0; i < topologySettings.getAmountLinks()/2; i++) {
+        for (int i = 0; i < topologySettings.getAmountLinks() / 2; i++) {
 
             // We create 2 links that reference each other, see also LinkdToplologyProvider.matchCdpLinks()
             Pair<OnmsNode, OnmsNode> pair = pairs.next();
@@ -72,22 +72,25 @@ public class OspfProtocol extends Protocol<OspfElement> {
             OspfLink sourceLink = createLink(
                     sourceNode,
                     ospfIpAddr,
-                    ospfRemIpAddr
+                    ospfRemIpAddr,
+                    nodeIfIndexes.get(sourceNode.getId())
             );
             links.add(sourceLink);
 
             OspfLink targetLink = createLink(
                     targetNode,
                     ospfRemIpAddr,
-                    ospfIpAddr
+                    ospfIpAddr,
+                    nodeIfIndexes.get(targetNode.getId())
             );
             links.add(targetLink);
-            context.currentProgress(String.format("Linked node %s with node %s", sourceNode.getLabel(), targetNode.getLabel()));
+            context.currentProgress(String.format("Linked node %s with node %s", sourceNode.getLabel(),
+                    targetNode.getLabel()));
         }
         return links;
     }
 
-    private OspfLink createLink(OnmsNode node, InetAddress ipAddress, InetAddress remoteAddress) {
+    private OspfLink createLink(OnmsNode node, InetAddress ipAddress, InetAddress remoteAddress, int ifIndex) {
         OspfLink link = new OspfLink();
         link.setNode(node);
         link.setOspfIpAddr(ipAddress);
@@ -95,7 +98,7 @@ public class OspfProtocol extends Protocol<OspfElement> {
 
         link.setOspfIpMask(this.inetAddressCreator.next());
         link.setOspfAddressLessIndex(3);
-        link.setOspfIfIndex(3);
+        link.setOspfIfIndex(ifIndex);
         link.setOspfRemRouterId(this.inetAddressCreator.next());
         link.setOspfRemAddressLessIndex(3);
         link.setOspfLinkLastPollTime(new Date());

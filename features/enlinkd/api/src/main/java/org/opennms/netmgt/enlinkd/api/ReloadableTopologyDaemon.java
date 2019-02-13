@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,22 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.topologies.service.api;
+package org.opennms.netmgt.enlinkd.api;
 
-import java.util.Set;
-
-public interface OnmsTopologyDao {
-
-    OnmsTopology getTopology(String protocol);
-
-    Set<String> getSupportedProtocols();
-
-    void register(OnmsTopologyUpdater updater);
-    void unregister(OnmsTopologyUpdater updater);
-
-    void subscribe(OnmsTopologyConsumer consumer);
-    void unsubscribe(OnmsTopologyConsumer consumer);
-    
-    void update(OnmsTopologyUpdater updater, OnmsTopologyMessage message);
-
+/**
+ * Provides an interface to reload a topology daemon.
+ */
+public interface ReloadableTopologyDaemon {
+    /**
+     * Triggers a reload of the topology in case the topology has been updated without going through the
+     * {@link org.opennms.netmgt.topologies.service.api.OnmsTopologyDao}.
+     */
+    void reloadTopology();
 }

@@ -53,7 +53,6 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class EnhancedLinkdMockDataPopulator {
@@ -342,7 +341,7 @@ public class EnhancedLinkdMockDataPopulator {
                 node2PortId, LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, node2PortDescr);
     }
 
-    public void setUpMock() throws OnmsTopologyException {
+    public void setUpMock() {
         EasyMock.expect(m_nodeDao.getDefaultFocusPoint()).andReturn(getOnmsNode(1)).anyTimes();
         EasyMock.expect(m_ospfElementDao.findAll()).andReturn(getOspfElements()).anyTimes();
         EasyMock.expect(m_topologyEntityCache.getNodeTopologyEntities()).andReturn(getNodes()).anyTimes();

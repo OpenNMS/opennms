@@ -28,31 +28,22 @@
 
 package org.opennms.netmgt.topologies.service.api;
 
+import java.util.Objects;
+
 public class OnmsTopologyMessage {
-    
-    public static OnmsTopologyMessage  update(OnmsTopologyRef messagebody,OnmsTopologyProtocol protocol) throws OnmsTopologyException {
-        checkOnmsTopologyMessage(messagebody, protocol, TopologyMessageStatus.UPDATE);
-        return new OnmsTopologyMessage(messagebody, protocol,TopologyMessageStatus.UPDATE);
-    }
-    
-    public static OnmsTopologyMessage  delete(OnmsTopologyRef messagebody,OnmsTopologyProtocol protocol) throws OnmsTopologyException {
-        checkOnmsTopologyMessage(messagebody, protocol, TopologyMessageStatus.DELETE);
-        return new OnmsTopologyMessage(messagebody, protocol,TopologyMessageStatus.DELETE);        
+
+    public static OnmsTopologyMessage update(OnmsTopologyRef messagebody, OnmsTopologyProtocol protocol) {
+        Objects.requireNonNull(messagebody);
+        Objects.requireNonNull(protocol);
+        return new OnmsTopologyMessage(messagebody, protocol, TopologyMessageStatus.UPDATE);
     }
 
-    private static void checkOnmsTopologyMessage(OnmsTopologyRef messagebody, OnmsTopologyProtocol protocol, TopologyMessageStatus messagestatus) throws OnmsTopologyException {
-        if (messagebody == null && protocol == null) {
-            throw new OnmsTopologyException("Protocol and Ref null, cannot create message", messagestatus);
-        }
-        if (messagebody == null ) {
-            throw new OnmsTopologyException("Ref null, cannot create message", protocol,messagestatus);
-        }
-        if (protocol == null ) {
-            throw new OnmsTopologyException("Protocol null, cannot create message", messagebody,messagestatus);
-        }
-        
+    public static OnmsTopologyMessage delete(OnmsTopologyRef messagebody, OnmsTopologyProtocol protocol) {
+        Objects.requireNonNull(messagebody);
+        Objects.requireNonNull(protocol);
+        return new OnmsTopologyMessage(messagebody, protocol, TopologyMessageStatus.DELETE);
     }
-    
+
     public enum TopologyMessageStatus {
         UPDATE,
         DELETE
