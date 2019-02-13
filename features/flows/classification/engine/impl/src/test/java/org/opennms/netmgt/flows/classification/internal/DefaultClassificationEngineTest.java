@@ -29,6 +29,7 @@
 package org.opennms.netmgt.flows.classification.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.stream.IntStream;
@@ -62,6 +63,33 @@ public class DefaultClassificationEngineTest {
         assertEquals("rule2", engine.classify(new ClassificationRequestBuilder().withSrcPort(9999).withDstPort(443).build()));
         assertEquals("rule3", engine.classify(new ClassificationRequestBuilder().withSrcPort(8888).withDstPort(9999).build()));
         assertEquals("rule4", engine.classify(new ClassificationRequestBuilder().withSrcPort(8888).withDstPort(80).build()));
+    }
+
+    @Test
+    public void verifyRuleEngineWithOmnidirectionals() {
+        DefaultClassificationEngine engine = new DefaultClassificationEngine(() ->
+                Lists.newArrayList(
+                        new RuleBuilder().withName("rule1").withSrcPort(80).withOmnidirectional(true).build(),
+                        new RuleBuilder().withName("rule2").withDstPort(443).withOmnidirectional(true).build(),
+                        new RuleBuilder().withName("rule3").withSrcPort(8080).withDstPort(8443).withOmnidirectional(true).build(),
+                        new RuleBuilder().withName("rule4").withSrcPort(1337).build(),
+                        new RuleBuilder().withName("rule5").withDstPort(7331).build()
+                ), FilterService.NOOP);
+
+        assertEquals("rule1", engine.classify(new ClassificationRequestBuilder().withSrcPort(9999).withDstPort(80).build()));
+        assertEquals("rule1", engine.classify(new ClassificationRequestBuilder().withSrcPort(80).withDstPort(9999).build()));
+
+        assertEquals("rule2", engine.classify(new ClassificationRequestBuilder().withSrcPort(443).withDstPort(9999).build()));
+        assertEquals("rule2", engine.classify(new ClassificationRequestBuilder().withSrcPort(9999).withDstPort(443).build()));
+
+        assertEquals("rule3", engine.classify(new ClassificationRequestBuilder().withSrcPort(8080).withDstPort(8443).build()));
+        assertEquals("rule3", engine.classify(new ClassificationRequestBuilder().withSrcPort(8443).withDstPort(8080).build()));
+
+        assertEquals("rule4", engine.classify(new ClassificationRequestBuilder().withSrcPort(1337).withDstPort(9999).build()));
+        assertNull(engine.classify(new ClassificationRequestBuilder().withSrcPort(9999).withDstPort(1337).build()));
+
+        assertEquals("rule5", engine.classify(new ClassificationRequestBuilder().withSrcPort(9999).withDstPort(7331).build()));
+        assertNull(engine.classify(new ClassificationRequestBuilder().withSrcPort(7331).withDstPort(9999).build()));
     }
 
     @Test

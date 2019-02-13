@@ -8,6 +8,7 @@
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<changeSet author="rangerrick" id="1.6.0-datalinkinterface">
+		<validCheckSum>3:8728d8aecacaf03b86c76a0b15ec05a4</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="datalinkinterface" /></not>
 		</preConditions> 
@@ -46,7 +47,7 @@
 			</column>
 
 			<!-- The last time when this information was retrieved -->
-			<column name="lastpolltime" type="DATETIME">
+			<column name="lastpolltime" type="TIMESTAMP WITH TIME ZONE">
 				<constraints nullable="false" />
 			</column>
 		</createTable>

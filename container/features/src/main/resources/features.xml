@@ -420,6 +420,7 @@
       <bundle>mvn:org.opennms.core/org.opennms.core.logging/${project.version}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.soa/${project.version}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.spring/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.xml/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-util/${project.version}</bundle>
     </feature>
@@ -776,8 +777,8 @@
       <feature>opennms-core</feature>
       <feature>opennms-events-api</feature>
       <feature>opennms-model</feature>
+      <feature>opennms-config-api</feature>
       -->
-
       <bundle>mvn:org.opennms.features.events/org.opennms.features.events.commands/${project.version}</bundle>
     </feature>
 
@@ -902,6 +903,7 @@
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.implementations.snmp4j/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.joesnmp/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-snmp-commands" description="OpenNMS :: Core :: SNMP :: Commands" version="${project.version}">
@@ -1174,6 +1176,25 @@
       <bundle>mvn:org.opennms.features.situation-feedback.rest/org.opennms.features.situation-feedback.rest.impl/${project.version}</bundle>
     </feature>
 
+
+    <feature name="opennms-alarm-history-api" description="OpenNMS :: Features :: Alarms :: History :: API" version="${project.version}">
+      <bundle>mvn:org.opennms.features.alarms.history/org.opennms.features.alarms.history.api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-alarm-history-rest" description="OpenNMS :: Features :: Alarms :: History :: REST" version="${project.version}">
+      <feature>opennms-osgi-core-rest</feature>
+      <feature>opennms-alarm-history-api</feature>
+      <bundle>mvn:org.opennms.features.alarms.history.rest/org.opennms.features.alarms.history.rest.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.alarms.history.rest/org.opennms.features.alarms.history.rest.impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-alarm-history-elastic" description="OpenNMS :: Features :: Alarms :: History :: Elasticsearch" version="${project.version}">
+      <feature>opennms-alarm-history-rest</feature>
+      <feature>opennms-jest</feature>
+      <bundle>mvn:org.mapstruct/mapstruct-jdk8/${mapstructVersion}</bundle>
+      <bundle>mvn:org.opennms.features.alarms.history/org.opennms.features.alarms.history.elastic/${project.version}</bundle>
+    </feature>
+
     <feature name="kafka-streams" description="Kafka Streams" version="${kafkaStreamsVersion}">
       <!-- Wrap the kafka-streams bundle instead of using the servicemix implementation since the later doesn't include the required imports for rocksdb -->
       <bundle dependency="true">wrap:mvn:org.apache.kafka/kafka-streams/${kafkaStreamsVersion}$Bundle-Version=${kafkaStreamsVersion}&amp;Export-Package=*;-noimport:=true:version="${kafkaStreamsVersion}"</bundle>
@@ -1283,6 +1304,7 @@
 
         <bundle dependency="true">mvn:com.google.guava/guava/18.0</bundle>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.soa/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
         <bundle>mvn:org.opennms.container/spring-extender/${project.version}</bundle>
     </feature>
 
@@ -1328,5 +1350,11 @@
         <feature dependency="true">opennms-situation-feedback-api</feature>
         <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
         <bundle>mvn:org.opennms.features/org.opennms.features.api-layer/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-enlinkd-shell" description="OpenNMS :: Features :: Enlinkd :: Shell" version="${project.version}">
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.shell/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.generator/${project.version}</bundle>
+        <feature>opennms-dao</feature>
     </feature>
 </features>

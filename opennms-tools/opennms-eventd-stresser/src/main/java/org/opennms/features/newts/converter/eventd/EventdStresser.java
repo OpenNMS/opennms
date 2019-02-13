@@ -204,7 +204,7 @@ public class EventdStresser {
 
         property = System.getProperty(PROPERTY_TRAP_PORT);
         if (property != null) {
-            m_trapPort = Integer.getInteger(PROPERTY_TRAP_PORT);
+            m_trapPort = SystemProperties.getInteger(PROPERTY_TRAP_PORT);
             System.out.println("Using Trap port: " + m_trapPort);
         }
 
@@ -216,7 +216,7 @@ public class EventdStresser {
 
         property = System.getProperty(PROPERTY_TRAP_COUNT);
         if (property != null) {
-            m_trapCount = Integer.getInteger(PROPERTY_TRAP_COUNT);
+            m_trapCount = SystemProperties.getInteger(PROPERTY_TRAP_COUNT);
             m_batchSize = m_trapCount;
             m_batchCount = 1;
             System.out.println("Using Trap count: " + m_trapCount);
@@ -224,25 +224,25 @@ public class EventdStresser {
 
         property = System.getProperty(PROPERTY_TRAP_RATE);
         if (property != null) {
-            m_trapRate = Integer.getInteger(PROPERTY_TRAP_RATE).doubleValue();
+            m_trapRate = SystemProperties.getInteger(PROPERTY_TRAP_RATE).doubleValue();
             System.out.println("Using Trap rate: " + m_trapRate);
         }
 
         property = System.getProperty(PROPERTY_BATCH_DELAY);
         if (property != null) {
-            m_batchDelay = Integer.getInteger(PROPERTY_BATCH_DELAY);
+            m_batchDelay = SystemProperties.getInteger(PROPERTY_BATCH_DELAY);
             System.out.println("Using batch delay: " + m_batchDelay);
         }
 
         property = System.getProperty(PROPERTY_BATCH_SIZE);
         if (property != null) {
-            m_batchSize = Integer.getInteger(PROPERTY_BATCH_SIZE);
+            m_batchSize = SystemProperties.getInteger(PROPERTY_BATCH_SIZE);
             System.out.println("Using batch size: " + m_batchSize);
         }
 
         property = System.getProperty(PROPERTY_PERSIST_WAIT);
         if (property != null) {
-            m_persistWait = Integer.getInteger(PROPERTY_PERSIST_WAIT);
+            m_persistWait = SystemProperties.getInteger(PROPERTY_PERSIST_WAIT);
             System.out.println("Using Event persistence wait period of: " + m_persistWait);
         }
 
