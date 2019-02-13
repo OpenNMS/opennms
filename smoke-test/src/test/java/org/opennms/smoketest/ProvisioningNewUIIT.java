@@ -238,7 +238,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
             // Disable implicitlyWait
             m_driver.manage().timeouts().implicitlyWait(0, TimeUnit.MILLISECONDS);
             // If this is the only node on the system, we'll be sent directly to its node details page.
-            findElementByXpath("//h3[text()='Availability']");
+            findElementByXpath("//div[@class='card-header']/span[text()='Availability']");
         } catch (NoSuchElementException e) {
             // If there are multiple nodes, we will be on the node list page, click through to the node
             findElementByLink(NODE_LABEL).click();

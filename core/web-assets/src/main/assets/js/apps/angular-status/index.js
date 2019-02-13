@@ -33,7 +33,6 @@ angular.module(MODULE_NAME, [
     'angular-loading-bar',
     'ngRoute',
     'ngResource',
-    'ui.checkbox',
     'ui.bootstrap',
     'onms.elementList',
     'onms.pagination'

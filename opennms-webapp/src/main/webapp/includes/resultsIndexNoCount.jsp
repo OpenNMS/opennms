@@ -102,7 +102,7 @@
 %>
 
  <% if (limit > 0 ) { %> 
-  <div class="text-center">
+  <div class="text-center my-2">
   <strong>Results <%=startResult%>-<%=endResult%></strong>
   </div>
  <% } else { %>
@@ -112,12 +112,12 @@
  <% } %> 
 
   <% if( itemCount >= limit || multiple > 0 ) { %>
-  <nav>
-  <ul class="pager" style="text-align:center;">
-    <li class="<%=multiple > 0 ? "" : "disabled"%>"><a href="<%=baseUrl%>&amp;<%=multipleName%>=0">First</a></li>
-    <li class="<%=multiple > 0 ? "" : "disabled"%>"><a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple-1%>">Previous</a></li>  
-    <li class="<%=itemCount >= limit ? "" : "disabled"%>"><a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple+1%>">Next</a></li>
-  </ul>
+  <nav class="btn-toolbar" role="toolbar">
+      <div class="form-group ml-auto mr-auto">
+        <a class="btn btn-sm btn-secondary <%=multiple > 0 ? "" : "disabled"%>" role="button" href="<%=baseUrl%>&amp;<%=multipleName%>=0">First</a></a>
+        <a class="btn btn-sm btn-secondary <%=multiple > 0 ? "" : "disabled"%>" role="button" href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple-1%>">Previous</a></a>
+        <a class="btn btn-sm btn-secondary <%=itemCount >= limit ? "" : "disabled"%>" role="button" href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple+1%>">Next</a></a>
+      </div>
   </nav>
   <% } else { %>
    <br/>

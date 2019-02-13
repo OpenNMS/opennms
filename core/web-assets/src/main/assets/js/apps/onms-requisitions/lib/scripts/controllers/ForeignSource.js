@@ -177,7 +177,7 @@ require('../services/Requisitions');
             },
             main: {
               label: 'No',
-              className: 'btn-default'
+              className: 'btn-secondary'
             }
           }
         });

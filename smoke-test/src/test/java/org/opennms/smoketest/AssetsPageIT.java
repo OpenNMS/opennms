@@ -44,16 +44,16 @@ public class AssetsPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllTextIsPresent() throws Exception {
-        assertEquals(3, countElementsMatchingCss("h3.panel-title"));
-        findElementByXpath("//h3[text()='Search Asset Information']");
-        findElementByXpath("//h3[text()='Assets with Asset Numbers']");
-        findElementByXpath("//h3[text()='Assets Inventory']");
+        assertEquals(3, countElementsMatchingCss("div.card-header"));
+        findElementByXpath("//span[text()='Search Asset Information']");
+        findElementByXpath("//span[text()='Assets with Asset Numbers']");
+        findElementByXpath("//span[text()='Assets Inventory']");
     }    
 
     @Test
     public void testAllLinks() throws InterruptedException {
         findElementByLink("All nodes with asset info").click();
-        findElementByXpath("//h3[text()='Assets']");
+        findElementByXpath("//span[text()='Assets']");
     }
 
 }

@@ -45,59 +45,61 @@
 
 <div class="row">
     <div class="col-md-12">
-        <div class="panel panel-success">
-            <div class="panel-heading">
-                <h3 class="panel-title">Report Delivery Options</h3>
+        <div class="card">
+            <div class="card-header">
+                <span>Report Delivery Options</span>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <form:form commandName="deliveryOptions" cssClass="form-horizontal">
                     <div class="form-group">
-                        <div class="col-md-2">
-                            <form:label path="instanceId" for="instanceId">Unique name:</form:label>
+                        <div class="col-md-6">
+                            <form:label path="instanceId" for="instanceId">Unique name</form:label>
                             <form:input path="instanceId" cssClass="form-control" data-toggle="tooltip" data-placement="right" title="A name to identify this report. Must be unique overall reports."/>
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-md-2">
-                            <form:label path="format" for="format">Format:</form:label>
-                            <form:select path="format" cssClass="form-control" data-toggle="tooltip" data-placement="right" title="The output format of the generated report.">
+                        <div class="col-md-6">
+                            <form:label path="format" for="format">Format</form:label>
+                            <form:select path="format" cssClass="form-control custom-select" data-toggle="tooltip" data-placement="right" title="The output format of the generated report.">
                                 <form:options items="${formats}"/>
                             </form:select>
                         </div>
 
                     </div>
                     <div class="form-group">
-                        <div class="col-md-2">
-                            <div class="checkbox">
-                                <label data-toggle="tooltip" data-placement="right" title="Indicates whether the generated report is send via email to the defined recipient.">
-                                    <form:checkbox path="sendMail"/>Email report
-                                </label>
-                            </div>
+                        <div class="col-md-6 ml-4">
+                            <form:checkbox path="sendMail" cssClass="form-check-input"/>
+                            <label class="form-check-label" for="sendMail1" data-toggle="tooltip" data-placement="right" title="Indicates whether the generated report is send via email to the defined recipient.">
+                                Email report
+                            </label>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <div class="col-md-2">
-                            <form:label path="mailTo" for="mailTo">Recipient:</form:label>
+                        <div class="col-md-6">
+                            <form:label path="mailTo" for="mailTo">Recipient</form:label>
                             <form:input path="mailTo" cssClass="form-control" data-toggle="tooltip" data-placement="right" title="The recipient of the generated report if 'Email report' is enabled."/>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <div class="col-md-2">
-                            <div class="checkbox">
-                                <label data-toggle="tooltip" data-placement="right" title="Indicates whether a copy of the generated report is stored on disk.">
-                                    <form:checkbox path="persist"/>Save a copy of this report
-                                </label>
-                            </div>
+                        <div class="col-md-6 ml-4">
+                            <form:checkbox path="persist" cssClass="form-check-input"/>
+                            <label class="form-check-label"
+                                   data-toggle="tooltip"
+                                   data-placement="right"
+                                   title="Indicates whether a copy of the generated report is stored on disk."
+                                   for="persist1" >
+                                Save a copy of this report
+                            </label>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <div class="col-md-2">
-                            <input type="submit" class="btn btn-default" id="proceed" name="_eventId_proceed" value="Proceed"/>&#160;
-                            <input type="submit" class="btn btn-default" name="_eventId_revise" value="Revise"/>&#160;
-                            <input type="submit" class="btn btn-default" name="_eventId_cancel" value="Cancel"/>&#160;
+                        <div class="col-md-6">
+                            <input type="submit" class="btn btn-secondary" id="proceed" name="_eventId_proceed" value="Proceed"/>&#160;
+                            <input type="submit" class="btn btn-secondary" name="_eventId_revise" value="Revise"/>&#160;
+                            <input type="submit" class="btn btn-secondary" name="_eventId_cancel" value="Cancel"/>&#160;
                         </div>
                     </div>
                 </form:form>

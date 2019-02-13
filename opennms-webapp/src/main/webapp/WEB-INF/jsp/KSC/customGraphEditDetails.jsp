@@ -82,11 +82,11 @@
 
 <c:choose>
   <c:when test="${fn:length(prefabGraphs) == 0}">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">No graph options available</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>No graph options available</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
           No graph options are available.
           This resource might not have any data that can be graphed with
@@ -99,9 +99,9 @@
     </div>
   </c:when>
   <c:otherwise>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Sample graph</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Sample graph</span>
       </div>
       <table class="table">
         <tr>
@@ -140,11 +140,11 @@
         </tr>
       </table>
     </div>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Choose graph options</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Choose graph options</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <form class="form-horizontal" name="customize_graph" method="get" action="<%= baseHref %>KSC/formProcGraph.htm">
           <input type="hidden" name="<%=FormProcGraphController.Parameters.action%>" value="none" />
           <div class="form-group">
@@ -169,7 +169,7 @@
                   <option value="${option.key}" ${timespanSelected}>${option.value.replaceAll("_", " ")}</option>
                 </c:forEach>
               </select>
-              <span class="help-block">This selects the relative start and stop times for the report</span>
+              <span class="form-text text-muted">This selects the relative start and stop times for the report</span>
             </div>
           </div>
           <div class="form-group">
@@ -188,7 +188,7 @@
                   <option value="${prefabGraph.name}" ${prefabSelected}>${prefabGraph.name}</option>
                 </c:forEach>
               </select>
-              <span class="help-block">This selects the relative start and stop times for the report</span>
+              <span class="form-text text-muted">This selects the relative start and stop times for the report</span>
             </div>
           </div>
           <div class="form-group">
@@ -207,14 +207,14 @@
                   <option value="${index}" ${indexSelected}>${index}</option>
                 </c:forEach>
               </select>
-              <span class="help-block">This selects the relative start and stop times for the report</span>
+              <span class="form-text text-muted">This selects the relative start and stop times for the report</span>
             </div>
           </div>
           <div class="btn-group">
-            <button type="button" class="btn btn-default" onclick="cancelGraph()" alt="Cancel this graph configuration">Cancel edits to this graph</button>
-            <button type="button" class="btn btn-default" onclick="updateGraph()" alt="Update changes to sample graph">Refresh sample view</button>
-            <button type="button" class="btn btn-default" onclick="chooseResource()" alt="Choose a different resource to graph">Choose different resource</button>
-            <button type="button" class="btn btn-default" onclick="saveGraph()" alt="Done with this graph configuration">Done with edits to this graph</button>
+            <button type="button" class="btn btn-secondary" onclick="cancelGraph()" alt="Cancel this graph configuration">Cancel edits to this graph</button>
+            <button type="button" class="btn btn-secondary" onclick="updateGraph()" alt="Update changes to sample graph">Refresh sample view</button>
+            <button type="button" class="btn btn-secondary" onclick="chooseResource()" alt="Choose a different resource to graph">Choose different resource</button>
+            <button type="button" class="btn btn-secondary" onclick="saveGraph()" alt="Done with this graph configuration">Done with edits to this graph</button>
           </div>
         </form>
       </div>

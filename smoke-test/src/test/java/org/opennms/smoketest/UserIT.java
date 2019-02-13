@@ -52,10 +52,10 @@ public class UserIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testExpectedTextAndLinksArePresent() throws Exception {
-        final List<WebElement> h3s = m_driver.findElements(By.tagName("h3"));
-        assertEquals("Account page should have 2 panels", 2, h3s.size());
-        assertEquals("Account page should have \"User Account Self-Service\" panel", "User Account Self-Service", h3s.get(0).getText());
-        assertEquals("Account page should have \"User Account Self-Service Options\" panel", "Account Self-Service Options", h3s.get(1).getText());
+        final List<WebElement> headers = m_driver.findElements(By.xpath("//div[@class='card-header']/span"));
+        assertEquals("Account page should have 2 panels", 2, headers.size());
+        assertEquals("Account page should have \"User Account Self-Service\" panel", "User Account Self-Service", headers.get(0).getText());
+        assertEquals("Account page should have \"User Account Self-Service Options\" panel", "Account Self-Service Options", headers.get(1).getText());
     }
 
     @Test
@@ -106,7 +106,7 @@ public class UserIT extends OpenNMSSeleniumTestCase {
         findElementByName("finish").click();
 
         findElementByLink(GROUP_NAME).click();
-        m_driver.findElement(By.xpath("//h2[text()='Details for Group: " + GROUP_NAME + "']"));
+        m_driver.findElement(By.xpath("//div[@class='card-header']/span[text()='Details for Group: " + GROUP_NAME + "']"));
 
         findElementByLink("Group List").click();
         findElementById(GROUP_NAME + ".doDelete").click();

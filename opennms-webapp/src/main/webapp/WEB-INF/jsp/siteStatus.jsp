@@ -40,11 +40,11 @@
 	<jsp:param name="breadcrumb" value="${view.columnValue}" />
 </jsp:include>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Site status for nodes in site '${view.columnValue}'</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Site status for nodes in site '${view.columnValue}'</span>
   </div>
-  <table class="table table-condensed table-bordered severity">
+  <table class="table table-sm table-bordered severity">
     <thead>
       <tr>
         <th>Device Type</th>
@@ -70,18 +70,18 @@
   </table>
 </div> <!-- panel -->
   
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Site outages</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Site outages</span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <c:url var="outagesLink" value="outage/list.htm">
       <c:param name="filter" value="asset.building=${view.columnValue}"/>
     </c:url>
     <p>
       <a href="${outagesLink}">View</a> current site outages.
     </p>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

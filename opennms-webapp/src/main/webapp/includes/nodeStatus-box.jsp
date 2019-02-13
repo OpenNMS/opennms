@@ -122,7 +122,7 @@
     }
 %>
 
-<table class="table table-condensed severity">
+<table class="table table-sm severity">
   <tr class="severity-<%=status%>">
     <td align="left" class="bright">
       <b><%=message%></b><%=details%>

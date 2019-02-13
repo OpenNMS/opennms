@@ -62,21 +62,21 @@
 <div class="btn-group">
   <button 
     type="button" 
-    class="btn btn-default <%=(parms.outageType == OutageType.CURRENT) ? "active" : ""%>" 
+    class="btn btn-secondary <%=(parms.outageType == OutageType.CURRENT) ? "active" : ""%>"
     onclick="document.outage_search_constraints_box_outtype_form.outtype.value = '<%=OutageType.CURRENT.getShortName() %>'; document.outage_search_constraints_box_outtype_form.submit();"
   >
     Current
   </button>
   <button 
     type="button" 
-    class="btn btn-default <%=(parms.outageType == OutageType.RESOLVED) ? "active" : ""%>"
+    class="btn btn-secondary <%=(parms.outageType == OutageType.RESOLVED) ? "active" : ""%>"
     onclick="document.outage_search_constraints_box_outtype_form.outtype.value = '<%=OutageType.RESOLVED.getShortName() %>'; document.outage_search_constraints_box_outtype_form.submit();"
   >
     Resolved
   </button>
   <button 
     type="button" 
-    class="btn btn-default <%=(parms.outageType == OutageType.BOTH) ? "active" : ""%>"
+    class="btn btn-secondary <%=(parms.outageType == OutageType.BOTH) ? "active" : ""%>"
     onclick="document.outage_search_constraints_box_outtype_form.outtype.value = '<%=OutageType.BOTH.getShortName() %>'; document.outage_search_constraints_box_outtype_form.submit();"
   >
     Both Current &amp; Resolved

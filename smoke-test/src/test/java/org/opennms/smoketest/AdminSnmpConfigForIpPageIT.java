@@ -139,17 +139,17 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testVersionHandling() {
         new Select(findElementByName("version")).selectByVisibleText("v1");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[text()='v1/v2c specific parameters']")));
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//h3[text()='v3 specific parameters']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='v1/v2c specific parameters']")));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//span[text()='v3 specific parameters']")));
 
         new Select(findElementByName("version")).selectByVisibleText("v2c");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[text()='v1/v2c specific parameters']")));
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//h3[text()='v3 specific parameters']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='v1/v2c specific parameters']")));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//span[text()='v3 specific parameters']")));
 
         // change to v3
         new Select(findElementByName("version")).selectByVisibleText("v3");
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//h3[text()='v1/v2c specific parameters']")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[text()='v3 specific parameters']")));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//span[text()='v1/v2c specific parameters']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='v3 specific parameters']")));
     }
 
     /**
@@ -272,7 +272,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
     public void testCancelButton() {
         findElementByName("cancelButton").click();
         // this takes you to the admin page
-        findElementByXpath("//h3[text()='OpenNMS System']");
+        findElementByXpath("//div[@class='card-header']/span[text()='OpenNMS System']");
         assertTrue(m_driver.getCurrentUrl().endsWith("/admin/index.jsp"));
     }
 

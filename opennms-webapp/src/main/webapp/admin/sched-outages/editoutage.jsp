@@ -751,7 +751,7 @@ function updateOutageTypeDisplay(selectElement) {
 <h3>Editing Outage: <%=theOutage.getName()%></h3>
 
 		<label>Nodes and Interfaces:</label>
-			<table class="table table-condensed table-borderless">
+			<table class="table table-sm table-borderless">
 				<tr>
 					<th valign="top">Node Labels</th>
 					<th valign="top">Interfaces</th>
@@ -764,7 +764,7 @@ function updateOutageTypeDisplay(selectElement) {
 							<div class="ui-widget">
 								<select id="newNodeSelect" name="newNodeSelect" style="display: none"></select>
 								<input type="radio"  value="addPathOutageDependency" name="addPathOutageNodeRadio"/> Add with path outage dependency
-								<input type="submit" class="btn btn-default" value="Add" name="addNodeButton"/>
+								<input type="submit" class="btn btn-secondary" value="Add" name="addNodeButton"/>
 							</div>
 						</form>
 						<p style="font-weight: bold; margin: 10px 0px 2px 0px;">Current selection:</p>
@@ -810,7 +810,7 @@ function updateOutageTypeDisplay(selectElement) {
 							<div class="ui-widget">
 								<select id="newInterfaceSelect" name="newInterfaceSelect" style="display: none"></select>
 								<input type="radio"  value="addPathOutageDependency" name="addPathOutageInterfaceRadio"/> Add with path outage dependency
-								<input type="submit" class="btn btn-default" value="Add" name="addInterfaceButton"/>
+								<input type="submit" class="btn btn-secondary" value="Add" name="addInterfaceButton"/>
 							</div>
 						</form>
 						<p style="font-weight: bold; margin: 10px 0px 2px 0px;">Current selection:</p>
@@ -866,7 +866,7 @@ function updateOutageTypeDisplay(selectElement) {
 						</script>
 						<form onsubmit="return verifyAddAll();" id="matchAnyForm" action="admin/sched-outages/editoutage.jsp" method="post">
 							<input type="hidden" name="formSubmission" value="true" />
-							<input type="submit" class="btn btn-default" name="matchAny" value="Select all nodes and interfaces" />
+							<input type="submit" class="btn btn-secondary" name="matchAny" value="Select all nodes and interfaces" />
 						</form>
 					</td>
 				</tr>
@@ -882,7 +882,7 @@ function updateOutageTypeDisplay(selectElement) {
           <div class="row">
             <div class="col-md-6">
 		<label>Outage Type:</label>
-			<table class="table table-condensed table-borderless">
+			<table class="table table-sm table-borderless">
 				<tr>
 					<td>
 						<% if (theOutage.getType() != null) { %>
@@ -902,7 +902,7 @@ function updateOutageTypeDisplay(selectElement) {
 				</tr>
 			</table>
 		<label>Time:</label>
-			<table class="table table-condensed table-borderless">
+			<table class="table table-sm table-borderless">
 				<%
 				List<org.opennms.netmgt.config.poller.outages.Time> outageTimes = theOutage.getTimes();
 					for (int i = 0; i < outageTimes.size(); i++) {
@@ -940,7 +940,7 @@ function updateOutageTypeDisplay(selectElement) {
 					}
 				%>
 			</table>
-			<table class="table table-condensed table-borderless">
+			<table class="table table-sm table-borderless">
 				<tr id="chooseDay" style="display: none">
 					<td>
 						<span id="chooseDayOfMonth" style="display: none">
@@ -1003,7 +1003,7 @@ function updateOutageTypeDisplay(selectElement) {
 				</tr>
 				<tr>
 					<td>
-						<input type="submit" class="btn btn-default" value="Add Outage" name="addOutage" />
+						<input type="submit" class="btn btn-secondary" value="Add Outage" name="addOutage" />
 					</td>
 				</tr>
 				<% if (theOutage.getTimes().size() == 0) { %>
@@ -1093,8 +1093,8 @@ function updateOutageTypeDisplay(selectElement) {
 						&& theOutage.getType() != null
 						&& (hasMatchAny || (theOutage.getInterfaces().size() > 0) || (theOutage.getNodes().size() > 0))
 						) {
-			%><input type="submit" class="btn btn-default" value="Save" name="saveButton" /><% } %>
-			<input type="submit" class="btn btn-default" value="Cancel" name="cancelButton" />
+			%><input type="submit" class="btn btn-secondary" value="Save" name="saveButton" /><% } %>
+			<input type="submit" class="btn btn-secondary" value="Cancel" name="cancelButton" />
                     </div> <!-- column -->
                   </div> <!-- row -->
 </form>

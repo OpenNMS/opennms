@@ -87,11 +87,11 @@
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Current Label</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Current Label</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
           <a href="element/node.jsp?node=<%=nodeId%>" title="More information for this node"><%=currentLabel.getLabel()%></a> (<%=typeMap.get(currentLabel.getSource())%>)
         </p>
@@ -100,46 +100,42 @@
   </div> <!-- column -->
 
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Choose a New Label</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Choose a New Label</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
           You can either specify a name or allow the system to automatically
           select the name.
         </p>
 
-        <form role="form" class="form-inline" action="admin/nodeLabelChange" method="post">
+        <form role="form" action="admin/nodeLabelChange" method="post">
           <input type="hidden" name="node" value="<%=nodeId%>" />
 
-          <div class="form-group">
             <label>User Defined</label>
             <br/>
-            <input type="radio" name="labeltype" value="user" <%=(currentLabel.getSource() == NodeLabelSource.USER) ? "checked" : ""%> />
-            <input type="text" name="userlabel" class="form-control" value="<%=currentLabel.getLabel()%>" maxlength="255" size="32"/>
-          </div>
+            <input type="radio" name="labeltype" class="mr-1" value="user" <%=(currentLabel.getSource() == NodeLabelSource.USER) ? "checked" : ""%> />
+            <input type="text" name="userlabel" value="<%=currentLabel.getLabel()%>" maxlength="255" size="32"/>
 
           <br/>
           <br/>
 
-          <div class="form-group">
             <label>Automatic</label>
             <br/>
-            <input type="radio" name="labeltype" value="auto" <%=(currentLabel.getSource() != NodeLabelSource.USER) ? "checked" : ""%> />
+            <input type="radio" name="labeltype" class="mr-1" value="auto" <%=(currentLabel.getSource() != NodeLabelSource.USER) ? "checked" : ""%> />
             <%=autoLabel.getLabel()%> (<%=typeMap.get(autoLabel.getSource())%>)
-          </div>
 
           <br/>
           <br/>
 
           <div class="form-group">
-            <input type="submit" class="btn btn-default" value="Change Label" />
-            <input type="reset" class="btn btn-default" />
+            <input type="submit" class="btn btn-secondary" value="Change Label" />
+            <input type="reset" class="btn btn-secondary" />
           </div>
 
         </form>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

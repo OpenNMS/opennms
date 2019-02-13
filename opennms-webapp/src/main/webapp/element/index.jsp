@@ -64,225 +64,198 @@
 
 <div class="row">
   <div class="col-lg-6 col-md-8">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Search for Nodes</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Search for Nodes</span>
       </div>
-      <div class="panel-body">
-        <div class="row">
-          <div class="col-sm-4 col-xs-6">
-            <ul class="list-unstyled">
-              <li><a href="element/nodeList.htm">All nodes</a></li>
-              <li><a href="element/nodeList.htm?listInterfaces=true">All nodes and their interfaces</a></li>
-            </ul>
-          </div> <!-- column -->
-          <div class="col-sm-8 col-xs-6">
-            <%-- search by name --%>
-            <div class="row">
-              <div class="col-md-12">
-                <form role="form" class="form-inline pull-right" action="element/nodeList.htm" method="get">
-                  <input type="hidden" name="listInterfaces" value="false"/>
-                  <div class="form-group">
-                    <label for="byname_nodename">Name containing:</label>
-                    <input type="text" class="form-control" id="byname_nodename" name="nodename" />
+      <div class="card-body">
+        <div>
+          <ul class="list-unstyled">
+            <li><a href="element/nodeList.htm">All nodes</a></li>
+            <li><a href="element/nodeList.htm?listInterfaces=true">All nodes and their interfaces</a></li>
+          </ul>
+        </div>
+          <%-- Search by name --%>
+          <form role="form" class="form-group" action="element/nodeList.htm" method="get">
+              <input type="hidden" name="listInterfaces" value="false"/>
+              <label for="byname_nodename">Name containing</label>
+              <div class="input-group">
+                  <input type="text" class="form-control" id="byname_nodename" name="nodename"/>
+                  <div class="input-group-append">
+                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
                   </div>
-                  <button type="submit" class="btn btn-default">Search</button>
-                </form>
-              </div> <!-- column -->
-            </div> <!-- row -->
+              </div>
+          </form>
 
-            <%-- search by ip --%>
-            <div class="row top-buffer">
-              <div class="col-md-12">
-                <form role="form" class="form-inline pull-right" action="element/nodeList.htm" method="get">
-                  <input type="hidden" name="listInterfaces" value="false"/>
-                  <div class="form-group">
-                    <label for="byip_iplike">TCP/IP Address like:</label>
-                    <input type="text" class="form-control" id="byip_iplike" name="iplike" value="" placeholder="*.*.*.* or *:*:*:*:*:*:*:*:*" />
+          <%-- Search by ip --%>
+          <form role="form" class="form-group" action="element/nodeList.htm" method="get">
+              <input type="hidden" name="listInterfaces" value="false"/>
+              <label for="byip_iplike">TCP/IP Address like</label>
+              <div class="input-group">
+                  <input type="text" class="form-control" id="byip_iplike" name="iplike" value="" placeholder="*.*.*.* or *:*:*:*:*:*:*:*:*"/>
+                  <div class="input-group-append">
+                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
                   </div>
-                  <button type="submit" class="btn btn-default">Search</button>
-                </form>
-              </div> <!-- column -->
-            </div> <!-- row -->
+              </div>
+          </form>
 
-            <%-- search by mib2 param --%>
-            <div class="row top-buffer">
-              <div class="col-md-12">
-                <form role="form" class="form-inline pull-right" action="element/nodeList.htm" method="get">
-                   <input type="hidden" name="listInterfaces" value="false"/>
-                   <label class="hidden-sm hidden-md hidden-lg">System attribute:</label>
-                   <select class="form-control" name="mib2Parm">
-                     <option>sysDescription</option>
-                     <option>sysObjectId</option>
-                     <option>sysContact</option>
-                     <option>sysName</option>
-                     <option>sysLocation</option>
-                   </select>
-                   <select class="form-control" name="mib2ParmMatchType">
-                     <option>contains</option>
-                     <option>equals</option>
-                   </select>
-                   <label for="bymib2_mib2ParmValue" class="hidden-xs">:</label>
-                   <input type="text" class="form-control" name="mib2ParmValue" />
-                   <button type="submit" class="btn btn-default">Search</button>
-                 </form>
-              </div> <!-- column -->
-            </div> <!-- row -->
-
-            <%-- search by interface param --%>
-            <div class="row top-buffer">
-              <div class="col-md-12">
-                <form role="form" class="form-inline pull-right" action="element/nodeList.htm" method="get">
-                  <input type="hidden" name="listInterfaces" value="false"/>
-                  <label class="hidden-sm hidden-md hidden-lg">Interface attribute:</label>
-                  <select class="form-control" name="snmpParm">
-                    <option>ifAlias</option>
-                    <option>ifName</option>
-                    <option>ifDescr</option>
+          <%-- Search by mib2 param --%>
+          <form role="form" class="form-group" action="element/nodeList.htm" method="get">
+              <input type="hidden" name="listInterfaces" value="false"/>
+              <label class="hidden-sm hidden-md hidden-lg">System attribute</label>
+              <div class="input-group">
+                  <select class="custom-select" name="mib2Parm">
+                      <option>sysDescription</option>
+                      <option>sysObjectId</option>
+                      <option>sysContact</option>
+                      <option>sysName</option>
+                      <option>sysLocation</option>
                   </select>
-                  <select class="form-control" name="snmpParmMatchType">
-                    <option>contains</option>
-                    <option>equals</option>
+                  <select class="custom-select" name="mib2ParmMatchType">
+                      <option>contains</option>
+                      <option>equals</option>
                   </select>
-                  <label for="byif_snmpParmValue" class="hidden-xs">:</label>
-                  <input type="text" class="form-control" name="snmpParmValue" />
-                  <button type="submit" class="btn btn-default">Search</button>
-                </form>
-              </div> <!-- column -->
-            </div> <!-- row -->
+                  <input type="text" class="form-control" id="bymib2_mib2ParmValue" name="mib2ParmValue"/>
+                  <div class="input-group-append">
+                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                  </div>
+              </div>
+          </form>
 
-            <%-- search by location --%>
-            <div class="row top-buffer">
-              <div class="col-md-12">
-                <form role="form" class="form-inline pull-right" action="element/nodeList.htm" method="get">
-                  <input type="hidden" name="listInterfaces" value="false"/>
-                  <div class="form-group">
-                    <label for="bymonitoringLocation_monitoringLocation">Location:</label>
-                    <select class="form-control" id="bymonitoringLocation_monitoringLocation" name="monitoringLocation">
+        <%-- Search by interface param --%>
+          <form role="form" class="form-group" action="element/nodeList.htm" method="get">
+              <input type="hidden" name="listInterfaces" value="false"/>
+              <label class="hidden-sm hidden-md hidden-lg">Interface attribute</label>
+              <div class="input-group">
+                  <select class="custom-select" name="snmpParm">
+                      <option>ifAlias</option>
+                      <option>ifName</option>
+                      <option>ifDescr</option>
+                  </select>
+                  <select class="custom-select" name="snmpParmMatchType">
+                      <option>contains</option>
+                      <option>equals</option>
+                  </select>
+                  <input type="text" class="form-control" id="byif_snmpParmValue" name="snmpParmValue"/>
+                  <div class="input-group-append">
+                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                  </div>
+              </div>
+          </form>
+              
+        <%-- Search by location --%>
+          <form role="form" class="form-group" action="element/nodeList.htm" method="get">
+              <input type="hidden" name="listInterfaces" value="false"/>
+              <label for="bymonitoringLocation_monitoringLocation">Location:</label>
+              <div class="input-group">
+                  <select class="custom-select" id="bymonitoringLocation_monitoringLocation" name="monitoringLocation">
                       <% for (OnmsMonitoringLocation monitoringLocation : monitoringLocations) { %>
-                        <option value="<%=monitoringLocation.getLocationName()%>"><%=monitoringLocation.getLocationName()%></option>
+                      <option value="<%=monitoringLocation.getLocationName()%>"><%=monitoringLocation.getLocationName()%>
+                      </option>
                       <% } %>
-                    </select>
+                  </select>
+                  <div class="input-group-append">
+                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
                   </div>
-                  <button type="submit" class="btn btn-default">Search</button>
-                </form>
-              </div> <!-- column -->
-            </div> <!-- row -->
+              </div>
+          </form>
 
-              <%-- search by service --%>
-              <div class="row top-buffer">
-                <div class="col-md-12">
-                  <form role="form" class="form-inline pull-right" action="element/nodeList.htm" method="get">
-                    <input type="hidden" name="listInterfaces" value="false"/>
-                    <div class="form-group">
-                      <label for="byservice_service">Providing service:</label>
-                      <select class="form-control" id="byservice_service" name="service">
-                        <% for (String name : serviceNameList) { %>
-                        <option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
-                        <% } %>
-                      </select>
-                    </div>
-                    <button type="submit" class="btn btn-default">Search</button>
-                  </form>
-                </div> <!-- column -->
-              </div> <!-- row -->
-
-            <%-- search by MAC --%>
-            <div class="row top-buffer">
-              <div class="col-md-12">
-                <form role="form" class="form-inline pull-right" action="element/nodeList.htm" method="get">
-                  <input type="hidden" name="listInterfaces" value="false"/>
-                  <div class="form-group">
-                    <label for="bymac_maclike">MAC Address like:</label>
-                    <input class="form-control" type="text" name="maclike" />
+        <%-- Search by service --%>
+          <form role="form" class="form-group" action="element/nodeList.htm" method="get">
+              <input type="hidden" name="listInterfaces" value="false"/>
+              <label for="byservice_service">Providing service</label>
+              <div class="input-group">
+                  <select class="custom-select" id="byservice_service" name="service">
+                      <% for (String name : serviceNameList) { %>
+                      <option value="<%=serviceNameMap.get(name)%>"><%=name%>
+                      </option>
+                      <% } %>
+                  </select>
+                  <div class="input-group-append">
+                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
                   </div>
-                  <button type="submit" class="btn btn-default">Search</button>
-                </form>
-              </div> <!-- column -->
-            </div> <!-- row -->
+              </div>
+          </form>
 
-            <%-- search by foreign source --%>
-            <div class="row top-buffer">
-              <div class="col-md-12">
-                <form role="form" class="form-inline pull-right" action="element/nodeList.htm" method="get">
-                  <input type="hidden" name="listInterfaces" value="false"/>
-                  <div class="form-group">
-                    <label for="byfs_foreignSource">Foreign Source name like:</label>
-                    <input type="text" class="form-control" name="foreignSource"/>
+        <%-- Search by MAC --%>
+          <form role="form" class="form-group" action="element/nodeList.htm" method="get">
+              <input type="hidden" name="listInterfaces" value="false"/>
+              <label for="bymac_maclike">MAC Address like</label>
+              <div class="input-group">
+                  <input class="form-control" type="text" name="maclike"/>
+                  <div class="input-group-append">
+                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
                   </div>
-                  <button type="submit" class="btn btn-default">Search</button>
-                </form>
-              </div> <!-- column -->
-            </div> <!-- row -->
-          </div> <!-- column -->
-        </div> <!-- row -->
-      </div> <!-- panel-body -->
-    </div> <!-- panel -->
+              </div>
+          </form>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Search Asset Information</h3>
+        <%-- Search by foreign source --%>
+          <form role="form" class="form-group" action="element/nodeList.htm" method="get">
+              <input type="hidden" name="listInterfaces" value="false"/>
+              <label for="byfs_foreignSource">Foreign Source name like</label>
+              <div class="input-group">
+                  <input type="text" class="form-control" name="foreignSource"/>
+                  <div class="input-group-append">
+                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                  </div>
+              </div>
+          </form>
       </div>
-      <div class="panel-body">
-        <div class="row">
-          <div class="col-md-3">
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span>Search Asset Information</span>
+      </div>
+      <div class="card-body">
+        <div>
             <ul class="list-unstyled">
               <li><a href="asset/nodelist.jsp?column=_allNonEmpty">All nodes with asset info</a></li>
             </ul>
-          </div> <!-- column -->
-          <div class="col-md-9">
-            <%-- search by category --%>
-            <div class="row">
-              <div class="col-md-12">
-                <form role="form" class="form-inline pull-right" action="asset/nodelist.jsp" method="get">
-                  <input type="hidden" name="column" value="category" />
-                  <div class="form-group">
-                    <label for="bycat_value">Category:</label>
-                    <select id="bycat_value" class="form-control" name="searchvalue">
-                      <% for( int i=0; i < Asset.CATEGORIES.length; i++ ) { %>
-                        <option><%=Asset.CATEGORIES[i]%></option>
+        </div>
+
+        <form role="form" class="form-group" action="asset/nodelist.jsp" method="get">
+            <input type="hidden" name="column" value="category"/>
+            <label for="bycat_value">Category</label>
+            <div class="input-group">
+                <select id="bycat_value" class="form-control custom-select" name="searchvalue">
+                <% for (int i = 0; i < Asset.CATEGORIES.length; i++) { %>
+                    <option><%=Asset.CATEGORIES[i]%>
+                    </option>
+                <% } %>
+                </select>
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                </div>
+            </div>
+        </form>
+
+            <%-- Search by field --%>
+          <form role="form" class="form-group" action="asset/nodelist.jsp" method="get">
+              <label for="byfield_column">Field</label>
+              <div class="input-group">
+                  <select id="byfield_column" class="form-control custom-select" name="column">
+                      <% for (int i = 0; i < this.columns.length; i++) { %>
+                      <option value="<%=this.columns[i][1]%>"><%=this.columns[i][0]%>
+                      </option>
                       <% } %>
-                    </select>
+                  </select>
+                  <input type="text" class="form-control" id="byfield_value" name="searchvalue" placeholder="Containing text"/>
+                  <div class="input-group-append">
+                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
                   </div>
-
-                  <button type="submit" class="btn btn-default">Search</button>
-                </form>
-              </div> <!-- column -->
-            </div> <!-- row -->
-
-            <%-- search by field --%>
-            <div class="row top-buffer">
-              <div class="col-md-12">
-                <form role="form" class="form-inline pull-right" action="asset/nodelist.jsp" method="get">
-                  <div class="form-group">
-                    <label for="byfield_column">Field</label>
-                    <select id="byfield_column" class="form-control" name="column">
-                      <% for( int i=0; i < this.columns.length; i++ ) { %>
-                      <option value="<%=this.columns[i][1]%>"><%=this.columns[i][0]%></option>
-                      <% } %>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label for="byfield_value">Containing text:</label>
-                    <input type="text" class="form-control" id="byfield_value" name="searchvalue" />
-                  </div>
-
-                  <button type="submit" class="btn btn-default">Search</button>
-                </form>
-              </div> <!-- column -->
-            </div> <!-- row -->
-          </div> <!-- column -->
-        </div> <!-- row -->
-      </div> <!-- panel-body -->
+              </div>
+          </form>
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 
   <div class="col-lg-6 col-md-4">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Search Options</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Search Options</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
           <p>Searching by name is a case-insensitive, inclusive search. For example,
             searching on <em>serv</em> would find any of <em>serv</em>, <em>Service</em>, 
             <em>Reserved</em>, <em>NTSERV</em>, <em>UserVortex</em>, etc. The underscore
@@ -336,7 +309,7 @@
           <p>Also note that you can quickly search for all nodes which have asset
             information assigned by clicking the <em>List all nodes with asset info</em> link.
           </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

@@ -57,11 +57,11 @@
     <div class="col-md-12">
         <c:choose>
             <c:when test="${empty pagedListHolder.pageList}">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Database Report List</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <span>Database Report List</span>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <p>None found.</p>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
                     <element:pagedList pagedListHolder="${pagedListHolder}" pagedLink="${pagedLink}" />
 
                     <div class="spacer"><!--  --></div>
-                    <table class="table table-condensed table-bordered table-striped table-hover">
+                    <table class="table table-sm table-bordered table-striped table-hover">
                         <thead>
                         <tr>
                             <th>title</th>
@@ -125,7 +125,7 @@
                         </div>
                     </c:if>
                     <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
-                    <input class="btn btn-default" type="submit" value="delete checked reports"/>
+                    <input class="btn btn-secondary" type="submit" value="delete checked reports"/>
                     <% } %>
 
                 </form:form>

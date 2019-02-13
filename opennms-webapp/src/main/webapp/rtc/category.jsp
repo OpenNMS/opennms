@@ -125,21 +125,21 @@
 <div class="btn-group">
   <button 
     type="button" 
-    class="btn btn-default <%=(showoutages.equals("all") ? "active" : "")%>" 
+    class="btn btn-secondary <%=(showoutages.equals("all") ? "active" : "")%>"
     onclick="top.location = '<%= Util.calculateUrlBase( req , "rtc/category.jsp?category=" + Util.encode(category.getName()) + "&amp;showoutages=all") %>'"
   >
     All
   </button>
   <button 
     type="button" 
-    class="btn btn-default <%=(showoutages.equals("outages") ? "active" : "")%>"
+    class="btn btn-secondary <%=(showoutages.equals("outages") ? "active" : "")%>"
     onclick="top.location = '<%= Util.calculateUrlBase( req , "rtc/category.jsp?category=" + Util.encode(category.getName()) + "&amp;showoutages=outages") %>'"
   >
     With outages
   </button>
   <button 
     type="button" 
-    class="btn btn-default <%=(showoutages.equals("avail") ? "active" : "")%>"
+    class="btn btn-secondary <%=(showoutages.equals("avail") ? "active" : "")%>"
     onclick="top.location = '<%= Util.calculateUrlBase( req , "rtc/category.jsp?category=" + Util.encode(category.getName()) + "&amp;showoutages=avail") %>'"
   >
     With availability less than 100%
@@ -148,8 +148,8 @@
 
 <br/><br/>
 
-    <div class="panel panel-default fix-subpixel">
-      <table class="table table-condensed severity">
+    <div class="card fix-subpixel">
+      <table class="table table-sm severity">
         <thead>
         <tr>
           <th>Nodes</th>

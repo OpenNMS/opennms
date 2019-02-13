@@ -69,11 +69,11 @@
    }
 </script>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Surveillance Categories</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Surveillance Categories</span>
   </div>
-  <table class="table table-condensed">
+  <table class="table table-sm table-responsive">
     <tr>
       <th>Delete</th>
       <th>Edit</th>
@@ -81,18 +81,16 @@
     </tr>
     <c:forEach items="${categories}" var="category">
       <tr>
-        <td><a onclick="deleteCategory('${fn:escapeXml(category.name)}', ${category.id})" ><i class="fa fa-trash-o fa-2x"></i></a></td>
+        <td><a href="javascript:void(0);" onclick="deleteCategory('${fn:escapeXml(category.name)}', ${category.id})" ><i class="fa fa-trash-o fa-2x"></i></a></td>
         <td><a href="admin/categories.htm?categoryid=${category.id}&edit"><i class="fa fa-edit fa-2x"></i></a></td>
         <td><a href="admin/categories.htm?categoryid=${category.id}">${fn:escapeXml(category.name)}</a></td>
       </tr>
     </c:forEach>
     <tr>
-      <td></td>
-      <td></td>
-      <td>
-        <form role="form" class="form-inline" action="admin/categories.htm">
-          <input type="textfield" class="form-control" size="40" name="newCategoryName"/>
-          <input type="submit" class="btn btn-default" value="Add New Category"/>
+      <td colspan="3">
+        <form role="form" class="form-inline mt-4" action="admin/categories.htm">
+          <input type="textfield" class="form-control" size="40" name="newCategoryName" placeholder="Category name"/>
+          <button type="submit" class="btn btn-secondary ml-2"><i class="fa fa-plus"></i> Add New Category</button>
         </form>
     </tr>
   </table>

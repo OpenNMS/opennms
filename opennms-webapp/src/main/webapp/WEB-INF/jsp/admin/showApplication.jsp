@@ -45,11 +45,11 @@
 
 <div class="row">
   <div class="col-md-8">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Application: ${fn:escapeXml(model.application.name)}</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Application: ${fn:escapeXml(model.application.name)}</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
         Application '${fn:escapeXml(model.application.name)}' has ${fn:length(model.memberServices)} services.
         </p>
@@ -58,7 +58,7 @@
         <a href="admin/applications.htm?edit=edit&applicationid=${model.application.id}">Edit application</a>
         </p>
 
-        <table class="table table-condensed">
+        <table class="table table-sm">
           <tr>
             <th>Node</th>
             <th>Interface</th>
@@ -72,7 +72,7 @@
             </tr>
           </c:forEach>
         </table>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

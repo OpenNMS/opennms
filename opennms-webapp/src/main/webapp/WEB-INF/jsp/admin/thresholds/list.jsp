@@ -42,12 +42,12 @@
     <jsp:param name="breadcrumb" value="Threshold Groups" />
 </jsp:include>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Threshold Configuration</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Threshold Configuration</span>
   </div>
     <form method="post" name="allGroups">
-      <table class="table table-condensed table-striped table-hover">
+      <table class="table table-sm table-striped table-hover">
         <tr>
                 <th>Name</th>
                 <th>RRD Repository</th>
@@ -71,5 +71,5 @@ function doReload() {
     }
 }
 </script>
-<button type="button" class="btn btn-default" onclick="doReload()">Request a reload threshold packages configuration</button>
+<button type="button" class="btn btn-secondary mb-4" onclick="doReload()">Request a reload threshold packages configuration</button>
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

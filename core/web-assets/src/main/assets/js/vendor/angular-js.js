@@ -16,7 +16,7 @@ require('angular-loading-bar/build/loading-bar.css');
 /* Bootstrap UI */
 require('vendor/bootstrap-js');
 require('angular-bootstrap-checkbox');
-require('angular-ui-bootstrap');
+require('ui-bootstrap4'); // angular-ui-boostrap for bootstrap 4
 
 console.log('init: angular-js'); // eslint-disable-line no-console
 

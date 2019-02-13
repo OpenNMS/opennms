@@ -159,15 +159,15 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Choose the piece of the path that you want to edit from below. When
+    <div class="card">
+      <div class="card-header">
+        <span>Choose the piece of the path that you want to edit from below. When
           all editing is complete click the <i>Finish</i> button. No changes will
-          be permanent until the <i>Finish</i> button has been clicked.</h3>
+          be permanent until the <i>Finish</i> button has been clicked.</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <div class="form-group">
-          <label for="input_name" class="control-label col-sm-2">Name:</label>
+          <label for="input_name" class="col-form-label col-sm-2">Name:</label>
           <div class="col-sm-10">
             <% if (newPath.getName()==null) { %>
               <input type="text" class="form-control" name="name" value=""/>
@@ -177,21 +177,21 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="input_initialDelay" class="control-label col-sm-2">Initial Delay:</label>
+          <label for="input_initialDelay" class="col-form-label col-sm-2">Initial Delay:</label>
           <div class="col-sm-10">
             <%=buildDelaySelect(intervals, "initialDelay", newPath.getInitialDelay().orElse("0s"))%>
           </div>
         </div>
         <div class="form-group">
           <div class="col-sm-10 col-sm-offset-2">
-      <table class="table table-condensed table-borderless">
+      <table class="table table-sm table-borderless">
         <% for (int i = 0; i < targetLinks.size(); i++) { %>
          <tr>
            <td>
             <% if (i!=0) { %>
             <hr>
             <% } %>
-            <table class="table table-condensed table-borderless">
+            <table class="table table-sm table-borderless">
               <tr>
                 <td width="10%">
                   <b>
@@ -209,12 +209,12 @@
                   <%=buildTargetList(i, newPath, "escalate"+i)%>
                 </td>
                 <td width="5%" valign="top">
-                    <input type="button" class="btn btn-default" value="Edit" onclick="edit_path(<%=i-1%>)"/>
+                    <input type="button" class="btn btn-secondary" value="Edit" onclick="edit_path(<%=i-1%>)"/>
                     <br/>
                     &nbsp;
                     <br/>
                     <%if (i > 0) { %>
-                      <input type="button" class="btn btn-default" value="Remove" onclick="remove_path(<%=i-1%>)"/>
+                      <input type="button" class="btn btn-secondary" value="Remove" onclick="remove_path(<%=i-1%>)"/>
                     <% } else { %>
                       &nbsp;
                     <% } %>
@@ -225,18 +225,18 @@
         </tr>
         <tr>
           <td>
-            <input type="button" class="btn btn-default" value="Add Escalation" onclick="add_path(<%=i%>)"/>
+            <input type="button" class="btn btn-secondary" value="Add Escalation" onclick="add_path(<%=i%>)"/>
           </td>
         </tr>
         <% } %>
       </table>
            </div> <!-- column -->
          </div> <!-- form-group -->
-      </div> <!-- panel-body -->
-      <div class="panel-footer">
-        <input type="submit" class="btn btn-default" value="Finish"/>
-        <input type="button" class="btn btn-default" value="Cancel" onclick="cancel()"/>
-      </div> <!-- panel-footer -->
+      </div> <!-- card-body -->
+      <div class="card-footer">
+        <input type="submit" class="btn btn-secondary" value="Finish"/>
+        <input type="button" class="btn btn-secondary" value="Cancel" onclick="cancel()"/>
+      </div> <!-- card-footer -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
@@ -250,7 +250,7 @@
     public String buildDelaySelect(String[] intervals, String name, String currValue)
     {
           boolean gotCurrValue = false;
-          StringBuffer buffer = new StringBuffer("<select class=\"form-control\" id=\"input_" + name + "\" name=\"" + name  + "\">");
+          StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" id=\"input_" + name + "\" name=\"" + name  + "\">");
                     
           for (int i = 0; i < intervals.length; i++)
           {
@@ -275,7 +275,7 @@
     
     public String buildTargetList(int index, Path path, String name)
     {
-        StringBuffer buffer = new StringBuffer("<select class=\"form-control\" name=\""+name+"\" size=\"4\">");
+        StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" name=\""+name+"\" size=\"4\">");
         List<Target> targets = null;
         
         if (index == 0)

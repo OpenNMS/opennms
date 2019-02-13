@@ -131,11 +131,11 @@
     String timelineUrl = "/opennms/rest/timeline/html/" + String.valueOf(nodeId) + "/" + java.net.URLEncoder.encode(ipAddr, "UTF-8") + "/" + java.net.URLEncoder.encode(service.getServiceName(), "UTF-8") + "/" + timelineStart + "/" + timelineEnd + "/";
 %>
 
-<div id="availability-box" class="panel panel-default">
-<div class="panel-heading">
-    <h3 class="panel-title">Overall Availability</h3>
+<div id="availability-box" class="card">
+<div class="card-header">
+    <span>Overall Availability</span>
 </div>
-<table class="table table-condensed severity">
+<table class="table table-sm severity">
   <tr class="CellStatus">
     <td class="Cleared nobright" colspan="2"><%=ipAddr%></td>
     <td class="Cleared nobright"><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>

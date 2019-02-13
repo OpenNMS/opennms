@@ -78,36 +78,57 @@
         </p>
 
         <form name="assetForm" novalidate>
+          <div class="row">
+            <div class="col">
+              <div class="btn-toolbar mb-4" role="toolbar">
+                  <button type="button" class="btn btn-secondary mr-2" ng-click="save()" id="save-asset" ng-disabled="assetForm.$invalid">
+                    <i class="fa fa-save"></i> Save
+                  </button>
+                  <button type="button" class="btn btn-secondary" ng-click="reset()" id="reset-asset">
+                    <i class="fa fa-refresh"></i> Reset
+                  </button>
+              </div>
+            </div>
+          </div>
+
           <div class="row" ng-repeat="row in config.rows">
             <div ng-class="col.class" ng-repeat="col in row.columns">
-              <div class="panel panel-default" ng-repeat="panel in col.panels">
-                <div class="panel-heading">
-                  <h3 class="panel-title">{{ panel.title }}</h3>
+              <div class="card" ng-repeat="panel in col.panels">
+                <div class="card-header">
+                  <span>{{ panel.title }}</span>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                   <div class="form-horizontal" ng-repeat="field in panel.fields">
-                    <div class="form-group" ng-class="{ 'has-error': assetForm[field.model].$invalid && !assetForm[field.model].$pristine, 'has-warning': assetForm[field.model].$dirty }">
-                      <label class="control-label col-md-3" for="{{ field.model }}" uib-tooltip="{{ field.tooltip  }}">{{ field.label }}</label>
+                    <div class="form-group">
+                      <label class="col-form-label col-md-3" for="{{ field.model }}" uib-tooltip="{{ field.tooltip  }}">{{ field.label }}
+                        <span class="badge badge-secondary ml-2" ng-show="(assetForm[field.model].$dirty && !(assetForm[field.model].$invalid && !assetForm[field.model].$pristine))">modified</span>
+                      </label>
                       <div class="col-md-9">
                         <%-- Static/ReadOnly fields --%>
-                        <p class="form-control-static" ng-if="field.type=='static'">{{ asset[field.model] }}</p>
+                        <p class="form-control-plaintext" ng-if="field.type=='static'">{{ asset[field.model] }}</p>
                         <%-- Standard fields with typeahead suggestions --%>
                         <input type="text" class="form-control" id="{{ field.model }}" name="{{ field.model }}" ng-model="asset[field.model]" ng-if="field.type=='text'"
                           typeahead-editable="true" typeahead-min-length="0" ng-pattern="field.pattern"
-                          uib-typeahead="suggestion for suggestion in getSuggestions(field.model) | filter:$viewValue"></input>
+                          uib-typeahead="suggestion for suggestion in getSuggestions(field.model) | filter:$viewValue"
+                          ng-class="{ 'is-invalid': assetForm[field.model].$invalid && !assetForm[field.model].$pristine }">
                         <%-- Password fields --%>
-                        <input type="password" class="form-control" ng-model="asset[field.model]" ng-if="field.type=='password'"></input>
+                        <input type="password" class="form-control" ng-model="asset[field.model]" ng-if="field.type=='password'"
+                               ng-class="{ 'is-invalid': assetForm[field.model].$invalid && !assetForm[field.model].$pristine}">
                         <%-- Textarea fields --%>
-                        <textarea class="form-control" style="height: 20em;" ng-model="asset[field.model]" ng-if="field.type=='textarea'"></textarea>
+                        <textarea class="form-control" style="height: 20em;" ng-model="asset[field.model]" ng-if="field.type=='textarea'"
+                                  ng-class="{ 'is-invalid': assetForm[field.model].$invalid && !assetForm[field.model].$pristine}"></textarea>
                         <%-- Date fields with Popup Picker --%>
-                        <p class="input-group" ng-if="field.type=='date'">
-                          <input type="text" class="form-control" uib-datepicker-popup="{{ dateFormat }}" is-open="field.open" ng-model="asset[field.model]" placeholder="Specify date using this format: {{ dateFormat }}" />
-                          <span class="input-group-btn">
-                            <button type="button" class="btn btn-default" ng-click="field.open=true"><i class="glyphicon glyphicon-calendar"></i></button>
-                          </span>
-                        </p>
+                        <div class="input-group" ng-if="field.type=='date'">
+                          <input type="text" class="form-control" uib-datepicker-popup="{{ dateFormat }}" is-open="field.open"
+                                 ng-model="asset[field.model]" placeholder="Specify date using this format: {{ dateFormat }}"
+                                 ng-class="{ 'is-invalid': assetForm[field.model].$invalid && !assetForm[field.model].$pristine}" />
+                          <div class="input-group-append">
+                            <button type="button" class="btn btn-secondary" ng-click="field.open=true"><i class="fa fa-calendar"></i></button>
+                          </div>
+                        </div>
                         <%-- List/Select fields --%>
-                        <select class="form-control" ng-model="asset[field.model]" ng-if="field.type=='select'">
+                        <select class="form-control custom-select" ng-model="asset[field.model]" ng-if="field.type=='select'"
+                                ng-class="{ 'is-invalid': assetForm[field.model].$invalid && !assetForm[field.model].$pristine}">
                           <option ng-repeat="value in field.options">{{value}}</option>
                         </select>
                       </div>
@@ -117,18 +138,7 @@
               </div>
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="btn-group">
-                <button type="button" class="btn btn-default" ng-click="save()" id="save-asset" ng-disabled="assetForm.$invalid">Save Asset Record&nbsp;&nbsp;&nbsp;
-                  <span class="glyphicon glyphicon-save"><span>
-                </button>
-                <button type="button" class="btn btn-default" ng-click="reset()" id="reset-asset">Reset&nbsp;&nbsp;&nbsp;
-                  <span class="glyphicon glyphicon-refresh"><span>
-                </button>
-              </div>
-            </div>
-          </div>
+
         </form>
       </div>
 <%

@@ -41,11 +41,11 @@
     <jsp:param name="breadcrumb" value="${report.type}" />
 </jsp:include>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Plugins</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Plugins</span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <p>Choose which plugins to enable:</p>
     <c:forEach items="${report.plugins}" var="plugin">
      <c:out value="using plugin ${plugin.name}" />
