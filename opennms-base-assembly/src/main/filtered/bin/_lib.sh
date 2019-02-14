@@ -3,7 +3,7 @@
 __onms_is_array() {
 	__onms_is_array_name="$1"; shift
 	__onms_is_array_declaration="$(declare -p "${__onms_is_array_name}" 2>/dev/null)"
-	[ "$(echo "${__onms_is_array_declaration}" | grep -c '^declare -a')" -gt 0 ];
+	echo "${__onms_is_array_declaration}" | grep -q '^declare -a'
 }
 
 __onms_convert_array() {
