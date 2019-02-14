@@ -31,7 +31,7 @@ runCommand() {
 	touch "$__tmpfile.tmp"
 
 	echo "running:" "$@" >>"$__tmpfile"
-	"$@" >"$__tmpfile.tmp" 2>&1
+	HOME="${__outputdir}" "$@" >"$__tmpfile.tmp" 2>&1
 	ret=$?
 	cat "$__tmpfile.tmp" >> "$__tmpfile"
 	cat "$__tmpfile.tmp"
