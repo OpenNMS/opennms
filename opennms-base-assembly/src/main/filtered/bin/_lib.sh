@@ -26,6 +26,10 @@ __onms_convert_array() {
 
 __onms_read_conf() {
 	__onms_read_conf_file="$1"; shift
+  if [ -z "$TMPDIR" ]; then
+    TMPDIR="/tmp/opennms.$$"
+    mkdir "$TMPDIR"
+  fi
 	__onms_read_conf_tmp_file="$(mktemp "$TMPDIR/opennms-conf.XXXX")"
   if [ -f "${__onms_read_conf_file}" ]; then
     cp "${__onms_read_conf_file}" "${__onms_read_conf_tmp_file}"
