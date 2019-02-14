@@ -16,7 +16,7 @@ Different parsers can be used to convert the syslog message fields into {opennms
 [options="header, autowidth"]
 |===
 | Parser  | Description
-| `org.opennms.netmgt.syslogd.CustomSyslogParser`    | Default parser that uses a regex statement to parse the syslog header.
+| `org.opennms.netmgt.syslogd.CustomSyslogParser`    | Parser that uses a regex statement to parse the syslog header.
 | `org.opennms.netmgt.syslogd.RadixTreeSyslogParser` | Parser that uses an internal list of _grok_-style statements to parse the syslog header.
 | `org.opennms.netmgt.syslogd.SyslogNGParser`        | Parser that strictly parses messages in the default pattern of syslog-ng.
 | `org.opennms.netmgt.syslogd.Rfc5424SyslogParser`   | Parser that strictly parses the RFC 5424 format for syslog messages.
