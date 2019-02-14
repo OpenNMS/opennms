@@ -155,7 +155,10 @@ testJessieJavaConf() {
 	cp "opennms.jessie.java.conf" "$INSTPREFIX/etc/opennms.conf"
 	output="$(runOpennms -f start 2>&1)"
 	assertContains "$output" "'-XX:+UseG1GC'"
-	assertContains "$output" "'-Xloggc"
+	assertContains "$output" "'-Xloggc:/opt/opennms/logs/gc.log'"
+	assertContains "$output" "'-XX:+UseGCLogFileRotation'"
+	assertContains "$output" "'-XX:NumberOfGCLogFiles=4'"
+	assertContains "$output" "'-XX:GCLogFileSize=20M'"
 	assertContains "$output" "'-Xmx8196m'"
 }
 

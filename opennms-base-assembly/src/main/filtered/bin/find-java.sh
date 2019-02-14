@@ -1,7 +1,13 @@
 #!/bin/bash
 
+MYDIR="$(dirname "$0")"
+MYDIR="$(cd "$MYDIR" || exit 1; pwd)"
+
+# shellcheck disable=SC1090
+. "${MYDIR}/_lib.sh"
+
 # if $JAVA_SEARCH_DIRS is already set, make sure it is treated as an array
-declare -p JAVA_SEARCH_DIRS 2>/dev/null | grep -q '^declare \-a' || IFS=" " read -r -a JAVA_SEARCH_DIRS <<< "${JAVA_SEARCH_DIRS[@]}"
+__onms_convert_to_array JAVA_SEARCH_DIRS
 
 compare_versions() {
 	a="$(printf '%s.0.0.0' "${1}" | sed -e 's,^1\.\([123456789]\),\1.0,' -e 's,_,.,g')"

@@ -101,7 +101,7 @@ testIsArrayArrayWithSpaces() {
 
 testConvertArrayUnset() {
   unset TEST_FOO
-  __onms_convert_array TEST_FOO
+  __onms_convert_to_array TEST_FOO
   assertIsArray TEST_FOO
   assertArrayLengthEquals TEST_FOO 0
 }
@@ -109,7 +109,7 @@ testConvertArrayUnset() {
 testConvertArrayEmptyScalar() {
   # shellcheck disable=2178
   TEST_FOO=""
-  __onms_convert_array TEST_FOO
+  __onms_convert_to_array TEST_FOO
   assertIsArray TEST_FOO
   assertArrayLengthEquals TEST_FOO 0
   assertEquals "" "${TEST_FOO[0]}"
@@ -118,7 +118,7 @@ testConvertArrayEmptyScalar() {
 testConvertArrayScalarOneVar() {
   # shellcheck disable=2178
   TEST_FOO="bar"
-  __onms_convert_array TEST_FOO
+  __onms_convert_to_array TEST_FOO
   assertIsArray TEST_FOO
   assertArrayLengthEquals TEST_FOO 1
   assertEquals "bar" "${TEST_FOO[0]}"
@@ -127,7 +127,7 @@ testConvertArrayScalarOneVar() {
 testConvertArrayScalarMultiVar() {
   # shellcheck disable=2178
   TEST_FOO="bar baz"
-  __onms_convert_array TEST_FOO
+  __onms_convert_to_array TEST_FOO
   assertIsArray TEST_FOO
   assertArrayLengthEquals TEST_FOO 2
   assertEquals "bar" "${TEST_FOO[0]}"
@@ -136,14 +136,14 @@ testConvertArrayScalarMultiVar() {
 
 testConvertArrayFromEmptyArray() {
   TEST_FOO=()
-  __onms_convert_array TEST_FOO
+  __onms_convert_to_array TEST_FOO
   assertIsArray TEST_FOO
   assertArrayLengthEquals TEST_FOO 0
 }
 
 testConvertArrayFromArrayWithOneEntry() {
   TEST_FOO=("bar")
-  __onms_convert_array TEST_FOO
+  __onms_convert_to_array TEST_FOO
   assertIsArray TEST_FOO
   assertArrayLengthEquals TEST_FOO 1
   assertEquals "bar" "${TEST_FOO[0]}"
@@ -151,7 +151,7 @@ testConvertArrayFromArrayWithOneEntry() {
 
 testConvertArrayFromArrayWithTwoEntries() {
   TEST_FOO=("bar" "baz")
-  __onms_convert_array TEST_FOO
+  __onms_convert_to_array TEST_FOO
   assertIsArray TEST_FOO
   assertArrayLengthEquals TEST_FOO 2
   assertEquals "bar" "${TEST_FOO[0]}"
@@ -160,7 +160,7 @@ testConvertArrayFromArrayWithTwoEntries() {
 
 testConvertArrayFromArrayWithTwoAndSpaces() {
   TEST_FOO=("bar" "baz zoom")
-  __onms_convert_array TEST_FOO
+  __onms_convert_to_array TEST_FOO
   assertIsArray TEST_FOO
   assertArrayLengthEquals TEST_FOO 2
   assertEquals "bar" "${TEST_FOO[0]}"

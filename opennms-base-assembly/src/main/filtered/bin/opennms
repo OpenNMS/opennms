@@ -128,7 +128,7 @@ if [ -f "${HOME}/.opennms-dev/opennms.conf" ]; then
 fi
 
 for __overrideable in "${OVERRIDEABLE_ARRAYS[@]}"; do
-	__onms_convert_array "${__overrideable}"
+	__onms_convert_to_array "${__overrideable}"
 done
 
 CONTROLLER_OPTIONS=("-Dopennms.home=$OPENNMS_HOME")
