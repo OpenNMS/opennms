@@ -171,13 +171,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.osgi.features.nrtg</groupId>
-      <artifactId>nrtg</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>vaadin</artifactId>
       <version>${project.version}</version>
@@ -192,18 +185,14 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-        <groupId>org.opennms.osgi.features.topology</groupId>
-        <artifactId>opennms-topology-runtime-pathoutage</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-        <scope>provided</scope>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>org.opennms.features.topology.plugins.topo.pathoutage</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>opennms-topology-runtime-asset</artifactId>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>asset</artifactId>
       <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.geolocation</groupId>
@@ -213,32 +202,24 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>opennms-topology-runtime-browsers</artifactId>
+      <groupId>org.opennms.features.topology.plugins</groupId>
+      <artifactId>org.opennms.features.topology.plugins.browsers</artifactId>
       <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>opennms-topology-runtime-linkd</artifactId>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>org.opennms.features.topology.plugins.topo.linkd</artifactId>
       <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>opennms-topology-runtime-application</artifactId>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>org.opennms.features.topology.plugins.topo.application</artifactId>
       <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>opennms-topology-runtime-bsm</artifactId>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>org.opennms.features.topology.plugins.topo.bsm</artifactId>
       <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.osgi.features.topology</groupId>
@@ -248,11 +229,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>opennms-topology-runtime-vmware</artifactId>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>org.opennms.features.topology.plugins.topo.vmware</artifactId>
       <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology</groupId>

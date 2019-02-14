@@ -2095,10 +2095,9 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.osgi.features.topology</groupId>
-        <artifactId>opennms-topology-api</artifactId>
+        <groupId>org.opennms.features.topology</groupId>
+        <artifactId>org.opennms.features.topology.api</artifactId>
         <version>${project.version}</version>
-        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
