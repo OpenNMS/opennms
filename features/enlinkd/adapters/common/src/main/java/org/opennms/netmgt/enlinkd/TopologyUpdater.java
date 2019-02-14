@@ -83,6 +83,7 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
     private OnmsTopology m_topology;
     private boolean m_runned = false;
     private boolean m_registered = false;
+    private boolean m_forceRun = false;
 
     public TopologyUpdater(
             TopologyService topologyService,
@@ -153,7 +154,8 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
                     return;
                 }
             }
-        } else if (m_topologyService.parseUpdates()) {
+        } else if (m_topologyService.parseUpdates() || m_forceRun) {
+            m_forceRun = false;
             m_topologyService.refresh();
             LOG.debug("run: updates {}, recalculating topology ", getName());
             OnmsTopology topo;
@@ -248,6 +250,14 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
 
     public void setRunned(boolean runned) {
         m_runned = runned;
+    }
+
+    public boolean isForceRun() {
+        return m_forceRun;
+    }
+
+    public void forceRun() {
+        m_forceRun = true;
     }
                 
 }
