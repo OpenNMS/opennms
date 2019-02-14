@@ -248,6 +248,7 @@
   </changeSet>
 
   <changeSet author="cgorantla" id="24.0.0-add-mapped-time-to-alarm-situations">
+    <validCheckSum>3:e01c4288c19444d61c6bd149ecf6bde7</validCheckSum>
     <createTable tableName="alarm_situations">
       <column name="id" type="integer">
         <constraints primaryKey="true" nullable="false" />
@@ -258,7 +259,7 @@
       <column name="related_alarm_id" type="integer">
         <constraints nullable="false" />
       </column>
-      <column name="mapped_time" type="DATETIME">
+      <column name="mapped_time" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
     </createTable>
@@ -312,6 +313,32 @@
     <addForeignKeyConstraint constraintName="fk_bsm_service_applications_applicationid"
                              baseTableName="bsm_service_applications" baseColumnNames="applicationid"
                              referencedTableName="applications" referencedColumnNames="id" onDelete="CASCADE"/>
+  </changeSet>
+
+  <changeSet author="fooker" id="24.0.0-classification-add-omnidirectional">
+    <addColumn tableName="classification_rules">
+      <column name="omnidirectional"
+              type="BOOLEAN"
+              defaultValue="FALSE">
+        <constraints nullable="false"></constraints>
+      </column>
+    </addColumn>
+    <sql>
+        UPDATE classification_rules
+        SET omnidirectional = TRUE
+        WHERE groupid = 1;
+    </sql>
+  </changeSet>
+
+  <changeSet author="jwhite" id="24.0.0-create-refid-index-on-acks">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="acks"/>
+    </preConditions>
+
+    <!-- Create index-->
+    <sql>
+      CREATE INDEX ack_refid_idx ON acks USING btree (refid);
+    </sql>
   </changeSet>
 
 </databaseChangeLog>

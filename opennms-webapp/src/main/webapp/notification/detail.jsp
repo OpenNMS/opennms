@@ -89,16 +89,16 @@
   <jsp:param name="breadcrumb" value='<%="Notice " + notice.getId()%>' />
 </jsp:include>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-<h3 class="panel-title">Notice <%=notice.getId()%> 
+<div class="card">
+  <div class="card-header">
+<span>Notice <%=notice.getId()%>
   <% if ( NoticeFactory.canDisplayEvent(notice.getEventId()) ) { %>
     from <a href="event/detail.jsp?id=<%=notice.getEventId()%>">Event <%=notice.getEventId()%></a>
   <% } %>
-</h3>
+</span>
   </div>
 
-  <table class="table table-condensed severity">
+  <table class="table table-sm severity">
   <tr class="severity-<%=eventSeverity.toLowerCase()%>">
     <th class="col-md-1">Notification&nbsp;Time</th>
     <td class="col-md-2"><onms:datetime date="<%=notice.getTimeSent()%>" /></td>
@@ -201,32 +201,32 @@
 </div>
 
 <% if (notice.getNumericMessage() != null && !"".equals(notice.getNumericMessage().trim())) { %>
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Numeric Message</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Numeric Message</span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <%=notice.getNumericMessage()%>
   </div>
 </div>
 <% } %>
 
 <% if (notice.getTextMessage() != null && !"".equals(notice.getTextMessage().trim())) { %>
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Text Message</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Text Message</span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <pre><%=notice.getTextMessage()%></pre>
   </div>
 </div>
 <% } %>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Users Notified</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Users Notified</span>
   </div>
-  <table class="table table-condensed severity">
+  <table class="table table-sm severity">
     <tr>
       <th class="col-md-3">Sent To</th>
       <th class="col-md-3">Sent At</th>
@@ -271,11 +271,11 @@
 </div>
 
 <% if (notice.getTimeReplied() == null) { %>
-  <form class="form-inline" method="post" name="acknowledge" action="notification/acknowledge">
+  <form class="mb-3" method="post" name="acknowledge" action="notification/acknowledge">
     <input type="hidden" name="curUser" value="<%=request.getRemoteUser()%>">
     <input type="hidden" name="notices" value="<%=notice.getId()%>"/>
     <input type="hidden" name="redirect" value="<%= request.getServletPath() + "?" + request.getQueryString()%>" />
-    <input class="form-control" type="submit" value="Acknowledge" />
+    <input type="submit" class="btn btn-secondary" value="Acknowledge" />
   </form>
 <% } %>
 

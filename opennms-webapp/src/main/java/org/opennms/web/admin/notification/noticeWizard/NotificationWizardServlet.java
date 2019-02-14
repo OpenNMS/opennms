@@ -51,6 +51,7 @@ import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Parameter;
+import org.opennms.netmgt.config.notifications.Rule;
 import org.opennms.netmgt.config.notifications.Varbind;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
@@ -184,7 +185,7 @@ public class NotificationWizardServlet extends HttpServlet {
         newNotice.setUei(request.getParameter("uei"));
 
         final Map<String, Object> params = new HashMap<String, Object>();
-        params.put("newRule", toSingleQuote(newNotice.getRule()));
+        params.put("newRule", toSingleQuote(newNotice.getRule().getContent()));
 
         return SOURCE_PAGE_RULE + makeQueryString(params);
     }
@@ -204,7 +205,9 @@ public class NotificationWizardServlet extends HttpServlet {
             return SOURCE_PAGE_RULE + makeQueryString(params);
         } else {
             final Notification newNotice = (Notification) user.getAttribute("newNotice");
-            newNotice.setRule(request.getParameter("newRule"));
+            Rule rule = new Rule();
+            rule.setContent(request.getParameter("newRule"));
+            newNotice.setRule(rule);
             return SOURCE_PAGE_PATH;
         }
     }
@@ -270,7 +273,9 @@ public class NotificationWizardServlet extends HttpServlet {
         // save the rule if we are bypassing validation
         if (redirectPage.equals(SOURCE_PAGE_PATH)) {
             final Notification newNotice = (Notification) user.getAttribute("newNotice");
-            newNotice.setRule(rule.toString());
+            Rule filterRule = new Rule();
+            filterRule.setContent(rule.toString());
+            newNotice.setRule(filterRule);
         }
 
         return redirectPage + makeQueryString(params);
@@ -456,7 +461,7 @@ public class NotificationWizardServlet extends HttpServlet {
         newNotice.setUei(uei);
 
         final Map<String, Object> params = new HashMap<String, Object>();
-        params.put("newRule", toSingleQuote(newNotice.getRule()));
+        params.put("newRule", toSingleQuote(newNotice.getRule().getContent()));
         user.setAttribute("newNotice", newNotice);
 
         return SOURCE_PAGE_RULE + makeQueryString(params);  
@@ -464,7 +469,9 @@ public class NotificationWizardServlet extends HttpServlet {
 
     private Notification buildNewNotification(final String status) {
         final Notification notice = new Notification();
-        notice.setRule("IPADDR IPLIKE *.*.*.*");
+        Rule rule = new Rule();
+        rule.setContent("IPADDR IPLIKE *.*.*.*");
+        notice.setRule(rule);
         notice.setNumericMessage("111-%noticeid%");
         notice.setSubject("Notice #%noticeid%");
         notice.setStatus(status);

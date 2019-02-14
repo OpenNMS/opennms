@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,6 +32,8 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
@@ -39,7 +41,6 @@ import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.api.Filter;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
 
@@ -62,8 +63,7 @@ public class FetchResultsTest {
         table.put(2L, "y", 99d);
 
         // Create the fetch results using the table
-        Map<String, Object> constants = Maps.newHashMap();
-        FetchResults results = new FetchResults(table, 300, constants);
+        FetchResults results = new FetchResults(table, 300, new HashMap<String,Object>(), null);
 
         // Verify
         Map<String, double[]> columns = results.getColumns();

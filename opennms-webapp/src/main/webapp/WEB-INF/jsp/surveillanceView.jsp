@@ -42,12 +42,12 @@
 
 <jsp:include page="/includes/surveillance-key.jsp" flush="false" />
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Surveillance View: ${webTable.title}</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Surveillance View: ${webTable.title}</span>
   </div>
 
-  <table class="table table-condensed table-bordered severity">
+  <table class="table table-sm table-bordered severity">
     <tr>
     <c:forEach items="${webTable.columnHeaders}" var="headerCell">
       <th class="${headerCell.styleClass}">

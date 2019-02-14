@@ -446,7 +446,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
                     final List<WebElement> spanElements = m_driver.findElements(By.xpath("//ul[@id='tabs']//li/a[@data-name='" + name + "']/span"));
                     final int count = spanElements.isEmpty() ? 0 : Integer.parseInt(spanElements.get(0).getText());
                     final String label = spanElements.isEmpty() ? eachTab.getText() : eachTab.getText().replace(spanElements.get(0).getText(), "");
-                    boolean isSelected = eachTab.findElement(By.xpath("..")).getAttribute("class").contains("active");
+                    boolean isSelected = eachTab.getAttribute("class").contains("active");
                     return new Tab(this, name.trim(), label.trim(), count, isSelected);
                 }).collect(Collectors.toList());
             });
@@ -844,7 +844,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
 
         public void navigateToPage(int page) {
             // Navigate to next page
-            execute(() -> findElementByXpath("//li[contains(@class, 'pagination-page')]/a[contains(text(), '" + page + "')]")).click();
+            execute(() -> findElementByXpath("//li[contains(@class, 'page-item')]/a[contains(text(), '" + page + "')]")).click();
 
             // The next page is active even if the data is not yet loaded, waiting reduced the likelihood of returning before
             // the page was refreshed. See HZN-1289.
@@ -857,11 +857,13 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         }
 
         public void deleteAll() {
-            final WebElement deleteAllButton = execute(() -> findElementById("action.deleteAll"));
-            if (deleteAllButton.isDisplayed() && deleteAllButton.isEnabled()) {
-                deleteAllButton.click();
-                execute(() -> findElementByXpath("//div[contains(@class,'popover')]//button[contains(text(), 'Yes')]")).click();
-                sleep(DEFAULT_WAIT_TIME);
+            if (!getRules().isEmpty()) {
+                final WebElement deleteAllButton = execute(() -> findElementById("action.deleteAll"));
+                if (deleteAllButton.isDisplayed() && deleteAllButton.isEnabled()) {
+                    deleteAllButton.click();
+                    execute(() -> findElementByXpath("//div[contains(@class,'popover')]//button[contains(text(), 'Yes')]")).click();
+                    sleep(DEFAULT_WAIT_TIME);
+                }
             }
         }
 

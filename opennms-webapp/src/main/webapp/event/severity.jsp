@@ -29,7 +29,7 @@
 
 --%>
 
-<table class="table table-condensed severity" style="margin-bottom: 0px;">
+<table class="table table-sm severity" style="margin-bottom: 0px;">
   <tr class="severity-critical">
     <td class="bright"><strong>Critical</strong></td>
     <td>This event means numerous devices on the network are affected by the event. Everyone who can should stop what they are doing and focus on fixing the problem.</td>

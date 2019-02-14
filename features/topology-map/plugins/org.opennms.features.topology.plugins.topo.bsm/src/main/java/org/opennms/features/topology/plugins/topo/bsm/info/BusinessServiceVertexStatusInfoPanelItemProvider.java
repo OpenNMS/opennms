@@ -138,11 +138,11 @@ public class BusinessServiceVertexStatusInfoPanelItemProvider extends VertexInfo
 
             rootLayout.addComponent(createStatusLabel(childVertex.getLabel(),
                                                       edgeStatus,
-                                                      String.format("%s &times; %d <i class=\"pull-right glyphicon %s\"></i>",
+                                                      String.format("%s &times; %d <i class=\"pull-right fa %s\"></i>",
                                                                     edgeStatus.getLabel(),
                                                                     edge.getWeight(),
                                                                     impactingVertices.contains(graph.getVertexByEdgeId(edge.getId()))
-                                                                    ? "glyphicon-flash"
+                                                                    ? "fa-bolt"
                                                                     : "")));
         }
 
@@ -180,7 +180,7 @@ public class BusinessServiceVertexStatusInfoPanelItemProvider extends VertexInfo
         if (graph.getOutEdges(graph.getVertexByBusinessServiceId(businessService.getId())).size() <= MAX_EDGES_FOR_IMPACTING) {
             return stateMachine.calculateImpacting(businessService)
                     .stream()
-                    .map(graph::getDest)
+                    .map(edge -> graph.getDest(edge)) // DO NOT CONVERT to lamda method reference. See NMS-10529
                     .collect(Collectors.toSet());
         }
         LOG.warn("Try to calculate impacting vertices for more than {} edges. This is currently not supported. See http://http://issues.opennms.org/browse/NMS-8527.", MAX_EDGES_FOR_IMPACTING);

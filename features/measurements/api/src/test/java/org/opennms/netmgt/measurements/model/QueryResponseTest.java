@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,12 +29,15 @@
 package org.opennms.netmgt.measurements.model;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.runners.Parameterized;
 import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.xml.JaxbUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -59,6 +62,13 @@ public class QueryResponseTest extends XmlTestNoCastor<QueryResponse> {
         columns.put("y", new double[]{2.0d, 2.1d});
         response.setColumns(columns);
 
+        // add them out of order, but they should always end up ordered by source label
+        final List<QueryResource> resources = new ArrayList<>();
+        resources.add(new QueryResource("idY", "parentY", "labelY", "nameY", new QueryNode(2, "test", "nodeY", "nodeY")));
+        resources.add(new QueryResource("idX", null, "labelX", "nameX",  new QueryNode(1, "test", "nodeX", "nodeX")));
+        response.setMetadata(new QueryMetadata(resources));
+
+        System.err.println(JaxbUtils.marshal(response));
         return Arrays.asList(new Object[][]{{
                 response,
                 "<query-response step=\"300\" start=\"1000\" end=\"2000\">" +
@@ -72,6 +82,16 @@ public class QueryResponseTest extends XmlTestNoCastor<QueryResponse> {
                     "</columns>" +
                     "<labels>x</labels>" +
                     "<labels>y</labels>" +
+                    "<metadata>" +
+                       "<resources>" +
+                          "<resource id=\"idY\" parent-id=\"parentY\" label=\"labelY\" name=\"nameY\" node-id=\"2\" />" +
+                          "<resource id=\"idX\" label=\"labelX\" name=\"nameX\" node-id=\"1\" />" +
+                       "</resources>" +
+                       "<nodes>" +
+                          "<node id=\"1\" foreign-source=\"test\" foreign-id=\"nodeX\" label=\"nodeX\" />" +
+                          "<node id=\"2\" foreign-source=\"test\" foreign-id=\"nodeY\" label=\"nodeY\" />" +
+                       "</nodes>" +
+                    "</metadata>" +
                     "<timestamps>1</timestamps>" +
                     "<timestamps>2</timestamps>" +
                 "</query-response>",

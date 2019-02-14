@@ -54,29 +54,25 @@
       Set<Integer> nodeList = pathOutageManager.getNodesInPath(critIp, critSvc);
 %>
   
-<div class="panel panel-default fix-subpixel">
-    <div class="panel-heading">
-        <h3 class="panel-title">Path Outage Node List</h3>
+<div class="card fix-subpixel">
+    <div class="card-header">
+        <span>Path Outage Node List</span>
     </div>
-    <table class="table table-condensed severity">
-          <thead class="dark">
+    <table class="table table-sm severity">
           <tr>
           <th>Critical Path</th>
           <th>Status</th>
           </tr>
-          </thead>
 
           <tr>
           <td><%= critIp %></td>
           <td class="bright severity-<%= pthData[3].toLowerCase() %>"><%= critSvc %></td>
           </tr>
 
-          <thead class="dark">
           <tr>
           <th>Node</th>
           <th>Status</th>
           </tr>
-          </thead>
 
           <% for (Integer nodeid : nodeList) {
               String labelColor[] = PathOutageManagerDaoImpl.getInstance().getLabelAndStatus(nodeid.toString(), null); %>

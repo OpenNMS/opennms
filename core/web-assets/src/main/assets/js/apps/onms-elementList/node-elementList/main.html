@@ -19,10 +19,10 @@ Use $window.location.href = "/element/node.jsp?node=" + items[0].id;
 					<label>Add Filter:</label>
 					<form class="form-inline" onSubmit="$('#filterModal').modal('hide')" ng-submit="addSearchClause(clause)">
 						<div class="form-group">
-						<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'id'" ng-change="updateClauseValue(clause.property)">
+						<select class="form-control custom-select" ng-model="clause.property" ng-init="clause.property = 'id'" ng-change="updateClauseValue(clause.property)">
 							<option ng-repeat="property in searchProperties" value="{{::property.id}}">{{::property.name}}</option>
 						</select>
-						<select class="form-control" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
+						<select class="form-control ml-2 custom-select" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
 							<option value="EQ">=</option>
 							<option value="NE">!=</option>
 							<option value="LT">&lt;</option>
@@ -30,7 +30,7 @@ Use $window.location.href = "/element/node.jsp?node=" + items[0].id;
 							<option value="GT">&gt;</option>
 							<option value="GE">&gt;=</option>
 						</select>
-						<span ng-if="clauseValues.length === 0">
+						<span class="my-2" ng-if="clauseValues.length === 0">
 							<input class="form-control" type="datetime-local"    ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'TIMESTAMP'"/>
 							<input class="form-control" type="text"              ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'STRING' || getSearchProperty(clause.property).type === 'IP_ADDRESS'"
 								placeholder="Type to search..."
@@ -43,10 +43,9 @@ Use $window.location.href = "/element/node.jsp?node=" + items[0].id;
 								<i class="fa fa-spinner fa-spin fa-lg fa-fw"/>
 							</span>
 						</span>
-						<select class="form-control" ng-model="clause.value" ng-if="clauseValues.length !== 0" ng-options="value.id as value.name for value in clauseValues"/>
+						<select class="form-control custom-select my-2" ng-model="clause.value" ng-if="clauseValues.length !== 0" ng-options="value.id as value.name for value in clauseValues"/>
 						</div>
-						<br/><br/>
-						<button class="btn btn-default" type="submit">Submit</button>
+						<button class="btn btn-secondary" type="submit">Submit</button>
 					</form>
 				</div>
 			</div>
@@ -121,36 +120,36 @@ Use $window.location.href = "/element/node.jsp?node=" + items[0].id;
 	<div>
 		<div class="btn-toolbar">
 			<div class="btn-group">
-				<a class="btn btn-default {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(0)">
+				<a class="btn btn-secondary {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(0)">
 					<i class="fa fa-backward"></i>&nbsp;&nbsp;First
 				</a>
 			</div>
 			<div class="btn-group">
-				<a class="btn btn-default {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(query.offset-query.limit)">
+				<a class="btn btn-secondary {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(query.offset-query.limit)">
 					<i class="fa fa-play fa-flip-horizontal"></i>&nbsp;&nbsp;Previous
 				</a>
 			</div>
 
 			<div class="btn-group">
-				<a class="btn btn-default" ng-click="setOffset(query.offset-(3*query.limit))" ng-hide="(query.offset-(3*query.limit)) &lt; 0" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset-(3*query.limit))" ng-hide="(query.offset-(3*query.limit)) &lt; 0" style="width:5em;">
 					{{(query.offset/query.limit) - 2}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(query.offset-(2*query.limit))" ng-hide="(query.offset-(2*query.limit)) &lt; 0" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset-(2*query.limit))" ng-hide="(query.offset-(2*query.limit)) &lt; 0" style="width:5em;">
 					{{(query.offset/query.limit) - 1}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(query.offset-query.limit)" ng-hide="(query.offset-query.limit) &lt; 0" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset-query.limit)" ng-hide="(query.offset-query.limit) &lt; 0" style="width:5em;">
 					{{query.offset/query.limit}}
 				</a>
-				<a class="btn btn-default active" ng-show="query.maxOffset &gt; 0" style="width:5em;">
+				<a class="btn btn-secondary active" ng-show="query.maxOffset &gt; 0" style="width:5em;">
 					{{(query.offset/query.limit) + 1}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(query.offset+query.limit)" ng-hide="(query.offset+query.limit) &gt; query.maxOffset" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset+query.limit)" ng-hide="(query.offset+query.limit) &gt; query.maxOffset" style="width:5em;">
 					{{(query.offset/query.limit) + 2}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(query.offset+(2*query.limit))" ng-hide="query.offset+(2*query.limit) &gt; query.maxOffset" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset+(2*query.limit))" ng-hide="query.offset+(2*query.limit) &gt; query.maxOffset" style="width:5em;">
 					{{(query.offset/query.limit) + 3}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(query.offset+(3*query.limit))" ng-hide="query.offset+(3*query.limit) &gt; query.maxOffset" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset+(3*query.limit))" ng-hide="query.offset+(3*query.limit) &gt; query.maxOffset" style="width:5em;">
 					{{(query.offset/query.limit) + 4}}
 				</a>
 			</div>
@@ -164,13 +163,13 @@ Use $window.location.href = "/element/node.jsp?node=" + items[0].id;
 					</div>
 
 					<div class="btn-group" style="margin-left:5px;">
-						<a class="btn btn-default {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(query.offset + query.limit)">
+						<a class="btn btn-secondary {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(query.offset + query.limit)">
 							Next&nbsp;&nbsp;<i class="fa fa-play"></i>
 						</a>
 					</div>
 
 					<div class="btn-group" style="margin-left:5px;">
-						<a class="btn btn-default {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(1000000000)">
+						<a class="btn btn-secondary {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(1000000000)">
 							Last&nbsp;&nbsp;<i class="fa fa-forward"></i>
 						</a>
 					</div>
@@ -185,9 +184,9 @@ Use $window.location.href = "/element/node.jsp?node=" + items[0].id;
 	<br/>
 	-->
 
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<div class="panel-title">
+	<div class="card">
+		<div class="card-header">
+			<div class="card-title">
 				<!-- Match the line-height of the location selector -->
 				<span ng-if="showInterfaces" style="line-height: 28px;">Nodes and their interfaces</span>
 				<span ng-if="!showInterfaces" style="line-height: 28px;">Nodes</span>
@@ -213,14 +212,14 @@ Use $window.location.href = "/element/node.jsp?node=" + items[0].id;
 
 				<!-- TODO: Move this control into the filter panel? -->
 				<!-- TODO: Change onchange into a $scope operation -->
-				<select class="form-control input-sm pull-right" style="width:auto;" id="monitoringLocation" onchange="javascript:location.href = location.protocol + '//' + location.host + location.pathname + '?monitoringLocation=' + this.options[this.selectedIndex].value;">
+				<select class="custom-select form-control form-control-sm pull-right" style="width:auto;" id="monitoringLocation" onchange="javascript:location.href = location.protocol + '//' + location.host + location.pathname + '?monitoringLocation=' + this.options[this.selectedIndex].value;">
 					<option value="" selected>All locations</option>
 					<option ng-repeat="location in getSearchPropertyValues('location.locationName')" value="{{location.id}}" selected>{{location.name}}</option>
 				</select>
 			</div>
-		</div> <!-- panel-heading -->
+		</div> <!-- card-header -->
 
-		<div class="panel-body">
+		<div class="card-body">
 			<div ng-if="items.length === 0" class="NLnode">
 				None found.
 			</div>
@@ -442,14 +441,14 @@ Use $window.location.href = "/element/node.jsp?node=" + items[0].id;
 					<!-- Second half of the nodes -->
 				</div>
 			</div>
-		</div> <!-- panel-body -->
+		</div> <!-- card-body -->
 
-		<div class="panel-footer">
+		<div class="card-footer">
 			{{items.length}} Node{{items.length === 1 ? '' : 's'}}<span ng-if="showInterfaces">, {{interfaces.length}} Interface{{interfaces.length === 1 ? '' : 's'}}</span>
 			<!-- NMS-9003: Move this control to the top -->
 			<a href="" ng-if="!showInterfaces" ng-click="toggleShowInterfaces()">Show interfaces</a>
 			<a href="" ng-if="showInterfaces" ng-click="toggleShowInterfaces()">Hide interfaces</a>
-		</div> <!-- panel-footer -->
+		</div> <!-- card-footer -->
 
 	</div> <!-- panel -->
 

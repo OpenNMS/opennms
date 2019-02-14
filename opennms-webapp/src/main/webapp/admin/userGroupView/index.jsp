@@ -45,11 +45,11 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Users and Groups</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Users and Groups</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
           <a HREF="admin/userGroupView/users/list.jsp">Configure Users</a>
         </p>
@@ -64,42 +64,42 @@
           <a HREF="admin/userGroupView/views/list.jsp">Configure Views</a>
         </p>
         -->
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Users</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Users</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
           Add new <em>Users</em>, change user names and passwords, and edit notification information.
         </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Groups</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Groups</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
           Assign and unassign <em>Users</em> to <em>Groups</em>.
         </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Roles</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Roles</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
           Configure Roles that define On Call schedules for users.
         </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

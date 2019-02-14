@@ -98,19 +98,28 @@ public class OspfOnmsTopologyUpdater extends TopologyUpdater {
         }
         
         for(TopologyConnection<OspfLinkTopologyEntity, OspfLinkTopologyEntity> pair : m_ospfTopologyService.match()) {
+            OspfLinkTopologyEntity left = pair.getLeft();
+            if (topology.getVertex(left.getNodeIdAsString()) == null) {
+                topology.getVertices().add(create(nodeMap.get(left.getNodeId()),ipMap.get(left.getNodeId())));                
+            }
+            OspfLinkTopologyEntity right = pair.getRight();
+            if (topology.getVertex(right.getNodeIdAsString()) == null) {
+                topology.getVertices().add(create(nodeMap.get(right.getNodeId()),ipMap.get(right.getNodeId())));                
+            }
+            
             topology.getEdges().add(OnmsTopologyEdge.create(
-                                                            Topology.getDefaultEdgeId(pair.getLeft().getId(), pair.getRight().getId()),
+                                                            Topology.getDefaultEdgeId(left.getId(), right.getId()),
                                                             create(
-                                                                   topology.getVertex(pair.getLeft().getNodeIdAsString()), 
-                                                                   pair.getLeft(), 
-                                                                   pair.getRight(),
-                                                                   nodeToOnmsSnmpTable.get(pair.getLeft().getNodeId(), pair.getLeft().getOspfIfIndex())
+                                                                   topology.getVertex(left.getNodeIdAsString()), 
+                                                                   left, 
+                                                                   right,
+                                                                   nodeToOnmsSnmpTable.get(left.getNodeId(), left.getOspfIfIndex())
                                                                    ), 
                                                             create(
-                                                                   topology.getVertex(pair.getRight().getNodeIdAsString()), 
-                                                                   pair.getRight(), 
-                                                                   pair.getLeft(),
-                                                                   nodeToOnmsSnmpTable.get(pair.getRight().getNodeId(), pair.getRight().getOspfIfIndex())
+                                                                   topology.getVertex(right.getNodeIdAsString()), 
+                                                                   right, 
+                                                                   left,
+                                                                   nodeToOnmsSnmpTable.get(right.getNodeId(), right.getOspfIfIndex())
                                                                    )
                                                             )
                                     );

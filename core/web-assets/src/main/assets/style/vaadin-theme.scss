@@ -23,13 +23,38 @@ The finished CSS file will include this line, directly:
 
 @import "opennms-theme.scss";
 @import "ionicons.scss";
+@import "font-awesome.scss";
 
-.root-layout {
-  padding-top: 65px;
+/*  --------------------------------------------------
+    :: Header and other Custom Vaadin styles
+    -------------------------------------------------- */
+.navbar-brand {
+  padding: 0px;
 }
 
-.navbar-brand {
-  padding: 1px;
+.onmsheader {
+  /* enforce visibility of dropdown elements, as they are otherwise hidden and not fully shown */
+  overflow: visible;
+  font-family: $font-family-sans-serif;
+  font-size: $font-size-base;
+  line-height: $line-height-base;
+}
+
+.onmsheader #navbar {
+  margin-top: 3px;
+}
+
+.onmsheader .dropdown-menu {
+  /* Change z-index so it is not hidden by some vaadin components */
+  z-index: 9999;
+}
+
+.onmsheader .dropdown-item {
+  box-sizing: border-box;
+}
+
+.onmsheader button.navbar-toggler {
+  font-size: $navbar-toggler-font-size;
 }
 
 .v-absolutelayout-wrapper {
@@ -243,11 +268,11 @@ td.v-table-cell-content.v-table-cell-content-marked {
 */
 
 .v-caption-surveillance-view {
-  background-color: $color_opennms;
-  border-color: $color_opennms !important;
-  border-bottom: 1px solid transparent;
+  background-color: $card-cap-bg;
+  border-color: $table-border-color !important;
+  border-bottom: $table-border-width solid transparent;
   padding: 6px;
-  color: white !important;
+  //color: white !important;
   font-size: 12px !important;
   font-weight: bold;
 
@@ -604,7 +629,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
   padding-left: 2px;
   padding-right: 4px;
   cursor: pointer;
-  color: $color_opennms_darker;
+  //color: $color_opennms_darker;
 }
 
 .v-select-select{
@@ -612,23 +637,26 @@ td.v-table-cell-content.v-table-cell-content-marked {
 }
 
 .surveillance-view .link {
-  color: $color_opennms_darker;
+  color: $link-color;
+  text-decoration: $link-decoration;
   cursor: pointer;
   opacity: 1.0;
 }
 
 .v-link a:link span {
-  color: $color_opennms;
+  color: $link-color;
+  text-decoration: $link-decoration;
 }
-.v-link a:visited span {
-  color: $color_opennms;
-}
+//.v-link a:visited span {
+//  color: $color_opennms;
+//}
 .v-link a:hover span {
-  color: $color_opennms_light;
+  color: $link-hover-color;
+  text-decoration: $link-hover-decoration
 }
-.v-link a:active span {
-  color: $color_opennms;
-}
+//.v-link a:active span {
+//  color: $color_opennms;
+//}
 
 .v-ui {
   background: #eeeeee;

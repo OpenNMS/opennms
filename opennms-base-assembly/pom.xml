@@ -160,6 +160,34 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <activation>
+        <os><family>!windows</family></os>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.6.0</version>
+            <executions>
+              <execution>
+                <id>shell script tests</id>
+                <phase>test</phase>
+                <goals><goal>exec</goal></goals>
+                <configuration>
+                  <executable>${project.basedir}/src/test/shell/run-tests.sh</executable>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <dependencies>
     <!-- Dependencies to put into the endorsed classpath -->
 
@@ -305,6 +333,10 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-detector-datagram</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-detector-dhcp</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

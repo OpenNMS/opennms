@@ -33,6 +33,12 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.sysprops</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
 
     <!-- Test Dependencies -->
    <dependency>
@@ -54,6 +60,12 @@
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.service.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.generator</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

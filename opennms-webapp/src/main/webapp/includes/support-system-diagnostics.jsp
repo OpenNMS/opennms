@@ -28,22 +28,22 @@
  *******************************************************************************/
 --%>
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">System Diagnostics</h3>
+<div class="card">
+    <div class="card-header">
+        <span>System Diagnostics</span>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
         <table class="table">
             <tr>
-                <td style="border-top: none;"><a href="admin/support/systemReport.htm" class="btn btn-default" role="button" style="width: 100%">Generate System Report</a></td>
+                <td style="border-top: none;"><a href="admin/support/systemReport.htm" class="btn btn-secondary" role="button" style="width: 100%">Generate System Report</a></td>
                 <td style="border-top: none;">Generate &quot;support-friendly&quot; information about your OpenNMS instance and system environment.</td>
             </tr>
             <tr>
-                <td style="border-top: none;"><a href="admin/nodemanagement/instrumentationLogReader.jsp" class="btn btn-default" role="button" style="width: 100%">Collectd Statistics</a></td>
+                <td style="border-top: none;"><a href="admin/nodemanagement/instrumentationLogReader.jsp" class="btn btn-secondary" role="button" style="width: 100%">Collectd Statistics</a></td>
                 <td style="border-top: none;">Get detailed statistics about your configured performance data collection.</td>
             </tr>
             <tr>
-                <td style="border-top: none;"><a href="about/index.jsp" class="btn btn-default" role="button" style="width: 100%">About OpenNMS</a></td>
+                <td style="border-top: none;"><a href="about/index.jsp" class="btn btn-secondary" role="button" style="width: 100%">About OpenNMS</a></td>
                 <td style="border-top: none;">Get an overview about your running OpenNMS instance such as Java Version, Operating System, PostgreSQL version and Time Series Strategy.</td>
             </tr>
         </table>

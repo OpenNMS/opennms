@@ -175,6 +175,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         rule.setSrcPort(newRule.getSrcPort());
         rule.setSrcAddress(newRule.getSrcAddress());
         rule.setName(newRule.getName());
+        rule.setOmnidirectional(newRule.isOmnidirectional());
         rule.setExporterFilter(newValue.getExporterFilter());
 
         // Persist
@@ -289,6 +290,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         if (!Strings.isNullOrEmpty(ruleDTO.getExporterFilter())) {
             rule.setExporterFilter(ruleDTO.getExporterFilter());
         }
+        rule.setOmnidirectional(ruleDTO.isOmnidirectional());
         rule.setProtocol(ruleDTO.getProtocols().stream().collect(Collectors.joining(",")));
         return rule;
     }
@@ -306,6 +308,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         ruleDTO.setGroup(convert(rule.getGroup()));
         ruleDTO.setPosition(rule.getPosition());
         ruleDTO.setExporterFilter(rule.getExporterFilter());
+        ruleDTO.setOmnidirectional(rule.isOmnidirectional());
         return ruleDTO;
     }
 

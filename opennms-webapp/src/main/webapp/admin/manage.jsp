@@ -163,27 +163,27 @@
   }
 %>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Manage and Unmanage Interfaces and Services</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Manage and Unmanage Interfaces and Services</span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
           <p>The two tables below represent each managed and unmanged node, interface, and service combination. The 'Status' column indicates if the interface or
           service is managed or not, with checked rows meaning the interface or service is managed, and unchecked meaning not managed. Each different interface
           has a dark grey row and no service column, and each service on that interface is listed below on light grey rows.</p>
           <p>Managing or Unmanaging an interface will automatically mark each service on that interface as managed or unmanaged accordingly. A service cannot be
           managed if its interface is not managed.</p>
 
-    <button type="button" class="btn btn-default" onClick="applyChanges()">Apply Changes</button>
-    <button type="button" class="btn btn-default" onClick="cancel()">Cancel</button>
-    <button type="button" class="btn btn-default" onClick="checkAll()">Select All</button>
-    <button type="button" class="btn btn-default" onClick="uncheckAll()"> Unselect All</button>
-    <button type="reset" class="btn btn-default">Reset</button>
+    <button type="button" class="btn btn-secondary" onClick="applyChanges()">Apply Changes</button>
+    <button type="button" class="btn btn-secondary" onClick="cancel()">Cancel</button>
+    <button type="button" class="btn btn-secondary" onClick="checkAll()">Select All</button>
+    <button type="button" class="btn btn-secondary" onClick="uncheckAll()"> Unselect All</button>
+    <button type="reset" class="btn btn-secondary">Reset</button>
 
     <div class="row top-buffer">
       <% if (nodes.size() > 0) { %>
 	<div class="col-md-6">
-          <table class="table table-condensed table-striped table-hover">
+          <table class="table table-sm table-striped table-hover">
             <tr>
               <th width="5%">Status</th>
               <th width="10%">Node Label</th>
@@ -200,7 +200,7 @@
       <!--see if there is a second column to draw-->
       <% if (midNodeIndex < nodes.size()) { %>
 	<div class="col-md-6">
-          <table class="table table-condensed table-striped table-hover">
+          <table class="table table-sm table-striped table-hover">
             <tr>
               <th width="5%">Status</th>
               <th width="10%">Node Label</th>
@@ -217,12 +217,12 @@
 
     <div class="top-buffer"></div>
 
-    <button type="button" class="btn btn-default" onClick="applyChanges()">Apply Changes</button>
-    <button type="button" class="btn btn-default" onClick="cancel()">Cancel</button>
-    <button type="button" class="btn btn-default" onClick="checkAll()">Select All</button>
-    <button type="button" class="btn btn-default" onClick="uncheckAll()"> Unselect All</button>
-    <button type="reset" class="btn btn-default">Reset</button>
-  </div> <!-- panel-body -->
+    <button type="button" class="btn btn-secondary" onClick="applyChanges()">Apply Changes</button>
+    <button type="button" class="btn btn-secondary" onClick="cancel()">Cancel</button>
+    <button type="button" class="btn btn-secondary" onClick="checkAll()">Select All</button>
+    <button type="button" class="btn btn-secondary" onClick="uncheckAll()"> Unselect All</button>
+    <button type="reset" class="btn btn-secondary">Reset</button>
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 </form>

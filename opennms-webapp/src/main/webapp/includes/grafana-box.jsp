@@ -111,12 +111,12 @@
     }
 %>
 
-<div id="grafana-box" class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Grafana Dashboards</h3>
+<div id="grafana-box" class="card">
+    <div class="card-header">
+        <span>Grafana Dashboards</span>
     </div>
 
-    <div id="dashboardlist" class="panel-body">
+    <div id="dashboardlist" class="card-body">
         <%
             if (responseString != null) {
         %>
@@ -141,18 +141,18 @@
                 }
                 if (showDashboard) {
                     if (limit < 1 || count++ < limit) {
-                        $('#dashboardlist').append('<a href="<%=grafanaProtocol%>://<%=grafanaHostname%>:<%=grafanaPort%><%=grafanaBasePath%>/dashboard/' + val['uri'] + '"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span>&nbsp;' + val['title'] + "</a><br/>");
+                        $('#dashboardlist').append('<a href="<%=grafanaProtocol%>://<%=grafanaHostname%>:<%=grafanaPort%><%=grafanaBasePath%>/dashboard/' + val['uri'] + '"><span class="fa fa-signal" aria-hidden="true"></span>&nbsp;' + val['title'] + "</a><br/>");
                     }
                 }
             };
             if (limit > 0 && count > limit) {
-                $('#dashboardlist').append('<a href="graph/grafana.jsp"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>&nbsp;View list of all Dashboards</a><br/>');
+                $('#dashboardlist').append('<a href="graph/grafana.jsp"><span class="fa fa-th-list" aria-hidden="true"></span>&nbsp;View list of all Dashboards</a><br/>');
             }
         </script>
         <%
             } else {
         %>
-        <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>&nbsp;<%=errorMessage%><br/>
+        <span class="fa fa-wrench" aria-hidden="true"></span>&nbsp;<%=errorMessage%><br/>
         <%
             }
         %>

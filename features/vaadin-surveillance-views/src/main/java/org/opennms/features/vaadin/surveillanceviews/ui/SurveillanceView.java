@@ -270,7 +270,7 @@ public class SurveillanceView extends CssLayout implements UIEvents.PollListener
      */
     @Override
     protected String getCss(Component c) {
-        return "padding-left: 0px;";
+        return "padding-left: 0px; vertical-align: top";
     }
 
     /**
@@ -388,21 +388,21 @@ public class SurveillanceView extends CssLayout implements UIEvents.PollListener
             resultsSidebar.setPrimaryStyleName("resource-graphs-sidebar hidden-print hidden-xs hidden-sm sidebar-fixed");
             resultsSidebar.setId("results-sidebar");
 
-            resultsSidebar.addComponent(new Label("<ul class=\"nav nav-stacked\">\n" +
-                    "                <li>\n" +
-                    "                    <a href=\"#surveillanceview\" data-target=\"#surveillanceview\">Surveillance View</a>\n" +
+            resultsSidebar.addComponent(new Label("<ul class=\"nav flex-column\">\n" +
+                    "                <li class=\"nav-item\">\n" +
+                    "                    <a class=\"nav-link\" href=\"#surveillanceview\" data-target=\"#surveillanceview\">Surveillance View</a>\n" +
                     "                </li>\n" +
-                    "                <li>\n" +
-                    "                    <a href=\"#alarms\" data-target=\"#alarms\">Alarms</a>\n" +
+                    "                <li class=\"nav-item\">\n" +
+                    "                    <a class=\"nav-link\" href=\"#alarms\" data-target=\"#alarms\">Alarms</a>\n" +
                     "                </li>\n" +
-                    "                <li>\n" +
-                    "                    <a href=\"#notifications\" data-target=\"#notifications\">Notifications</a>\n" +
+                    "                <li class=\"nav-item\">\n" +
+                    "                    <a class=\"nav-link\" href=\"#notifications\" data-target=\"#notifications\">Notifications</a>\n" +
                     "                </li>\n" +
-                    "                <li>\n" +
-                    "                    <a href=\"#outages\" data-target=\"#outages\">Outages</a>\n" +
+                    "                <li class=\"nav-item\">\n" +
+                    "                    <a class=\"nav-link\" href=\"#outages\" data-target=\"#outages\">Outages</a>\n" +
                     "                </li>\n" +
-                    "                <li>\n" +
-                    "                    <a href=\"#resourcegraphs\" data-target=\"#resourcegraphs\">Resource Graphs</a>\n" +
+                    "                <li class=\"nav-item\">\n" +
+                    "                    <a class=\"nav-link\" href=\"#resourcegraphs\" data-target=\"#resourcegraphs\">Resource Graphs</a>\n" +
                     "                </li>\n" +
                     "            </ul>" +
                     "<script type=\"text/javascript\">\n" +

@@ -47,8 +47,8 @@ public interface FlowRepository {
 
     CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationsSeries(int N, long step, boolean includeOther, List<Filter> filters);
 
-    CompletableFuture<List<TrafficSummary<Conversation>>> getTopNConversations(int N, List<Filter> filters);
+    CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversations(int N, List<Filter> filters);
 
-    CompletableFuture<Table<Directional<Conversation>, Long, Double>> getTopNConversationsSeries(int N, long step, List<Filter> filters);
+    CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationsSeries(int N, long step, List<Filter> filters);
 
 }

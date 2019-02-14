@@ -48,11 +48,11 @@
 <div class="row">
     <div class="col-md-6">
         <!-- general info box -->
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">General (Status: ${model.status_general})</h3>
+        <div class="card">
+            <div class="card-header">
+                <span>General (Status: ${model.status_general})</span>
             </div>
-            <table class="table table-condensed table-bordered">
+            <table class="table table-sm mb-0">
                 <tr>
                     <th>Node</th>
                     <td><a href="element/node.jsp?node=${model.db_id}">${model.id}</a></td>
@@ -68,11 +68,11 @@
             </table>
         </div>
 
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Rancid Info</h3>
+        <div class="card">
+            <div class="card-header">
+                <span>Rancid Info</span>
             </div>
-            <table class="table table-condensed table-bordered">
+            <table class="table table-sm mb-0">
                 <tr>
                     <th>Device Name</th>
                     <td>${model.id}</td>
@@ -95,11 +95,11 @@
 
     <div class="col-md-6">
         <!-- Inventory info box -->
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Inventory Elements</h3>
+        <div class="card">
+            <div class="card-header">
+                <span>Inventory Elements</span>
             </div>
-            <table class="table table-condensed table-bordered">
+            <table class="table table-sm mb-0">
                 <tr>
                     <th>Group</th>
                     <th>Total Revisions</th>
@@ -125,11 +125,11 @@
         </div>
 
         <!-- Software image box -->
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Software Images Stored</h3>
+        <div class="card">
+            <div class="card-header">
+                <span>Software Images Stored</span>
             </div>
-            <table class="table table-condensed table-bordered">
+            <table class="table table-sm mb-0">
                 <tr>
                     <th>Name</th>
                     <th>Size</th>

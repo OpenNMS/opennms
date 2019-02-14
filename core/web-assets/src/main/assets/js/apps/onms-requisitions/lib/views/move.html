@@ -7,27 +7,27 @@
 
 <div class="modal-body">
   <form name="moveForm">
-    <label class="control-label">{{ label }}</label>
+    <label class="col-form-label">{{ label }}</label>
     <div class="input-group">
-      <span class="input-group-btn">
-        <button type="button" class="btn btn-default btn-number" ng-disabled="position == 0 || moveForm.$invalid" ng-click="substract()">
-          <span class="glyphicon glyphicon-minus"></span>
+      <span class="input-group-prepend">
+        <button type="button" class="btn btn-secondary btn-number" ng-disabled="position == 0 || moveForm.$invalid" ng-click="substract()">
+          <span class="fa fa-minus"></span>
         </button>
       </span>
       <input type="text" ng-model="position" class="form-control input-number" ng-pattern="/\d+/" required>
-      <span class="input-group-btn">
-        <button type="button" class="btn btn-default btn-number" ng-disabled="position == maximum || moveForm.$invalid" ng-click="add()">
-          <span class="glyphicon glyphicon-plus"></span>
+      <span class="input-group-append">
+        <button type="button" class="btn btn-secondary btn-number" ng-disabled="position == maximum || moveForm.$invalid" ng-click="add()">
+          <span class="fa fa-plus"></span>
         </button>
       </span>
     </div>
-    <p class="help-block">Choose a index between 0 and {{ maximum }}.</p>
+    <p class="form-text text-muted">Choose a index between 0 and {{ maximum }}.</p>
   </form>
 </div>
 
 <div class="modal-footer">
   <button type="button" class="btn btn-primary" id="save-detector" ng-click="move()" ng-disabled="position > maximum || moveForm.$invalid">Move</button>
-  <button type="button" class="btn btn-default" id="cancel-detector" ng-click="cancel()">Cancel</button>
+  <button type="button" class="btn btn-secondary" id="cancel-detector" ng-click="cancel()">Cancel</button>
 </div>
 
 </div>

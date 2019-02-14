@@ -61,15 +61,15 @@
   <jsp:param name="breadcrumb" value='<%="Outage " + outage.getId()%>' />
 </jsp:include>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Outage <%=outage.getId()%></h3>
+<div class="card">
+  <div class="card-header">
+    <span>Outage <%=outage.getId()%></span>
   </div>
 
-  <table class="table table-condensed severity">
-        <tr>
-          <th class="col-md-1">Node</th>
-          <td class="col-md-3">
+  <table class="table table-sm severity">
+        <tr class="d-flex">
+          <th class="col-2">Node</th>
+          <td class="col-2">
             <% if( outage.getNodeId() > 0 ) { %>
               <a href="element/node.jsp?node=<%=outage.getNodeId()%>"><%=outage.getNodeLabel()%></a>
             <% } else {%>
@@ -77,16 +77,16 @@
             <% } %>
           </td>
           
-          <th class="col-md-1">Lost&nbsp;Service&nbsp;Time</th>
-          <td class="col-md-3"><onms:datetime date="<%=outage.getLostServiceTime()%>" /></td>
+          <th class="col-2">Lost&nbsp;Service&nbsp;Time</th>
+          <td class="col-2"><onms:datetime date="<%=outage.getLostServiceTime()%>" /></td>
           
-          <th class="col-md-1">Lost&nbsp;Service&nbsp;Event</th>
-          <td class="col-md-3"><a href="event/detail.jsp?id=<%=outage.getLostServiceEventId()%>"><%=outage.getLostServiceEventId()%></a></td>          
+          <th class="col-2">Lost&nbsp;Service&nbsp;Event</th>
+          <td class="col-2"><a href="event/detail.jsp?id=<%=outage.getLostServiceEventId()%>"><%=outage.getLostServiceEventId()%></a></td>
           
         </tr>
-        <tr>
-          <th>Interface</th>
-          <td>
+        <tr class="d-flex">
+          <th class="col-2">Interface</th>
+          <td class="col-2">
             <% if( outage.getIpAddress() != null ) { %>
               <% if( outage.getNodeId() > 0 ) { %>
                 <c:url var="interfaceLink" value="element/interface.jsp">
@@ -102,8 +102,8 @@
             <% } %>
           </td>
           
-          <th>Regained&nbsp;Service&nbsp;Time</th>
-          <td>
+          <th class="col-2">Regained&nbsp;Service&nbsp;Time</th>
+          <td class="col-2">
             <% Date regainTime = outage.getRegainedServiceTime(); %>
             
             <% if(regainTime != null) { %>
@@ -114,8 +114,8 @@
             <% } %>
           </td>
 
-          <th>Regained&nbsp;Service&nbsp;Event</th>
-          <td>
+          <th class="col-2">Regained&nbsp;Service&nbsp;Event</th>
+          <td class="col-2">
             <% Integer regainedEventId = outage.getRegainedServiceEventId(); %>
             <% if(regainedEventId != null && regainedEventId > 0) { %>
               <a href="event/detail.jsp?id=<%=regainedEventId%>">
@@ -127,9 +127,9 @@
             <% } %>
           </td>
         </tr>
-        <tr>
-          <th>Service</th>
-          <td>
+        <tr class="d-flex">
+          <th class="col-2">Service</th>
+          <td class="col-2">
             <% if( outage.getServiceName() != null ) { %>
               <% if( outage.getIpAddress() != null && outage.getNodeId() > 0 ) { %>
                 <c:url var="serviceLink" value="element/service.jsp">
@@ -145,16 +145,16 @@
               &nbsp;
             <% } %>
           </td>
-          <th>Event Source Location</th>
-          <td>
+          <th class="col-2">Event Source Location</th>
+          <td class="col-2">
             <% if( outage.getEventLocation() != null ) { %>
             <%=outage.getEventLocation()%>
             <% } else { %>
             &nbsp;
             <% } %>
           </td>
-          <th>Node Location</th>
-          <td>
+          <th class="col-2">Node Location</th>
+          <td class="col-2">
             <% if( outage.getLocation() != null ) { %>
             <%=outage.getLocation()%>
             <% } else { %>

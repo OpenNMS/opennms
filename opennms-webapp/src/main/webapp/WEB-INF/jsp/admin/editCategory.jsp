@@ -99,11 +99,11 @@ function toggleReqNodes() {
 }
 </script>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Edit Surveillance Category ${model.category.name}</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Edit Surveillance Category ${model.category.name}</span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <p>
     Category '${model.category.name}' has ${fn:length(model.sortedMemberNodes)} nodes
     </p>
@@ -112,7 +112,7 @@ function toggleReqNodes() {
       <input type="hidden" name="categoryid" value="${model.category.id}"/>
       <input type="hidden" name="edit" value=""/>
 
-      <div class="row form-group">
+      <div class="form-group form-row">
         <div class="col-md-5">
           <label for="toAdd">Available nodes</label>
           <select id="toAdd" class="form-control" name="toAdd" size="20" multiple>
@@ -121,11 +121,9 @@ function toggleReqNodes() {
           </select>
         </div> <!-- column -->
 
-        <div class="col-md-2 text-center">
-          <div class="btn-group-vertical" role="group">
-            <button type="submit" class="btn btn-default" name="action" value="Add &#155;&#155;">Add &#155;&#155;</button>
-            <button type="submit" class="btn btn-default" name="action" value="&#139;&#139; Remove">&#139;&#139; Remove</button>
-          </div>
+        <div class="col-md-2 form-group text-center my-auto mx-auto">
+            <button type="submit" class="btn btn-secondary" name="action" value="Add &#155;&#155;">Add &#155;&#155;</button>
+            <button type="submit" class="btn btn-secondary" name="action" value="&#139;&#139; Remove">&#139;&#139; Remove</button>
         </div>
 
         <div class="col-md-5">
@@ -142,7 +140,7 @@ function toggleReqNodes() {
         <label for="toggleCheckbox">Check this box to enable requisitioned nodes (changes <strong>will</strong> be lost on next synchronization)</label>
       </div>
     </form>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 <script type="text/javascript">

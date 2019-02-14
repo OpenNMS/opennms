@@ -46,14 +46,14 @@
     int colClass = 12 / columns;
 %>
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Trend</h3>
+<div class="card">
+    <div class="card-header">
+        <span>Trend</span>
     </div>
-    <div class="alert-box panel-body">
-        <div class="row gutter-10">
+    <div class="alert-box card-body">
+        <div class="row">
             <c:forEach var="trendDefinition" items="${trendDefinitions}">
-                <div class="col-xs-<%= colClass %>">
+                <div class="col-sm-<%= colClass %>">
                     <jsp:include page="/trend/trend.htm" flush="false">
                         <jsp:param name="name" value="${trendDefinition.name}"/>
                     </jsp:include>

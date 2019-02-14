@@ -217,10 +217,11 @@
 
 <div class="row">
 <div class="col-md-12">
+<div class="form-group">
   <!-- start menu -->
-  <a class="btn btn-default" href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>">View all events</a>
-  <button type="button" class="btn btn-default" onClick="$('#advancedSearchModal').modal()">Search</button>
-  <button type="button" class="btn btn-default" onClick="$('#severityLegendModal').modal()">Severity Legend</button>
+  <a class="btn btn-secondary" href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>">View all events</a>
+  <button type="button" class="btn btn-secondary" onClick="$('#advancedSearchModal').modal()">Search</button>
+  <button type="button" class="btn btn-secondary" onClick="$('#severityLegendModal').modal()">Severity Legend</button>
         <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
           <% if ( eventCount > 0 ) { %>
               <!-- hidden form for acknowledging the result set -->
@@ -231,17 +232,20 @@
               </form>
 
               <% if( AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-                <button type="button" class="btn btn-default" onclick="if (confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?  (<%=eventCount%> total events)')) {  document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</button>
+                <button type="button" class="btn btn-secondary" onclick="if (confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?  (<%=eventCount%> total events)')) {  document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</button>
               <% } else { %>
-                <button type="button" class="btn btn-default" onclick="if (confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?  (<%=eventCount%> total events)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</button>
+                <button type="button" class="btn btn-secondary" onclick="if (confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?  (<%=eventCount%> total events)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</button>
               <% } %>
           <% } %>
         <% } %>
       <!-- end menu -->
 </div>
-<div class="text-right hidden">
-  <jsp:include page="/includes/event-querypanel.jsp" flush="false" />
 </div>
+</div>
+<div class="row">
+    <div class="col form-group">
+        <jsp:include page="/includes/event-querypanel.jsp" flush="false" />
+    </div>
 </div>
 
 <%-- This tag writes out the createFavorite(), deleteFavorite(), and clearFilters() methods --%>
@@ -261,33 +265,30 @@
 <div class="row">
   <div class="col-sm-6 col-md-3">
   <div class="input-group">
-    <span class="input-group-addon">
+    <span class="input-group-prepend">
       <c:choose>
       <c:when test="${favorite == null}">
-      <a onclick="createFavorite()">
+      <button class="btn btn-secondary" onclick="createFavorite()">
         <!-- Star outline -->
         <i class="fa fa-lg fa-star-o"></i>
-      </a>
+      </button>
       </c:when>
       <c:otherwise>
-      <a onclick="deleteFavorite(${favorite.id})">
+      <button class="btn btn-secondary" onclick="deleteFavorite(${favorite.id})">
         <i class="fa fa-lg fa-star"></i>
-      </a>
+      </button>
       </c:otherwise>
       </c:choose>
     </span>
     <!-- Use background-color:white to make it look less disabled -->
     <input type="text" class="form-control" style="background-color:white;" readonly placeholder="Unsaved filter" value="<c:out value="${favorite.name}"/>"/>
-    <div class="input-group-btn">
-      <div class="dropdown">
-        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-          <span class="caret"></span>
-        </button>
+    <div class="input-group-append">
+      <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-expanded="false"></button>
         <!-- I put margin: 0px here because the margin gap was causing the menu to disappear before you could get the mouse on it -->
         <ul class="dropdown-menu dropdown-menu-right" style="margin: 0px;" role="menu">
           <c:forEach var="fave" items="${favorites}">
             <c:if test="${favorite.id != fave.id}">
-              <li>
+              <li class="dropdown-item">
                 <a onclick="changeFavorite(${fave.id}, '${fave.filter}')">
                   <c:out value="${fave.name}"/>
                 </a>
@@ -295,10 +296,9 @@
               <c:set var="showDivider" value="${true}"/>
             </c:if>
           </c:forEach>
-          <c:if test="${showDivider}"><li class="divider"/></c:if>
-          <li><a onclick="clearFilters()">Clear filters</a></li>
+          <c:if test="${showDivider}"><li class="dropdown-divider"/></c:if>
+          <li class="dropdown-item"><a onclick="clearFilters()">Clear filters</a></li>
         </ul>
-      </div>
     </div>
   </div>
   </div>
@@ -352,7 +352,7 @@
 
     <% String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge"); %>
 
-      <table class="table table-condensed severity">
+      <table class="table table-sm severity">
         <thead>
         <tr>
           <% if( "true".equals(acknowledgeEvent) ) { %>
@@ -559,13 +559,13 @@
           <% 
           if( (req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY )) && "true".equals(acknowledgeEvent)) { %>
             <% if( AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-              <input type="button" value="Acknowledge Events" onClick="submitForm('<%= AcknowledgeType.UNACKNOWLEDGED.getShortName() %>')"/>
-              <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
-              <input TYPE="reset" />
+              <input class="btn btn-sm btn-primary" type="button" value="Acknowledge Events" onClick="submitForm('<%= AcknowledgeType.UNACKNOWLEDGED.getShortName() %>')"/>
+              <input class="btn btn-sm btn-secondary" TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
+              <input class="btn btn-sm btn-secondary" TYPE="reset" />
             <% } else if( AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-              <input type="button" value="Unacknowledge Events" onClick="submitForm('<%= AcknowledgeType.ACKNOWLEDGED.getShortName() %>')"/>
-              <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
-              <input TYPE="reset" />
+              <input class="btn btn-sm btn-primary" type="button" value="Unacknowledge Events" onClick="submitForm('<%= AcknowledgeType.ACKNOWLEDGED.getShortName() %>')"/>
+              <input class="btn btn-sm btn-secondary" TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
+              <input class="btn btn-sm btn-secondary" TYPE="reset" />
             <% } %>
           <% } %>
         </p>

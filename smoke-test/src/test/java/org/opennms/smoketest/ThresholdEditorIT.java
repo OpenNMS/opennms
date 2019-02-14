@@ -48,17 +48,17 @@ public class ThresholdEditorIT extends OpenNMSSeleniumTestCase {
     @Test
     public void a_testAllTextIsPresent() throws Exception {
         // main threshold page
-        assertEquals(1, countElementsMatchingCss("h3.panel-title"));
-        findElementByXpath("//h3[text()='Threshold Configuration']");
+        assertEquals(1, countElementsMatchingCss("span.card-header"));
+        findElementByXpath("//span[text()='Threshold Configuration']");
         findElementByXpath("//button[@type='button' and text()='Request a reload threshold packages configuration']");
         // threshold group page
         clickElement(By.xpath("//a[contains(@href, 'groupName=cisco&editGroup')]"));
-        assertEquals(3, countElementsMatchingCss("h3.panel-title"));
-        findElementByXpath("//h3[text()='Basic Thresholds']");
+        assertEquals(3, countElementsMatchingCss("span.card-header"));
+        findElementByXpath("//span[text()='Basic Thresholds']");
         findElementByXpath("//a[text()='Create New Threshold']");
-        findElementByXpath("//h3[text()='Expression-based Thresholds']");
+        findElementByXpath("//span[text()='Expression-based Thresholds']");
         findElementByXpath("//a[text()='Create New Expression-based Threshold']");
-        findElementByXpath("//h3[text()='Help']");
+        findElementByXpath("//span[text()='Help']");
     }
     @Test
     public void b_testCreateNewThreshold() throws Exception {
@@ -89,7 +89,7 @@ public class ThresholdEditorIT extends OpenNMSSeleniumTestCase {
         enterText(By.name("rearmedUEI"), "uei.opennms.org/rearmed");
         // save the threshold
         clickElement(By.xpath(("//input[@value='Save']")));
-        findElementByXpath("//h3[text()='Basic Thresholds']");
+        findElementByXpath("//span[text()='Basic Thresholds']");
         // make sure all the visible fields on the threshold page match
         assertEquals(6, countElementsMatchingCss(".edit-group-basic-thresholds tr"));
         assertEquals("rearmingAbsoluteChange", findElementByCss("td[name='threshold.4.type'").getText());
@@ -143,7 +143,7 @@ public class ThresholdEditorIT extends OpenNMSSeleniumTestCase {
         clickElement(By.xpath("//tr[@name='filter.2']//input[@value='Delete']"));
         assertElementDoesNotExist(By.xpath("//tr[@name='filter.2']"));
         clickElement(By.xpath(("//input[@value='Save']")));
-        findElementByXpath("//h3[text()='Basic Thresholds']");
+        findElementByXpath("//span[text()='Basic Thresholds']");
         assertEquals(6, countElementsMatchingCss(".edit-group-basic-thresholds tr"));
         assertEquals("rearmingAbsoluteChange", findElementByCss("td[name='threshold.4.type'").getText());
         assertEquals("baz", findElementByCss("td[name='threshold.4.description'").getText());
@@ -162,7 +162,7 @@ public class ThresholdEditorIT extends OpenNMSSeleniumTestCase {
         assertEquals(6, countElementsMatchingCss(".edit-group-basic-thresholds tr"));
         clickElement(By.xpath("//tr[@name='threshold.4']//a[text()='Delete']"));
         Thread.sleep(50);
-        waitForElement(By.xpath("//h3[text()='Basic Thresholds']"));
+        waitForElement(By.xpath("//span[text()='Basic Thresholds']"));
         assertEquals(5, countElementsMatchingCss(".edit-group-basic-thresholds tr"));
     }
     @Test
@@ -194,7 +194,7 @@ public class ThresholdEditorIT extends OpenNMSSeleniumTestCase {
         enterText(By.name("rearmedUEI"), "uei.opennms.org/rearmed");
         // save the threshold
         clickElement(By.xpath(("//input[@value='Save']")));
-        findElementByXpath("//h3[text()='Basic Thresholds']");
+        findElementByXpath("//span[text()='Basic Thresholds']");
         // make sure all the visible fields on the threshold page match
         assertEquals(2, countElementsMatchingCss(".edit-group-expression-based-thresholds tr"));
         assertEquals("rearmingAbsoluteChange", findElementByCss("td[name='expression.0.type'").getText());
@@ -248,7 +248,7 @@ public class ThresholdEditorIT extends OpenNMSSeleniumTestCase {
         clickElement(By.xpath("//tr[@name='filter.2']//input[@value='Delete']"));
         assertElementDoesNotExist(By.xpath("//tr[@name='filter.2']"));
         clickElement(By.xpath(("//input[@value='Save']")));
-        findElementByXpath("//h3[text()='Basic Thresholds']");
+        findElementByXpath("//span[text()='Basic Thresholds']");
         assertEquals(2, countElementsMatchingCss(".edit-group-expression-based-thresholds tr"));
         assertEquals("rearmingAbsoluteChange", findElementByCss("td[name='expression.0.type'").getText());
         assertEquals("baz", findElementByCss("td[name='expression.0.description'").getText());
@@ -267,7 +267,7 @@ public class ThresholdEditorIT extends OpenNMSSeleniumTestCase {
         assertEquals(2, countElementsMatchingCss(".edit-group-expression-based-thresholds tr"));
         clickElement(By.xpath("//tr[@name='expression.0']//a[text()='Delete']"));
         Thread.sleep(50);
-        waitForElement(By.xpath("//h3[text()='Basic Thresholds']"));
+        waitForElement(By.xpath("//span[text()='Basic Thresholds']"));
         assertEquals(1, countElementsMatchingCss(".edit-group-expression-based-thresholds tr"));
     }
 }

@@ -62,6 +62,10 @@ public class ResourceId implements Comparable<ResourceId> {
         this.name = name == null ? "" : name;
     }
 
+    public ResourceId getParent() {
+        return this.parent;
+    }
+
     public ResourceId resolve(final String type,
                               final String name) {
         return new ResourceId(this, type, name);

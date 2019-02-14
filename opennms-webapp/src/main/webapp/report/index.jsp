@@ -45,11 +45,11 @@
 
 <div class="row">
   <div class="col-md-5">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">Reports</h3>
+    <div class="card">
+        <div class="card-header">
+            <span>Reports</span>
         </div>
-        <div class="panel-body" id="onms-search">
+        <div class="card-body" id="onms-search">
             <div class="row">
                 <div class="col-md-12">
                     <div class="pull-right">
@@ -100,11 +100,11 @@
   </div>
 
   <div class="col-md-7">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">Descriptions</h3>
+    <div class="card">
+        <div class="card-header">
+            <span>Descriptions</span>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
             <p><b>Resource Graphs</b> provide an easy way to visualize the critical
                 SNMP, response time, and other data collected from managed nodes
                 throughout your network.

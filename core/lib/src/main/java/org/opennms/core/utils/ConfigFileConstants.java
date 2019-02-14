@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,8 +40,8 @@ import java.io.IOException;
  * This class holds all OpenNMS related config filenames
  */
 public abstract class ConfigFileConstants {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(ConfigFileConstants.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigFileConstants.class);
 
     private static final String[] FILE_ID_TO_NAME;
 
@@ -83,11 +83,6 @@ public abstract class ConfigFileConstants {
      * The Availability Reports HTML converter xsl file.
      */
     public static final int REPORT_HTML_XSL;
-
-    /**
-     * The opennms dhcpd config file
-     */
-    public static final int DHCPD_CONFIG_FILE_NAME;
 
     /**
      * The opennms notifd config file
@@ -416,6 +411,10 @@ public abstract class ConfigFileConstants {
      */
     public static final int SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME;
 
+    /**
+     * The SNMP Asset Provisioning Adapter configuration file
+     */
+    public static final int WSMAN_ASSET_ADAPTER_CONFIG_FILE_NAME;
 
     /**
      * The WMI collection configuration file
@@ -506,8 +505,6 @@ public abstract class ConfigFileConstants {
         KSC_REPORT_FILE_NAME = 46;
         SCRIPTD_CONFIG_FILE_NAME = 47;
 
-        DHCPD_CONFIG_FILE_NAME = 50;
-
         RRD_CONFIG_FILE_NAME = 51;
 
         JAVA_MAIL_CONFIG_FILE_NAME = 52;
@@ -564,9 +561,11 @@ public abstract class ConfigFileConstants {
         JDBC_COLLECTION_CONFIG_FILE_NAME = 80;
         
         ENLINKD_CONFIG_FILE_NAME = 81;
+
+        WSMAN_ASSET_ADAPTER_CONFIG_FILE_NAME = 82;
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[82];
+        FILE_ID_TO_NAME = new String[83];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -626,7 +625,6 @@ public abstract class ConfigFileConstants {
 
         FILE_ID_TO_NAME[SCRIPTD_CONFIG_FILE_NAME] = "scriptd-configuration.xml";
 
-        FILE_ID_TO_NAME[DHCPD_CONFIG_FILE_NAME] = "dhcpd-configuration.xml";
         FILE_ID_TO_NAME[RRD_CONFIG_FILE_NAME] = "rrd-configuration.properties";
         FILE_ID_TO_NAME[JAVA_MAIL_CONFIG_FILE_NAME] = "javamail-configuration.properties";
         FILE_ID_TO_NAME[VACUUMD_CONFIG_FILE_NAME] = "vacuumd-configuration.xml";
@@ -655,6 +653,7 @@ public abstract class ConfigFileConstants {
         FILE_ID_TO_NAME[MAPS_ADAPTER_CONFIG_FILE_NAME] = "mapsadapter-configuration.xml";
         FILE_ID_TO_NAME[MICROBLOG_CONFIG_FILE_NAME] = "microblog-configuration.xml";
         FILE_ID_TO_NAME[SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME] = "snmp-asset-adapter-configuration.xml";
+        FILE_ID_TO_NAME[WSMAN_ASSET_ADAPTER_CONFIG_FILE_NAME] = "wsman-asset-adapter-configuration.xml";
         FILE_ID_TO_NAME[JDBC_COLLECTION_CONFIG_FILE_NAME] = "jdbc-datacollection-config.xml";
     }
 

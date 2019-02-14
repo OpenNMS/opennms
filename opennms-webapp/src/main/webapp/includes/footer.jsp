@@ -72,7 +72,15 @@
 <%-- This </div> tag is unmatched in this file (its matching tag is in the
      header), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain.  See bug #1728. --%>
-<%= "</div>" %><!-- id="content" -->
+
+<c:choose>
+    <c:when test="${param.superQuiet == 'true'}">
+        <%-- nothing to do --%>
+    </c:when>
+    <c:otherwise>
+        <%= "</div>" %><!-- id="content" -->
+    </c:otherwise>
+</c:choose>
 
 <c:choose>
     <c:when test="${param.quiet == 'true'}">

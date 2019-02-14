@@ -106,6 +106,7 @@ import org.opennms.netmgt.config.siteStatusViews.SiteStatusViewConfiguration;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmpAsset.adapter.SnmpAssetAdapterConfiguration;
 import org.opennms.netmgt.config.snmpinterfacepoller.SnmpInterfacePollerConfiguration;
+import org.opennms.netmgt.config.wsmanAsset.adapter.WsManAssetAdapterConfiguration;
 import org.opennms.netmgt.config.statsd.StatisticsDaemonConfiguration;
 import org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration;
 import org.opennms.netmgt.config.syslogd.SyslogdConfiguration;
@@ -271,6 +272,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "vmware-datacollection-config.xml", VmwareDatacollectionConfig.class, false, null);
         addFile(Source.CONFIG, "wmi-config.xml", WmiConfig.class, true, null);
         addFile(Source.CONFIG, "wmi-datacollection-config.xml", WmiDatacollectionConfig.class, false, null);
+        addFile(Source.CONFIG, "wsman-asset-adapter-configuration.xml", WsManAssetAdapterConfiguration.class, true, null);
         addFile(Source.CONFIG, "wsman-config.xml", WsmanConfig.class, true, null);
 
         addFile(Source.EXAMPLE, "collectd-configuration.xml", CollectdConfiguration.class, false, null);

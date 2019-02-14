@@ -98,11 +98,11 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Admin Options</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Admin Options</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
   <% if (!isRequisitioned) { %>
   <p>
     <a href="admin/nodelabel.jsp?node=<%=nodeId%>">Change Node Label</a>
@@ -144,17 +144,17 @@
   </p>
 
   <% } %>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
       
 
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Option Descriptions</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Option Descriptions</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
   <% if (!isRequisitioned) { %>
   <p>
     <b>Change Node Label</b> allows administrators either to specify a node 
@@ -215,7 +215,7 @@
   </p>
 
   <% } %>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

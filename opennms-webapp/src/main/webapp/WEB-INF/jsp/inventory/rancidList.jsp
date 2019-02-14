@@ -49,24 +49,24 @@
 <div class="row">
     <div class="col-md-12">
         <h2> Node: ${model.id} </h2>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">RWS status</h3>
+        <div class="card">
+            <div class="card-header">
+                <span>RWS status</span>
             </div>
 
-            <table class="table table-condensed table-bordered">
+            <table class="table table-sm mb-0">
                 <tr>
                     <td>${model.RWSStatus}</td>
                 </tr>
             </table>
         </div>
 
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Associated Elements</h3>
+        <div class="card">
+            <div class="card-header">
+                <span>Associated Elements</span>
             </div>
 
-            <table class="table table-condensed table-bordered">
+            <table class="table table-sm mb-0">
                 <tr>
                     <th>Group</th>
                     <th>Version</th>

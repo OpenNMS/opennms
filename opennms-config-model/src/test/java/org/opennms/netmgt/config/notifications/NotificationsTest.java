@@ -78,7 +78,9 @@ public class NotificationsTest extends XmlTestNoCastor<Notifications> {
         notification.setName("interfaceDown");
         notification.setStatus("on");
         notification.setUei("uei.opennms.org/nodes/interfaceDown");
-        notification.setRule("IPADDR != '0.0.0.0'");
+        Rule filterRule = new Rule();
+        filterRule.setContent("IPADDR != '0.0.0.0'");
+        notification.setRule(filterRule);
         notification.setDestinationPath("Email-Admin");
         notification.setTextMessage("All services are down");
         notification.setSubject("Notice #%noticeid%: %interfaceresolve% (%interface%) on node %nodelabel% down.");

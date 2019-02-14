@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -58,12 +58,13 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.opennms.bootstrap.Bootstrap;
 import org.opennms.core.db.DataSourceConfigurationFactory;
 import org.opennms.core.db.install.InstallerDb;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.logging.Logging;
-import org.opennms.core.schema.ExistingResourceAccessor;
 import org.opennms.core.schema.Migration;
 import org.opennms.core.schema.Migrator;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -190,7 +191,7 @@ public class Installer {
             m_migration.setAdminPassword(adminDsConfig.getPassword());
             m_migration.setDatabaseUser(dsConfig.getUserName());
             m_migration.setDatabasePassword(dsConfig.getPassword());
-            m_migration.setChangeLog("changelog.xml");
+            m_migration.setChangeLog("classpath*:/changelog.xml");
         }
 
         checkIPv6();
@@ -271,7 +272,7 @@ public class Installer {
 
             for (final Resource resource : context.getResources("classpath*:/changelog.xml")) {
                 System.out.println("- Running migration for changelog: " + resource.getDescription());
-                m_migration.setAccessor(new ExistingResourceAccessor(resource));
+                m_migration.setChangeLog(resource);
                 m_migrator.migrate(m_migration);
             }
         }
@@ -603,10 +604,13 @@ public class Installer {
         m_update_unicode = m_commandLine.hasOption("U");
         m_do_vacuum = m_commandLine.hasOption("v");
         m_webappdir = m_commandLine.getOptionValue("w", m_webappdir);
+
         m_installerDb.setDebug(m_commandLine.hasOption("x"));
+        Configurator.setRootLevel(Level.WARN);
         if (m_commandLine.hasOption("x")) {
-        	m_migrator.enableDebug();
+            Configurator.setRootLevel(Level.DEBUG);
         }
+
         m_fix_constraint_remove_rows = m_commandLine.hasOption("X");
         m_install_webapp = m_commandLine.hasOption("y");
         m_skip_upgrade_tools = m_commandLine.hasOption("S");

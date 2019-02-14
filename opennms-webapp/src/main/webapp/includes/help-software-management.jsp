@@ -28,22 +28,22 @@
  *******************************************************************************/
 --%>
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Software Management</h3>
+<div class="card">
+    <div class="card-header">
+        <span>Software Management</span>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
         <table class="table">
             <tr>
-                <td style="border-top: none;"><a href="https://github.com/OpenNMS/opennms" target="_blank" class="btn btn-default" role="button" style="width: 100%">OpenNMS on GitHub</a></td>
+                <td style="border-top: none;"><a href="https://github.com/OpenNMS/opennms" target="_blank" class="btn btn-secondary" role="button" style="width: 100%">OpenNMS on GitHub</a></td>
                 <td style="border-top: none;">Our source code is version controlled with git and hosted on GitHub. Download the source code for released versions of OpenNMS or the latest development code.</td>
             </tr>
             <tr>
-                <td style="border-top: none;"><a href="https://issues.opennms.org" target="_blank" class="btn btn-default" role="button" style="width: 100%">Issue Tracker</a></td>
+                <td style="border-top: none;"><a href="https://issues.opennms.org" target="_blank" class="btn btn-secondary" role="button" style="width: 100%">Issue Tracker</a></td>
                 <td style="border-top: none;">The software project is managed with JIRA. We use it to manage bugs, enhancements, feature and release management. Create your free account and you are welcome to participate.</td>
             </tr>
             <tr>
-                <td style="border-top: none;"><a href="https://bamboo.opennms.org/browse/OPENNMS-ONMS" target="_blank" class="btn btn-default" role="button" style="width: 100%">Continuous Integration</a></td>
+                <td style="border-top: none;"><a href="https://bamboo.opennms.org/browse/OPENNMS-ONMS" target="_blank" class="btn btn-secondary" role="button" style="width: 100%">Continuous Integration</a></td>
                 <td style="border-top: none;">Running OpenNMS in production requires software quality gates which are provided by bamboo our public CI/CD system.</td>
             </tr>
 

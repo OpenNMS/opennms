@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,32 +36,32 @@ import liquibase.statement.core.DropForeignKeyConstraintStatement;
 
 public class DropForeignKeyConstraintCascadeStatement extends DropForeignKeyConstraintStatement {
 
-	private Boolean m_cascade;
+    private Boolean m_cascade;
 
-	public DropForeignKeyConstraintCascadeStatement(final DropForeignKeyConstraintStatement statement, Boolean cascade) {
-		super(statement.getBaseTableSchemaName(), statement.getBaseTableName(), statement.getConstraintName());
-		m_cascade = cascade;
-	}
+    public DropForeignKeyConstraintCascadeStatement(final DropForeignKeyConstraintStatement statement, Boolean cascade) {
+        super(statement.getBaseTableCatalogName(), statement.getBaseTableSchemaName(), statement.getBaseTableName(), statement.getConstraintName());
+        m_cascade = cascade;
+    }
 
-	public DropForeignKeyConstraintCascadeStatement setCascade(final Boolean cascade) {
-		m_cascade = cascade;
-		return this;
-	}
-	
-	public Boolean getCascade() {
-		return m_cascade;
-	}
+    public DropForeignKeyConstraintCascadeStatement setCascade(final Boolean cascade) {
+        m_cascade = cascade;
+        return this;
+    }
 
-	public static SqlStatement[] createFromSqlStatements(final SqlStatement[] superSql, final Boolean cascade) {
-		final List<SqlStatement> statements = new ArrayList<>();
-		
-		for (final SqlStatement statement : superSql) {
-			if (statement instanceof DropForeignKeyConstraintStatement) {
-				statements.add(new DropForeignKeyConstraintCascadeStatement((DropForeignKeyConstraintStatement)statement, cascade));
-			} else {
-				statements.add(statement);
-			}
-		}
-		return statements.toArray(new SqlStatement[0]);
-	}
+    public Boolean getCascade() {
+        return m_cascade;
+    }
+
+    public static SqlStatement[] createFromSqlStatements(final SqlStatement[] superSql, final Boolean cascade) {
+        final List<SqlStatement> statements = new ArrayList<>();
+
+        for (final SqlStatement statement : superSql) {
+            if (statement instanceof DropForeignKeyConstraintStatement) {
+                statements.add(new DropForeignKeyConstraintCascadeStatement((DropForeignKeyConstraintStatement)statement, cascade));
+            } else {
+                statements.add(statement);
+            }
+        }
+        return statements.toArray(new SqlStatement[0]);
+    }
 }

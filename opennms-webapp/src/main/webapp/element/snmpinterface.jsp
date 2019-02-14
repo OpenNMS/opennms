@@ -100,7 +100,7 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
 
 <ul class="list-inline">
   <% if (ifIndex > 0 ) { %>
-  	<li>
+  	<li class="list-inline-item">
       <a href="<%=eventUrl2%>">View Events by ifIndex</a>
   	</li>
   <% } %>
@@ -116,13 +116,13 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
       <c:param name="reports" value="all"/>
       <c:param name="resourceId" value="<%=resourceId.toString()%>"/>
     </c:url>
-    <li>
+    <li class="list-inline-item">
       <a href="<c:out value="${graphLink}"/>">SNMP Interface Data Graphs</a>
     </li>
    <% 
     }
     if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
-    <li>
+    <li class="list-inline-item">
       <a href="admin/deleteInterface" onClick="return doDelete()">Delete</a>
     </li>
   <% } %>       
@@ -136,12 +136,12 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
 
 	<div class="col-md-6">
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">General</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>General</span>
       </div>
       <!-- general info box -->
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <tr>
           <th>Node</th>
           <td><a href="element/node.jsp?node=<%=intf_db.getNodeId()%>"><%=node.getLabel()%></a></td>
@@ -191,11 +191,11 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
     </div>
 
     <!-- SNMP box, if info available -->
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">SNMP Attributes</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>SNMP Attributes</span>
       </div>
-    	<table class="table table-condensed">
+    	<table class="table table-sm">
         <tr>
           <th>Interface Type</th>
           <td><%=ElementUtil.getIfTypeString(intf_db.getSnmpIfType())%></td>
