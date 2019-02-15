@@ -98,47 +98,36 @@
     
 </script>
 
-
-<h2>Destination Paths</h2>
-
 <form method="post" name="path" action="admin/notification/destinationWizard" onsubmit="return newPath();">
-  <input type="hidden" name="userAction" value=""/>
-  <input type="hidden" name="sourcePage" value="destinationPaths.jsp"/>
+    <input type="hidden" name="userAction" value=""/>
+    <input type="hidden" name="sourcePage" value="destinationPaths.jsp"/>
+    <div class="row">
+        <div class="col-md-6">
+    <div class="card">
+        <div class="card-header">
+            <div class="pull-left">
+                <h4>Destination Paths</h4>
+            </div>
+                <input type="submit" class="btn btn-secondary pull-right" value="New Path"/>
+        </div>
+        <div class="card-body">
 
-<div class="row">
-  <div class="col-md-2">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Create a new Destination Path</h3>
-      </div>
-      <div class="panel-body">
-        <input type="submit" class="btn btn-default" value="New Path"/>
-      </div>
-    </div> <!-- panel -->
-  </div> <!-- column -->
-
-  <div class="col-md-2">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Modify/Delete an existing Destination Path.</h3>
-      </div>
-      <div class="panel-body">
-        <select NAME="paths" class="form-control">
-          <% Map<String, Path> pathsMap = new TreeMap<String, Path>(DestinationPathFactory.getInstance().getPaths());
-             for (String key : pathsMap.keySet()) {
-          %>
-               <option VALUE=<%=key%>><%=key%></option>
-          <% } %>
-        </select>
-      </div>
-      <div class="panel-footer">
-        <input type="button" class="btn btn-default" value="Edit" onclick="editPath()"/>
-        <input type="button" class="btn btn-default" value="Delete" onclick="deletePath()"/>
-      </div>
-    </div> <!-- panel -->
-  </div> <!-- column -->
-</div> <!-- row -->
-
+            <div class="mb-2">
+                <select NAME="paths" class="custom-select">
+                    <% Map<String, Path> pathsMap = new TreeMap<String, Path>(DestinationPathFactory.getInstance().getPaths());
+                        for (String key : pathsMap.keySet()) {
+                    %>
+                    <option VALUE=<%=key%>><%=key%>
+                    </option>
+                    <% } %>
+                </select>
+            </div>
+            <input type="button" class="btn btn-secondary" value="Edit" onclick="editPath()"/>
+            <input type="button" class="btn btn-secondary" value="Delete" onclick="deletePath()"/>
+        </div>
+    </div>
+        </div>
+    </div>
 </form>
     
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

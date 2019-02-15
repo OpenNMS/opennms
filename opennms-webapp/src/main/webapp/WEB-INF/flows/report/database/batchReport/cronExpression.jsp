@@ -44,33 +44,25 @@
   <jsp:param name="breadcrumb" value="Run"/>
 </jsp:include>
 
-<div class="row">
-    <div class="col-md-12">
-        <div class="panel">
-            <div class="panel-heading">
-                <h3 class="panel-title">Cron Expression</h3>
+<div class="card">
+    <div class="card-header">
+        <span>Cron Expression</span>
+    </div>
+    <div class="card-body">
+        <p>We use Quartz Scheduler, for information on cron syntax used in Quartz Scheduler there is a great tutorial <a href="http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger" target="_blank">here</a>.</p>
+        <form:form commandName="triggerDetails" cssClass="form">
+            <div class="form-group">
+                <form:label for="cronExpression" path="cronExpression" cssClass="form-check-label">
+                    <c:out value="cron expression"/>
+                </form:label>
+                <form:input path="cronExpression" cssClass="form-control"/>
             </div>
-            <div class="panel-body">
-                <p>We use Quartz Scheduler, for information on cron syntax used in Quartz Scheduler there is a great tutorial <a href="http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger" target="_blank">here</a></p>
-                <form:form commandName="triggerDetails" cssClass="form-horizontal">
-                    <div class="form-group">
-                        <div class="col-md-2">
-                            <form:label for="cronExpression" path="cronExpression" cssClass="label">
-                                <c:out value="cron expression"/>
-                            </form:label>
-                            <form:input path="cronExpression"/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-2">
-                            <input type="submit" class="btn btn-default" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
-                            <input type="submit" class="btn btn-default" name="_eventId_revise" value="Revise"/>&#160;
-                            <input type="submit" class="btn btn-default" name="_eventId_cancel" value="Cancel"/>&#160;
-                        </div>
-                    </div>
-                </form:form>
+            <div class="form-group">
+                <input type="submit" class="btn btn-secondary" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
+                <input type="submit" class="btn btn-secondary" name="_eventId_revise" value="Revise"/>&#160;
+                <input type="submit" class="btn btn-secondary" name="_eventId_cancel" value="Cancel"/>&#160;
             </div>
-        </div>
+        </form:form>
     </div>
 </div>
 

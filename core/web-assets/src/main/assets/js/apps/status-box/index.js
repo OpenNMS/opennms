@@ -115,7 +115,7 @@ const render = function(options) {
 		// create container for graph if it does not exist yet
 		if ($('#' + graph.id).length === 0) {
 			var graphContainer = $('<div/>', {
-				class: 'col-centered col-xs-12 col-sm-6 col-md-6 col-lg-4'
+				class: 'mx-auto col-xs-12 col-sm-6 col-md-6 col-lg-4'
 			});
 			graphContainer.append($('<div></div>', {
 				id: graph.id

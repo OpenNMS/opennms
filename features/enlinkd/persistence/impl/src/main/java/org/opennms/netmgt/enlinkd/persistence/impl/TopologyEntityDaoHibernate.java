@@ -74,7 +74,7 @@ public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements T
     @Override
     public List<OspfLinkTopologyEntity> getOspfLinkTopologyEntities() {
         return (List<OspfLinkTopologyEntity>)getHibernateTemplate().find(
-                "select new org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity(l.id, l.node.id, l.ospfIpAddr, l.ospfRemIpAddr, l.ospfIfIndex) from org.opennms.netmgt.enlinkd.model.OspfLink l");
+                "select new org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity(l.id, l.node.id, l.ospfIpAddr, l.ospfIpMask, l.ospfRemIpAddr, l.ospfIfIndex) from org.opennms.netmgt.enlinkd.model.OspfLink l");
     }
 
 
@@ -82,7 +82,7 @@ public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements T
     public List<SnmpInterfaceTopologyEntity> getSnmpTopologyEntities() {
         return (List<SnmpInterfaceTopologyEntity>)getHibernateTemplate().find(
                 "select new org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity(" +
-                        "i.id, i.ifIndex, i.ifName, i.ifSpeed, i.node.id) from org.opennms.netmgt.model.OnmsSnmpInterface i");
+                        "i.id, i.ifIndex, i.ifName, i.ifAlias, i.ifSpeed, i.node.id) from org.opennms.netmgt.model.OnmsSnmpInterface i");
     }
 
     @Override

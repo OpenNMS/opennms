@@ -49,20 +49,20 @@
   
 <c:if test="${isAdmin}">
   <div class="btn-group" role="group">
-  <form action="admin/distributed/locationMonitorPauseAll.htm" method="post" style="display:inline;">
-    <button class="btn btn-default" type="submit">Pause All</button>
+  <form action="admin/distributed/locationMonitorPauseAll.htm" method="post">
+    <button class="btn btn-secondary mr-2 mb-2" type="submit">Pause All</button>
   </form>
-  <form action="admin/distributed/locationMonitorResumeAll.htm" method="post" style="display:inline;">
-    <button class="btn btn-default" type="submit">Resume All</button>
+  <form action="admin/distributed/locationMonitorResumeAll.htm" method="post">
+    <button class="btn btn-secondary" type="submit">Resume All</button>
   </form>
   </div>
 </c:if>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title"><spring:message code="distributed.pollerStatus.title"/></h3>
+<div class="card">
+  <div class="card-header">
+    <span><spring:message code="distributed.pollerStatus.title"/></span>
   </div>
-  <table class="table table-condensed table-bordered severity">
+  <table class="table table-sm table-bordered severity">
     <tr>
       <th><spring:message code="distributed.area"/></th>
       <th><spring:message code="distributed.definitionName"/></th>

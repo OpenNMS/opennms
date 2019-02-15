@@ -36,9 +36,9 @@
     String severity = System.getProperty("org.opennms.geomap.defaultSeverity", "Normal");
 %>
 
-<div class="panel panel-default fix-subpixel">
-    <div class="panel-heading">
-        <h3 class="panel-title">Regional Status</h3>
+<div class="card fix-subpixel">
+    <div class="card-header">
+        <span>Regional Status</span>
     </div>
     <div>
         <jsp:include page="includes/map.jsp">

@@ -80,25 +80,18 @@
     
 </script>
 
-<h2>Event Notifications</h2>
-
 <form method="post" name="notices" action="admin/notification/noticeWizard/notificationWizard">
 <input type="hidden" name="userAction" value=""/>
 <input type="hidden" name="notice" value=""/>
 <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_NOTICES%>"/>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Add a notification to an event or edit an existing event notification</h3>
+<div class="card">
+  <div class="card-header">
+    <h4 class="pull-left">Event Notifications</h4>
+    <button class="pull-right btn btn-secondary" onclick="javascript:newNotice()"><i class="fa fa-plus"></i> Add New Event Notification</button>
   </div>
-  <table class="table table-condensed">
-    <tr>
-      <td> <input type="button" class="btn btn-default" value="Add New Event Notification" onclick="javascript:newNotice()"/>
-    </tr>
-    <tr>
-      <td valign="top">
-        <h4>Event Notifications</h4>
-        <table class="table table-condensed table-striped">
+  <div class="card-body">
+        <table class="table table-sm table-striped">
           <tr>
             <th colspan="3">
               Actions
@@ -116,10 +109,10 @@
           <c:forEach items="${notifications}" var="notification">
           <tr>
             <td>
-              <input type="button" class="btn btn-default" value="Edit" onclick="javascript:editNotice('${notification.escapedName}')"/>
+              <input type="button" class="btn btn-secondary" value="Edit" onclick="javascript:editNotice('${notification.escapedName}')"/>
             </td>
             <td>
-              <input type="button" class="btn btn-default" value="Delete"  onclick="javascript:deleteNotice('${notification.escapedName}')"/>
+              <input type="button" class="btn btn-secondary" value="Delete"  onclick="javascript:deleteNotice('${notification.escapedName}')"/>
             </td>
             <td>
             <c:choose>
@@ -145,10 +138,8 @@
           </tr>
           </c:forEach>
         </table>
-      </td>
-    </tr>
-  </table>
-</div> <!-- panel -->
+  </div>
+</div> <!-- card -->
 
 </form>
 

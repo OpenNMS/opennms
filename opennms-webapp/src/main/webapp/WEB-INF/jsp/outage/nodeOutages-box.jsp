@@ -53,11 +53,11 @@
 <c:url var="outageLink" value="outage/list.htm">
   <c:param name="filter" value="node=${nodeId}"/>
 </c:url>
-<div class="panel panel-default">
-<div class="panel-heading">
-<h3 class="panel-title"><a href="${outageLink}">Recent&nbsp;Outages</a></h3>
+<div class="card">
+<div class="card-header">
+<span><a href="${outageLink}">Recent&nbsp;Outages</a></span>
 </div>
-<table class="table table-condensed severity">
+<table class="table table-sm severity">
 <% if(outages.length == 0) { %>
   <tr>
     <td>There have been no outages on this node in the last 24 hours.</td>

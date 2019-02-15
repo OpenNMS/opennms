@@ -9,11 +9,11 @@
   <form name="cloneForm">
     <div class="form-group">
       <div class="form-group">
-        <label class="control-label" for="sourceFS">Source Foreign Source</label>
+        <label class="col-form-label" for="sourceFS">Source Foreign Source</label>
         <input class="form-control" type="text" name="sourceFS" ng-disabled="true" ng-model="foreignSource"></input>
       </div>
       <div class="form-group">
-        <label class="control-label" for="targetFS">Target Foreign Source</label>
+        <label class="col-form-label" for="targetFS">Target Foreign Source</label>
         <input class="form-control" type="text" name="targetFS" placeholder="Target Foreign Source to override (hit space bar to see the options)" ng-model="targetForeignSource" typeahead-min-length="0" typeahead-editable="false" uib-typeahead="fs for fs in availableForeignSources | filter:$viewValue" required></input>
       </div>
     </div>
@@ -22,7 +22,7 @@
 
 <div class="modal-footer">
   <button type="button" class="btn btn-primary" ng-click="save()" ng-disabled="cloneForm.$invalid">Clone</button>
-  <button type="button" class="btn btn-default" ng-click="cancel()" >Cancel</button>
+  <button type="button" class="btn btn-secondary" ng-click="cancel()" >Cancel</button>
 </div>
 
 </div>

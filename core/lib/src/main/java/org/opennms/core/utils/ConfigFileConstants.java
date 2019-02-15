@@ -85,11 +85,6 @@ public abstract class ConfigFileConstants {
     public static final int REPORT_HTML_XSL;
 
     /**
-     * The opennms dhcpd config file
-     */
-    public static final int DHCPD_CONFIG_FILE_NAME;
-
-    /**
      * The opennms notifd config file
      */
     public static final int NOTIFD_CONFIG_FILE_NAME;
@@ -510,8 +505,6 @@ public abstract class ConfigFileConstants {
         KSC_REPORT_FILE_NAME = 46;
         SCRIPTD_CONFIG_FILE_NAME = 47;
 
-        DHCPD_CONFIG_FILE_NAME = 50;
-
         RRD_CONFIG_FILE_NAME = 51;
 
         JAVA_MAIL_CONFIG_FILE_NAME = 52;
@@ -632,7 +625,6 @@ public abstract class ConfigFileConstants {
 
         FILE_ID_TO_NAME[SCRIPTD_CONFIG_FILE_NAME] = "scriptd-configuration.xml";
 
-        FILE_ID_TO_NAME[DHCPD_CONFIG_FILE_NAME] = "dhcpd-configuration.xml";
         FILE_ID_TO_NAME[RRD_CONFIG_FILE_NAME] = "rrd-configuration.properties";
         FILE_ID_TO_NAME[JAVA_MAIL_CONFIG_FILE_NAME] = "javamail-configuration.properties";
         FILE_ID_TO_NAME[VACUUMD_CONFIG_FILE_NAME] = "vacuumd-configuration.xml";

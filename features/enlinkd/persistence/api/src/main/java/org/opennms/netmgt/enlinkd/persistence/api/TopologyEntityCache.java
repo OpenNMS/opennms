@@ -47,7 +47,7 @@ import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
  * We use the cache to improve the displaying speed of topologies.
  */
 public interface TopologyEntityCache {
-    List<NodeTopologyEntity> getNodeTopolgyEntities();
+    List<NodeTopologyEntity> getNodeTopologyEntities();
     List<CdpLinkTopologyEntity> getCdpLinkTopologyEntities();
     List<OspfLinkTopologyEntity> getOspfLinkTopologyEntities();
     List<IsIsLinkTopologyEntity> getIsIsLinkTopologyEntities();

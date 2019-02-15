@@ -101,7 +101,7 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
       }
 
     @Override
-    public List<NodeTopologyEntity> getNodeTopolgyEntities() {
+    public List<NodeTopologyEntity> getNodeTopologyEntities() {
         return this.nodeTopologyEntities.getUnchecked(CACHE_KEY);
     }
 

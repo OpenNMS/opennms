@@ -42,6 +42,7 @@
     <jsp:param name="breadcrumb" value="Help"/>
 </jsp:include>
 
+<div class="row">
 <div class="col-md-4">
     <jsp:include page="/includes/help-documentation.jsp" flush="false" />
 </div>
@@ -50,6 +51,7 @@
 </div>
 <div class="col-md-4">
     <jsp:include page="/includes/help-software-management.jsp" flush="false" />
+</div>
 </div>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

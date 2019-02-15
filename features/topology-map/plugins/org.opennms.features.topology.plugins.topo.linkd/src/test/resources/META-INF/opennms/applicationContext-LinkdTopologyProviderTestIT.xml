@@ -46,6 +46,10 @@
         </property>
     </bean>
 
+    <bean id="genericHibernateAccessor" class="org.opennms.netmgt.dao.hibernate.GenericHibernateAccessor">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
     <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
         <property name="sessionFactory" ref="sessionFactory" />
         <property name="nestedTransactionAllowed" value="true"/>
@@ -59,7 +63,41 @@
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
 
+    <bean id="cdpLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.CdpLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="cdpElementDao" class="org.opennms.netmgt.enlinkd.persistence.impl.CdpElementDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="lldpLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.LldpLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="lldpElementDao" class="org.opennms.netmgt.enlinkd.persistence.impl.LldpElementDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="ospfLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.OspfLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="ospfElementDao" class="org.opennms.netmgt.enlinkd.persistence.impl.OspfElementDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="isisLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.IsIsLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="isisElementDao" class="org.opennms.netmgt.enlinkd.persistence.impl.IsIsElementDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
+
+    <bean id="onmsTopologyDao" class="org.opennms.netmgt.topologies.service.impl.OnmsTopologyDaoInMemoryImpl"/>
 
     <bean id="topologyEntityDao" class="org.opennms.netmgt.enlinkd.persistence.impl.TopologyEntityDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />
@@ -69,34 +107,67 @@
         <property name="topologyEntityDao" ref="topologyEntityDao" />
     </bean>
 
-    <bean id="ipNetToMediaDao" class="org.opennms.netmgt.enlinkd.persistence.impl.IpNetToMediaDaoHibernate">
-        <property name="sessionFactory" ref="sessionFactory" />
+    <bean id="nodeTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.NodeTopologyServiceImpl">
+      <property name="nodeDao" ref="nodeDao" />
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
     </bean>
+        
+   <bean id="cdpTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.CdpTopologyServiceImpl">
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
+      <property name="cdpLinkDao" ref="cdpLinkDao" />
+      <property name="cdpElementDao" ref="cdpElementDao" />
+   </bean>
 
-    <bean id="bridgeBridgeLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.BridgeBridgeLinkDaoHibernate">
-        <property name="sessionFactory" ref="sessionFactory" />
-    </bean>
+   <bean id="isisTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.IsisTopologyServiceImpl">
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
+      <property name="isisLinkDao" ref="isisLinkDao" />
+      <property name="isisElementDao" ref="isisElementDao" />
+   </bean>
 
-    <bean id="bridgeElementDao" class="org.opennms.netmgt.enlinkd.persistence.impl.BridgeElementDaoHibernate">
-        <property name="sessionFactory" ref="sessionFactory" />
-    </bean>
+   <bean id="lldpTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.LldpTopologyServiceImpl">
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
+      <property name="lldpLinkDao" ref="lldpLinkDao" />
+      <property name="lldpElementDao" ref="lldpElementDao" />
+   </bean>
+   
+   <bean id="ospfTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.OspfTopologyServiceImpl">
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
+      <property name="ospfLinkDao" ref="ospfLinkDao" />
+      <property name="ospfElementDao" ref="ospfElementDao" />
+   </bean>
 
-    <bean id="bridgeMacLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.BridgeMacLinkDaoHibernate">
-        <property name="sessionFactory" ref="sessionFactory" />
-    </bean>
+	<bean id ="nodesOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.NodesOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
 
-    <bean id="bridgeTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.BridgeTopologyServiceImpl">
-        <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
-        <property name="bridgeElementDao" ref="bridgeElementDao" />
-        <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
-    </bean>
+	<bean id ="cdpOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.CdpOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="cdpTopologyService" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
+	<bean id ="isisOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.IsisOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="isisTopologyService" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
+	<bean id ="lldpOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.LldpOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="lldpTopologyService" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
+	<bean id ="ospfOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.OspfOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="ospfTopologyService" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
 
     <bean id="enLinkdTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
         <constructor-arg ref="metricRegistry"/>
-        <property name="nodeDao" ref="nodeDao" />
-        <property name="topologyEntityCache" ref="topologyEntityCache" />
-        <property name="bridgeTopologyService" ref="bridgeTopologyService" />
-        <property name="ipNetToMediaDao" ref="ipNetToMediaDao"/>
+        <property name="onmsTopologyDao" ref="onmsTopologyDao" />
     </bean>
 
 </beans>

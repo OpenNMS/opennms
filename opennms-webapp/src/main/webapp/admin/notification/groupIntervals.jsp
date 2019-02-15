@@ -76,14 +76,14 @@
   <%=Util.makeHiddenTags(request)%>
   <input type="hidden" name="sourcePage" value="groupIntervals.jsp"/>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Choose the interval to wait between contacting each member in the groups.</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Choose the interval to wait between contacting each member in the groups.</span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <div class="row">
       <div class="col-md-6">
-        <table class="table table-condensed table-borderless">
+        <table class="table table-sm table-borderless">
           <tr>
             <td valign="top" align="left">
             <%=intervalTable(newPath,
@@ -92,18 +92,14 @@
                              intervals)%>
             </td>
           </tr>
-          <tr>
-            <td colspan="2">
-              <input type="reset" class="btn btn-default"/>
-            </td>
-          </tr>
         </table>
       </div> <!-- column -->
     </div> <!-- row -->
-  </div> <!-- panel-body -->
-  <div class="panel-footer">
-    <a HREF="javascript:document.groupIntervals.submit()">Next &#155;&#155;&#155;</a>
-  </div> <!-- panel-footer -->
+  </div> <!-- card-body -->
+  <div class="card-footer">
+      <input type="reset" class="btn btn-secondary"/>
+      <a class="btn btn-secondary" href="javascript:document.groupIntervals.submit()">Next Step <i class="fa fa-arrow-right"></i></a>
+  </div> <!-- card-footer -->
 </div> <!-- panel -->
 
 </form>
@@ -113,7 +109,7 @@
 <%!
     public String intervalTable(Path path, String[] groups, int index, String[] intervals)
     {
-        StringBuffer buffer = new StringBuffer("<table class=\"table table-condensed table-borderless\">");
+        StringBuffer buffer = new StringBuffer("<table class=\"table table-sm table-borderless\">");
         
         for (int i = 0; i < groups.length; i++)
         {
@@ -128,7 +124,7 @@
     
     public String buildIntervalSelect(Path path, String group, int index, String[] intervals)
     {
-        StringBuffer buffer = new StringBuffer("<select class=\"form-control\" NAME=\"" + group + "Interval\">");
+        StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" NAME=\"" + group + "Interval\">");
         
         String selectedOption = "0m";
         

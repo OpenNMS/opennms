@@ -46,17 +46,17 @@
 
 <div class="row" >
     <div class="col-md-12">
-        <div class="panel panel-success">
-            <div class="panel-heading">
-                <h3 class="panel-title">Report Error</h3>
+        <div class="card">
+            <div class="card-header">
+                <span>Report Error</span>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <form:form role="form">
                     <c:forEach var="message" items="${flowRequestContext.messageContext.allMessages}">
                         <div class="alert alert-danger" role="alert">${message.text}</div>
                     </c:forEach>
                     <%--An error has occurred and it has not been possible to run or schedule your report.--%>
-                    <input type="submit" class="btn btn-default" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
+                    <input type="submit" class="btn btn-secondary" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
                 </form:form>
             </div>
 

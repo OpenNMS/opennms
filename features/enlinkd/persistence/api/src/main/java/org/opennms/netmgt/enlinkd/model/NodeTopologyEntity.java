@@ -57,7 +57,7 @@ public class NodeTopologyEntity implements Serializable {
         this(id, type, sysObjectId, label, location.getLocationName());
     }
 
-    public static NodeTopologyEntity create(OnmsNode node){
+    public static NodeTopologyEntity toNodeTopologyInfo(OnmsNode node){
         return new NodeTopologyEntity(node.getId(), node.getType(), node.getSysObjectId(), node.getLabel(), node.getLocation().getLocationName());
     }
 

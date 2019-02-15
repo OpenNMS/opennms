@@ -82,7 +82,7 @@ public class DefaultServiceCollectorRegistry implements ServiceCollectorRegistry
         if (serviceCollector != null) {
             final String className = getClassName(properties);
             if (className == null) {
-                LOG.warn("Unable to determine the class name for collector: {}, with properties: {}. The monitor will not be registered.",
+                LOG.warn("Unable to determine the class name for collector: {}, with properties: {}. The collector will not be registered.",
                         serviceCollector, properties);
                 return;
             }
@@ -96,7 +96,7 @@ public class DefaultServiceCollectorRegistry implements ServiceCollectorRegistry
         if (serviceCollector != null) {
             final String className = getClassName(properties);
             if (className == null) {
-                LOG.warn("Unable to determine the class name for collector: {}, with properties: {}. The monitor will not be unregistered.",
+                LOG.warn("Unable to determine the class name for collector: {}, with properties: {}. The collector will not be unregistered.",
                         serviceCollector, properties);
                 return;
             }

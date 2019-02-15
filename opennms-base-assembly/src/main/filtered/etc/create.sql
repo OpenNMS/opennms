@@ -1936,6 +1936,9 @@ create table isisLink (
 
 create table ipNetToMedia (
     id                      integer default nextval('opennmsNxtId') not null,
+    nodeid                  integer,
+    ifIndex                 integer,
+    port                    text,
     netAddress              text not null,
     physAddress             varchar(32) not null,
     sourceNodeId            integer not null,
@@ -1943,7 +1946,8 @@ create table ipNetToMedia (
     createTime     timestamp not null,
     lastPollTime   timestamp not null,
     constraint pk_ipnettomedia_id primary key (id),
-    constraint fk_sourcenodeid_ipnettomedia foreign key (sourcenodeid) references node (nodeid) 
+    constraint fk_ipnettomedia_nodeid foreign key (nodeid) references node (nodeid), 
+    constraint fk_ipnettomedia_sourcenodeid foreign key (sourcenodeid) references node (nodeid) 
 );
 
 create table bridgeElement (

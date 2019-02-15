@@ -73,7 +73,6 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.streams.StreamsConfig;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -85,8 +84,8 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
-import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync;
+import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.netmgt.alarmd.AlarmLifecycleListenerManager;
@@ -102,6 +101,8 @@ import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsHwEntityAlias;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -173,8 +174,10 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
     private KafkaMessageConsumerRunner kafkaConsumer;
 
+    @Autowired
+    private OnmsTopologyDao onmsTopologyDao;
     @Before
-    public void setUp() throws IOException {
+    public void setUp() throws IOException, OnmsTopologyException {
         File data = tempFolder.newFolder("data");
         eventdIpcMgr.setEventWriter(mockDatabase);
 
@@ -226,7 +229,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         when(configAdmin.getConfiguration(OpennmsKafkaProducer.KAFKA_CLIENT_PID).getProperties()).thenReturn(producerConfig);
         when(configAdmin.getConfiguration(KafkaAlarmDataSync.KAFKA_STREAMS_PID).getProperties()).thenReturn(streamsConfig);
 
-        kafkaProducer = new OpennmsKafkaProducer(protobufMapper, nodeCache, configAdmin, eventdIpcMgr);
+        kafkaProducer = new OpennmsKafkaProducer(protobufMapper, nodeCache, configAdmin, eventdIpcMgr, onmsTopologyDao);
         kafkaProducer.setEventTopic(EVENT_TOPIC_NAME);
         // Don't forward newSuspect events
         kafkaProducer.setEventFilter("!getUei().equals(\"" + EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI + "\")");

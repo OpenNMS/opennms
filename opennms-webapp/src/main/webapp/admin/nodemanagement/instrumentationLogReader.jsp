@@ -119,11 +119,11 @@ pageContext.setAttribute("searchString", searchString==null?"":Util.encode(searc
 
 <div class="row">
   <div class="col-md-4">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Instrumentation Log Statistics</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Instrumentation Log Statistics</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
         Start time: ${collector.startTime == null ? "N/A" : collector.startTime}
         </p>
@@ -147,34 +147,34 @@ pageContext.setAttribute("searchString", searchString==null?"":Util.encode(searc
         the <em>log4j2.xml</em> configuration file.
         </p>
         </c:if>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
 
 <div class="row">
   <div class="col-md-4">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Filtering</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Filtering</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <form id="ILRfilter" action="admin/nodemanagement/instrumentationLogReader.jsp" method="get" style="display:inline">
           <input type="text" class="form-control" name="searchString" size="15" value="<%=searchString==null?"":WebSecurityUtils.sanitizeString(searchString)%>"/>
-          <button type="submit" class="btn btn-default">Submit</button>
+          <button type="submit" class="btn btn-secondary mt-1">Submit</button>
         </form>
         <form id="ILRreset" action="admin/nodemanagement/instrumentationLogReader.jsp" method="get" style="display:inline">
           <input type="hidden" name="searchString" value=""/>
-          <button type="submit" class="btn btn-default">Reset</button>
+          <button type="submit" class="btn btn-secondary mt-1">Reset</button>
         </form>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
 
 <div class="row">
   <div class="col-md-12">
-    <table class="table table-condensed table-striped">
+    <table class="table table-sm table-striped">
       <tr>
       <th>Service</th>
       <c:choose>

@@ -9,14 +9,14 @@
   </div>
 </div>
 <div class="form-group">
-  <label class="control-label" for="snmpVersion">Version</label>
-  <select class="form-control" id="snmpVersion" name="snmpVersion" ng-model="node.snmpVersion" ng-disabled="node.noSnmp">
+  <label class="col-form-label" for="snmpVersion">Version</label>
+  <select class="form-control custom-select" id="snmpVersion" name="snmpVersion" ng-model="node.snmpVersion" ng-disabled="node.noSnmp">
     <option>v1</option>
     <option selected>v2c</option>
   </select>
 </div>
 <div class="form-group">
-  <label class="control-label" for="snmpCommunity">Community String</label>
+  <label class="col-form-label" for="snmpCommunity">Community String</label>
   <input class="form-control" type="text" id="snmpCommunity" name="snmpCommunity" placeholder="SNMP Community String" ng-model="node.snmpCommunity" ng-disabled="node.noSnmp"></input>
 </div>
 

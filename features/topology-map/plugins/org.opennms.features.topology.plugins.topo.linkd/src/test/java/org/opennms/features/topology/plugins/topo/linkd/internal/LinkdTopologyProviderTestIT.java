@@ -51,8 +51,13 @@ import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
+import org.opennms.netmgt.enlinkd.CdpOnmsTopologyUpdater;
+import org.opennms.netmgt.enlinkd.IsisOnmsTopologyUpdater;
+import org.opennms.netmgt.enlinkd.LldpOnmsTopologyUpdater;
+import org.opennms.netmgt.enlinkd.NodesOnmsTopologyUpdater;
+import org.opennms.netmgt.enlinkd.OspfOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
-import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +69,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-LinkdTopologyProviderTestIT.xml"
 })
@@ -82,15 +86,32 @@ public class LinkdTopologyProviderTestIT {
 
     @Autowired
     TopologyEntityCache entityCache;
+    
+    @Autowired
+    NodesOnmsTopologyUpdater nodesOnmsTopologyUpdater;
 
     @Autowired
-    BridgeTopologyService bridgeTopologyService;
+    CdpOnmsTopologyUpdater cdpOnmsTopologyUpdater;
 
+    @Autowired
+    IsisOnmsTopologyUpdater isisOnmsTopologyUpdater;
+    
+    @Autowired
+    LldpOnmsTopologyUpdater lldpOnmsTopologyUpdater;
+    
+    @Autowired
+    OspfOnmsTopologyUpdater ospfOnmsTopologyUpdater;
+    
     private TopologyGenerator generator;
 
     @BeforeTransaction
     public void setUp() {
-        bridgeTopologyService.load(); // avoid Nullpointer later
+        nodesOnmsTopologyUpdater.register();
+        cdpOnmsTopologyUpdater.register();
+        isisOnmsTopologyUpdater.register();
+        lldpOnmsTopologyUpdater.register();
+        ospfOnmsTopologyUpdater.register();
+        
         TopologyGenerator.ProgressCallback progressCallback = new TopologyGenerator.ProgressCallback(LOG::info);
         TopologyPersister persister = new TopologyPersister(genericPersistenceAccessor, progressCallback);
         generator = TopologyGenerator.builder()
@@ -100,34 +121,34 @@ public class LinkdTopologyProviderTestIT {
 
     @Test
     @Transactional
-    public void testCdp() {
+    public void testCdp()throws Exception {
         test(TopologyGenerator.Protocol.cdp);
     }
 
     @Test
     @Transactional
-    public void testLldp() {
+    public void testLldp() throws Exception {
         test(TopologyGenerator.Protocol.lldp);
     }
 
     @Test
     @Transactional
-    public void testIsis() {
+    public void testIsis() throws Exception {
         test(TopologyGenerator.Protocol.isis);
     }
 
     @Test
     @Transactional
-    public void testOspf() {
+    public void testOspf() throws Exception {
         test(TopologyGenerator.Protocol.ospf);
     }
 
-    private void test(TopologyGenerator.Protocol protocol){
+    private void test(TopologyGenerator.Protocol protocol) throws OnmsTopologyException{
         testAmounts(protocol);
         testLinkingBetweenNodes(protocol);
     }
 
-    private void testAmounts(TopologyGenerator.Protocol protocol) {
+    private void testAmounts(TopologyGenerator.Protocol protocol) throws OnmsTopologyException {
 
         TopologySettings settings = TopologySettings.builder()
                 .protocol(protocol)
@@ -143,13 +164,20 @@ public class LinkdTopologyProviderTestIT {
 
         // 3.) Invalidate cache - nothing should be found:
         entityCache.refresh();
-        linkdTopologyProvider.refresh();
+        refresh();
         assertEquals(0, linkdTopologyProvider.getVerticesWithoutGroups().size());
     }
 
-    private void verifyAmounts(TopologySettings settings) {
+    private void refresh() throws OnmsTopologyException {
+        nodesOnmsTopologyUpdater.setTopology(nodesOnmsTopologyUpdater.buildTopology());
+        cdpOnmsTopologyUpdater.setTopology(cdpOnmsTopologyUpdater.buildTopology());
+        isisOnmsTopologyUpdater.setTopology(isisOnmsTopologyUpdater.buildTopology());
+        lldpOnmsTopologyUpdater.setTopology(lldpOnmsTopologyUpdater.buildTopology());
+        ospfOnmsTopologyUpdater.setTopology(ospfOnmsTopologyUpdater.buildTopology());
         linkdTopologyProvider.refresh();
-
+    }
+    private void verifyAmounts(TopologySettings settings) throws OnmsTopologyException {
+        refresh();
         List<Vertex> vertices = linkdTopologyProvider.getVerticesWithoutGroups();
 
         // Check amount nodes
@@ -165,16 +193,18 @@ public class LinkdTopologyProviderTestIT {
         assertEquals(expectedAmountOfEdges, allEdges.size());
     }
 
-    private void generateTopologyAndRefreshCaches(TopologySettings settings){
+    private void generateTopologyAndRefreshCaches(TopologySettings settings) throws OnmsTopologyException{
         generator.generateTopology(settings);
         entityCache.refresh();
-        linkdTopologyProvider.refresh();
+        
+        refresh();
     }
 
     /**
      * Generates a ring topology and verifies that each Vertex is connected to it's neighbors.
+     * @throws OnmsTopologyException 
      */
-    private void testLinkingBetweenNodes(TopologyGenerator.Protocol protocol) {
+    private void testLinkingBetweenNodes(TopologyGenerator.Protocol protocol) throws OnmsTopologyException {
 
         // 1.) Generate Topology
         TopologySettings settings = TopologySettings.builder()

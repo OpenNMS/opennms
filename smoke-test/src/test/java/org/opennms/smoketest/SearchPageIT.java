@@ -48,10 +48,10 @@ public class SearchPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllTextIsPresent() throws Exception {
-        assertEquals(3, countElementsMatchingCss("h3.panel-title"));
-        findElementByXpath("//h3[text()='Search for Nodes']");
-        findElementByXpath("//h3[text()='Search Asset Information']");
-        findElementByXpath("//h3[text()='Search Options']");
+        assertEquals(3, countElementsMatchingCss("div.card-header"));
+        findElementByXpath("//span[text()='Search for Nodes']");
+        findElementByXpath("//span[text()='Search Asset Information']");
+        findElementByXpath("//span[text()='Search Options']");
     }
 
     @Test 
@@ -77,23 +77,23 @@ public class SearchPageIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testAllLinks() throws InterruptedException {
         findElementByLink("All nodes").click();
-        findElementByXpath("//h3//span[text()='Nodes']");
+        findElementByXpath("//div[@class='btn-toolbar']/span[text()='Nodes']");
 
         searchPage();
         findElementByLink("All nodes and their interfaces").click();
-        findElementByXpath("//h3[text()='Nodes and their interfaces']");
+        findElementByXpath("//span[text()='Nodes and their interfaces']");
         findElementByLink("Hide interfaces");
 
         searchPage();
         findElementByLink("All nodes with asset info").click();
-        findElementByXpath("//h3[text()='Assets']");
+        findElementByXpath("//span[text()='Assets']");
     }
 
     @Test
     public void testSearchMacAddress() throws Exception {
         final WebElement maclike = enterText(By.cssSelector("input[name='maclike']"), "0");
         maclike.sendKeys(Keys.ENTER);
-        findElementByXpath("//div[@id='content']/ol/li[text()='Node List']");
-        findElementByXpath("//h3[@class='panel-title']/span[text()='Nodes']");
+        findElementByXpath("//div[@id='content']/nav/ol/li[text()='Node List']");
+        findElementByXpath("//div[@class='card-header']//div[@class='btn-toolbar']/span[text()='Nodes']");
     }
 }

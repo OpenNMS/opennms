@@ -84,6 +84,9 @@
             <!-- Enlinkd features -->
             <repository>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.service.api/${project.version}/xml/features</repository>
 
+            <!-- Topologies features -->
+            <repository>mvn:org.opennms.features.topologies/org.opennms.features.topologies.service.api/${project.version}/xml/features</repository>
+
             <!-- BSM features -->
             <repository>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service.api/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features.bsm/org.opennms.features.bsm.shell-commands/${project.version}/xml/features</repository>
@@ -338,6 +341,9 @@
 
             <!-- Enlinkd -->
             <feature>org.opennms.features.enlinkd.service.api</feature>
+
+            <!-- Topologies -->
+            <feature>org.opennms.features.topologies.service.api</feature>
 
             <!-- BSM -->
             <feature>org.opennms.features.bsm.service.api</feature>
@@ -899,6 +905,12 @@
       <artifactId>karaf-features</artifactId>
       <version>${opennmsApiVersion}</version>
       <type>xml</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topologies</groupId>
+      <artifactId>org.opennms.features.topologies.service.api</artifactId>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

@@ -4,6 +4,8 @@
 
 ==== OSPF Discovery
 
+The following MIBSs are supported to discover and build the _OSPF_ network topology and are collected by the _OSPF Discovery Collector_.
+
 The relevant MIBs for OSPF topology are _OSPF-MIB_ and _OSPF-TRAP-MIB_.
 In these MIBs are defined the relevant objects used to find OSPF links, specifically:
 
@@ -52,3 +54,7 @@ Information gathered from these OIDs will be stored in the following database ta
 
 .Database tables related to OSPF discovery
 image::enlinkd/ospf-database.png[]
+
+
+_OSPF Topology Updater_ provide OSPF OnmsTopology consolidating OSPF data collected by _OSPF Collector_ only full bidirectional connections between two OSPF supported devices become _Edges_.
+_Node A_  and _Node B_ are connected by an _OSPF Edge_ if and only if there is a _OSPF link_ in _Node A_ to _Node B_ and viceversa.

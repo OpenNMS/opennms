@@ -103,8 +103,8 @@
   <input type="hidden" name="groupName"/>
   <input type="hidden" name="newName"/>
 
-  <div class="panel panel-default">
-    <table class="table table-condensed table-bordered">
+  <div class="card">
+    <table class="table table-sm table-bordered">
          <tr>
           <th>Delete</th>
           <th>Modify</th>
@@ -130,10 +130,10 @@
           <td width="5%" class="text-center">
             <c:choose>
               <c:when test='${group.name != "Admin"}'>
-                <button id="${group.name}.doRename" type="button" class="btn btn-default" name="rename" onclick="renameGroup('${group.name}')">Rename</button>
+                <button id="${group.name}.doRename" type="button" class="btn btn-secondary" name="rename" onclick="renameGroup('${group.name}')">Rename</button>
               </c:when>
               <c:otherwise>
-                <button id="${group.name}.doRename" type="button" class="btn btn-default" name="rename" onclick="alert('Sorry, the Admin group cannot be renamed.')">Rename</button>
+                <button id="${group.name}.doRename" type="button" class="btn btn-secondary" name="rename" onclick="alert('Sorry, the Admin group cannot be renamed.')">Rename</button>
               </c:otherwise>
             </c:choose>
           </td>

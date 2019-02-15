@@ -54,13 +54,6 @@
   <jsp:param name="asset" value="jquery-js" />
 </jsp:include>
 
-<style type="text/css">
-        /* TODO shouldn't be necessary */
-        .ui-button { margin-left: -1px; }
-        .ui-button-icon-only .ui-button-text { padding: 0em; }
-        .ui-autocomplete-input { margin: 0; padding: 0.12em 0 0.12em 0.20em; }
-</style>
-
 <script type="text/javascript" >
 
     function next()
@@ -83,9 +76,12 @@
                 var self = this;
                 // Hide the existing tag
                 var select = this.element.hide();
+
+                var wrapper = $("<div class=\"input-group\">").appendTo(select.parent());
+
                 // Add an autocomplete text field
-                var input = $("<input name=\"" + self.options.name + "\">")
-                                .insertAfter(select)
+                var input = $("<input class=\"form-control\" name=\"" + self.options.name + "\">")
+                                .appendTo(wrapper)
                                 .autocomplete({
                                     source: self.options.jsonUrl,
                                     delay: 1000,
@@ -108,22 +104,13 @@
                                         }
                                     },
                                     minLength: 0
-                                })
-                                .addClass("ui-widget ui-widget-content ui-corner-left");
+                                });
 
                 // Add a dropdown arrow button that will expand the entire list
-                $("<button type=\"button\">&nbsp;</button>")
+                $('<div class="input-group-append"><button type="button" class="btn btn-secondary"><i class="fa fa-caret-down"></i></button></div>')
                     .attr("tabIndex", -1)
                     .attr("title", "Show All Items")
                     .insertAfter(input)
-                    .button({
-                        icons: {
-                            primary: "ui-icon-triangle-1-s"
-                        },
-                        text: false
-                    })
-                    .removeClass("ui-corner-all")
-                    .addClass("ui-corner-right ui-button-icon")
                     .click(function() {
                         // close if already visible
                         if (input.autocomplete("widget").is(":visible")) {
@@ -143,94 +130,114 @@
         $('#addparm').click(function(event) {
           event.preventDefault();
           var lastNum = 0;
-          $('#parmlist > div').each(function(index,el) {
+          $('#parmlist > tbody > tr').each(function(index,el) {
             var num = Number( $(el).attr('id').substring(4) );
             if (lastNum <= num) { lastNum = num + 1; }
           });
+
           var nextParm = 'parm' + lastNum;
-          $('<div id="' + nextParm + '"></div>')
+          var tbody = $('#parmlist > tbody');
+          var row = $('<tr id="'+nextParm+'"></tr>')
+              .appendTo(tbody);
+          $(row)
+            .append($('<td></td>')
             .append(
-                $('<input type="image" src="images/redcross.gif" />')
-                  .attr('id', nextParm+'.delete')
-                  .attr('name', nextParm+'.delete')
-                  .click(function() {
-                    $(this).parent().remove();
-                  })
-              , ' ')
-            .append('Name: <input id="'+nextParm+'.name" name="'+nextParm+'.name" type="text" value="" /> ')
-            .append('Value: <textarea id="'+nextParm+'.value" name="'+nextParm+'.value" cols="60" rows="1"></textarea>')
-          .appendTo($('#parmlist'));
+                $('<button type="button" role="button" class="btn btn-link"><i class="fa fa-trash"></i></button>')
+                    .attr('id', nextParm+'.delete')
+                    .attr('name', nextParm+'.delete')
+                    .click(function(e) {
+                        e.preventDefault();
+                        $("#" + nextParm).remove();
+                        if ($("#parmlist > tbody > tr").length == 0) {
+                            $('#parmlist').addClass("invisible");
+                        }
+                    })
+            )
+          );
+          $(row).append($('<td></td>').append('<input id="'+nextParm+'.name" name="'+nextParm+'.name" type="text" value="" class="form-control" />'));
+          $(row).append($('<td></td>').append('<input id="'+nextParm+'.value" name="'+nextParm+'.value" type="text" value="" class="form-control" />'));
+          $('#parmlist').removeClass("invisible");
         });
     });
 
 </script>
 
-<form role="form" class="form-horizontal" method="post" name="sendevent" id="form.sendevent" action="admin/postevent.jsp">
+<form role="form" class="form" method="post" name="sendevent" id="form.sendevent" action="admin/postevent.jsp">
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Send Event to OpenNMS</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Send Event to OpenNMS</span>
       </div>
-      <div class="panel-body">
-        <div class="form-group">
-          <label for="input.uei" class="col-sm-2 control-label">Event</label>
-          <div class="col-sm-10">
-            <select name="uei" class="form-control" id="input.uei" >
+      <div class="card-body">
+       <div class="form-group form-row">
+          <label for="input.uei" class="col-sm-3 col-form-label">Event</label>
+          <div class="col-sm-9">
+            <select name="uei" class="form-control custom-select" id="input.uei" >
               <option value="">--Select One--</option>
               ${model.eventSelect}
             </select>
           </div>
         </div>
-        <div class="form-group">
-          <label for="uuid" class="col-sm-2 control-label">UUID</label>
-          <div class="col-sm-10">
+       <div class="form-group form-row">
+          <label for="uuid" class="col-sm-3 col-form-label">UUID</label>
+          <div class="col-sm-9">
             <input id="uuid" name="uuid" class="form-control" type="text" value="" />
           </div>
         </div>
-        <div class="form-group">
-          <label for="nodeSelect" class="col-sm-2 control-label">Node ID:</label>
-          <div class="col-sm-10">
-            <select id="nodeSelect" name="nodeSelect" class="form-control" style="display: none"></select>
+       <div class="form-group form-row">
+          <label for="nodeSelect" class="col-sm-3 col-form-label">Node ID</label>
+          <div class="col-sm-9">
+            <select id="nodeSelect" name="nodeSelect" class="form-control custom-select" style="display: none"></select>
           </div>
         </div>
-        <div class="form-group">
-          <label for="hostname" class="col-sm-2 control-label">Source Hostname:</label>
-          <div class="col-sm-10">
+       <div class="form-group form-row">
+          <label for="hostname" class="col-sm-3 col-form-label">Source Hostname</label>
+          <div class="col-sm-9">
             <input id="hostname" name="hostname" class="form-control" type="text" value="<%=hostName%>" />
           </div>
         </div>
-        <div class="form-group">
-          <label for="interfaceSelect" class="col-sm-2 control-label">Interface:</label>
-          <div class="col-sm-10">
-            <select id="interfaceSelect" name="interfaceSelect" class="form-control" style="display: none"></select>
+       <div class="form-group form-row">
+          <label for="interfaceSelect" class="col-sm-3 col-form-label">Interface</label>
+          <div class="col-sm-9">
+            <select id="interfaceSelect" name="interfaceSelect" class="form-control custom-select" style="display: none"></select>
           </div>
         </div>
-        <div class="form-group">
-          <label for="service" class="col-sm-2 control-label">Service:</label>
-          <div class="col-sm-10">
+       <div class="form-group form-row">
+          <label for="service" class="col-sm-3 col-form-label">Service</label>
+          <div class="col-sm-9">
             <input id="service" name="service" class="form-control" type="text" value="" />
           </div>
         </div>
-        <div class="form-group">
-          <label for="service" class="col-sm-2 control-label">Parameters:</label>
-          <div class="col-sm-10">
-            <div id="parmlist"></div>
-            <br/>
-            <a id="addparm">Add additional parameter</a>
+       <div class="form-group form-row">
+          <label for="service" class="col-sm-3 col-form-label">Parameters</label>
+          <div class="col-sm-9">
+            <table id="parmlist" class="table table-sm table-borderless invisible">
+                <thead>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td>Name</td>
+                        <td>Value</td>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+            <a href id="addparm">Add additional parameter</a>
           </div>
         </div>
-        <div class="form-group">
-          <label for="description" class="col-sm-2 control-label">Description:</label>
-          <div class="col-sm-10">
+       <div class="form-group form-row">
+          <label for="description" class="col-sm-3 col-form-label">Description</label>
+          <div class="col-sm-9">
             <textarea id="description" name="description" class="form-control" rows="5" style="resize: none;"></textarea>
           </div>
         </div>
-        <div class="form-group">
-          <label for="input_severity" class="col-sm-2 control-label">Severity:</label>
-          <div class="col-sm-10">
-                <select name="severity" id="input_severity" class="form-control">
+       <div class="form-group form-row">
+          <label for="input_severity" class="col-sm-3 col-form-label">Severity</label>
+          <div class="col-sm-9">
+                <select name="severity" id="input_severity" class="form-control custom-select">
                   <option value="">--Select One--</option>
                   <option>Indeterminate</option>
                   <option>Cleared</option>
@@ -242,21 +249,21 @@
                 </select>
           </div>
         </div>
-        <div class="form-group">
-          <label for="operinstruct" class="col-sm-2 control-label">Operator Instructions:</label>
-          <div class="col-sm-10">
+       <div class="form-group form-row">
+          <label for="operinstruct" class="col-sm-3 col-form-label">Operator Instructions</label>
+          <div class="col-sm-9">
             <textarea id="operinstruct" name="operinstruct" class="form-control" rows="5" style="resize: none;"></textarea>
           </div>
         </div>
-        <div class="form-group">
-          <div class="col-sm-2 col-sm-offset-2">
-            <input type="reset" class="btn btn-default"/>
+       <div class="form-group form-row">
+          <div class="col-sm-3 col-sm-offset-2">
+            <input type="reset" class="btn btn-secondary"/>
           </div>
         </div>
-      </div> <!-- panel-body -->
-      <div class="panel-footer">
+      </div> <!-- card-body -->
+      <div class="card-footer">
         <a href="javascript:next()">Send Event &#155;&#155;&#155;</a>
-      </div> <!-- panel-footer -->
+      </div> <!-- card-footer -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

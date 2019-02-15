@@ -1070,6 +1070,7 @@
 
       <feature>opennms-collection-api</feature>
       <feature>opennms-core-web</feature>
+      <feature>opennms-dhcpd</feature>
       <feature>opennms-icmp-api</feature>
       <feature>opennms-provisioning-api</feature>
       <feature>wsman-integration</feature>
@@ -1084,6 +1085,7 @@
       <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.impl/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-detector-bsf/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-detector-datagram/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-detector-dhcp/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-detector-generic/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-detector-jdbc/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-detector-jmx/${project.version}</bundle>
@@ -1092,6 +1094,11 @@
       <bundle>mvn:org.opennms/opennms-detector-ssh/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-detector-web/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-dhcpd" description="OpenNMS :: Features :: DHCPD" version="${project.version}">
+        <bundle>mvn:org.opennms.features/org.opennms.features.dhcpd/${project.version}</bundle>
+        <bundle>mvn:com.helger/dhcp4java/${dhcp4javaVersion}</bundle>
     </feature>
 
     <feature name="opennms-provisioning-shell" description="OpenNMS :: Provisioning :: Shell" version="${project.version}">
@@ -1143,7 +1150,8 @@
       <!-- We really just need org.apache.httpcomponents out of here -->
       <feature>opennms-core-web</feature>
       <feature>opennms-core-ipc-rpc-api</feature>
-      <feature>opennms-icmp-api</feature> 
+      <feature>opennms-dhcpd</feature>
+      <feature>opennms-icmp-api</feature>
       <feature>opennms-poller-api</feature>
       <feature>opennms-dao-api</feature>
       <feature>opennms-config</feature>

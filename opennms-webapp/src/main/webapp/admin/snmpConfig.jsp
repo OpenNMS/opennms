@@ -162,9 +162,9 @@
 		// hide all not selected elements and show selected Element
 		$("div[class*='snmp-']").each(function() {
 		  if ($(this).hasClass(activeClass)) { // show
-                    $(this).removeClass("hidden");
+            $(this).css("display", "block");
 		  } else { // hide
-		    $(this).addClass("hidden");
+		    $(this).css("display", "none");
 		  }
 		});
 		return true;
@@ -261,52 +261,52 @@
 <%
 if (request.getAttribute("success") != null) {
 %>
-  <h3>Finished configuring SNMP. OpenNMS does not need to be restarted.</h3>
+  <h3 class="alert alert-success">Finished configuring SNMP. OpenNMS does not need to be restarted.</h3>
 <%
 }
 %>
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel">
-      <div class="panel-heading">
-        <h3 class="panel-title">SNMP Config Lookup</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>SNMP Config Lookup</span>
       </div>
-      <div class="panel-body">
-        <form role="form" class="form-horizontal" method="post" name="snmpConfigGetForm" action="admin/snmpConfig?action=get">
-          <div class="form-group">
-            <label for="lookup_ipAddress" class="control-label col-sm-3" data-toggle="tooltip" data-placement="right" title="Specify the IP Address for which you want to lookup the SNMP configuration. Either IPv4 or IPv6 format is allowed.">
+      <div class="card-body">
+        <form role="form" class="form" method="post" name="snmpConfigGetForm" action="admin/snmpConfig?action=get">
+          <div class="form-group form-row">
+            <label for="lookup_ipAddress" class="col-form-label col-sm-3" data-toggle="tooltip" data-placement="right" title="Specify the IP Address for which you want to lookup the SNMP configuration. Either IPv4 or IPv6 format is allowed.">
             IP Address
             </label>
             <div class="col-sm-9">
               <input type="text" class="form-control" name="ipAddress" id="lookup_ipAddress"/>
             </div>
           </div>
-          <div class="form-group">
-            <label for="lookup_location" class="control-label col-sm-3" data-toggle="tooltip" data-placement="right" title="Specify the location for which you want to lookup the SNMP configuration.">
+          <div class="form-group form-row">
+            <label for="lookup_location" class="col-form-label col-sm-3" data-toggle="tooltip" data-placement="right" title="Specify the location for which you want to lookup the SNMP configuration.">
             Location
             </label>
             <div class="col-sm-9">
-              <select id="lookup_location" name="location" class="form-control">
+              <select id="lookup_location" name="location" class="form-control custom-select">
               </select>
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group form-row">
             <div class="col-sm-9 col-sm-offset-2">
-              <button type="submit" class="btn btn-default" name="getConfig">Look up</button>
+              <button type="submit" class="btn btn-secondary" name="getConfig">Look up</button>
             </div>
           </div>
         </form>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 
   <div class="col-md-6">
-    <div class="panel">
-      <div class="panel-heading">
-        <h3 class="panel-title">Descriptions</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Descriptions</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
 		<p>
 			<b>SNMP Config Lookup:</b> You can look up the actual SNMP
 			configuration for a specific IP and location. To do so enter the IP Address 
@@ -329,7 +329,7 @@ if (request.getAttribute("success") != null) {
 			name changed, it may be necessary to update the SNMP information on
 			the interface page for that device (by selecting the "Update SNMP"
 			link) for these changes to take effect.</p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- col-md-6 -->
 </div> <!--  row -->
@@ -339,182 +339,182 @@ if (request.getAttribute("success") != null) {
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel">
-      <div class="panel-heading">
-        <h3 class="panel-title">Updating SNMP Configuration</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Updating SNMP Configuration</span>
       </div>
-      <div class="panel-body">
-          <div class="form-group">
+      <div class="card-body">
+          <div class="form-group form-row">
             <div class="col-sm-12">
               <h3>General Parameters</h3>
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="version" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="Specify the SNMP version you want to use. You are not allowed to set v1/v2c and v3 parameters at the same time.">
-            Version:
+          <div class="form-group form-row">
+            <label for="version" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="Specify the SNMP version you want to use. You are not allowed to set v1/v2c and v3 parameters at the same time.">
+            Version
             </label>
             <div class="col-sm-9">
-              <select id="version" name="version" class="form-control" onChange="onVersionChange()">
+              <select id="version" name="version" class="form-control custom-select" onChange="onVersionChange()">
                 <%=getOptions(version, "v2c", "v1", "v2c", "v3")%>
               </select>
-              <p class="help-block"><b>Default: </b>v2c</p>
+              <p class="form-text text-muted"><b>Default: </b>v2c</p>
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="firstIPAddress" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="Specify the IP Address you want to define as the first IP address. Even if you just want to add a specific IP address enter that one here. Either IPv4 or IPv6 format is allowed.">
-              First IP Address:
+          <div class="form-group form-row">
+            <label for="firstIPAddress" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="Specify the IP Address you want to define as the first IP address. Even if you just want to add a specific IP address enter that one here. Either IPv4 or IPv6 format is allowed.">
+              First IP Address
             </label>
             <div class="col-sm-9">
               <input id="firstIPAddress" name="firstIPAddress" class="form-control" required="required" value="<%=firstIpAddress%>">
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="lastIPAddress" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="If you want to define a range of IP addresses, specify the last IP address. If you just want to add a specific IP address to your SNMP configuration leave this field empty. Either IPv4 or IPv6 format is allowed.">
-            Last IP Address:
+          <div class="form-group form-row">
+            <label for="lastIPAddress" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="If you want to define a range of IP addresses, specify the last IP address. If you just want to add a specific IP address to your SNMP configuration leave this field empty. Either IPv4 or IPv6 format is allowed.">
+            Last IP Address
             </label>
             <div class="col-sm-9">
               <input id="lastIPAddress" name="lastIPAddress" class="form-control">
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="location" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="Specify the location at which SNMP Config needs to be updated">
-            Location:
+          <div class="form-group form-row">
+            <label for="location" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="Specify the location at which SNMP Config needs to be updated">
+            Location
             </label>
             <div class="col-sm-9">
-              <select id="location" name="location" class="form-control">
+              <select id="location" name="location" class="form-control custom-select">
               </select>
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="timeout" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The amount of time, in milliseconds, that OpenNMS will wait for a response from the agent.">
-            Timeout:
+          <div class="form-group form-row">
+            <label for="timeout" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The amount of time, in milliseconds, that OpenNMS will wait for a response from the agent.">
+            Timeout
             </label>
             <div class="col-sm-9">
               <input id="timeout" name="timeout" class="form-control" value="<%=timeout%>">
-              <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_TIMEOUT %> ms</p>
+              <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_TIMEOUT %> ms</p>
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="retryCount" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The number of retries that will be made to connect to the SNMP agent if the initial attempt fails.">
-            Retries:
+          <div class="form-group form-row">
+            <label for="retryCount" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The number of retries that will be made to connect to the SNMP agent if the initial attempt fails.">
+            Retries
             </label>
             <div class="col-sm-9">
               <input id="retryCount" name="retryCount" class="form-control" value="<%=retryCount%>">
-              <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_RETRIES %></p>
+              <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_RETRIES %></p>
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="port" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="This overrides the default port.">
-            Port:
+          <div class="form-group form-row">
+            <label for="port" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="This overrides the default port.">
+            Port
             </label>
             <div class="col-sm-9">
               <input id="port" name="port" class="form-control" value="<%=port%>">
-              <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_PORT %></p>
+              <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_PORT %></p>
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="proxyHost" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="This overrides the default port.">
-            Proxy Host:
+          <div class="form-group form-row">
+            <label for="proxyHost" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="This overrides the default port.">
+            Proxy Host
             </label>
             <div class="col-sm-9">
               <input id="proxyHost" name="proxyHost=" class="form-control" value="<%=proxyHost%>">
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="maxRequestSize" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The maximum size of outgoing SNMP requests. It must be at least 484.">
-            Max Request Size:
+          <div class="form-group form-row">
+            <label for="maxRequestSize" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The maximum size of outgoing SNMP requests. It must be at least 484.">
+            Max Request Size
             </label>
             <div class="col-sm-9">
               <input id="maxRequestSize" name="maxRequestSize" class="form-control" value="<%=maxRequestSize%>">
-              <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_MAX_REQUEST_SIZE %></p>
+              <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_MAX_REQUEST_SIZE %></p>
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="maxVarsPerPdu" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The maximum number of variables per SNMP request.">
-            Max Vars Per Pdu:
+          <div class="form-group form-row">
+            <label for="maxVarsPerPdu" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The maximum number of variables per SNMP request.">
+            Max Vars Per Pdu
             </label>
             <div class="col-sm-9">
               <input id="maxVarsPerPdu" name="maxVarsPerPdu" class="form-control" value="<%=maxVarsPerPdu%>">
-              <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_MAX_VARS_PER_PDU %></p>
+              <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_MAX_VARS_PER_PDU %></p>
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="maxRepetitions" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The maximum number of instances which the agent may return for any variables beyond those specified by the non-repeaters field. Applies only to v2c and v3.">
-            Max Repetitions:
+          <div class="form-group form-row">
+            <label for="maxRepetitions" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The maximum number of instances which the agent may return for any variables beyond those specified by the non-repeaters field. Applies only to v2c and v3.">
+            Max Repetitions
             </label>
             <div class="col-sm-9">
               <input id="maxRepetitions" name="maxRepetitions" class="form-control" value="<%=maxRepetitions%>">
-              <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_MAX_REPETITIONS %></p>
+              <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_MAX_REPETITIONS %></p>
             </div>
           </div>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 
   <!-- v1/v2c parameters -->
-  <div class="col-md-6 hidden snmp-v1 snmp-v2c">
-    <div class="panel">
-      <div class="panel-heading">
-        <h3 class="panel-title">v1/v2c specific parameters</h3>
+  <div class="col-md-6 snmp-v1 snmp-v2c" style="display:none">
+    <div class="card">
+      <div class="card-header">
+        <span>v1/v2c specific parameters</span>
       </div>
-      <div class="panel-body">
-        <div class="form-group">
-          <label for="readCommunityString" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The default 'read' community string for SNMP queries.">
-          Read Community String:
+      <div class="card-body">
+        <div class="form-group form-row">
+          <label for="readCommunityString" class="col-sm-4 col-form-label" data-toggle="tooltip" data-placement="right" title="The default 'read' community string for SNMP queries.">
+          Read Community String
           </label>
-          <div class="col-sm-9">
+          <div class="col-sm-8">
             <input id="readCommunityString" class="form-control" name="readCommunityString" value="<%=readCommunityString%>">
-            <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_READ_COMMUNITY %></p>
+            <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_READ_COMMUNITY %></p>
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="writeCommunityString" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The default 'write' community string for SNMP queries. Note that this is for future development - OpenNMS does not perform SNMP 'sets' at the moment.">
-          Write Community String:
+        <div class="form-group form-row">
+          <label for="writeCommunityString" class="col-sm-4 col-form-label" data-toggle="tooltip" data-placement="right" title="The default 'write' community string for SNMP queries. Note that this is for future development - OpenNMS does not perform SNMP 'sets' at the moment.">
+          Write Community String
           </label>
-          <div class="col-sm-9">
+          <div class="col-sm-8">
             <input id="writeCommunityString" class="form-control" name="writeCommunityString" value="<%=writeCommunityString%>">
-            <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_WRITE_COMMUNITY %></p>
+            <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_WRITE_COMMUNITY %></p>
           </div>
         </div>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 
   <!--  v3 parameters -->
-  <div class="col-md-6 hidden snmp-v3">
-    <div class="panel">
-      <div class="panel-heading">
-        <h3 class="panel-title">v3 specific parameters</h3>
+  <div class="col-md-6 snmp-v3" style="display:none">
+    <div class="card">
+      <div class="card-header">
+        <span>v3 specific parameters</span>
       </div>
-      <div class="panel-body">
-        <div class="form-group">
-          <label for="securityName" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="A security name for SNMP v3 authentication.">
-          Security Name:
+      <div class="card-body">
+        <div class="form-group form-row">
+          <label for="securityName" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="A security name for SNMP v3 authentication.">
+          Security Name
           </label>
           <div class="col-sm-9">
             <input id="securityName" class="form-control" name="securityName" value="<%=securityName%>">
-            <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_SECURITY_NAME %></p>
+            <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_SECURITY_NAME %></p>
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="securityLevel" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The security level for SNMP v3 authentication. If you leave it empty the security level is determined automatically as follows: 1) if no authentication passphrase is set noAuthNoPriv is determined 2) if authentication passphrase is set but a privacy passphrase is not authNoPriv is determined 3) if authentication and privacy passphrase is set authPriv is determined">
-          Security Level:
+        <div class="form-group form-row">
+          <label for="securityLevel" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The security level for SNMP v3 authentication. If you leave it empty the security level is determined automatically as follows: 1) if no authentication passphrase is set noAuthNoPriv is determined 2) if authentication passphrase is set but a privacy passphrase is not authNoPriv is determined 3) if authentication and privacy passphrase is set authPriv is determined">
+          Security Level
           </label>
           <div class="col-sm-9">
-            <select id="securityLevel" name="securityLevel" class="form-control">
+            <select id="securityLevel" name="securityLevel" class="form-control custom-select">
               <option value=""></option>
               <option value="1"
                 <%="1".equals(securityLevel) ? "selected" : ""%>>noAuthNoPriv</option>
@@ -523,128 +523,128 @@ if (request.getAttribute("success") != null) {
               <option value="3"
                 <%="3".equals(securityLevel) ? "selected" : ""%>>authPriv</option>
             </select>
-            <p class="help-block"><b>Default: </b> noAuthNoPriv|authNoPriv|authPriv</p>
+            <p class="form-text text-muted"><b>Default: </b> noAuthNoPriv|authNoPriv|authPriv</p>
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="authPassPhrase" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The passphrase to use for SNMP v3 authentication.">
-          Auth Passphrase:
+        <div class="form-group form-row">
+          <label for="authPassPhrase" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The passphrase to use for SNMP v3 authentication.">
+          Auth Passphrase
           </label>
           <div class="col-sm-9">
             <input id="authPassPhrase" class="form-control" name="authPassPhrase" value="<%=authPassPhrase%>">
-            <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_AUTH_PASS_PHRASE %></p>
+            <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_AUTH_PASS_PHRASE %></p>
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="authProtocol" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The authentication protocol for SNMP v3.">
-          Auth Protocol:
+        <div class="form-group form-row">
+          <label for="authProtocol" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The authentication protocol for SNMP v3.">
+          Auth Protocol
           </label>
           <div class="col-sm-9">
-			<select id="authProtocol" name="authProtocol" class="form-control">
+			<select id="authProtocol" name="authProtocol" class="form-control custom-select">
 			  <%=getOptions(authProtocol, "", "", "MD5", "SHA")%>
 			</select>
-            <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_AUTH_PROTOCOL %></p>
+            <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_AUTH_PROTOCOL %></p>
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="privPassPhrase" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="A privacy pass phrase used to encrypt the contents of SNMP v3 PDUs.">
-          Privacy Passphrase:
+        <div class="form-group form-row">
+          <label for="privPassPhrase" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="A privacy pass phrase used to encrypt the contents of SNMP v3 PDUs.">
+          Privacy Passphrase
           </label>
           <div class="col-sm-9">
             <input id="privPassPhrase" class="form-control" name="privPassPhrase" value="<%=privPassPhrase%>">
-            <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_PRIV_PASS_PHRASE %></p>
+            <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_PRIV_PASS_PHRASE %></p>
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="privProtocol" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The privacy protocol used to encrypt the contents of SNMP v3 PDUs.">
-          Privacy Protocol:
+        <div class="form-group form-row">
+          <label for="privProtocol" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The privacy protocol used to encrypt the contents of SNMP v3 PDUs.">
+          Privacy Protocol
           </label>
           <div class="col-sm-9">
-            <select id="privProtocol" name="privProtocol" class="form-control">
+            <select id="privProtocol" name="privProtocol" class="form-control custom-select">
               <%=getOptions(privProtocol, "", "", "DES", "AES", "AES192", "AES256")%>
             </select>
-            <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_PRIV_PROTOCOL %></p>
+            <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_PRIV_PROTOCOL %></p>
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="engineId" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The engine id of the target agent.">
-          Engine Id:
+        <div class="form-group form-row">
+          <label for="engineId" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The engine id of the target agent.">
+          Engine Id
           </label>
           <div class="col-sm-9">
             <input id="engineId" class="form-control" name="engineId" value="<%=engineId%>">
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="contextEngineId" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The name of the context to obtain data from the target agent.">
-          Context Engine Id:
+        <div class="form-group form-row">
+          <label for="contextEngineId" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The name of the context to obtain data from the target agent.">
+          Context Engine Id
           </label>
           <div class="col-sm-9">
             <input id="contextEngineId" class="form-control" name="contextEngineId" value="<%=contextEngineId%>">
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="contextName" class="col-sm-3 control-label">
-          Context Name:
+        <div class="form-group form-row">
+          <label for="contextName" class="col-sm-3 col-form-label">
+          Context Name
           </label>
           <div class="col-sm-9">
             <input id="contextName" class="form-control" name="contextName" value="<%=contextName%>">
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="enterpriseId" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="An enterprise id for SNMP v3 collection.">
-          Enterprise Id:
+        <div class="form-group form-row">
+          <label for="enterpriseId" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="An enterprise id for SNMP v3 collection.">
+          Enterprise Id
           </label>
           <div class="col-sm-9">
             <input id="enterpriseId" class="form-control" name="enterpriseId" value="<%=enterpriseId%>">
           </div>
         </div>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!--  row -->
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel">
-      <div class="panel-heading">
-        <h3 class="panel-title">Save Options</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Save Options</span>
       </div>
-      <div class="panel-body">
-        <div class="form-group">
-          <label for="sendEventOption" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="By default the snmp configuration is published to the system by sending an event. This is useful if you have multiple OpenNMS instances running and want to notify all of them about the changes. If you do not which to send the event, unmark the checkbox. Be aware that collectd must be activated to process the event!">
+      <div class="card-body">
+        <div class="form-group form-row">
+          <label for="sendEventOption" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="By default the snmp configuration is published to the system by sending an event. This is useful if you have multiple OpenNMS instances running and want to notify all of them about the changes. If you do not which to send the event, unmark the checkbox. Be aware that collectd must be activated to process the event!">
           Send Event
           </label>
           <div class="col-sm-9">
             <input type="checkbox" id="sendEventOption" name="sendEventOption" checked="checked"/>
-            <p class="help-block"><b>Default: </b>enabled</p>
+            <p class="form-text text-muted"><b>Default: </b>enabled</p>
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="saveLocallyOption" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="This option saves the changes directly in snmp-config.xml and does not send an event. The difference to the 'Send Event' option is that Collectd is not needed. If Collectd is not running select this option.">
+        <div class="form-group form-row">
+          <label for="saveLocallyOption" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="This option saves the changes directly in snmp-config.xml and does not send an event. The difference to the 'Send Event' option is that Collectd is not needed. If Collectd is not running select this option.">
           Send Locally
           </label>
           <div class="col-sm-9">
             <input type="checkbox" id="saveLocallyOption" name="saveLocallyOption"/>
-            <p class="help-block"><b>Default: </b>disabled</p>
+            <p class="form-text text-muted"><b>Default: </b>disabled</p>
           </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group form-row">
           <div class="col-sm-9 col-sm-offset-3">
-            <button type="submit" class="btn btn-default" name="saveConfig">Save Config</button>
-            <button type="button" class="btn btn-default" name="cancelButton" onClick="cancel();">Cancel</button>
+            <button type="submit" class="btn btn-secondary" name="saveConfig">Save Config</button>
+            <button type="button" class="btn btn-secondary" name="cancelButton" onClick="cancel();">Cancel</button>
           </div>
         </div>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

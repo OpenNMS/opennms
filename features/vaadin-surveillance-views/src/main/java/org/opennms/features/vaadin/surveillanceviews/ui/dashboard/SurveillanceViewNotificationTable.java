@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
 import com.vaadin.v7.data.util.BeanItemContainer;
@@ -269,7 +270,7 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
             public Object generateCell(final Table table, final Object itemId, final Object propertyId) {
                 final Notification notification = (Notification) itemId;
 
-                Button icon = getClickableIcon("glyphicon glyphicon-bell", new Button.ClickListener() {
+                Button icon = getClickableIcon(FontAwesome.BELL, new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent clickEvent) {
                         final URI currentLocation = getUI().getPage().getLocation();

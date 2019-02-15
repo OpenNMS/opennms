@@ -161,29 +161,29 @@ $(document).ready(function() {
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Choose the event UEI that will trigger this notification.</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Choose the event UEI that will trigger this notification.</span>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <tr>
           <td valign="top" align="left">
             <div class="form-group">
-              <label for="uei" class="control-label">Events</label>
+              <label for="uei" class="col-form-label">Events</label>
               <input id="uei-list-filter" name="uei-list-filter" type="text" class="form-control" size="96" value="" placeholder="Filter displayed events..." />
               <select id="uei" name="uei" class="form-control" size="20" >
               ${model.eventSelect}
               </select>
             </div>
             <div class="form-group">
-              <label for="regexp" class="control-label">Regular Expression Field</label>
+              <label for="regexp" class="col-form-label">Regular Expression Field</label>
               <input id="regexp" name="regexp" type="text" class="form-control" size="96" value="${model.noticeUei}" />
             </div>
           </td>
         </tr>
         <tr>
           <td colspan="2">
-            <input type="reset" class="btn btn-default"/>
+            <input type="reset" class="btn btn-secondary"/>
           </td>
         </tr>
         <tr>

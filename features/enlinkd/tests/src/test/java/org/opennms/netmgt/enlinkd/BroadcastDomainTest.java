@@ -31,7 +31,6 @@ package org.opennms.netmgt.enlinkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -42,9 +41,6 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.netmgt.config.EnhancedLinkdConfig;
-import org.opennms.netmgt.config.EnhancedLinkdConfigManager;
-import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
 import org.opennms.netmgt.enlinkd.service.api.Bridge;
@@ -61,35 +57,12 @@ import org.opennms.netmgt.model.OnmsNode;
 import com.google.common.collect.Sets;
 
 public class BroadcastDomainTest extends EnLinkdTestHelper {
-
-    EnhancedLinkd linkd;
             
     @Before
     public void setUp() throws Exception {
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.opennms.netmgt.enlinkd.service.api", "DEBUG");
         MockLogAppender.setupLogging(p);
-        linkd = new EnhancedLinkd();
-        EnhancedLinkdConfig config = new EnhancedLinkdConfigManager() {
-            
-            @Override
-            public void save() throws IOException {
-                
-            }
-            
-            @Override
-            public void reload() throws IOException {
-                m_config = new EnlinkdConfiguration();
-                m_config.setInitialSleepTime(1000L);
-                m_config.setRescanInterval(10000L);
-            }
-            
-            @Override
-            protected void saveXml(String xml) throws IOException {
-            }
-        };
-        config.reload();
-        linkd.setLinkdConfig(config);
     }
 
     @Test

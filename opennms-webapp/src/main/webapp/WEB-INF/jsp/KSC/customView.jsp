@@ -75,29 +75,29 @@
 
 <c:choose>
   <c:when test="${fn:length(resultSets) <= 0}">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">No graphs defined</h3>
+  <div class="card">
+    <div class="card-header">
+      <span>No graphs defined</span>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
       <p>There are no graphs defined for this report.</p>
     </div>
   </div>
   </c:when>
 
   <c:otherwise>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Custom View: ${title}</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Custom View: ${title}</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <form class="form-horizontal" name="view_form" method="get" action="<%= baseHref %>KSC/formProcView.htm">
           <input type="hidden" name="<%=FormProcViewController.Parameters.type%>" value="${reportType}" >
           <input type="hidden" name="<%=FormProcViewController.Parameters.action%>" value="none">
           <c:if test="${!empty report}">
             <input type="hidden" name="<%=FormProcViewController.Parameters.report%>" value="${report}">
           </c:if>
-          <table id="graph-results" class="table table-condensed" align="center">
+          <table id="graph-results" class="table table-sm" align="center">
             <c:set var="graphNum" value="0"/>
             <c:set var="showFootnote1" value="false"/>
             <%-- Loop over each row in the table --%>
@@ -109,7 +109,7 @@
                   <c:if test="${graphNum < fn:length(resultSets)}">
                     <c:set var="resultSet" value="${resultSets[graphNum]}"/>
                     <td align="center">
-                      <table class="table table-condensed">
+                      <table class="table table-sm">
                         <tr>
                           <th>
                             ${resultSet.title} <br/>
@@ -169,7 +169,7 @@
             <div class="form-group">
               <label class="col-md-2 label-control">Override Graph Timespan</label>
               <div class="col-md-4">
-                <select class="form-control" name="timespan">
+                <select class="form-control custom-select" name="timespan">
                   <c:forEach var="option" items="${timeSpans}">
                     <c:choose>
                       <c:when test="${timeSpan == option.key}">
@@ -182,7 +182,7 @@
                     <option value="${option.key}" ${selected}>${option.value.replaceAll("_", " ")}</option>
                   </c:forEach>
                 </select>
-                <span class="help-block">Press update button to reflect option changes to ALL graphs</span>
+                <span class="form-text text-muted">Press update button to reflect option changes to ALL graphs</span>
               </div>
             </div>
           </c:if>
@@ -191,7 +191,7 @@
             <div class="form-group">
               <label class="col-md-2 label-control">Override Graph Type</label>
               <div class="col-md-4">
-                <select class="form-control" name="graphtype">
+                <select class="form-control custom-select" name="graphtype">
                   <c:forEach var="option" items="${graphTypes}">
                     <c:choose>
                       <c:when test="${graphType == option.key}">
@@ -204,22 +204,22 @@
                     <option value="${option.key}" ${selected}>${option.value}</option>
                   </c:forEach>
                 </select>
-                <span class="help-block">Press update button to reflect option changes to ALL graphs</span>
+                <span class="form-text text-muted">Press update button to reflect option changes to ALL graphs</span>
               </div>
             </div>
           </c:if>
           <!-- Button bar -->
           <div class="btn-group">
-            <button class="btn btn-default" type="button" onclick="exitReport()">Exit Report Viewer</button>
+            <button class="btn btn-secondary" type="button" onclick="exitReport()">Exit Report Viewer</button>
             <c:if test="${!empty timeSpan || !empty graphType}">
-              <button class="btn btn-default" type="button" onclick="updateReport()">Update Report View</button>
+              <button class="btn btn-secondary" type="button" onclick="updateReport()">Update Report View</button>
             </c:if>
             <c:if test="${showCustomizeButton}">
-              <button class="btn btn-default" type="button" onclick="customizeReport()">Customize This Report</button>
+              <button class="btn btn-secondary" type="button" onclick="customizeReport()">Customize This Report</button>
             </c:if>
           </div>
         </form>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </c:otherwise>
 </c:choose>
