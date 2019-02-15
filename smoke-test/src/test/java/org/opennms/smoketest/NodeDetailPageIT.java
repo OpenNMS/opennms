@@ -29,6 +29,7 @@
 package org.opennms.smoketest;
 
 import java.io.StringReader;
+import java.util.Date;
 import java.util.Objects;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -37,6 +38,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.http.client.methods.HttpGet;
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.openqa.selenium.By;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -97,6 +101,13 @@ public class NodeDetailPageIT extends OpenNMSSeleniumTestCase {
             final NodeList children = rootElement.getChildNodes();
             Assert.assertEquals(1, children.getLength());
             final int nodeId = Integer.valueOf(children.item(0).getAttributes().getNamedItem("id").getNodeValue());
+
+            //force loading topology
+            final EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_TOPOLOGY_UEI, getClass().getSimpleName());
+            eventBuilder.setTime(new Date());
+            eventBuilder.setParam(EventConstants.PARAM_TOPOLOGY_NAMESPACE, "all");
+            sendPost("/rest/events", JaxbUtils.marshal(eventBuilder.getEvent()), 202);
+            Thread.sleep(5000); // Wait to allow the event to be processed
 
             // Navigate to the node details page
             NodeDetailPage nodeDetailPage = new NodeDetailPage(this, nodeId);

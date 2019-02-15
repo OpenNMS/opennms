@@ -28,20 +28,34 @@
 
 package org.opennms.netmgt.enlinkd.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
+import org.opennms.netmgt.enlinkd.model.IsIsElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
+import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
+import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.TopologyConnection;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
-public class IsisTopologyServiceImpl implements IsisTopologyService {
+public class IsisTopologyServiceImpl extends TopologyServiceImpl implements IsisTopologyService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(IsisTopologyServiceImpl.class);
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
@@ -77,6 +91,7 @@ public class IsisTopologyServiceImpl implements IsisTopologyService {
         if (link == null)
             return;
         saveIsisLink(nodeId, link);
+        updatesAvailable();
     }
 
     @Transactional
@@ -134,6 +149,8 @@ public class IsisTopologyServiceImpl implements IsisTopologyService {
         element.setIsisNodeLastPollTime(element.getIsisNodeCreateTime());
         m_isisElementDao.saveOrUpdate(element);
         m_isisElementDao.flush();
+        updatesAvailable();
+
     
     }
 
@@ -151,6 +168,62 @@ public class IsisTopologyServiceImpl implements IsisTopologyService {
 
     public void setIsisElementDao(IsIsElementDao isisElementDao) {
         m_isisElementDao = isisElementDao;
+    }
+
+    @Override
+    public List<IsIsElementTopologyEntity> findAllIsIsElements() {
+        return getTopologyEntityCache().getIsIsElementTopologyEntities();
+    }
+
+    @Override
+    public List<TopologyConnection<IsIsLinkTopologyEntity, IsIsLinkTopologyEntity>> match() {
+        List<IsIsElementTopologyEntity> elements = getTopologyEntityCache().getIsIsElementTopologyEntities();
+        List<IsIsLinkTopologyEntity> allLinks = getTopologyEntityCache().getIsIsLinkTopologyEntities();
+        // 1.) create lookupMaps
+        Map<Integer, IsIsElementTopologyEntity> elementmap = new HashMap<Integer, IsIsElementTopologyEntity>();
+        for (IsIsElementTopologyEntity element: elements) {
+            elementmap.put(element.getNodeId(), element);
+        }
+
+        Map<CompositeKey, IsIsLinkTopologyEntity> targetLinkMap = new HashMap<>();
+        for (IsIsLinkTopologyEntity targetLink : allLinks) {
+            IsIsElementTopologyEntity targetElement = elementmap.get(targetLink.getNodeId());
+            targetLinkMap.put(new CompositeKey(targetLink.getIsisISAdjIndex(),
+                      targetElement.getIsisSysID(),
+                      targetLink.getIsisISAdjNeighSysID()), targetLink);
+        }
+
+        // 2. iterate
+        Set<Integer> parsed = new HashSet<Integer>();
+        List<TopologyConnection<IsIsLinkTopologyEntity, IsIsLinkTopologyEntity>> results = new ArrayList<>();
+
+        for (IsIsLinkTopologyEntity sourceLink : allLinks) {
+            if (parsed.contains(sourceLink.getId())) {
+                continue;
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getIsIsLinks: source: {}", sourceLink);
+            }
+            IsIsElementTopologyEntity sourceElement = elementmap.get(sourceLink.getNodeId());
+            IsIsLinkTopologyEntity targetLink = targetLinkMap.get(new CompositeKey(sourceLink.getIsisISAdjIndex(),
+                    sourceLink.getIsisISAdjNeighSysID(),
+                    sourceElement.getIsisSysID()));
+
+            if (targetLink == null) {
+                LOG.debug("getIsIsLinks: cannot found target for source: '{}'", sourceLink.getId());
+                continue;
+            }
+            if (sourceLink.getId().intValue() == targetLink.getId().intValue()|| parsed.contains(targetLink.getId())) {
+                continue;
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getIsIsLinks: target: {}", targetLink);
+            }
+            results.add(TopologyConnection.of(sourceLink, targetLink));
+            parsed.add(sourceLink.getId());
+            parsed.add(targetLink.getId());
+        }
+        return results;
     }
 
 }

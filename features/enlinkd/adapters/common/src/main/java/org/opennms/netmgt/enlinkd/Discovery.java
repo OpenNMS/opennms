@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is designed to collect the necessary SNMP information from the
@@ -41,6 +41,8 @@ import org.opennms.netmgt.scheduler.ReadyRunnable;
  * allows the collection to occur in a thread if necessary.
  */
 public abstract class Discovery implements ReadyRunnable {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Discovery.class);
 
     /**
      * The scheduler object
@@ -57,9 +59,8 @@ public abstract class Discovery implements ReadyRunnable {
      * The initial sleep time, default value 5 minutes
      */
 
-    protected boolean m_suspendCollection = false;
-
-    private final EventForwarder m_eventForwarder;
+    private boolean m_suspendCollection = false;
+    private boolean m_unschedule = false;
     
     /**
      * Constructs a new SNMP collector for a node using the passed interface
@@ -70,11 +71,13 @@ public abstract class Discovery implements ReadyRunnable {
      * @param config
      *            The SnmpPeer object to collect from.
      */
-    public Discovery(final EventForwarder eventforwarder, long interval, long initial) {
-        m_eventForwarder = eventforwarder;
+    public Discovery(long interval, long initial) {
         m_poll_interval = interval;
         m_initial_sleep_time = initial;
-   }
+    }
+
+    public Discovery() {
+    }
 
     public abstract String getName();
     public abstract void runDiscovery();
@@ -82,7 +85,24 @@ public abstract class Discovery implements ReadyRunnable {
     // run is called by a Thread for the runnable
     // execute is where you got the stuff made
     public void run() {
-        runDiscovery();
+        //if unscheduled return
+        // not scheduling itself anymore
+        if (m_unschedule) {
+            LOG.info( "run: unscheduled {}", 
+                      getInfo());
+            return;
+        }
+        //if collection is suspended then
+        // schedule the collection
+        if (m_suspendCollection) {
+            LOG.info( "run: suspended {}", 
+                      getInfo());
+            schedule();
+            return;
+        }
+        LOG.info( "run: running {}", 
+                      getInfo());
+        runDiscovery();            
         reschedule();
     }
     /**
@@ -124,7 +144,7 @@ public abstract class Discovery implements ReadyRunnable {
     /**
 	 * 
 	 */
-    public void reschedule() {
+    private void reschedule() {
         if (m_scheduler == null)
             throw new IllegalStateException(
                                             "Cannot schedule a service whose scheduler is set to null");
@@ -139,9 +159,12 @@ public abstract class Discovery implements ReadyRunnable {
      * @return a boolean.
      */
     public boolean isReady() {
-        return !m_suspendCollection;
+        return true;
     }
 
+    public void unschedule() {
+        m_unschedule = true;
+    }
     /**
      * <p>
      * suspend
@@ -168,7 +191,7 @@ public abstract class Discovery implements ReadyRunnable {
      * @return a {@link java.lang.String} object.
      */
     public String getInfo() {
-        return  getName();  
+        return  getName() + " initial:" + m_initial_sleep_time + " interval:" + m_poll_interval;  
     }
 
     /**
@@ -243,34 +266,5 @@ public abstract class Discovery implements ReadyRunnable {
                     return false;
             return true;
     }
-
-    protected void sendSuspendedEvent(int nodeid) {
-        EventBuilder builder = new EventBuilder(
-                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended",
-                                   "EnhancedLinkd");
-                           builder.setNodeid(nodeid);
-                           builder.addParam("runnable", getName());
-       m_eventForwarder.sendNow(builder.getEvent());
-    }
-    
-    protected void sendStartEvent(int nodeid) {
-        EventBuilder builder = new EventBuilder(
-                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted",
-                                   "EnhancedLinkd");
-                           builder.setNodeid(nodeid);
-                           builder.addParam("runnable", getName());
-                           m_eventForwarder.sendNow(builder.getEvent());
-        
-    }
-    
-    protected void sendCompletedEvent(int nodeid) {
-        EventBuilder builder = new EventBuilder(
-                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted",
-                                   "EnhancedLinkd");
-                           builder.setNodeid(nodeid);
-                           builder.addParam("runnable", getName());
-                           m_eventForwarder.sendNow(builder.getEvent());
-    }
-
 
 }

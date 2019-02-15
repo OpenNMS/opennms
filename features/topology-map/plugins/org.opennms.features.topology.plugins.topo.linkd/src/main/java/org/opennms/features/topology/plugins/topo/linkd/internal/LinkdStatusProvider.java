@@ -47,6 +47,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
+import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.slf4j.LoggerFactory;
 
 public class LinkdStatusProvider implements StatusProvider {
@@ -59,7 +60,7 @@ public class LinkdStatusProvider implements StatusProvider {
 
     @Override
     public String getNamespace() {
-        return LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
+        return OnmsTopology.TOPOLOGY_NAMESPACE_LINKD;
     }
 
     @Override

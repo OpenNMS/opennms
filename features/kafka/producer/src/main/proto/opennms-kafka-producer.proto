@@ -147,3 +147,38 @@ message Node {
   repeated SnmpInterface snmp_interface = 12;
   HwEntity hw_inventory = 13;
 }
+
+message TopologyRef {
+  string id = 1;
+  string protocol = 2;
+}
+
+message TopologyVertexNode {
+  NodeCriteria node_criteria = 1;
+}
+
+message TopologyVertexSegment {
+}
+
+message TopologyPort {
+  string vertex_id = 1;
+  uint64 if_index = 2; 
+  string if_name = 3; 
+  string address = 4;
+}
+
+message TopologyVertex {
+    TopologyRef ref = 1;
+  	oneof vertex {
+  		TopologyVertexNode node = 2;
+  		TopologyVertexSegment segment = 3;
+	}
+    string label = 4;
+}
+
+message TopologyEdge {
+  TopologyRef ref = 1;
+  TopologyPort source = 2;
+  TopologyPort target = 3;
+}
+

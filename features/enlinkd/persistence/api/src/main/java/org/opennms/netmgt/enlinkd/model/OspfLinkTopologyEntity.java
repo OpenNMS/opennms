@@ -39,13 +39,15 @@ public class OspfLinkTopologyEntity {
     private final Integer id;
     private final Integer nodeId;
     private final InetAddress ospfIpAddr;
+    private final InetAddress ospfIpMask;
     private final InetAddress ospfRemIpAddr;
     private final Integer ospfIfIndex;
 
-    public OspfLinkTopologyEntity(Integer id, Integer nodeId, InetAddress ospfIpAddr, InetAddress ospfRemIpAddr, Integer ospfIfIndex) {
+    public OspfLinkTopologyEntity(Integer id, Integer nodeId, InetAddress ospfIpAddr, InetAddress ospfIpMask, InetAddress ospfRemIpAddr, Integer ospfIfIndex) {
         this.id = id;
         this.nodeId = nodeId;
         this.ospfIpAddr = ospfIpAddr;
+        this.ospfIpMask = ospfIpMask;
         this.ospfRemIpAddr = ospfRemIpAddr;
         this.ospfIfIndex = ospfIfIndex;
     }
@@ -54,6 +56,7 @@ public class OspfLinkTopologyEntity {
         return new OspfLinkTopologyEntity(link.getId()
                 , link.getNode().getId()
                 , link.getOspfIpAddr()
+                , link.getOspfIpMask()
                 , link.getOspfRemIpAddr()
                 , link.getOspfIfIndex());
     }
@@ -94,5 +97,9 @@ public class OspfLinkTopologyEntity {
                 .add("ospfRemIpAddr", ospfRemIpAddr)
                 .add("ospfIfIndex", ospfIfIndex)
                 .toString();
+    }
+
+    public InetAddress getOspfIpMask() {
+        return ospfIpMask;
     }
 }

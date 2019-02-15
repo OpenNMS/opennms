@@ -40,7 +40,6 @@ import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
@@ -53,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public final class NodeDiscoveryLldp extends NodeDiscovery {
+public final class NodeDiscoveryLldp extends NodeCollector {
     private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryLldp.class);
 
     private final static String DW_SYSOID=".1.3.6.1.4.1.7262.2.4";
@@ -71,16 +70,16 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
      * @param LinkableNode node
      * 
      */
-    public NodeDiscoveryLldp(final EventForwarder eventForwarder,
+    public NodeDiscoveryLldp(
             final LldpTopologyService lldpTopologyService,
             final LocationAwareSnmpClient locationAwareSnmpClient,
             final long interval,final long initial,
             final Node node) {
-        super(eventForwarder, locationAwareSnmpClient, interval, initial,node);
+        super(locationAwareSnmpClient, interval, initial,node);
     	m_lldpTopologyService = lldpTopologyService;
     }
 
-    protected void runNodeDiscovery() {
+    protected void collect() {
 
     	final Date now = new Date(); 
 
@@ -111,7 +110,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
         } else {
     		LOG.debug( "run: node[{}]: lldp identifier : {}",
     				getNodeId(),
-    				lldpLocalGroup.getLldpElement());
+    				lldpLocalGroup.getLldpElement().getLldpChassisId());
         }
 
         m_lldpTopologyService.store(getNodeId(),

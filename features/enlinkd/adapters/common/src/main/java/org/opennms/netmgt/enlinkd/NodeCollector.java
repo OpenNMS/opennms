@@ -34,11 +34,8 @@ import java.net.InetAddress;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.enlinkd.service.api.Node;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class is designed to collect the necessary SNMP information from the
@@ -47,9 +44,7 @@ import org.slf4j.LoggerFactory;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public abstract class NodeDiscovery extends Discovery {
-
-    private static final Logger LOG = LoggerFactory.getLogger(NodeDiscovery.class);
+public abstract class NodeCollector extends Discovery {
     /**
      * The node ID of the system used to collect the SNMP information
      */
@@ -65,15 +60,15 @@ public abstract class NodeDiscovery extends Discovery {
      * @param config
      *            The SnmpPeer object to collect from.
      */
-    public NodeDiscovery(final EventForwarder eventForwarder, final LocationAwareSnmpClient locationAwareSnmpClient,
+    public NodeCollector(final LocationAwareSnmpClient locationAwareSnmpClient,
             final long interval,final long initial, final Node node) {
-        super(eventForwarder,interval, initial);
+        super(interval, initial);
         m_node = node;
         m_locationAwareSnmpClient=locationAwareSnmpClient;
     }
 
 
-    protected abstract void runNodeDiscovery(); 
+    protected abstract void collect(); 
     /**
      * <p>
      * Performs the collection for the targeted IP address. The success or
@@ -86,17 +81,7 @@ public abstract class NodeDiscovery extends Discovery {
      * </p>
      */
     public void runDiscovery() {
-        if (m_suspendCollection) {
-            sendSuspendedEvent(getNodeId());
-        } else {
-            sendStartEvent(getNodeId());
-            LOG.info( "run: node [{}], start {} collection.", 
-                      getNodeId(), getName());
-            runNodeDiscovery();
-            LOG.info( "run: node [{}], end {} collection.", 
-                      getNodeId(),getName());
-            sendCompletedEvent(getNodeId());
-        }
+            collect();
     }
 
     /**
@@ -112,17 +97,10 @@ public abstract class NodeDiscovery extends Discovery {
     	return str(m_node.getSnmpPrimaryIpAddr());
     }
 
-    /**
-     * <p>
-     * getInfo
-     * </p>
-     * 
-     * @return a {@link java.lang.String} object.
-     */
+    @Override
     public String getInfo() {
-        return  getName()  
-        		+ " node=" + getNodeId()
-        		+ " ip=" + str(getPrimaryIpAddress());
+        return  getName() + " node:[" + getNodeId()
+    		+ "] ip:" + str(getPrimaryIpAddress()) + super.getInfo();
     }
 
     public int getNodeId() {
@@ -159,7 +137,7 @@ public abstract class NodeDiscovery extends Discovery {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        NodeDiscovery other = (NodeDiscovery) obj;
+        NodeCollector other = (NodeCollector) obj;
         if (m_node == null) {
             if (other.m_node != null)
                 return false;
@@ -175,6 +153,11 @@ public abstract class NodeDiscovery extends Discovery {
 
     public LocationAwareSnmpClient getLocationAwareSnmpClient() {
         return m_locationAwareSnmpClient;
+    }
+
+
+    public Node getNode() {
+        return m_node;
     }
     	
 }

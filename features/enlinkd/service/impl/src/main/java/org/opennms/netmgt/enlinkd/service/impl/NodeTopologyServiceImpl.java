@@ -33,23 +33,26 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.opennms.core.criteria.Alias;
-import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.Node;
+import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.PrimaryType;
 
-public class NodeTopologyServiceImpl implements org.opennms.netmgt.enlinkd.service.api.NodeTopologyService {
+public class NodeTopologyServiceImpl extends TopologyServiceImpl implements NodeTopologyService {
 
     private NodeDao m_nodeDao;
-    
     @Override
     public List<Node> findAllSnmpNode() {
         final List<Node> nodes = new ArrayList<Node>();
-
+        
         final Criteria criteria = new Criteria(OnmsNode.class);
         criteria.setAliases(Arrays.asList(new Alias[] { new Alias(
                                                                   "ipInterfaces",
@@ -64,6 +67,7 @@ public class NodeTopologyServiceImpl implements org.opennms.netmgt.enlinkd.servi
                                node.getSysObjectId(), node.getSysName(),node.getLocation() == null ? null : node.getLocation().getLocationName()));
         }
         return nodes;
+                                                                                                       
     }
 
     @Override
@@ -89,17 +93,37 @@ public class NodeTopologyServiceImpl implements org.opennms.netmgt.enlinkd.servi
         }
     }
     
+    @Override
+    public List<NodeTopologyEntity> findAllNode() {
+        return getTopologyEntityCache().getNodeTopologyEntities();
+    }
+
+    @Override
+    public List<IpInterfaceTopologyEntity> findAllIp() {
+        return getTopologyEntityCache().getIpInterfaceTopologyEntities();
+    }
+
+    @Override
+    public List<SnmpInterfaceTopologyEntity> findAllSnmp() {
+        return getTopologyEntityCache().getSnmpInterfaceTopologyEntities();
+    }
+
+
+    @Override
+    public NodeTopologyEntity getDefaultFocusPoint() {
+        OnmsNode node = m_nodeDao.getDefaultFocusPoint();
+        if ( node != null) {
+            return NodeTopologyEntity.toNodeTopologyInfo(node);
+        }
+        return null;
+    }
+
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
 
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
-    }
-
-    @Override
-    public List<OnmsNode> findAll() {
-        return m_nodeDao.findAll();
     }
         
 }
