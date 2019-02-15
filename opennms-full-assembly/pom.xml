@@ -575,6 +575,7 @@
                 <feature>opennms-api-layer</feature>
                 <feature>karaf-extender</feature>
                 <feature>opennms-alarm-history-elastic</feature>
+                <feature>org.opennms.features.topologies.service.api</feature>
 
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>

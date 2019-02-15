@@ -1470,4 +1470,11 @@
         <feature>guava</feature>
         <bundle>mvn:org.opennms.features/org.opennms.features.ifttt/${project.version}</bundle>
     </feature>
+    <feature name="org.opennms.features.topologies.service.api" version="${project.version}" description="OpenNMS :: Features :: Topologies :: Service :: API">
+        <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
+        <feature>guava</feature>
+        <bundle>mvn:org.opennms.features.topologies/org.opennms.features.topologies.service.api/${project.version}</bundle>
+        <bundle>wrap:mvn:net.sf.jung/jung-api/${jungVersion}</bundle>
+        <bundle>mvn:org.opennms/opennms-model/${project.version}</bundle>
+    </feature>
 </features>
