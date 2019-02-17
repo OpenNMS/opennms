@@ -28,16 +28,24 @@
 
 package org.opennms.enlinkd.generator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TopologyContext {
 
     private final TopologyGenerator.ProgressCallback progressCallback;
 
     private final TopologyPersister topologyPersister;
 
-    TopologyContext(final TopologyGenerator.ProgressCallback progressCallback, TopologyPersister topologyPersister){
+    private final List<Action> postActions;
+
+    private TopologyContext(TopologyGenerator.ProgressCallback progressCallback, TopologyPersister topologyPersister, List<Action> postActions) {
         this.progressCallback = progressCallback;
         this.topologyPersister = topologyPersister;
+        this.postActions = postActions;
     }
+
+
 
     public void currentProgress(String msg){
         this.progressCallback.currentProgress(msg);
@@ -49,5 +57,46 @@ public class TopologyContext {
 
     public TopologyPersister getTopologyPersister(){
         return this.topologyPersister;
+    }
+
+    public List<Action> getPostActions() {
+        return postActions;
+    }
+
+    public static TopologyContextBuilder builder() {
+        return new TopologyContextBuilder();
+    }
+
+    @FunctionalInterface
+    public interface Action {
+        void invoke() throws Exception;
+    }
+
+    public static class TopologyContextBuilder {
+        private TopologyGenerator.ProgressCallback progressCallback;
+        private TopologyPersister topologyPersister;
+        private List<Action> postActions = new ArrayList<>();
+
+        private TopologyContextBuilder() {
+        }
+
+        public TopologyContextBuilder progressCallback(TopologyGenerator.ProgressCallback progressCallback) {
+            this.progressCallback = progressCallback;
+            return this;
+        }
+
+        public TopologyContextBuilder topologyPersister(TopologyPersister topologyPersister) {
+            this.topologyPersister = topologyPersister;
+            return this;
+        }
+
+        public TopologyContextBuilder addPostAction(Action postAction) {
+            this.postActions.add(postAction);
+            return this;
+        }
+
+        public TopologyContext build() {
+            return new TopologyContext(progressCallback, topologyPersister, postActions);
+        }
     }
 }

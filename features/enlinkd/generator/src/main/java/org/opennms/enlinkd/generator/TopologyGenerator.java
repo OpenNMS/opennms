@@ -28,6 +28,8 @@
 
 package org.opennms.enlinkd.generator;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.function.Consumer;
 
 import org.opennms.enlinkd.generator.protocol.CdpProtocol;
@@ -56,9 +58,6 @@ public class TopologyGenerator {
 
     public static final String CATEGORY_NAME = "GeneratedNode";
 
-    public static TopologyGeneratorBuilder builder() {
-        return new TopologyGeneratorBuilder();
-    }
 
     public enum Topology {
         ring, random, complete
@@ -70,10 +69,8 @@ public class TopologyGenerator {
 
     private TopologyContext topologyContext;
 
-    private TopologyGenerator(
-            TopologyPersister persister,
-            ProgressCallback progressCallback) {
-        this.topologyContext = new TopologyContext(progressCallback, persister);
+    public TopologyGenerator(TopologyContext topologyContext) {
+        this.topologyContext = topologyContext;
     }
 
 
@@ -81,6 +78,18 @@ public class TopologyGenerator {
         topologySettings.verify();
         deleteTopology(); // Let's first get rid of old generated topologies
         getProtocol(topologySettings).createAndPersistNetwork();
+        topologyContext.getPostActions().forEach(this::invokePostAction);
+    }
+
+    private void invokePostAction(TopologyContext.Action action) {
+        try {
+            action.invoke();
+        } catch (Exception e) {
+            StringWriter writer = new StringWriter();
+            e.printStackTrace(new PrintWriter(writer));
+            String stackTrace = writer.toString();
+            this.topologyContext.currentProgress("An error occured while invoking post action:%n", stackTrace);
+        }
     }
 
     public void deleteTopology() {
@@ -99,34 +108,6 @@ public class TopologyGenerator {
             return new OspfProtocol(topologySettings, topologyContext);
         } else {
             throw new IllegalArgumentException("Don't know this protocol: " + topologySettings.getProtocol());
-        }
-    }
-
-    public static class TopologyGeneratorBuilder {
-
-        private TopologyPersister persister;
-        private ProgressCallback progressCallback;
-
-        private TopologyGeneratorBuilder() {
-        }
-
-        public TopologyGeneratorBuilder persister(TopologyPersister persister) {
-            this.persister = persister;
-            return this;
-        }
-
-        public TopologyGeneratorBuilder progressCallback(ProgressCallback progressCallback) {
-            this.progressCallback = progressCallback;
-            return this;
-        }
-
-        public TopologyGenerator build() {
-            if(progressCallback == null) {
-                // Default: use a logger
-                Logger log = LoggerFactory.getLogger(TopologyGenerator.class);
-                progressCallback = new ProgressCallback(log::info);
-            }
-            return new TopologyGenerator(persister, progressCallback);
         }
     }
 

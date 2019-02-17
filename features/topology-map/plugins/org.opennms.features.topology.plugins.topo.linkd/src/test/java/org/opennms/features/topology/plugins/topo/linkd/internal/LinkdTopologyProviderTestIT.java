@@ -43,6 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.enlinkd.generator.TopologyContext;
 import org.opennms.enlinkd.generator.TopologyGenerator;
 import org.opennms.enlinkd.generator.TopologyPersister;
 import org.opennms.enlinkd.generator.TopologySettings;
@@ -114,9 +115,11 @@ public class LinkdTopologyProviderTestIT {
 
         TopologyGenerator.ProgressCallback progressCallback = new TopologyGenerator.ProgressCallback(LOG::info);
         TopologyPersister persister = new TopologyPersister(genericPersistenceAccessor, progressCallback);
-        generator = TopologyGenerator.builder()
-                .persister(persister)
-                .progressCallback(progressCallback).build();
+        TopologyContext context = TopologyContext.builder()
+                .topologyPersister(persister)
+                .progressCallback(progressCallback) // we don't use the Post actions here since we call the caches directly in the test
+                .build();
+        generator = new TopologyGenerator(context);
     }
 
     @Test
