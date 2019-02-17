@@ -43,7 +43,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.enlinkd.generator.TopologyContext;
 import org.opennms.enlinkd.generator.TopologyGenerator;
 import org.opennms.enlinkd.generator.TopologyPersister;
 import org.opennms.enlinkd.generator.TopologySettings;
@@ -115,11 +114,9 @@ public class LinkdTopologyProviderTestIT {
 
         TopologyGenerator.ProgressCallback progressCallback = new TopologyGenerator.ProgressCallback(LOG::info);
         TopologyPersister persister = new TopologyPersister(genericPersistenceAccessor, progressCallback);
-        TopologyContext context = TopologyContext.builder()
-                .progressCallback(progressCallback)
-                .topologyPersister(persister)
-                .build();
-        generator = new TopologyGenerator(context);
+        generator = TopologyGenerator.builder()
+                .persister(persister)
+                .progressCallback(progressCallback).build();
     }
 
     @Test
