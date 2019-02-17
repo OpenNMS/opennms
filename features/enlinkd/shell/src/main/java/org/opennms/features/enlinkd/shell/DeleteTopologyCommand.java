@@ -28,37 +28,29 @@
 
 package org.opennms.features.enlinkd.shell;
 
-import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.enlinkd.generator.TopologyGenerator;
-import org.opennms.enlinkd.generator.TopologyPersister;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 
 /**
  * Deletes the generated topology via karaf command. The topology is identified as it belongs to the category "GeneratedNode"
  * Install: feature:install opennms-enlinkd-shell
- * Usage: typpe enlinkd:delete-topology in karaf console
+ * Usage: type enlinkd:delete-topology in karaf console
  */
 @Command(scope = "enlinkd", name = "delete-topology",
         description = "Delete generated topology (OnmsNodes, XxElements, XxLinks, SnmpInterfaces, IpInterfaces." +
                 "The topology is identified as it belongs to the category 'GeneratedNode'")
 @Service
-public class DeleteTopologyCommand implements Action {
+public class DeleteTopologyCommand extends AbstractTopologyCommand {
 
     @Reference
     private GenericPersistenceAccessor genericPersistenceAccessor;
 
     @Override
     public Object execute() throws Exception {
-        // We print directly to System.out so it will appear in the console
-        TopologyGenerator.ProgressCallback progressCallback = new TopologyGenerator.ProgressCallback(System.out::println);
-
-        TopologyGenerator generator = TopologyGenerator.builder()
-                .persister(new TopologyPersister(genericPersistenceAccessor, progressCallback))
-                .progressCallback(progressCallback)
-                .build();
+        TopologyGenerator generator = createTopologyGenerator();
         generator.deleteTopology();
         return null;
     }

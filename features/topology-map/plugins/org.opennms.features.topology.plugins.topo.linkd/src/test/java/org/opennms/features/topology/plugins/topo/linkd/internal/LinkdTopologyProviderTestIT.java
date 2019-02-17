@@ -43,6 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.enlinkd.generator.TopologyContext;
 import org.opennms.enlinkd.generator.TopologyGenerator;
 import org.opennms.enlinkd.generator.TopologyPersister;
 import org.opennms.enlinkd.generator.TopologySettings;
@@ -86,7 +87,7 @@ public class LinkdTopologyProviderTestIT {
 
     @Autowired
     TopologyEntityCache entityCache;
-    
+
     @Autowired
     NodesOnmsTopologyUpdater nodesOnmsTopologyUpdater;
 
@@ -95,13 +96,13 @@ public class LinkdTopologyProviderTestIT {
 
     @Autowired
     IsisOnmsTopologyUpdater isisOnmsTopologyUpdater;
-    
+
     @Autowired
     LldpOnmsTopologyUpdater lldpOnmsTopologyUpdater;
-    
+
     @Autowired
     OspfOnmsTopologyUpdater ospfOnmsTopologyUpdater;
-    
+
     private TopologyGenerator generator;
 
     @BeforeTransaction
@@ -111,12 +112,14 @@ public class LinkdTopologyProviderTestIT {
         isisOnmsTopologyUpdater.register();
         lldpOnmsTopologyUpdater.register();
         ospfOnmsTopologyUpdater.register();
-        
+
         TopologyGenerator.ProgressCallback progressCallback = new TopologyGenerator.ProgressCallback(LOG::info);
         TopologyPersister persister = new TopologyPersister(genericPersistenceAccessor, progressCallback);
-        generator = TopologyGenerator.builder()
-                .persister(persister)
-                .progressCallback(progressCallback).build();
+        TopologyContext context = TopologyContext.builder()
+                .progressCallback(progressCallback)
+                .topologyPersister(persister)
+                .build();
+        generator = new TopologyGenerator(context);
     }
 
     @Test
@@ -143,7 +146,7 @@ public class LinkdTopologyProviderTestIT {
         test(TopologyGenerator.Protocol.ospf);
     }
 
-    private void test(TopologyGenerator.Protocol protocol) throws OnmsTopologyException{
+    private void test(TopologyGenerator.Protocol protocol) throws OnmsTopologyException {
         testAmounts(protocol);
         testLinkingBetweenNodes(protocol);
     }
@@ -196,13 +199,11 @@ public class LinkdTopologyProviderTestIT {
     private void generateTopologyAndRefreshCaches(TopologySettings settings) throws OnmsTopologyException{
         generator.generateTopology(settings);
         entityCache.refresh();
-        
         refresh();
     }
 
     /**
      * Generates a ring topology and verifies that each Vertex is connected to it's neighbors.
-     * @throws OnmsTopologyException 
      */
     private void testLinkingBetweenNodes(TopologyGenerator.Protocol protocol) throws OnmsTopologyException {
 

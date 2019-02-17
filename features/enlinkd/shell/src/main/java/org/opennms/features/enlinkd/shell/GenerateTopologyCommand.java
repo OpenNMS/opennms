@@ -28,24 +28,21 @@
 
 package org.opennms.features.enlinkd.shell;
 
-import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
-import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.enlinkd.generator.TopologyGenerator;
-import org.opennms.enlinkd.generator.TopologyPersister;
 import org.opennms.enlinkd.generator.TopologySettings;
-import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 
 /**
  * Generate a enlinkd topology via karaf command.
+ * Log into console via: ssh -p 8101 admin@localhost
  * Install: feature:install opennms-enlinkd-shell
  * Usage: type 'enlinkd:generate-topology' in karaf console
  */
 @Command(scope = "enlinkd", name = "generate-topology", description = "Creates a linkd topology")
 @Service
-public class GenerateTopologyCommand implements Action {
+public class GenerateTopologyCommand extends AbstractTopologyCommand {
 
     @Option(name = "--nodes", description = "generate <N> OmnsNodes. Default: 10")
     private Integer amountNodes;
@@ -65,22 +62,15 @@ public class GenerateTopologyCommand implements Action {
     @Option(name = "--topology", description = "type of topology (complete | ring | random). Default: random.")
     private String topology;
 
-    @Option(name = "--protocol", description = "type of protocol (cdp | isis | lldp | ospf). Default: cdp.")
+    @Option(name = "--protocol", description = "type of protocol (cdp | isis | lldp | ospf | bridgeBridge). Default: cdp.")
     private String protocol;
 
-    @Reference
-    private GenericPersistenceAccessor genericPersistenceAccessor;
 
     @Override
     public Object execute() {
 
-        // We print directly to System.out so it will appear in the console
-        TopologyGenerator.ProgressCallback progressCallback = new TopologyGenerator.ProgressCallback(System.out::println);
+        TopologyGenerator generator = createTopologyGenerator();
 
-        TopologyGenerator generator = TopologyGenerator.builder()
-                .persister(new TopologyPersister(genericPersistenceAccessor, progressCallback))
-                .progressCallback(progressCallback)
-                .build();
         TopologySettings settings = TopologySettings.builder()
                 .amountElements(this.amountElements)
                 .amountIpInterfaces(this.amountIpInterfaces)
