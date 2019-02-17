@@ -65,7 +65,7 @@ public class TopologyGenerator {
     }
 
     public enum Protocol {
-        cdp, isis, lldp, ospf
+        cdp, isis, lldp, ospf, bridgeBridge
     }
 
     private TopologyContext topologyContext;
