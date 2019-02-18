@@ -28,66 +28,44 @@
 
 package org.opennms.features.enlinkd.shell;
 
+import java.util.Date;
+
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.opennms.enlinkd.generator.TopologyContext;
 import org.opennms.enlinkd.generator.TopologyGenerator;
 import org.opennms.enlinkd.generator.TopologyPersister;
-import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
-import org.opennms.netmgt.enlinkd.BridgeOnmsTopologyUpdater;
-import org.opennms.netmgt.enlinkd.CdpOnmsTopologyUpdater;
-import org.opennms.netmgt.enlinkd.IsisOnmsTopologyUpdater;
-import org.opennms.netmgt.enlinkd.LldpOnmsTopologyUpdater;
-import org.opennms.netmgt.enlinkd.NodesOnmsTopologyUpdater;
-import org.opennms.netmgt.enlinkd.OspfOnmsTopologyUpdater;
-import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.model.events.EventBuilder;
 
 abstract class AbstractTopologyCommand implements Action {
     @Reference
     private GenericPersistenceAccessor genericPersistenceAccessor;
 
     @Reference
-    private LinkdTopologyProvider linkdTopologyProvider;
-
-    @Reference
-    private TopologyEntityCache entityCache;
-
-    @Reference
-    private NodesOnmsTopologyUpdater nodesOnmsTopologyUpdater;
-
-    @Reference
-    private CdpOnmsTopologyUpdater cdpOnmsTopologyUpdater;
-
-    @Reference
-    private IsisOnmsTopologyUpdater isisOnmsTopologyUpdater;
-
-    @Reference
-    private LldpOnmsTopologyUpdater lldpOnmsTopologyUpdater;
-
-    @Reference
-    private OspfOnmsTopologyUpdater ospfOnmsTopologyUpdater;
-
-    @Reference
-    private BridgeOnmsTopologyUpdater bridgeOnmsTopologyUpdater;
+    private EventIpcManager eventIpcManager;
 
     protected TopologyGenerator createTopologyGenerator(){
         // We print directly to System.out so it will appear in the console
         TopologyGenerator.ProgressCallback progressCallback = new TopologyGenerator.ProgressCallback(System.out::println);
 
         TopologyPersister persister = new TopologyPersister(genericPersistenceAccessor, progressCallback);
+
+        TopologyContext.Action action = new TopologyContext.Action() {
+            @Override
+            public void invoke() throws Exception {
+                final EventBuilder builder = new EventBuilder(EventConstants.RELOAD_TOPOLOGY_UEI, getClass().getSimpleName());
+                builder.setTime(new Date()); builder.setParam(EventConstants.PARAM_TOPOLOGY_NAMESPACE, "all");
+                eventIpcManager.send(builder.getEvent());
+            }
+        };
+
         TopologyContext context = TopologyContext.builder()
                 .topologyPersister(persister)
                 .progressCallback(progressCallback)
-                // we need to inject the Updaters this way to not create a circular dependency
-                .addPostAction(() -> nodesOnmsTopologyUpdater.setTopology(nodesOnmsTopologyUpdater.buildTopology()))
-                .addPostAction(() -> cdpOnmsTopologyUpdater.setTopology(cdpOnmsTopologyUpdater.buildTopology()))
-                .addPostAction(() -> isisOnmsTopologyUpdater.setTopology(isisOnmsTopologyUpdater.buildTopology()))
-                .addPostAction(() -> lldpOnmsTopologyUpdater.setTopology(lldpOnmsTopologyUpdater.buildTopology()))
-                .addPostAction(() -> ospfOnmsTopologyUpdater.setTopology(ospfOnmsTopologyUpdater.buildTopology()))
-                .addPostAction(() -> bridgeOnmsTopologyUpdater.setTopology(bridgeOnmsTopologyUpdater.buildTopology()))
-                .addPostAction(() -> entityCache.refresh())
-                .addPostAction(() -> linkdTopologyProvider.refresh())
+                .addPostAction(action)
                 .build();
 
         return new TopologyGenerator(context);

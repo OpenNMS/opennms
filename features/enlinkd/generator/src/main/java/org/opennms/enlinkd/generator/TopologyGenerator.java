@@ -88,12 +88,13 @@ public class TopologyGenerator {
             StringWriter writer = new StringWriter();
             e.printStackTrace(new PrintWriter(writer));
             String stackTrace = writer.toString();
-            this.topologyContext.currentProgress("An error occured while invoking post action:%n", stackTrace);
+            this.topologyContext.currentProgress("An error occurred while invoking post action:%n", stackTrace);
         }
     }
 
     public void deleteTopology() {
         this.topologyContext.getTopologyPersister().deleteTopology();
+        topologyContext.getPostActions().forEach(this::invokePostAction);
     }
 
     private org.opennms.enlinkd.generator.protocol.Protocol getProtocol(TopologySettings topologySettings) {
