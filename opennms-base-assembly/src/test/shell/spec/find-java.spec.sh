@@ -4,7 +4,6 @@
 . ../init.sh
 
 TESTDIR="$(get_testdir find-java)"
-FIND_JAVA="$PROJECTDIR/src/main/filtered/bin/find-java.sh"
 
 makeFakeJava() {
   if [ -z "$4" ]; then
@@ -24,6 +23,12 @@ oneTimeSetUp() {
   rm -rf "$TESTDIR"
   REAL_PATH="$PATH"
   export JAVA_SEARCH_DIRS="$TESTDIR"
+
+  mkdir -p "${TESTDIR}/opennms_home/bin"
+  cp "${PROJECTDIR}/src/main/filtered/bin/find-java.sh" \
+    "${PROJECTDIR}/src/main/resources/bin/_lib.sh" \
+    "${TESTDIR}/opennms_home/bin/"
+  FIND_JAVA="${TESTDIR}/opennms_home/bin/find-java.sh"
 
   makeFakeJava "$TESTDIR/1.6-oracle" false "1.6.0_900" "b52"
   makeFakeJava "$TESTDIR/1.6-openjdk" true "1.6.0_32" "b41"
@@ -45,10 +50,10 @@ runFindJava() {
 }
 
 testShellcheck() {
-	if [ -n "$SHELLCHECK" ] && [ -x "$SHELLCHECK" ]; then
-		"$SHELLCHECK" "$FIND_JAVA"
-		assertTrue "shellcheck on bin/find-java.sh should pass" $?
-	fi
+  if [ -n "$SHELLCHECK" ] && [ -x "$SHELLCHECK" ]; then
+    "$SHELLCHECK" "$FIND_JAVA"
+    assertTrue "shellcheck on bin/find-java.sh should pass" $?
+  fi
 }
 
 testHelp() {

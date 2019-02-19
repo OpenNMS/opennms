@@ -30,7 +30,7 @@ oneTimeSetUp() {
   makeFakeJava "$FAKE_JAVA_HOME" false "1.8.0_69" "420-b42"
 
   mkdir -p "$FAKE_OPENNMS_HOME"/{bin,data,lib}
-  cp "$PROJECTDIR/src/main/filtered/bin/_lib.sh" "$FAKE_OPENNMS_HOME/bin/"
+  cp "$PROJECTDIR/src/main/resources/bin/_lib.sh" "$FAKE_OPENNMS_HOME/bin/"
   cp "$PROJECTDIR/src/main/filtered/bin/find-java.sh" "$FAKE_OPENNMS_HOME/bin/"
   sed -e "s,\${install.dir},${FAKE_OPENNMS_HOME},g" \
     "$PROJECTDIR/src/main/filtered/bin/runjava" \
@@ -47,10 +47,10 @@ oneTimeTearDown() {
 }
 
 testShellcheck() {
-	if [ -n "$SHELLCHECK" ] && [ -x "$SHELLCHECK" ]; then
-		"$SHELLCHECK" "$RUNJAVA"
-		assertTrue "shellcheck on bin/runjava should pass" $?
-	fi
+  if [ -n "$SHELLCHECK" ] && [ -x "$SHELLCHECK" ]; then
+    "$SHELLCHECK" "$RUNJAVA"
+    assertTrue "shellcheck on bin/runjava should pass" $?
+  fi
 }
 
 testHelp() {

@@ -7,7 +7,7 @@ OVERRIDEABLE_ARRAYS=(TEST_FOO TEST_BAR TEST_BAZ TEST_ADDITIONAL_OPTIONS)
 . ../init.sh
 
 # shellcheck disable=SC1090
-. "$PROJECTDIR/src/main/filtered/bin/_lib.sh"
+. "$PROJECTDIR/src/main/resources/bin/_lib.sh"
 
 TESTDIR="$(get_testdir _lib)"
 
@@ -64,10 +64,10 @@ setUp() {
 }
 
 testShellcheck() {
-	if [ -n "$SHELLCHECK" ] && [ -x "$SHELLCHECK" ]; then
-		"$SHELLCHECK" "$PROJECTDIR/src/main/filtered/bin/_lib.sh"
-		assertTrue "shellcheck on bin/_lib.sh should pass" $?
-	fi
+  if [ -n "$SHELLCHECK" ] && [ -x "$SHELLCHECK" ]; then
+    "$SHELLCHECK" "$PROJECTDIR/src/main/resources/bin/_lib.sh"
+    assertTrue "shellcheck on bin/_lib.sh should pass" $?
+  fi
 }
 
 testIsArrayUnsetVariable() {

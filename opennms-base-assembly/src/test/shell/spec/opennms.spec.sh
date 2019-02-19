@@ -13,7 +13,8 @@ oneTimeSetUp() {
 }
 
 setUp() {
-	for FILE in _lib.sh opennms runjava find-java.sh; do
+	cp "$PROJECTDIR/src/main/resources/bin/_lib.sh" "$INSTPREFIX/bin/"
+	for FILE in opennms runjava find-java.sh; do
 		sed -e "s,\${install.dir},${INSTPREFIX},g" \
 			-e "s,\${install.pid.file},${INSTPREFIX}/run/opennms.pid,g" \
 			-e "s,\${install.package.description},OpenNMS Shell Test,g" \
