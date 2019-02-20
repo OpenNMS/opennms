@@ -32,9 +32,14 @@ import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,8 +56,23 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 public abstract class InetAddressUtils {
-
     private static final Logger LOG = LoggerFactory.getLogger(InetAddressUtils.class);
+    private static final Comparator<InetAddress> IFACE_COMPARATOR = new Comparator<InetAddress>() {
+        @Override
+        public int compare(final InetAddress o1, final InetAddress o2) {
+            if (o1 == null) {
+                if (o2 == null) {
+                    return 0;
+                }
+                return 1;
+            } else {
+                if (o2 == null) {
+                    return -1;
+                }
+                return o1.getClass().getName().compareTo(o2.getClass().getName());
+            }
+        }
+    };
 
     public static final String INVALID_BRIDGE_ADDRESS = "000000000000";
     public static final String INVALID_STP_BRIDGE_ID  = "0000000000000000";
@@ -107,6 +127,33 @@ public abstract class InetAddressUtils {
     public static String getLocalHostAddressAsString() {
         final String localhost = str(getLocalHostAddress());
         return localhost == null? "127.0.0.1" : localhost;
+    }
+
+    public static Optional<InetAddress> getLocalLoopbackAddress() {
+        try {
+            final List<InetAddress> loopbackAddresses = new ArrayList<>();
+            final Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
+            while (ifaces.hasMoreElements()) {
+                final NetworkInterface iface = ifaces.nextElement();
+                if (iface.isLoopback() && iface.isUp() && !iface.isVirtual()) {
+                    final Enumeration<InetAddress> addrs = iface.getInetAddresses();
+                    while (addrs.hasMoreElements()) {
+                        final InetAddress addr = addrs.nextElement();
+                        if (!addr.isMulticastAddress() && (addr.isLinkLocalAddress() || addr.isLoopbackAddress() || addr.isAnyLocalAddress())) {
+                            loopbackAddresses.add(addr);
+                        }
+                    }
+                }
+            }
+            if (!loopbackAddresses.isEmpty()) {
+                // prefer IPv4 loopback addresses to IPv6
+                loopbackAddresses.sort(IFACE_COMPARATOR);
+                return Optional.of(loopbackAddresses.get(0));
+            }
+        } catch (final Exception e) {
+            LOG.warn("getLocalLoopbackAddress: an exception occurred while attempting to determine the local loopback address.",e);
+        }
+        return Optional.empty();
     }
 
     public static String getLocalHostName() {
