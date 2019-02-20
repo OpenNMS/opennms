@@ -6,6 +6,7 @@
     <repository>mvn:org.ops4j.pax.jdbc/pax-jdbc-features/1.0.1/xml/features</repository>
     <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
     <repository>mvn:org.opennms.integration.api/karaf-features/${opennmsApiVersion}/xml</repository>
+    <repository>mvn:com.eclipsesource.jaxrs/features/${osgiJaxRsVersion}/xml/features</repository>
     <feature name="opennms-amqp-event-forwarder" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Event Forwarder">
         <feature>camel-core</feature>
         <feature>camel-blueprint</feature>
@@ -1004,55 +1005,6 @@
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.jceks-impl/${project.version}</bundle>
         <bundle>blueprint:mvn:org.opennms.container/scv/${project.version}/xml/blueprint-scv</bundle>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.shell/${project.version}</bundle>
-    </feature>
-    <feature name="jax-rs-connector" version="${osgiJaxRsVersion}" description="Jersey JAX RS OSGi Connector" resolver="(obr)">
-        <feature>http</feature>
-        <feature>scr</feature>
-        <bundle dependency="true">mvn:javax.annotation/javax.annotation-api/1.2</bundle>
-        <bundle dependency="true">mvn:javax.servlet/javax.servlet-api/3.0.1</bundle>
-        <bundle dependency="true">mvn:com.eclipsesource.jaxrs/jersey-min/2.22.2</bundle>
-        <bundle>mvn:com.eclipsesource.jaxrs/consumer/${osgiJaxRsVersion}</bundle>
-        <bundle>mvn:com.eclipsesource.jaxrs/publisher/${osgiJaxRsVersion}</bundle>
-        <bundle>mvn:com.eclipsesource.jaxrs/publisher-api/${osgiJaxRsVersion}</bundle>
-    </feature>
-    <feature name="jax-rs-provider-moxy" version="${osgiJaxRsVersion}" description="Moxy Json Provider for Jersey">
-        <feature version="2.5.2">eclipselink-moxy</feature>
-        <bundle>mvn:com.eclipsesource.jaxrs/provider-moxy/${osgiJaxRsVersion}</bundle>
-    </feature>
-    <feature name="jax-rs-provider-jackson" version="${osgiJaxRsVersion}" description="Jackson Json Provider for Jersey">
-        <feature version="2.8.9">jackson</feature>
-        <bundle>mvn:com.eclipsesource.jaxrs/provider-jackson/${osgiJaxRsVersion}</bundle>
-    </feature>
-    <feature name="jax-rs-provider-gson" version="2.3">
-        <bundle dependency="true">mvn:com.google.code.gson/gson/2.3</bundle>
-        <bundle>mvn:com.eclipsesource.jaxrs/provider-gson/${osgiJaxRsVersion}</bundle>
-    </feature>
-    <feature name="jax-rs-provider-multipart" version="${osgiJaxRsVersion}">
-        <bundle>mvn:com.eclipsesource.jaxrs/provider-multipart/${osgiJaxRsVersion}</bundle>
-    </feature>
-    <feature name="jax-rs-provider-security" version="${osgiJaxRsVersion}">
-        <bundle>mvn:com.eclipsesource.jaxrs/provider-security/${osgiJaxRsVersion}</bundle>
-    </feature>
-    <feature name="jax-rs-provider-sse" version="${osgiJaxRsVersion}">
-        <bundle>mvn:com.eclipsesource.jaxrs/provider-sse/${osgiJaxRsVersion}</bundle>
-    </feature>
-    <feature name="eclipselink-moxy" version="2.5.2" description="Eclipselink :: Moxy">
-        <bundle dependency="true">mvn:org.eclipse.persistence/org.eclipse.persistence.core/2.5.2</bundle>
-        <bundle dependency="true">mvn:org.eclipse.persistence/org.eclipse.persistence.asm/2.5.2</bundle>
-        <bundle dependency="true">mvn:org.eclipse.persistence/org.eclipse.persistence.antlr/2.5.2</bundle>
-        <bundle dependency="true">mvn:org.eclipse.persistence/org.eclipse.persistence.moxy/2.5.2</bundle>
-    </feature>
-    <feature name="jax-rs-shell-commands" version="${osgiJaxRsVersion}" description="JAX RS OSGi Shell Commands">
-        <bundle>mvn:com.eclipsesource.jaxrs/publisher-api/${osgiJaxRsVersion}</bundle>
-        <bundle>mvn:com.eclipsesource.jaxrs/shell-commands/${osgiJaxRsVersion}</bundle>
-    </feature>
-    <feature name="jackson" version="2.8.9" description="Jackson :: Jaxrs">
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.8.9</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.8.9</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.8.0</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/2.8.9</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/2.8.9</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/2.8.9</bundle>
     </feature>
     <feature name="opennms-osgi-core-rest" version="${project.version}" description="OpenNMS :: Features :: OSGI :: Core :: Rest">
         <details>Core module which provides features to install to listen for rest related services,
