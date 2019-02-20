@@ -94,6 +94,23 @@
     </service-properties>
   </service>
 
+  <!-- Snmp Data Collection Config -->
+  <reference id="dataCollectionConfigDao" interface="org.opennms.netmgt.config.api.DataCollectionConfigDao" availability="mandatory" />
+
+  <bean id="snmpCollectionConfigExtensionManager" class="org.opennms.features.apilayer.config.SnmpCollectionConfigExtensionManager">
+    <argument ref="dataCollectionConfigDao"/>
+  </bean>
+
+  <reference-list interface="org.opennms.integration.api.v1.config.datacollection.SnmpCollectionConfigExtension" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="snmpCollectionConfigExtensionManager" />
+  </reference-list>
+
+  <service ref="snmpCollectionConfigExtensionManager" interface="org.opennms.core.config.api.ConfigurationProvider" >
+    <service-properties>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
+  </service>
+
   <!-- Alarm Persister Extension -->
   <bean id="alarmPersisterExtensionManager" class="org.opennms.features.apilayer.alarms.AlarmPersisterExtensionManager">
     <argument ref="blueprintBundleContext"/>

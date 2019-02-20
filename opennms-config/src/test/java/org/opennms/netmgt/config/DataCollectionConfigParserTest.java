@@ -305,7 +305,7 @@ public class DataCollectionConfigParserTest {
     }
 
     private static void validateParser(DataCollectionConfigParser parser) {
-        Map<String,DatacollectionGroup> groupMap = parser.getExternalGroupMap();
+        Map<String,DatacollectionGroup> groupMap = parser.loadExternalGroupMap();
         int currentResourceTypes = 0;
         int currentSystemDefs = 0;
         int currentMibGroups = 0;
