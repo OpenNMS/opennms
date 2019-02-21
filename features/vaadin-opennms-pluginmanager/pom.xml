@@ -88,32 +88,6 @@
           </execution>
         </executions>
       </plugin>
-
-      <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>features-maven-plugin</artifactId>
-        <configuration>
-          <bundles>
-            <bundle>mvn:org.opennms.plugins/vaadin-opennms-pluginmanager/${project.version}</bundle>
-            <bundle>mvn:org.opennms.plugins/org.opennms.plugin.pluginmanager.pluginmanager-core/${pluginmanagerVersion}</bundle>
-          </bundles>
-
-          <!-- repos for licence manager and feature manager -->
-          <repositories>
-            <repository>mvn:org.opennms.plugins/org.opennms.plugin.licencemanager/${licencemanagerVersion}/xml/features</repository>
-            <repository>mvn:org.opennms.plugins/org.opennms.plugin.featuremanager/${featuremanagerVersion}/xml/features</repository>
-          </repositories>
-
-          <features>
-            <feature>opennms-core</feature>
-            <feature>vaadin</feature>
-            <feature>org.opennms.plugin.licencemanager</feature>
-            <feature>org.opennms.plugin.featuremanager</feature>
-          </features>
-
-        </configuration>
-      </plugin>
-
     </plugins>
   </build>
 

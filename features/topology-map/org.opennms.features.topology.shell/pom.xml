@@ -29,15 +29,6 @@
           </instructions>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>features-maven-plugin</artifactId>
-        <configuration>
-          <bundles>
-            <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.shell/${project.version}</bundle>
-          </bundles>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
   <dependencies>
