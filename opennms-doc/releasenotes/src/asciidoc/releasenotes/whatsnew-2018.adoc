@@ -84,6 +84,34 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.5]
+
+==== Release Meridian-2018.1.5
+
+Release 2018.1.5 is an update to Meridian 2018.1.4.
+It contains a number of bug fixes including fixes for sending notifications for events without
+associated nodes, XSS issues, and more.
+It also includes a number of performance improvements and and update to the latest Jetty web
+server framework.
+
+The codename for 2018.1.5 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_5[Fresh breeze]_.
+
+===== Bug
+
+* JDBC collector event reason provides no useful information (Issue http://issues.opennms.org/browse/NMS-9633[NMS-9633])
+* syslog events are creating notifications and disregarding rules in place (Issue http://issues.opennms.org/browse/NMS-10486[NMS-10486])
+* Node page very slow to load for nodes with more than 1000 events (Issue http://issues.opennms.org/browse/NMS-10506[NMS-10506])
+* SNMP configuration UI should select location "Default" by default, not the first location alphabetically (Issue http://issues.opennms.org/browse/NMS-10514[NMS-10514])
+* Wallboard URLs with board name should be permalinks, but return "Nothing to display" instead (Issue http://issues.opennms.org/browse/NMS-10515[NMS-10515])
+* Event parameters table have strong limits for the columns (Issue http://issues.opennms.org/browse/NMS-10525[NMS-10525])
+* Cross-Site Scripting: Reflected (Issue http://issues.opennms.org/browse/NMS-10546[NMS-10546])
+* Cross-Frame Scripting (Issue http://issues.opennms.org/browse/NMS-10547[NMS-10547])
+* syslog parsing of messages without a year will sometimes infer the wrong year (Issue http://issues.opennms.org/browse/NMS-10548[NMS-10548])
+
+===== Enhancement
+
+* Upgrade to Jetty 9.4.12 (Issue http://issues.opennms.org/browse/NMS-10558[NMS-10558])
+
 [releasenotes-changelog-Meridian-2018.1.4]
 
 ==== Release Meridian-2018.1.4
