@@ -2,10 +2,44 @@
 
 === Changelog
 
+[[releasenotes-changelog-23.0.3]]
+
+==== Release 23.0.3
+
+OpenNMS Horizon 23.0.3 is an update to Horizon 23.0.2.
+It contains a number of bug fixes including fixes for sending notifications for events without
+associated nodes, XSS issues, and more.
+It also includes a number of performance improvements and and update to the latest Jetty web
+server framework.
+
+For a high-level overview of what's changed in OpenNMS 23, see link:http://docs.opennms.org/opennms/releases/23.0.2/releasenotes/releasenotes.html#releasenotes-23[What's New in OpenNMS 23].
+
+The codename for 23.0.3 is _link:https://en.wikipedia.org/wiki/Wicked_Witch_of_the_West[Wicked Witch of the West]_.
+
+===== Bug
+
+* JDBC collector event reason provides no useful information (Issue http://issues.opennms.org/browse/NMS-9633[NMS-9633])
+* Minion WSMAN collector is not functional due to dependency missing (Issue http://issues.opennms.org/browse/NMS-9711[NMS-9711])
+* syslog events are creating notifications and disregarding rules in place (Issue http://issues.opennms.org/browse/NMS-10486[NMS-10486])
+* Node page very slow to load for nodes with more than 1000 events (Issue http://issues.opennms.org/browse/NMS-10506[NMS-10506])
+* SNMP configuration UI should select location "Default" by default, not the first location alphabetically (Issue http://issues.opennms.org/browse/NMS-10514[NMS-10514])
+* Wallboard URLs with board name should be permalinks, but return "Nothing to display" instead (Issue http://issues.opennms.org/browse/NMS-10515[NMS-10515])
+* Event parameters table have strong limits for the columns (Issue http://issues.opennms.org/browse/NMS-10525[NMS-10525])
+* BusinessServiceVertexStatusInfoPanelItem is broken (Issue http://issues.opennms.org/browse/NMS-10529[NMS-10529])
+* Recent Debian builds can't be installed on Ubuntu 14 (Issue http://issues.opennms.org/browse/NMS-10541[NMS-10541])
+* Cross-Site Scripting: Reflected (Issue http://issues.opennms.org/browse/NMS-10546[NMS-10546])
+* Cross-Frame Scripting (Issue http://issues.opennms.org/browse/NMS-10547[NMS-10547])
+* syslog parsing of messages without a year will sometimes infer the wrong year (Issue http://issues.opennms.org/browse/NMS-10548[NMS-10548])
+
+===== Enhancement
+
+* Upgrade to Jetty 9.4.12 (Issue http://issues.opennms.org/browse/NMS-10558[NMS-10558])
+
 [[releasenotes-changelog-23.0.2]]
+
 ==== Release 23.0.2
 
-OpenNMS Horizon 23.0.2 is an update to Horizon 23.0.2.
+OpenNMS Horizon 23.0.2 is an update to Horizon 23.0.1.
 It contains a number of bug fixes and enhancements, including performance improvements to topology maps, many fixes and improvements to Kafka support, and a bunch of correlation and alarm updates.
 
 For a high-level overview of what's changed in OpenNMS 23, see link:http://docs.opennms.org/opennms/releases/23.0.2/releasenotes/releasenotes.html#releasenotes-23[What's New in OpenNMS 23].
