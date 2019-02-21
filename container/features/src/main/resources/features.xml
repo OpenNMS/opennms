@@ -695,7 +695,7 @@
         <bundle>mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}</bundle>
     </feature>
     <feature name="tsrm-troubleticketer" version="${project.version}" description="OpenNMS :: Features :: Ticketing :: Tivoli Service Request Manager (TSRM)">
-        <feature version="3.1.11">cxf-jaxws</feature>
+        <feature version="${cxfVersion}">cxf-jaxws</feature>
         <feature>javax.servlet</feature>
         <bundle>mvn:org.opennms.features.ticketing/org.opennms.features.ticketing.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features/opennms-integration-tsrm/${project.version}</bundle>

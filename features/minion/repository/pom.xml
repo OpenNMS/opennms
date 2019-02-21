@@ -59,6 +59,7 @@
                                 <feature>minion-icmp-proxy</feature>
                                 <feature>minion-telemetryd-receivers</feature>
                                 <feature>hawtio-offline</feature>
+				<feature>cxf-commands/${cxfVersion}</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
@@ -305,6 +306,12 @@
             <groupId>org.opennms.protocols</groupId>
             <artifactId>org.opennms.protocols.xml</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf.karaf</groupId>
+            <artifactId>cxf-karaf-commands</artifactId>
+            <version>${cxfVersion}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
