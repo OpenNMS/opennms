@@ -69,4 +69,8 @@ public class OnmsTopologyVertex extends OnmsTopologyAbstractRef implements OnmsT
         return m_address;
     }
 
+    @Override
+    public void accept(TopologyVisitor v) {
+        v.visit(this);
+    }
 }
