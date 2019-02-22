@@ -30,6 +30,7 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>features</module>
     <module>poms</module>
     <module>provision</module>
     <module>org.opennms.features.topology.api</module>
