@@ -14,12 +14,13 @@ $(function() {
         let connect = function () {
             notificationSocket = new WebSocket((Util.getBaseHref() + 'notification/stream').replace(/^http/, 'ws'));
 
-            notificationSocket.onclose = function () {
+            notificationSocket.onclose = function (event) {
+                notificationSocket.close();
+                notificationSocket = null;
+
                 setTimeout(connect, 1000);
             };
-            notificationSocket.onerror = function () {
-                setTimeout(connect, 5000);
-            };
+
             notificationSocket.onmessage = function (event) {
                 let message = JSON.parse(event.data);
                 let notification = new Notification(message.head, {
