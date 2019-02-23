@@ -41,6 +41,7 @@ import org.opennms.netmgt.enlinkd.api.ReloadableTopologyDaemon;
 
 /**
  * Generate a enlinkd topology via karaf command.
+ * Log into console via: ssh -p 8101 admin@localhost
  * Install: feature:install opennms-enlinkd-shell
  * Usage: type 'enlinkd:generate-topology' in karaf console
  */
