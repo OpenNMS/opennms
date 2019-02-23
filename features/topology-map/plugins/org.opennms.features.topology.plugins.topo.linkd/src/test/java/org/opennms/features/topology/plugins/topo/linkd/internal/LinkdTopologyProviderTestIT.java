@@ -51,12 +51,15 @@ import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
+import org.opennms.netmgt.enlinkd.BridgeOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.CdpOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.IsisOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.LldpOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.NodesOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.OspfOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
+import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +103,13 @@ public class LinkdTopologyProviderTestIT {
     
     @Autowired
     OspfOnmsTopologyUpdater ospfOnmsTopologyUpdater;
-    
+
+    @Autowired
+    BridgeOnmsTopologyUpdater bridgeOnmsTopologyUpdater;
+
+    @Autowired
+    BridgeTopologyService bridgeTopologyService;
+
     private TopologyGenerator generator;
 
     @BeforeTransaction
@@ -110,7 +119,8 @@ public class LinkdTopologyProviderTestIT {
         isisOnmsTopologyUpdater.register();
         lldpOnmsTopologyUpdater.register();
         ospfOnmsTopologyUpdater.register();
-        
+        bridgeOnmsTopologyUpdater.register();
+
         TopologyGenerator.ProgressCallback progressCallback = new TopologyGenerator.ProgressCallback(LOG::info);
         TopologyPersister persister = new TopologyPersister(genericPersistenceAccessor, progressCallback);
         generator = TopologyGenerator.builder()
@@ -142,16 +152,15 @@ public class LinkdTopologyProviderTestIT {
         test(TopologyGenerator.Protocol.ospf);
     }
 
-    private void test(TopologyGenerator.Protocol protocol) throws OnmsTopologyException{
-        testAmounts(protocol);
-        testLinkingBetweenNodes(protocol);
-    }
-
-    private void test(TopologyGenerator.Protocol protocol) {
     @Test
     @Transactional
     public void testBridgeBridge() throws Exception {
         test(TopologyGenerator.Protocol.bridgeBridge);
+    }
+
+    private void test(TopologyGenerator.Protocol protocol) throws OnmsTopologyException{
+        testAmounts(protocol);
+        testLinkingBetweenNodes(protocol);
     }
 
     private void testAmounts(TopologyGenerator.Protocol protocol) {
@@ -180,6 +189,8 @@ public class LinkdTopologyProviderTestIT {
         isisOnmsTopologyUpdater.setTopology(isisOnmsTopologyUpdater.buildTopology());
         lldpOnmsTopologyUpdater.setTopology(lldpOnmsTopologyUpdater.buildTopology());
         ospfOnmsTopologyUpdater.setTopology(ospfOnmsTopologyUpdater.buildTopology());
+        bridgeTopologyService.load();
+        bridgeOnmsTopologyUpdater.setTopology(bridgeOnmsTopologyUpdater.buildTopology());
         linkdTopologyProvider.refresh();
     }
     private void verifyAmounts(TopologySettings settings) {
