@@ -30,6 +30,7 @@ package org.opennms.enlinkd.generator;
 
 import java.util.function.Consumer;
 
+import org.opennms.enlinkd.generator.protocol.BridgeProtocol;
 import org.opennms.enlinkd.generator.protocol.CdpProtocol;
 import org.opennms.enlinkd.generator.protocol.IsIsProtocol;
 import org.opennms.enlinkd.generator.protocol.LldpProtocol;
@@ -97,6 +98,8 @@ public class TopologyGenerator {
             return new LldpProtocol(topologySettings, topologyContext);
         } else if (Protocol.ospf == protocol) {
             return new OspfProtocol(topologySettings, topologyContext);
+        } else if (Protocol.bridgeBridge == protocol) {
+            return new BridgeProtocol(topologySettings, topologyContext);
         } else {
             throw new IllegalArgumentException("Don't know this protocol: " + topologySettings.getProtocol());
         }
