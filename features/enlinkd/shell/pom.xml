@@ -61,6 +61,15 @@
       <artifactId>org.opennms.features.enlinkd.generator</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- Test dependencies -->
     <dependency>
       <groupId>junit</groupId>

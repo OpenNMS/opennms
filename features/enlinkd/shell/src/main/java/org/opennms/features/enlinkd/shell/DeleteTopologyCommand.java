@@ -35,6 +35,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.enlinkd.generator.TopologyGenerator;
 import org.opennms.enlinkd.generator.TopologyPersister;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
+import org.opennms.netmgt.enlinkd.api.ReloadableTopologyDaemon;
 
 /**
  * Deletes the generated topology via karaf command. The topology is identified as it belongs to the category "GeneratedNode"
@@ -50,8 +51,11 @@ public class DeleteTopologyCommand implements Action {
     @Reference
     private GenericPersistenceAccessor genericPersistenceAccessor;
 
+    @Reference
+    private ReloadableTopologyDaemon reloadableTopologyDaemon;
+
     @Override
-    public Object execute() throws Exception {
+    public Object execute() {
         // We print directly to System.out so it will appear in the console
         TopologyGenerator.ProgressCallback progressCallback = new TopologyGenerator.ProgressCallback(System.out::println);
 
@@ -60,6 +64,7 @@ public class DeleteTopologyCommand implements Action {
                 .progressCallback(progressCallback)
                 .build();
         generator.deleteTopology();
+        reloadableTopologyDaemon.reloadTopology();
         return null;
     }
 }

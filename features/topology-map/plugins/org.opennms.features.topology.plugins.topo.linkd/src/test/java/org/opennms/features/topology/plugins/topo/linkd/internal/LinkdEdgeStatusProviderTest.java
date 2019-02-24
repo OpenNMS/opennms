@@ -53,7 +53,6 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 
 public class LinkdEdgeStatusProviderTest {
 
@@ -73,14 +72,14 @@ public class LinkdEdgeStatusProviderTest {
 
     private List<LinkdEdge> m_edges; 
 
-    private LinkdVertex getVertexFromNode(OnmsNode node) throws OnmsTopologyException {
+    private LinkdVertex getVertexFromNode(OnmsNode node) {
         return LinkdVertex.create(
                                   TopologyUpdater.create(
                                              NodeTopologyEntity.toNodeTopologyInfo(node), null));
     }
 
     @Before
-    public void setUp() throws OnmsTopologyException {
+    public void setUp() {
         OnmsMonitoringLocation location = new OnmsMonitoringLocation("default","default");
         m_node1 = new OnmsNode();
         m_node1.setId(1);

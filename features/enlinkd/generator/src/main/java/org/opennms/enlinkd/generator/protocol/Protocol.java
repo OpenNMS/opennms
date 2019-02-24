@@ -31,7 +31,9 @@ package org.opennms.enlinkd.generator.protocol;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.enlinkd.generator.TopologyContext;
 import org.opennms.enlinkd.generator.TopologyGenerator;
@@ -48,19 +50,20 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
-
 public abstract class Protocol<Element> {
 
     final TopologySettings topologySettings;
     final TopologyContext context;
     private final RandomUtil random = new RandomUtil();
+    // A map that holds a valid ifIndex for each node that has an snmp interface
+    final Map<Integer, Integer> nodeIfIndexes = new HashMap<>();
 
     public Protocol(TopologySettings topologySettings, TopologyContext context) {
         this.topologySettings = topologySettings;
         this.context = context;
     }
 
-    public void createAndPersistNetwork(){
+    public void createAndPersistNetwork() {
         this.context.currentProgress("%nCreating %s %s topology with %s Nodes, %s Elements, %s Links, %s SnmpInterfaces, %s IpInterfaces:",
                 topologySettings.getTopology(),
                 this.getProtocol(),
@@ -109,6 +112,7 @@ public abstract class Protocol<Element> {
 
     protected OnmsNode createNode(int count, OnmsMonitoringLocation location, OnmsCategory category) {
         OnmsNode node = new OnmsNode();
+        node.setId(count);
         node.setLabel("Node" + count);
         node.setLocation(location);
         node.addCategory(category);
@@ -126,6 +130,7 @@ public abstract class Protocol<Element> {
 
     private OnmsSnmpInterface createSnmpInterface(int ifIndex, OnmsNode node) {
         OnmsSnmpInterface onmsSnmpInterface = new OnmsSnmpInterface();
+        onmsSnmpInterface.setId((node.getId() * topologySettings.getAmountSnmpInterfaces()) + ifIndex);
         onmsSnmpInterface.setNode(node);
         onmsSnmpInterface.setIfIndex(ifIndex);
         onmsSnmpInterface.setIfType(4);
@@ -134,6 +139,7 @@ public abstract class Protocol<Element> {
         onmsSnmpInterface.setIfOperStatus(7);
         onmsSnmpInterface.setLastCapsdPoll(new Date());
         onmsSnmpInterface.setLastSnmpPoll(new Date());
+        nodeIfIndexes.computeIfAbsent(node.getId(), key -> ifIndex);
 
         return onmsSnmpInterface;
     }
@@ -149,6 +155,7 @@ public abstract class Protocol<Element> {
 
     private OnmsIpInterface createIpInterface(OnmsSnmpInterface snmp, InetAddress inetAddress) {
         OnmsIpInterface ip = new OnmsIpInterface();
+        ip.setId(snmp.getId());
         ip.setSnmpInterface(snmp);
         ip.setIpLastCapsdPoll(new Date());
         ip.setNode(snmp.getNode());

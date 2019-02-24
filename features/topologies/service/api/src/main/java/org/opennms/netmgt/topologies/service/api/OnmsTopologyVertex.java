@@ -28,14 +28,13 @@
 
 package org.opennms.netmgt.topologies.service.api;
 
+import java.util.Objects;
+
 public class OnmsTopologyVertex extends OnmsTopologyAbstractRef implements OnmsTopologyRef {
 
-
-    public static OnmsTopologyVertex create(String id,String label,String address,String iconKey) throws OnmsTopologyException {
-        if (id == null) {
-            throw new OnmsTopologyException("id is null, cannot create vertex");
-        }
-        return new OnmsTopologyVertex(id,label,address,iconKey);
+    public static OnmsTopologyVertex create(String id, String label, String address, String iconKey) {
+        Objects.requireNonNull(id, "id is null, cannot create vertex");
+        return new OnmsTopologyVertex(id, label, address, iconKey);
     }
     
     private Integer m_nodeid;

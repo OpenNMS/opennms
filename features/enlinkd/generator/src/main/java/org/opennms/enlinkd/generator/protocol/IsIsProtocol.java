@@ -82,7 +82,7 @@ public class IsIsProtocol extends Protocol<IsIsElement> {
         List<IsIsLink> links = new ArrayList<>();
         Integer isisISAdjIndex = 0;
 
-        for (int i = 0; i < topologySettings.getAmountLinks()/2; i++) {
+        for (int i = 0; i < topologySettings.getAmountLinks() / 2; i++) {
 
             // We create 2 links that reference each other, see also LinkdToplologyProvider.match...Links()
             Pair<IsIsElement, IsIsElement> pair = pairs.next();
@@ -90,25 +90,24 @@ public class IsIsProtocol extends Protocol<IsIsElement> {
             IsIsElement targetElement = pair.getRight();
             isisISAdjIndex++;
 
-            IsIsLink sourceLink = createLink(
-                    sourceElement.getNode(),
-                    isisISAdjIndex, targetElement.getIsisSysID()
-            );
+            int sourceIfIndex = nodeIfIndexes.get(sourceElement.getNode().getId());
+            int targetIfIndex = nodeIfIndexes.get(targetElement.getNode().getId());
+
+            IsIsLink sourceLink = createLink(sourceElement.getNode(), isisISAdjIndex, targetElement.getIsisSysID(),
+                    sourceIfIndex);
             links.add(sourceLink);
 
-            IsIsLink targetLink = createLink(
-                    targetElement.getNode(),
-                    isisISAdjIndex,
-                    sourceElement.getIsisSysID()
-            );
+            IsIsLink targetLink = createLink(targetElement.getNode(), isisISAdjIndex, sourceElement.getIsisSysID(),
+                    targetIfIndex);
             links.add(targetLink);
 
-            LOG.debug("Linked node {} with node {}", sourceElement.getNode().getLabel(), targetElement.getNode().getLabel());
+            context.currentProgress(String.format("Linked node %s with node %s", sourceElement.getNode().getLabel(),
+                    targetElement.getNode().getLabel()));
         }
         return links;
     }
 
-    private IsIsLink createLink(OnmsNode node, Integer isisISAdjIndex, String isisISAdjNeighSysID) {
+    private IsIsLink createLink(OnmsNode node, Integer isisISAdjIndex, String isisISAdjNeighSysID, int ifIndex) {
         IsIsLink link = new IsIsLink();
         link.setIsisISAdjIndex(isisISAdjIndex);
         link.setIsisISAdjNeighSysID(isisISAdjNeighSysID);
@@ -120,7 +119,7 @@ public class IsIsProtocol extends Protocol<IsIsElement> {
         link.setIsisISAdjNeighSNPAAddress("isisISAdjNeighSNPAAddress");
         link.setIsisISAdjNeighSysType(IsIsLink.IsisISAdjNeighSysType.l1_IntermediateSystem);
         link.setIsisISAdjNbrExtendedCircID(3);
-        link.setIsisCircIfIndex(3);
+        link.setIsisCircIfIndex(ifIndex);
         link.setIsisCircAdminState(IsIsElement.IsisAdminState.on);
         return link;
     }

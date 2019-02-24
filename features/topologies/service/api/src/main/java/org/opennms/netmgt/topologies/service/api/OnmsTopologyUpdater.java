@@ -29,11 +29,11 @@
 package org.opennms.netmgt.topologies.service.api;
 
 public interface OnmsTopologyUpdater {
-    
+
     OnmsTopology getTopology();
 
-    OnmsTopologyProtocol getProtocol() throws OnmsTopologyException;
-    
+    OnmsTopologyProtocol getProtocol();
+
     String getName();
 
 }

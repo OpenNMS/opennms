@@ -28,13 +28,12 @@
 
 package org.opennms.netmgt.topologies.service.api;
 
+import java.util.Objects;
+
 public class OnmsTopologyProtocol {
 
-
-    public static OnmsTopologyProtocol create(String id) throws OnmsTopologyException {
-        if (id == null) {
-            throw new OnmsTopologyException("id is null, cannot create protocol");
-        }
+    public static OnmsTopologyProtocol create(String id) {
+        Objects.requireNonNull(id, "id is null, cannot create protocol");
         return new OnmsTopologyProtocol(id.toUpperCase());
     }
     
@@ -72,6 +71,5 @@ public class OnmsTopologyProtocol {
             return false;
         return true;
     }
-    
 
 }
