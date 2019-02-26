@@ -591,7 +591,7 @@ org.apache.felix.http.port=8181
     <feature name="opennms-bridge-http-service" description="OpenNMS Bridge OSGi HTTP Service" version="${opennms.osgi.version}">
         <!--<feature>pax-http</feature>-->
         <!-- <bundle start-level="30">mvn:org.apache.karaf.http/org.apache.karaf.http.core/4.2.2</bundle> -->
-        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.http.bridge/${felixVersion}</bundle>
+        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.http.bridge/${felixBridgeVersion}</bundle>
         <!--<bundle start-level="30">mvn:org.opennms.container/org.opennms.container.bridge/${project.version}</bundle>-->
         <capability>http-service;provider:=apache-felix</capability>
         <conditional>
