@@ -617,7 +617,7 @@ org.apache.felix.http.port=8181
     <feature name="opennms-http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="${opennms.osgi.version}">
         <!-- <feature version="[6.0,6.1)">pax-http</feature> -->
         <feature>opennms-bridge-http-service</feature>
-        <!-- Do not start pax-* related bundles as they are not needed AFAIK -->
+        <!-- Do not start pax-* related bundles as they are not needed -->
         <!--<bundle dependency="true" start-level="20">mvn:org.ow2.asm/asm-all/5.0.2</bundle>-->
         <!--<bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-bundleutils/4.6</bundle>-->
         <!--<bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-reflect/4.6</bundle>-->

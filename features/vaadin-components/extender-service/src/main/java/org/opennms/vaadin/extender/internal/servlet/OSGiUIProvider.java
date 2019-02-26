@@ -12,9 +12,13 @@ import com.vaadin.server.UIProvider;
 import com.vaadin.server.UIProviderEvent;
 import com.vaadin.ui.UI;
 
-//TODO MVR
-// responsible to create the UI.
-// Original this was for each servlet, but now is for all servlets
+/**
+ * This class is responsible to dispatch any Vaadin UI creation (exposed via {@link ApplicationFactory}) accordingly.
+ * This was required as a {@link UIProvider} should take care of all ui creation, and not just one, which was the case
+ * originally, but broke with the Karaf 4.2.2 Upgrade.
+ *
+ * @author mvrueden
+ */
 public class OSGiUIProvider extends UIProvider {
 
     // cannonical class name -> application factory

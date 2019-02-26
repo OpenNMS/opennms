@@ -32,16 +32,12 @@ import org.opennms.container.web.bridge.proxy.pattern.matchers.ExactPathMatcher;
 import org.opennms.container.web.bridge.proxy.pattern.matchers.PathMatcher;
 
 public class PatternMatcherFactory {
-
     public static PatternMatcher createPatternMatcher(String pattern) {
-        // TODO MVR add RestPathMatcher as well
         if (pattern.endsWith("/*")) {
             return new PathMatcher(pattern);
         }
         return new ExactPathMatcher(pattern);
     }
-
-
 }
 
 

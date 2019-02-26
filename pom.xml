@@ -1336,10 +1336,7 @@
     <karafVersion>4.2.2</karafVersion>
     <kafkaStreamsVersion>1.0.1</kafkaStreamsVersion>
     <kafkaStreamsBundleVersion>1.0.1_1</kafkaStreamsBundleVersion>
-    <!-- TODO MVR remove me -->
-    <felixApiVersion>3.0.0</felixApiVersion>
     <felixBridgeVersion>4.0.4</felixBridgeVersion>
-    <!-- TODO MVR remove me -->
     <felixProxyVersion>3.0.4</felixProxyVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
