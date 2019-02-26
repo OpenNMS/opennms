@@ -1,110 +1,95 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.container.web;
 
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
+import java.util.Objects;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.http.HttpServlet;
 
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
-import org.osgi.framework.Filter;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
-public final class DispatcherTracker
-    extends ServiceTracker<Object, Object>
-{
-    final static String DEFAULT_FILTER = "(http.felix.dispatcher=*)";
+/**
+ * In order to dispatch requests to the Apache Felix Http Bridge, we have to listen for the HttpServlet the bridge module
+ * is exposing.
+ *
+ * @author mvrueden
+ */
+public final class DispatcherTracker extends ServiceTracker<HttpServlet, HttpServlet> {
+    private final ServletConfig config;
+    private HttpServlet dispatcher;
 
-    private final FilterConfig config;
-    private javax.servlet.Filter dispatcher;
-
-    public DispatcherTracker(final BundleContext context, final String filter, final FilterConfig config) throws Exception {
-        super(context, createFilter(context, filter, config.getServletContext()), null);
-        this.config = config;
+    public DispatcherTracker(BundleContext context, ServletConfig servletConfig) throws InvalidSyntaxException {
+        super(context, context.createFilter("(&(objectClass=javax.servlet.http.HttpServlet)(http.felix.dispatcher=*))"), null);
+        this.config = Objects.requireNonNull(servletConfig);
     }
 
-    public javax.servlet.Filter getDispatcher()
-    {
+    public HttpServlet getDispatcher() {
         return this.dispatcher;
     }
 
     @Override
-    public Object addingService(ServiceReference<Object> ref)
-    {
-        Object service = super.addingService(ref);
-        if (service instanceof javax.servlet.Filter) {
-            setDispatcher((javax.servlet.Filter)service);
-        }
-
+    public HttpServlet addingService(ServiceReference ref) {
+        HttpServlet service = super.addingService(ref);
+        setDispatcher(service);
         return service;
     }
 
     @Override
-    public void removedService(ServiceReference<Object> ref, Object service)
-    {
-        if (service instanceof javax.servlet.Filter) {
-            setDispatcher(null);
-        }
-
-        super.removedService(ref, service);
+    public void removedService(ServiceReference<HttpServlet> reference, HttpServlet service) {
+        setDispatcher(null);
+        super.removedService(reference, service);
     }
 
-    private void log(String message, Throwable cause)
-    {
-        this.config.getServletContext().log(message, cause);
-    }
-
-    private void setDispatcher(javax.servlet.Filter dispatcher)
-    {
+    private void setDispatcher(HttpServlet dispatcher) {
         destroyDispatcher();
         this.dispatcher = dispatcher;
         initDispatcher();
     }
 
-    private void destroyDispatcher()
-    {
-        if (this.dispatcher == null) {
-            return;
-        }
-
-        this.dispatcher.destroy();
-        this.dispatcher = null;
-    }
-
-    private void initDispatcher()
-    {
-        if (this.dispatcher == null) {
-            return;
-        }
-
-        try {
-            this.dispatcher.init(this.config);
-        } catch (Exception e) {
-            log("Failed to initialize dispatcher", e);
+    private void destroyDispatcher() {
+        if (this.dispatcher != null) {
+            this.dispatcher.destroy();
         }
     }
 
-    private static Filter createFilter(BundleContext context, String filter, ServletContext servletContext) throws Exception {
-        final StringBuilder str = new StringBuilder();
-        str.append("(&(").append(Constants.OBJECTCLASS).append("=");
-        str.append(javax.servlet.Filter.class.getName()).append(")");
-        str.append(filter != null ? filter : DEFAULT_FILTER).append(")");
-        final String filterText = str.toString();
-        return context.createFilter(filterText);
+    private void initDispatcher() {
+        if (this.dispatcher != null) {
+            try {
+                this.dispatcher.init(config);
+            } catch (Exception e) {
+                config.getServletContext().log("Failed to initialize dispatcher", e);
+            }
+        }
     }
+
 }
