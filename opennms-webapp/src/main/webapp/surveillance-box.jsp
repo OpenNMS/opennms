@@ -68,5 +68,5 @@
     </script>
 
     <div id="surveillance-view">
-    <iframe id="surveillance-iframe" src="vaadin-surveillance-views?dashboard=false<%= viewName %>" frameborder="0" style="min-height:100%; min-width:100%;"></iframe>
+    <iframe name="surveillance-view-embedded" id="surveillance-iframe" src="vaadin-surveillance-views?dashboard=false<%= viewName %>" frameborder="0" style="min-height:100%; min-width:100%;"></iframe>
     </div>

@@ -43,5 +43,5 @@
   <jsp:param name="vaadinEmbeddedStyles" value="true" />
 </jsp:include>
 
-<iframe id="vaadin-content" src="admin/admin-snmp-collections" frameborder="0" class="vaadin-fullscreen"></iframe>
+<iframe name="mib-compiler-snmp" id="vaadin-content" src="admin/admin-snmp-collections" frameborder="0" class="vaadin-fullscreen"></iframe>
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
