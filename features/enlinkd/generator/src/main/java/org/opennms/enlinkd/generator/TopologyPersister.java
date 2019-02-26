@@ -64,6 +64,10 @@ public class TopologyPersister {
         progressCallback.currentProgress("    Inserting of %s done.", entity.getClass().getSimpleName());
     }
 
+    public <E> void persist(E ... elements) {
+        persist(Arrays.asList(elements));
+    }
+
     public <E> void persist(List<E> elements) {
         if (elements.size() < 1) {
             return; // nothing do do
