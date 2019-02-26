@@ -130,7 +130,7 @@ public abstract class Protocol<Element> {
         return interfaces;
     }
 
-    private OnmsSnmpInterface createSnmpInterface(int ifIndex, OnmsNode node) {
+    protected OnmsSnmpInterface createSnmpInterface(int ifIndex, OnmsNode node) {
         OnmsSnmpInterface onmsSnmpInterface = new OnmsSnmpInterface();
         onmsSnmpInterface.setId((node.getId() * topologySettings.getAmountSnmpInterfaces()) + ifIndex);
         onmsSnmpInterface.setNode(node);
@@ -155,7 +155,7 @@ public abstract class Protocol<Element> {
         return interfaces;
     }
 
-    private OnmsIpInterface createIpInterface(OnmsSnmpInterface snmp, InetAddress inetAddress) {
+    protected OnmsIpInterface createIpInterface(OnmsSnmpInterface snmp, InetAddress inetAddress) {
         OnmsIpInterface ip = new OnmsIpInterface();
         ip.setId(snmp.getId());
         ip.setSnmpInterface(snmp);
