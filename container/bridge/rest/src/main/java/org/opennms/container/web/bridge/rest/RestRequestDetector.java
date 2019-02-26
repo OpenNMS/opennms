@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.container.web.bridge.proxy;
+package org.opennms.container.web.bridge.rest;
 
 import java.util.Arrays;
 import java.util.HashSet;

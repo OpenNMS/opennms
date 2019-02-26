@@ -28,9 +28,12 @@
 
 package org.opennms.container.web.bridge.proxy;
 
+import java.util.Enumeration;
 import java.util.Objects;
 
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 
 import org.osgi.framework.BundleContext;
@@ -48,7 +51,11 @@ public final class DispatcherTracker extends ServiceTracker<HttpServlet, HttpSer
     private final ServletConfig config;
     private HttpServlet dispatcher;
 
-    public DispatcherTracker(BundleContext context, ServletConfig servletConfig) throws InvalidSyntaxException {
+    public DispatcherTracker(BundleContext context, FilterConfig filterConfig) throws InvalidSyntaxException {
+        this(context, convert(filterConfig));
+    }
+
+    private DispatcherTracker(BundleContext context, ServletConfig servletConfig) throws InvalidSyntaxException {
         super(context, context.createFilter("(&(objectClass=javax.servlet.http.HttpServlet)(http.felix.dispatcher=*))"), null);
         this.config = Objects.requireNonNull(servletConfig);
     }
@@ -92,4 +99,30 @@ public final class DispatcherTracker extends ServiceTracker<HttpServlet, HttpSer
         }
     }
 
+    private static ServletConfig convert(FilterConfig filterConfig) {
+        // Convert FilterConfig to ServletConfig
+        final ServletConfig servletConfig = new ServletConfig() {
+
+            @Override
+            public String getServletName() {
+                return "opennms-http-osgi-bridge";
+            }
+
+            @Override
+            public ServletContext getServletContext() {
+                return filterConfig.getServletContext();
+            }
+
+            @Override
+            public String getInitParameter(String name) {
+                return filterConfig.getInitParameter(name);
+            }
+
+            @Override
+            public Enumeration<String> getInitParameterNames() {
+                return filterConfig.getInitParameterNames();
+            }
+        };
+        return servletConfig;
+    }
 }
