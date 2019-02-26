@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Template;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 
@@ -51,12 +52,11 @@ public class DataSet extends FlowSet<DataRecord> {
     public DataSet(final Packet packet,
                    final FlowSetHeader header,
                    final Session.Resolver resolver,
-                   final ByteBuffer buffer) throws InvalidPacketException {
+                   final ByteBuffer buffer) throws InvalidPacketException, MissingTemplateException {
         super(packet, header);
 
         this.resolver = Objects.requireNonNull(resolver);
-        this.template = this.resolver.lookupTemplate(this.header.setId)
-                .orElseThrow(() -> new InvalidPacketException(buffer, "Unknown Template ID: %d", this.header.setId));
+        this.template = this.resolver.lookupTemplate(this.header.setId);
 
         // For variable length fields we assume at least the length value (1 byte) to be present
         final int minimumRecordLength = this.template.stream()

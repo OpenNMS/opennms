@@ -33,6 +33,8 @@ import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.bytes;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElement;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Semantics;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
@@ -61,7 +63,7 @@ public class MacAddressValue extends Value<byte[]> {
     public static InformationElement parser(final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) {
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) throws InvalidPacketException, MissingTemplateException {
                 return new MacAddressValue(name, semantics, bytes(buffer, 6));
             }
 

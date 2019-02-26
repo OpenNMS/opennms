@@ -34,6 +34,7 @@ import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElement;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Semantics;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
@@ -63,7 +64,7 @@ public class BooleanValue extends Value<Boolean> {
         return new InformationElement() {
             @Override
             public Value<?> parse(final Session.Resolver resolver,
-                                  final ByteBuffer buffer) throws InvalidPacketException {
+                                  final ByteBuffer buffer) throws InvalidPacketException, MissingTemplateException {
                 final int value = uint8(buffer);
                 if (value < 1 || value > 2) {
                     throw new InvalidPacketException(buffer, "Illegal value '%d' for boolean type (only 1/true and 2/false allowed)", value);
