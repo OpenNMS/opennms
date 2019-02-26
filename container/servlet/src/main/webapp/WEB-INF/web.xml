@@ -37,7 +37,7 @@
   <!-- WARMERGE: begin filter -->
   <filter>
     <filter-name>proxy</filter-name>
-    <filter-class>org.opennms.container.web.ProxyFilter</filter-class>
+    <filter-class>org.opennms.container.web.bridge.proxy.ProxyFilter</filter-class>
   </filter>
   <!-- WARMERGE: end filter -->
 
