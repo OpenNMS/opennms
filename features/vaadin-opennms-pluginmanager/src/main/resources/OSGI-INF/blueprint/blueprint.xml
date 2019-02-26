@@ -31,7 +31,7 @@
   <!-- ReST Servelet configuration for jersey -->
   <service interface="javax.servlet.http.HttpServlet">
     <service-properties>
-      <entry key="alias" value="/pluginmgr/rest/v1-0" />
+      <entry key="osgi.http.whiteboard.servlet.pattern" value="/pluginmgr/rest/v1-0" />
     </service-properties>
     <bean class="com.sun.jersey.spi.container.servlet.ServletContainer">
       <argument ref="pluginManagerRestApplication" />
@@ -87,7 +87,7 @@
 
   <service id="pluginManagerRestService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="pluginManagerAdminApplicationFactory">
     <service-properties>
-      <entry key="alias" value="/admin/plugin-manager" />
+      <entry key="osgi.http.whiteboard.servlet.pattern" value="/admin/plugin-manager/*" />
       <entry key="init.widgetset" value="org.opennms.vaadin.DefaultWidgetset" />
     </service-properties>
   </service>
@@ -105,7 +105,7 @@
 
   <service id="featureDiagnosticsService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="featureDiagnosticsApplicationFactory">
     <service-properties>
-      <entry key="alias" value="/admin/plugin-manager-feature-diagnostics" />
+      <entry key="osgi.http.whiteboard.servlet.pattern" value="/admin/plugin-manager-feature-diagnostics/*" />
       <entry key="init.widgetset" value="org.opennms.vaadin.DefaultWidgetset" />
     </service-properties>
   </service>
@@ -123,7 +123,7 @@
 
   <service id="licenceDiagnosticsService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="licenceDiagnosticsApplicationFactory">
     <service-properties>
-      <entry key="alias" value="/admin/plugin-manager-licence-diagnostics" />
+      <entry key="osgi.http.whiteboard.servlet.pattern" value="/admin/plugin-manager-licence-diagnostics/*" />
       <entry key="init.widgetset" value="org.opennms.vaadin.DefaultWidgetset" />
     </service-properties>
   </service>
@@ -141,7 +141,7 @@
 
   <service id="pluginDiagnosticsService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="pluginDiagnosticsApplicationFactory">
     <service-properties>
-      <entry key="alias" value="/admin/plugin-manager-plugin-diagnostics" />
+      <entry key="osgi.http.whiteboard.servlet.pattern" value="/admin/plugin-manager-plugin-diagnostics/*" />
       <entry key="init.widgetset" value="org.opennms.vaadin.DefaultWidgetset" />
     </service-properties>
   </service> 

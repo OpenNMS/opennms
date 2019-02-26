@@ -7,7 +7,7 @@
   -->
   <service interface="javax.servlet.Servlet" >
     <service-properties>
-      <entry key="alias" value="/test-servlet"/>
+      <entry key="osgi.http.whiteboard.servlet.pattern" value="/test-servlet"/>
     </service-properties>
     <bean class="org.opennms.core.test.http.MonkeyServlet"/>
   </service>

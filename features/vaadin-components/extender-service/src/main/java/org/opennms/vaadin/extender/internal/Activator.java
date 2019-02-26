@@ -84,7 +84,8 @@ public class Activator implements BundleActivator {
         Dictionary<String, String> props;
 
         props = new Hashtable<String, String>();
-        props.put("alias", VaadinResourceServlet.VAADIN);
+        props.put(Constants.ALIAS, VaadinResourceServlet.VAADIN + "/*");
+        props.put(Constants.OSGI_HTTP_WHITEBOARD_SERVLET_PATTERN, VaadinResourceServlet.VAADIN + "/*");
 
         HttpServlet vaadinResourceServlet = new VaadinResourceServlet(vaadin);
 

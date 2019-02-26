@@ -116,6 +116,8 @@ public class PaxVaadinBundleTracker extends BundleTracker<Object> {
 
 				Map<String, Object> props = new Hashtable<String, Object>();
 				props.put(org.opennms.vaadin.extender.Constants.ALIAS, alias);
+				props.put(org.opennms.vaadin.extender.Constants.OSGI_HTTP_WHITEBOARD_SERVLET_PATTERN, alias);
+				props.put("servlet.init.ui.class", applicationFactoryWrapper.getUIClass().getCanonicalName());
 
 				if (widgetset != null) {
 					props.put("widgetset", widgetset);

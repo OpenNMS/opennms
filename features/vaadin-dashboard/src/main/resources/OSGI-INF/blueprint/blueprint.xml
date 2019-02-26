@@ -19,7 +19,7 @@
 
     <service id="wallboardService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="wallboardUIFactory">
         <service-properties>
-            <entry key="alias" value="/vaadin-wallboard"/>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/vaadin-wallboard/*"/>
             <entry key="init.widgetset" value="org.opennms.features.vaadin.dashboard.DashboardWidgetSet"/>
         </service-properties>
     </service>
@@ -42,7 +42,7 @@
 
     <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="wallboardConfigUIFactory">
         <service-properties>
-            <entry key="alias" value="/admin/wallboard-config"/>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/admin/wallboard-config/*"/>
             <entry key="init.widgetset" value="org.opennms.features.vaadin.dashboard.DashboardWidgetSet"/>
         </service-properties>
     </service>
