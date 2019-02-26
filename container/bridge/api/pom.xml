@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>org.opennms.container</groupId>
         <artifactId>org.opennms.container.bridge</artifactId>
@@ -12,48 +10,4 @@
     <artifactId>org.opennms.container.bridge.api</artifactId>
     <packaging>jar</packaging>
     <name>OpenNMS :: OSGi Container :: Web OSGi Bridge :: API</name>
-    <dependencies>
-        <!--<dependency>-->
-            <!--<groupId>javax.servlet</groupId>-->
-            <!--<artifactId>javax.servlet-api</artifactId>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.osgi</groupId>-->
-            <!--<artifactId>org.osgi.core</artifactId>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.osgi</groupId>-->
-            <!--<artifactId>org.osgi.compendium</artifactId>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.felix</groupId>-->
-            <!--<artifactId>org.apache.felix.http.api</artifactId>-->
-            <!--<version>${felixApiVersion}</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>com.eclipsesource.jaxrs</groupId>-->
-            <!--<artifactId>publisher-api</artifactId>-->
-            <!--<version>${osgiJaxRsVersion}</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>junit</groupId>-->
-            <!--<artifactId>junit</artifactId>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.opennms.dependencies</groupId>-->
-            <!--<artifactId>spring-dependencies</artifactId>-->
-            <!--<type>pom</type>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.opennms.dependencies</groupId>-->
-            <!--<artifactId>spring-test-dependencies</artifactId>-->
-            <!--<type>pom</type>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-    </dependencies>
 </project>
