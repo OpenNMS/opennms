@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServlet;
 
 import org.opennms.vaadin.extender.AbstractApplicationFactory;
 import org.opennms.vaadin.extender.VaadinResourceService;
+import org.opennms.vaadin.extender.internal.servlet.OSGiUIProvider;
 import org.opennms.vaadin.extender.internal.servlet.VaadinOSGiServlet;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -41,6 +42,7 @@ import org.osgi.util.tracker.BundleTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.server.UIProvider;
 import com.vaadin.ui.UI;
 
 public class PaxVaadinBundleTracker extends BundleTracker<Object> {
@@ -112,7 +114,9 @@ public class PaxVaadinBundleTracker extends BundleTracker<Object> {
 
 			final String widgetset = findWidgetset(bundle);
 			if (application != null) {
-			    VaadinOSGiServlet servlet = new VaadinOSGiServlet(new ApplicationFactoryWrapper(application), bundle.getBundleContext());
+				final ApplicationFactoryWrapper applicationFactoryWrapper = new ApplicationFactoryWrapper(application);
+				final UIProvider uiProvider = new OSGiUIProvider(applicationFactoryWrapper);
+				VaadinOSGiServlet servlet = new VaadinOSGiServlet(uiProvider, bundle.getBundleContext());
 
 				Map<String, Object> props = new Hashtable<String, Object>();
 				props.put(org.opennms.vaadin.extender.Constants.ALIAS, alias);
@@ -120,7 +124,7 @@ public class PaxVaadinBundleTracker extends BundleTracker<Object> {
 				props.put("servlet.init.ui.class", applicationFactoryWrapper.getUIClass().getCanonicalName());
 
 				if (widgetset != null) {
-					props.put("widgetset", widgetset);
+					props.put("servlet.init.widgetset", widgetset);
 				}
 
 				@SuppressWarnings({"unchecked"})
