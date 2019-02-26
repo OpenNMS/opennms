@@ -76,8 +76,9 @@ public class ProxyFilter implements Filter, RequestHandlerRegistry {
         servletTracker.open();
         dispatcherTracker.open();
 
-        // TODO MVR make this more generic
-        addRequestHandler(new RestRequestHandler());
+        // By default we register a handler for all rest endpoints, as they are already
+        // known by the ApplicationRegistry (jax-rs-connector project)
+        addRequestHandler(new RestRequestHandler(bundleContext));
     }
 
     @Override
@@ -110,14 +111,6 @@ public class ProxyFilter implements Filter, RequestHandlerRegistry {
         handlers.clear();
     }
 
-    private static BundleContext getBundleContext(final ServletContext servletContext) throws ServletException {
-        final Object context = servletContext.getAttribute(BundleContext.class.getName());
-        if (context instanceof BundleContext) {
-            return (BundleContext)context;
-        }
-        throw new ServletException("Bundle context attribute [" + BundleContext.class.getName() + "] not set in servlet context");
-    }
-
     private DispatcherTracker createDispatcherTracker(FilterConfig filterConfig) {
         try {
             return new DispatcherTracker(bundleContext, filterConfig);
@@ -141,5 +134,13 @@ public class ProxyFilter implements Filter, RequestHandlerRegistry {
     @Override
     public void removeRequestHandler(RequestHandler requestHandler) {
         handlers.remove(requestHandler);
+    }
+
+    private static BundleContext getBundleContext(final ServletContext servletContext) throws ServletException {
+        final Object context = servletContext.getAttribute(BundleContext.class.getName());
+        if (context instanceof BundleContext) {
+            return (BundleContext)context;
+        }
+        throw new ServletException("Bundle context attribute [" + BundleContext.class.getName() + "] not set in servlet context");
     }
 }

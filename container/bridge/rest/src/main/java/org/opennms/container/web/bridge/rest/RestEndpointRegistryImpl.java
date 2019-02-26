@@ -26,46 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.container.web.bridge.proxy.handlers;
+package org.opennms.container.web.bridge.rest;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import org.opennms.container.web.bridge.api.RestEndpointRegistry;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-public class RestRequestHandler implements RequestHandler {
+import com.eclipsesource.jaxrs.publisher.api.ApplicationRegistry;
 
-    private final BundleContext bundleContext;
+@Component(name="restEndpointRegistry")
+public class RestEndpointRegistryImpl implements RestEndpointRegistry {
 
-    public RestRequestHandler(BundleContext bundleContext) {
-        this.bundleContext = Objects.requireNonNull(bundleContext);
-    }
-
-    @Override
-    public boolean canHandle(String requestedPath) {
-        final List<String> knownPatterns = getPatterns();
-        for (String eachPattern : knownPatterns) {
-            if (requestedPath.startsWith(eachPattern)) {
-                return true;
-            }
-        }
-        return false;
-    }
+    private ApplicationRegistry applicationRegistry;
 
     @Override
-    public List<String> getPatterns() {
-        final ServiceReference<RestEndpointRegistry> serviceReference = bundleContext.getServiceReference(RestEndpointRegistry.class);
-        if (serviceReference != null) {
-            try {
-                final RestEndpointRegistry restEndpointRegistry = bundleContext.getService(serviceReference);
-                return restEndpointRegistry.getRestEndpoints();
-            } finally {
-                bundleContext.ungetService(serviceReference);
-            }
-        }
-        return Collections.emptyList();
+    public List<String> getRestEndpoints() {
+        return Collections.unmodifiableList(applicationRegistry.getEndpoints());
+    }
+
+    @Reference
+    public void setApplicationRegistry(ApplicationRegistry applicationRegistry) {
+        this.applicationRegistry = applicationRegistry;
     }
 }

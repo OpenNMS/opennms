@@ -15,12 +15,13 @@
     <packaging>pom</packaging>
     <name>OpenNMS :: OSGi Container :: Web OSGi Bridge :: Parent</name>
     <modules>
-        <!--<module>api</module>-->
+        <module>api</module>
         <module>proxy</module>
-        <!--<module>rest</module>-->
+        <module>rest</module>
         <!--<module>shell</module>-->
     </modules>
 
+    <!-- TODO MVR rework dependencies -->
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>
