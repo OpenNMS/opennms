@@ -35,6 +35,7 @@ import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
@@ -95,7 +96,8 @@ public class TopologyPersister {
                 OspfLink.class,
                 BridgeBridgeLink.class,
                 OnmsIpInterface.class,
-                OnmsSnmpInterface.class);
+                OnmsSnmpInterface.class,
+                IpNetToMedia.class);
 
         for (Class<?> clazz : deleteOperations) {
             deleteEntities(clazz);

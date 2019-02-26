@@ -57,9 +57,6 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 // +- SharedSegment.create(link)
 // +- m_bridgeMacLinkDao.findAll()
 //
-// It seems that you need also to generate ipnettomedia too.
-// In fact a bridgebridgelink is a connection between two bridges and a bridge mac link is a connection with a node.
-// but you also need to let the node binded to the mac address and then you need an ip address for the mac.
 public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
 
     private final MacAddressGenerator macGenerator = new MacAddressGenerator();
@@ -77,12 +74,13 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
     @Override
     protected void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) {
 
+        context.currentProgress("Version 1"); // TODO: delete later just for testing purpose
+
         // Call with: enlinkd:generate-topology --protocol bridgeBridge --nodes 3 --snmpinterfaces 0 -- ipinterfaces 0
 
-//        NodeA is connected to port 24 of NodeB
-//        NodeC is connected to port 23 of NodeB
-//        you have tio generate three nodes nodeA(id=1) nodeB(id=2) nodeC(id=3)
-
+       // NodeA is connected to port 24 of NodeB
+       // NodeC is connected to port 23 of NodeB
+       // you have to generate three nodes nodeA(id=1) nodeB(id=2) nodeC(id=3)
         OnmsNode nodeA =  nodes.get(0);
         OnmsNode nodeB =  nodes.get(1);
         OnmsNode nodeC =  nodes.get(2);
