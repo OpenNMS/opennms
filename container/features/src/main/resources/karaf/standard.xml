@@ -589,10 +589,11 @@ org.apache.felix.http.port=8181
 
     <!-- Replace the Pax Web HTTP service with our servlet bridge -->
     <feature name="opennms-bridge-http-service" description="OpenNMS Bridge OSGi HTTP Service" version="${opennms.osgi.version}">
-        <feature>pax-http</feature>
+        <!--<feature>pax-http</feature>-->
         <!-- <bundle start-level="30">mvn:org.apache.karaf.http/org.apache.karaf.http.core/4.2.2</bundle> -->
-        <bundle start-level="30">mvn:org.opennms.container/org.opennms.container.bridge/${project.version}</bundle>
-        <capability>http-service;provider:=pax-http</capability>
+        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.http.bridge/${felixVersion}</bundle>
+        <!--<bundle start-level="30">mvn:org.opennms.container/org.opennms.container.bridge/${project.version}</bundle>-->
+        <capability>http-service;provider:=apache-felix</capability>
         <conditional>
             <condition>webconsole</condition>
             <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.http/4.2.2</bundle>
@@ -616,20 +617,20 @@ org.apache.felix.http.port=8181
     <feature name="opennms-http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="${opennms.osgi.version}">
         <!-- <feature version="[6.0,6.1)">pax-http</feature> -->
         <feature>opennms-bridge-http-service</feature>
+        <!-- Do not start pax-* related bundles as they are not needed AFAIK -->
+        <!--<bundle dependency="true" start-level="20">mvn:org.ow2.asm/asm-all/5.0.2</bundle>-->
+        <!--<bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-bundleutils/4.6</bundle>-->
+        <!--<bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-reflect/4.6</bundle>-->
+        <!--<bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-finder/4.6</bundle>-->
+        <!--<bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-api/${paxWebVersion}</bundle>-->
+        <!--<bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-spi/${paxWebVersion}</bundle>-->
+        <!--<bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-runtime/${paxWebVersion}</bundle>-->
+        <!--&lt;!&ndash; <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jetty/${paxWebVersion}</bundle> &ndash;&gt;-->
 
-        <bundle dependency="true" start-level="20">mvn:org.ow2.asm/asm-all/5.0.2</bundle>
-        <bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-bundleutils/4.6</bundle>
-        <bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-reflect/4.6</bundle>
-        <bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-finder/4.6</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-api/${paxWebVersion}</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-spi/${paxWebVersion}</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-runtime/${paxWebVersion}</bundle>
-        <!-- <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jetty/${paxWebVersion}</bundle> -->
-
-        <bundle dependency="true" start-level="30">mvn:org.eclipse.jdt.core.compiler/ecj/4.5.1</bundle>
-        <bundle start-level="30" dependency="true">mvn:javax.el/javax.el-api/3.0.0</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jsp/${paxWebVersion}</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/${paxWebVersion}</bundle>
+        <!--<bundle dependency="true" start-level="30">mvn:org.eclipse.jdt.core.compiler/ecj/4.5.1</bundle>-->
+        <!--<bundle start-level="30" dependency="true">mvn:javax.el/javax.el-api/3.0.0</bundle>-->
+        <!--<bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jsp/${paxWebVersion}</bundle>-->
+        <!--<bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/${paxWebVersion}</bundle>-->
     </feature>
 
     <!-- Copied out of PAX Web features.xml at mvn:org.ops4j.pax.web/pax-web-features/${paxWebVersion}/xml/features -->
