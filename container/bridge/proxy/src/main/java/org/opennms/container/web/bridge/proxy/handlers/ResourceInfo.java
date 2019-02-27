@@ -49,7 +49,7 @@ public class ResourceInfo {
     }
 
     public boolean isValid() {
-        return !patterns.isEmpty() && !patternMatchers.isEmpty() && prefix != null && "".equals(prefix.trim());
+        return !patterns.isEmpty() && !patternMatchers.isEmpty() && prefix != null && !"".equals(prefix.trim());
     }
 
     public List<String> getPatterns() {
