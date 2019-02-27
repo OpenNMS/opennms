@@ -47,6 +47,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.container.web.bridge.proxy.handlers.RequestHandler;
 import org.opennms.container.web.bridge.proxy.handlers.RequestHandlerRegistry;
 import org.opennms.container.web.bridge.proxy.handlers.RestRequestHandler;
+import org.opennms.container.web.bridge.proxy.trackers.ResourceTracker;
 import org.opennms.container.web.bridge.proxy.trackers.ServletTracker;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -67,13 +68,20 @@ public class ProxyFilter implements Filter, RequestHandlerRegistry {
     private DispatcherTracker dispatcherTracker;
     private List<RequestHandler> handlers = new ArrayList<>();
     private ServiceTracker<Servlet, Servlet> servletTracker;
+    private ServiceTracker resourceTracker;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         bundleContext = getBundleContext(filterConfig.getServletContext());
-        dispatcherTracker = createDispatcherTracker(filterConfig);
-        servletTracker = new ServletTracker(bundleContext, filterConfig.getServletContext(), this);
+        try {
+            dispatcherTracker = createDispatcherTracker(filterConfig);
+            servletTracker = new ServletTracker(bundleContext, filterConfig.getServletContext(), this);
+            resourceTracker = new ResourceTracker(bundleContext, filterConfig.getServletContext(), this);
+        } catch (InvalidSyntaxException e) {
+            throw new RuntimeException(e);
+        }
         servletTracker.open();
+        resourceTracker.open();
         dispatcherTracker.open();
 
         // By default we register a handler for all rest endpoints, as they are already
@@ -108,6 +116,7 @@ public class ProxyFilter implements Filter, RequestHandlerRegistry {
     @Override
     public void destroy() {
         servletTracker.close();
+        resourceTracker.close();
         handlers.clear();
     }
 

@@ -36,42 +36,28 @@ import org.opennms.container.web.bridge.proxy.pattern.PatternMatcher;
 import org.opennms.container.web.bridge.proxy.pattern.PatternMatcherFactory;
 import org.osgi.framework.ServiceReference;
 
-// Info object for servlets
-public class ServletInfo {
-    private String alias;
-    private String name;
+// TODO MVR a lot of this is duplicated here and also in ServletInfo. May need to be revisited
+public class ResourceInfo {
     private final List<String> patterns;
     private final List<PatternMatcher> patternMatchers;
+    private final String prefix;
 
-    public ServletInfo(ServiceReference reference) {
-        this.name = Utils.getStringProperty(reference, "osgi.http.whiteboard.servlet.name");
-        this.patterns = Utils.getListProperty(reference, "osgi.http.whiteboard.servlet.pattern");
-        this.alias = Utils.getStringProperty(reference, "alias");
-        this.patternMatchers = PatternMatcherFactory.determinePatternMatcher(this.patterns);
-    }
-
-    public boolean canHandle(String path) {
-        final Optional<PatternMatcher> any = patternMatchers.stream().filter(pm -> pm.matches(path)).findAny();
-        return any.isPresent();
+    public ResourceInfo(ServiceReference reference) {
+        this.patterns = Utils.getListProperty(reference, "osgi.http.whiteboard.resource.pattern");
+        this.prefix = Utils.getStringProperty(reference, "osgi.http.whiteboard.resource.prefix");
+        this.patternMatchers = PatternMatcherFactory.determinePatternMatcher(patterns);
     }
 
     public boolean isValid() {
-        return !patterns.isEmpty() && !patternMatchers.isEmpty();
-    }
-
-    public boolean hasAlias() {
-        return alias != null;
-    }
-
-    public String getAlias() {
-        return alias;
-    }
-
-    public String getName() {
-        return name;
+        return !patterns.isEmpty() && !patternMatchers.isEmpty() && prefix != null && "".equals(prefix.trim());
     }
 
     public List<String> getPatterns() {
         return patterns;
+    }
+
+    public boolean canHandle(String requestedPath) {
+        final Optional<PatternMatcher> any = patternMatchers.stream().filter(pm -> pm.matches(requestedPath)).findAny();
+        return any.isPresent();
     }
 }

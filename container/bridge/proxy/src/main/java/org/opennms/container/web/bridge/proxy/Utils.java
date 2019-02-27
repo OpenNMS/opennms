@@ -26,28 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.container.web.bridge.proxy.pattern;
+package org.opennms.container.web.bridge.proxy;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.opennms.container.web.bridge.proxy.pattern.matchers.ExactPathMatcher;
-import org.opennms.container.web.bridge.proxy.pattern.matchers.PathMatcher;
+import org.osgi.framework.ServiceReference;
 
-public final class PatternMatcherFactory {
+public final class Utils {
 
-    private PatternMatcherFactory() {}
+    private Utils() {}
 
-    public static PatternMatcher createPatternMatcher(String pattern) {
-        if (pattern.endsWith("/*")) {
-            return new PathMatcher(pattern);
+    public static List<String> getListProperty(ServiceReference reference, String key) {
+        final List<String> returnList = new ArrayList<>();
+        final Object property = reference.getProperty(key);
+        if (property instanceof String) {
+            final String value = ((String) property).trim();
+            if (value != null && !"".equals(property)) {
+                returnList.add(value);
+            }
         }
-        return new ExactPathMatcher(pattern);
+        return returnList;
     }
 
-    public static List<PatternMatcher> determinePatternMatcher(List<String> patterns) {
-        return patterns.stream().map(pattern -> createPatternMatcher(pattern)).collect(Collectors.toList());
+    public static String getStringProperty(ServiceReference reference, String key) {
+        final Object property = reference.getProperty(key);
+        if (property instanceof String) {
+            return ((String) property).trim();
+        }
+        return null;
     }
 }
-
-

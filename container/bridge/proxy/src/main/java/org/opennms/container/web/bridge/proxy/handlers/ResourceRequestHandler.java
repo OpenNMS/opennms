@@ -26,28 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.container.web.bridge.proxy.pattern;
+package org.opennms.container.web.bridge.proxy.handlers;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
-import org.opennms.container.web.bridge.proxy.pattern.matchers.ExactPathMatcher;
-import org.opennms.container.web.bridge.proxy.pattern.matchers.PathMatcher;
+public class ResourceRequestHandler implements RequestHandler {
 
-public final class PatternMatcherFactory {
+    private final ResourceInfo resourceInfo;
 
-    private PatternMatcherFactory() {}
-
-    public static PatternMatcher createPatternMatcher(String pattern) {
-        if (pattern.endsWith("/*")) {
-            return new PathMatcher(pattern);
-        }
-        return new ExactPathMatcher(pattern);
+    public ResourceRequestHandler(ResourceInfo resourceInfo) {
+        this.resourceInfo = Objects.requireNonNull(resourceInfo);
     }
 
-    public static List<PatternMatcher> determinePatternMatcher(List<String> patterns) {
-        return patterns.stream().map(pattern -> createPatternMatcher(pattern)).collect(Collectors.toList());
+    @Override
+    public List<String> getPatterns() {
+        return Collections.unmodifiableList(resourceInfo.getPatterns());
+    }
+
+    @Override
+    public boolean canHandle(String requestedPath) {
+        return resourceInfo.canHandle(requestedPath);
     }
 }
-
-
