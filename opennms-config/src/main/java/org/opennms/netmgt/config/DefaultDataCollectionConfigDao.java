@@ -731,6 +731,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
                     if (source == null) {
                         source = new DataCollectionGroups();
                     }
+                    target.getDataCollectionGroupByName().putAll(source.getDataCollectionGroupByName());
                     return target;
                 })
                 .build();

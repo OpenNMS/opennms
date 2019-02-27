@@ -26,35 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.datacollection;
+package org.opennms.netmgt.model;
 
-import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-public class DataCollectionGroups  implements Serializable {
+public class PrefabGraphs {
 
-    private Map<String, List<DatacollectionGroup>> dataCollectionGroupByName = new HashMap<>();
+    private List<PrefabGraph> prefabGraphs = new ArrayList<>();
 
-    public void addDataCollectionGroup(String snmpCollectionName, List<DatacollectionGroup> datacollectionGroups) {
-        if(dataCollectionGroupByName.containsKey(snmpCollectionName)) {
-            dataCollectionGroupByName.get(snmpCollectionName).addAll(datacollectionGroups);
-        } else {
-            dataCollectionGroupByName.put(snmpCollectionName, datacollectionGroups);
-        }
+    public void setPrefabGraphs(List<PrefabGraph> prefabGraphs) {
+        this.prefabGraphs = prefabGraphs;
     }
 
-    public Set<String> getSnmpCollectionNames() {
-          return dataCollectionGroupByName.keySet();
+    public List<PrefabGraph> getPrefabGraphs() {
+        return prefabGraphs;
     }
 
-    public List<DatacollectionGroup> getDataCollectionGroup(String snmpCollectionName) {
-        return dataCollectionGroupByName.get(snmpCollectionName);
-    }
-
-    public Map<String, List<DatacollectionGroup>> getDataCollectionGroupByName() {
-        return dataCollectionGroupByName;
+    public void addPrefabGraph(PrefabGraph prefabGraph) {
+        this.prefabGraphs.add(prefabGraph);
     }
 }

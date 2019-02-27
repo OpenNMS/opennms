@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.opennms.integration.api.v1.config.datacollection.SnmpCollectionConfigExtension;
+import org.opennms.integration.api.v1.config.datacollection.SnmpCollectionExtension;
 import org.opennms.integration.api.v1.config.datacollection.SnmpDataCollection;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.Collect;
@@ -45,17 +45,17 @@ import org.opennms.netmgt.config.datacollection.MibObjProperty;
 import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 
-public class SnmpCollectionConfigExtensionManager extends ConfigExtensionManager<SnmpCollectionConfigExtension, DataCollectionGroups> {
+public class SnmpCollectionExtensionManager extends ConfigExtensionManager<SnmpCollectionExtension, DataCollectionGroups> {
 
     private final DataCollectionConfigDao dataCollectionConfigDao;
 
-    public SnmpCollectionConfigExtensionManager(DataCollectionConfigDao dataCollectionConfigDao) {
+    public SnmpCollectionExtensionManager(DataCollectionConfigDao dataCollectionConfigDao) {
         super(DataCollectionGroups.class, new DataCollectionGroups());
         this.dataCollectionConfigDao = dataCollectionConfigDao;
     }
 
     @Override
-    protected DataCollectionGroups getConfigForExtensions(Set<SnmpCollectionConfigExtension> extensions) {
+    protected DataCollectionGroups getConfigForExtensions(Set<SnmpCollectionExtension> extensions) {
         DataCollectionGroups dataCollectionGroups = new DataCollectionGroups();
         extensions.forEach(extension ->
             dataCollectionGroups.addDataCollectionGroup(extension.getSnmpCollectionName(), toDataCollectionGroups(extension)));
@@ -68,9 +68,9 @@ public class SnmpCollectionConfigExtensionManager extends ConfigExtensionManager
     }
 
 
-    public static List<DatacollectionGroup> toDataCollectionGroups(SnmpCollectionConfigExtension extension) {
+    public static List<DatacollectionGroup> toDataCollectionGroups(SnmpCollectionExtension extension) {
         return extension.getSnmpDataCollectionGroups().stream()
-                .map(SnmpCollectionConfigExtensionManager::toDataCollectionGroup).collect(Collectors.toList());
+                .map(SnmpCollectionExtensionManager::toDataCollectionGroup).collect(Collectors.toList());
     }
 
 
@@ -78,10 +78,10 @@ public class SnmpCollectionConfigExtensionManager extends ConfigExtensionManager
         DatacollectionGroup datacollectionGroup = new DatacollectionGroup();
         datacollectionGroup.setName(snmpDataCollection.getName());
         datacollectionGroup.setGroups(snmpDataCollection.getGroups().stream()
-                .map(SnmpCollectionConfigExtensionManager::toGroup)
+                .map(SnmpCollectionExtensionManager::toGroup)
                 .collect(Collectors.toList()));
         datacollectionGroup.setSystemDefs(snmpDataCollection.getSystemDefs().stream()
-                .map(SnmpCollectionConfigExtensionManager::toSystemDef)
+                .map(SnmpCollectionExtensionManager::toSystemDef)
                 .collect(Collectors.toList()));
         datacollectionGroup.setResourceTypes(snmpDataCollection.getResourceTypes().stream()
                 .map(ResourceTypesExtensionManager::toResourceType)
@@ -95,10 +95,10 @@ public class SnmpCollectionConfigExtensionManager extends ConfigExtensionManager
         group.setName(grp.getName());
         group.setIncludeGroups(grp.getIncludeGroups());
         group.setMibObjs(grp.getMibObjs().stream()
-                .map(SnmpCollectionConfigExtensionManager::toMibObj)
+                .map(SnmpCollectionExtensionManager::toMibObj)
                 .collect(Collectors.toList()));
         group.setProperties(grp.getProperties().stream()
-                .map(SnmpCollectionConfigExtensionManager::toMibObjProperty)
+                .map(SnmpCollectionExtensionManager::toMibObjProperty)
                 .collect(Collectors.toList()));
         return group;
     }
@@ -120,7 +120,7 @@ public class SnmpCollectionConfigExtensionManager extends ConfigExtensionManager
         mibObjProperty.setClassName(objProperty.getClassName());
         mibObjProperty.setInstance(objProperty.getInstance());
         mibObjProperty.setParameters(objProperty.getParameters().stream()
-                .map(SnmpCollectionConfigExtensionManager::toParameter)
+                .map(SnmpCollectionExtensionManager::toParameter)
                 .collect(Collectors.toList()));
         return mibObjProperty;
     }

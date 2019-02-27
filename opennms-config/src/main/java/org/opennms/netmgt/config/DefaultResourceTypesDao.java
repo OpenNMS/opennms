@@ -108,6 +108,7 @@ public class DefaultResourceTypesDao extends AbstractMergingJaxbConfigDao<Resour
                     if (source == null) {
                         source = new ResourceTypes();
                     }
+                    target.getResourceTypes().addAll(source.getResourceTypes());
                     return target;
                 })
                 .build();
