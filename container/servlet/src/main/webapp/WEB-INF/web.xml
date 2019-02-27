@@ -21,8 +21,8 @@
   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 >
 
-  <description>Karaf Embedded Example</description>
-  <display-name>Karaf Embedded Example</display-name>
+  <description>Karaf Embedded</description>
+  <display-name>Karaf Embedded</display-name>
 
   <!-- WARMERGE: begin listener -->
   <listener>
