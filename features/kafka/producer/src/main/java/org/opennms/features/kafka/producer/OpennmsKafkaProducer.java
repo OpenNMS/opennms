@@ -136,10 +136,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private Set<OnmsTopologyProtocol> topologyProtocols = new HashSet<>();
     private String encoding = "UTF8";
 
-    private final DeletingVisitor deletingVisitor = new DeletingVisitor();
-    private final UpdatingVisitor updatingVisitor = new UpdatingVisitor();
-
-
     public OpennmsKafkaProducer(ProtobufMapper protobufMapper, NodeCache nodeCache,
                                 ConfigurationAdmin configAdmin, EventSubscriptionService eventSubscriptionService,
                                 OnmsTopologyDao topologyDao) {
@@ -213,16 +209,16 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             LOG.error("forwardTopologyMessage: null status");
             return;
         }
-        if (message.getMessagebody() == null ) {
+        if (message.getMessagebody() == null) {
             LOG.error("forwardTopologyMessage: null message");
-            return;            
+            return;
         }
 
         if (message.getMessagestatus() == TopologyMessageStatus.DELETE) {
-            message.getMessagebody().accept(deletingVisitor.forMessage(message));
+            message.getMessagebody().accept(new DeletingVisitor(message));
         } else {
-            message.getMessagebody().accept(updatingVisitor.forMessage(message));
-        }            
+            message.getMessagebody().accept(new UpdatingVisitor(message));
+        }
     }
 
     private void forwardTopologyEdgeMessage(byte[] refid, byte[] message) {
@@ -649,14 +645,22 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         this.encoding = encoding;
     }
 
-    private class DeletingVisitor implements TopologyVisitor {
-        private OpennmsModelProtos.TopologyRef mappedTopomsg = null;
+    private class TopologyVisitorImpl implements TopologyVisitor {
+        final OnmsTopologyMessage onmsTopologyMessage;
 
-        DeletingVisitor forMessage(OnmsTopologyMessage topoMessage) {
-            Objects.requireNonNull(topoMessage);
-            this.mappedTopomsg = protobufMapper.toTopologyRef(topoMessage.getProtocol().getId(),
-                    topoMessage.getMessagebody().getId()).build();
-            return this;
+        TopologyVisitorImpl(OnmsTopologyMessage onmsTopologyMessage) {
+            this.onmsTopologyMessage = Objects.requireNonNull(onmsTopologyMessage);
+        }
+
+        byte[] getKeyForEdge(OnmsTopologyEdge edge) {
+            Objects.requireNonNull(onmsTopologyMessage);
+            return String.format("topology:%s:%s", onmsTopologyMessage.getProtocol().getId(), edge.getId()).getBytes();
+        }
+    }
+
+    private class DeletingVisitor extends TopologyVisitorImpl {
+        DeletingVisitor(OnmsTopologyMessage topologyMessage) {
+            super(topologyMessage);
         }
 
         @Override
@@ -666,18 +670,15 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
         @Override
         public void visit(OnmsTopologyEdge edge) {
-            forwardTopologyEdgeMessage(mappedTopomsg.toByteArray(), null);
+            forwardTopologyEdgeMessage(getKeyForEdge(edge), null);
         }
     }
 
-    private class UpdatingVisitor implements TopologyVisitor {
-        private OnmsTopologyMessage topoMessage = null;
-
-        UpdatingVisitor forMessage(OnmsTopologyMessage topoMessage) {
-            this.topoMessage = Objects.requireNonNull(topoMessage);
-            return this;
+    private class UpdatingVisitor extends TopologyVisitorImpl {
+        UpdatingVisitor(OnmsTopologyMessage onmsTopologyMessage) {
+            super(onmsTopologyMessage);
         }
-        
+
         @Override
         public void visit(OnmsTopologyVertex vertex) {
             // Node handling
@@ -690,10 +691,10 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
         @Override
         public void visit(OnmsTopologyEdge edge) {
+            Objects.requireNonNull(onmsTopologyMessage);
             final OpennmsModelProtos.TopologyEdge mappedTopoMsg =
-                    protobufMapper.toEdgeTopologyMessage(topoMessage.getProtocol().getId(), edge).build();
-            forwardTopologyEdgeMessage(mappedTopoMsg.getRef().toByteArray(),
-                    mappedTopoMsg.toByteArray());
+                    protobufMapper.toEdgeTopologyMessage(onmsTopologyMessage.getProtocol().getId(), edge).build();
+            forwardTopologyEdgeMessage(getKeyForEdge(edge), mappedTopoMsg.toByteArray());
         }
     }
 }
