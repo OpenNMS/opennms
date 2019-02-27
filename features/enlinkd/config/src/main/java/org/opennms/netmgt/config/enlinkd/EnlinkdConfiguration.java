@@ -70,10 +70,16 @@ public class EnlinkdConfiguration implements java.io.Serializable {
     private Long m_rescanInterval;
 
     /**
-     * Bridge Topology Discovery Time interval in mill seconds.
+     *  Bridge Topology Discovery Time interval in mill seconds.
      */
     @XmlAttribute(name = "bridge_topology_interval")
     private Long m_bridgeTopologyInterval;
+
+    /**
+     *  Topology Discovery Time interval in mill seconds.
+     */
+    @XmlAttribute(name = "topology_interval")
+    private Long m_topologyInterval;
 
     /**
      * Max bridge forwarding table to hold in memory.
@@ -157,6 +163,14 @@ public class EnlinkdConfiguration implements java.io.Serializable {
         m_bridgeTopologyInterval = bridgeTopologyInterval;
     }
 
+    public Long getTopologyInterval() {
+        return m_topologyInterval == null? 30000l : m_topologyInterval;
+    }
+
+    public void setTopologyInterval(Long topologyInterval) {
+        m_topologyInterval = topologyInterval;
+    }
+
     public Integer getMaxBft() {
         return m_maxBft != null ? m_maxBft : 100;
     }
@@ -220,6 +234,7 @@ public class EnlinkdConfiguration implements java.io.Serializable {
             m_initialSleepTime, 
             m_rescanInterval, 
             m_bridgeTopologyInterval,
+            m_topologyInterval,
             m_maxBft, 
             m_discoveryBridgeThreads,
             m_useCdpDiscovery, 
@@ -242,6 +257,7 @@ public class EnlinkdConfiguration implements java.io.Serializable {
                 && Objects.equals(this.m_initialSleepTime, that.m_initialSleepTime)
                 && Objects.equals(this.m_rescanInterval, that.m_rescanInterval)
                 && Objects.equals(this.m_bridgeTopologyInterval, that.m_bridgeTopologyInterval)
+                && Objects.equals(this.m_topologyInterval, that.m_topologyInterval)
                 && Objects.equals(this.m_maxBft, that.m_maxBft)
                 && Objects.equals(this.m_discoveryBridgeThreads, that.m_discoveryBridgeThreads)
                 && Objects.equals(this.m_useCdpDiscovery, that.m_useCdpDiscovery)

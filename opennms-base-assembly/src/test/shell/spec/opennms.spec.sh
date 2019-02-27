@@ -13,7 +13,8 @@ oneTimeSetUp() {
 }
 
 setUp() {
-	for FILE in opennms runjava; do
+	cp "$PROJECTDIR/src/main/resources/bin/_lib.sh" "$INSTPREFIX/bin/"
+	for FILE in opennms runjava find-java.sh; do
 		sed -e "s,\${install.dir},${INSTPREFIX},g" \
 			-e "s,\${install.pid.file},${INSTPREFIX}/run/opennms.pid,g" \
 			-e "s,\${install.package.description},OpenNMS Shell Test,g" \
@@ -28,7 +29,7 @@ setUp() {
 	done
 
 	"$INSTPREFIX/bin/runjava" "-q" "-s"
-	assertEquals 'runjava should have succeeded' 0 "$?"
+	assertEquals 'runjava should have succeeded' "$?" 0
 
 	touch "$INSTPREFIX/etc/configured"
 	echo "STATUS_WAIT=1" > "$INSTPREFIX/etc/opennms.conf"
@@ -63,16 +64,16 @@ testStart() {
 	export OPENNMS_UNIT_TEST_STATUS=3
 	output="$(runOpennms -f start 2>&1)"
 	assertContains "runjava should be skipping execution" "$output" "Skipping execution:"
-	assertContains "ADDITIONAL_MANAGER_OPTIONS should include -DisThreadContextMapInheritable=true" "$output" "-DisThreadContextMapInheritable=true"
+	assertContains "ADDITIONAL_MANAGER_OPTIONS should include -DisThreadContextMapInheritable=true" "$output" "'-DisThreadContextMapInheritable=true'"
 	assertNotContains "HOTSPOT is not enabled by default, no -server" "$output" "-server"
 	assertNotContains "Incremental GC is not enabled by default, no -Xincgc" "$output" "-Xincgc"
 }
 
 testStop() {
 	output="$(runOpennms -f stop 2>&1)"
-	assertContains "$output" " exit"
-	assertTrue "opennms_bootstrap.jar stop should be run once" "[ $(echo "$output" | grep -c ' stop') -eq 1 ]"
-	assertTrue "opennms_bootstrap.jar exit should be run once" "[ $(echo "$output" | grep -c ' exit') -eq 1 ]"
+	assertContains "$output" " 'exit'"
+	assertTrue "opennms_bootstrap.jar stop should be run once" "[ $(echo "$output" | grep -c " 'stop'") -eq 1 ]"
+	assertTrue "opennms_bootstrap.jar exit should be run once" "[ $(echo "$output" | grep -c " 'exit'") -eq 1 ]"
 }
 
 testRestart() {
@@ -80,74 +81,86 @@ testRestart() {
 	output="$(runOpennms -f restart 2>&1)"
 	assertContains "$output" "but it's already stopped"
 	assertContains "$output" "Skipping execution"
-	assertContains "$output" "opennms_bootstrap.jar start"
+	assertContains "$output" "opennms_bootstrap.jar' 'start'"
 }
 
 testAdditionalManagerOptionsVariableOneArgument() {
 	export OPENNMS_UNIT_TEST_STATUS=3
 	echo "ADDITIONAL_MANAGER_OPTIONS=\"-DisThreadContextMapInheritable=false\"" >> "$INSTPREFIX/etc/opennms.conf"
 	output="$(runOpennms -f start 2>&1)"
-	assertContains "$output" "-DisThreadContextMapInheritable=false"
-	assertNotContains "$output" "-DisThreadContextMapInheritable=true"
+	assertContains "$output" "'-DisThreadContextMapInheritable=false'"
+	assertNotContains "$output" "'-DisThreadContextMapInheritable=true'"
 }
 
 testAdditionalManagerOptionsVariableTwoArguments() {
 	export OPENNMS_UNIT_TEST_STATUS=3
 	echo "ADDITIONAL_MANAGER_OPTIONS=\"-DisThreadContextMapInheritable=false -Dgroovy.use.classvalue=false\"" >> "$INSTPREFIX/etc/opennms.conf"
 	output="$(runOpennms -f start 2>&1)"
-	assertContains "$output" "-DisThreadContextMapInheritable=false"
-	assertNotContains "$output" "-DisThreadContextMapInheritable=true"
-	assertContains "$output" "-Dgroovy.use.classvalue=false"
-	assertNotContains "$output" "-Dgroovy.use.classvalue=true"
+	assertContains "$output" "'-DisThreadContextMapInheritable=false'"
+	assertNotContains "$output" "'-DisThreadContextMapInheritable=true'"
+	assertContains "$output" "'-Dgroovy.use.classvalue=false'"
+	assertNotContains "$output" "'-Dgroovy.use.classvalue=true'"
 }
 
 testAdditionalManagerOptionsArrayOneArgument() {
 	export OPENNMS_UNIT_TEST_STATUS=3
 	echo "ADDITIONAL_MANAGER_OPTIONS=(\"-DisThreadContextMapInheritable=false\")" >> "$INSTPREFIX/etc/opennms.conf"
 	output="$(runOpennms -f start 2>&1)"
-	assertContains "$output" "-DisThreadContextMapInheritable=false"
-	assertNotContains "$output" "-DisThreadContextMapInheritable=true"
+	assertContains "$output" "'-DisThreadContextMapInheritable=false'"
+	assertNotContains "$output" "'-DisThreadContextMapInheritable=true'"
 }
 
 testAdditionalManagerOptionsArrayTwoArguments() {
 	export OPENNMS_UNIT_TEST_STATUS=3
 	echo "ADDITIONAL_MANAGER_OPTIONS=(\"-DisThreadContextMapInheritable=false\" \"-Dgroovy.use.classvalue=false\")" >> "$INSTPREFIX/etc/opennms.conf"
 	output="$(runOpennms -f start 2>&1)"
-	assertContains "$output" "-DisThreadContextMapInheritable=false"
-	assertNotContains "$output" "-DisThreadContextMapInheritable=true"
-	assertContains "$output" "-Dgroovy.use.classvalue=false"
-	assertNotContains "$output" "-Dgroovy.use.classvalue=true"
+	assertContains "$output" "'-DisThreadContextMapInheritable=false'"
+	assertNotContains "$output" "'-DisThreadContextMapInheritable=true'"
+	assertContains "$output" "'-Dgroovy.use.classvalue=false'"
+	assertNotContains "$output" "'-Dgroovy.use.classvalue=true'"
 }
 
 testJavaHeapSize() {
 	export OPENNMS_UNIT_TEST_STATUS=3
 	echo "JAVA_HEAP_SIZE=1234" >> "$INSTPREFIX/etc/opennms.conf"
 	output="$(runOpennms -f start 2>&1)"
-	assertContains "Java calls should have a modified heap size" "$output" "Xmx1234m"
-	assertNotContains "Java calls should not have the default heap size" "$output" "Xmx1024m"
+	assertContains "Java calls should have a modified heap size" "$output" "'-Xmx1234m'"
+	assertNotContains "Java calls should not have the default heap size" "$output" "'-Xmx1024m'"
 }
 
 testIncrementalGC() {
 	export OPENNMS_UNIT_TEST_STATUS=3
 	echo "USE_INCGC=true" >> "$INSTPREFIX/etc/opennms.conf"
 	output="$(runOpennms -f start 2>&1)"
-	assertContains "The -Xincgc flag should be passed" "$output" "-Xincgc"
+	assertContains "The -Xincgc flag should be passed" "$output" "'-Xincgc'"
 }
 
 testVerboseGC() {
 	export OPENNMS_UNIT_TEST_STATUS=3
 	echo "VERBOSE_GC=true" >> "$INSTPREFIX/etc/opennms.conf"
 	output="$(runOpennms -f start 2>&1)"
-	assertContains "The -verbose:gc flag should be passed" "$output" "-verbose:gc"
+	assertContains "The -verbose:gc flag should be passed" "$output" "'-verbose:gc'"
 }
 
 testAgalueJavaConf() {
 	export OPENNMS_UNIT_TEST_STATUS=3
 	cp "opennms.agalue.java.conf" "$INSTPREFIX/etc/opennms.conf"
 	output="$(runOpennms -f start 2>&1)"
-	assertContains "$output" "-Xmx8192"
-	assertContains "$output" "-d64"
-	assertContains "$output" "-XX:+StartAttachListener"
+	assertContains "$output" "'-Xmx8192m'"
+	assertContains "$output" "'-d64'"
+	assertContains "$output" "'-XX:+StartAttachListener'"
+}
+
+testJessieJavaConf() {
+	export OPENNMS_UNIT_TEST_STATUS=3
+	cp "opennms.jessie.java.conf" "$INSTPREFIX/etc/opennms.conf"
+	output="$(runOpennms -f start 2>&1)"
+	assertContains "$output" "'-XX:+UseG1GC'"
+	assertContains "$output" "'-Xloggc:/opt/opennms/logs/gc.log'"
+	assertContains "$output" "'-XX:+UseGCLogFileRotation'"
+	assertContains "$output" "'-XX:NumberOfGCLogFiles=4'"
+	assertContains "$output" "'-XX:GCLogFileSize=20M'"
+	assertContains "$output" "'-Xmx8196m'"
 }
 
 . ../shunit2

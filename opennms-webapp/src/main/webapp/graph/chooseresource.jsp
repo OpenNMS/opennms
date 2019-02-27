@@ -58,7 +58,7 @@
   <jsp:param name="breadcrumb" value="Choose" />
 </jsp:include>
 
-<div class="container-fluid" ng-app="onms-resources" ng-controller="NodeResourcesCtrl" ng-init="init(${node},${reports},${endUrl})">
+<div class="" ng-app="onms-resources" ng-controller="NodeResourcesCtrl" ng-init="init(${node},${reports},${endUrl})">
 
   <div growl></div>
 
@@ -87,21 +87,25 @@
       <h4>Resources</h4>
     </div>
     <div class="col-md-6">
-      <form class="form-inline pull-right">
-        <div class="input-group">
-          <span class="input-group-addon">
-            <span class="glyphicon glyphicon-search"></span>
-          </span>
+      <form class="form-inline pull-right mb-4">
+        <div class="input-group mr-4">
+          <div class="input-group-prepend">
+            <div class="input-group-text">
+              <span class="fa fa-search"></span>
+            </div>
+          </div>
           <input class="form-control" type="text" placeholder="Search/Filter Resources" ng-model="searchQuery"></input>
-          <span class="input-group-addon" ng-show="searchQuery.length > 0">
-            <span class="glyphicon glyphicon-remove" ng-click="searchQuery = ''"></span>
-          </span>
+          <div class="input-group-prepend" ng-show="searchQuery.length > 0">
+            <div class="input-group-text">
+              <span class="fa fa-remove" ng-click="searchQuery = ''"></span>
+            </div>
+          </div>
         </div>
         <div class="btn-group">
-          <button type="button" class="btn btn-default" ng-click="checkAll(true)">Select All <span class="glyphicon glyphicon-check"/></button>
-          <button type="button" class="btn btn-default" ng-click="checkAll(false)">Clear All <span class="glyphicon glyphicon-remove"/></button>
-          <button type="button" class="btn btn-default" ng-click="graphSelected()">Graph Selection <span class="glyphicon glyphicon-th-large"/></button>
-          <button type="button" class="btn btn-default" ng-click="graphAll()">Graph All <span class="glyphicon glyphicon-th"/></button>
+          <button type="button" class="btn btn-secondary" ng-click="checkAll(true)"><i class="fa fa-check"></i> Select All</button>
+          <button type="button" class="btn btn-secondary" ng-click="checkAll(false)"><i class="fa fa-remove"></i> Clear All</button>
+          <button type="button" class="btn btn-secondary" ng-click="graphSelected()"><i class="fa fa-th-large"></i> Graph Selection</button>
+          <button type="button" class="btn btn-secondary" ng-click="graphAll()"><i class="fa fa-th"></i> Graph All</button>
         </div>
       </form>
     </div>
@@ -110,12 +114,12 @@
   <div class="row" ng-show="hasResources">
     <div class="col-md-12">
       <uib-accordion close-others="false">
-        <div ng-click="isCollapsed[type] = !isCollapsed[type]" uib-accordion-group is-open="true" class="panel-default" ng-repeat="(type, group) in filteredResources" ng-show="group.length > 0">
+        <div ng-click="isCollapsed[type] = !isCollapsed[type]" uib-accordion-group is-open="true" class="card-default" ng-repeat="(type, group) in filteredResources" ng-show="group.length > 0">
           <uib-accordion-heading>
-            {{ type }} <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isCollapsed[type], 'glyphicon-chevron-right': !isCollapsed[type]}"></i>
+            {{ type }} <i class="pull-right fa" ng-class="{'fa-chevron-down': isCollapsed[type], 'fa-chevron-right': !isCollapsed[type]}"></i>
           </uib-accordion-heading>
             <div class="checkbox" ng-repeat="resource in group | orderBy:'label'">
-              <label><input type="checkbox" ng-model="resource.selected"/>{{ resource.label }}</label>
+              <label><input type="checkbox" class="mr-1" ng-model="resource.selected"/>{{ resource.label }}</label>
             </div>
         </div>
       </uib-accordion>

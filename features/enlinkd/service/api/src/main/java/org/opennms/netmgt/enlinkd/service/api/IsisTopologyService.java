@@ -30,16 +30,20 @@ package org.opennms.netmgt.enlinkd.service.api;
 
 
 import java.util.Date;
+import java.util.List;
 
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
+import org.opennms.netmgt.enlinkd.model.IsIsElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
+import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
 
-public interface IsisTopologyService {
+public interface IsisTopologyService extends TopologyService {
         
     void delete(int nodeid);
     void reconcile(int nodeId, Date now);
     void store(int nodeId, IsIsLink link);
     void store(int nodeId, IsIsElement element);
 
-    
+    List<IsIsElementTopologyEntity> findAllIsIsElements();
+    List<TopologyConnection<IsIsLinkTopologyEntity, IsIsLinkTopologyEntity>> match();
 }

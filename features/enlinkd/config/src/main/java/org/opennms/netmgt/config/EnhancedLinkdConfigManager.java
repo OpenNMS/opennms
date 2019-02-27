@@ -149,6 +149,10 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
         return m_config.getBridgeTopologyInterval();
     }
 
+    public long getTopologyInterval() {
+        return m_config.getTopologyInterval();
+    }
+
 
     /**
      * <p>getThreads</p>

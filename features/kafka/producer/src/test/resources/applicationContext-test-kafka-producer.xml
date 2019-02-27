@@ -13,6 +13,8 @@
 
     <context:annotation-config/>
 
+    <bean id="onmsTopologyDao" class="org.opennms.netmgt.topologies.service.impl.OnmsTopologyDaoInMemoryImpl"/>
+
     <bean id="protobufMapper" class="org.opennms.features.kafka.producer.ProtobufMapper">
         <constructor-arg ref="eventConfDao"/>
         <constructor-arg ref="hwEntityDao"/>

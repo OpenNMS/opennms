@@ -628,6 +628,12 @@
     <service name="DHCP" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="2" />
       <parameter key="timeout" value="3000" />
+      <parameter key="macAddress" value="00:06:0D:BE:9C:B2"/>
+      <parameter key="myIpAddress" value="127.0.0.1"/>
+      <parameter key="extendedMode" value="false"/>
+      <parameter key="relayMode" value="false"/>
+      <parameter key="requestIpAddress" value="127.0.0.1"/>
+
       <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
       <parameter key="rrd-base-name" value="dhcp" />
       <parameter key="ds-name" value="dhcp" />
@@ -702,7 +708,7 @@
   <monitor service="WMI" class-name="org.opennms.netmgt.poller.monitors.WmiMonitor" />
   
   <!-- These monitors are now distributed separately.  They must be installed before enabling the following: -->
-  <monitor service="DHCP" class-name="org.opennms.protocols.dhcp.monitor.DhcpMonitor" />
+  <monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor" />
   <monitor service="NSClient" class-name="org.opennms.protocols.nsclient.monitor.NsclientMonitor" />
   <monitor service="NSClientpp" class-name="org.opennms.protocols.nsclient.monitor.NsclientMonitor" />
   <monitor service="RadiusAuth" class-name="org.opennms.protocols.radius.monitor.RadiusAuthMonitor" />

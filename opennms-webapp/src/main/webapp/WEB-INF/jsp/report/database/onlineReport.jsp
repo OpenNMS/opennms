@@ -46,32 +46,32 @@
 
 <div class="row">
     <div class="col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Run Online Report</h3>
+        <div class="card">
+            <div class="card-header">
+                <span>Run Online Report</span>
             </div>
-            <div class="panel-body">
-                <form:form modelAttribute="parameters" cssClass="form-horizontal" role="form">
+            <div class="card-body">
+                <form:form modelAttribute="parameters" cssClass="form" role="form">
                     <%-- // string parameters --%>
                     <c:forEach items="${parameters.stringParms}" var="stringParm" varStatus="stringParmRow">
                         <div class="form-group">
                             <div class="col-md-2">
                                 <form:label path="stringParms[${stringParmRow.index}].value" for="stringParms[${stringParmRow.index}].value">
-                                    <c:out value="${stringParm.displayName}:"/>
+                                    <c:out value="${stringParm.displayName}"/>
                                 </form:label>
                                 <c:choose>
                                     <c:when test="${stringParm.inputType == 'reportCategorySelector'}">
-                                        <form:select cssClass="form-select" path="stringParms[${stringParmRow.index}].value">
+                                        <form:select cssClass="form-select custom-select" path="stringParms[${stringParmRow.index}].value">
                                             <form:options items="${categories}"/>
                                         </form:select>
                                     </c:when>
                                     <c:when test="${stringParm.inputType == 'onmsCategorySelector'}">
-                                        <form:select cssClass="form-select" path="stringParms[${stringParmRow.index}].value">
+                                        <form:select cssClass="form-select custom-select" path="stringParms[${stringParmRow.index}].value">
                                             <form:options items="${onmsCategories}"/>
                                         </form:select>
                                     </c:when>
                                     <c:otherwise>
-                                        <form:input cssClass="form-control" path="stringParms[${stringParmRow.index}].value"/>
+                                        <form:input cssClass="form-control custom-select" path="stringParms[${stringParmRow.index}].value"/>
                                     </c:otherwise>
                                 </c:choose>
                             </div>
@@ -82,7 +82,7 @@
                         <div class="form-group">
                             <div class="col-md-2">
                                 <form:label path="intParms[${intParmRow.index}].value" for="intParms[${intParmRow.index}].value">
-                                    <c:out value="${intParm.displayName}:"/>
+                                    <c:out value="${intParm.displayName}"/>
                                 </form:label>
                                 <form:input cssClass="form-control" path="intParms[${intParmRow.index}].value"/>
                             </div>
@@ -93,7 +93,7 @@
                         <div class="form-group">
                             <div class="col-md-2">
                                 <form:label path="floatParms[${floatParmRow.index}].value" for="floatParms[${floatParmRow.index}].value">
-                                    <c:out value="${floatParm.displayName}:"/>
+                                    <c:out value="${floatParm.displayName}"/>
                                 </form:label>
                                 <form:input cssClass="form-control" path="floatParms[${floatParmRow.index}].value"/>
                             </div>
@@ -104,7 +104,7 @@
                         <div class="form-group">
                             <div class="col-md-2">
                                 <form:label path="doubleParms[${doubleParmRow.index}].value" for="doubleParms[${doubleParmRow.index}].value">
-                                    <c:out value="${doubleParm.displayName}:"/>
+                                    <c:out value="${doubleParm.displayName}"/>
                                 </form:label>
                                 <form:input cssClass="form-control" path="doubleParms[${doubleParmRow.index}].value"/>
                             </div>
@@ -114,8 +114,8 @@
                     <c:forEach items="${parameters.dateParms}" var="date" varStatus="dateParmRow">
                         <div class="form-group">
                             <div class="col-md-8">
-                                <strong >
-				                    <c:out value="${date.displayName}:"/>
+                                <strong>
+				                    <c:out value="${date.displayName}"/>
 			                    </strong>
                                 <div class="row">
                                     <div class="col-md-4">
@@ -124,7 +124,7 @@
                                     <div class="col-md-8">
 
                                             <div class="pull-left">
-                                                <form:select cssClass="form-control" path="dateParms[${dateParmRow.index}].hours">
+                                                <form:select cssClass="form-control custom-select" path="dateParms[${dateParmRow.index}].hours">
                                                     <c:forEach var="hour" begin="0" end="23">
                                                         <form:option value="${hour}">
                                                             <fmt:formatNumber minIntegerDigits="2" value="${hour}" />
@@ -134,7 +134,7 @@
                                             </div>
                                             <div class="pull-left"><p class="lead">:</p></div>
                                             <div class="pull-left">
-                                                <form:select cssClass="form-control" path="dateParms[${dateParmRow.index}].minutes">
+                                                <form:select cssClass="form-control custom-select" path="dateParms[${dateParmRow.index}].minutes">
                                                     <c:forEach var="minute" begin="0" end="59">
                                                         <form:option value="${minute}">
                                                             <fmt:formatNumber minIntegerDigits="2" value="${minute}" />
@@ -153,8 +153,8 @@
 
                     <div class="form-group">
                         <div class="col-md-2">
-                            <form:label path="format" for="formatSelect">Report Format:</form:label>
-                            <form:select id="formatSelect" path="format" cssClass="form-control">
+                            <form:label path="format" for="formatSelect">Report Format</form:label>
+                            <form:select id="formatSelect" path="format" cssClass="form-control custom-select">
                                 <form:options items="${formats}"/>
                             </form:select>
                         </div>
@@ -175,9 +175,9 @@
                     </c:if>
                     <div class="form-group">
                         <div class="col-md-2">
-                            <input type="submit" class="btn btn-default" name="run" value="run report" id="run"/>
+                            <input type="submit" class="btn btn-secondary" name="run" value="run report" id="run"/>
                             <c:if test="${errorMessage != null}">
-                                <input type="submit" class="btn btn-default" name="cancel" value="cancel" id="cancel">
+                                <input type="submit" class="btn btn-secondary" name="cancel" value="cancel" id="cancel">
                             </c:if>
                         </div>
                     </div>

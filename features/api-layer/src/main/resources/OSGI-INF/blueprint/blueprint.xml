@@ -15,12 +15,12 @@
   <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
   <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
 
-  <service interface="org.opennms.integration.api.v1.dao.NodeDao" >
-    <bean class="org.opennms.features.apilayer.dao.NodeDaoImpl">
-      <argument ref="nodeDao"/>
-      <argument ref="sessionUtils"/>
-    </bean>
-  </service>
+  <service interface="org.opennms.integration.api.v1.dao.NodeDao" ref="nodeDaoImpl"/>
+
+  <bean id="nodeDaoImpl" class="org.opennms.features.apilayer.dao.NodeDaoImpl">
+    <argument ref="nodeDao"/>
+    <argument ref="sessionUtils"/>
+  </bean>
 
   <service interface="org.opennms.integration.api.v1.dao.AlarmDao" >
     <bean class="org.opennms.features.apilayer.dao.AlarmDaoImpl">
@@ -156,5 +156,34 @@
   <bean id="pollerClient" class="org.opennms.features.apilayer.pollers.ServicePollerClientImpl">
     <argument ref="locationAwarePollerClient"/>
   </bean>
+  
+  <!-- Ticketer -->
+  <bean id="ticketingExtensionManager" class="org.opennms.features.apilayer.ticketing.TicketingPluginManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.ticketing.TicketingPlugin" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="ticketingExtensionManager" />
+  </reference-list>
+
+  <!-- Service Collectors -->
+  <bean id="serviceCollectorManager" class="org.opennms.features.apilayer.collectors.ServiceCollectorManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.collectors.ServiceCollectorFactory" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="serviceCollectorManager" />
+  </reference-list>
+
+  <reference id="locationAwareCollectorClient" interface="org.opennms.netmgt.collection.api.LocationAwareCollectorClient"/>
+
+  <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
+
+  <service interface="org.opennms.integration.api.v1.collectors.ServiceCollectorClient" >
+    <bean class="org.opennms.features.apilayer.collectors.ServiceCollectorClientImpl">
+      <argument ref="locationAwareCollectorClient"/>
+      <argument ref="collectionAgentFactory" />
+      <argument ref="nodeDaoImpl" />
+    </bean>
+  </service>
+
 
 </blueprint>

@@ -46,17 +46,17 @@
 
 <div class="row">
     <div class="col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Report Running</h3>
+        <div class="card">
+            <div class="card-header">
+                <span>Report Running</span>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <form:form cssClass="stdform">
                     <p>
                         <span class="indent">Your report is being run.</span>
                     </p>
                     <span class="indent">
-                        <input type="submit" class="btn btn-default" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
+                        <input type="submit" class="btn btn-secondary" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
                     </span>
                 </form:form>
             </div>

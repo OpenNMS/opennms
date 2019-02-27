@@ -121,6 +121,9 @@ public class IpNetToMedia implements Serializable {
 
     private Integer m_id;
     
+    private OnmsNode m_node;
+    private Integer m_ifIndex;
+    private String  m_port;
     private InetAddress m_netAddress;
     private String m_physAddress;
     private IpNetToMediaType m_ipNetToMediaType;
@@ -225,14 +228,64 @@ public class IpNetToMedia implements Serializable {
     }
     
     /**
+     * <p>setSourceIfIndex</p>
+     *
+     * @param ifIndex a {@link java.lang.Integer} object.
+     */
+    public void setSourceIfIndex(Integer sourceIfIndex) {
+        m_sourceIfIndex = sourceIfIndex;
+    }
+
+    @Transient
+    public Integer getNodeId() {
+        if (m_node != null) {
+            return m_node.getId();
+        }
+        return null;
+    }
+    /**
+     * <p>getNode</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
+    @ManyToOne(optional=false, fetch=FetchType.LAZY)
+    @JoinColumn(name="nodeId", nullable=true)
+    public OnmsNode getNode() {
+        return m_node;
+    }
+
+    /**
+     * <p>setNode</p>
+     *
+     * @param Node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
+    public void setNode(OnmsNode node) {
+        m_node = node;
+    }
+
+    @Column(name="ifIndex", nullable=true)
+    public Integer getIfIndex() {
+        return m_ifIndex;
+    }
+    
+    /**
      * <p>setIfIndex</p>
      *
      * @param ifIndex a {@link java.lang.Integer} object.
      */
-    public void setSourceIfIndex(Integer ifIndex) {
-        m_sourceIfIndex = ifIndex;
+    public void setIfIndex(Integer ifIndex) {
+        m_ifIndex = ifIndex;
     }
 
+    public String getPort() {
+        return m_port;
+    }
+
+    public void setPort(String port) {
+        m_port = port;
+    }
+
+   
     /**
      * <p>getCreateTime</p>
      *
@@ -275,6 +328,9 @@ public class IpNetToMedia implements Serializable {
     }
 
 	public void merge(IpNetToMedia element) {
+	        setNode(element.getNode());
+	        setIfIndex(element.getIfIndex());
+	        setPort(element.getPort());    
 		setSourceNode(element.getSourceNode());
 		setSourceIfIndex(element.getSourceIfIndex());
 		setLastPollTime(element.getCreateTime());
@@ -288,14 +344,23 @@ public class IpNetToMedia implements Serializable {
     @Override
     public String toString() {
         StringBuffer strb = new StringBuffer();
-        strb.append("ipnettomedia: source nodeid:["); 
-        strb.append(getSourceNode().getId());
-        strb.append("]. source ifindex:[");
-        strb.append(getSourceIfIndex());
+        strb.append("ipnettomedia: ");
+        strb.append("nodeid:["); 
+        if (getNode() != null) {
+            strb.append(getNode().getId());
+        } else {
+            strb.append("null");
+        }
+        strb.append("]. ifindex:[");
+        strb.append(getIfIndex());
         strb.append("]. ipaddr:[");
         strb.append(getNetAddress());
         strb.append("]. physaddr:[");
         strb.append(getPhysAddress());
+        strb.append(" source nodeid:["); 
+        strb.append(getSourceNode().getId());
+        strb.append("]. source ifindex:[");
+        strb.append(getSourceIfIndex());
         strb.append("]");
 
         return strb.toString();

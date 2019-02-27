@@ -39,6 +39,7 @@ import javax.annotation.Nullable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.smoketest.AbstractPage;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.openqa.selenium.By;
@@ -48,7 +49,11 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.ContextConfiguration;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
 public class OpsBoardAdminPageIT extends OpenNMSSeleniumTestCase {
 
     private OpsBoardAdminPage adminPage;
@@ -89,6 +94,7 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumTestCase {
 
     // See NMS-10515
     @Test
+    @org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
     public void canCreateAndUseDeepLink() {
         final OpsBoardAdminEditorPage testBoard = adminPage.createNew("My-Wallboard");
         testBoard.addDashlet(new DashletBuilder()

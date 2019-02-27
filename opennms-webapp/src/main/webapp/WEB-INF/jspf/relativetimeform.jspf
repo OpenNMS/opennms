@@ -2,8 +2,8 @@
 <div align="center">
   <form role="form" class="form-inline" name="reltimeform" action="">
     <div class="form-group">
-      <label for="input_rtstatus">Time period</label>
-      <select id="input_rtstatus" name="rtstatus" class="form-control" onchange="relativeTimeFormChange();">
+      <label for="input_rtstatus" class="mr-1">Time period</label>
+      <select id="input_rtstatus" name="rtstatus" class="form-control custom-select" onchange="relativeTimeFormChange();">
 	  <c:forEach var="period"
                  items="${requestScope.results.relativeTimePeriods}">
         <c:set var="relativeTimeChecked"></c:set>
@@ -20,30 +20,5 @@
 	  <option value="custom" ${relativeTimeChecked}>Custom</option>
      </select>
    </div> <!-- form-group -->
-<%--
-    <table class="periods">
-      <tbody>
-        <tr>
-	  <c:forEach var="period"
-                     items="${requestScope.results.relativeTimePeriods}">
-	    <td><c:out value="${period.name}"/></td>
-	  </c:forEach>
-        </tr>
-
-        <tr>
-	  <c:forEach var="period"
-                     items="${requestScope.results.relativeTimePeriods}">
-	    <td>
-	      <input type="radio" name="rtstatus"
-	        <c:if test="${period.id == requestScope.results.relativeTime}">
-		  checked="checked"
-	        </c:if>
-                onclick="goRelativeTime('<c:out value="${period.id}"/>');"/>
-	    </td>
-	  </c:forEach>
-        </tr>
-      </tbody>
-    </table>
---%>
   </form>
 </div>

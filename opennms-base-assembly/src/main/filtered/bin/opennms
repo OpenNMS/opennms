@@ -86,7 +86,7 @@ VERBOSE_GC=""
 OPENNMS_UNIT_TEST=0
 
 # Additional options to pass to runjava.
-RUNJAVA_OPTIONS=()
+RUNJAVA_OPTIONS=""
 
 # JMX URL that this script uses to communicate with a running OpenNMS daemon
 # when it cannot connect using the Attach API (automatically or by PID)
@@ -101,38 +101,40 @@ MAXIMUM_FILE_DESCRIPTORS=20480
 # maximum size of stack segment (in kbytes) to be setted by ulimit -s
 MAXIMUM_SIZE_STACK_SEGMENT=8192
 
-ADDITIONAL_CONTROLLER_OPTIONS=()
-ADDITIONAL_MANAGER_OPTIONS=()
-APP_PARMS_CONTROLLER=()
-APP_VM_PARMS=()
-
-CONTROLLER_OPTIONS=("-Dopennms.home=$OPENNMS_HOME")
-#CONTROLLER_OPTIONS+=("-Dlog4j.configuration=log4j.properties")
-
-COMMAND=""
+ADDITIONAL_CONTROLLER_OPTIONS=""
+ADDITIONAL_MANAGER_OPTIONS=""
+APP_PARMS_CONTROLLER=""
+APP_PARMS_AFTER=""
 
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
 #### Create $OPENNMS_HOME/etc/opennms.conf and put overrides in there. ####
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
 
+OVERRIDEABLE_ARRAYS=(RUNJAVA_OPTIONS ADDITIONAL_CONTROLLER_OPTIONS ADDITIONAL_MANAGER_OPTIONS APP_PARMS_CONTROLLER APP_PARMS_AFTER)
+
+# shellcheck disable=SC1090
+. "${OPENNMS_HOME}/bin/_lib.sh"
 
 # Load opennms.conf, if it exists, to override above configuration options.
 if [ -f "${OPENNMS_HOME}/etc/opennms.conf" ]; then
 	# shellcheck disable=SC1090
-	. "${OPENNMS_HOME}/etc/opennms.conf"
+	__onms_read_conf "${OPENNMS_HOME}/etc/opennms.conf"
 fi
 
 # Load ~/.opennms-dev/opennms.conf if it exists, to override above configuration options.
 if [ -f "${HOME}/.opennms-dev/opennms.conf" ]; then
 	# shellcheck disable=SC1090
-	. "${HOME}/.opennms-dev/opennms.conf"
+	__onms_read_conf "${HOME}/.opennms-dev/opennms.conf"
 fi
 
-declare -p RUNJAVA_OPTIONS 2>/dev/null | grep -q '^declare \-a' || IFS=" " read -r -a RUNJAVA_OPTIONS <<< "${RUNJAVA_OPTIONS[@]}"
-declare -p ADDITIONAL_CONTROLLER_OPTIONS 2>/dev/null | grep -q '^declare \-a' || IFS=" " read -r -a ADDITIONAL_CONTROLLER_OPTIONS <<< "${ADDITIONAL_CONTROLLER_OPTIONS[@]}"
-declare -p ADDITIONAL_MANAGER_OPTIONS 2>/dev/null | grep -q '^declare \-a' || IFS=" " read -r -a ADDITIONAL_MANAGER_OPTIONS <<< "${ADDITIONAL_MANAGER_OPTIONS[@]}"
-declare -p APP_PARMS_CONTROLLER 2>/dev/null | grep -q '^declare \-a' || IFS=" " read -r -a APP_PARMS_CONTROLLER <<< "${APP_PARMS_CONTROLLER[@]}"
-declare -p APP_PARMS_AFTER 2>/dev/null | grep -q '^declare \-a' || IFS=" " read -r -a APP_PARMS_AFTER <<< "${APP_PARMS_AFTER[@]}"
+for __overrideable in "${OVERRIDEABLE_ARRAYS[@]}"; do
+	__onms_convert_to_array "${__overrideable}"
+done
+
+CONTROLLER_OPTIONS=("-Dopennms.home=$OPENNMS_HOME")
+#CONTROLLER_OPTIONS+=("-Dlog4j.configuration=log4j.properties")
+
+COMMAND=""
 
 show_help () {
 	cat <<END
@@ -305,7 +307,11 @@ checkLogDir(){
 
 runCmd(){
 	if [ "$NOEXECUTE" -eq 1 ]; then
-		echo "Skipping execution:" "$@"
+		__tmp_array=()
+		for ARG in "$@"; do
+			__tmp_array+=("'$ARG'")
+		done
+		echo "Skipping execution:" "${__tmp_array[@]}"
 	else
 		"$@"
 	fi
@@ -375,7 +381,6 @@ doStart(){
 	if [ "$SERVICE" = "" ]; then
 		APP_VM_PARMS=("${JPDA[@]}" "${MANAGER_OPTIONS[@]}")
 		APP_PARMS_BEFORE=("start")
-
 	else
 		APP_VM_PARMS=("${CONTROLLER_OPTIONS[@]}")
 		APP_PARMS_BEFORE=(start "$SERVICE")

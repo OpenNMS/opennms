@@ -102,19 +102,6 @@
                     <ignore />
                   </action>
                 </pluginExecution>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.opennms.maven.plugins</groupId>
-                    <artifactId>features-maven-plugin</artifactId>
-                    <versionRange>[1.0-SNAPSHOT,)</versionRange>
-                    <goals>
-                      <goal>generate-features-xml</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore />
-                  </action>
-                </pluginExecution>
               </pluginExecutions>
             </lifecycleMappingMetadata>
           </configuration>

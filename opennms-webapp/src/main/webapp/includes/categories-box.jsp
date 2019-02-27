@@ -88,12 +88,12 @@
 	}
 %>
 
-<div class="panel panel-default fix-subpixel">
-  <div class="panel-heading">
-    <h3 class="panel-title"><%= titleName %></h3>
+<div class="card fix-subpixel">
+  <div class="card-header">
+    <span><%= titleName %></span>
   </div>
 
-<table class="table table-condensed severity">
+<table class="table table-sm severity">
 <%
 	for (Iterator<String> i = categoryData.keySet().iterator(); i.hasNext(); ) {
 	    String sectionName = i.next();

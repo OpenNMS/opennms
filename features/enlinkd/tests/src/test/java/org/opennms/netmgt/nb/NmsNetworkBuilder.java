@@ -46,7 +46,7 @@ import org.opennms.netmgt.model.SnmpInterfaceBuilder;
 public abstract class NmsNetworkBuilder {
     //NMS7918
     public static final String PE01_ROOT = "PE01";
-    public static final String PE01_IP   = "172.25.64.8";
+    public static final String PE01_IP   = "10.25.19.1";
     public static final String PE01_NAME = "pe01";
     public static final String PE01_SYSNAME = "PE01";
     public static final String PE01_SYSOID = ".1.3.6.1.4.1.9.1.534";

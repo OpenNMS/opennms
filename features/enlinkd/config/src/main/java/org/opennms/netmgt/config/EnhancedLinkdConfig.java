@@ -85,6 +85,12 @@ public interface EnhancedLinkdConfig {
      */
     long getBridgeTopologyInterval();
 
+    /**
+     * <p>getTopologyInterval</p>
+     *
+     * @return a long.
+     */
+    long getTopologyInterval();
 
     /**
      * <p>useCdpDiscovery</p>

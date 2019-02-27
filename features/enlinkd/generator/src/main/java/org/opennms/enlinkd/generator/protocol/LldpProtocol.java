@@ -81,42 +81,43 @@ public class LldpProtocol extends Protocol<LldpElement> {
         return element;
     }
 
-
     private List<LldpLink> createLinks(List<LldpElement> elements) {
         PairGenerator<LldpElement> pairs = createPairGenerator(elements);
         List<LldpLink> links = new ArrayList<>();
-        for (int i = 0; i < topologySettings.getAmountLinks()/2; i++) {
+        for (int i = 0; i < topologySettings.getAmountLinks() / 2; i++) {
 
             // We create 2 links that reference each other, see also LinkdToplologyProvider.match...Links()
             Pair<LldpElement, LldpElement> pair = pairs.next();
             LldpElement sourceElement = pair.getLeft();
             LldpElement targetElement = pair.getRight();
 
-            String portId = UUID.randomUUID().toString();
-            String portIdRemote = UUID.randomUUID().toString();
             LldpUtils.LldpPortIdSubType portIdSubType = LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS;
-            LldpUtils.LldpPortIdSubType portIdSubTypeRemote = LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS;
+            LldpUtils.LldpPortIdSubType portIdSubTypeRemote =
+                    LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS;
 
-            LldpLink sourceLink = createLink(
-                    sourceElement.getNode(),
-                    portId, portIdSubType, portIdRemote, portIdSubTypeRemote, targetElement.getLldpChassisId()
-            );
+            int sourceIfIndex = nodeIfIndexes.get(sourceElement.getNode().getId());
+            int targetIfIndex = nodeIfIndexes.get(targetElement.getNode().getId());
+            String portId = sourceElement.getNode().getId() + "-" + sourceIfIndex;
+            String portIdRemote = sourceElement.getNode().getId() + "-" + sourceIfIndex;
+
+            LldpLink sourceLink = createLink(sourceElement.getNode(), portId, portIdSubType, portIdRemote,
+                    portIdSubTypeRemote, targetElement.getLldpChassisId(), sourceIfIndex);
             links.add(sourceLink);
 
-            LldpLink targetLink = createLink(
-                    targetElement.getNode(),
-                    portIdRemote, portIdSubTypeRemote, portId, portIdSubType, sourceElement.getLldpChassisId()
-            );
+            LldpLink targetLink = createLink(targetElement.getNode(), portIdRemote, portIdSubTypeRemote, portId,
+                    portIdSubType, sourceElement.getLldpChassisId(), targetIfIndex);
             links.add(targetLink);
 
-            LOG.debug("Linked node {} with node {}", sourceElement.getNode().getLabel(), targetElement.getNode().getLabel());
+            context.currentProgress(String.format("Linked node %s with node %s", sourceElement.getNode().getLabel(),
+                    targetElement.getNode().getLabel()));
         }
         return links;
     }
 
 
-    private LldpLink createLink(OnmsNode node, String portId, LldpUtils.LldpPortIdSubType portIdSubType
-            , String remotePortId, LldpUtils.LldpPortIdSubType remotePortIdSubType, String remoteChassisId) {
+    private LldpLink createLink(OnmsNode node, String portId, LldpUtils.LldpPortIdSubType portIdSubType,
+                                String remotePortId, LldpUtils.LldpPortIdSubType remotePortIdSubType,
+                                String remoteChassisId, int ifIndex) {
         LldpLink link = new LldpLink();
         link.setLldpPortId(portId);
         link.setLldpPortIdSubType(portIdSubType);
@@ -124,11 +125,11 @@ public class LldpProtocol extends Protocol<LldpElement> {
         link.setLldpRemPortIdSubType(remotePortIdSubType);
         link.setLldpRemChassisId(remoteChassisId);
         link.setNode(node);
+        link.setLldpPortIfindex(ifIndex);
 
         // static attributes:
         link.setLldpRemChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_CHASSISCOMPONENT); // shouldn't be relevant for match => set it fixed
         link.setLldpLocalPortNum(123);
-        link.setLldpPortIfindex(123);
         link.setLldpLinkLastPollTime(new Date());
         link.setLldpPortDescr("lldpportdescr");
         link.setLldpRemSysname("lldpRemSysname");

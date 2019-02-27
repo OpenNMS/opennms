@@ -153,6 +153,10 @@
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
+            <artifactId>opennms-detector-dhcp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
             <artifactId>opennms-detector-lineoriented</artifactId>
         </dependency>
         <dependency>
@@ -182,11 +186,6 @@
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-detector-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.protocols</groupId>
-            <artifactId>org.opennms.protocols.dhcp</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.protocols</groupId>

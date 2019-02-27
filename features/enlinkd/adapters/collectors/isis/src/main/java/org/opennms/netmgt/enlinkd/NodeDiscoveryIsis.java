@@ -39,7 +39,6 @@ import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisSysObjectGroupTracker;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
@@ -52,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public final class NodeDiscoveryIsis extends NodeDiscovery {
+public final class NodeDiscoveryIsis extends NodeCollector {
 
     private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.class);
     
@@ -65,16 +64,16 @@ public final class NodeDiscoveryIsis extends NodeDiscovery {
 	 * @param EnhancedLinkd linkd
 	 * @param LinkableNode node
 	 */
-    public NodeDiscoveryIsis(final EventForwarder eventForwarder,
+    public NodeDiscoveryIsis(
             final IsisTopologyService isisTopologyService,
             final LocationAwareSnmpClient locationAwareSnmpClient,
             final long interval,final long initial,
             final Node node) {
-        super(eventForwarder, locationAwareSnmpClient, interval, initial,node);
+        super(locationAwareSnmpClient, interval, initial,node);
     	m_isisTopologyService = isisTopologyService;
     }
 
-    protected void runNodeDiscovery() {
+    protected void collect() {
 
     	final Date now = new Date(); 
 

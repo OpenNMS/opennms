@@ -90,14 +90,14 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllTextIsPresent() throws Exception {
-        findElementByXpath("//h3//span[text()='Nodes']");
+        findElementByXpath("//div[@class='btn-toolbar']/span[text()='Nodes']");
         findElementByXpath("//ol[@class=\"breadcrumb\"]//li[text()='Node List']");
     }
 
     @Test
     public void testAllLinks() throws InterruptedException {
         findElementByLink("Show interfaces").click();
-        findElementByXpath("//h3[text()='Nodes and their interfaces']");
+        findElementByXpath("//div[@class='card-header']/span[text()='Nodes and their interfaces']");
         findElementByLink("Hide interfaces");
     }
 

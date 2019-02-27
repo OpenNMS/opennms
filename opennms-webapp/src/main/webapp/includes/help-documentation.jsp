@@ -46,43 +46,43 @@
     });
 </script>
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Documentation</h3>
+<div class="card">
+    <div class="card-header">
+        <span>Documentation</span>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
         <span id="online-documentation" style="display:none;">
             <table class="table">
                 <tr>
                     <td style="border-top: none;"><a
                             href="https://docs.opennms.org/opennms/releases/<%=Vault.getProperty("version.display")%>/guide-install/guide-install.html"
-                            target="_blank" class="btn btn-default" role="button"
+                            target="_blank" class="btn btn-secondary" role="button"
                             style="width: 100%">Installation Guide</a></td>
                     <td style="border-top: none;">OpenNMS can be installed several operating systems and can be deployed for several scenarios with different technologies. Have a look in the Installation Guide to find instructions to deploy and maintain your OpenNMS instance.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a
                             href="https://docs.opennms.org/opennms/releases/<%=Vault.getProperty("version.display")%>/guide-admin/guide-admin.html"
-                            target="_blank" class="btn btn-default" role="button"
+                            target="_blank" class="btn btn-secondary" role="button"
                             style="width: 100%">Admin Guide</a></td>
                     <td style="border-top: none;">Have a look into the Admin Guide to find instructions how to configure OpenNMS to monitor your infrastructure and services.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a
                             href="https://docs.opennms.org/opennms/releases/<%=Vault.getProperty("version.display")%>/guide-development/guide-development.html"
-                            target="_blank" class="btn btn-default" role="button"
+                            target="_blank" class="btn btn-secondary" role="button"
                             style="width: 100%">Developers Guide</a></td>
                     <td style="border-top: none;">Developers can extend and improve the OpenNMS platform. The Developers Guide is a good starting point for extending OpenNMS and using the ReST APIs for integration.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a href="https://wiki.opennms.org" target="_blank"
-                                                     class="btn btn-default" role="button" style="width: 100%">OpenNMS Wiki</a></td>
+                                                     class="btn btn-secondary" role="button" style="width: 100%">OpenNMS Wiki</a></td>
                     <td style="border-top: none;">With the large variety of devices and applications you can monitor with OpenNMS, the Wiki provides space to share experience with How Tos and Tutorials to address specific use cases.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a
                             href="https://wiki.opennms.org/wiki/Community/Welcome_Guide" target="_blank"
-                            class="btn btn-default" role="button" style="width: 100%">Welcome Guide</a></td>
+                            class="btn btn-secondary" role="button" style="width: 100%">Welcome Guide</a></td>
                     <td style="border-top: none;">If you are new in the project, you can find useful information in your Welcome Guide to get anything you need to get started.</td>
                 </tr>
             </table>
@@ -91,28 +91,28 @@
             <table class="table">
                 <tr>
                     <td style="border-top: none;"><a href="docs/guide-install/index.html" target="_blank"
-                                                     class="btn btn-default" role="button" style="width: 100%">Installation Guide</a></td>
+                                                     class="btn btn-secondary" role="button" style="width: 100%">Installation Guide</a></td>
                     <td style="border-top: none;">OpenNMS can be installed several operating systems and can be deployed for several scenarios with different technologies. Have a look in the Installation Guide to find instructions to deploy and maintain your OpenNMS instance.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a href="docs/guide-admin/index.html" target="_blank"
-                                                     class="btn btn-default" role="button" style="width: 100%">Admin Guide</a></td>
+                                                     class="btn btn-secondary" role="button" style="width: 100%">Admin Guide</a></td>
                     <td style="border-top: none;">Have a look into the Admin Guide to find instructions how to configure OpenNMS to monitor your infrastructure and services.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a href="docs/guide-development/index.html" target="_blank"
-                                                     class="btn btn-default" role="button" style="width: 100%">Developers Guide</a></td>
+                                                     class="btn btn-secondary" role="button" style="width: 100%">Developers Guide</a></td>
                     <td style="border-top: none;">Developers can extend and improve the OpenNMS platform. The Developers Guide is a good starting point for extending OpenNMS and using the ReST APIs for integration.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a href="https://wiki.opennms.org" target="_blank"
-                                                     class="btn btn-default" role="button" style="width: 100%">OpenNMS Wiki</a></td>
+                                                     class="btn btn-secondary" role="button" style="width: 100%">OpenNMS Wiki</a></td>
                     <td style="border-top: none;">With the large variety of devices and applications you can monitor with OpenNMS, the Wiki provides space to share experience with How Tos and Tutorials to address specific use cases.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a
                             href="https://wiki.opennms.org/wiki/Community/Welcome_Guide" target="_blank"
-                            class="btn btn-default" role="button" style="width: 100%">Welcome Guide</a></td>
+                            class="btn btn-secondary" role="button" style="width: 100%">Welcome Guide</a></td>
                     <td style="border-top: none;">If you are new in the project, you can find useful information in your Welcome Guide to get anything you need to get started.</td>
                 </tr>
             </table>

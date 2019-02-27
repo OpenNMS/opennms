@@ -49,12 +49,19 @@
 					</documentation>
 				</annotation>
 			</attribute>
-			
 			<attribute name="bridge_topology_interval" type="long"
 				use="optional" default="300000">
 				<annotation>
 					<documentation>
 						Bridge Topology Discovery Time interval in mill seconds.
+					</documentation>
+				</annotation>
+			</attribute>				
+			<attribute name="topology_interval" type="long"
+				use="optional" default="30000">
+				<annotation>
+					<documentation>
+						Topology Updater Time interval in mill seconds.
 					</documentation>
 				</annotation>
 			</attribute>

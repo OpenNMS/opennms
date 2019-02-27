@@ -136,7 +136,7 @@ public class CollectionSetMapper {
                             .newBuilder();
                     attributeBuilder.setGroup(lastGroupName);
                     attributeBuilder.setName(attribute.getName());
-                    attributeBuilder.setValue(attribute.getNumericValue().longValue());
+                    attributeBuilder.setValue(attribute.getNumericValue().doubleValue());
                     attributeBuilder.setType((attribute.getType() == AttributeType.GAUGE) ? Type.GAUGE : Type.COUNTER);
                     collectionSetResourceBuilder.addNumeric(attributeBuilder);
                 }

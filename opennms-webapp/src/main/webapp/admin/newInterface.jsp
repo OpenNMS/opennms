@@ -79,11 +79,11 @@
 
 <div class="row">
   <div class="col-md-4">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Enter IP Address</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Enter IP Address</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <form method="post" name="newIpForm" onsubmit="return verifyIpAddress();">
             <c:if test="${param.action == 'redo'}">
               <p class="text-danger">
@@ -93,31 +93,31 @@
             </c:if>
 
             <div class="form-group">
-              <label for="input_ipAddress">IP address:</label>
-              <input size="15" name="ipAddress" class="form-control">
+              <label for="input_ipAddress">IP Address</label>
+              <input size="15" name="ipAddress" id="input_ipAddress" class="form-control">
             </div>
 
             <div class="form-group">
-              <input type="submit" class="btn btn-default" value="Add">
-              <input type="button" class="btn btn-default" value="Cancel" onclick="cancel()">
+              <input type="submit" class="btn btn-secondary" value="Add">
+              <input type="button" class="btn btn-secondary" value="Cancel" onclick="cancel()">
             </div>
         </form>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 
   <div class="col-md-8">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Add Interface</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Add Interface</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
         Enter in a valid IP address to generate a newSuspectEvent. This will add a node to the OpenNMS
         database for this device. Note: if the IP address already exists in OpenNMS, use "Rescan" from
         the node page to update it. Also, if no services exist for this IP, it will still be added.
         </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

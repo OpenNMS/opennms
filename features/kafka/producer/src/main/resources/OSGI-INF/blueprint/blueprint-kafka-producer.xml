@@ -13,9 +13,13 @@
   <!-- Configuration properties -->
   <cm:property-placeholder id="kafkaProducerProperties" persistent-id="org.opennms.features.kafka.producer" update-strategy="reload">
     <cm:default-properties>
+      <cm:property name="encoding" value="UTF8"/>
       <cm:property name="eventTopic" value="events"/>
       <cm:property name="alarmTopic" value="alarms"/>
       <cm:property name="nodeTopic" value="nodes"/>
+      <cm:property name="topologyProtocols" value="bridge,cdp,isis,lldp,ospf"/>
+      <cm:property name="topologyVertexTopic" value="vertices"/>
+      <cm:property name="topologyEdgeTopic" value="edges"/>
       <cm:property name="alarmFeedbackTopic" value="alarmFeedback"/>
       <cm:property name="metricTopic" value="metrics"/>
       <cm:property name="forward.metrics" value="true"/>
@@ -37,6 +41,7 @@
   <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" />
   <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" />
   <reference id="hwEntityDao" interface="org.opennms.netmgt.dao.api.HwEntityDao" />
+  <reference id="onmsTopologyDao" interface="org.opennms.netmgt.topologies.service.api.OnmsTopologyDao" />
 
   <bean id="protobufMapper" class="org.opennms.features.kafka.producer.ProtobufMapper">
     <argument ref="eventConfDao"/>
@@ -58,7 +63,11 @@
     <argument ref="nodeCache"/>
     <argument ref="configAdmin"/>
     <argument ref="eventSubscriptionService"/>
+    <argument ref="onmsTopologyDao"/>
 
+    <property name="topologyProtocols" value="${topologyProtocols}"/>
+    <property name="topologyVertexTopic" value="${topologyVertexTopic}"/>
+    <property name="topologyEdgeTopic" value="${topologyEdgeTopic}"/>
     <property name="eventTopic" value="${eventTopic}"/>
     <property name="alarmTopic" value="${alarmTopic}"/>
     <property name="nodeTopic" value="${nodeTopic}"/>
@@ -67,6 +76,7 @@
     <property name="alarmFilter" value="${alarmFilter}"/>
     <property name="suppressIncrementalAlarms" value="${suppressIncrementalAlarms}"/>
     <property name="kafkaSendQueueCapacity" value="${kafkaSendQueueCapacity}"/>
+    <property name="encoding" value="${encoding}"/>
   </bean>
 
   <service ref="kafkaProducer" interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener">

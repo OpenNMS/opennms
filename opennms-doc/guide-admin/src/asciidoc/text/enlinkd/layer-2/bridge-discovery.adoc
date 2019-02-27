@@ -9,6 +9,33 @@ To discover _Links_ an algorithm based on a scientific paper with the title link
 The gathered information is used to classify _Links_ in _macLink_ and _bridgeLink_.
 A _macLink_ represents a _Link_ between a workstation or server identified by a mac address.
 A _bridgeLink_ is a _connection_ between backbone ports.
+A _Shared Segment_ is a _connection among workstations or servers (several mac addresses) and backbone ports (for example devices connected via an hub).
+A _bridgeLink_ is a a _shared segment_ with only two bridge backbone ports.
+A _macLink_ is a _shared segment_ with only a bridge port and only one _mac_ address.
+A _Broadcast Domain_ is a collection of _Shared Segment_ baed on common set of _mac_ addresses.
+
+_Discovery Bridge Broadcast Domains_ is made in two step, the first step regards data collection.
+The Bridge Forwarding Table together with other Spanning Tree information is collected by the BridgeDiscovery Collector.
+The BTF is not persisted into database and is maintained in memory to be processed by the BridgeDomainDiscovery.
+_BridgeDomainDiscovery_ runs the specified algorithm over collected BFT and will produce a Bridge Domain or several 
+Bridge domains depending on the broadcasts set of mac addresses found.
+Bridge Domains are collection of Shared Segments as described above. 
+
+_BridgeDomainDiscovery_ does not support multi vlan, the Bridge Network model identify a _Bridge_ for every _VLAN_.
+Each VLAN has it's own Bridge Forwarding Table and it's own Spanning Tree. So in line to discovery a Bridge Topology the algorithm has to be run against every bridge and every vlan.
+Actually the discovery is run only against the main VLAN. 
+
+Bridge Domains provide no information about layer 3 but only a layer 2 two map of the Broadcast Domains.
+While Bridge/Switch are identified by the fact that are OpenNMS Nodes to map mac to Nodes where possible
+the IpNetToMedia table is needed. In this manned we are able to associate to mac address the corresponding ip address and then the associated node.
+The _Bridge Topology Updater_ put together the information stored into bridge domains with the _ipnettomedia_ data.
+and provide Bridge OnmsTopology.
+
+_Bridge Topology Updater_ whenever possible tries to associate a mac address to an ip address and then to a node.
+It can happen that the mac address and the ip address specified are not associate to a single node (for example because 
+there are duplicated node or also because the nodes supports protocol like LACP), in this case we do not resolve the node but leave the association found mac:ip into a specific Vertex.
+
+_Bridge Topology Updater_ do not support LACP protocols and other similar aggregation protocols.
 
 Transparent bridging is not loop free so if you have loops you have to enable the spanning tree protocol that will detect loops and again will put some ports in a _blocking_ state to avoid loops.
 To get links it is necessary to perform some calculations that let us define the _Links_.

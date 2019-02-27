@@ -75,14 +75,14 @@
 
 </script>
 
-<div class="panel panel-default">
-	<div class="panel-heading">
-		<h3 class="panel-title">
+<div class="card">
+	<div class="card-header">
+		<span>
 			<c:out value="${role.name}" />
-		</h3>
+		</span>
 	</div>
 
-	<table class="table table-condensed severity">
+	<table class="table table-sm severity">
 		<tr>
 			<th class="col-md-1">Name</th>
 			<td class="col-md-5"><c:out value="${role.name}" /></td>
@@ -116,18 +116,18 @@
 	<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.nextMonth}' type='date' pattern='MM-yyyy'/>"/>
 </form>
 
-<div class="panel panel-default">
-	<div class="panel-heading">
-		<h3 class="panel-title">Role Schedule</h3>
+<div class="card">
+	<div class="card-header">
+		<span>Role Schedule</span>
 	</div>
 
-	<table class="table table-condensed table-bordered severity">
+	<table class="table table-sm table-bordered severity">
 			<caption class="text-center">
-				<button class="btn btn-default" onclick="prevMonth()">&laquo;</button>
+				<button class="btn btn-secondary" onclick="prevMonth()">&laquo;</button>
 				&nbsp;
 				<strong><c:out value="${calendar.monthAndYear}"/></strong>
 				&nbsp;
-				<button class="btn btn-default" onclick="nextMonth()">&raquo;</button>
+				<button class="btn btn-secondary" onclick="nextMonth()">&raquo;</button>
 			</caption>
 				<tr>
 				<c:forEach var="day" items="${calendar.weeks[0].days}">

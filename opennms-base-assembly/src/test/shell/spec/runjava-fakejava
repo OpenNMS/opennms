@@ -1,16 +1,8 @@
 #!/bin/bash
 
-if [ -z "$FAKE_JAVA_VERSION" ]; then
-  FAKE_JAVA_VERSION="1.8.0_191"
-fi
-
-if [ -z "$FAKE_JAVA_BUILD" ]; then
-  FAKE_JAVA_BUILD="17.23-b09"
-fi
-
-if [ -z "$FAKE_OPENJDK" ]; then
-  FAKE_OPENJDK=false
-fi
+FAKE_JAVA_VERSION="@fake_java_version@";
+FAKE_JAVA_BUILD="@fake_java_build@";
+FAKE_OPENJDK="@fake_openjdk@";
 
 if [ "$1" = "-version" ]; then
   if [ "$FAKE_OPENJDK" = true ]; then

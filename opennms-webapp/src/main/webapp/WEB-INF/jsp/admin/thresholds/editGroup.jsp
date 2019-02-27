@@ -69,11 +69,11 @@
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Basic Thresholds</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Basic Thresholds</span>
       </div>
-      <table class="table table-condensed table-striped edit-group-basic-thresholds">
+      <table class="table table-sm table-striped edit-group-basic-thresholds">
         <tr>
             <th>Type</th>
             <th>Description</th>
@@ -105,20 +105,20 @@
             </tr>
         </c:forEach>
       </table>
-      <div class="panel-footer">
+      <div class="card-footer">
         <a href="admin/thresholds/index.htm?groupName=${group.name}&newThreshold">Create New Threshold</a>
-      </div> <!-- panel-footer -->
+      </div> <!-- card-footer -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Expression-based Thresholds</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Expression-based Thresholds</span>
       </div>
-      <table class="table table-condensed table-striped edit-group-expression-based-thresholds">
+      <table class="table table-sm table-striped edit-group-expression-based-thresholds">
         <tr>
             <th>Type</th>
             <th>Description</th>
@@ -150,9 +150,9 @@
             </tr>
         </c:forEach>
       </table>
-      <div class="panel-footer">
+      <div class="card-footer">
         <a href="admin/thresholds/index.htm?groupName=${group.name}&newExpression">Create New Expression-based Threshold</a>
-      </div> <!-- panel-footer -->
+      </div> <!-- card-footer -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
@@ -161,11 +161,11 @@
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Help</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Help</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
         The upper section is Basic Thresholds (thresholds on a  single datasource).  The threshold details are displayed to edit the threshold, click on the "Edit" link on same line as the threshold line.  
         To delete the threshold, click on "Delete" on the same line as the threshold you want to delete.<br/>
@@ -174,7 +174,7 @@
         <br/>
         If you have a custom UEI for triggering or re-arming the threshold, then it will be a hyperlink.  Clicking on that link takes you to the notifications wizard for that UEI, allowing you to see existing notifications for that UEI, and possibly create a new notification for that UEI.
         </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
