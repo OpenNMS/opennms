@@ -203,6 +203,24 @@
         </td>
     </tr>
     <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+        <th class="col-2">Managed Object Type</th>
+        <td class="col-4">
+            <% if (alarm.getManagedObjectType() != null) {%>
+            <%=alarm.getManagedObjectType()%>
+            <% } else {%>
+            &nbsp;
+            <% }%>
+        </td>
+        <th class="col-2">Managed Object Instance</th>
+        <td class="col-4">
+            <% if (alarm.getManagedObjectInstance() != null) {%>
+            <%=alarm.getManagedObjectInstance()%>
+            <% } else {%>
+            &nbsp;
+            <% }%>
+        </td>
+    </tr>
+    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
         <th class="col-2">Ticket&nbsp;ID</th>
         <td class="col-4"><% if (alarm.getTTicketId() == null) {%>
             &nbsp;
