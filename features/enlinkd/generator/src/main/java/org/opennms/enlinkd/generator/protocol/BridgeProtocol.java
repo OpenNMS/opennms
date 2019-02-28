@@ -41,6 +41,8 @@ import org.opennms.enlinkd.generator.topology.PairGenerator;
 import org.opennms.enlinkd.generator.util.InetAddressGenerator;
 import org.opennms.enlinkd.generator.util.MacAddressGenerator;
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
+import org.opennms.netmgt.enlinkd.model.BridgeElement;
+import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -78,40 +80,88 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
 
         // Call with: enlinkd:generate-topology --protocol bridgeBridge --nodes 3 --snmpinterfaces 0 -- ipinterfaces 0
 
-       // NodeA is connected to port 24 of NodeB
-       // NodeC is connected to port 23 of NodeB
+       // NodeA port 4 is connected to port 24 of NodeB
+       // NodeC port 3 is connected to port 23 of NodeB
        // you have to generate three nodes nodeA(id=1) nodeB(id=2) nodeC(id=3)
+        
         OnmsNode nodeA =  nodes.get(0);
         OnmsNode nodeB =  nodes.get(1);
         OnmsNode nodeC =  nodes.get(2);
 
         // snmpinterfaces -> nodeB ----port 1,24 ---specified ifindex name ands so on
-        OnmsSnmpInterface snmpInterfaceA = createSnmpInterface(1, nodeA);
-        OnmsSnmpInterface snmpInterfaceB = createSnmpInterface(2, nodeB);
-        OnmsSnmpInterface snmpInterfaceC = createSnmpInterface(3, nodeC);
-        context.getTopologyPersister().persist(snmpInterfaceA, snmpInterfaceB, snmpInterfaceC);
+        OnmsSnmpInterface snmpInterfaceA4 = createSnmpInterface(4, nodeA);
+        OnmsSnmpInterface snmpInterfaceB24 = createSnmpInterface(24, nodeB);
+        OnmsSnmpInterface snmpInterfaceB23 = createSnmpInterface(23, nodeB);
+        OnmsSnmpInterface snmpInterfaceC3 = createSnmpInterface(3, nodeC);
+        context.getTopologyPersister().persist(snmpInterfaceA4, snmpInterfaceB24,snmpInterfaceB23, snmpInterfaceC3);
 
+        // in bridge only topology ip addresses are not needed
         // ipinterface -> nodeA - 192.168.0.1
         // ipinterface -> nodeB - 192.168.0.2
         // ipinterface -> nodeC - 192.168.0.3
-        OnmsIpInterface ipInterfaceA = createIpInterface(snmpInterfaceA, inetGenerator.next());
-        OnmsIpInterface ipInterfaceB = createIpInterface(snmpInterfaceB, inetGenerator.next());
-        OnmsIpInterface ipInterfaceC = createIpInterface(snmpInterfaceC, inetGenerator.next());
-        context.getTopologyPersister().persist(ipInterfaceA, ipInterfaceB, ipInterfaceC);
+        //OnmsIpInterface ipInterfaceA = createIpInterface(snmpInterfaceA, inetGenerator.next());
+        //OnmsIpInterface ipInterfaceB = createIpInterface(snmpInterfaceB, inetGenerator.next());
+        //OnmsIpInterface ipInterfaceC = createIpInterface(snmpInterfaceC, inetGenerator.next());
+        //context.getTopologyPersister().persist(ipInterfaceA, ipInterfaceB, ipInterfaceC);
 
+        //In Bridge only Topology no need for mac address here
         // ipnettomedia -> nodeid=1 0123456789a 192.168.0.1
         // ipnettomedia -> nodeid=1 0123456789b 192.168.0.2
         // ipnettomedia -> nodeid=3 0123456789c 192.168.0.3
-        IpNetToMedia ipNetToMediaA = createIpNetToMedia(nodeA, "0123456789a", ipInterfaceA.getIpAddress(), nodeB);
-        IpNetToMedia ipNetToMediaB = createIpNetToMedia(nodeA, "0123456789b", ipInterfaceB.getIpAddress(), nodeB);
-        IpNetToMedia ipNetToMediaC = createIpNetToMedia(nodeC, "0123456789c", ipInterfaceC.getIpAddress(), nodeB);
-        context.getTopologyPersister().persist(ipNetToMediaA, ipNetToMediaB, ipNetToMediaC);
+        //IpNetToMedia ipNetToMediaA = createIpNetToMedia(nodeA, "0123456789a", ipInterfaceA.getIpAddress(), nodeB);
+        //IpNetToMedia ipNetToMediaB = createIpNetToMedia(nodeA, "0123456789b", ipInterfaceB.getIpAddress(), nodeB);
+        //IpNetToMedia ipNetToMediaC = createIpNetToMedia(nodeC, "0123456789c", ipInterfaceC.getIpAddress(), nodeB);
+        //context.getTopologyPersister().persist(ipNetToMediaA, ipNetToMediaB, ipNetToMediaC);
+        
+        BridgeElement bridgeA = createBridgeElement(nodeA);
+        BridgeElement bridgeB = createBridgeElement(nodeB);
+        BridgeElement bridgeC = createBridgeElement(nodeC);
 
-        List<BridgeBridgeLink> bridgeBridgeLinks = createBridgeBridgeLinks(nodes);
-        this.context.getTopologyPersister().persist(bridgeBridgeLinks);
+        this.context.getTopologyPersister().persist(bridgeA,bridgeB,bridgeC);
+        
+        // linkBA nodeA port 4 connected to nodeB port 24
+        BridgeBridgeLink linkBA = createBridgeBridgeLink(nodeA, nodeB, 4, 24);
+        // linkBA nodeA port 3 connected to nodeB port 23
+        BridgeBridgeLink linkBC = createBridgeBridgeLink(nodeC, nodeB, 4, 23);
+        
+        
+        this.context.getTopologyPersister().persist(linkBA,linkBC);
+
+        //        List<BridgeBridgeLink> bridgeBridgeLinks = createBridgeBridgeLinks(nodes);
+//        this.context.getTopologyPersister().persist(bridgeBridgeLinks);
     }
 
+    private List<BridgeElement> createBridgeElements(OnmsNode ... nodes) {
+        List<BridgeElement> elements = new ArrayList<>();
+        for (OnmsNode node: nodes) {
+            elements.add(createBridgeElement(node));
+        }
+        return elements;
+    }
+    
+    private List<BridgeElement> createBridgeElements(List<OnmsNode> nodes){
+        List<BridgeElement> elements = new ArrayList<>();
+        for (int i = 0; i < topologySettings.getAmountLinks()/2; i++) {
+            OnmsNode node = nodes.get(i);
+            elements.add(createBridgeElement(node));
+        }
+        return elements;
+    }
+    
+    private BridgeElement createBridgeElement(OnmsNode node) {
+        BridgeElement bridge = new BridgeElement();
+        bridge.setNode(node);
+        bridge.setBaseBridgeAddress(macGenerator.next());
+        bridge.setBaseType(BridgeDot1dBaseType.DOT1DBASETYPE_TRANSPARENT_ONLY);
+        bridge.setBridgeNodeLastPollTime(new Date());
+        bridge.setBaseNumPorts(topologySettings.getAmountLinks());
+        bridge.setVlan(1);
+        bridge.setVlanname("default");
+        return bridge;
+    }
+    
     private List<BridgeBridgeLink> createBridgeBridgeLinks(List<OnmsNode> nodes) {
+        // Here we shold use a different strategy because we need to generate a tree
         PairGenerator<OnmsNode> pairs = createPairGenerator(nodes);
         List<BridgeBridgeLink> links = new ArrayList<>();
         for (int i = 0; i < topologySettings.getAmountLinks()/2; i++) {
@@ -135,16 +185,16 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
     private BridgeBridgeLink createBridgeBridgeLink(OnmsNode node, OnmsNode designatedNode, int port, int designatedPort) {
         BridgeBridgeLink link = new BridgeBridgeLink();
         link.setBridgeBridgeLinkLastPollTime(new Date());
-        link.setBridgePortIfIndex(3);
+        link.setBridgePortIfIndex(port);
         link.setBridgePort(port);
-        link.setVlan(23);
+        link.setVlan(1);
         link.setBridgePortIfName("xx");
         link.setNode(node);
         link.setBridgeBridgeLinkCreateTime(new Date());
         link.setDesignatedNode(designatedNode);
         link.setDesignatedPort(designatedPort);
-        link.setDesignatedPortIfIndex(3);
-        link.setDesignatedVlan(23);
+        link.setDesignatedPortIfIndex(designatedPort);
+        link.setDesignatedVlan(1);
         link.setDesignatedPortIfName("xx");
         return link;
     }
