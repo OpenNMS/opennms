@@ -19,5 +19,6 @@
     <module>tests</module>
     <module>shell</module>
     <module>generator</module>
+    <module>api</module>
   </modules>
 </project>

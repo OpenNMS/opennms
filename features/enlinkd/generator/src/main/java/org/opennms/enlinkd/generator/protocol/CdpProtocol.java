@@ -57,7 +57,7 @@ public class CdpProtocol extends Protocol<CdpElement> {
     public void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) {
         List<CdpElement> cdpElements = createCdpElements(nodes);
         context.getTopologyPersister().persist(cdpElements);
-        List<CdpLink> links = createCdpLinks(cdpElements);
+        List<CdpLink> links = createLinks(cdpElements);
         context.getTopologyPersister().persist(links);
     }
 
@@ -79,40 +79,37 @@ public class CdpProtocol extends Protocol<CdpElement> {
         return cdpElement;
     }
 
-    private List<CdpLink> createCdpLinks(List<CdpElement> cdpElements) {
+    private List<CdpLink> createLinks(List<CdpElement> cdpElements) {
         PairGenerator<CdpElement> pairs = createPairGenerator(cdpElements);
         List<CdpLink> links = new ArrayList<>();
-        for (int i = 0; i < topologySettings.getAmountLinks()/2; i++) {
+        for (int i = 0; i < topologySettings.getAmountLinks() / 2; i++) {
 
             // We create 2 links that reference each other, see also LinkdToplologyProvider.matchCdpLinks()
             Pair<CdpElement, CdpElement> pair = pairs.next();
-            CdpElement sourceCdpElement = pair.getLeft();
-            CdpElement targetCdpElement = pair.getRight();
-            CdpLink sourceLink = createCdpLink(
-                    sourceCdpElement.getNode(),
-                    UUID.randomUUID().toString(),
-                    UUID.randomUUID().toString(),
-                    targetCdpElement.getCdpGlobalDeviceId()
-            );
+            CdpElement sourceElement = pair.getLeft();
+            CdpElement targetElement = pair.getRight();
+
+            int sourceIfIndex = nodeIfIndexes.get(sourceElement.getNode().getId());
+            int targetIfIndex = nodeIfIndexes.get(targetElement.getNode().getId());
+
+            CdpLink sourceLink = createCdpLink(sourceElement.getNode(), UUID.randomUUID().toString(),
+                    UUID.randomUUID().toString(), targetElement.getCdpGlobalDeviceId(), sourceIfIndex);
             links.add(sourceLink);
 
             String targetCdpCacheDevicePort = sourceLink.getCdpInterfaceName();
             String targetCdpInterfaceName = sourceLink.getCdpCacheDevicePort();
-            String targetCdpGlobalDeviceId = sourceCdpElement.getCdpGlobalDeviceId();
-            CdpLink targetLink = createCdpLink(
-                    targetCdpElement.getNode(),
-                    targetCdpInterfaceName,
-                    targetCdpCacheDevicePort,
-                    targetCdpGlobalDeviceId
-            );
+            String targetCdpGlobalDeviceId = sourceElement.getCdpGlobalDeviceId();
+            CdpLink targetLink = createCdpLink(targetElement.getNode(), targetCdpInterfaceName,
+                    targetCdpCacheDevicePort, targetCdpGlobalDeviceId, targetIfIndex);
             links.add(targetLink);
-            LOG.debug("Linked node {} with node {}", sourceCdpElement.getNode().getLabel(), targetCdpElement.getNode().getLabel());
+            context.currentProgress(String.format("Linked node %s with node %s", sourceElement.getNode().getLabel(),
+                    targetElement.getNode().getLabel()));
         }
         return links;
     }
 
     private CdpLink createCdpLink(OnmsNode node, String cdpInterfaceName, String cdpCacheDevicePort,
-                                  String cdpCacheDeviceId) {
+                                  String cdpCacheDeviceId, int ifIndex) {
         CdpLink link = new CdpLink();
         link.setCdpCacheDeviceId(cdpCacheDeviceId);
         link.setCdpInterfaceName(cdpInterfaceName);
@@ -122,7 +119,7 @@ public class CdpProtocol extends Protocol<CdpElement> {
         link.setCdpCacheAddress("CdpCacheAddress");
         link.setCdpCacheDeviceIndex(33);
         link.setCdpCacheDevicePlatform("CdpCacheDevicePlatform");
-        link.setCdpCacheIfIndex(33);
+        link.setCdpCacheIfIndex(ifIndex);
         link.setCdpCacheVersion("CdpCacheVersion");
         link.setCdpLinkLastPollTime(new Date());
         return link;

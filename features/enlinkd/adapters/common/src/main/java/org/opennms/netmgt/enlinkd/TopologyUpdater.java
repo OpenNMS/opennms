@@ -29,6 +29,7 @@
 package org.opennms.netmgt.enlinkd;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
@@ -41,7 +42,6 @@ import org.opennms.netmgt.enlinkd.service.api.TopologyService;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyRef;
@@ -55,14 +55,13 @@ import com.google.common.collect.Table;
 
 public abstract class TopologyUpdater extends Discovery implements OnmsTopologyUpdater {
 
-    public static OnmsTopologyProtocol create(ProtocolSupported protocol) throws OnmsTopologyException {
+    public static OnmsTopologyProtocol create(ProtocolSupported protocol) {
             return OnmsTopologyProtocol.create(protocol.name());
     }
     
-    public static OnmsTopologyVertex create(NodeTopologyEntity node, IpInterfaceTopologyEntity primary) throws OnmsTopologyException {
-        if (node == null || node.getId() == null) {
-            throw new OnmsTopologyException("NodeTopologyEntity is null");
-        }
+    public static OnmsTopologyVertex create(NodeTopologyEntity node, IpInterfaceTopologyEntity primary) {
+        Objects.requireNonNull(node);
+        Objects.requireNonNull(node.getId());
         OnmsTopologyVertex vertex = 
                 OnmsTopologyVertex.create(node.getId().toString(), 
                                           node.getLabel(), 
@@ -103,8 +102,8 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
             m_topologyDao.register(this);
             m_registered  = true;
             LOG.info("register: protocol:{}", getProtocol().getId());
-        } catch (OnmsTopologyException e) {
-            LOG.error("register: protocol:{} {}", e.getProtocol(),e.getMessage());
+        } catch (Exception e) {
+            LOG.error("register", e);
         }
     }
     
@@ -116,24 +115,24 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
             m_topologyDao.unregister(this);
             m_registered = false;
             LOG.info("unregister: protocol:{}", getProtocol().getId());
-        } catch (OnmsTopologyException e) {
-            LOG.error("unregister: protocol:{} {}", e.getProtocol(),e.getMessage());
+        } catch (Exception e) {
+            LOG.error("unregister", e);
         }
     }
     
     private <T extends OnmsTopologyRef>void update(T topoObject) {
         try {
             m_topologyDao.update(this, OnmsTopologyMessage.update(topoObject,getProtocol()));
-        } catch (OnmsTopologyException e) {
-            LOG.error("update: status:{} id:{} protocol:{} message{}", e.getMessageStatus(), e.getId(), e.getProtocol(),e.getMessage());
+        } catch (Exception e) {
+            LOG.error("Exception while updating", e);
         }
     }
 
     private <T extends OnmsTopologyRef>void delete(T topoObject) {
         try {
             m_topologyDao.update(this, OnmsTopologyMessage.delete(topoObject,getProtocol()));
-        } catch (OnmsTopologyException e) {
-            LOG.error("delete: status:{} id:{} protocol:{} message{}", e.getMessageStatus(), e.getId(), e.getProtocol(),e.getMessage());
+        } catch (Exception e) {
+            LOG.error("Exception while deleting", e);
         }
     }
 
@@ -149,8 +148,8 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
                     m_topology.getVertices().stream().forEach(v -> update(v));
                     m_topology.getEdges().stream().forEach(g -> update(g));
                     LOG.debug("run: {} first run topology calculated", getName());
-                } catch (OnmsTopologyException e) {
-                    LOG.error("run: {} first run: cannot build topology",getName(), e);
+                } catch (Exception e) {
+                    LOG.error("run: {} first run: cannot build topology", getName(), e);
                     return;
                 }
             }
@@ -161,7 +160,7 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
             OnmsTopology topo;
             try {
                 topo = buildTopology();
-            } catch (OnmsTopologyException e) {
+            } catch (Exception e) {
                 LOG.error("cannot build topology", e);
                 return;
             }
@@ -219,7 +218,7 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
         }
         return n1;
     }
-    public abstract OnmsTopology buildTopology() throws OnmsTopologyException;
+    public abstract OnmsTopology buildTopology();
 
     @Override
     public OnmsTopology getTopology() {

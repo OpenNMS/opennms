@@ -28,19 +28,18 @@
 
 package org.opennms.netmgt.topologies.service.api;
 
+import java.util.Objects;
+
 public class OnmsTopologyPort extends OnmsTopologyAbstractRef implements OnmsTopologyRef {
 
-    public static OnmsTopologyPort create(String id, OnmsTopologyVertex vertex, Integer index) throws OnmsTopologyException {
-        if (id == null) {
-            throw new OnmsTopologyException("Cannot create port, id is null");
-        }
-        if (vertex == null) {
-            throw new OnmsTopologyException("Cannot create port, vertex is null");
-        }
+    public static OnmsTopologyPort create(String id, OnmsTopologyVertex vertex, Integer index) {
+        Objects.requireNonNull(id, "Cannot create port, id is null");
+        Objects.requireNonNull(vertex, "Cannot create port, vertex is null");
+
         if (index != null) {
-            return new OnmsTopologyPort(id,vertex,index);
+            return new OnmsTopologyPort(id, vertex, index);
         }
-        return new OnmsTopologyPort(id,vertex,-1);
+        return new OnmsTopologyPort(id, vertex, -1);
     }
 
     private final OnmsTopologyVertex m_vertex;

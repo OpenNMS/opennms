@@ -37,6 +37,7 @@ import org.opennms.enlinkd.generator.TopologyGenerator;
 import org.opennms.enlinkd.generator.TopologyPersister;
 import org.opennms.enlinkd.generator.TopologySettings;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
+import org.opennms.netmgt.enlinkd.api.ReloadableTopologyDaemon;
 
 /**
  * Generate a enlinkd topology via karaf command.
@@ -71,6 +72,9 @@ public class GenerateTopologyCommand implements Action {
     @Reference
     private GenericPersistenceAccessor genericPersistenceAccessor;
 
+    @Reference
+    private ReloadableTopologyDaemon reloadableTopologyDaemon;
+
     @Override
     public Object execute() {
 
@@ -91,6 +95,7 @@ public class GenerateTopologyCommand implements Action {
                 .topology(toEnumOrNull(TopologyGenerator.Topology.class, this.topology))
                 .build();
         generator.generateTopology(settings);
+        reloadableTopologyDaemon.reloadTopology();
         return null;
     }
 

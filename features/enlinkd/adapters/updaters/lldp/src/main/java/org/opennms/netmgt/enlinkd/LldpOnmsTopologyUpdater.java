@@ -43,7 +43,6 @@ import org.opennms.netmgt.enlinkd.service.api.TopologyConnection;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
@@ -62,7 +61,7 @@ public class LldpOnmsTopologyUpdater extends TopologyUpdater {
 
     public static OnmsTopologyPort create(OnmsTopologyVertex source,LldpLinkTopologyEntity sourceLink, 
                                                                     LldpLinkTopologyEntity targetlink,
-                                                                    SnmpInterfaceTopologyEntity snmpiface) throws OnmsTopologyException {
+                                                                    SnmpInterfaceTopologyEntity snmpiface) {
         OnmsTopologyPort port = OnmsTopologyPort.create(sourceLink.getId().toString(),source, sourceLink.getLldpPortIfindex());
         port.setIfindex(sourceLink.getLldpPortIfindex());
         if (snmpiface != null) {
@@ -87,7 +86,7 @@ public class LldpOnmsTopologyUpdater extends TopologyUpdater {
     }
 
     @Override
-    public OnmsTopology buildTopology() throws OnmsTopologyException {
+    public OnmsTopology buildTopology() {
         Map<Integer, NodeTopologyEntity> nodeMap= getNodeMap();
         Map<Integer, IpInterfaceTopologyEntity> ipMap= getIpPrimaryMap();
         Table<Integer, Integer,SnmpInterfaceTopologyEntity> nodeToOnmsSnmpTable = getSnmpInterfaceTable();
@@ -120,13 +119,13 @@ public class LldpOnmsTopologyUpdater extends TopologyUpdater {
     }
 
     @Override
-    public OnmsTopologyProtocol getProtocol() throws OnmsTopologyException {
+    public OnmsTopologyProtocol getProtocol() {
         return create(ProtocolSupported.LLDP);
     }
 
     public LldpTopologyService getLldpTopologyService() {
         return m_lldpTopologyService;
     }
-            
+
 }
 

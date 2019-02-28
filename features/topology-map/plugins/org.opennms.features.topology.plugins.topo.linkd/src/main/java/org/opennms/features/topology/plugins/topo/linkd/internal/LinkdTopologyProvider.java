@@ -44,7 +44,6 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,10 +98,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         try{
             loadTopology(ProtocolSupported.LLDP);
             LOG.info("loadEdges: LldpLink loaded");
-        } catch (OnmsTopologyException e) {
-            LOG.info("loadEdges: {}", e.getMessage() );
         } catch (Exception e){
-            LOG.error("Loading LldpLink failed: {}",e.getMessage(),e);
+            LOG.error("Loading LldpLink failed", e);
         } finally {
             context.stop();
         }
@@ -111,10 +108,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         try{
             loadTopology(ProtocolSupported.OSPF);
             LOG.info("loadEdges: OspfLink loaded");
-        } catch (OnmsTopologyException e) {
-            LOG.info("loadEdges: {}", e.getMessage() );
         } catch (Exception e){
-            LOG.error("Loading OspfLink failed: {}",e.getMessage(),e);
+            LOG.error("Loading OspfLink failed", e);
         } finally {
             context.stop();
         }
@@ -123,10 +118,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         try{
             loadTopology(ProtocolSupported.CDP);
             LOG.info("loadEdges: CdpLink loaded");
-        } catch (OnmsTopologyException e) {
-            LOG.info("loadEdges: {}", e.getMessage() );
-        } catch (Exception e){
-            LOG.error("Loading CdpLink failed: {}",e.getMessage(),e);
+        }  catch (Exception e){
+            LOG.error("Loading CdpLink failed", e);
         } finally {
             context.stop();
         }
@@ -135,10 +128,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         try{
             loadTopology(ProtocolSupported.ISIS);
             LOG.info("loadEdges: IsIsLink loaded");
-        } catch (OnmsTopologyException e) {
-            LOG.info("loadEdges: {}", e.getMessage() );
         } catch (Exception e){
-            LOG.error("Exception getting IsIs link: "+e.getMessage(),e);
+            LOG.error("Exception getting IsIs link", e);
         } finally {
             context.stop();
         }
@@ -147,16 +138,14 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         try{
             loadTopology(ProtocolSupported.BRIDGE);
             LOG.info("loadEdges: BridgeLink loaded");
-        } catch (OnmsTopologyException e) {
-            LOG.info("loadEdges: {}", e.getMessage() );
         } catch (Exception e){
-            LOG.error("Loading BridgeLink failed: {}",e.getMessage(),e);
+            LOG.error("Loading BridgeLink failed", e);
         } finally {
             context.stop();
         }
     }
 
-    private void loadTopology(ProtocolSupported protocol) throws OnmsTopologyException {
+    private void loadTopology(ProtocolSupported protocol) {
         OnmsTopology topology =   m_onmsTopologyDao.getTopology(protocol.name());
         
         final Map<String, LinkdVertex> vmap = new HashMap<>();
@@ -184,8 +173,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         OnmsTopologyVertex node = null;
         try {
             node = m_onmsTopologyDao.getTopology(ProtocolSupported.NODES.name()).getDefaultVertex();
-        } catch (OnmsTopologyException e) {
-            LOG.error("getDefaultVertex: no default node found: {}", e.getMessage());
+        } catch (Exception e) {
+            LOG.error("getDefaultVertex: no default node found", e);
             return null;
         }
 
@@ -221,7 +210,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             }
             LOG.info("refresh: Loaded Vertices");
         } catch (Exception e){
-            LOG.error("Exception Loading Vertices: {}",e.getMessage(),e);
+            LOG.error("Exception Loading Vertices", e);
         } finally {
             vcontext.stop();
         }
@@ -231,7 +220,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             loadEdges();
             LOG.info("refresh: Loaded Edges");
         } catch (Exception e){
-            LOG.error("Exception Loading Edges: {}",e.getMessage(),e);
+            LOG.error("Exception Loading Edges", e);
         } finally {
             vcontext.stop();
         }

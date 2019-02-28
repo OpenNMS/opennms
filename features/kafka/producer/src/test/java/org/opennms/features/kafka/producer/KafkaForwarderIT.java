@@ -102,7 +102,6 @@ import org.opennms.netmgt.model.OnmsHwEntityAlias;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -177,7 +176,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     @Autowired
     private OnmsTopologyDao onmsTopologyDao;
     @Before
-    public void setUp() throws IOException, OnmsTopologyException {
+    public void setUp() throws IOException {
         File data = tempFolder.newFolder("data");
         eventdIpcMgr.setEventWriter(mockDatabase);
 
