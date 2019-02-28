@@ -1309,7 +1309,7 @@
     <jsoupVersion>1.7.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
-    <karafVersion>4.2.2</karafVersion>
+    <karafVersion>4.2.3</karafVersion>
     <kafkaStreamsVersion>1.0.1</kafkaStreamsVersion>
     <kafkaStreamsBundleVersion>1.0.1_1</kafkaStreamsBundleVersion>
     <felixBridgeVersion>4.0.4</felixBridgeVersion>
@@ -1320,13 +1320,12 @@
     <log4j2Version>2.8.2</log4j2Version>
     <mapstructVersion>1.2.0.CR1</mapstructVersion>
     <minaVersion>2.0.16</minaVersion>
-    <minionKarafVersion>4.0.5</minionKarafVersion>
     <mockitoVersion>1.10.19</mockitoVersion>
     <netty4Version>4.1.9.Final</netty4Version>
     <newtsVersion>1.5.1</newtsVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
-    <paxWebVersion>7.2.5</paxWebVersion>
+    <paxWebVersion>7.2.8</paxWebVersion>
     <protobufVersion>2.6.1</protobufVersion>
     <protobuf3Version>3.5.1</protobuf3Version>
     <postgresqlVersion>42.2.5</postgresqlVersion>
