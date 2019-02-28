@@ -33,6 +33,7 @@ import java.util.List;
 
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
+import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
@@ -95,6 +96,7 @@ public class TopologyPersister {
                 LldpElement.class,
                 OspfLink.class,
                 BridgeBridgeLink.class,
+                BridgeElement.class,
                 OnmsIpInterface.class,
                 OnmsSnmpInterface.class,
                 IpNetToMedia.class);
