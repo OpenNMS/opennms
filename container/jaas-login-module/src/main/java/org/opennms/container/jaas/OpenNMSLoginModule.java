@@ -47,6 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 
+// TODO MVR rework this. Verify AbstractKarafLoginModule, especially login(), abort() and commit(), logout()
 public class OpenNMSLoginModule extends AbstractKarafLoginModule implements OpenNMSLoginHandler {
     private static final transient Logger LOG = LoggerFactory.getLogger(OpenNMSLoginModule.class);
 
@@ -65,7 +66,8 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule implements Open
 
     @Override
     public boolean login() throws LoginException {
-        return LoginModuleUtils.doLogin(this, m_subject, m_sharedState, m_options);
+        succeeded = LoginModuleUtils.doLogin(this, m_subject, m_sharedState, m_options);
+        return succeeded;
     }
 
     @Override
