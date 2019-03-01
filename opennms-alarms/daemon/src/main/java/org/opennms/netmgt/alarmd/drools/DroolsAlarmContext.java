@@ -41,13 +41,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.hibernate.Hibernate;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.alarmd.Alarmd;
 import org.opennms.netmgt.alarmd.api.AlarmCallbackStateTracker;
@@ -80,6 +85,9 @@ import com.google.common.collect.Sets;
  */
 public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLifecycleListener {
     private static final Logger LOG = LoggerFactory.getLogger(DroolsAlarmContext.class);
+
+    private static final String LOCK_TIMEOUT_MS_SYS_PROP = "org.opennms.alarms.drools.lock.timeout.ms";
+    protected static final long LOCK_TIMEOUT_MS = SystemProperties.getLong(LOCK_TIMEOUT_MS_SYS_PROP, TimeUnit.SECONDS.toMillis(20));
 
     @Autowired
     private AlarmService alarmService;
@@ -301,11 +309,33 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             LOG.debug("Ignoring new/updated alarm. Drools session is stopped.");
             return;
         }
-        getLock().lock();
+        tryWithLock(alarm.getId(), alarm.getReductionKey(),
+                (id, rkey) -> handleNewOrUpdatedAlarms(Collections.singleton(alarm)),
+                "Add or update");
+    }
+
+    private void tryWithLock(int alarmId, String reductionKey, BiConsumer<Integer, String> callback, String action) {
         try {
-            handleNewOrUpdatedAlarms(Collections.singleton(alarm));
-        } finally {
-            getLock().unlock();
+            // It is possible that the session is currently locked while waiting for the
+            // transaction that this thread is holding to be committed, so we limit the time
+            // we spend waiting for the lock in order to avoid deadlocks.
+            // If we were not able to successfully acquire the lock, then log a warning.
+            // The alarm snapshot handling will ensure that the state of the context is eventually consistent.
+            if (getLock().tryLock(LOCK_TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
+                try {
+                    callback.accept(alarmId, reductionKey);
+                } finally {
+                    getLock().unlock();
+                }
+            } else {
+                LOG.warn("Failed to acquire Drools session lock within {}ms. " +
+                                "{} for alarm with id={} and reduction-key={} will not be immediately reflected in the context.",
+                        LOCK_TIMEOUT_MS, action, alarmId, reductionKey);
+            }
+        } catch (InterruptedException e) {
+            LOG.warn("Interrupted while waiting for Drools session lock. " +
+                            "{} for alarm with id={} and reduction-key={} will not be immediately reflected in the context.",
+                   action, alarmId, reductionKey);
         }
     }
 
@@ -406,12 +436,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             LOG.debug("Ignoring deleted alarm. Drools session is stopped.");
             return;
         }
-        getLock().lock();
-        try {
-            handleDeletedAlarmNoLock(alarmId, reductionKey);
-        } finally {
-            getLock().unlock();
-        }
+        tryWithLock(alarmId, reductionKey, (id, rkey) -> handleDeletedAlarmNoLock(alarmId, reductionKey), "Delete");
     }
 
     private void handleRelatedAlarms(OnmsAlarm situation) {
