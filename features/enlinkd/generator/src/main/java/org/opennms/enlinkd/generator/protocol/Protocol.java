@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.opennms.enlinkd.generator.TopologyContext;
 import org.opennms.enlinkd.generator.TopologyGenerator;
@@ -160,7 +161,7 @@ public abstract class Protocol<Element> {
         ip.setId(snmp.getId());
         ip.setSnmpInterface(snmp);
         ip.setIpLastCapsdPoll(new Date());
-        ip.setNode(snmp.getNode());
+        ip.setNode(Optional.ofNullable(snmp).map(OnmsSnmpInterface::getNode).orElse(null));
         ip.setIpAddress(inetAddress);
         return ip;
     }

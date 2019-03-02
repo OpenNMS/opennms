@@ -35,6 +35,13 @@ public class MacAddressGenerator {
     public String next() {
         String s = String.format("%1$" + 12 + "s", Integer.toHexString(last)); // example: "           1"
         s = s.replace(' ', '0'); // example: "000000000001"
+        last++;
+        return s;
+    }
+
+    public String nextWithSeparator() {
+
+        String s = next();
         s = s.substring(0, 2)
                 + ':' + s.substring(2, 4)
                 + ':' + s.substring(4, 6)
