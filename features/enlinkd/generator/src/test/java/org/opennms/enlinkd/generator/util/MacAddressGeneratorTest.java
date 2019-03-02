@@ -37,39 +37,39 @@ public class MacAddressGeneratorTest {
     @Test
     public void shouldProduceStreamOfMacAddresses() {
         MacAddressGenerator gen = new MacAddressGenerator();
-        assertEquals("00:00:00:00:00:00", gen.next());
-        assertEquals("00:00:00:00:00:01", gen.next());
-        assertEquals("00:00:00:00:00:02", gen.next());
-        assertEquals("00:00:00:00:00:03", gen.next());
-        assertEquals("00:00:00:00:00:04", gen.next());
-        assertEquals("00:00:00:00:00:05", gen.next());
-        assertEquals("00:00:00:00:00:06", gen.next());
-        assertEquals("00:00:00:00:00:07", gen.next());
-        assertEquals("00:00:00:00:00:08", gen.next());
-        assertEquals("00:00:00:00:00:09", gen.next());
-        assertEquals("00:00:00:00:00:0a", gen.next());
-        assertEquals("00:00:00:00:00:0b", gen.next());
-        assertEquals("00:00:00:00:00:0c", gen.next());
-        assertEquals("00:00:00:00:00:0d", gen.next());
-        assertEquals("00:00:00:00:00:0e", gen.next());
-        assertEquals("00:00:00:00:00:0f", gen.next());
+        assertEquals("00000000000000000", gen.next());
+        assertEquals("00000000000000001", gen.next());
+        assertEquals("00000000000000002", gen.next());
+        assertEquals("00000000000000003", gen.next());
+        assertEquals("00000000000000004", gen.next());
+        assertEquals("00000000000000005", gen.next());
+        assertEquals("00000000000000006", gen.next());
+        assertEquals("00000000000000007", gen.next());
+        assertEquals("00000000000000008", gen.next());
+        assertEquals("00000000000000009", gen.next());
+        assertEquals("0000000000000000a", gen.next());
+        assertEquals("0000000000000000b", gen.next());
+        assertEquals("0000000000000000c", gen.next());
+        assertEquals("0000000000000000d", gen.next());
+        assertEquals("0000000000000000e", gen.next());
+        assertEquals("0000000000000000f", gen.next());
 
-        assertEquals("00:00:00:00:00:10", gen.next());
-        assertEquals("00:00:00:00:00:11", gen.next());
-        assertEquals("00:00:00:00:00:12", gen.next());
-        assertEquals("00:00:00:00:00:13", gen.next());
-        assertEquals("00:00:00:00:00:14", gen.next());
-        assertEquals("00:00:00:00:00:15", gen.next());
-        assertEquals("00:00:00:00:00:16", gen.next());
-        assertEquals("00:00:00:00:00:17", gen.next());
-        assertEquals("00:00:00:00:00:18", gen.next());
-        assertEquals("00:00:00:00:00:19", gen.next());
-        assertEquals("00:00:00:00:00:1a", gen.next());
-        assertEquals("00:00:00:00:00:1b", gen.next());
-        assertEquals("00:00:00:00:00:1c", gen.next());
-        assertEquals("00:00:00:00:00:1d", gen.next());
-        assertEquals("00:00:00:00:00:1e", gen.next());
-        assertEquals("00:00:00:00:00:1f", gen.next());
+        assertEquals("00000000000000010", gen.next());
+        assertEquals("00000000000000011", gen.next());
+        assertEquals("00000000000000012", gen.next());
+        assertEquals("00000000000000013", gen.next());
+        assertEquals("00000000000000014", gen.next());
+        assertEquals("00000000000000015", gen.next());
+        assertEquals("00000000000000016", gen.next());
+        assertEquals("00000000000000017", gen.next());
+        assertEquals("00000000000000018", gen.next());
+        assertEquals("00000000000000019", gen.next());
+        assertEquals("0000000000000001a", gen.next());
+        assertEquals("0000000000000001b", gen.next());
+        assertEquals("0000000000000001c", gen.next());
+        assertEquals("0000000000000001d", gen.next());
+        assertEquals("0000000000000001e", gen.next());
+        assertEquals("0000000000000001f", gen.next());
 
     }
 }

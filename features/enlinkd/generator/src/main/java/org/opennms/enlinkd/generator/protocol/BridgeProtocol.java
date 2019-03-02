@@ -76,9 +76,9 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
     @Override
     protected void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) {
 
-        context.currentProgress("Version 1"); // TODO: delete later just for testing purpose
+        context.currentProgress("Version 7"); // TODO: delete later just for testing purpose
 
-        // Call with: enlinkd:generate-topology --protocol bridgeBridge --nodes 10 --snmpinterfaces 0 -- ipinterfaces 1
+        // Call with: enlinkd:generate-topology --protocol bridgeBridge --nodes 10 --snmpinterfaces 0 --ipinterfaces 0
         //      here is complete example of bridge topology
        // 4 nodes are bridges: nodeBridgeA, nodeBridgeB, nodeBridgeC, nodeBridgeD
        //              B
@@ -144,7 +144,7 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
         OnmsNode nodeHostF =  nodes.get(5);
         String macF=macGenerator.next();
         OnmsSnmpInterface snmpInterfaceF = createSnmpInterface(1, nodeHostF);
-        context.getTopologyPersister().persist(createSnmpInterface(5, nodeBridgeA),snmpInterfaceF);
+        context.getTopologyPersister().persist(createSnmpInterface(6, nodeBridgeA),snmpInterfaceF);
         OnmsIpInterface ipInterfaceF = createIpInterface(snmpInterfaceF, inetGenerator.next());
         context.getTopologyPersister().persist(ipInterfaceF);
         context.getTopologyPersister().persist(
@@ -185,6 +185,7 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
         String macI=macGenerator.next();
         context.getTopologyPersister().persist(createSnmpInterface(12, nodeBridgeD));
         OnmsIpInterface ipInterfaceI = createIpInterface(null, inetGenerator.next());
+        ipInterfaceI.setNode(nodeHostI);
         context.getTopologyPersister().persist(ipInterfaceI);
         context.getTopologyPersister().persist(
            createIpNetToMedia(nodeHostI, null, null,macI, ipInterfaceI.getIpAddress(), nodeBridgeA)
@@ -193,10 +194,11 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
 
         // nodeHostL  is connected on port 13 of nodeBridgeD
         // ipinterface -> nodeHostI - 192.168.0.16
-        OnmsNode nodeHostL =  nodes.get(8);
+        OnmsNode nodeHostL =  nodes.get(9);
         String macL=macGenerator.next();
         context.getTopologyPersister().persist(createSnmpInterface(13, nodeBridgeD));
         OnmsIpInterface ipInterfaceL = createIpInterface(null, inetGenerator.next());
+        ipInterfaceL.setNode(nodeHostL);
         context.getTopologyPersister().persist(ipInterfaceL);
         context.getTopologyPersister().persist(
            createIpNetToMedia(nodeHostL, null, null,macL, ipInterfaceL.getIpAddress(), nodeBridgeA)
@@ -238,7 +240,7 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
     private BridgeElement createBridgeElement(OnmsNode node, Integer vlanid, String vlanname) {
         BridgeElement bridge = new BridgeElement();
         bridge.setNode(node);
-        bridge.setBaseBridgeAddress(macGenerator.next());
+        bridge.setBaseBridgeAddress(macGenerator.next().replace(":", ""));
         bridge.setBaseType(BridgeDot1dBaseType.DOT1DBASETYPE_TRANSPARENT_ONLY);
         bridge.setBridgeNodeLastPollTime(new Date());
         bridge.setBaseNumPorts(topologySettings.getAmountLinks());
