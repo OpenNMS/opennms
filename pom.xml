@@ -1374,7 +1374,7 @@
     <skipSignJar>true</skipSignJar>
 
     <!-- change to match which version of opennms-pluginmanger you want to run -->
-    <pluginmanagerVersion>1.3.0-SNAPSHOT</pluginmanagerVersion>
+    <pluginmanagerVersion>1.3.0</pluginmanagerVersion>
     <licencemanagerVersion>${pluginmanagerVersion}</licencemanagerVersion>
     <featuremanagerVersion>${pluginmanagerVersion}</featuremanagerVersion>
 

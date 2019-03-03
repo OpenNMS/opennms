@@ -207,8 +207,8 @@
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
         <bundle>mvn:org.jolokia/jolokia-client-java/1.3.3</bundle>
     </feature>
-    <feature name="jrobin" version="1.6.0-SNAPSHOT" description="JRobin">
-        <bundle>mvn:org.jrobin/jrobin/1.6.0-SNAPSHOT</bundle>
+    <feature name="jrobin" version="1.6.0" description="JRobin">
+        <bundle>mvn:org.jrobin/jrobin/1.6.0</bundle>
     </feature>
     <feature name="json-lib" version="2.2.3" description="json-lib">
         <bundle>wrap:mvn:net.sf.ezmorph/ezmorph/1.0.6</bundle>
