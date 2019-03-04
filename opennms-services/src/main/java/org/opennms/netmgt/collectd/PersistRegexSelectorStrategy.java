@@ -89,6 +89,7 @@ public class PersistRegexSelectorStrategy implements PersistenceSelectorStrategy
         }
         EvaluatorContextVisitor visitor = new EvaluatorContextVisitor();
         resource.visit(visitor);
+        visitor.getEvaluationContext().setVariable("instance", resource.getInstance());
         ExpressionParser parser = new SpelExpressionParser();
         for (Parameter param : m_parameterCollection) {
             if (param.getKey().equals(MATCH_EXPRESSION)) {
