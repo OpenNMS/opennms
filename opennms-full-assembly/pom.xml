@@ -1013,19 +1013,5 @@
       <name>Sonatype Public Maven Repository</name>
       <url>http://maven.opennms.org/content/repositories/sonatype-public-repo/</url>
     </repository>
-    <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <id>coova</id>
-      <name>Coova Repository</name>
-      <url>http://maven.opennms.org/content/repositories/coova/</url>
-    </repository>
-    <repository>
-      <id>sonatype.org-snapshot</id>
-      <name>Sonatype OSS Snapshots Repository</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      <releases><enabled>false</enabled></releases>
-      <snapshots><enabled>true</enabled></snapshots>
-    </repository>
   </repositories>
 </project>
