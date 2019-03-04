@@ -336,6 +336,8 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             LOG.warn("Interrupted while waiting for Drools session lock. " +
                             "{} for alarm with id={} and reduction-key={} will not be immediately reflected in the context.",
                    action, alarmId, reductionKey);
+            // Propagate the interrupt
+            Thread.currentThread().interrupt();
         }
     }
 
