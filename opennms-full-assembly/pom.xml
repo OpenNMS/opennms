@@ -292,7 +292,6 @@
               <goal>features-add-to-repository</goal>
             </goals>
             <configuration>
-              <karafVersion>${karafVersion}</karafVersion>
               <descriptors>
                 <!-- 
                   All of these feature files need to be added to the featuresRepositories parameter in the
@@ -592,7 +591,6 @@
               <goal>features-add-to-repository</goal>
             </goals>
             <configuration>
-              <karafVersion>${karafVersion}</karafVersion>
               <descriptors>
                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring</descriptor>
                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
