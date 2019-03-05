@@ -36,7 +36,6 @@ import org.opennms.container.web.bridge.proxy.pattern.PatternMatcher;
 import org.opennms.container.web.bridge.proxy.pattern.PatternMatcherFactory;
 import org.osgi.framework.ServiceReference;
 
-// TODO MVR a lot of this is duplicated here and also in ServletInfo. May need to be revisited
 public class ResourceInfo {
     private final List<String> patterns;
     private final List<PatternMatcher> patternMatchers;
