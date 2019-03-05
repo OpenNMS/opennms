@@ -216,7 +216,7 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
         context.getTopologyPersister().persist(
                    createBridgeMacLink(bridge3, bridge3portCounter, vlanid, mac7)
                );
-        bridge1portCounter++;
+        bridge3portCounter++;
         host7portCounter++;
 
         // host8:port81 connected bridge4:port42
