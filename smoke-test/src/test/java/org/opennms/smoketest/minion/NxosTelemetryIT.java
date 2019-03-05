@@ -143,7 +143,7 @@ public class NxosTelemetryIT {
         try (final SshClient sshClient = new SshClient(sshAddr, "admin", "admin")) {
             // Modify minion configuration for telemetry
             PrintStream pipe = sshClient.openShell();
-            pipe.println("config:edit org.opennms.features.telemetry.listeners-udp-50001");
+            pipe.println("config:edit --alias udp-50001 --factory org.opennms.features.telemetry.listeners");
             pipe.println("config:property-set name NXOS");
             pipe.println("config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener");
             pipe.println("config:property-set parameters.port 50001");

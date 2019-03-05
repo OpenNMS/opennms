@@ -52,7 +52,7 @@ To enable and configure an _UDP Listener_ for NX-OS on Minion, connect to the _K
 ----
 $ ssh -p 8201 admin@localhost
 ...
-admin@minion()> config:edit org.opennms.features.telemetry.listeners-udp-50000
+admin@minion()> config:edit --alias udp-5000 --factory org.opennms.features.telemetry.listeners
 admin@minion()> config:property-set name NXOS
 admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener
 admin@minion()> config:property-set parameters.port 50001
