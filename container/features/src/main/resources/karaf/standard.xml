@@ -178,8 +178,6 @@ sshRealm = karaf
 # sshRole defines the role required to access the console through ssh
 #
 sshRole = ssh
-# TODO MVR was sshRole = admin, however in 4.2.2 this is also ssh, why is this?
-# TODO MVR maybe this was the reason why list -t 0 does not show the system bundle anymore?
 
 #
 # Defines if the SFTP system is enabled or not in the SSH server
