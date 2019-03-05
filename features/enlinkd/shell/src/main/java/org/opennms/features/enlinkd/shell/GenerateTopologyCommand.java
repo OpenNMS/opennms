@@ -67,7 +67,7 @@ public class GenerateTopologyCommand implements Action {
     @Option(name = "--topology", description = "type of topology (complete | ring | random). Default: random.")
     private String topology;
 
-    @Option(name = "--protocol", description = "type of protocol (cdp | isis | lldp | ospf | bridgeBridge). Default: cdp.")
+    @Option(name = "--protocol", description = "type of protocol (cdp | isis | lldp | ospf | bridge). Default: cdp.")
     private String protocol;
 
     @Reference

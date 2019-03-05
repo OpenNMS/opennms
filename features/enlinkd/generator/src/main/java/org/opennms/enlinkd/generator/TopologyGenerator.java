@@ -66,7 +66,7 @@ public class TopologyGenerator {
     }
 
     public enum Protocol {
-        cdp, isis, lldp, ospf, bridgeBridge
+        cdp, isis, lldp, ospf, bridge
     }
 
     private TopologyContext topologyContext;
@@ -98,7 +98,7 @@ public class TopologyGenerator {
             return new LldpProtocol(topologySettings, topologyContext);
         } else if (Protocol.ospf == protocol) {
             return new OspfProtocol(topologySettings, topologyContext);
-        } else if (Protocol.bridgeBridge == protocol) {
+        } else if (Protocol.bridge == protocol) {
             return new BridgeProtocol(topologySettings, topologyContext);
         } else {
             throw new IllegalArgumentException("Don't know this protocol: " + topologySettings.getProtocol());

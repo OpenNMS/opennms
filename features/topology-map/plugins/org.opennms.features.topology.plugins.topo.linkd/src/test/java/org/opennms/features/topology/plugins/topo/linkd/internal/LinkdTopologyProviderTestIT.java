@@ -155,7 +155,7 @@ public class LinkdTopologyProviderTestIT {
     @Test
     @Transactional
     public void testBridgeBridge() throws Exception {
-        test(TopologyGenerator.Protocol.bridgeBridge);
+        test(TopologyGenerator.Protocol.bridge);
     }
 
     private void test(TopologyGenerator.Protocol protocol) throws OnmsTopologyException{
