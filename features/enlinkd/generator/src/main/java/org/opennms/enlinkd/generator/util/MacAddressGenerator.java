@@ -30,7 +30,8 @@ package org.opennms.enlinkd.generator.util;
 
 public class MacAddressGenerator {
 
-    private int last = 0;
+    //0000:0000:0000 is an invalid mac address
+    private int last = 1;
 
     public String next() {
         String s = String.format("%1$" + 12 + "s", Integer.toHexString(last)); // example: "           1"
