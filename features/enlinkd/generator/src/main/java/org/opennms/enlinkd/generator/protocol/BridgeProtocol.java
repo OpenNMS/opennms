@@ -76,7 +76,6 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
     @Override
     protected void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) {
 
-        context.currentProgress("Version 7"); // TODO: delete later just for testing purpose
 
         // Call with: enlinkd:generate-topology --protocol bridgeBridge --nodes 10 --snmpinterfaces 0 --ipinterfaces 0
         //      here is complete example of bridge topology
@@ -107,10 +106,10 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
 
         // save bridge element
         this.context.getTopologyPersister().persist(
-                    createBridgeElement(bridge1, vlanid ,"default"),
-                    createBridgeElement(bridge2, vlanid ,"default"),
-                    createBridgeElement(bridge3, vlanid ,"default"),
-                    createBridgeElement(bridge4, vlanid ,"default")                
+                    createBridgeElement(bridge1, vlanid),
+                    createBridgeElement(bridge2, vlanid),
+                    createBridgeElement(bridge3, vlanid),
+                    createBridgeElement(bridge4, vlanid)
                 );
         
         //First persist bridge topology
@@ -310,7 +309,7 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
     private List<BridgeElement> createBridgeElements(OnmsNode ... nodes) {
         List<BridgeElement> elements = new ArrayList<>();
         for (OnmsNode node: nodes) {
-            elements.add(createBridgeElement(node, 1, "default"));
+            elements.add(createBridgeElement(node, 1));
         }
         return elements;
     }
@@ -319,12 +318,12 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
         List<BridgeElement> elements = new ArrayList<>();
         for (int i = 0; i < topologySettings.getAmountLinks()/2; i++) {
             OnmsNode node = nodes.get(i);
-            elements.add(createBridgeElement(node,1,"default"));
+            elements.add(createBridgeElement(node,1));
         }
         return elements;
     }
     
-    private BridgeElement createBridgeElement(OnmsNode node, Integer vlanid, String vlanname) {
+    private BridgeElement createBridgeElement(OnmsNode node, Integer vlanid) {
         BridgeElement bridge = new BridgeElement();
         bridge.setNode(node);
         bridge.setBaseBridgeAddress(macGenerator.next().replace(":", ""));
@@ -332,31 +331,9 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
         bridge.setBridgeNodeLastPollTime(new Date());
         bridge.setBaseNumPorts(topologySettings.getAmountLinks());
         bridge.setVlan(vlanid);
-        bridge.setVlanname(vlanname);
+        bridge.setVlanname("default");
         return bridge;
     }
-    
-    private List<BridgeBridgeLink> createBridgeBridgeLinks(List<OnmsNode> nodes, Integer vlanid) {
-        // Here we shold use a different strategy because we need to generate a tree
-        PairGenerator<OnmsNode> pairs = createPairGenerator(nodes);
-        List<BridgeBridgeLink> links = new ArrayList<>();
-        for (int i = 0; i < topologySettings.getAmountLinks()/2; i++) {
-
-            // We create 2 links that reference each other, see also BridgeTopologyServiceImpl.getAllPersisted()
-            Pair<OnmsNode, OnmsNode> pair = pairs.next();
-            OnmsNode sourceNode = pair.getLeft();
-            OnmsNode targetNode = pair.getRight();
-
-            BridgeBridgeLink sourceLink = createBridgeBridgeLink(sourceNode, targetNode, 1 , 2,1);
-            links.add(sourceLink);
-
-//            BridgeBridgeLink targetLink = createBridgeBridgeLink(targetNode, sourceNode, 2, 1,1);
-//           links.add(targetLink);
-            context.currentProgress(String.format("Linked node %s with node %s", sourceNode.getLabel(), targetNode.getLabel()));
-        }
-        return links;
-    }
-
 
     private BridgeBridgeLink createBridgeBridgeLink(OnmsNode node, OnmsNode designatedNode, int port, int designatedPort, Integer vlanid) {
         BridgeBridgeLink link = new BridgeBridgeLink();
