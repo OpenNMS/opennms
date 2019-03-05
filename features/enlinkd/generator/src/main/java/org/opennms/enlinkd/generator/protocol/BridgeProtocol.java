@@ -58,6 +58,9 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 //
 public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
 
+    /* this is the vlan id for all the bridgebridgelinks and bridgemaclinks */
+    private final static int VLAN_ID = 1;
+
     private final MacAddressGenerator macGenerator = new MacAddressGenerator();
     private final InetAddressGenerator inetGenerator = new InetAddressGenerator();
 
@@ -67,101 +70,42 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
 
     @Override
     protected TopologyGenerator.Protocol getProtocol() {
-        return TopologyGenerator.Protocol.bridgeBridge;
-    }
-
-    private void persistBBLink(OnmsNode bridge, Integer port, OnmsNode designated, Integer designatedPort, Integer vlanid) {
-        persistBBLink(bridge, port, true, designated, designatedPort, true, vlanid);
-    }
-
-    private void persistBBLink(OnmsNode bridge, Integer port, boolean createSnmpInterface, OnmsNode designated, Integer designatedPort, boolean createdesignatedsnmpInterface, Integer vlanid) {
-        if (createSnmpInterface) {
-        context.getTopologyPersister().persist(
-                       createSnmpInterface(port, bridge)
-                   );
-        }
-        if (createdesignatedsnmpInterface) {
-        context.getTopologyPersister().persist(
-                       createSnmpInterface(designatedPort, designated)
-                   );
-        }
-        context.getTopologyPersister().persist(
-           createBridgeBridgeLink(bridge, designated, port, designatedPort,vlanid)
-        );
-    }
-    private void persistBMLink(OnmsNode bridge, Integer port, Integer vlanid, OnmsNode host, Integer hostPort, OnmsNode gateway) {
-        persistBMLink(bridge, port, true, vlanid, host, hostPort, gateway);
-    }
-    
-    private void persistBMLink(OnmsNode bridge, Integer port, boolean createsnmpinterface, Integer vlanid, OnmsNode host, Integer hostPort, OnmsNode gateway) {
-        String mac=macGenerator.next();
-        InetAddress ip= inetGenerator.next();
-        if (createsnmpinterface) {
-            context.getTopologyPersister().persist(
-               createSnmpInterface(port, bridge)
-           );
-        }
-        if (hostPort != null) {
-            OnmsSnmpInterface snmpInterface = createSnmpInterface(hostPort, host);
-            context.getTopologyPersister().persist(
-                   snmpInterface
-               );
-            OnmsIpInterface ipInterface = createIpInterface(snmpInterface, ip);
-            context.getTopologyPersister().persist(ipInterface);
-        } else {
-            OnmsIpInterface ipInterface = createIpInterface(null,ip);
-            ipInterface.setNode(host);
-            context.getTopologyPersister().persist(ipInterface);
-        }
-        context.getTopologyPersister().persist(
-                   createIpNetToMedia(host, hostPort, mac, ip, gateway)
-                );
-        context.getTopologyPersister().persist(
-                   createBridgeMacLink(bridge, port, vlanid, mac)
-               );
-    }
-    
-    public void persistCloud(OnmsNode bridge, Integer port, Integer vlanid, int macaddresses, int ipaddresses) {
-        for (int i=0; i<ipaddresses;i++) {
-            String nextMac = macGenerator.next();
-            context.getTopologyPersister().persist(
-                   createIpNetToMedia(null, null,nextMac, inetGenerator.next(), bridge)
-                    );
-            context.getTopologyPersister().persist(
-                       createBridgeMacLink(bridge, port, vlanid, nextMac));
-        }
-        
-        for (int i=0; i<macaddresses;i++) {
-            context.getTopologyPersister().persist(createBridgeMacLink(bridge, port, vlanid, macGenerator.next()));
-        }   
+        return TopologyGenerator.Protocol.bridge;
     }
 
     @Override
     protected void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) {
 
 
-        // Call with: enlinkd:generate-topology --protocol bridgeBridge --nodes 10 --snmpinterfaces 0 --ipinterfaces 0
-        //      here is complete example of bridge topology
-       // 4 nodes are bridges: nodeBridgeA, nodeBridgeB, nodeBridgeC, nodeBridgeD
-       //            bridge1
-       //           --------  
-       //           |      |
-       //        bridge0   bridge2
-       //         -----
-       //           |
-       //        bridge3
-       // 6 nodes are hosts: host4,host5, host6, host7, host8, host9
-       // generate 4 ipnettomedia without a corresponding node  
-       // consider also that on port 1 of C is connected an HUB with a group of hosts connected
-       // the hub has no snmp agent and therefore we are not to explore his mab forwarding table 
-       // we also follow the convention to start the port countin from the if of the node
-       // following an integer: so port11 -> is the first generated port of node with id 1
-       //                          port12 -> is the second generated port of node with id 1 
-       //                          port21 -> is the first generated port of node with id 2 
-       //                          port53 -> is the third generated port of node with id 5 
+        // Call with: enlinkd:generate-topology --protocol bridge --nodes 10 --snmpinterfaces 0 --ipinterfaces 0
+
+        // here is complete example of bridge topology
+        //
+        //                           bridge0
+        //           ------------------------------------
+        //           |      |          |        |       |
+        //        bridge1  bridge3  bridge4  bridge5  Macs/Ip
+        //           |          |                     no node
+        //        -------    --------
+        //        |          |      |
+        //     Segment     host8    host9
+        //   -----------
+        //   |         |
+        // Macs/Ip  bridge2
+        // no node     |
+        //          Segment
+        //
+        // 6 nodes are hosts: host4,host5, host6, host7, host8, host9
+        // generate 4 ipnettomedia without a corresponding node
+        // consider also that on port 1 of C is connected an HUB with a group of hosts connected
+        // the hub has no snmp agent and therefore we are not to explore his mab forwarding table
+        // we also follow the convention to start the port countin from the if of the node
+        // following an integer: so port11 -> is the first generated port of node with id 1
+        //                          port12 -> is the second generated port of node with id 1
+        //                          port21 -> is the first generated port of node with id 2
+        //                          port53 -> is the third generated port of node with id 5
         
-        // this is the vlan id for all the bridgebridgelinks and bridgemaclinks...
-        int vlanid = 1;
+
         OnmsNode bridge0 =  nodes.get(0);
         OnmsNode bridge1 =  nodes.get(1);
         OnmsNode bridge2 =  nodes.get(2);
@@ -183,62 +127,128 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
         
         // save bridge element
         this.context.getTopologyPersister().persist(
-            createBridgeElement(bridge0, vlanid),
-            createBridgeElement(bridge1, vlanid),
-            createBridgeElement(bridge2, vlanid),
-            createBridgeElement(bridge3, vlanid)
+            createBridgeElement(bridge0),
+            createBridgeElement(bridge1),
+            createBridgeElement(bridge2),
+            createBridgeElement(bridge3)
         );
         
         //bridge0
         //bridge0:port1 connected to up bridge1:port11
-        persistBBLink(bridge0, bridge0portCounter, bridge1, bridge1portCounter, vlanid);
+        persistBridgeBridgeLink(bridge0, bridge0portCounter, bridge1, bridge1portCounter);
         //bridge3:port31 connected to up bridge0:port2
         bridge0portCounter++;
-        persistBBLink(bridge3, bridge3portCounter, bridge0, bridge0portCounter, vlanid);
+        persistBridgeBridgeLink(bridge3, bridge3portCounter, bridge0, bridge0portCounter);
         //bridge0:port3 connected to cloud
         bridge0portCounter++;
-        persistCloud(bridge0, bridge0portCounter, vlanid, 2, 2);
+        persistCloud(bridge0, bridge0portCounter, 2, 2);
         // bridge0:port4 connected to host4:port41
         bridge0portCounter++;
-        persistBMLink(bridge0, bridge0portCounter, vlanid, host4, host4portCounter, bridge0);
+        persistBridgeMacLink(bridge0, bridge0portCounter, host4, host4portCounter, bridge0);
         // bridge0:port5 connected to host5:port51
         bridge0portCounter++;
-        persistBMLink(bridge0, bridge0portCounter, vlanid, host5, host5portCounter, bridge0);
+        persistBridgeMacLink(bridge0, bridge0portCounter, host5, host5portCounter, bridge0);
 
         //bridge1
         //bridge2:port21 connected to bridge1:port12 with clouds
         bridge1portCounter++;
-        persistBBLink(bridge2, bridge2portCounter, bridge1, bridge1portCounter, vlanid);
-        persistCloud(bridge1, bridge1portCounter, vlanid, 2, 2);
+        persistBridgeBridgeLink(bridge2, bridge2portCounter, bridge1, bridge1portCounter);
+        persistCloud(bridge1, bridge1portCounter, 2, 2);
         
         //bridge2
         // host6 and host 7 connected to port 22 
         bridge2portCounter++;
-        persistBMLink(bridge2, bridge2portCounter, true,  vlanid, host6, host6portCounter, bridge0);
-        persistBMLink(bridge2, bridge2portCounter, false, vlanid, host7, host7portCounter, bridge0);
+        persistBridgeMacLink(bridge2, bridge2portCounter, true,  host6, host6portCounter, bridge0);
+        persistBridgeMacLink(bridge2, bridge2portCounter, false, host7, host7portCounter, bridge0);
         
         // bridge3
         // host8:with-no-snmp connected bridge3:port32
         bridge3portCounter++;
-        persistBMLink(bridge3, bridge3portCounter, vlanid, host8, null, bridge0);
+        persistBridgeMacLink(bridge3, bridge3portCounter, host8, null, bridge0);
         // host9:with-no-snmp connected bridge3:port33
         bridge3portCounter++;
-        persistBMLink(bridge3, bridge3portCounter, vlanid, host9, null, bridge0);
+        persistBridgeMacLink(bridge3, bridge3portCounter, host9, null, bridge0);
     }
-    
-    private BridgeElement createBridgeElement(OnmsNode node, Integer vlanid) {
+
+    private void persistBridgeBridgeLink(OnmsNode bridge, Integer port, OnmsNode designated, Integer designatedPort) {
+        persistBridgeBridgeLink(bridge, port, true, designated, designatedPort, true);
+    }
+
+    private void persistBridgeBridgeLink(OnmsNode bridge, Integer port, boolean createSnmpInterface, OnmsNode designated, Integer designatedPort, boolean createdesignatedsnmpInterface) {
+        if (createSnmpInterface) {
+            context.getTopologyPersister().persist(
+                    createSnmpInterface(port, bridge)
+            );
+        }
+        if (createdesignatedsnmpInterface) {
+            context.getTopologyPersister().persist(
+                    createSnmpInterface(designatedPort, designated)
+            );
+        }
+        context.getTopologyPersister().persist(
+                createBridgeBridgeLink(bridge, designated, port, designatedPort)
+        );
+    }
+    private void persistBridgeMacLink(OnmsNode bridge, Integer port, OnmsNode host, Integer hostPort, OnmsNode gateway) {
+        persistBridgeMacLink(bridge, port, true, host, hostPort, gateway);
+    }
+
+    private void persistBridgeMacLink(OnmsNode bridge, Integer port, boolean createsnmpinterface, OnmsNode host, Integer hostPort, OnmsNode gateway) {
+        String mac=macGenerator.next();
+        InetAddress ip= inetGenerator.next();
+        if (createsnmpinterface) {
+            context.getTopologyPersister().persist(
+                    createSnmpInterface(port, bridge)
+            );
+        }
+        if (hostPort != null) {
+            OnmsSnmpInterface snmpInterface = createSnmpInterface(hostPort, host);
+            context.getTopologyPersister().persist(
+                    snmpInterface
+            );
+            OnmsIpInterface ipInterface = createIpInterface(snmpInterface, ip);
+            context.getTopologyPersister().persist(ipInterface);
+        } else {
+            OnmsIpInterface ipInterface = createIpInterface(null,ip);
+            ipInterface.setNode(host);
+            context.getTopologyPersister().persist(ipInterface);
+        }
+        context.getTopologyPersister().persist(
+                createIpNetToMedia(host, hostPort, mac, ip, gateway)
+        );
+        context.getTopologyPersister().persist(
+                createBridgeMacLink(bridge, port, mac)
+        );
+    }
+
+    private void persistCloud(OnmsNode bridge, Integer port, int macaddresses, int ipaddresses) {
+        for (int i=0; i<ipaddresses;i++) {
+            String nextMac = macGenerator.next();
+            context.getTopologyPersister().persist(
+                    createIpNetToMedia(null, null, nextMac, inetGenerator.next(), bridge)
+            );
+            context.getTopologyPersister().persist(
+                    createBridgeMacLink(bridge, port, nextMac));
+        }
+
+        for (int i=0; i<macaddresses;i++) {
+            context.getTopologyPersister().persist(createBridgeMacLink(bridge, port, macGenerator.next()));
+        }
+    }
+
+    private BridgeElement createBridgeElement(OnmsNode node) {
         BridgeElement bridge = new BridgeElement();
         bridge.setNode(node);
         bridge.setBaseBridgeAddress(macGenerator.next().replace(":", ""));
         bridge.setBaseType(BridgeDot1dBaseType.DOT1DBASETYPE_TRANSPARENT_ONLY);
         bridge.setBridgeNodeLastPollTime(new Date());
         bridge.setBaseNumPorts(topologySettings.getAmountLinks());
-        bridge.setVlan(vlanid);
+        bridge.setVlan(VLAN_ID);
         bridge.setVlanname("default");
         return bridge;
     }
 
-    private BridgeBridgeLink createBridgeBridgeLink(OnmsNode node, OnmsNode designatedNode, int port, int designatedPort, Integer vlanid) {
+    private BridgeBridgeLink createBridgeBridgeLink(OnmsNode node, OnmsNode designatedNode, int port, int designatedPort) {
         BridgeBridgeLink link = new BridgeBridgeLink();
         link.setBridgePortIfIndex(port);
         link.setBridgePort(port);
@@ -247,19 +257,19 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
         link.setDesignatedNode(designatedNode);
         link.setDesignatedPort(designatedPort);
         link.setDesignatedPortIfIndex(designatedPort);
-        link.setDesignatedVlan(vlanid);
+        link.setDesignatedVlan(VLAN_ID);
         link.setBridgeBridgeLinkLastPollTime(new Date());
         return link;
     }
 
-    private BridgeMacLink createBridgeMacLink(OnmsNode bridge, Integer bridgePort, Integer vlan, String mac){
+    private BridgeMacLink createBridgeMacLink(OnmsNode bridge, Integer bridgePort, String mac){
         BridgeMacLink bridgeMacLink = new BridgeMacLink();
         bridgeMacLink.setNode(bridge);
         bridgeMacLink.setBridgePort(bridgePort);
         bridgeMacLink.setBridgePortIfIndex(bridgePort);
         bridgeMacLink.setLinkType(BridgeMacLink.BridgeMacLinkType.BRIDGE_LINK);
         bridgeMacLink.setMacAddress(mac);
-        bridgeMacLink.setVlan(vlan);
+        bridgeMacLink.setVlan(VLAN_ID);
         bridgeMacLink.setBridgeMacLinkLastPollTime(new Date());
         return bridgeMacLink;
     }
