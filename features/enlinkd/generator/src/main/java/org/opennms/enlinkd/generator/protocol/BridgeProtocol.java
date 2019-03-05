@@ -69,30 +69,46 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
     protected TopologyGenerator.Protocol getProtocol() {
         return TopologyGenerator.Protocol.bridgeBridge;
     }
-    
+
     private void persistBBLink(OnmsNode bridge, Integer port, OnmsNode designated, Integer designatedPort, Integer vlanid) {
+        persistBBLink(bridge, port, true, designated, designatedPort, true, vlanid);
+    }
+
+    private void persistBBLink(OnmsNode bridge, Integer port, boolean createSnmpInterface, OnmsNode designated, Integer designatedPort, boolean createdesignatedsnmpInterface, Integer vlanid) {
+        if (createSnmpInterface) {
         context.getTopologyPersister().persist(
-                       createSnmpInterface(port, bridge), 
+                       createSnmpInterface(port, bridge)
+                   );
+        }
+        if (createdesignatedsnmpInterface) {
+        context.getTopologyPersister().persist(
                        createSnmpInterface(designatedPort, designated)
                    );
+        }
         context.getTopologyPersister().persist(
            createBridgeBridgeLink(bridge, designated, port, designatedPort,vlanid)
         );
     }
-    
     private void persistBMLink(OnmsNode bridge, Integer port, Integer vlanid, OnmsNode host, Integer hostPort, OnmsNode gateway) {
+        persistBMLink(bridge, port, true, vlanid, host, hostPort, gateway);
+    }
+    
+    private void persistBMLink(OnmsNode bridge, Integer port, boolean createsnmpinterface, Integer vlanid, OnmsNode host, Integer hostPort, OnmsNode gateway) {
         String mac=macGenerator.next();
         InetAddress ip= inetGenerator.next();
+        if (createsnmpinterface) {
+            context.getTopologyPersister().persist(
+               createSnmpInterface(port, bridge)
+           );
+        }
         if (hostPort != null) {
             OnmsSnmpInterface snmpInterface = createSnmpInterface(hostPort, host);
             context.getTopologyPersister().persist(
-                   createSnmpInterface(port, bridge),
                    snmpInterface
                );
             OnmsIpInterface ipInterface = createIpInterface(snmpInterface, ip);
             context.getTopologyPersister().persist(ipInterface);
         } else {
-            context.getTopologyPersister().persist(createSnmpInterface(port, bridge));
             OnmsIpInterface ipInterface = createIpInterface(null,ip);
             ipInterface.setNode(host);
             context.getTopologyPersister().persist(ipInterface);
@@ -198,8 +214,8 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
         //bridge2
         // host6 and host 7 connected to port 22 
         bridge2portCounter++;
-        persistBMLink(bridge2, bridge2portCounter, vlanid, host6, host6portCounter, bridge0);
-        persistBMLink(bridge2, bridge2portCounter, vlanid, host7, host7portCounter, bridge0);
+        persistBMLink(bridge2, bridge2portCounter, true,  vlanid, host6, host6portCounter, bridge0);
+        persistBMLink(bridge2, bridge2portCounter, false, vlanid, host7, host7portCounter, bridge0);
         
         // bridge3
         // host8:with-no-snmp connected bridge3:port32
