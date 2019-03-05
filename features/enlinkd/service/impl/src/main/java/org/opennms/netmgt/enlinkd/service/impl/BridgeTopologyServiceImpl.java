@@ -784,11 +784,7 @@ SEG:        for (SharedSegment segment : bmlsegments) {
     }
 
     @Override
-    public List<TopologyShared> match() {
-        // make sure the domains were loaded before calling this method, otherwise we end in a Nullpointer
-        if(m_domains == null){
-            load();
-        }
+    public List<TopologyShared> match() {       
         final List<TopologyShared> links = new ArrayList<>();
         final List<MacPort> macPortMap = getMacPorts();
         
