@@ -28,30 +28,35 @@
 
 package org.opennms.core.rpc.utils.mate;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
-public class SimpleScope implements Scope {
-    private final Map<ContextKey, String> values;
+import com.google.common.collect.Maps;
 
-    public SimpleScope(final Map<ContextKey, String> values) {
-        this.values = Objects.requireNonNull(values);
-    }
+public class ObjectScope<T> implements Scope {
+    private final T object;
+    private final Map<ContextKey, Function<T, Optional<String>>> accessors = Maps.newHashMap();
 
-    public SimpleScope() {
-        this(Collections.emptyMap());
+    public ObjectScope(final T object) {
+        this.object = Objects.requireNonNull(object);
     }
 
     @Override
     public Optional<String> get(final ContextKey contextKey) {
-        return Optional.ofNullable(this.values.get(contextKey));
+        return this.accessors.getOrDefault(contextKey, (missing) -> Optional.empty())
+                .apply(this.object);
     }
 
     @Override
     public Set<ContextKey> keys() {
-        return this.values.keySet();
+        return this.accessors.keySet();
+    }
+
+    public ObjectScope<T> map(final String context, final String key, final Function<T, Optional<String>> accessor) {
+        this.accessors.put(new ContextKey(context, key), accessor);
+        return this;
     }
 }
