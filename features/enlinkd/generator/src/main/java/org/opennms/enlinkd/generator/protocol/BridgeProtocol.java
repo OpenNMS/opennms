@@ -167,8 +167,8 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
         OnmsNode bridge2 =  nodes.get(2);
         OnmsNode bridge3 =  nodes.get(3);
         OnmsNode host4   =  nodes.get(4);
-        OnmsNode host5   =  nodes.get(4);
-        OnmsNode host6   =  nodes.get(5);
+        OnmsNode host5   =  nodes.get(5);
+        OnmsNode host6   =  nodes.get(6);
         OnmsNode host7   =  nodes.get(7);
         OnmsNode host8   =  nodes.get(8);
         OnmsNode host9   =  nodes.get(9);
