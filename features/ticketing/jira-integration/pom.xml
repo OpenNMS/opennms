@@ -22,15 +22,6 @@
             </instructions>
           </configuration>
         </plugin>
-        <plugin>
-            <groupId>org.opennms.maven.plugins</groupId>
-            <artifactId>features-maven-plugin</artifactId>
-            <configuration>
-                <bundles>
-                    <bundle>mvn:org.opennms.features/jira-troubleticketer/${project.version}</bundle>
-                </bundles>
-            </configuration>
-        </plugin>
       </plugins>
     </build>
     <dependencies>

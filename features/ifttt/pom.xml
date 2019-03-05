@@ -26,20 +26,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.opennms.maven.plugins</groupId>
-                <artifactId>features-maven-plugin</artifactId>
-                <configuration>
-                    <name>ifttt-integration</name>
-                    <bundles>
-                        <bundle>mvn:org.opennms.features/org.opennms.features.ifttt/${project.version}</bundle>
-                    </bundles>
-                    <features>
-                        <feature>opennms-dao-api</feature>
-                        <feature>guava</feature>
-                    </features>
-                </configuration>
-            </plugin>
-            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>

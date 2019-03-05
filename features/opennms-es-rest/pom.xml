@@ -43,33 +43,6 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>features-maven-plugin</artifactId>
-        <configuration>
-          <name>opennms-es-rest</name>
-          <features>
-            <feature version="${project.version}">opennms-jest</feature>
-          </features>
-          <bundles>
-            <!-- dropwizard-metrics feature -->
-            <bundle>mvn:io.dropwizard.metrics/metrics-core/3.1.2</bundle>
-
-            <!-- rate-limited-logger feature -->
-            <bundle>mvn:joda-time/joda-time/${jodaTimeVersion}</bundle>
-            <bundle>wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}</bundle>
-
-            <!-- opennms-core-ipc-sink-api feature -->
-            <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.api/${project.version}</bundle>
-            <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.common/${project.version}</bundle>
-            <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.xml/${project.version}</bundle>
-
-            <!-- actual plugin -->
-            <bundle>mvn:${project.groupId}/${project.artifactId}/${project.version}</bundle>
-          </bundles>
-        </configuration>
-      </plugin>
-
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
 

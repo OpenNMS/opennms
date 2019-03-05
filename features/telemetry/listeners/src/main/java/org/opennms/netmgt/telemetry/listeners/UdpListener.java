@@ -164,7 +164,7 @@ public class UdpListener implements Listener {
                         for (final UdpParser parser : parsers) {
                             if (BufferUtils.peek(msg.content().nioBuffer(), ((Dispatchable) parser)::handles)) {
                                 new SingleDatagramPacketParserHandler(parser).channelRead0(ctx, msg);
-                                break;
+                                return;
                             }
                         }
                         LOG.warn("Unhandled packet from {}", msg.sender());

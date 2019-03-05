@@ -32,16 +32,16 @@ import java.util.Set;
 
 public interface OnmsTopologyDao {
 
-    OnmsTopology getTopology(String protocol) throws OnmsTopologyException;
+    OnmsTopology getTopology(String protocol);
 
     Set<String> getSupportedProtocols();
 
-    void register(OnmsTopologyUpdater updater) throws OnmsTopologyException;
-    void unregister(OnmsTopologyUpdater updater) throws OnmsTopologyException;
+    void register(OnmsTopologyUpdater updater);
+    void unregister(OnmsTopologyUpdater updater);
 
     void subscribe(OnmsTopologyConsumer consumer);
     void unsubscribe(OnmsTopologyConsumer consumer);
     
-    void update(OnmsTopologyUpdater updater, OnmsTopologyMessage message) throws OnmsTopologyException;
+    void update(OnmsTopologyUpdater updater, OnmsTopologyMessage message);
 
 }

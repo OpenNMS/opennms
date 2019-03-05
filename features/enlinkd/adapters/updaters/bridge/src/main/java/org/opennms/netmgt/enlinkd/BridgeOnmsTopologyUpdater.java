@@ -46,7 +46,6 @@ import org.opennms.netmgt.enlinkd.service.api.TopologyShared;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
@@ -65,7 +64,7 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater  {
         return update;
     }
     
-    public static OnmsTopologyVertex createSegmentVertex(TopologyShared segment) throws OnmsTopologyException {
+    public static OnmsTopologyVertex createSegmentVertex(TopologyShared segment) {
         OnmsTopologyVertex cloudVertex = OnmsTopologyVertex.create(Topology.getSharedSegmentId(segment),
                                                                 Topology.getSharedSegmentLabel(),
                                                                 null,
@@ -74,7 +73,7 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater  {
         return cloudVertex;        
     }
 
-    public static OnmsTopologyVertex createMacsCloudVertex(List<MacPort> ports, TopologyShared segment ) throws OnmsTopologyException {
+    public static OnmsTopologyVertex createMacsCloudVertex(List<MacPort> ports, TopologyShared segment ) {
         OnmsTopologyVertex vertex = OnmsTopologyVertex.create(Topology.getMacsCloudId(segment), 
                                          Topology.getMacsIpLabel(), 
                                          Topology.getAddress(segment.getCloud(),ports), 
@@ -83,13 +82,13 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater  {
         return vertex;
     }
 
-    public static OnmsTopologyPort createVertexPort(OnmsTopologyVertex vertex) throws OnmsTopologyException{
+    public static OnmsTopologyPort createVertexPort(OnmsTopologyVertex vertex) {
         OnmsTopologyPort   port = OnmsTopologyPort.create(Topology.getPortId(vertex.getId()),vertex,-1);
         port.setToolTipText(vertex.getToolTipText());
         return port;
     }
 
-    public static OnmsTopologyPort create(OnmsTopologyVertex source, BridgePort bp, SnmpInterfaceTopologyEntity snmpiface) throws OnmsTopologyException {
+    public static OnmsTopologyPort create(OnmsTopologyVertex source, BridgePort bp, SnmpInterfaceTopologyEntity snmpiface) {
         OnmsTopologyPort port = OnmsTopologyPort.create(Topology.getId(bp),source, bp.getBridgePort());
         port.setIfindex(bp.getBridgePortIfIndex());
         if (snmpiface != null) {
@@ -100,7 +99,7 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater  {
         return port;
     }
 
-    public static OnmsTopologyPort create(OnmsTopologyVertex source, MacPort mp, SnmpInterfaceTopologyEntity snmpiface) throws OnmsTopologyException {
+    public static OnmsTopologyPort create(OnmsTopologyVertex source, MacPort mp, SnmpInterfaceTopologyEntity snmpiface) {
         OnmsTopologyPort port = OnmsTopologyPort.create(Topology.getId(mp),source, mp.getIfIndex());
         port.setIfindex(mp.getIfIndex());
         if (snmpiface != null) {
@@ -127,7 +126,7 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater  {
     }
 
     @Override
-    public OnmsTopology buildTopology() throws OnmsTopologyException {
+    public OnmsTopology buildTopology() {
         Map<Integer, NodeTopologyEntity> nodeMap= getNodeMap();
         Map<Integer, IpInterfaceTopologyEntity> ipMap= getIpPrimaryMap();
         Table<Integer, Integer,SnmpInterfaceTopologyEntity> snmpTable = getSnmpInterfaceTable();
@@ -274,13 +273,13 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater  {
     }
 
     @Override
-    public OnmsTopologyProtocol getProtocol() throws OnmsTopologyException {
+    public OnmsTopologyProtocol getProtocol() {
         return create(ProtocolSupported.BRIDGE);
     }
 
     public BridgeTopologyService getBridgeTopologyService() {
         return m_bridgeTopologyService;
     }
-            
+
 }
 

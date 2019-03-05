@@ -32,19 +32,6 @@
     </resources>
     <plugins>
       <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>features-maven-plugin</artifactId>
-        <configuration>
-          <bundles>
-            <bundle>mvn:org.opennms.features/vaadin-snmp-events-and-metrics/${project.version}</bundle>
-          </bundles>
-          <features>
-            <feature>opennms-core</feature>
-            <feature>vaadin</feature>
-          </features>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
         <configuration>

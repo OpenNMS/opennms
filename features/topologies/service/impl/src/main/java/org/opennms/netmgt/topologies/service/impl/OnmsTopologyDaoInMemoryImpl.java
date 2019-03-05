@@ -35,33 +35,33 @@ import java.util.Set;
 
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyUpdater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 
 public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
 
     Logger LOG = LoggerFactory.getLogger(OnmsTopologyDaoInMemoryImpl.class);
-    private Map<OnmsTopologyProtocol,OnmsTopologyUpdater> m_updatersMap = new HashMap<OnmsTopologyProtocol, OnmsTopologyUpdater>();
-    Set<OnmsTopologyConsumer> m_consumers = new HashSet<OnmsTopologyConsumer>();
+    private final Map<OnmsTopologyProtocol, OnmsTopologyUpdater> m_updatersMap = new HashMap<OnmsTopologyProtocol,
+            OnmsTopologyUpdater>();
+    final Set<OnmsTopologyConsumer> m_consumers = new HashSet<OnmsTopologyConsumer>();
 
     @Override
-    public OnmsTopology getTopology(String protocolSupported) throws OnmsTopologyException {
+    public OnmsTopology getTopology(String protocolSupported) {
         OnmsTopologyProtocol protocol = OnmsTopologyProtocol.create(protocolSupported);
         if (m_updatersMap.containsKey(protocol)) {
             return m_updatersMap.get(protocol).getTopology();
         }
-        throw new OnmsTopologyException(String.format("%s protocol not supported",protocolSupported));
+        throw new IllegalArgumentException(String.format("%s protocol not supported", protocolSupported));
     }
 
     @Override
     public void subscribe(OnmsTopologyConsumer consumer) {
         synchronized (m_consumers) {
-            m_consumers.add(consumer);            
+            m_consumers.add(consumer);
         }
     }
 
@@ -73,27 +73,24 @@ public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
     }
 
     @Override
-    public void register(OnmsTopologyUpdater updater) throws OnmsTopologyException {
+    public void register(OnmsTopologyUpdater updater) {
         synchronized (m_updatersMap) {
             if (m_updatersMap.containsKey(updater.getProtocol())) {
-                throw new OnmsTopologyException("Protocol already registered", updater.getProtocol());
+                throw new IllegalArgumentException("Protocol already registered " + updater.getProtocol());
             }
             m_updatersMap.put(updater.getProtocol(), updater);
         }
     }
 
     @Override
-    public void unregister(OnmsTopologyUpdater updater) throws OnmsTopologyException {
+    public void unregister(OnmsTopologyUpdater updater) {
         synchronized (m_updatersMap) {
-            OnmsTopologyUpdater subscribed =  m_updatersMap.get(updater.getProtocol());
-            if (subscribed == null) {
-                throw new OnmsTopologyException("updater is not registered", updater.getProtocol());
+            OnmsTopologyUpdater subscribed = m_updatersMap.get(updater.getProtocol());
+            if (subscribed == null || subscribed != updater) {
+                throw new IllegalArgumentException("updater is not registered " + updater.getProtocol());
             }
-            if (subscribed == updater) {
-                m_updatersMap.remove(updater.getProtocol());
-            } else {
-                throw new OnmsTopologyException("updater is not registered", updater.getProtocol());                
-            }
+
+            m_updatersMap.remove(updater.getProtocol());
         }
     }
 
@@ -107,26 +104,28 @@ public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
     }
 
     @Override
-    public void update(OnmsTopologyUpdater updater,
-            OnmsTopologyMessage message) throws OnmsTopologyException {
+    public void update(OnmsTopologyUpdater updater, OnmsTopologyMessage message) {
         final OnmsTopologyProtocol protocol = updater.getProtocol();
         if (!m_updatersMap.containsKey(protocol)) {
-            throw new OnmsTopologyException(String.format("cannot update message with id: %s. Protocol not supported",
-                                                          message.getMessagebody().getId()),
-                                            protocol,
-                                            message.getMessagestatus());
+            throw new IllegalArgumentException(String.format("cannot update message with id: %s. Protocol %s not " +
+                            "supported for message status %s", message.getMessagebody().getId(), protocol,
+                    message.getMessagestatus()));
         }
         if (m_updatersMap.get(protocol) != updater) {
-            throw new OnmsTopologyException(String.format("cannot update message with id: %s. Updater not registered",
-                                                          message.getMessagebody().getId()),
-                                            protocol,
-                                            message.getMessagestatus());
+            throw new IllegalArgumentException(String.format("cannot update message with id: %s, protocol: %s and " +
+                            "message status: %s. Updater not registered", message.getMessagebody().getId(), protocol,
+                    message.getMessagestatus()));
         }
         synchronized (m_consumers) {
             m_consumers
-                .stream()
-                .filter(consumer ->  consumer.getProtocols().contains(protocol))
-                .forEach(consumer -> consumer.consume(message));            
+                    .stream()
+                    .filter(consumer -> {
+                        if (consumer.getProtocols() == null) {
+                            return false;
+                        }
+                        return consumer.getProtocols().contains(protocol);
+                    })
+                    .forEach(consumer -> consumer.consume(message));
         }
     }
 }

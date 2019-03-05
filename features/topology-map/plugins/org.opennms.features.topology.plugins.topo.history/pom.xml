@@ -27,9 +27,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opennms.osgi.features.topology</groupId>
-            <artifactId>opennms-topology-api</artifactId>
-            <type>pom</type>
+            <groupId>org.opennms.features.topology</groupId>
+            <artifactId>org.opennms.features.topology.api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features</groupId>

@@ -39,6 +39,9 @@ The following properties, found in `${OPENNMS_HOME}/etc/opennms.properties`, can
 | `org.opennms.newts.config.username`             | `cassandra`          | Username to use when connecting to Cassandra via CQL.
 | `org.opennms.newts.config.password`             | `cassandra`          | Password to use when connecting to Cassandra via CQL.
 | `org.opennms.newts.config.ssl`                  | `false`              | Enable/disable SSL when connecting to Cassandra.
+| `org.opennms.newts.config.core-connections-per-host`   | Driver default | Core number of connections per host.
+| `org.opennms.newts.config.max-connections-per-host`    | Driver default | Maximum number of connections per host.
+| `org.opennms.newts.config.max-requests-per-connection` | Driver default | Maximum amount of requests that can be in-flight on a single connection at the same time.
 | `org.opennms.newts.config.read_consistency`     | `ONE`                | Consistency level used for _read_ operations.
                                                                            See http://docs.datastax.com/en/cassandra/2.1/cassandra/dml/dml_config_consistency_c.html[Configuring data consistency] for a list of available options.
 | `org.opennms.newts.config.write_consistency`    | `ANY`                | Consistency level used for _write_ operations.

@@ -64,7 +64,6 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage.TopologyMessageStatus;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
@@ -147,7 +146,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         this.topologyDao=Objects.requireNonNull(topologyDao);
     }
 
-    public void init() throws IOException, OnmsTopologyException {
+    public void init() throws IOException {
         // Create the Kafka producer
         final Properties producerConfig = new Properties();
         final Dictionary<String, Object> properties = configAdmin.getConfiguration(KAFKA_CLIENT_PID).getProperties();
@@ -541,8 +540,8 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         for (String protocol: protocols.split(",")) {
             try {
                 topologyProtocols.add(OnmsTopologyProtocol.create(protocol));
-            } catch (OnmsTopologyException e) {
-                LOG.error("Cannot add protocol: {}", e.getMessage());
+            } catch (Exception e) {
+                LOG.error("Cannot add protocol", e);
             }
         }
         forwardTopologyMessages=!Strings.isNullOrEmpty(protocols);

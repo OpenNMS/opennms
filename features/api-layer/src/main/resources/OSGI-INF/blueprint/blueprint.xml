@@ -156,6 +156,14 @@
   <bean id="pollerClient" class="org.opennms.features.apilayer.pollers.ServicePollerClientImpl">
     <argument ref="locationAwarePollerClient"/>
   </bean>
+  
+  <!-- Ticketer -->
+  <bean id="ticketingExtensionManager" class="org.opennms.features.apilayer.ticketing.TicketingPluginManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.ticketing.TicketingPlugin" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="ticketingExtensionManager" />
+  </reference-list>
 
   <!-- Service Collectors -->
   <bean id="serviceCollectorManager" class="org.opennms.features.apilayer.collectors.ServiceCollectorManager">
