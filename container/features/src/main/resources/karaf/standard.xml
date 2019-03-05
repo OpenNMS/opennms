@@ -625,7 +625,10 @@ org.apache.felix.http.port=8181
 
     <!-- Copied out of PAX Web features.xml at mvn:org.ops4j.pax.web/pax-web-features/${paxWebVersion}/xml/features -->
     <feature name="opennms-war" description="Provide support of a full WebContainer" version="${opennms.osgi.version}">
-        <!-- TODO MVR copy over from the above features.xml -->
+        <!--
+            The definition here was merged over from the "pax-war" feature defined in repository
+            mvn:org.ops4j.pax.web/pax-web-features/7.2.8/xml/features.
+        -->
         <config name="org.ops4j.pax.url.war">
             org.ops4j.pax.url.war.importPaxLoggingPackages=true
         </config>
