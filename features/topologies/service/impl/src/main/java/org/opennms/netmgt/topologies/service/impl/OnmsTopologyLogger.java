@@ -74,22 +74,7 @@ public class OnmsTopologyLogger implements OnmsTopologyConsumer {
         txt.append(message.getMessagestatus());
         txt.append("-");
         txt.append(message.getMessagebody().getId());
-        if (message.getMessagebody() instanceof OnmsTopologyVertex) {
-            txt.append(":");
-            txt.append(((OnmsTopologyVertex)message.getMessagebody()).getLabel());
-        } else if (message.getMessagebody() instanceof OnmsTopologyEdge) {
-            txt.append(":");
-            OnmsTopologyEdge edge = (OnmsTopologyEdge)message.getMessagebody();
-            OnmsTopologyPort source = edge.getSource();
-            txt.append(source.getVertex().getId());
-            txt.append(":");
-            txt.append(source.getIfname());
-            txt.append("|");
-            OnmsTopologyPort target = edge.getTarget();
-            txt.append(target.getVertex().getId());
-            txt.append(":");
-            txt.append(target.getIfname());
-        }
+        message.getMessagebody().accept(new TopologyVisitor(txt));
         LOG.debug(txt.toString());
     }
 
@@ -101,6 +86,34 @@ public class OnmsTopologyLogger implements OnmsTopologyConsumer {
 
     public OnmsTopologyProtocol getProtocol() {
         return m_protocol;
+    }
+    
+    private class TopologyVisitor implements org.opennms.netmgt.topologies.service.api.TopologyVisitor {
+        private final StringBuffer txt;
+
+        TopologyVisitor(StringBuffer txt) {
+            this.txt = txt;
+        }
+
+        @Override
+        public void visit(OnmsTopologyVertex vertex) {
+            txt.append(":");
+            txt.append(vertex.getLabel());
+        }
+
+        @Override
+        public void visit(OnmsTopologyEdge edge) {
+            txt.append(":");
+            OnmsTopologyPort source = edge.getSource();
+            txt.append(source.getVertex().getId());
+            txt.append(":");
+            txt.append(source.getIfname());
+            txt.append("|");
+            OnmsTopologyPort target = edge.getTarget();
+            txt.append(target.getVertex().getId());
+            txt.append(":");
+            txt.append(target.getIfname());
+        }
     }
 
 }

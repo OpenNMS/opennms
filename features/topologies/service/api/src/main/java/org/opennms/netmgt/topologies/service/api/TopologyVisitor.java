@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,19 @@
 
 package org.opennms.netmgt.topologies.service.api;
 
-public interface OnmsTopologyRef {
+/**
+ * An interface to allow visiting the different types that may be stored in the {@link OnmsTopologyMessage topology
+ * message's} {@link OnmsTopologyRef payload}.
+ * <p>
+ * There should be one visit method here for each of the implementations of {@link OnmsTopologyRef}.
+ */
+public interface TopologyVisitor {
+    default void visit(OnmsTopologyVertex vertex) {
+    }
 
-    String getId();   
-    
-    String getToolTipText();
-    
-    void accept(TopologyVisitor v);
- 
+    default void visit(OnmsTopologyPort port) {
+    }
+
+    default void visit(OnmsTopologyEdge edge) {
+    }
 }
