@@ -34,8 +34,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElement;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Semantics;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
@@ -66,7 +64,7 @@ public class StringValue extends Value<String> {
     public static InformationElement parser(final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) throws InvalidPacketException, MissingTemplateException {
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) {
                 return new StringValue(name, semantics, new String(bytes(buffer, buffer.remaining()), UTF8_CHARSET));
             }
 

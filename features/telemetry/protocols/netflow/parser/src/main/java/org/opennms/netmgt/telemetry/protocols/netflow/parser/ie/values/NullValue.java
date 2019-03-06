@@ -58,7 +58,7 @@ public class NullValue extends Value<Void> {
         return new InformationElement() {
             @Override
             public Value<?> parse(final Session.Resolver resolver,
-                                  final ByteBuffer buffer) throws InvalidPacketException, MissingTemplateException {
+                                  final ByteBuffer buffer) {
                 return new NullValue(name, semantics);
             }
 

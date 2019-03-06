@@ -36,7 +36,6 @@ import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElement;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Semantics;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
@@ -65,7 +64,7 @@ public class IPv4AddressValue extends Value<Inet4Address> {
     public static InformationElement parser(final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) throws InvalidPacketException, MissingTemplateException {
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) throws InvalidPacketException {
                 try {
                     return new IPv4AddressValue(name, semantics, (Inet4Address) Inet4Address.getByAddress(bytes(buffer, 4)));
                 } catch (final UnknownHostException e) {
