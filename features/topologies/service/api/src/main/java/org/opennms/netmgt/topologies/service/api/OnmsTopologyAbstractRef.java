@@ -75,6 +75,6 @@ public abstract class OnmsTopologyAbstractRef {
         m_toolTipText = toolTipText;
     }
 
-    
-    
+    public abstract void accept(TopologyVisitor v);
+
 }

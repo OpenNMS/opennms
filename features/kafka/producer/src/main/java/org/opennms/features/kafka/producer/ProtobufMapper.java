@@ -55,6 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionOperations;
 
+import com.google.common.base.Enums;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -465,45 +466,32 @@ public class ProtobufMapper {
             setter.accept(date.getTime());
         }
     }
-    
+
     public OpennmsModelProtos.TopologyRef.Builder toTopologyRef(String protocol, String id) {
-        final OpennmsModelProtos.TopologyRef.Builder builder = OpennmsModelProtos.TopologyRef.newBuilder()
+        return OpennmsModelProtos.TopologyRef.newBuilder()
                 .setId(id)
-                .setProtocol(protocol);
-        return builder;
+                .setProtocol(Enums.getIfPresent(OpennmsModelProtos.TopologyRef.Protocol.class, protocol).orNull());
     }
 
     private OpennmsModelProtos.TopologyRef getTopologyRef(String protocol, String id) {
         return toTopologyRef(protocol, id).build();
     }
 
-    private OpennmsModelProtos.TopologyVertexNode getTopologyVertexNode(String protocol,
-            org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex vertex) {
-        final OpennmsModelProtos.TopologyVertexNode.Builder builder = OpennmsModelProtos.TopologyVertexNode.newBuilder();
-        if (vertex.getNodeid() != null) {
-            try {
-                builder.setNodeCriteria(nodeIdToCriteriaCache.get(Integer.toUnsignedLong(vertex.getNodeid())));
-            } catch (ExecutionException e) {
-                LOG.warn("An error occurred when building node criteria for node with id: {}." +
-                        " The node foreign source and foreign id (if set) will be missing from the vertex with id: {}.",
-                        vertex.getNodeid(), vertex.getId(), e);
-                builder.setNodeCriteria(OpennmsModelProtos.NodeCriteria.newBuilder()
-                        .setId(vertex.getNodeid()));
-            }
-        }
-        return builder.build();
-    }
-
-    private OpennmsModelProtos.TopologyVertexSegment getTopologyVertexSegment(String protocol,
-            org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex vertex) {
-        final OpennmsModelProtos.TopologyVertexSegment.Builder builder = OpennmsModelProtos.TopologyVertexSegment.newBuilder();
-        return builder.build();
-    }
-
     private OpennmsModelProtos.TopologyPort getPort(org.opennms.netmgt.topologies.service.api.OnmsTopologyPort port) {
         final OpennmsModelProtos.TopologyPort.Builder builder = OpennmsModelProtos.TopologyPort.newBuilder()
                 .setVertexId(port.getVertex().getId())
                 .setIfIndex(port.getIfindex());
+
+        try {
+            builder.setNodeCriteria(nodeIdToCriteriaCache.get(Integer.toUnsignedLong(port.getVertex().getNodeid())));
+        } catch (ExecutionException e) {
+            LOG.warn("An error occurred when building node criteria for node with id: {}." +
+                            " The node foreign source and foreign id (if set) will be missing from the vertex with " +
+                            "id: {}.",
+                    port.getVertex().getNodeid(), port.getVertex().getId(), e);
+            builder.setNodeCriteria(OpennmsModelProtos.NodeCriteria.newBuilder()
+                    .setId(port.getVertex().getNodeid()));
+        }
 
         // The ifName and address might not be set so don't set nulls on the builder since protobuf does not allow null
         // values
@@ -518,27 +506,14 @@ public class ProtobufMapper {
         return builder.build();
     }
 
-    public OpennmsModelProtos.TopologyVertex.Builder toVertexTopologyMessage(String protocol,
-            org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex vertex) {
-        final OpennmsModelProtos.TopologyVertex.Builder builder = OpennmsModelProtos.TopologyVertex.newBuilder()
-                .setRef(getTopologyRef(protocol, vertex.getId()))
-                .setLabel(vertex.getLabel());
-        if (vertex.getNodeid() != null) {
-            builder.setNode(getTopologyVertexNode(protocol, vertex));
-        } else {
-            builder.setSegment(getTopologyVertexSegment(protocol, vertex));
-        }
-        return builder;
-    }
-    
     public OpennmsModelProtos.TopologyEdge.Builder toEdgeTopologyMessage(String protocol,
-            org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge edge) {
-        final OpennmsModelProtos.TopologyEdge.Builder builder = OpennmsModelProtos.TopologyEdge.newBuilder()
+                                                                         org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge edge) {
+
+        return OpennmsModelProtos.TopologyEdge.newBuilder()
                 .setRef(getTopologyRef(protocol, edge.getId()))
                 .setSource(getPort(edge.getSource()))
-                .setTarget(getPort(edge.getTarget()));
-                        
-        return builder;
+                // Note: this doesn't currently support a target segment
+                .setTargetPort(getPort(edge.getTarget()));
     }
 
 }

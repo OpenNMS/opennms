@@ -68,6 +68,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage.TopologyMessageStatus;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
+import org.opennms.netmgt.topologies.service.api.TopologyVisitor;
 import org.opennms.netmgt.xml.event.Event;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -134,7 +135,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     private Set<OnmsTopologyProtocol> topologyProtocols = new HashSet<>();
     private String encoding = "UTF8";
-
 
     public OpennmsKafkaProducer(ProtobufMapper protobufMapper, NodeCache nodeCache,
                                 ConfigurationAdmin configAdmin, EventSubscriptionService eventSubscriptionService,
@@ -209,57 +209,16 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             LOG.error("forwardTopologyMessage: null status");
             return;
         }
-        if (message.getMessagebody() == null ) {
+        if (message.getMessagebody() == null) {
             LOG.error("forwardTopologyMessage: null message");
-            return;            
+            return;
         }
 
         if (message.getMessagestatus() == TopologyMessageStatus.DELETE) {
-            forwardTopologyDeleteMessage(message);
+            message.getMessagebody().accept(new DeletingVisitor(message));
         } else {
-            forwardTopologyUpdateMessage(message);
-        }            
-    }
-
-    private void forwardTopologyDeleteMessage(OnmsTopologyMessage message) {
-        OpennmsModelProtos.TopologyRef mappedTopomsg = 
-                protobufMapper.toTopologyRef(message.getProtocol().getId(), message.getMessagebody().getId()).build();
-        if (message.getMessagebody() instanceof OnmsTopologyVertex) {
-            forwardTopologyVertexMessage(mappedTopomsg.toByteArray(),null);
-        } else if (message.getMessagebody() instanceof OnmsTopologyEdge) {
-            forwardTopologyEdgeMessage(mappedTopomsg.toByteArray(),null);
-        } else {
-            LOG.error("forwardTopologyDeleteMessage: no supported update class {}", message.getMessagebody().getClass().getName());            
+            message.getMessagebody().accept(new UpdatingVisitor(message));
         }
-    }
-
-    private void forwardTopologyUpdateMessage(OnmsTopologyMessage message) {
-        if (message.getMessagebody() instanceof OnmsTopologyVertex) {
-            OnmsTopologyVertex vertex = (OnmsTopologyVertex) message.getMessagebody();
-            final OpennmsModelProtos.TopologyVertex mappedTopoMsg = 
-                    protobufMapper.toVertexTopologyMessage(message.getProtocol().getId(),vertex).build();
-            forwardTopologyVertexMessage(mappedTopoMsg.getRef().toByteArray(),
-                                         mappedTopoMsg.toByteArray());
-        } else if (message.getMessagebody() instanceof OnmsTopologyEdge) {
-            OnmsTopologyEdge edge = (OnmsTopologyEdge) message.getMessagebody();
-            final OpennmsModelProtos.TopologyEdge mappedTopoMsg = 
-                    protobufMapper.toEdgeTopologyMessage(message.getProtocol().getId(),edge).build();
-            forwardTopologyEdgeMessage(mappedTopoMsg.getRef().toByteArray(),
-                                       mappedTopoMsg.toByteArray());
-        } else {
-            LOG.error("forwardTopologyUpdateMessage: no supported update class {}", message.getMessagebody().getClass().getName());
-        }
-    }
- 
-    private void forwardTopologyVertexMessage(byte[] refid, byte[] value) {
-        sendRecord(() -> {
-            return new ProducerRecord<>(topologyVertexTopic, refid, value);
-        }, recordMetadata -> {
-            // We've got an ACK from the server that the event was forwarded
-            // Let other threads know when we've successfully forwarded an event
-            forwardedTopologyVertexMessage.countDown();
-        });
-        
     }
 
     private void forwardTopologyEdgeMessage(byte[] refid, byte[] message) {
@@ -686,5 +645,56 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         this.encoding = encoding;
     }
 
-    
+    private class TopologyVisitorImpl implements TopologyVisitor {
+        final OnmsTopologyMessage onmsTopologyMessage;
+
+        TopologyVisitorImpl(OnmsTopologyMessage onmsTopologyMessage) {
+            this.onmsTopologyMessage = Objects.requireNonNull(onmsTopologyMessage);
+        }
+
+        byte[] getKeyForEdge(OnmsTopologyEdge edge) {
+            Objects.requireNonNull(onmsTopologyMessage);
+            return String.format("topology:%s:%s", onmsTopologyMessage.getProtocol().getId(), edge.getId()).getBytes();
+        }
+    }
+
+    private class DeletingVisitor extends TopologyVisitorImpl {
+        DeletingVisitor(OnmsTopologyMessage topologyMessage) {
+            super(topologyMessage);
+        }
+
+        @Override
+        public void visit(OnmsTopologyVertex vertex) {
+            // Note: Handling of segments (vertices with no node Id) should go here when they are being published
+        }
+
+        @Override
+        public void visit(OnmsTopologyEdge edge) {
+            forwardTopologyEdgeMessage(getKeyForEdge(edge), null);
+        }
+    }
+
+    private class UpdatingVisitor extends TopologyVisitorImpl {
+        UpdatingVisitor(OnmsTopologyMessage onmsTopologyMessage) {
+            super(onmsTopologyMessage);
+        }
+
+        @Override
+        public void visit(OnmsTopologyVertex vertex) {
+            // Node handling
+            if (forwardNodes && vertex.getNodeid() != null) {
+                maybeUpdateNode(vertex.getNodeid());
+            }
+
+            // Note: Segments (vertices with no node id) are currently unsupported
+        }
+
+        @Override
+        public void visit(OnmsTopologyEdge edge) {
+            Objects.requireNonNull(onmsTopologyMessage);
+            final OpennmsModelProtos.TopologyEdge mappedTopoMsg =
+                    protobufMapper.toEdgeTopologyMessage(onmsTopologyMessage.getProtocol().getId(), edge).build();
+            forwardTopologyEdgeMessage(getKeyForEdge(edge), mappedTopoMsg.toByteArray());
+        }
+    }
 }
