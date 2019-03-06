@@ -138,9 +138,6 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                     new ObjectScope<>(monitoredService)
                             .map("service", "name", (s) -> Optional.of(s.getServiceName()))
                             .map("service", "type", (s) -> Optional.of(s.getServiceType().getName()))
-                            .map("service", "qualifier", (s) -> Optional.of(s.getQualifier()))
-                            .map("service", "source", (s) -> Optional.of(s.getSource()))
-                            .map("service", "notify", (s) -> Optional.of(s.getNotify()))
             );
         });
 

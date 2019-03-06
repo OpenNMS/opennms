@@ -12,6 +12,54 @@ These pages show the meta-data as it is currently assigned in the database.
 The meta-data can be used to dynamically configure service monitoring, performance data collection, and service detection.
 They all use a link:#ga-meta-data-dls[simple DSL] which allows to access the meta-data associated to the elements they are working on.
 
+=== Special contexts
+In relation to nodes, interfaces and services, there are special contexts available which expose details about those objects.
+
+The `node` context provides details about the node currently processed.
+The following keys are available under this context:
+
+[options="header, autowidth"]
+|===
+| Context:Key            | Description |
+| `node:label`           | The label of the node
+| `node:foreign-source`  | The nodes foreign source name
+| `node:foreign-id`      | The nodes foreigne ID
+| `node:netbios-domain`  | The NetBIOS domain as provided by SNMP
+| `node:netbios-name`    | The NetBIOS name as provided by SNMP
+| `node:os`              | The nodes operating system
+| `node:sys-name`        | The system name of the node
+| `node:sys-location`    | The system localtion of the node
+| `node:sys-contact`     | The system contact specified for the node
+| `node:sys-description` | The system description of the node
+| `node:location`        | The nodes monitoring location name
+| `node:area`            | The nodes monitoring location area
+|===
+
+The `interface` context provides details about the interface currently processed.
+The following keys are available unter this context:
+
+[options="header, autowidth"]
+|===
+| Context:Key               | Description |
+| `interface:hostname       | The hostname associated with the IP address of the interface
+| `interface:address        | The IP address if the interface
+| `interface:netmask        | The netmask of the interface
+| `interface:if-index       | The SNMP interface index
+| `interface:if-alias       | The SNMP interface alias
+| `interface:if-description | The SNMP interface description
+| `interface:phy-addr       | The physical address of the interface
+|===
+
+The `service` context provides details about the service currently processed.
+The following keys are available unter this context:
+
+[options="header, autowidth"]
+|===
+| Context:Key        | Description |
+| `service:name      | The full name of the service
+| `service:type      | The service type
+|===
+
 [[ga-meta-data-dsl]]
 === The Meta-Data-DSL
 The meta-data DSL allow interpolation of meta-data into a parameter.
