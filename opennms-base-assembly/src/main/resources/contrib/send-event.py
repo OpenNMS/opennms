@@ -38,7 +38,7 @@ class Event:
 
         # Time, expected format: "Monday, February 18, 2002 3:01:58 PM EST"
         time = self.time if self.time is not None else datetime.datetime.utcnow()
-        ET.SubElement(root, "time").text = time.strftime("%A, %B %d, %Y %I:%M:%S %p UTC")
+        ET.SubElement(root, "time").text = time.strftime("%A, %-d %B %Y %H:%M:%S o'clock UTC")
 
         # Host
         ET.SubElement(root, "host").text = self.host
