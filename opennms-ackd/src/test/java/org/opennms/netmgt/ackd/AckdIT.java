@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.ackd;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -53,6 +55,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.UserNotificationDao;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -267,14 +270,14 @@ public class AckdIT implements InitializingBean {
     }
     
     @Test
-    public void testHandelEvent() throws InterruptedException {
+    public void testHandleEvent() throws InterruptedException {
         
         VerificationObject vo = createAckStructure();
         EventBuilder bldr = new EventBuilder(EventConstants.ACKNOWLEDGE_EVENT_UEI, "AckdTest");
         bldr.addParam("ackType", String.valueOf(AckType.ALARM));
         bldr.addParam("refId", vo.m_alarmId);
         final String user = "ackd-test-user";
-        bldr.addParam("user", user);
+        bldr.addParam("ackUser", user);
 
         m_daemon.handleAckEvent(bldr.getEvent());
         
@@ -287,20 +290,69 @@ public class AckdIT implements InitializingBean {
 //        Assert.assertEquals(alarm.getAckTime(), bldr.getEvent().getTime());
     }
     
-    
+
+    @Test
+    public void testHandleEventEscalate() throws InterruptedException {
+        
+        VerificationObject vo = createAckStructure();
+        assertEquals(OnmsSeverity.MAJOR.getId(), vo.m_alarmSeverity);
+        EventBuilder bldr = new EventBuilder(EventConstants.ACKNOWLEDGE_EVENT_UEI, "AckdTest");
+        bldr.addParam("ackType", String.valueOf(AckType.ALARM));
+        bldr.addParam("ackAction", String.valueOf(AckAction.ESCALATE));
+        bldr.addParam("refId", vo.m_alarmId);
+        final String user = "ackd-test-user";
+        bldr.addParam("ackUser", user);
+
+        m_daemon.handleAckEvent(bldr.getEvent());
+        
+        OnmsNotification notif = m_notificationDao.get(vo.m_notifId);
+        Assert.assertEquals(notif.getAckUser(), null);
+//        Assert.assertEquals(notif.getAckTime(), bldr.getEvent().getTime());
+        
+        OnmsAlarm alarm = m_alarmDao.get(vo.m_alarmId);
+        Assert.assertEquals(alarm.getAckUser(), null);
+        Assert.assertEquals(OnmsSeverity.CRITICAL.getId(), alarm.getSeverityId().intValue());
+//        Assert.assertEquals(alarm.getAckTime(), bldr.getEvent().getTime());
+    }
+
+    @Test
+    public void testHandleEventClear() throws InterruptedException {
+        
+        VerificationObject vo = createAckStructure();
+        assertEquals(OnmsSeverity.MAJOR.getId(), vo.m_alarmSeverity);
+        EventBuilder bldr = new EventBuilder(EventConstants.ACKNOWLEDGE_EVENT_UEI, "AckdTest");
+        bldr.addParam("ackType", String.valueOf(AckType.ALARM));
+        bldr.addParam("ackAction", String.valueOf(AckAction.CLEAR));
+        bldr.addParam("refId", vo.m_alarmId);
+        final String user = "ackd-test-user";
+        bldr.addParam("ackUser", user);
+
+        m_daemon.handleAckEvent(bldr.getEvent());
+        
+        OnmsNotification notif = m_notificationDao.get(vo.m_notifId);
+        Assert.assertEquals(notif.getAckUser(), null);
+//        Assert.assertEquals(notif.getAckTime(), bldr.getEvent().getTime());
+        
+        OnmsAlarm alarm = m_alarmDao.get(vo.m_alarmId);
+        Assert.assertEquals(alarm.getAckUser(), null);
+        Assert.assertEquals(OnmsSeverity.CLEARED.getId(), alarm.getSeverityId().intValue());
+//        Assert.assertEquals(alarm.getAckTime(), bldr.getEvent().getTime());
+    }
+
     class VerificationObject {
         int m_eventID;
         int m_alarmId;
         int m_nodeId;
         int m_notifId;
         int m_userNotifId;
+        int m_alarmSeverity;
     }
     
     private VerificationObject createAckStructure() {
         
         final Date time = new Date();
         VerificationObject vo = new VerificationObject();
-        
+        vo.m_alarmSeverity = OnmsSeverity.MAJOR.getId();
         List<OnmsNode> nodes = m_nodeDao.findAll();
         Assert.assertTrue("List of nodes should not be empty", nodes.size() > 0);
         OnmsNode node = m_nodeDao.get(nodes.get(0).getId());
@@ -312,7 +364,7 @@ public class AckdIT implements InitializingBean {
         
         event.setEventCreateTime(time);
         event.setEventDescr("Test node down event.");
-        event.setEventSeverity(OnmsSeverity.MAJOR.getId());
+        event.setEventSeverity(vo.m_alarmSeverity);
         event.setEventSource("AckdTest");
         event.setEventTime(time);
         event.setEventUei(EventConstants.NODE_DOWN_EVENT_UEI);
