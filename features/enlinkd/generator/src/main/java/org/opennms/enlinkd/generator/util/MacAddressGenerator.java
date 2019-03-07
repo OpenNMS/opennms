@@ -31,12 +31,12 @@ package org.opennms.enlinkd.generator.util;
 public class MacAddressGenerator {
 
     // we start with 1 since 0000:0000:0000 is an invalid mac address
-    private int last = 1;
+    private int next = 1;
 
     public String next() {
-        String s = String.format("%1$" + 12 + "s", Integer.toHexString(last)); // example: "           1"
+        String s = String.format("%1$" + 12 + "s", Integer.toHexString(next)); // example: "           1"
         s = s.replace(' ', '0'); // example: "000000000001"
-        last++;
+        next++;
         return s;
     }
 }
