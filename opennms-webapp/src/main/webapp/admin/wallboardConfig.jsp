@@ -43,5 +43,5 @@
     <jsp:param name="vaadinEmbeddedStyles" value="true" />
 </jsp:include>
 
-<iframe src="admin/wallboard-config" class="vaadin-fullscreen" frameborder="0"></iframe>
+<iframe name="wallboard-config" src="admin/wallboard-config" class="vaadin-fullscreen" frameborder="0"></iframe>
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
