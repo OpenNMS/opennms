@@ -171,7 +171,8 @@ public class LinkdTopologyProviderTestIT {
      *   -----------
      *   |         |
      * Macs/Ip  bridge2
-     * no node     |
+     * no node  -------
+     *             |
      *          Segment
      */
 
@@ -186,9 +187,10 @@ public class LinkdTopologyProviderTestIT {
         TopologySettings settings = TopologySettings.builder()
                 .protocol(TopologyGenerator.Protocol.bridge)
                 .amountNodes(10)
+                .amountIpInterfaces(0)
+                .amountSnmpInterfaces(0)
                 .build();
         generateTopologyAndRefreshCaches(settings);
-        assertEquals(settings.getAmountNodes(), linkdTopologyProvider.getVerticesWithoutGroups().size());
 
         // 2.) map the nodes by it's label name.
         final Map<String, Vertex> vertices = new HashMap<>();
@@ -208,18 +210,28 @@ public class LinkdTopologyProviderTestIT {
         }
 
 
-        // 3.) Linking between hosts and bridges
-        verifyLinkingBetweenNodes(vertices.get("node0"), vertices.get("node1"));
-        verifyLinkingBetweenNodes(vertices.get("node0"), vertices.get("node3"));
-        verifyLinkingBetweenNodes(vertices.get("node0"), vertices.get("node4"));
-        verifyLinkingBetweenNodes(vertices.get("node0"), vertices.get("node5"));
+        // 3.) Check linking:
+        // Level 0 -> 1
+        verifyLinkingBetweenNodes(vertices.get("Node0"), vertices.get("Node1"));
+        verifyLinkingBetweenNodes(vertices.get("Node0"), vertices.get("Node3"));
+        verifyLinkingBetweenNodes(vertices.get("Node0"), vertices.get("Node4"));
+        verifyLinkingBetweenNodes(vertices.get("Node0"), vertices.get("Node5"));
+        verifyLinkingBetweenNodes(vertices.get("Node0"), vertices.get("NoNode[000000000007]"));
 
-        verifyLinkingBetweenNodes(vertices.get("node3"), vertices.get("node8"));
-        verifyLinkingBetweenNodes(vertices.get("node0"), vertices.get("node9"));
+        // Level 1 -> 2
+        verifyLinkingBetweenNodes(vertices.get("Node1"), vertices.get("Segment[nodeid:2]"));
+        verifyLinkingBetweenNodes(vertices.get("Node3"), vertices.get("Node8"));
+        verifyLinkingBetweenNodes(vertices.get("Node3"), vertices.get("Node9"));
 
-        // 4. Linking with Segments, Unknown nodes
-        verifyLinkingBetweenNodes(vertices.get("node0"), vertices.get("NoNode[000000000007]"));
-        verifyLinkingBetweenNodes(vertices.get("Segment[nodeid:13561]"), vertices.get("NoNode[00000000000e]"));
+        // Level 2 -> 3
+        verifyLinkingBetweenNodes(vertices.get("Segment[nodeid:2]"), vertices.get("NoNode[00000000000e]"));
+        verifyLinkingBetweenNodes(vertices.get("Segment[nodeid:2]"), vertices.get("Node2"));
+
+        // Level 3 -> 4
+        verifyLinkingBetweenNodes(vertices.get("Node2"), vertices.get("Segment[nodeid:3]"));
+        verifyLinkingBetweenNodes(vertices.get("Segment[nodeid:3]"), vertices.get("Node6"));
+        verifyLinkingBetweenNodes(vertices.get("Segment[nodeid:3]"), vertices.get("Node7"));
+
     }
 
     private void test(TopologyGenerator.Protocol protocol) throws OnmsTopologyException{
