@@ -269,12 +269,6 @@ public class AckdIT implements InitializingBean {
         
     }
     
-    /*
-     * Send Ackd Notification Event for the ALARM
-     * ackAction is the default Acknowledge
-     * this will led to ack both the notification and the alarm
-     *  
-     */
     @Test
     public void testHandleEvent() throws InterruptedException {
         
@@ -295,40 +289,8 @@ public class AckdIT implements InitializingBean {
         Assert.assertEquals(alarm.getAckUser(), user);
 //        Assert.assertEquals(alarm.getAckTime(), bldr.getEvent().getTime());
     }
+    
 
-    /*
-     * Send Ackd Notification Event for the NOTIFICATION
-     * ackAction is the default Acknowledge
-     * this will led to ack both the notification and the alarm
-     *  
-     */
-    @Test
-    public void testHandleEventNotificationAck() throws InterruptedException {
-        
-        VerificationObject vo = createAckStructure();
-        EventBuilder bldr = new EventBuilder(EventConstants.ACKNOWLEDGE_EVENT_UEI, "AckdTest");
-        bldr.addParam("ackType", String.valueOf(AckType.NOTIFICATION));
-        bldr.addParam("refId", vo.m_alarmId);
-        final String user = "ackd-test-user";
-        bldr.addParam("ackUser", user);
-
-        m_daemon.handleAckEvent(bldr.getEvent());
-        
-        OnmsNotification notif = m_notificationDao.get(vo.m_notifId);
-        Assert.assertEquals(notif.getAckUser(), user);
-//        Assert.assertEquals(notif.getAckTime(), bldr.getEvent().getTime());
-        
-        OnmsAlarm alarm = m_alarmDao.get(vo.m_alarmId);
-        Assert.assertEquals(alarm.getAckUser(), user);
-//        Assert.assertEquals(alarm.getAckTime(), bldr.getEvent().getTime());
-    }
-
-    /*
-     * Send Ackd Notification Event for the ALARM
-     * AckAction is ESCALATE
-     * this will led only to escalate the alarm
-     *  
-     */
     @Test
     public void testHandleEventEscalate() throws InterruptedException {
         
@@ -353,12 +315,6 @@ public class AckdIT implements InitializingBean {
 //        Assert.assertEquals(alarm.getAckTime(), bldr.getEvent().getTime());
     }
 
-    /*
-     * Send Ackd Notification Event for the ALARM
-     * AckAction is CLEAR
-     * this will led clear the alarm
-     * and ack the notif 
-     */
     @Test
     public void testHandleEventClear() throws InterruptedException {
         
@@ -374,7 +330,7 @@ public class AckdIT implements InitializingBean {
         m_daemon.handleAckEvent(bldr.getEvent());
         
         OnmsNotification notif = m_notificationDao.get(vo.m_notifId);
-        Assert.assertEquals(notif.getAckUser(), user);
+        Assert.assertEquals(notif.getAckUser(), null);
 //        Assert.assertEquals(notif.getAckTime(), bldr.getEvent().getTime());
         
         OnmsAlarm alarm = m_alarmDao.get(vo.m_alarmId);
