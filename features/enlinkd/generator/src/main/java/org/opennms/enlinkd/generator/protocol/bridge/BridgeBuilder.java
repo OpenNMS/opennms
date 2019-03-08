@@ -49,7 +49,6 @@ public class BridgeBuilder {
     private OnmsNode node;
     private int bridgePortCounter;
     private BridgeBuilderContext context;
-    private List<Object> objectsToPersist;
 
     public BridgeBuilder(OnmsNode node, int bridgePortCounter, BridgeBuilderContext context) {
         this.node = node;
@@ -102,7 +101,6 @@ public class BridgeBuilder {
     }
 
     public void createAndPersistCloud(int macaddresses, int ipaddresses) {
-        // this.bridgePortCounter ++;
         for (int i=0; i<ipaddresses;i++) {
             String nextMac = context.getNextMacAddress();
             context.getTopologyPersister().persist(
