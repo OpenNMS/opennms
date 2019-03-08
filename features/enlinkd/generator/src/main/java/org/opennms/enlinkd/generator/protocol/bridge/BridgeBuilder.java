@@ -33,7 +33,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.opennms.enlinkd.generator.TopologyPersister;
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
@@ -56,14 +55,18 @@ public class BridgeBuilder {
         this.node = node;
         this.bridgePortCounter = bridgePortCounter;
         this.context = context;
+        createAndSaveBridgeElement(node);
     }
 
     public BridgeBuilder connectToNewBridge(OnmsNode targetNode, int targetNodePortCounter) {
-//        BridgeElement bridgeElement = createBridgeElement(targetNode);
-//        this.context.getTopologyPersister().persist(bridgeElement);
         this.bridgePortCounter ++;
         createAndPersistBridgeBridgeLink(targetNode, targetNodePortCounter, this.node, this.bridgePortCounter);
         return new BridgeBuilder(targetNode, targetNodePortCounter , this.context);
+    }
+
+    private void createAndSaveBridgeElement(OnmsNode node) {
+        BridgeElement bridgeElement = createBridgeElement(node);
+        this.context.getTopologyPersister().persist(bridgeElement);
     }
 
     private BridgeElement createBridgeElement(OnmsNode node) {
@@ -99,10 +102,11 @@ public class BridgeBuilder {
     }
 
     public void createAndPersistCloud(int macaddresses, int ipaddresses) {
+        // this.bridgePortCounter ++;
         for (int i=0; i<ipaddresses;i++) {
             String nextMac = context.getNextMacAddress();
             context.getTopologyPersister().persist(
-                    createIpNetToMedia(null, null, nextMac, context.getInetAddress(), this.node)
+                    createIpNetToMedia(null, null, nextMac, context.getNextInetAddress(), this.node)
             );
             context.getTopologyPersister().persist(
                     createBridgeMacLink(this.node, this.bridgePortCounter, nextMac));
@@ -114,14 +118,13 @@ public class BridgeBuilder {
 
     }
 
-    public void createAndPersistBridgeMacLink(OnmsNode host, Integer hostPort) {
-        createAndPersistBridgeMacLink(true, host, hostPort);
+    public void createAndPersistBridgeMacLink(OnmsNode host, Integer hostPort, OnmsNode gateway) {
+        createAndPersistBridgeMacLink(true, host, hostPort, gateway);
     }
 
-    private void createAndPersistBridgeMacLink(boolean createsnmpinterface, OnmsNode host, Integer hostPort) {
-        this.bridgePortCounter ++;
-        String mac=this.context.getNextMacAddress();
-        InetAddress ip= this.context.getInetAddress();
+    public void createAndPersistBridgeMacLink(boolean createsnmpinterface, OnmsNode host, Integer hostPort, OnmsNode gateway) {
+        String mac=context.getNextMacAddress();
+        InetAddress ip= context.getNextInetAddress();
         if (createsnmpinterface) {
             context.getTopologyPersister().persist(
                     createSnmpInterface(this.bridgePortCounter, this.node)
@@ -140,12 +143,11 @@ public class BridgeBuilder {
             context.getTopologyPersister().persist(ipInterface);
         }
         context.getTopologyPersister().persist(
-                createIpNetToMedia(host, hostPort, mac, ip, this.node)
+                createIpNetToMedia(host, hostPort, mac, ip, gateway)
         );
         context.getTopologyPersister().persist(
                 createBridgeMacLink(this.node, this.bridgePortCounter, mac)
         );
-
     }
 
     protected OnmsIpInterface createIpInterface(OnmsSnmpInterface snmp, InetAddress inetAddress) {
@@ -213,5 +215,9 @@ public class BridgeBuilder {
         ipNetToMedia.setSourceIfIndex(0);
         ipNetToMedia.setSourceNode(sourceNode);
         return ipNetToMedia;
+    }
+
+    public void increasePortCounter() {
+        this.bridgePortCounter++;
     }
 }
