@@ -121,36 +121,25 @@ public class OnmsAcknowledgment {
         
         for (Parm parm : parms) {
             final String parmValue = parm.getValue().getContent();
-            if (!"ackAction".equals(parm.getParmName()) && 
-                !"ackType".equals(parm.getParmName()) && !"refId".equals(parm.getParmName()) && !"ackUser".equals(parm.getParmName()) ) {
-                throw new IllegalArgumentException("Event parm: "+parm.getParmName()+", is an invalid paramter");
-            } 
             
-            if ("ackType".equals(parm.getParmName())) {
-
-                if ("ALARM".equalsIgnoreCase(parmValue) || "NOTIFICATION".equalsIgnoreCase(parmValue)) {
-                    m_ackType = ("ALARM".equalsIgnoreCase(parmValue) ? AckType.ALARM : AckType.NOTIFICATION);
-                } else {
-                    throw new IllegalArgumentException("Event parm: "+parm.getParmName()+", has invalid value, requires: \"Alarm\" or \"Notification\"." );
-                }
-                
-            } else if ("refId".equals(parm.getParmName())){
-                m_refId = Integer.valueOf(parmValue);
-            } else if ("ackUser".equals(parm.getParmName())){
-                m_ackUser = parmValue;
+            if (!"ackType".equals(parm.getParmName()) && !"refId".equals(parm.getParmName()) && !"user".equals(parm.getParmName()) ) {
+                throw new IllegalArgumentException("Event parm: "+parm.getParmName()+", is an invalid paramter");
             } else {
-                if ("ACKNOWLEDGE".equalsIgnoreCase(parmValue)) {
-                    m_ackAction=AckAction.ACKNOWLEDGE;
-                } else if ("ESCALATE".equalsIgnoreCase(parmValue)) {
-                    m_ackAction=AckAction.ESCALATE;
-                } else if ("UNACKNOWLEDGE".equalsIgnoreCase(parmValue)) {
-                    m_ackAction=AckAction.UNACKNOWLEDGE;
-                } else if ("CLEAR".equalsIgnoreCase(parmValue)) {
-                    m_ackAction=AckAction.CLEAR;
+            
+                if ("ackType".equals(parm.getParmName())) {
+
+                    if ("ALARM".equalsIgnoreCase(parmValue) || "NOTIFICATION".equalsIgnoreCase(parmValue)) {
+                        m_ackType = ("ALARM".equalsIgnoreCase(parmValue) ? AckType.ALARM : AckType.NOTIFICATION);
+                    } else {
+                        throw new IllegalArgumentException("Event parm: "+parm.getParmName()+", has invalid value, requires: \"Alarm\" or \"Notification\"." );
+                    }
+                    
+                } else if ("refId".equals(parm.getParmName())){
+                    m_refId = Integer.valueOf(parm.getValue().getContent());
                 } else {
-                    m_ackAction = AckAction.UNSPECIFIED;
-                } 
-            }
+                    m_ackUser = parm.getValue().getContent();
+                }
+            }                
         }
     }
 
