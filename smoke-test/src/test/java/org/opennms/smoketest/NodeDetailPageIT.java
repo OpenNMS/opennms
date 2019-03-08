@@ -28,19 +28,30 @@
 
 package org.opennms.smoketest;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.StringReader;
+import java.net.InetSocketAddress;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.core.Response;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.http.client.methods.HttpGet;
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.smoketest.utils.RestClient;
+import org.opennms.test.system.api.NewTestEnvironment;
 import org.openqa.selenium.By;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -119,6 +130,83 @@ public class NodeDetailPageIT extends OpenNMSSeleniumTestCase {
             Assert.assertEquals("TestMachine", topologyUIPage.getFocusedVertices().get(0).getLabel());
         } finally {
             deleteTestRequisition();
+        }
+    }
+
+    private void createNodeWithInterfaces(final RestClient restClient, final String nodeLabel, final int numberOfInterfaces) {
+        final String foreignSource = "test";
+        final String foreignSourceAndForeignId = foreignSource + ":" + nodeLabel;
+        final OnmsNode node = new OnmsNode();
+        node.setLabel(nodeLabel);
+        node.setType(OnmsNode.NodeType.ACTIVE);
+        node.setForeignSource("test");
+        node.setForeignId(nodeLabel);
+
+        final Response responseAddNode = restClient.addNode(node);
+        assertEquals(201, responseAddNode.getStatus());
+
+        for (int i = 0; i < numberOfInterfaces; i++) {
+            String ipAddress = "192.168.1." + (i + 1);
+            final OnmsIpInterface ipInterface = new OnmsIpInterface();
+            ipInterface.setNode(node);
+            ipInterface.setIpAddress(InetAddressUtils.getInetAddress(ipAddress));
+            ipInterface.setIpHostName(ipAddress);
+            ipInterface.setIsManaged("M");
+            ipInterface.setIsSnmpPrimary(i == 0 ? PrimaryType.PRIMARY : PrimaryType.NOT_ELIGIBLE);
+
+            final Response responseAddInterface = restClient.addInterface(foreignSourceAndForeignId, ipInterface);
+            assertEquals(201, responseAddInterface.getStatus());
+        }
+    }
+
+    @Test
+    public void checkMaximumNumberOfInterfaces() throws Exception {
+        final InetSocketAddress opennmsHttp = getTestEnvironment().getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8980);
+        final RestClient restClient = new RestClient(opennmsHttp);
+        try {
+            createNodeWithInterfaces(restClient, "nodeWith10Interfaces", 10);
+            createNodeWithInterfaces(restClient, "nodeWith11Interfaces", 11);
+            final OnmsNode nodeWith10Interfaces = restClient.getNode("test:nodeWith10Interfaces");
+            final OnmsNode nodeWith11Interfaces = restClient.getNode("test:nodeWith11Interfaces");
+
+            NodeDetailPage nodeDetailPage;
+
+            nodeDetailPage = new NodeDetailPage(this, nodeWith10Interfaces.getId());
+            nodeDetailPage.open();
+
+            setImplicitWait(1, TimeUnit.SECONDS);
+
+            Assert.assertEquals(1, m_driver.findElements(By.id("availability-box")).size());
+            Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.1")).size());
+            Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.2")).size());
+            Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.3")).size());
+            Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.4")).size());
+            Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.5")).size());
+            Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.6")).size());
+            Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.7")).size());
+            Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.8")).size());
+            Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.9")).size());
+            Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.10")).size());
+            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.11")).size());
+
+            nodeDetailPage = new NodeDetailPage(this, nodeWith11Interfaces.getId());
+            nodeDetailPage.open();
+
+            Assert.assertEquals(0, m_driver.findElements(By.id("availability-box")).size());
+            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.1")).size());
+            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.2")).size());
+            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.3")).size());
+            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.4")).size());
+            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.5")).size());
+            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.6")).size());
+            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.7")).size());
+            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.8")).size());
+            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.9")).size());
+            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.10")).size());
+            Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.11")).size());
+        } finally {
+            sendDelete("rest/nodes/test:nodeWith10Interfaces", 202);
+            sendDelete("rest/nodes/test:nodeWith11Interfaces", 202);
         }
     }
 }
