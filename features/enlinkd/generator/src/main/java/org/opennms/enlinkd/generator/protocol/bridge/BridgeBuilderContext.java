@@ -50,7 +50,7 @@ public class BridgeBuilderContext {
         return macGenerator.next();
     }
 
-    public InetAddress getInetAddress(){
+    public InetAddress getNextInetAddress(){
         return inetGenerator.next();
     }
 

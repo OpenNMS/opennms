@@ -123,14 +123,14 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
 
 
         // save bridge element
-        this.context.getTopologyPersister().persist(
-            createBridgeElement(bridge0),
-                // instead of:
-            createBridgeElement(bridge1),
-            createBridgeElement(bridge2),
-                // instead of:
-                createBridgeElement(bridge3)
-        );
+//        this.context.getTopologyPersister().persist(
+//            createBridgeElement(bridge0),
+//                // instead of:
+//            createBridgeElement(bridge1),
+//            createBridgeElement(bridge2),
+//                // instead of:
+//                createBridgeElement(bridge3)
+//        );
         
         //bridge0
         //bridge0:port1 connected to up bridge1:port11
@@ -139,51 +139,67 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
         // createAndPersistBridgeBridgeLink(bridge1, bridge1portCounter, bridge0, bridge0portCounter);
 
         //bridge3:port31 connected to up bridge0:port2
-        bridge0B.connectToNewBridge(bridge3, bridge3portCounter);
+        BridgeBuilder bridge3B = bridge0B.connectToNewBridge(bridge3, bridge3portCounter);
         bridge0portCounter++;
         // instead of:
         // createAndPersistBridgeBridgeLink(bridge3, bridge3portCounter, bridge0, bridge0portCounter);
 
         //bridge0:port3 connected to cloud
         bridge0portCounter++;
-        // bridge0B.createAndPersistCloud(2, 2);
+        bridge0B.increasePortCounter();
+        bridge0B.createAndPersistCloud(2, 2);
         // instead off:
-        createAndPersistCloud(bridge0, bridge0portCounter, 2, 2);
+        // createAndPersistCloud(bridge0, bridge0portCounter, 2, 2);
 
         // bridge0:port4 connected to host4:port41
         bridge0portCounter++;
-        // bridge0B.createAndPersistBridgeMacLink(host4, host4portCounter);
+        bridge0B.increasePortCounter();
+        bridge0B.createAndPersistBridgeMacLink(host4, host4portCounter, bridge0);
         // instead of:
-        createAndPersistBridgeMacLink(bridge0, bridge0portCounter, host4, host4portCounter, bridge0);
+        // createAndPersistBridgeMacLink(bridge0, bridge0portCounter, host4, host4portCounter, bridge0);
 
         // bridge0:port5 connected to host5:port51
         bridge0portCounter++;
-        // bridge0B.createAndPersistBridgeMacLink(host5, host5portCounter);
+        bridge0B.increasePortCounter();
+        bridge0B.createAndPersistBridgeMacLink(host5, host5portCounter, bridge0);
         // instead of:
-        createAndPersistBridgeMacLink(bridge0, bridge0portCounter, host5, host5portCounter, bridge0);
+        // createAndPersistBridgeMacLink(bridge0, bridge0portCounter, host5, host5portCounter, bridge0);
 
         //bridge1
         //bridge2:port21 connected to bridge1:port12 with clouds
         bridge1portCounter++;
-        bridge1B.connectToNewBridge(bridge2, bridge2portCounter);
+        BridgeBuilder bridge2B = bridge1B.connectToNewBridge(bridge2, bridge2portCounter);
 // instead of
   // createAndPersistBridgeBridgeLink(bridge2, bridge2portCounter, bridge1, bridge1portCounter);
-//         bridge1B.createAndPersistCloud(2, 2);
-         createAndPersistCloud(bridge1, bridge1portCounter, 2, 2);
+
+        bridge1B.createAndPersistCloud(2, 2);
+  // instead of
+         // createAndPersistCloud(bridge1, bridge1portCounter, 2, 2);
         
         //bridge2
-        // host6 and host 7 connected to port 22 
+        // host6 and host 7 connected to port 22 : "cloud" symbol
         bridge2portCounter++;
-        createAndPersistBridgeMacLink(bridge2, bridge2portCounter, true,  host6, host6portCounter, bridge0);
-        createAndPersistBridgeMacLink(bridge2, bridge2portCounter, false, host7, host7portCounter, bridge0);
+        bridge2B.increasePortCounter();
+        bridge2B.createAndPersistBridgeMacLink(true,  host6, host6portCounter, bridge0);
+        // instead of
+        // createAndPersistBridgeMacLink(bridge2, bridge2portCounter, true,  host6, host6portCounter, bridge0);
+        bridge2B.createAndPersistBridgeMacLink(false, host7, host7portCounter, bridge0);
+        // instead of
+        // createAndPersistBridgeMacLink(bridge2, bridge2portCounter, false, host7, host7portCounter, bridge0);
         
         // bridge3
         // host8:with-no-snmp connected bridge3:port32
         bridge3portCounter++;
-        createAndPersistBridgeMacLink(bridge3, bridge3portCounter, host8, null, bridge0);
+        bridge3B.increasePortCounter();
+        bridge3B.createAndPersistBridgeMacLink(host8, null, bridge0);
+        // instead of
+        // createAndPersistBridgeMacLink(bridge3, bridge3portCounter, host8, null, bridge0);
         // host9:with-no-snmp connected bridge3:port33
         bridge3portCounter++;
-        createAndPersistBridgeMacLink(bridge3, bridge3portCounter, host9, null, bridge0);
+        bridge3B.increasePortCounter();
+        bridge3B.createAndPersistBridgeMacLink(host9, null, bridge0);
+        // instead of
+        // createAndPersistBridgeMacLink(bridge3, bridge3portCounter, host9, null, bridge0);
     }
 
     private void createAndPersistBridgeBridgeLink(final OnmsNode bridge, final Integer port, final OnmsNode designated, final Integer designatedPort) {
