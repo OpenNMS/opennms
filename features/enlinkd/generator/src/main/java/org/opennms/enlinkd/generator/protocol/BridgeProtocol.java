@@ -35,6 +35,8 @@ import java.util.List;
 import org.opennms.enlinkd.generator.TopologyContext;
 import org.opennms.enlinkd.generator.TopologyGenerator;
 import org.opennms.enlinkd.generator.TopologySettings;
+import org.opennms.enlinkd.generator.protocol.bridge.BridgeBuilder;
+import org.opennms.enlinkd.generator.protocol.bridge.BridgeBuilderContext;
 import org.opennms.enlinkd.generator.util.IdGenerator;
 import org.opennms.enlinkd.generator.util.InetAddressGenerator;
 import org.opennms.enlinkd.generator.util.MacAddressGenerator;
@@ -115,36 +117,59 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
         int host5portCounter = 51;
         int host6portCounter = 61;
         int host7portCounter = 71;
-        
+
+        BridgeBuilderContext context = new BridgeBuilderContext(this.context.getTopologyPersister(), this.macGenerator, this.inetGenerator);
+        BridgeBuilder bridge0B = new BridgeBuilder(bridge0, bridge0portCounter - 1, context);
+
+
         // save bridge element
         this.context.getTopologyPersister().persist(
             createBridgeElement(bridge0),
+                // instead of:
             createBridgeElement(bridge1),
             createBridgeElement(bridge2),
-            createBridgeElement(bridge3)
+                // instead of:
+                createBridgeElement(bridge3)
         );
         
         //bridge0
         //bridge0:port1 connected to up bridge1:port11
-        createAndPersistBridgeBridgeLink(bridge0, bridge0portCounter, bridge1, bridge1portCounter);
+        BridgeBuilder bridge1B = bridge0B.connectToNewBridge(bridge1, bridge1portCounter);
+        // instead of:
+        // createAndPersistBridgeBridgeLink(bridge1, bridge1portCounter, bridge0, bridge0portCounter);
+
         //bridge3:port31 connected to up bridge0:port2
+        bridge0B.connectToNewBridge(bridge3, bridge3portCounter);
         bridge0portCounter++;
-        createAndPersistBridgeBridgeLink(bridge3, bridge3portCounter, bridge0, bridge0portCounter);
+        // instead of:
+        // createAndPersistBridgeBridgeLink(bridge3, bridge3portCounter, bridge0, bridge0portCounter);
+
         //bridge0:port3 connected to cloud
         bridge0portCounter++;
+        // bridge0B.createAndPersistCloud(2, 2);
+        // instead off:
         createAndPersistCloud(bridge0, bridge0portCounter, 2, 2);
+
         // bridge0:port4 connected to host4:port41
         bridge0portCounter++;
+        // bridge0B.createAndPersistBridgeMacLink(host4, host4portCounter);
+        // instead of:
         createAndPersistBridgeMacLink(bridge0, bridge0portCounter, host4, host4portCounter, bridge0);
+
         // bridge0:port5 connected to host5:port51
         bridge0portCounter++;
+        // bridge0B.createAndPersistBridgeMacLink(host5, host5portCounter);
+        // instead of:
         createAndPersistBridgeMacLink(bridge0, bridge0portCounter, host5, host5portCounter, bridge0);
 
         //bridge1
         //bridge2:port21 connected to bridge1:port12 with clouds
         bridge1portCounter++;
-        createAndPersistBridgeBridgeLink(bridge2, bridge2portCounter, bridge1, bridge1portCounter);
-        createAndPersistCloud(bridge1, bridge1portCounter, 2, 2);
+        bridge1B.connectToNewBridge(bridge2, bridge2portCounter);
+// instead of
+  // createAndPersistBridgeBridgeLink(bridge2, bridge2portCounter, bridge1, bridge1portCounter);
+//         bridge1B.createAndPersistCloud(2, 2);
+         createAndPersistCloud(bridge1, bridge1portCounter, 2, 2);
         
         //bridge2
         // host6 and host 7 connected to port 22 
@@ -161,7 +186,7 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
         createAndPersistBridgeMacLink(bridge3, bridge3portCounter, host9, null, bridge0);
     }
 
-    private void createAndPersistBridgeBridgeLink(OnmsNode bridge, Integer port, OnmsNode designated, Integer designatedPort) {
+    private void createAndPersistBridgeBridgeLink(final OnmsNode bridge, final Integer port, final OnmsNode designated, final Integer designatedPort) {
         createAndPersistBridgeBridgeLink(bridge, port, true, designated, designatedPort, true);
     }
 
@@ -180,6 +205,7 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
                 createBridgeBridgeLink(bridge, designated, port, designatedPort)
         );
     }
+
     private void createAndPersistBridgeMacLink(OnmsNode bridge, Integer port, OnmsNode host, Integer hostPort, OnmsNode gateway) {
         createAndPersistBridgeMacLink(bridge, port, true, host, hostPort, gateway);
     }
