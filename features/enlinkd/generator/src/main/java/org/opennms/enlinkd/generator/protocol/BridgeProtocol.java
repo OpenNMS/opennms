@@ -28,8 +28,6 @@
 
 package org.opennms.enlinkd.generator.protocol;
 
-import java.net.InetAddress;
-import java.util.Date;
 import java.util.List;
 
 import org.opennms.enlinkd.generator.TopologyContext;
@@ -37,30 +35,22 @@ import org.opennms.enlinkd.generator.TopologyGenerator;
 import org.opennms.enlinkd.generator.TopologySettings;
 import org.opennms.enlinkd.generator.protocol.bridge.BridgeBuilder;
 import org.opennms.enlinkd.generator.protocol.bridge.BridgeBuilderContext;
-import org.opennms.enlinkd.generator.util.IdGenerator;
 import org.opennms.enlinkd.generator.util.InetAddressGenerator;
 import org.opennms.enlinkd.generator.util.MacAddressGenerator;
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
-import org.opennms.netmgt.enlinkd.model.BridgeElement;
-import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dBaseType;
-import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
-import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 
 /**
  * Creates a topology with Bridges and Segments.
- * Call with: enlinkd:generate-topology --protocol bridge --nodes 10 --snmpinterfaces 0 --ipinterfaces 0
+ * Call with: enlinkd:generate-topology --protocol bridge --nodes
  * Example:
- *
  *
  *                           bridge0
  *           ------------------------------------
  *           |      |          |        |       |
  *        bridge1  bridge3  bridge4  bridge5  Macs/Ip
- *           |          |                     no node
- *        -------    --------
+ *           |          |               |     no node
+ *        -------    --------          ...
  *        |          |      |
  *     Segment     host8    host9
  *   -----------
@@ -75,9 +65,9 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
  * the hub has no snmp agent and therefore we are not to explore his mab forwarding table
  * we also follow the convention to start the port countin from the if of the node
  * following an integer: so port11 -> is the first generated port of node with id 1
- *                          port12 -> is the second generated port of node with id 1
- *                          port21 -> is the first generated port of node with id 2
- *                          port53 -> is the third generated port of node with id 5
+ * port12 -> is the second generated port of node with id 1
+ * port21 -> is the first generated port of node with id 2
+ * port53 -> is the third generated port of node with id 5
  */
 public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
 
@@ -89,6 +79,33 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
 
     public BridgeProtocol(TopologySettings topologySettings, TopologyContext context) {
         super(topologySettings, context);
+    }
+
+    @Override
+    protected void printProtocolSpecificMessage() {
+        // the bridge topology is different as the other topologies since it consists of different node types -> we need
+        // a different implementation of this method
+        this.context.currentProgress("%nCreating %s topology with %s Nodes. All other settings are ignored since they not relevant for this topology",
+                this.getProtocol(),
+                topologySettings.getAmountNodes());
+    }
+
+    @Override
+    protected TopologySettings adoptAndVerifySettings(TopologySettings topologySettings) {
+        int amountNodes;
+        TopologySettings.TopologySettingsBuilder builder = TopologySettings.builder();
+        // make amount of nodes multiple of 10:
+        if (topologySettings.getAmountNodes() < 10) {
+            builder.amountNodes(10);
+        } else {
+            int nodes = topologySettings.getAmountNodes() + topologySettings.getAmountNodes() % 10;
+            builder.amountNodes(nodes);
+        }
+        return builder.amountSnmpInterfaces(0)
+                .amountIpInterfaces(0)
+                .amountLinks(0)
+                .amountElements(0)
+                .build();
     }
 
     @Override
@@ -105,20 +122,20 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
 
     }
 
-     protected void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes, BridgeBuilder bridge0B, OnmsNode gateway, int iteration) {
+    protected void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes, BridgeBuilder bridge0B, OnmsNode gateway, int iteration) {
 
-            int offset = iteration * 10;
-            OnmsNode bridge1 = nodes.get(1 + offset);
-            OnmsNode bridge2 = nodes.get(2 + offset);
-            OnmsNode bridge3 = nodes.get(3 + offset);
-            OnmsNode host4 = nodes.get(4 + offset);
-            OnmsNode bridge5 = nodes.get(5 + offset);
-            OnmsNode host6 = nodes.get(6 + offset);
-            OnmsNode host7 = nodes.get(7 + offset);
-            OnmsNode host8 = nodes.get(8 + offset);
-            OnmsNode host9 = nodes.get(9 + offset);
+        int offset = iteration * 10;
+        OnmsNode bridge1 = nodes.get(1 + offset);
+        OnmsNode bridge2 = nodes.get(2 + offset);
+        OnmsNode bridge3 = nodes.get(3 + offset);
+        OnmsNode host4 = nodes.get(4 + offset);
+        OnmsNode bridge5 = nodes.get(5 + offset);
+        OnmsNode host6 = nodes.get(6 + offset);
+        OnmsNode host7 = nodes.get(7 + offset);
+        OnmsNode host8 = nodes.get(8 + offset);
+        OnmsNode host9 = nodes.get(9 + offset);
 
-            //bridge0
+        //bridge0
         //bridge0:port1 connected to up bridge1:port11
         BridgeBuilder bridge1B = bridge0B.connectToNewBridge(bridge1, 11);
 
@@ -133,21 +150,20 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
         bridge0B.increasePortCounter();
         bridge0B.createAndPersistBridgeMacLink(host4, 41, gateway);
 
-        // bridge0B.increasePortCounter();
+        // bridge5 will be the new root bridge for the next interation
         BridgeBuilder bridge5B = bridge0B.connectToNewBridge(bridge5, 51);
-                // bridge0B.createAndPersistBridgeMacLink(host5, 51, gateway);
 
         //bridge1
         //bridge2:port21 connected to bridge1:port12 with clouds
         BridgeBuilder bridge2B = bridge1B.connectToNewBridge(bridge2, 21);
         bridge1B.createAndPersistCloud(2, 2);
-        
+
         //bridge2
         // host6 and host 7 connected to port 22 : "cloud" symbol
         bridge2B.increasePortCounter();
-        bridge2B.createAndPersistBridgeMacLink(true,  host6, 61, gateway);
+        bridge2B.createAndPersistBridgeMacLink(true, host6, 61, gateway);
         bridge2B.createAndPersistBridgeMacLink(false, host7, 71, gateway);
-        
+
         // bridge3
         // host8:with-no-snmp connected bridge3:port32
         bridge3B.increasePortCounter();
@@ -155,8 +171,8 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
         bridge3B.increasePortCounter();
         bridge3B.createAndPersistBridgeMacLink(host9, null, gateway);
 
-        if(nodes.size() >= offset + 20 ) {
-            createAndPersistProtocolSpecificEntities(nodes, bridge5B, gateway, iteration+1);
+        if (nodes.size() >= offset + 20) {
+            createAndPersistProtocolSpecificEntities(nodes, bridge5B, gateway, iteration + 1);
         }
     }
 }

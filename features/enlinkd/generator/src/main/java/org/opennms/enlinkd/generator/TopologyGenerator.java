@@ -79,9 +79,9 @@ public class TopologyGenerator {
 
 
     public void generateTopology(TopologySettings topologySettings) {
-        topologySettings.verify();
+        org.opennms.enlinkd.generator.protocol.Protocol protocol = getProtocol(topologySettings);
         deleteTopology(); // Let's first get rid of old generated topologies
-        getProtocol(topologySettings).createAndPersistNetwork();
+        protocol.createAndPersistNetwork();
     }
 
     public void deleteTopology() {

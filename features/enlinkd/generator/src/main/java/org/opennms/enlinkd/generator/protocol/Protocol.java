@@ -60,19 +60,12 @@ public abstract class Protocol<Element> {
     final Map<Integer, Integer> nodeIfIndexes = new HashMap<>();
 
     public Protocol(TopologySettings topologySettings, TopologyContext context) {
-        this.topologySettings = topologySettings;
+        this.topologySettings = adoptAndVerifySettings(topologySettings);
         this.context = context;
     }
 
     public void createAndPersistNetwork() {
-        this.context.currentProgress("%nCreating %s %s topology with %s Nodes, %s Elements, %s Links, %s SnmpInterfaces, %s IpInterfaces:",
-                topologySettings.getTopology(),
-                this.getProtocol(),
-                topologySettings.getAmountNodes(),
-                topologySettings.getAmountElements(),
-                topologySettings.getAmountElements(),
-                topologySettings.getAmountSnmpInterfaces(),
-                topologySettings.getAmountIpInterfaces());
+        printProtocolSpecificMessage();
         OnmsCategory category = createCategory();
         context.getTopologyPersister().persist(category);
         List<OnmsNode> nodes = createNodes(topologySettings.getAmountNodes(), category);
@@ -85,11 +78,27 @@ public abstract class Protocol<Element> {
         createAndPersistProtocolSpecificEntities(nodes);
     }
 
+    protected void printProtocolSpecificMessage() {
+        this.context.currentProgress("%nCreating %s %s topology with %s Nodes, %s Elements, %s Links, %s SnmpInterfaces, %s IpInterfaces:",
+                topologySettings.getTopology(),
+                this.getProtocol(),
+                topologySettings.getAmountNodes(),
+                topologySettings.getAmountElements(),
+                topologySettings.getAmountElements(),
+                topologySettings.getAmountSnmpInterfaces(),
+                topologySettings.getAmountIpInterfaces());
+    }
+
     protected abstract void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes);
 
     protected abstract TopologyGenerator.Protocol getProtocol();
 
-    private OnmsCategory createCategory() {
+    protected TopologySettings adoptAndVerifySettings(TopologySettings topologySettings) {
+        topologySettings.verify();
+        return topologySettings;
+    }
+
+    protected OnmsCategory createCategory() {
         OnmsCategory category = new OnmsCategory();
         category.setName(TopologyGenerator.CATEGORY_NAME);
         return category;
