@@ -70,6 +70,8 @@ public class TopologySettings {
         assertMoreOrEqualsThan("we need at least 2 nodes", 2, this.amountNodes);
         assertMoreOrEqualsThan("we need at least 2 elements", 2, this.amountElements);
         assertMoreOrEqualsThan("we need at least 1 link", 1, this.amountLinks);
+        assertMoreOrEqualsThan("links must be less than or equal to number of snmp interfaces",
+                this.amountLinks, this.amountSnmpInterfaces);
     }
 
     private static void assertMoreOrEqualsThan(String message, int expected, int actual) {

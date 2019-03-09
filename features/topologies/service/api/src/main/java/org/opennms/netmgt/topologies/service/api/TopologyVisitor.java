@@ -1,9 +1,8 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -27,21 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
---%>
+package org.opennms.netmgt.topologies.service.api;
 
-<%@page language="java"
-        contentType="text/html"
-        session="true"
-        %>
+/**
+ * An interface to allow visiting the different types that may be stored in the {@link OnmsTopologyMessage topology
+ * message's} {@link OnmsTopologyRef payload}.
+ * <p>
+ * There should be one visit method here for each of the implementations of {@link OnmsTopologyRef}.
+ */
+public interface TopologyVisitor {
+    default void visit(OnmsTopologyVertex vertex) {
+    }
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-    <jsp:param name="title" value="Ops Board Configuration" />
-    <jsp:param name="headTitle" value="Ops Board Configuration" />
-    <jsp:param name="location" value="admin" />
-    <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-    <jsp:param name="breadcrumb" value="Ops Board Configuration" />
-    <jsp:param name="vaadinEmbeddedStyles" value="true" />
-</jsp:include>
+    default void visit(OnmsTopologyPort port) {
+    }
 
-<iframe name="wallboard-config" src="admin/wallboard-config" class="vaadin-fullscreen" frameborder="0"></iframe>
-<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
+    default void visit(OnmsTopologyEdge edge) {
+    }
+}

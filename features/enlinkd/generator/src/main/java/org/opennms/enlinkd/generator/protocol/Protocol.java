@@ -117,6 +117,8 @@ public abstract class Protocol<Element> {
         node.setLocation(location);
         node.addCategory(category);
         node.setType(OnmsNode.NodeType.ACTIVE);
+        node.setForeignSource("fs" + count);
+        node.setForeignId("fid" + count);
         return node;
     }
 

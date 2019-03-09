@@ -10,7 +10,7 @@
 
 [[ga]]
 = Administrators Guide
-:author: Copyright (c) 2015-2018 The OpenNMS Group, Inc.
+:author: Copyright (c) 2015-2019 The OpenNMS Group, Inc.
 :revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
@@ -315,6 +315,7 @@ ifndef::opennms-prime[]
 include::text/minion/kafka.adoc[]
 include::text/minion/aws-sqs.adoc[]
 include::text/minion/offheap.adoc[]
+include::text/minion/jdbc-driver.adoc[]
 endif::opennms-prime[]
 
 [[ga-sentinel]]

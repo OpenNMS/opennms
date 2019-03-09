@@ -34,6 +34,7 @@ import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElement;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Semantics;
@@ -67,7 +68,7 @@ public class OctetArrayValue extends Value<byte[]> {
     public static InformationElementDatabase.ValueParserFactory parserWithLimits(final int minimum, final int maximum) {
         return (name, semantics) -> new InformationElement() {
             @Override
-            public Value<?> parse(Session.Resolver resolver, ByteBuffer buffer) throws InvalidPacketException {
+            public Value<?> parse(Session.Resolver resolver, ByteBuffer buffer) throws InvalidPacketException, MissingTemplateException {
                 return new OctetArrayValue(name, semantics, bytes(buffer, buffer.remaining()));
             }
 
