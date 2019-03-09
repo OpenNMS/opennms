@@ -178,7 +178,7 @@ public class LinkdTopologyProviderTestIT {
 
     @Test
     @Transactional
-    public void testBridgeBridge() throws Exception {
+    public void testBridge() throws Exception {
         // The testing of bridge topologies is a bit different than for the other protocols since we have a hierarchical
         // topology with different node types.
 
@@ -193,17 +193,21 @@ public class LinkdTopologyProviderTestIT {
 
         // 2.) map the nodes by it's label name.
         final Map<String, Vertex> vertices = new HashMap<>();
+        final Map<Integer,Vertex> verticesById = new HashMap<>();
         for(Vertex vertex : linkdTopologyProvider.getVerticesWithoutGroups()) {
             String label = vertex.getLabel();
             if("Segment".equals(label)) { // enhance Segment to make it unique
                 label = StringUtils.substringAfter(vertex.getTooltipText(), "nodeid:["); // Shared Segment': nodeid:[13561], bridgeport
                 label = StringUtils.substringBefore(label, "]");
-                label = "Segment[nodeid:"+label+"]";
+                label = verticesById.get(Integer.parseInt(label)).getLabel(); // get label by id of node
+                label = "Segment["+label+"]";
             } else if (label.contains("without node")) {
                 // shared addresses: ([000000000007, 000000000008]ip:[0.0.0.1 ], mac:[000000000005]ip:[0.0.0.2 ], mac:[000000000006])(Unknown/Not an OpenNMS Node)
                 label = StringUtils.substringAfter(vertex.getTooltipText(), "shared addresses: ([");
                 label = StringUtils.substringBefore(label, ",");
                 label = "NoNode["+label+"]";
+            } else {
+                verticesById.put(vertex.getNodeID(), vertex);
             }
             vertices.put(label, vertex);
         }
@@ -218,18 +222,18 @@ public class LinkdTopologyProviderTestIT {
         verifyLinkingBetweenNodes(vertices.get("Node0"), vertices.get("NoNode[000000000007]"));
 
         // Level 1 -> 2
-        verifyLinkingBetweenNodes(vertices.get("Node1"), vertices.get("Segment[nodeid:2]"));
+        verifyLinkingBetweenNodes(vertices.get("Node1"), vertices.get("Segment[Node1]"));
         verifyLinkingBetweenNodes(vertices.get("Node3"), vertices.get("Node8"));
         verifyLinkingBetweenNodes(vertices.get("Node3"), vertices.get("Node9"));
 
         // Level 2 -> 3
-        verifyLinkingBetweenNodes(vertices.get("Segment[nodeid:2]"), vertices.get("NoNode[00000000000e]"));
-        verifyLinkingBetweenNodes(vertices.get("Segment[nodeid:2]"), vertices.get("Node2"));
+        verifyLinkingBetweenNodes(vertices.get("Segment[Node1]"), vertices.get("NoNode[00000000000e]"));
+        verifyLinkingBetweenNodes(vertices.get("Segment[Node1]"), vertices.get("Node2"));
 
         // Level 3 -> 4
-        verifyLinkingBetweenNodes(vertices.get("Node2"), vertices.get("Segment[nodeid:3]"));
-        verifyLinkingBetweenNodes(vertices.get("Segment[nodeid:3]"), vertices.get("Node6"));
-        verifyLinkingBetweenNodes(vertices.get("Segment[nodeid:3]"), vertices.get("Node7"));
+        verifyLinkingBetweenNodes(vertices.get("Node2"), vertices.get("Segment[Node2]"));
+        verifyLinkingBetweenNodes(vertices.get("Segment[Node2]"), vertices.get("Node6"));
+        verifyLinkingBetweenNodes(vertices.get("Segment[Node2]"), vertices.get("Node7"));
 
     }
 
