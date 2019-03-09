@@ -42,8 +42,8 @@ import org.opennms.netmgt.model.OnmsNode;
 
 /**
  * Creates a topology with Bridges and Segments.
- * Call with: enlinkd:generate-topology --protocol bridge --nodes
- * Example:
+ * Call with: enlinkd:generate-topology --protocol bridge --nodes 10
+ * will result in:
  *
  *                           bridge0
  *           ------------------------------------
@@ -59,15 +59,7 @@ import org.opennms.netmgt.model.OnmsNode;
  * no node     |
  *          Segment
  *
- * 6 nodes are hosts: host4,host5, host6, host7, host8, host9
- * generate 4 ipnettomedia without a corresponding node
- * consider also that on port 1 of C is connected an HUB with a group of hosts connected
- * the hub has no snmp agent and therefore we are not to explore his mab forwarding table
- * we also follow the convention to start the port countin from the if of the node
- * following an integer: so port11 -> is the first generated port of node with id 1
- * port12 -> is the second generated port of node with id 1
- * port21 -> is the first generated port of node with id 2
- * port53 -> is the third generated port of node with id 5
+ * If more than 10 nodes are requested then the tree repeats itself with bridge5 as the root node of the new subtree.
  */
 public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
 
@@ -122,7 +114,7 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
 
     }
 
-    protected void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes, BridgeBuilder bridge0B, OnmsNode gateway, int iteration) {
+    private void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes, BridgeBuilder bridge0B, OnmsNode gateway, int iteration) {
 
         int offset = iteration * 10;
         OnmsNode bridge1 = nodes.get(1 + offset);
@@ -171,6 +163,7 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
         bridge3B.increasePortCounter();
         bridge3B.createAndPersistBridgeMacLink(host9, null, gateway);
 
+        // create sub tree on bridge5:
         if (nodes.size() >= offset + 20) {
             createAndPersistProtocolSpecificEntities(nodes, bridge5B, gateway, iteration + 1);
         }
