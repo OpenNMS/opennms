@@ -30,7 +30,6 @@ package org.opennms.enlinkd.generator.protocol.bridge;
 
 import java.net.InetAddress;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;

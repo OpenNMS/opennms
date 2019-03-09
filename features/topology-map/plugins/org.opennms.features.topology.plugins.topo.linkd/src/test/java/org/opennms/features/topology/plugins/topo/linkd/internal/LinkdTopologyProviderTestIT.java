@@ -179,9 +179,8 @@ public class LinkdTopologyProviderTestIT {
     @Test
     @Transactional
     public void testBridgeBridge() throws Exception {
-        // The testing of bridge topologies is a bit different thean for the other protocols since we have a hierarchical
+        // The testing of bridge topologies is a bit different than for the other protocols since we have a hierarchical
         // topology with different node types.
-
 
         // 1.) Generate Topology
         TopologySettings settings = TopologySettings.builder()

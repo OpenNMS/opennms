@@ -98,22 +98,27 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
 
     @Override
     protected void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes) {
-
-        OnmsNode bridge0 =  nodes.get(0);
-        OnmsNode bridge1 =  nodes.get(1);
-        OnmsNode bridge2 =  nodes.get(2);
-        OnmsNode bridge3 =  nodes.get(3);
-        OnmsNode host4   =  nodes.get(4);
-        OnmsNode host5   =  nodes.get(5);
-        OnmsNode host6   =  nodes.get(6);
-        OnmsNode host7   =  nodes.get(7);
-        OnmsNode host8   =  nodes.get(8);
-        OnmsNode host9   =  nodes.get(9);
-
+        OnmsNode bridge0 = nodes.get(0);
         BridgeBuilderContext context = new BridgeBuilderContext(this.context.getTopologyPersister(), this.macGenerator, this.inetGenerator);
         BridgeBuilder bridge0B = new BridgeBuilder(bridge0, 0, context);
-        
-        //bridge0
+        createAndPersistProtocolSpecificEntities(nodes, bridge0B, bridge0, 0);
+
+    }
+
+     protected void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes, BridgeBuilder bridge0B, OnmsNode gateway, int iteration) {
+
+            int offset = iteration * 10;
+            OnmsNode bridge1 = nodes.get(1 + offset);
+            OnmsNode bridge2 = nodes.get(2 + offset);
+            OnmsNode bridge3 = nodes.get(3 + offset);
+            OnmsNode host4 = nodes.get(4 + offset);
+            OnmsNode bridge5 = nodes.get(5 + offset);
+            OnmsNode host6 = nodes.get(6 + offset);
+            OnmsNode host7 = nodes.get(7 + offset);
+            OnmsNode host8 = nodes.get(8 + offset);
+            OnmsNode host9 = nodes.get(9 + offset);
+
+            //bridge0
         //bridge0:port1 connected to up bridge1:port11
         BridgeBuilder bridge1B = bridge0B.connectToNewBridge(bridge1, 11);
 
@@ -126,10 +131,11 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
 
         // bridge0:port4 connected to host4:port41
         bridge0B.increasePortCounter();
-        bridge0B.createAndPersistBridgeMacLink(host4, 41, bridge0);
+        bridge0B.createAndPersistBridgeMacLink(host4, 41, gateway);
 
-        bridge0B.increasePortCounter();
-        bridge0B.createAndPersistBridgeMacLink(host5, 51, bridge0);
+        // bridge0B.increasePortCounter();
+        BridgeBuilder bridge5B = bridge0B.connectToNewBridge(bridge5, 51);
+                // bridge0B.createAndPersistBridgeMacLink(host5, 51, gateway);
 
         //bridge1
         //bridge2:port21 connected to bridge1:port12 with clouds
@@ -139,15 +145,18 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
         //bridge2
         // host6 and host 7 connected to port 22 : "cloud" symbol
         bridge2B.increasePortCounter();
-        bridge2B.createAndPersistBridgeMacLink(true,  host6, 61, bridge0);
-        bridge2B.createAndPersistBridgeMacLink(false, host7, 71, bridge0);
+        bridge2B.createAndPersistBridgeMacLink(true,  host6, 61, gateway);
+        bridge2B.createAndPersistBridgeMacLink(false, host7, 71, gateway);
         
         // bridge3
         // host8:with-no-snmp connected bridge3:port32
         bridge3B.increasePortCounter();
-        bridge3B.createAndPersistBridgeMacLink(host8, null, bridge0);
+        bridge3B.createAndPersistBridgeMacLink(host8, null, gateway);
         bridge3B.increasePortCounter();
-        bridge3B.createAndPersistBridgeMacLink(host9, null, bridge0);
-    }
+        bridge3B.createAndPersistBridgeMacLink(host9, null, gateway);
 
+        if(nodes.size() >= offset + 20 ) {
+            createAndPersistProtocolSpecificEntities(nodes, bridge5B, gateway, iteration+1);
+        }
+    }
 }
