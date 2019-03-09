@@ -2,7 +2,7 @@
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,33 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.netflow.parser.session;
+package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+public class MissingTemplateException extends Exception {
 
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
-
-public interface Session {
-
-    interface Resolver {
-        Template lookupTemplate(final int templateId) throws MissingTemplateException;
-        List<Value<?>> lookupOptions(final List<Value<?>> values);
+    public MissingTemplateException(final int templateId) {
+        super(Integer.toString(templateId));
     }
-
-    void addTemplate(final long observationDomainId, final Template template);
-
-    void removeTemplate(final long observationDomainId, final int templateId);
-
-    void removeAllTemplate(final long observationDomainId, final Template.Type type);
-
-    void addOptions(final long observationDomainId,
-                    final int templateId,
-                    final Collection<Value<?>> scopes,
-                    final List<Value<?>> values);
-
-    Resolver getResolver(final long observationDomainId);
-
 }

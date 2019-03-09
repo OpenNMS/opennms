@@ -37,7 +37,6 @@ import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.BooleanValue;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.DateTimeValue;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.FloatValue;

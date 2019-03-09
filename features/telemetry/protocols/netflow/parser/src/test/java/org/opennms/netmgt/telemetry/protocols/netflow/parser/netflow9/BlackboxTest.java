@@ -74,7 +74,8 @@ public class BlackboxTest {
                 new Object[]{Arrays.asList("netflow9_test_cisco_wlc_8510_tpl_262.dat")},
                 new Object[]{Arrays.asList("netflow9_test_cisco_1941K9.dat")},
                 new Object[]{Arrays.asList("netflow9_cisco_asr1001x_tpl259.dat")},
-                new Object[]{Arrays.asList("netflow9_test_paloalto_panos_tpl.dat", "netflow9_test_paloalto_panos_data.dat")}
+                new Object[]{Arrays.asList("netflow9_test_paloalto_panos_tpl.dat", "netflow9_test_paloalto_panos_data.dat")},
+                new Object[]{Arrays.asList("netflow9_test_juniper_data_b4_tmpl.dat")}
         );
     }
 

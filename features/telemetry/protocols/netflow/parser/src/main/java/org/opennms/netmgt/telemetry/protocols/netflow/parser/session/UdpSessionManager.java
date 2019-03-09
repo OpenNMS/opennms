@@ -44,6 +44,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 
 import com.google.common.collect.Iterables;
@@ -63,8 +64,13 @@ public class UdpSessionManager {
             }
 
             @Override
-            public Optional<Template> lookupTemplate(final int templateId) {
-                return Optional.ofNullable(UdpSessionManager.this.templates.get(key(templateId))).map(v -> v.template);
+            public Template lookupTemplate(final int templateId) throws MissingTemplateException {
+                final TemplateWrapper templateWrapper = UdpSessionManager.this.templates.get(key(templateId));
+                if (templateWrapper != null) {
+                    return templateWrapper.template;
+                } else {
+                    throw new MissingTemplateException(templateId);
+                }
             }
 
             @Override
