@@ -61,7 +61,6 @@ import org.opennms.netmgt.enlinkd.NodesOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.OspfOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyException;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -237,7 +236,7 @@ public class LinkdTopologyProviderTestIT {
 
     }
 
-    private void test(TopologyGenerator.Protocol protocol) throws OnmsTopologyException{
+    private void test(TopologyGenerator.Protocol protocol) {
         testAmounts(protocol);
         testLinkingBetweenNodes(protocol);
     }
