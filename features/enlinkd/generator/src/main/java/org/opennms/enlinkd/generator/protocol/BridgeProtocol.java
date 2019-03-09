@@ -77,23 +77,27 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
     protected void printProtocolSpecificMessage() {
         // the bridge topology is different as the other topologies since it consists of different node types -> we need
         // a different implementation of this method
-        this.context.currentProgress("%nCreating %s topology with %s Nodes. All other settings are ignored since they not relevant for this topology",
+        this.context.currentProgress("%nCreating %s topology with %s Nodes. Other settings are ignored since they not relevant for this topology",
                 this.getProtocol(),
                 topologySettings.getAmountNodes());
     }
 
     @Override
     protected TopologySettings adoptAndVerifySettings(TopologySettings topologySettings) {
+        // make amount of nodes multiple of 10 since each (sub)tree needs 10 nodes:
         int amountNodes;
-        TopologySettings.TopologySettingsBuilder builder = TopologySettings.builder();
-        // make amount of nodes multiple of 10:
         if (topologySettings.getAmountNodes() < 10) {
-            builder.amountNodes(10);
+            amountNodes = 10;
         } else {
-            int nodes = topologySettings.getAmountNodes() + topologySettings.getAmountNodes() % 10;
-            builder.amountNodes(nodes);
+            int modulo = topologySettings.getAmountNodes() % 10;
+            amountNodes = topologySettings.getAmountNodes();
+            if(modulo != 0){
+                amountNodes += 10-modulo;
+            }
         }
-        return builder.amountSnmpInterfaces(0)
+        return TopologySettings.builder()
+                .amountNodes(amountNodes)
+                .amountSnmpInterfaces(0)
                 .amountIpInterfaces(0)
                 .amountLinks(0)
                 .amountElements(0)
