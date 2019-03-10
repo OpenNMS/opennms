@@ -158,9 +158,9 @@ public class LinkdTopologyProviderTestIT {
      *
      *                      bridge0
      *                         |
-     *           ----------------------------------------
-     *           |          |          |        |       |
-     *        bridge1    bridge3    bridge4  bridge5  Macs/Ip
+     *           ------------------------------------------------
+     *           |          |          |        |       |       |
+     *        bridge1    bridge3    bridge4  bridge5  Macs/Ip bridge10
      *           |          |                         no node
      *        -------    --------
      *        |          |      |
@@ -175,7 +175,7 @@ public class LinkdTopologyProviderTestIT {
 
     @Test
     @Transactional
-    public void testBridge() throws Exception {
+    public void testBridge() {
         // The testing of bridge topologies is a bit different than for the other protocols since we have a hierarchical
         // topology with different node types.
 
@@ -217,6 +217,7 @@ public class LinkdTopologyProviderTestIT {
         verifyLinkingBetweenNodes(vertices.get("Node0"), vertices.get("Node4"));
         verifyLinkingBetweenNodes(vertices.get("Node0"), vertices.get("Node5"));
         verifyLinkingBetweenNodes(vertices.get("Node0"), vertices.get("NoNode[000000000007]"));
+        verifyLinkingBetweenNodes(vertices.get("Node0"), vertices.get("Node10"));
 
         // Level 1 -> 2
         verifyLinkingBetweenNodes(vertices.get("Node1"), vertices.get("Segment[Node1]"));

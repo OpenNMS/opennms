@@ -38,14 +38,14 @@ public class BridgeProtocolTest {
 
     @Test
     public void testAdoptAndVerifySettings() {
-        testAmountNodes(10, -1);
-        testAmountNodes(10, 0);
-        testAmountNodes(10, 9);
-        testAmountNodes(10, 10);
-        testAmountNodes(20, 11);
-        testAmountNodes(20, 19);
-        testAmountNodes(20, 20);
-        testAmountNodes(30, 21);
+        testAmountNodes(11, -1);
+        testAmountNodes(11, 0);
+        testAmountNodes(11, 10);
+        testAmountNodes(11, 11);
+        testAmountNodes(21, 12);
+        testAmountNodes(21, 20);
+        testAmountNodes(21, 21);
+        testAmountNodes(31, 22);
     }
 
     private void testAmountNodes(int expected, int initialSetting) {
