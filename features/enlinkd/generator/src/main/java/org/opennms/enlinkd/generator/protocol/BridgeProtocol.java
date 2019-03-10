@@ -84,17 +84,18 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
 
     @Override
     protected TopologySettings adoptAndVerifySettings(TopologySettings topologySettings) {
-        // make amount of nodes multiple of 10 since each (sub)tree needs 10 nodes:
+        // make amount of nodes multiple of 10+1 since each (sub)tree needs 10 nodes:
         int amountNodes;
-        if (topologySettings.getAmountNodes() < 10) {
-            amountNodes = 10;
+        if (topologySettings.getAmountNodes() < 11) {
+            amountNodes = 11;
         } else {
-            int modulo = topologySettings.getAmountNodes() % 10;
             amountNodes = topologySettings.getAmountNodes();
-            if(modulo != 0){
-                amountNodes += 10-modulo;
+            int modulo = (amountNodes -1) % 10;
+            if(modulo != 0) {
+                amountNodes += (10-modulo);
             }
         }
+
         return TopologySettings.builder()
                 .amountNodes(amountNodes)
                 .amountSnmpInterfaces(0)
@@ -118,7 +119,7 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
 
     }
 
-    private void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes, BridgeBuilder bridge0B, OnmsNode gateway, int iteration) {
+    private void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes, BridgeBuilder root, OnmsNode gateway, int iteration) {
 
         int offset = iteration * 10;
         OnmsNode bridge1 = nodes.get(1 + offset);
@@ -130,24 +131,24 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
         OnmsNode host7 = nodes.get(7 + offset);
         OnmsNode host8 = nodes.get(8 + offset);
         OnmsNode host9 = nodes.get(9 + offset);
-
+        OnmsNode bridge10 = nodes.get(10 + offset);
         //bridge0
         //bridge0:port1 connected to up bridge1:port11
-        BridgeBuilder bridge1B = bridge0B.connectToNewBridge(bridge1, 11);
+        BridgeBuilder bridge1B = root.connectToNewBridge(bridge1, 11);
 
         //bridge3:port31 connected to up bridge0:port2
-        BridgeBuilder bridge3B = bridge0B.connectToNewBridge(bridge3, 31);
+        BridgeBuilder bridge3B = root.connectToNewBridge(bridge3, 31);
 
         //bridge0:port3 connected to cloud
-        bridge0B.increasePortCounter();
-        bridge0B.createAndPersistCloud(2, 2);
+        root.increasePortCounter();
+        root.createAndPersistCloud(2, 2);
 
         // bridge0:port4 connected to host4:port41
-        bridge0B.increasePortCounter();
-        bridge0B.createAndPersistBridgeMacLink(host4, 41, gateway);
+        root.increasePortCounter();
+        root.createAndPersistBridgeMacLink(host4, 41, gateway);
 
         // bridge5 will be the new root bridge for the next interation
-        BridgeBuilder bridge5B = bridge0B.connectToNewBridge(bridge5, 51);
+        BridgeBuilder bridge5B = root.connectToNewBridge(bridge5, 51);
 
         //bridge1
         //bridge2:port21 connected to bridge1:port12 with clouds
@@ -166,6 +167,9 @@ public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
         bridge3B.createAndPersistBridgeMacLink(host8, null, gateway);
         bridge3B.increasePortCounter();
         bridge3B.createAndPersistBridgeMacLink(host9, null, gateway);
+
+        //bridge3:port31 connected to up bridge0:port2
+        root.connectToNewBridge(bridge10, 10);
 
         // create sub tree on bridge5:
         if (nodes.size() >= offset + 20) {
