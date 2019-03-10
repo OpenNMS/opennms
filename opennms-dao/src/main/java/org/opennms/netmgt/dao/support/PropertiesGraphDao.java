@@ -43,6 +43,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -751,9 +752,21 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     /** {@inheritDoc} */
     @Override
     public PrefabGraph getPrefabGraph(final String name) {
-        PrefabGraph prefabGraph = getAllPrefabGraphs().stream().filter(graph -> graph.getName().equals(name)).findFirst().get();
-        if (prefabGraph != null) {
-            return prefabGraph;
+        for (final FileReloadContainer<PrefabGraphTypeDao> container : m_types.values()) {
+            final PrefabGraphTypeDao type = container.getObject();
+            this.rescanIncludeDirectory(type);
+            final PrefabGraph graph = type.getQuery(name);
+            if (graph != null) {
+                return graph;
+            }
+        }
+
+        if (m_extContainer.getObject() != null) {
+            List<PrefabGraph> graphs = m_extContainer.getObject().getPrefabGraphs();
+            Optional<PrefabGraph> prefabGraph = graphs.stream().filter(graph -> graph.getName().equals(name)).findFirst();
+            if (prefabGraph.isPresent()) {
+                return prefabGraph.get();
+            }
         }
         throw new ObjectRetrievalFailureException(PrefabGraph.class, name,
                                                   "Could not find prefabricated graph report with name '"
