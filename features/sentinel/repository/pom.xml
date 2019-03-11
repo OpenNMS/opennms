@@ -53,8 +53,8 @@
 
                                 <!-- TODO MVR -->
                                 <feature>sentinel-eventd</feature>
-                                <feature>sentinel-bsm</feature>
-
+                                <feature>sentinel-bsmd</feature>
+                                
                                 <!-- Sentinel specific features -->
                                 <feature>sentinel-core</feature>
                                 <feature>sentinel-persistence</feature>

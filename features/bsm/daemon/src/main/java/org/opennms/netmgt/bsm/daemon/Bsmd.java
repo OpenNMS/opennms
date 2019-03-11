@@ -59,7 +59,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.support.TransactionOperations;
 
 /**
  * This daemon is responsible for driving the Business Service state machine by:
@@ -87,7 +87,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     private EventConfDao m_eventConfDao;
 
     @Autowired
-    private TransactionTemplate m_template;
+    private TransactionOperations m_transactionOperations;
 
     @Autowired
     private BusinessServiceStateMachine m_stateMachine;
@@ -173,7 +173,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
         }
 
         // Update the state machine with the latest list of business services
-        m_template.execute(new TransactionCallbackWithoutResult() {
+        m_transactionOperations.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 final List<BusinessService> businessServices = m_manager.getAllBusinessServices();
@@ -274,12 +274,12 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
         return m_eventConfDao;
     }
 
-    public void setTransactionTemplate(TransactionTemplate template) {
-        m_template = template;
+    public void setTransactionOperations(TransactionOperations transactionOperations) {
+        m_transactionOperations = transactionOperations;
     }
 
-    public TransactionTemplate getTransactionTemplate() {
-        return m_template;
+    public TransactionOperations getTransactionOperations() {
+        return m_transactionOperations;
     }
 
     public void setVerifyReductionKeys(boolean verify) {

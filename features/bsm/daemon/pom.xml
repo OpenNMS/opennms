@@ -21,7 +21,9 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Private-Package>org.opennms.netmgt.bsm.service.internal.*</Private-Package>
+            <Private-Package></Private-Package>
+            <DynamicImport-Package>org.springframework.*</DynamicImport-Package>
+            <Spring-Context>META-INF/opennms/applicationContext-osgi.xml</Spring-Context>
           </instructions>
         </configuration>
       </plugin>

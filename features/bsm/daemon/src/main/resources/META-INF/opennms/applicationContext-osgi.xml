@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+          http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+          http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+          http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+          http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+    <context:annotation-config />
+    <tx:annotation-driven />
+
+    <!-- Import all "bundle" dependencies -->
+    <osgi:reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventIpcManager" />
+    <osgi:reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" />
+    <osgi:reference id="businessServiceStateMachine" interface="org.opennms.netmgt.bsm.service.BusinessServiceStateMachine" />
+    <osgi:reference id="businessServiceManager" interface="org.opennms.netmgt.bsm.service.BusinessServiceManager" />
+    <osgi:reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" />
+    <osgi:reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService" />
+
+    <bean id="bsmDaemon" class="org.opennms.netmgt.bsm.daemon.Bsmd" init-method="start" destroy-method="destroy"/>
+    <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+        <property name="annotatedListener" ref="bsmDaemon" />
+        <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+    </bean>
+    <osgi:service interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener" ref="bsmDaemon" />
+
+</beans>
+
+
+

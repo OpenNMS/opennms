@@ -22,7 +22,11 @@
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Import-Package>*,org.springframework.transaction.annotation</Import-Package>
-            <Private-Package>org.opennms.netmgt.bsm.service.internal.*;org.opennms.netmgt.bsm.service.model.graph.internal.*</Private-Package>
+            <!--This is required otherwise nothing is exported -->
+            <Export-Package>org.opennms.netmgt.bsm.service.*</Export-Package>
+            <!-- TODO MVR the daemon uses these packages, we may need to expose those as services, etc. -->
+            <!--<Private-Package>org.opennms.netmgt.bsm.service.internal.*;org.opennms.netmgt.bsm.service.model.graph.internal.*</Private-Package>-->
+            <Private-Package></Private-Package>
           </instructions>
         </configuration>
       </plugin>
