@@ -299,6 +299,9 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
         SortedSet<OnmsHwEntityAlias> aliases = aliasMap.get(entity.getEntPhysicalIndex());
         if (aliases != null) {
             entity.setEntAliases(aliases);
+            for (OnmsHwEntityAlias alias : aliases) {
+                alias.setHwEntity(entity);
+            }
         }
     }
 

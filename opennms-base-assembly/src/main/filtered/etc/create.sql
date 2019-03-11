@@ -2273,7 +2273,7 @@ create unique index hwEntityAttribute_unique_idx on hwEntityAttribute(hwEntityId
 
 create table hwEntityAlias (
     id          integer default nextval('opennmsNxtId') not null,
-    hwEntityId  integer ,
+    hwEntityId  integer not null,
     index       integer not null,
     oid         text not null,
     constraint pk_hwentityalias PRIMARY KEY (id),
