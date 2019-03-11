@@ -17,9 +17,11 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
+            <Spring-Context>META-INF/opennms/applicationContext-osgi.xml</Spring-Context>
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <Import-Package>*,org.springframework.transaction.annotation</Import-Package>
             <Private-Package>org.opennms.netmgt.bsm.service.internal.*;org.opennms.netmgt.bsm.service.model.graph.internal.*</Private-Package>
           </instructions>
         </configuration>

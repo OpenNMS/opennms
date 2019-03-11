@@ -34,6 +34,9 @@
     <!-- OpenNMS Provisioning API and implementations -->
     <module>provisioning</module>
 
+    <!-- Jung Wrapper -->
+    <module>jung</module>
+
     <!-- OpenNMS Polling API -->
     <module>poller</module>
 

@@ -51,6 +51,10 @@
                                 <feature>opennms-persistence</feature>
                                 <feature>opennms-spring-extender</feature>
 
+                                <!-- TODO MVR -->
+                                <feature>sentinel-eventd</feature>
+                                <feature>sentinel-bsm</feature>
+
                                 <!-- Sentinel specific features -->
                                 <feature>sentinel-core</feature>
                                 <feature>sentinel-persistence</feature>

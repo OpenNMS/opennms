@@ -43,6 +43,9 @@ public class JaxbResourceConfiguration<T> implements ConfigurationResource<T> {
     private Class<T> m_class;
     private Resource m_resource;
 
+    public JaxbResourceConfiguration(final String clazzName, final Resource resource) throws ClassNotFoundException {
+        this((Class<T>) Class.forName(clazzName), resource);
+    }
     public JaxbResourceConfiguration(final Class<T> clazz, final Resource resource) {
         m_class = clazz;
         m_resource = resource;

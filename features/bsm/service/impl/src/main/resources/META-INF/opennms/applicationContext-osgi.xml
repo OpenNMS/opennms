@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+          http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+          http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+          http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+          http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+    <context:annotation-config />
+    <tx:annotation-driven />
+
+    <!-- Import all service dependencies -->
+    <osgi:reference id="alarmDao"               interface="org.opennms.netmgt.dao.api.AlarmDao" />
+    <osgi:reference id="nodeDao"                interface="org.opennms.netmgt.dao.api.NodeDao" />
+    <osgi:reference id="applicationDao"         interface="org.opennms.netmgt.dao.api.ApplicationDao" />
+    <osgi:reference id="monitoredServiceDao"    interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" />
+    <osgi:reference id="businessServiceDao"     interface="org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao" />
+    <osgi:reference id="businessServicEdgeeDao"     interface="org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao" />
+    <osgi:reference id="mapFunctionDao"         interface="org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao" />
+    <osgi:reference id="reductionFunctionDao"   interface="org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao" />
+    <osgi:reference id="eventForwarder"         interface="org.opennms.netmgt.events.api.EventForwarder" />
+
+    <bean id="alarmProvider" class="org.opennms.netmgt.bsm.service.internal.AlarmProviderImpl"/>
+    <bean id="stateMachine" class="org.opennms.netmgt.bsm.service.internal.DefaultBusinessServiceStateMachine" />
+    <osgi:service interface="org.opennms.netmgt.bsm.service.BusinessServiceStateMachine" ref="stateMachine" />
+    <osgi:list id="stateChangeHandlerList" interface="org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler" cardinality="0..N">
+        <osgi:listener ref="stateMachine" bind-method="addHandler" unbind-method="removeHandler" />
+    </osgi:list>
+    <bean id="businessServiceManager" class="org.opennms.netmgt.bsm.service.internal.BusinessServiceManagerImpl" />
+    <osgi:service ref="businessServiceManager" interface="org.opennms.netmgt.bsm.service.BusinessServiceManager" />
+
+</beans>

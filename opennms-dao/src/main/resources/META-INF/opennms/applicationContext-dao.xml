@@ -93,11 +93,6 @@
   </bean>
   <onmsgi:service interface="org.opennms.netmgt.model.FilterManager" ref="filterManager" />
 
-  <bean id="eventdServiceManager" class="org.opennms.netmgt.dao.hibernate.EventdServiceManagerHibernate">
-    <property name="serviceTypeDao" ref="serviceTypeDao"/>
-  </bean>
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.EventdServiceManager" ref="eventdServiceManager" />
-
   <!-- Other Non-Database DAOs -->
   <!-- The time-series strategy specific context should provide beans that implement:
             org.opennms.netmgt.collection.api.PersisterFactory

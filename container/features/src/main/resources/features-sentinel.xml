@@ -70,6 +70,20 @@
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-shell/${project.version}</bundle>
     </feature>
 
+    <feature name="sentinel-eventd">
+        <feature dependency="true">sentinel-persistence</feature>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon/${project.version}</bundle> <!-- TODO MVR do we really need this? -->
+        <!--<bundle>mvn:commons-beanutils/commons-beanutils/${TODO.version}</bundle>-->
+        <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-bsm">
+        <feature dependency="true">sentinel-persistence</feature>
+        <feature>org.opennms.features.bsm.service.api</feature>
+        <feature>org.opennms.features.bsm.service.impl</feature>
+        <feature>org.opennms.features.bsm.shell-commands</feature>
+    </feature>
+
     <feature name="sentinel-telemetry" description="OpenNMS :: Sentinel :: Telemetry" version="${project.version}">
         <feature>sentinel-persistence</feature>
 

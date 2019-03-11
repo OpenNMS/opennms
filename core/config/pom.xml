@@ -23,6 +23,7 @@
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Export-Package>org.opennms.core.config.impl.*;version="${project.version}"</Export-Package>
+						<DynamicImport-Package>org.opennms.*</DynamicImport-Package>
 					</instructions>
 				</configuration>
 			</plugin>
