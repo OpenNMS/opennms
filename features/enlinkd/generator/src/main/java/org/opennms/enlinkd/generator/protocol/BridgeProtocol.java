@@ -50,7 +50,7 @@ import org.opennms.netmgt.model.OnmsNode;
  *           |      |          |        |       |
  *        bridge1  bridge3  bridge4  bridge5  Macs/Ip
  *           |          |               |     no node
- *        -------    --------          ...
+ *        -------    --------     ...subtree...
  *        |          |      |
  *     Segment     host8    host9
  *   -----------
