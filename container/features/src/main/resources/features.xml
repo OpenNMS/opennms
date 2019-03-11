@@ -526,11 +526,14 @@
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.commands/${project.version}</bundle>
     </feature>
     <feature name="opennms-dao-api" version="${project.version}" description="OpenNMS :: DAO :: API">
+        <feature>commons-lang</feature>
         <feature>opennms-core</feature>
         <feature>opennms-model</feature>
         <feature>opennms-config-api</feature>
+        <feature>hibernate36</feature> <!-- TODO MVR theoretically only the hibernate core might be sufficient -->
         <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.model/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-api/${project.version}</bundle>
+        <!-- TODO MVR if this is actually empty, we should get rid of it -->
+        <!--<bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-api/${project.version}</bundle>-->
     </feature>
     <feature name="opennms-dao" version="${project.version}" description="OpenNMS :: DAO">
         <feature>commons-jxpath</feature>
@@ -1023,6 +1026,10 @@
         <bundle>mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.modules/${karafVersion}</bundle>
         <bundle>mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.config/${karafVersion}</bundle>
     </feature>
+    <feature name="opennms-timeformat" version="${project.version}">
+        <bundle>mvn:org.opennms.features.timeformat/org.opennms.features.timeformat.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.timeformat/org.opennms.features.timeformat.impl/${project.version}</bundle>
+    </feature>
     <feature name="jmxconfiggenerator" version="${project.version}" description="OpenNMS JMX Configuration Generator">
         <feature>guava</feature>
         <feature>commons-io</feature>
@@ -1055,7 +1062,6 @@
     <feature name="org.opennms.features.bsm.service.api" version="${project.version}" description="OpenNMS :: Features :: BSM :: Service :: API">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
         <feature>guava</feature>
-        <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.persistence.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.jung/${jungVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.criteria/${project.version}</bundle>
@@ -1218,6 +1224,8 @@
     <feature name="opennms-topology-runtime-browsers" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: Browsers">
         <details>Alarm browser to enhance the Linkd topology UI.</details>
         <feature>opennms-topology-api</feature>
+        <feature>opennms-timeformat</feature>
+        <feature>spring-security32</feature> <!-- TODO MVR install it for now, should probably be handled differently -->
         <bundle>mvn:org.opennms.features.topology.plugins/org.opennms.features.topology.plugins.browsers/${project.version}</bundle>
     </feature>
     <feature name="opennms-topology-runtime-vmware" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: VMware">

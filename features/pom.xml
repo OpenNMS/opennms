@@ -185,5 +185,8 @@
     <module>ifttt</module>
 
     <module>jest</module>
+
+    <!-- TODO MVR opennms-web-api separation -->
+    <module>web</module>
   </modules>
 </project>

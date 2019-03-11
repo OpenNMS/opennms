@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+          http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+          http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+          http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+          http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+    <tx:annotation-driven />
+    <context:annotation-config/>
+    <context:component-scan base-package="org.opennms.features.status" />
+
+    <osgi:reference id="applicationDao" interface="org.opennms.netmgt.dao.api.ApplicationDao" />
+    <osgi:reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
+    <osgi:reference id="genericPersistenceAccessor" interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor" />
+    <osgi:reference id="businessServiceManager" interface="org.opennms.netmgt.bsm.service.BusinessServiceManager" />
+
+    <!-- properties are automatically injected -->
+    <bean id="nodeStatusCalculator" class="org.opennms.features.status.api.node.strategy.DefaultNodeStatusCalculator"/>
+    <osgi:service interface="org.opennms.features.status.api.node.NodeStatusCalculator" ref="nodeStatusCalculator" />
+</beans>

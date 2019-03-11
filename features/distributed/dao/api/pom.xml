@@ -23,9 +23,11 @@
                         <Export-Package>
                             org.opennms.netmgt.dao.util,
                             org.opennms.netmgt.dao.api,
+                            org.opennms.netmgt.enlinkd.model,
                             org.opennms.netmgt.enlinkd.persistence.api,
                             org.opennms.netmgt.enlinkd.service.api,
                             org.opennms.netmgt.topologies.service.api,
+                            org.opennms.netmgt.topology.persistence.api,
                             org.opennms.netmgt.bsm.persistence.api,
                             org.opennms.netmgt.bsm.persistence.api.functions,
                             org.opennms.netmgt.bsm.persistence.api.functions.reduce,
@@ -36,7 +38,6 @@
                             com.google.common.base,
                             com.google.common.collect,
 
-                            javax.persistence,
                             javax.validation.constraints,
 
                             org.slf4j,
@@ -56,6 +57,7 @@
                             org.opennms.core.utils,
                             org.opennms.core.xml,
                             org.opennms.features.reporting.model,
+                            org.opennms.netmgt.enlinkd.model,
                             org.opennms.netmgt.enlinkd.persistence.api,
                             org.opennms.netmgt.enlinkd.service.api,
                             org.opennms.netmgt.topologies.service.api,
@@ -82,19 +84,10 @@
                             org.opennms.netmgt.model.minion,
                             org.opennms.netmgt.model.monitoringLocations,
                             org.opennms.netmgt.model.outage,
-                            org.opennms.netmgt.xml.event
+                            org.opennms.netmgt.topology.persistence.api,
+                            org.opennms.netmgt.xml.event,
                         </Import-Package>
-                        <Private-Package>
-                            org.opennms.netmgt.dao.util,
-                            org.opennms.netmgt.dao.api,
-                            org.opennms.netmgt.enlinkd.persistence.api,
-                            org.opennms.netmgt.enlinkd.service.api,
-                            org.opennms.netmgt.topologies.service.api,
-                            org.opennms.netmgt.bsm.persistence.api,
-                            org.opennms.netmgt.bsm.persistence.api.functions.reduce,
-                            org.opennms.netmgt.bsm.persistence.api.functions.map,
-                            org.opennms.netmgt.flows.classification.persistence.api
-                        </Private-Package>
+                        <Private-Package></Private-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -110,11 +103,11 @@
                         </goals>
                         <configuration>
                             <artifactSet>
-                                <includes>
-                                    <include>org.opennms:opennms-dao-api</include>
-                                    <include>org.opennms.features.bsm:org.opennms.features.bsm.persistence.api</include>
-                                    <include>org.opennms.features.flows.classification.persistence:org.opennms.features.flows.classification.persistence.api</include>
-                                </includes>
+                                <!-- TODO MVR The api module must be empty, otherwise we have overlapping classes from impl.
+                                In Impl everything must be available, otherwise hibernate cannot scan the classes -->
+                                <excludes>
+                                    <exclude>*:*</exclude>
+                                </excludes>
                             </artifactSet>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
                         </configuration>
@@ -146,6 +139,12 @@
         <dependency>
             <groupId>org.opennms.features.topologies</groupId>
             <artifactId>org.opennms.features.topologies.service.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- TODO MVR not sure if this is the right place -->
+        <dependency>
+            <groupId>org.opennms.features.topology</groupId>
+            <artifactId>org.opennms.features.topology.persistence.api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

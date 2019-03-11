@@ -57,12 +57,21 @@
                                 <feature>sentinel-web</feature>
                                 <feature>sentinel-vaadin</feature>
                                 <feature>sentinel-vaadin-bsm-admin-page</feature>
+                                <feature>sentinel-topology-base</feature>
+                                <feature>sentinel-geolocation</feature>
 
                                 <!-- TODO MVR Topology -->
                                 <feature>opennms-topology-api</feature>
                                 <feature>opennms-topology-runtime-base</feature>
                                 <feature>opennms-topology-runtime-browsers</feature>
+                                <feature>opennms-topology-runtime-linkd</feature>
+                                <feature>opennms-topology-runtime-vmware</feature>
+                                <feature>opennms-topology-runtime-application</feature>
                                 <feature>opennms-topology-runtime-bsm</feature>
+                                <feature>opennms-topology-runtime-graphml</feature>
+                                <feature>opennms-topology-runtime-pathoutage</feature>
+                                <feature>opennms-topology-runtime-asset</feature>
+                                <feature>org.opennms.features.topology.shell</feature>
 
                                 <!-- Sentinel specific features -->
                                 <feature>sentinel-core</feature>

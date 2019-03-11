@@ -99,7 +99,10 @@
 
     <!-- TODO MVR simulates the web-api for now -->
     <feature name="sentinel-web-api">
-        <bundle>mvn:org.opennms.features.vaadin-components/pagenaventry/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.web/org.opennms.features.web.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.web/org.opennms.features.web.navigate/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.web/org.opennms.features.web.utils/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.web/org.opennms.features.web.header/${project.version}</bundle>
     </feature>
 
     <feature name="sentinel-vaadin">
@@ -111,6 +114,20 @@
         <feature>sentinel-bsmd</feature>
         <feature>sentinel-vaadin</feature>
         <feature>vaadin-adminpage</feature>
+    </feature>
+
+    <feature name="sentinel-geolocation">
+        <!-- TODO MVR in opennms the status providers are exposed via Spring.
+            Should probably be split in order to make it easier integrate with osgi"
+         -->
+        <bundle>mvn:org.opennms.features.status/org.opennms.features.status.api/${project.version}</bundle>
+        <feature>geolocation</feature>
+    </feature>
+
+    <feature name="sentinel-topology-base">
+        <feature>sentinel-persistence</feature>
+        <feature>sentinel-geolocation</feature>
+        <feature>opennms-topology-runtime-base</feature>
     </feature>
 
     <feature name="sentinel-telemetry" description="OpenNMS :: Sentinel :: Telemetry" version="${project.version}">
