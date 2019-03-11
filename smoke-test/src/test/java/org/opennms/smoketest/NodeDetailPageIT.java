@@ -28,30 +28,20 @@
 
 package org.opennms.smoketest;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.StringReader;
-import java.net.InetSocketAddress;
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.core.Response;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.http.client.methods.HttpGet;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.smoketest.utils.RestClient;
-import org.opennms.test.system.api.NewTestEnvironment;
 import org.openqa.selenium.By;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -133,46 +123,35 @@ public class NodeDetailPageIT extends OpenNMSSeleniumTestCase {
         }
     }
 
-    private void createNodeWithInterfaces(final RestClient restClient, final String nodeLabel, final int numberOfInterfaces) {
+    private void createNodeWithInterfaces(final String nodeLabel, final int numberOfInterfaces) throws Exception {
         final String foreignSource = "test";
-        final String foreignSourceAndForeignId = foreignSource + ":" + nodeLabel;
-        final OnmsNode node = new OnmsNode();
-        node.setLabel(nodeLabel);
-        node.setType(OnmsNode.NodeType.ACTIVE);
-        node.setForeignSource("test");
-        node.setForeignId(nodeLabel);
+        final String foreignId = nodeLabel;
+        final String foreignSourceAndForeignId = foreignSource + ":" + foreignId;
 
-        final Response responseAddNode = restClient.addNode(node);
-        assertEquals(201, responseAddNode.getStatus());
+        final String node = "<node type=\"A\" label=\""+nodeLabel+"\" foreignSource=\""+foreignSource+"\" foreignId=\""+foreignId+"\">" +
+                "<labelSource>H</labelSource><sysContact>Ulf</sysContact><sysDescription>Test System</sysDescription><sysLocation>Fulda</sysLocation>"+
+                "<sysName>"+nodeLabel+"</sysName><sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId><createTime>2019-03-11T07:12:46.421-04:00</createTime>" +
+                "<lastCapsdPoll>2019-03-11T07:12:46.421-04:00</lastCapsdPoll></node>";
+
+        sendPost("rest/nodes", node, 201);
 
         for (int i = 0; i < numberOfInterfaces; i++) {
-            String ipAddress = "192.168.1." + (i + 1);
-            final OnmsIpInterface ipInterface = new OnmsIpInterface();
-            ipInterface.setNode(node);
-            ipInterface.setIpAddress(InetAddressUtils.getInetAddress(ipAddress));
-            ipInterface.setIpHostName(ipAddress);
-            ipInterface.setIsManaged("M");
-            ipInterface.setIsSnmpPrimary(i == 0 ? PrimaryType.PRIMARY : PrimaryType.NOT_ELIGIBLE);
+            final String ipAddress = "192.168.1." + (i + 1);
+            final String ipInterface = "<ipInterface isManaged=\"M\" snmpPrimary=\"P\">" +
+                    "<ipAddress>"+ipAddress+"</ipAddress><hostName>"+nodeLabel+".local</hostName>" +
+                    "</ipInterface>";
 
-            final Response responseAddInterface = restClient.addInterface(foreignSourceAndForeignId, ipInterface);
-            assertEquals(201, responseAddInterface.getStatus());
+            sendPost("rest/nodes/"+foreignSourceAndForeignId+"/ipinterfaces", ipInterface, 201);
         }
     }
 
     @Test
     public void checkMaximumNumberOfInterfaces() throws Exception {
-        final InetSocketAddress opennmsHttp = getTestEnvironment().getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8980);
-        final RestClient restClient = new RestClient(opennmsHttp);
         try {
-            createNodeWithInterfaces(restClient, "nodeWith10Interfaces", 10);
-            createNodeWithInterfaces(restClient, "nodeWith11Interfaces", 11);
-            final OnmsNode nodeWith10Interfaces = restClient.getNode("test:nodeWith10Interfaces");
-            final OnmsNode nodeWith11Interfaces = restClient.getNode("test:nodeWith11Interfaces");
-
-            NodeDetailPage nodeDetailPage;
-
-            nodeDetailPage = new NodeDetailPage(this, nodeWith10Interfaces.getId());
-            nodeDetailPage.open();
+            createNodeWithInterfaces("nodeWith10Interfaces", 10);
+            createNodeWithInterfaces("nodeWith11Interfaces", 11);
+            
+            m_driver.get(getBaseUrl()+"opennms/element/node.jsp?node=test:nodeWith10Interfaces");
 
             setImplicitWait(1, TimeUnit.SECONDS);
 
@@ -189,8 +168,7 @@ public class NodeDetailPageIT extends OpenNMSSeleniumTestCase {
             Assert.assertEquals(1, m_driver.findElements(By.linkText("192.168.1.10")).size());
             Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.11")).size());
 
-            nodeDetailPage = new NodeDetailPage(this, nodeWith11Interfaces.getId());
-            nodeDetailPage.open();
+            m_driver.get(getBaseUrl()+"opennms/element/node.jsp?node=test:nodeWith11Interfaces");
 
             Assert.assertEquals(0, m_driver.findElements(By.id("availability-box")).size());
             Assert.assertEquals(0, m_driver.findElements(By.linkText("192.168.1.1")).size());
