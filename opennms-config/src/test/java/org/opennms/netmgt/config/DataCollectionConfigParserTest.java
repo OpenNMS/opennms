@@ -300,6 +300,7 @@ public class DataCollectionConfigParserTest {
     private static void executeParser(SnmpCollection collection) throws URISyntaxException {
         File configFolder = getDatacollectionDirectory();
         DataCollectionConfigParser parser = new DataCollectionConfigParser(configFolder.getAbsolutePath());
+        parser.loadExternalGroupMap();
         parser.parseCollection(collection);
         validateParser(parser);
     }

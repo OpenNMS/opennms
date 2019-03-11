@@ -158,7 +158,7 @@ public class DataCollectionConfigParser {
     /**
      * Read all XML files from datacollection directory and parse them to create a list of DatacollectionGroup objects.
      */
-    private void parseExternalResources() {
+    protected void parseExternalResources() {
         // Check configuration files repository
         File folder = new File(configDirectory);
         if (!folder.exists() || !folder.isDirectory()) {
