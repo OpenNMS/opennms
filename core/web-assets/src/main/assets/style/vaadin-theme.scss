@@ -7,10 +7,10 @@ so I have included a hack in the webpack configuration to un-comment the
 
 The finished CSS file will include this line, directly:
 
-@import "/opennms/VAADIN/themes/reindeer/legacy-styles.css";
+@import "/VAADIN/themes/reindeer/legacy-styles.css";
 */
 
-/*! string-replace-webpack-plugin: @import "/opennms/VAADIN/themes/reindeer/legacy-styles.css"; */
+/*! string-replace-webpack-plugin: @import "/VAADIN/themes/reindeer/legacy-styles.css"; */
 
 @import "bootstrap.scss";
 

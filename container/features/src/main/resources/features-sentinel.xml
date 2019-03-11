@@ -70,6 +70,7 @@
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-shell/${project.version}</bundle>
     </feature>
 
+    <!-- TODO MVR cannot be installed and just works -->
     <feature name="sentinel-eventd">
         <feature dependency="true">sentinel-persistence</feature>
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon/${project.version}</bundle> <!-- TODO MVR do we really need this? -->
@@ -77,6 +78,7 @@
         <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
     </feature>
 
+    <!-- TODO MVR cannot be installed and just works -->
     <feature name="sentinel-bsmd">
         <feature dependency="true">sentinel-eventd</feature>
         <feature dependency="true">sentinel-persistence</feature>
@@ -85,6 +87,30 @@
         <feature>org.opennms.features.bsm.shell-commands</feature>
         <bundle>mvn:org.opennms/opennms-alarm-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.daemon/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-web">
+        <feature>http</feature>
+        <feature>http-whiteboard</feature>
+        <!--<feature>cxf-http</feature>-->
+        <feature>jax-rs-connector</feature>
+        <feature>sentinel-web-api</feature>
+    </feature>
+
+    <!-- TODO MVR simulates the web-api for now -->
+    <feature name="sentinel-web-api">
+        <bundle>mvn:org.opennms.features.vaadin-components/pagenaventry/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-vaadin">
+        <feature>sentinel-web</feature>
+        <feature>vaadin</feature>
+    </feature>
+
+    <feature name="sentinel-vaadin-bsm-admin-page">
+        <feature>sentinel-bsmd</feature>
+        <feature>sentinel-vaadin</feature>
+        <feature>vaadin-adminpage</feature>
     </feature>
 
     <feature name="sentinel-telemetry" description="OpenNMS :: Sentinel :: Telemetry" version="${project.version}">

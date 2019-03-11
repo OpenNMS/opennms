@@ -19,6 +19,7 @@
     <module>core</module>
     <module>graph</module>
     <module>extender-service</module>
+    <module>pagenaventry</module>
     <module>widgetset</module>
   </modules>
 </project>
