@@ -514,85 +514,75 @@
 </div>
 
 <% if (request.isUserInRole(Authentication.ROLE_ADMIN) || !request.isUserInRole(Authentication.ROLE_READONLY)) {%>
+    <div class="row">
+        <div class="col-md-6">
+            <form class="form-inline" method="post" action="alarm/acknowledge">
+                <input type="hidden" name="actionCode" value="<%=action%>" />
+                <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
+                <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
+                <input class="form-control btn btn-secondary" type="submit" value="<%=ackButtonName%>" />
+            </form>
+            <%if (showEscalate || showClear) {%>
+                    <form class="form-inline" method="post" action="alarm/changeSeverity">
+                        <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
+                        <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
+                        <select class="form-control custom-select" name="actionCode">
+                            <%if (showEscalate) {%>
+                            <option value="<%=escalateAction%>">Escalate this alarm</option>
+                            <% }%>
+                            <%if (showClear) {%>
+                            <option value="<%=clearAction%>">Clear this alarm</option>
+                            <% }%>
+                        </select>
+                        <input class="form-control btn btn-secondary" type="submit" value="Go"/>
+                    </form>
+            <% } // showEscalate || showClear %>
+        </div>
+        <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.alarmTroubleTicketEnabled"))) {%>
+        <div class="col-md-6">
+            <form class="form-inline" method="post" action="alarm/ticket/create.htm">
+                <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
+                <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
+                <form:input class="form-control btn btn-secondary" type="submit" value="Create Ticket" disabled="<%=((alarm.getTTicketState() != null) && (alarm.getTTicketState() != TroubleTicketState.CREATE_FAILED)) ? true : false %>" />
+                <%-- Remedy Specific TroubleTicket - Start --%>
+                <% if ("org.opennms.netmgt.ticketer.remedy.RemedyTicketerPlugin".equalsIgnoreCase(Vault.getProperty("opennms.ticketer.plugin")) && (alarm.getTTicketState() == null || alarm.getTTicketState().toString().equals("CREATE_FAILED") )) { %>
+                  <input type="hidden" name="nodelabel" value="<%=alarm.getNodeLabel()%>"/>
+                  <input class="form-control" type="text" name="remedy.user.comment" value="Add a Comment here"/>
+                  <select class="form-control" name="remedy.urgency">
+                    <option value="1-Critical">1-Critical</option>
+                    <option value="2-High">2-High</option>
+                    <option value="3-Medium">3-Medium</option>
+                    <option value="4-Low" selected="selected">4-Low</option>
+                  </select>
+                  <select class="form-control" name="remedy.assignedgroup">
+                    <% String propsFile = new String(Vault.getProperty("opennms.home") + "/etc/remedy.properties");
+                       Configuration remedyConfig = null;
+                       try {
+                         remedyConfig = new PropertiesConfiguration(propsFile);
+                       } catch (final ConfigurationException e) {}
+                       for (String group: remedyConfig.getString("remedy.targetgroups").split(":")) { %>
+                         <option value="<%=group%>"><%=group%></option>
+                    <% }  %>
+                  </select>
+                <% } %>
+                <%-- Remedy Specific TroubleTicket - End --%>
+            </form>
 
-<div class="row">
-<div class="col-md-6">
+            <form class="form-inline" method="post" action="alarm/ticket/update.htm">
+                <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
+                <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
+                <form:input class="form-control btn btn-secondary" type="submit" value="Update Ticket" disabled="<%=(alarm.getTTicketState() == null || alarm.getTTicketId() == null) %>"/>
+            </form>
 
-                <form class="form-inline" method="post" action="alarm/acknowledge">
-                    <input type="hidden" name="actionCode" value="<%=action%>" />
-                    <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-                    <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
-                    <input class="form-control btn btn-secondary" type="submit" value="<%=ackButtonName%>" />
-                </form>
-
-        <%if (showEscalate || showClear) {%>
-
-                <form class="form-inline" method="post" action="alarm/changeSeverity">
-                    <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-                    <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />	  
-                    <select class="form-control custom-select" name="actionCode">
-                        <%if (showEscalate) {%>
-                        <option value="<%=escalateAction%>">Escalate this alarm</option>
-                        <% }%>
-                        <%if (showClear) {%>
-                        <option value="<%=clearAction%>">Clear this alarm</option>
-                        <% }%>
-                    </select>
-                    <input class="form-control btn btn-secondary" type="submit" value="Go"/>
-                </form>
-
-        <% } // showEscalate || showClear %>
-
-<% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.alarmTroubleTicketEnabled"))) {%>
-
-</div>
-<div class="col-md-6">
-
-<form class="form-inline" method="post" action="alarm/ticket/create.htm">
-    <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-    <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input class="form-control btn btn-secondary" type="submit" value="Create Ticket" disabled="<%=((alarm.getTTicketState() != null) && (alarm.getTTicketState() != TroubleTicketState.CREATE_FAILED)) ? true : false %>" />
-    <%-- Remedy Specific TroubleTicket - Start --%>
-    <% if ("org.opennms.netmgt.ticketer.remedy.RemedyTicketerPlugin".equalsIgnoreCase(Vault.getProperty("opennms.ticketer.plugin")) && (alarm.getTTicketState() == null || alarm.getTTicketState().toString().equals("CREATE_FAILED") )) { %>
-      <input type="hidden" name="nodelabel" value="<%=alarm.getNodeLabel()%>"/>
-      <input class="form-control" type="text" name="remedy.user.comment" value="Add a Comment here"/>
-      <select class="form-control" name="remedy.urgency">
-        <option value="1-Critical">1-Critical</option>
-        <option value="2-High">2-High</option>
-        <option value="3-Medium">3-Medium</option>
-        <option value="4-Low" selected="selected">4-Low</option>
-      </select>
-      <select class="form-control" name="remedy.assignedgroup">
-        <% String propsFile = new String(Vault.getProperty("opennms.home") + "/etc/remedy.properties");
-           Configuration remedyConfig = null;
-           try {
-             remedyConfig = new PropertiesConfiguration(propsFile);
-           } catch (final ConfigurationException e) {}
-           for (String group: remedyConfig.getString("remedy.targetgroups").split(":")) { %>
-             <option value="<%=group%>"><%=group%></option>
-        <% }  %>
-      </select>
-    <% } %>
-    <%-- Remedy Specific TroubleTicket - End --%>
-</form>
-
-<form class="form-inline" method="post" action="alarm/ticket/update.htm">
-    <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-    <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input class="form-control btn btn-secondary" type="submit" value="Update Ticket" disabled="<%=(alarm.getTTicketState() == null || alarm.getTTicketId() == null) %>"/>
-</form>
-
-<form class="form-inline" method="post" action="alarm/ticket/close.htm">
-    <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-    <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input class="form-control btn btn-secondary" type="submit" value="Close Ticket" disabled="<%=((alarm.getTTicketState() == null) || ((alarm.getTTicketState() != TroubleTicketState.OPEN) && (alarm.getTTicketState() != TroubleTicketState.CLOSE_FAILED))) ? true : false %>" />
-</form>
-
-</div>
-</div>
+            <form class="form-inline" method="post" action="alarm/ticket/close.htm">
+                <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
+                <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
+                <form:input class="form-control btn btn-secondary" type="submit" value="Close Ticket" disabled="<%=((alarm.getTTicketState() == null) || ((alarm.getTTicketState() != TroubleTicketState.OPEN) && (alarm.getTTicketState() != TroubleTicketState.CLOSE_FAILED))) ? true : false %>" />
+            </form>
+        </div>
+        <% } // alarmTroubleTicketEnabled %>
+    </div>
 <br/>
-
-<% } // alarmTroubleTicketEnabled %>
 <% } // isUserInRole %>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
