@@ -130,7 +130,7 @@
         <span>OpenNMS System</span>
       </div>
       <div class="card-body">
-        <ul class="list-unstyled">
+        <ul class="list-unstyled mb-0">
             <li><a href="admin/sysconfig.jsp">System Configuration</a></li>
             <li><a href="admin/userGroupView/index.jsp">Configure Users, Groups and On-Call Roles</a></li>
         </ul>
@@ -142,7 +142,7 @@
         <span>Provisioning</span>
       </div>
       <div class="card-body">
-        <ul class="list-unstyled">
+        <ul class="list-unstyled mb-0">
             <li><a href="admin/ng-requisitions/index.jsp">Manage Provisioning Requisitions</a></li>
             <li><a href="admin/asset/index.jsp">Import and Export Asset Information</a></li>
             <li><a href="admin/categories.htm">Manage Surveillance Categories</a></li>
@@ -160,7 +160,7 @@
         <span>Event Management</span>
       </div>
       <div class="card-body">
-        <ul class="list-unstyled">
+        <ul class="list-unstyled mb-0">
             <li><a href="admin/sendevent.htm">Manually Send an Event</a></li>
             <!-- Secret function 
                     <a href="admin/eventconf/list.jsp">Configure Events</a> 
@@ -192,7 +192,7 @@
               <span>Flow Management</span>
           </div>
           <div class="card-body">
-              <ul class="list-unstyled">
+              <ul class="list-unstyled mb-0">
                   <li><a href="admin/classification/index.jsp">Manage Flow Classification</a></li>
               </ul>
           </div> <!-- card-body -->
@@ -203,7 +203,7 @@
         <span>Service Monitoring</span>
       </div>
       <div class="card-body">
-        <ul class="list-unstyled">
+        <ul class="list-unstyled mb-0">
             <li><a href="admin/sched-outages/index.jsp">Configure Scheduled Outages</a></li>
             <li><a href="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a></li>
             <%=getAdminPageNavEntries("service-monitoring")%>
@@ -216,7 +216,7 @@
         <span>Performance Measurement</span>
       </div>
       <div class="card-body">
-        <ul class="list-unstyled">
+        <ul class="list-unstyled mb-0">
             <li><a href="admin/manageSnmpCollections.jsp">Configure SNMP Collections and Data Collection Groups</a></li>
             <li><a href="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a></li>
             <li><a href="admin/thresholds/index.htm">Configure Thresholds</a></li>
@@ -229,7 +229,7 @@
         <span>Distributed Monitoring</span>
       </div>
       <div class="card-body">
-        <ul class="list-unstyled">
+        <ul class="list-unstyled mb-0">
             <li><a href="locations/index.jsp">Manage Monitoring Locations</a></li>
             <li><a href="admin/applications.htm">Manage Applications</a></li>
             <li><a href="distributed/locationMonitorList.htm">Manage Remote Pollers</a></li>
@@ -243,7 +243,7 @@
         <span>Additional Tools</span>
       </div>
       <div class="card-body">
-        <ul class="list-unstyled">
+        <ul class="list-unstyled mb-0">
             <li><a href="admin/nodemanagement/instrumentationLogReader.jsp">Instrumentation Log Reader</a></li>
             <%=getAdminPageNavEntries("operations")%>
         </ul>

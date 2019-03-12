@@ -507,7 +507,7 @@ function confirmAssetEdit() {
       <span>Path Outage - Critical Path</span>
     </div>
     <div class="card-body">
-      <ul class="list-unstyled">
+      <ul class="list-unstyled mb-0">
         <li class="list-inline-item">
           ${model.criticalPath}
         </li>
@@ -623,7 +623,7 @@ function confirmAssetEdit() {
   	<span>General (Status: ${model.status})</span>
     </div>
   <div class="card-body">
-    <ul class="list-unstyled">
+    <ul class="list-unstyled mb-0">
       <c:if test="${model.showRancid}">
         <c:url var="rancidLink" value="inventory/rancid.htm">
           <c:param name="node" value="${model.id}"/>

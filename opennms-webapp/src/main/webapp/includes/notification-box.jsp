@@ -69,7 +69,7 @@
 		<span><a href="notification/index.jsp">Notifications</a></span>
 	</div>
 	<div class="card-body">
-	<ul class="list-unstyled">
+	<ul class="list-unstyled mb-0">
 		<% if( nodeIdString == null ) { %>
 			<li>
 			<i class="fa fa-fw fa-user"></i>
