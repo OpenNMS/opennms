@@ -123,9 +123,8 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
                 CollectionSetMapper collectionSetMapper = new CollectionSetMapper(nodeDao);
                 future.complete(collectionSetMapper.buildCollectionSet(builder, collectionSet));
             }
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.error("Collection encountered error", e);
-            throw new CollectionException("Collection encountered error", e);
+        } catch (Exception e) {
+            future.completeExceptionally(e);
         }
         return future;
     }

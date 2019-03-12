@@ -26,40 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.apilayer.pollers;
+package org.opennms.features.apilayer.model;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.net.InetAddress;
+import java.util.Objects;
 
-import org.opennms.features.apilayer.utils.InterfaceMapper;
-import org.opennms.integration.api.v1.pollers.ServicePollerFactory;
-import org.opennms.netmgt.poller.ServiceMonitor;
-import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.integration.api.v1.model.IpInterface;
+import org.opennms.integration.api.v1.model.SnmpInterface;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 
-/**
- * Manager to plug the service pollers that implement integration-api to the default service poller registry.
- */
-public class ServicePollerManager extends InterfaceMapper<ServicePollerFactory, ServiceMonitor> {
+public class IpInterfaceBean implements IpInterface {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ServicePollerManager.class);
+    private final OnmsIpInterface ipInterface;
 
-    public ServicePollerManager(BundleContext bundleContext) {
-        super(ServiceMonitor.class, bundleContext);
+    public IpInterfaceBean(OnmsIpInterface ipInterface) {
+        this.ipInterface = Objects.requireNonNull(ipInterface);
     }
 
     @Override
-    public ServiceMonitor map(ServicePollerFactory ext) {
-        return new ServicePollerImpl(ext);
+    public InetAddress getIpAddress() {
+        return ipInterface.getIpAddress();
     }
-
-    // override as registry needs poller class name in properties.
-    @Override
-    public Map<String, Object> getServiceProperties(ServicePollerFactory extension) {
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("type", extension.getPollerClassName());
-        return properties;
-    }
-
 }

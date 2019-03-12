@@ -91,6 +91,7 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
         event.setDescr(def.getDescription());
         event.setSeverity(def.getSeverity().getLabel());
         event.setLogmsg(toLogMsg(def.getLogMessage()));
+        event.setOperinstruct(def.getOperatorInstructions());
         event.setAlarmData(toAlarmData(def.getAlarmData()));
         final List<Parameter> parms = def.getParameters().stream()
                 .map(EventConfExtensionManager::toParameter)
