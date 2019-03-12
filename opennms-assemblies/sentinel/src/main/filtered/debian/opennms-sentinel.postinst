@@ -17,6 +17,7 @@ fi
 
 # Remove the directory used as the local Maven repo cache
 rm -rf "${SENTINELHOME}/.local"
+rm -rf "${SENTINELHOME}/.m2"
 
 chown -R "${SENTINELUSER}:${SENTINELUSER}" "${ETCDIR}" "${SENTINELHOME}" "${SENTINELDATA}" "${SENTINELLOG}"
 
