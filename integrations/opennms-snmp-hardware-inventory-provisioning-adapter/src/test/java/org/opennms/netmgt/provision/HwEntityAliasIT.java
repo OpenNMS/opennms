@@ -28,12 +28,12 @@
 
 package org.opennms.netmgt.provision;
 
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -42,13 +42,11 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.config.hardware.HwExtension;
-import org.opennms.netmgt.config.hardware.HwInventoryAdapterConfiguration;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsHwEntity;
+import org.opennms.netmgt.model.OnmsHwEntityAlias;
 import org.opennms.netmgt.provision.SnmpHardwareInventoryProvisioningAdapter;
 import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOperation;
 import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOperationSchedule;
@@ -61,6 +59,11 @@ import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 /**
  * The Test Class for SnmpHardwareInventoryProvisioningAdapter.
  * 
@@ -121,8 +124,8 @@ public class HwEntityAliasIT implements InitializingBean {
     @Autowired
     private HwEntityDao m_entityDao;
 
-    /** The operations. */
-    private List<TestOperation> m_operations = new ArrayList<>();
+    /** The operation. */
+    private TestOperation testOperation;
 
     /* (non-Javadoc)
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
@@ -153,8 +156,8 @@ public class HwEntityAliasIT implements InitializingBean {
 
         Integer nodeId = m_nodeDao.findByForeignId("Cisco", Integer.toString(1)).getId();
         AdapterOperationSchedule ops = new AdapterOperationSchedule(0, 1, 1, TimeUnit.SECONDS);
-        AdapterOperation op = m_adapter.new AdapterOperation(nodeId, AdapterOperationType.ADD, ops);
-        m_operations.add(new TestOperation(nodeId, op));
+        AdapterOperation adapterOperation = m_adapter.new AdapterOperation(nodeId, AdapterOperationType.ADD, ops);
+        testOperation = new TestOperation(nodeId, adapterOperation);
     }
 
     /**
@@ -175,38 +178,30 @@ public class HwEntityAliasIT implements InitializingBean {
     @Test
     @Transactional
     public void testDiscoverSnmpEntities() throws Exception {
-        HwInventoryAdapterConfiguration config = m_adapter.getHwAdapterConfigDao().getConfiguration();
-        Assert.assertEquals(3, config.getExtensions().size());
-        Assert.assertEquals(5, config.getExtensions().get(0).getMibObjects().size());
-        Assert.assertEquals(12, config.getExtensions().get(1).getMibObjects().size());
-        Assert.assertEquals(10, config.getExtensions().get(2).getMibObjects().size());
+        m_adapter.processPendingOperationForNode(testOperation.operation);
 
-        HwExtension ext = config.getExtensions().get(0);
-        Assert.assertEquals("CISCO-ENTITY-EXT-MIB", ext.getName());
-        Assert.assertEquals(5, ext.getMibObjects().size());
+        OnmsHwEntity root = m_entityDao.findRootByNodeId(testOperation.nodeId);
+        assertThat(root, is(notNullValue()));
+        assertThat(root.isRoot(), is(true));
 
-        ext = config.getExtensions().get(1);
-        Assert.assertEquals("CISCO-ENTITY-ASSET-MIB", ext.getName());
-        Assert.assertEquals(12, ext.getMibObjects().size());
+        m_nodeDao.flush();
+        m_entityDao.flush();
 
-        Assert.assertEquals(27, m_adapter.getVendorAttributeMap().size());
-
-        for (TestOperation op : m_operations) {
-            m_adapter.processPendingOperationForNode(op.operation);
-
-            OnmsHwEntity root = m_entityDao.findRootByNodeId(op.nodeId);
-            Assert.assertNotNull(root);
-            Assert.assertTrue(root.isRoot());
-            FileWriter w = new FileWriter("target/" + op.nodeId + ".xml");
-            JaxbUtils.marshal(root, w);
-            w.close();
-
-            m_nodeDao.flush();
-            m_entityDao.flush();
+        List<OnmsHwEntityAlias> aliases = new ArrayList<>();
+        for (OnmsHwEntity entity : m_entityDao.findAll()) {
+            Set<OnmsHwEntityAlias> entAliases = entity.getEntAliases();
+            if (entAliases != null && !entAliases.isEmpty()) {
+                aliases.addAll(entAliases);
+            }
         }
 
-        // TODO - hwEntityAlias assertions
-        Assert.assertEquals(18, m_entityDao.countAll());
+        assertThat(aliases, hasSize(4));
+
+        List<String> aliasOids = aliases.stream().map(a -> a.getOid()).collect(Collectors.toList());
+        assertThat(aliasOids, hasItem(".1.3.6.1.2.1.2.2.1.1.10101"));
+        assertThat(aliasOids, hasItem(".1.3.6.1.2.1.2.2.1.1.10102"));
+        assertThat(aliasOids, hasItem(".1.3.6.1.2.1.2.2.1.1.10104"));
+        assertThat(aliasOids, hasItem(".1.3.6.1.2.1.2.2.1.1.10502"));
     }
 
 }
