@@ -22,6 +22,7 @@ chown -R "${MINIONUSER}:${MINIONUSER}" "${ETCDIR}" "${MINIONHOME}" "${MINIONDATA
 
 # Remove the directory used as the local Maven repo cache
 rm -rf "${MINIONHOME}/.local"
+rm -rf "${MINIONHOME}/.m2"
 
 # Make sure the kernel is configured to allow ping as non-root
 _group_range="$(sysctl net.ipv4.ping_group_range 2>/dev/null | cut -d= -f2 | sed -e 's,^ *,,' -e 's, *$,,' -e 's,\t, ,g')"
