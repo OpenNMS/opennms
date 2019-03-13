@@ -271,9 +271,9 @@
 </div>
 
 <% if (alarm.isPartOfSituation()) { %>
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Parent Situation(s)</h3>
+<div class="card">
+    <div class="card-header">
+        <span>Parent Situation(s)</span>
     </div>
     <table class="table table-sm severity">
         <thead>
@@ -331,9 +331,9 @@
 <% } %>
 
 <% if (alarm.isSituation()) { %>
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Related Alarm(s)</h3>
+<div class="card">
+    <div class="card-header">
+        <span>Related Alarm(s)</span>
     </div>
     <table class="table table-sm severity">
         <thead>
