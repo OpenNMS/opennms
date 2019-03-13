@@ -179,10 +179,15 @@
             %>
               <label class="col-form-label">Notification Status:<%if (status.equals("Unknown")) {%> Unknown<% }%></label>
               &nbsp;
-              <label for="on" class="radio-inline"><input style="margin-top:0px;" type="radio" name="status" id="on" value="on" <%=("On".equals(status) ? "checked" : "")%> />On</label>
-              <label for="off" class="radio-inline"><input style="margin-top:0px;" type="radio" name="status" id="off" value="off" <%=("Off".equals(status) ? "checked" : "")%> />Off</label>
-              &nbsp;
-              <button type="submit" class="btn btn-secondary">Update</button>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="status" id="on" value="on" <%=("On".equals(status) ? "checked" : "")%>>
+                <label class="form-check-label" for="on">On</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="status" id="off" value="off" <%=("Off".equals(status) ? "checked" : "")%>>
+                <label class="form-check-label" for="off">Off</label>
+              </div>
+              <button type="submit" class="btn btn-sm btn-secondary">Update</button>
         </form>
       </div> <!-- card-footer -->
     </div> <!-- panel -->
