@@ -81,15 +81,18 @@
 
     String action = null;
     String ackButtonName = null;
+    String ackButtonIcon = null;
     boolean showEscalate = false;
     boolean showClear = false;
 
     if (alarm.getAckTime() == null) {
-        ackButtonName = "Acknowledge this alarm";
+        ackButtonName = "Acknowledge";
         action = AcknowledgeType.ACKNOWLEDGED.getShortName();
+        ackButtonIcon = "fa fa-check-square-o";
     } else {
-        ackButtonName = "Unacknowledge this alarm";
+        ackButtonName = "Unacknowledge";
         action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
+        ackButtonIcon = "fa fa-square-o";
     }
 
     String escalateAction = AlarmSeverityChangeController.ESCALATE_ACTION;
@@ -428,12 +431,10 @@
   </div>
   <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
 	         <form class="form" method="post" action="alarm/saveStickyMemo.htm">
-				<textarea style="width:100%" name="stickyMemoBody" ><%=(alarm.getStickyMemo() != null && alarm.getStickyMemo().getBody() != null) ? alarm.getStickyMemo().getBody() : ""%></textarea>
+				<textarea class="w-100 mb-1" name="stickyMemoBody" ><%=(alarm.getStickyMemo() != null && alarm.getStickyMemo().getBody() != null) ? alarm.getStickyMemo().getBody() : ""%></textarea>
 				<input type="hidden" name="alarmId" value="<%=alarm.getId() %>"/>
-                <div class="btn-group btn-group-sm">
-                <form:input class="btn btn-secondary" type="submit" value="Save" />
-                <form:input class="btn btn-secondary" type="button" value="Delete" onclick="document.getElementById('deleteStickyForm').submit();"/>
-                </div>
+                <form:input class="btn btn-sm btn-secondary" type="submit" value="Save" />
+                <form:input class="btn btn-sm btn-secondary" type="button" value="Delete" onclick="document.getElementById('deleteStickyForm').submit();"/>
 	         </form>
 	         <form id="deleteStickyForm" method="post" action="alarm/removeStickyMemo.htm">
 				<input type="hidden" name="alarmId" value="<%=alarm.getId() %>"/>
@@ -466,12 +467,10 @@
   </div>
   <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
             <form class="form" method="post" action="alarm/saveJournalMemo.htm">
-                <textarea style="width:100%" name="journalMemoBody" ><%=(alarm.getReductionKeyMemo() != null && alarm.getReductionKeyMemo().getBody() != null) ? alarm.getReductionKeyMemo().getBody() : ""%></textarea>
+                <textarea class="w-100 mb-1" name="journalMemoBody" ><%=(alarm.getReductionKeyMemo() != null && alarm.getReductionKeyMemo().getBody() != null) ? alarm.getReductionKeyMemo().getBody() : ""%></textarea>
                 <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
-                <div class="btn-group btn-group-sm">
-                <form:input class="btn btn-secondary" type="submit" value="Save" />
-                <form:input class="btn btn-secondary" type="button" value="Delete" onclick="document.getElementById('deleteJournalForm').submit();"/>
-                </div>
+                <form:input class="btn btn-sm btn-secondary" type="submit" value="Save" />
+                <form:input class="btn btn-sm btn-secondary" type="button" value="Delete" onclick="document.getElementById('deleteJournalForm').submit();"/>
             </form>
             <form id="deleteJournalForm" method="post" action="alarm/removeJournalMemo.htm">
                 <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
@@ -516,31 +515,41 @@
 <% if (request.isUserInRole(Authentication.ROLE_ADMIN) || !request.isUserInRole(Authentication.ROLE_READONLY)) {%>
     <div class="row">
         <div class="col-md-6">
-            <form class="form-inline" method="post" action="alarm/acknowledge">
+            <div class="input-group mt-2">
+            <form class="form-inline mr-1" method="post" action="alarm/acknowledge">
                 <input type="hidden" name="actionCode" value="<%=action%>" />
                 <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
                 <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
-                <input class="form-control btn btn-secondary" type="submit" value="<%=ackButtonName%>" />
+                <button class="form-control btn btn-secondary" type="submit">
+                    <i class="<%=ackButtonIcon%>"></i> <%=ackButtonName%>
+                </button>
             </form>
-            <%if (showEscalate || showClear) {%>
-                    <form class="form-inline" method="post" action="alarm/changeSeverity">
-                        <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-                        <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
-                        <select class="form-control custom-select" name="actionCode">
-                            <%if (showEscalate) {%>
-                            <option value="<%=escalateAction%>">Escalate this alarm</option>
-                            <% }%>
-                            <%if (showClear) {%>
-                            <option value="<%=clearAction%>">Clear this alarm</option>
-                            <% }%>
-                        </select>
-                        <input class="form-control btn btn-secondary" type="submit" value="Go"/>
-                    </form>
-            <% } // showEscalate || showClear %>
+
+            <%if (showEscalate) {%>
+                <form class="form-inline mr-1" method="post" action="alarm/changeSeverity?actionCode=<%=escalateAction%>">
+                    <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
+                    <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
+                    <button class="form-control btn btn-secondary" type="submit">
+                        <i class="fa fa-arrow-up"></i> Escalate
+                    </button>
+                </form>
+            <%}%>
+
+            <%if (showClear) {%>
+                <form class="form-inline" method="post" action="alarm/changeSeverity?actionCode=<%=clearAction%>">
+                    <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
+                    <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
+                    <button class="form-control btn btn-secondary" type="submit" value="Clear">
+                        <i class="fa fa-thumbs-up"></i> Clear
+                    </button>
+                </form>
+            <%}%>
+            </div>
         </div>
         <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.alarmTroubleTicketEnabled"))) {%>
         <div class="col-md-6">
-            <form class="form-inline" method="post" action="alarm/ticket/create.htm">
+            <div class="input-group mt-2">
+            <form class="form-inline mr-1" method="post" action="alarm/ticket/create.htm">
                 <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
                 <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
                 <form:input class="form-control btn btn-secondary" type="submit" value="Create Ticket" disabled="<%=((alarm.getTTicketState() != null) && (alarm.getTTicketState() != TroubleTicketState.CREATE_FAILED)) ? true : false %>" />
@@ -568,7 +577,7 @@
                 <%-- Remedy Specific TroubleTicket - End --%>
             </form>
 
-            <form class="form-inline" method="post" action="alarm/ticket/update.htm">
+            <form class="form-inline mr-1" method="post" action="alarm/ticket/update.htm">
                 <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
                 <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
                 <form:input class="form-control btn btn-secondary" type="submit" value="Update Ticket" disabled="<%=(alarm.getTTicketState() == null || alarm.getTTicketId() == null) %>"/>
@@ -579,6 +588,7 @@
                 <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
                 <form:input class="form-control btn btn-secondary" type="submit" value="Close Ticket" disabled="<%=((alarm.getTTicketState() == null) || ((alarm.getTTicketState() != TroubleTicketState.OPEN) && (alarm.getTTicketState() != TroubleTicketState.CLOSE_FAILED))) ? true : false %>" />
             </form>
+            </div>
         </div>
         <% } // alarmTroubleTicketEnabled %>
     </div>
