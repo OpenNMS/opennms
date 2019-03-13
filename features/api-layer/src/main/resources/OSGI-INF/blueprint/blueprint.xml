@@ -94,6 +94,52 @@
     </service-properties>
   </service>
 
+  <!-- Snmp Data Collection Config Extension-->
+  <reference id="dataCollectionConfigDao" interface="org.opennms.netmgt.config.api.DataCollectionConfigDao" availability="mandatory" />
+
+  <bean id="snmpCollectionExtensionManager" class="org.opennms.features.apilayer.config.SnmpCollectionExtensionManager">
+    <argument ref="dataCollectionConfigDao"/>
+  </bean>
+
+  <reference-list interface="org.opennms.integration.api.v1.config.datacollection.SnmpCollectionExtension" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="snmpCollectionExtensionManager" />
+  </reference-list>
+
+  <service ref="snmpCollectionExtensionManager" interface="org.opennms.core.config.api.ConfigurationProvider" >
+    <service-properties>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
+  </service>
+
+  <!-- Resource types Config Extension -->
+  <bean id="resourceTypesExtensionManager" class="org.opennms.features.apilayer.config.ResourceTypesExtensionManager">
+  </bean>
+
+  <reference-list interface="org.opennms.integration.api.v1.config.datacollection.ResourceTypesExtension" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="resourceTypesExtensionManager" />
+  </reference-list>
+
+  <service ref="resourceTypesExtensionManager" interface="org.opennms.core.config.api.ConfigurationProvider" >
+    <service-properties>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
+  </service>
+
+
+  <!-- Resource Graph Properties Extension -->
+  <bean id="graphPropertiesExtensionManager" class="org.opennms.features.apilayer.config.GraphPropertiesExtensionManager">
+  </bean>
+
+  <reference-list interface="org.opennms.integration.api.v1.config.datacollection.graphs.GraphPropertiesExtension" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="graphPropertiesExtensionManager" />
+  </reference-list>
+
+  <service ref="graphPropertiesExtensionManager" interface="org.opennms.core.config.api.ConfigurationProvider" >
+    <service-properties>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
+  </service>
+
   <!-- Alarm Persister Extension -->
   <bean id="alarmPersisterExtensionManager" class="org.opennms.features.apilayer.alarms.AlarmPersisterExtensionManager">
     <argument ref="blueprintBundleContext"/>
