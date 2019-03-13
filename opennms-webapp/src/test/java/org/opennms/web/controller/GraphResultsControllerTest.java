@@ -68,6 +68,7 @@ public class GraphResultsControllerTest {
 		PropertiesGraphDao graphDao = new PropertiesGraphDao();
 		graphDao.loadProperties("performance", new FileSystemResource(new File("src/test/resources/etc/snmp-graph.properties")));
 
+		graphDao.afterPropertiesSet();
 		List<PrefabGraph> prefabs = graphDao.getAllPrefabGraphs();
 		Assert.assertNotNull(prefabs);
 		Assert.assertFalse(prefabs.isEmpty());

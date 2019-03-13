@@ -29,10 +29,11 @@
 package org.opennms.netmgt.config;
 
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Date;
 
+import org.opennms.core.config.api.ConfigReloadContainer;
 import org.opennms.core.xml.AbstractMergingJaxbConfigDao;
 import org.opennms.netmgt.config.api.ResourceTypesDao;
 import org.opennms.netmgt.config.datacollection.ResourceType;
@@ -40,9 +41,12 @@ import org.opennms.netmgt.config.datacollection.ResourceTypes;
 
 public class DefaultResourceTypesDao extends AbstractMergingJaxbConfigDao<ResourceTypes, ResourceTypes> implements ResourceTypesDao {
 
+    private ConfigReloadContainer<ResourceTypes> m_extContainer;
+
     public DefaultResourceTypesDao() {
         super(ResourceTypes.class, "Resource Type Definitions",
                 Paths.get("etc", "resource-types.d"));
+        initExtensions();
     }
 
     @Override
@@ -52,6 +56,10 @@ public class DefaultResourceTypesDao extends AbstractMergingJaxbConfigDao<Resour
         final ResourceTypes configuredResourceTypes = getObject();
         if (configuredResourceTypes != null) {
             configuredResourceTypes.getResourceTypes().stream().forEach(r -> resourceTypesByName.put(r.getName(), r));
+        }
+        final ResourceTypes resourceTypesFromContainer = m_extContainer.getObject();
+        if (resourceTypesFromContainer != null) {
+            resourceTypesFromContainer.getResourceTypes().stream().forEach(r -> resourceTypesByName.put(r.getName(), r));
         }
         return resourceTypesByName;
     }
@@ -89,5 +97,20 @@ public class DefaultResourceTypesDao extends AbstractMergingJaxbConfigDao<Resour
         } else {
             return lastUpdateOfResourceTypes;
         }
+    }
+
+    private void initExtensions() {
+        m_extContainer = new ConfigReloadContainer.Builder<>(ResourceTypes.class)
+                .withMerger((source, target) -> {
+                    if (target == null) {
+                        target = new ResourceTypes();
+                    }
+                    if (source == null) {
+                        source = new ResourceTypes();
+                    }
+                    target.getResourceTypes().addAll(source.getResourceTypes());
+                    return target;
+                })
+                .build();
     }
 }

@@ -39,11 +39,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.opennms.core.config.api.ConfigReloadContainer;
 import org.opennms.core.spring.FileReloadContainer;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
+import org.opennms.netmgt.config.datacollection.DataCollectionGroups;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
@@ -78,9 +80,11 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 
     private List<String> dataCollectionGroups = new ArrayList<>();
     private Map<String, ResourceType> resourceTypes = new HashMap<String, ResourceType>();
+    private ConfigReloadContainer<DataCollectionGroups> m_extContainer;
 
     public DefaultDataCollectionConfigDao() {
         super(DatacollectionConfig.class, "data-collection");
+        initExtensions();
     }
 
     @Override
@@ -88,23 +92,44 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         final DataCollectionConfigParser parser = new DataCollectionConfigParser(getConfigDirectory());
         resourceTypes.clear();
 
-        final Map<String,DatacollectionGroup> externalGroupMap = parser.getExternalGroupMap();
-
+        Map<String,DatacollectionGroup> externalGroupMap = parser.loadExternalGroupMap();
         // Create a special collection to hold all resource types, because they should be defined only once.
         final SnmpCollection resourceTypeCollection = new SnmpCollection();
         resourceTypeCollection.setName("__resource_type_collection");
 
+        // Load data collection groups from container.
+        DataCollectionGroups dataCollectionGroupObj = m_extContainer.getObject();
+        if (dataCollectionGroupObj != null) {
+            // Add data collection groups loaded from container to external group map.
+            dataCollectionGroupObj.getSnmpCollectionNames().forEach(collectionName -> {
+                List<DatacollectionGroup> datacollectionGroupList = dataCollectionGroupObj.getDataCollectionGroup(collectionName);
+                datacollectionGroupList.stream().forEach(group -> externalGroupMap.put(group.getName(), group));
+            });
+        }
+
         // Updating Configured Collections
         for (final SnmpCollection collection : config.getSnmpCollections()) {
+            if(dataCollectionGroupObj != null) {
+                // Set include-collection for the specific collection so that parseCollection will load all resources.
+                Set<String> collectionNames = dataCollectionGroupObj.getSnmpCollectionNames();
+                if (collectionNames.contains(collection.getName())) {
+                    List<DatacollectionGroup> datacollectionGroupList = dataCollectionGroupObj.getDataCollectionGroup(collection.getName());
+                    datacollectionGroupList.stream().forEach(datacollectionGroup -> {
+                        IncludeCollection includeCollection = new IncludeCollection();
+                        includeCollection.setDataCollectionGroup(datacollectionGroup.getName());
+                        collection.addIncludeCollection(includeCollection);
+                    });
+                }
+            }
             parser.parseCollection(collection);
             // Save local resource types
             for (final ResourceType rt : collection.getResourceTypes()) {
                 resourceTypeCollection.addResourceType(rt);
                 resourceTypes.put(rt.getName(), rt);
             }
+
             // Remove local resource types
             collection.setResourceTypes(new ArrayList<ResourceType>());
-
             // Save external Resource Types
             for (IncludeCollection include : collection.getIncludeCollections()) {
                 if (include.getDataCollectionGroup() != null) {
@@ -121,7 +146,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         resourceTypeCollection.setSystems(new Systems());
         config.insertSnmpCollection(resourceTypeCollection);
         dataCollectionGroups.clear();
-        dataCollectionGroups.addAll(parser.getExternalGroupMap().keySet());
+        dataCollectionGroups.addAll(externalGroupMap.keySet());
 
         validateResourceTypes(config.getSnmpCollections(), resourceTypes.keySet());
 
@@ -696,4 +721,19 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         return new Date(getContainer().getLastUpdate());
     }
 
+
+    private void initExtensions() {
+        m_extContainer = new ConfigReloadContainer.Builder<>(DataCollectionGroups.class)
+                .withMerger((source, target) -> {
+                    if (target == null) {
+                        target = new DataCollectionGroups();
+                    }
+                    if (source == null) {
+                        source = new DataCollectionGroups();
+                    }
+                    target.getDataCollectionGroupByName().putAll(source.getDataCollectionGroupByName());
+                    return target;
+                })
+                .build();
+    }
 }

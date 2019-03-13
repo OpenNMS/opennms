@@ -76,4 +76,9 @@ public class OnmsTopologyEdge extends OnmsTopologyAbstractRef implements OnmsTop
         ports.add(m_target);
         return ports;
     }
+
+    @Override
+    public void accept(TopologyVisitor v) {
+        v.visit(this);
+    }
 }

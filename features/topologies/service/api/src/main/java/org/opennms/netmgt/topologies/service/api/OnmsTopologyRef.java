@@ -33,5 +33,7 @@ public interface OnmsTopologyRef {
     String getId();   
     
     String getToolTipText();
+    
+    void accept(TopologyVisitor v);
  
 }

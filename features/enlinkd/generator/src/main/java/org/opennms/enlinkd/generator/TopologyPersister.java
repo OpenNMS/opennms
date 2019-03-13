@@ -32,8 +32,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
+import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
+import org.opennms.netmgt.enlinkd.model.BridgeElement;
+import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
@@ -63,6 +67,10 @@ public class TopologyPersister {
         progressCallback.currentProgress("    Inserting of %s done.", entity.getClass().getSimpleName());
     }
 
+    public <E> void persist(E ... elements) {
+        persist(Arrays.asList(elements));
+    }
+
     public <E> void persist(List<E> elements) {
         if (elements.size() < 1) {
             return; // nothing do do
@@ -88,8 +96,12 @@ public class TopologyPersister {
                 IsIsElement.class,
                 LldpElement.class,
                 OspfLink.class,
+                BridgeBridgeLink.class,
+                BridgeMacLink.class,
+                BridgeElement.class,
                 OnmsIpInterface.class,
-                OnmsSnmpInterface.class);
+                OnmsSnmpInterface.class,
+                IpNetToMedia.class);
 
         for (Class<?> clazz : deleteOperations) {
             deleteEntities(clazz);

@@ -106,6 +106,9 @@ public class OnmsTopologyPort extends OnmsTopologyAbstractRef implements OnmsTop
         m_ifname = ifname;
     }
 
-    
-     
+    @Override
+    public void accept(TopologyVisitor v) {
+        v.visit(this);
+    }
+
 }

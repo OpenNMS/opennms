@@ -134,12 +134,12 @@
   </c:if>
 
   <%--
-    Vaadin uses the window.name property to implement the preserveOnRefresh functionality.
-    However if now window.name is set, a random name is generated.
-    As most vaadin applications are embedded via <iframe src=...></iframe> the name is always random.
-    This results in a new UI creation per each refresh of the page, which then leaks into the user session.
-    See NMS- TODO MVR for more details.
-   --%>
+   Vaadin uses the window.name property to implement the preserveOnRefresh functionality.
+   However if now window.name is set, a random name is generated.
+   As most vaadin applications are embedded via <iframe src=...></iframe> the name is always random.
+   This results in a new UI creation per each refresh of the page - even if preserveOnRefresh is enabled,
+   which breaks the functionality. See NMS-10601 for more details.
+  --%>
   <script type="text/javascript">
     // If no window.name is set, define one, to ensure it is not empty.
     // This is required for Vaadin to work properly (especially for @PreserveOnRefresh UIs).

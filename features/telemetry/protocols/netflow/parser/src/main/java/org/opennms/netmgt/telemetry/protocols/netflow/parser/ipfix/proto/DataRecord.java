@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Field;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
@@ -92,7 +93,7 @@ public final class DataRecord implements Record {
     public DataRecord(final DataSet set,
                       final Session.Resolver resolver,
                       final Template template,
-                      final ByteBuffer buffer) throws InvalidPacketException {
+                      final ByteBuffer buffer) throws InvalidPacketException, MissingTemplateException {
         this.set = Objects.requireNonNull(set);
 
         this.template = Objects.requireNonNull(template);
@@ -128,7 +129,7 @@ public final class DataRecord implements Record {
 
     public static Value<?> parseField(final Field field,
                                       final Session.Resolver resolver,
-                                      final ByteBuffer buffer) throws InvalidPacketException {
+                                      final ByteBuffer buffer) throws InvalidPacketException, MissingTemplateException {
         int length = field.length();
         if (length == VARIABLE_SIZED) {
             length = uint8(buffer);

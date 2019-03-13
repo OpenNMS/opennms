@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElement;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedValue;
@@ -117,7 +118,7 @@ public final class ScopeFieldSpecifier implements Field, Scope {
     }
 
     @Override
-    public Value<?> parse(Session.Resolver resolver, ByteBuffer buffer) throws InvalidPacketException {
+    public Value<?> parse(Session.Resolver resolver, ByteBuffer buffer) throws InvalidPacketException, MissingTemplateException {
         return this.field.parse(resolver, buffer);
     }
 
