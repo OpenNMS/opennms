@@ -30,6 +30,7 @@ package org.opennms.features.apilayer.model;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.opennms.features.apilayer.utils.ModelMappers;
@@ -74,6 +75,14 @@ public class InMemoryEventBean implements InMemoryEvent {
     @Override
     public List<EventParameter> getParameters() {
         return parameters;
+    }
+
+    @Override
+    public Optional<String> getParameterValue(String name) {
+        return parameters.stream()
+                .filter(p -> Objects.equals(name, p.getName()))
+                .map(EventParameter::getValue)
+                .findFirst();
     }
 
     @Override

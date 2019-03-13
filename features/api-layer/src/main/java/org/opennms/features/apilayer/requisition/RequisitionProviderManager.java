@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,40 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.apilayer.pollers;
+package org.opennms.features.apilayer.requisition;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.features.apilayer.utils.InterfaceMapper;
-import org.opennms.integration.api.v1.pollers.ServicePollerFactory;
-import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.integration.api.v1.requisition.RequisitionProvider;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Manager to plug the service pollers that implement integration-api to the default service poller registry.
- */
-public class ServicePollerManager extends InterfaceMapper<ServicePollerFactory, ServiceMonitor> {
+import com.google.common.collect.ImmutableMap;
 
-    private static final Logger LOG = LoggerFactory.getLogger(ServicePollerManager.class);
+public class RequisitionProviderManager extends InterfaceMapper<RequisitionProvider, org.opennms.netmgt.provision.persist.RequisitionProvider> {
 
-    public ServicePollerManager(BundleContext bundleContext) {
-        super(ServiceMonitor.class, bundleContext);
+    private static final Logger LOG = LoggerFactory.getLogger(InterfaceMapper.class);
+
+    public RequisitionProviderManager(BundleContext bundleContext) {
+        super(org.opennms.netmgt.provision.persist.RequisitionProvider.class, bundleContext);
     }
 
     @Override
-    public ServiceMonitor map(ServicePollerFactory ext) {
-        return new ServicePollerImpl(ext);
+    public org.opennms.netmgt.provision.persist.RequisitionProvider map(RequisitionProvider ext) {
+        return new RequisitionProviderImpl(ext);
     }
 
-    // override as registry needs poller class name in properties.
     @Override
-    public Map<String, Object> getServiceProperties(ServicePollerFactory extension) {
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("type", extension.getPollerClassName());
-        return properties;
+    public Map<String, Object> getServiceProperties(RequisitionProvider extension) {
+        return ImmutableMap.<String,Object>builder()
+                // Registry needs type of provider
+                .put("type", extension.getType())
+                .build();
     }
-
 }
