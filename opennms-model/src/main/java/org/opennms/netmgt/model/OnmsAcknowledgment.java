@@ -122,7 +122,10 @@ public class OnmsAcknowledgment {
         for (Parm parm : parms) {
             final String parmValue = parm.getValue().getContent();
             if (!"ackAction".equals(parm.getParmName()) && 
-                !"ackType".equals(parm.getParmName()) && !"refId".equals(parm.getParmName()) && !"ackUser".equals(parm.getParmName()) ) {
+                !"ackType".equals(parm.getParmName())   && 
+                !"refId".equals(parm.getParmName())     && 
+                !"ackUser".equals(parm.getParmName())   &&
+                !"user".equals(parm.getParmName())) {
                 throw new IllegalArgumentException("Event parm: "+parm.getParmName()+", is an invalid paramter");
             } 
             
@@ -136,7 +139,7 @@ public class OnmsAcknowledgment {
                 
             } else if ("refId".equals(parm.getParmName())){
                 m_refId = Integer.valueOf(parmValue);
-            } else if ("ackUser".equals(parm.getParmName())){
+            } else if ("ackUser".equals(parm.getParmName())|| "user".equals(parm.getParmName())){
                 m_ackUser = parmValue;
             } else {
                 if ("ACKNOWLEDGE".equalsIgnoreCase(parmValue)) {
