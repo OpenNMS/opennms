@@ -784,7 +784,7 @@ SEG:        for (SharedSegment segment : bmlsegments) {
     }
 
     @Override
-    public List<TopologyShared> match() {
+    public List<TopologyShared> match() {       
         final List<TopologyShared> links = new ArrayList<>();
         final List<MacPort> macPortMap = getMacPorts();
         
