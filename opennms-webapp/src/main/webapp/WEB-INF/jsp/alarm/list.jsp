@@ -560,10 +560,10 @@
                 <br />
             </c:if>
             <c:if test="<%= alarms[i].getStickyMemo() != null && alarms[i].getStickyMemo().getId() != null%>">
-                <img style="vertical-align:middle" src="images/AlarmMemos/StickyMemo.png" width="20" height="20" title="<%=alarms[i].getStickyMemo().getBody() %>"/>
+                <i class="fa fa-comment-o" title="<%=alarms[i].getStickyMemo().getBody() %>"></i>
             </c:if>
             <c:if test="<%= alarms[i].getReductionKeyMemo() != null && alarms[i].getReductionKeyMemo().getId() != null%>">
-                <img style="vertical-align:middle" src="images/AlarmMemos/JournalMemo.png" width="20" height="20" title="<%=alarms[i].getReductionKeyMemo().getBody() %>"/>
+                <i class="fa fa-sticky-note-o" title="<%=alarms[i].getReductionKeyMemo().getBody() %>"></i>
             </c:if>
 
           <c:if test="${param.display == 'long'}">
