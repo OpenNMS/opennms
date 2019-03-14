@@ -84,7 +84,7 @@ public class DiscoveryConfigurationTest extends XmlTestNoCastor<DiscoveryConfigu
         return Arrays.asList(new Object[][] {
             {
                 conf,
-                "<discovery-configuration packets-per-second=\"1\"\n" + 
+                "<discovery-configuration packets-per-second=\"1.0\"\n" +
                         "        initial-sleep-time=\"30000\" restart-sleep-time=\"86400000\"\n" + 
                         "        retries=\"1\" timeout=\"2000\">\n" + 
                         "    <include-range timeout=\"3000\" foreign-source=\"blah\">\n" + 
@@ -108,7 +108,7 @@ public class DiscoveryConfigurationTest extends XmlTestNoCastor<DiscoveryConfigu
             },
             {
                 exampleConf,
-                "<discovery-configuration packets-per-second=\"1\"\n" + 
+                "<discovery-configuration packets-per-second=\"1.0\"\n" +
                 "        initial-sleep-time=\"30000\" restart-sleep-time=\"86400000\"\n" + 
                 "        retries=\"1\" timeout=\"2000\">\n" + 
                 "        <include-range>\n" + 
