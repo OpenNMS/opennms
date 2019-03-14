@@ -4,23 +4,44 @@
            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
-  <!-- Runtime -->
-  <service interface="org.opennms.integration.api.v1.runtime.RuntimeInfo" >
-    <bean class="org.opennms.features.apilayer.RuntimeInfoImpl" />
-  </service>
+  <!-- Configuration properties for the API layer -->
+  <cm:property-placeholder id="org.opennms.features.apilayer"
+                           persistent-id="org.opennms.features.apilayer"
+                           update-strategy="reload">
+    <cm:default-properties>
+      <cm:property name="alarmFeedback.gracePeriodInMs" value="5000"/>
+      <cm:property name="alarmFeedback.sleepTimeInMs" value="1000"/>
+      <cm:property name="alarmFeedback.waitTimeMs" value="500"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
 
-  <!-- DAOs -->
+  <!-- Service references -->
   <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory"/>
   <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
   <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
   <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
-
-  <service interface="org.opennms.integration.api.v1.dao.NodeDao" ref="nodeDaoImpl"/>
+  <reference id="deployedForeignSourceRepository" interface="org.opennms.netmgt.provision.persist.ForeignSourceRepository" filter="(type=deployed)"/>
+  <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" availability="mandatory"/>
+  <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
+  <reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
 
   <bean id="nodeDaoImpl" class="org.opennms.features.apilayer.dao.NodeDaoImpl">
     <argument ref="nodeDao"/>
     <argument ref="sessionUtils"/>
   </bean>
+  <service interface="org.opennms.integration.api.v1.dao.NodeDao" ref="nodeDaoImpl"/>
+
+  <!-- Runtime -->
+  <service interface="org.opennms.integration.api.v1.runtime.RuntimeInfo" >
+    <bean class="org.opennms.features.apilayer.RuntimeInfoImpl" />
+  </service>
+
+  <service interface="org.opennms.integration.api.v1.dao.NodeDao" >
+    <bean class="org.opennms.features.apilayer.dao.NodeDaoImpl">
+      <argument ref="nodeDao"/>
+      <argument ref="sessionUtils"/>
+    </bean>
+  </service>
 
   <service interface="org.opennms.integration.api.v1.dao.AlarmDao" >
     <bean class="org.opennms.features.apilayer.dao.AlarmDaoImpl">
@@ -36,17 +57,6 @@
     </bean>
   </service>
 
-  <!-- Configuration properties for the API layer -->
-  <cm:property-placeholder id="org.opennms.features.apilayer"
-                           persistent-id="org.opennms.features.apilayer"
-                           update-strategy="reload">
-    <cm:default-properties>
-      <cm:property name="alarmFeedback.gracePeriodInMs" value="5000"/>
-      <cm:property name="alarmFeedback.sleepTimeInMs" value="1000"/>
-      <cm:property name="alarmFeedback.waitTimeMs" value="500"/>
-    </cm:default-properties>
-  </cm:property-placeholder>
-
   <service interface="org.opennms.integration.api.v1.dao.AlarmFeedbackDao">
     <bean class="org.opennms.features.apilayer.dao.AlarmFeedbackDaoImpl">
       <argument value="${alarmFeedback.gracePeriodInMs}"/>
@@ -56,8 +66,6 @@
   </service>
 
   <!-- Events -->
-  <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" availability="mandatory"/>
-  <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
 
   <bean id="eventConfExtensionManager" class="org.opennms.features.apilayer.config.EventConfExtensionManager">
     <argument ref="eventConfDao"/>
@@ -75,6 +83,12 @@
   <service interface="org.opennms.integration.api.v1.events.EventForwarder" >
     <bean class="org.opennms.features.apilayer.events.EventForwarderImpl">
       <argument ref="eventForwarder"/>
+    </bean>
+  </service>
+
+  <service interface="org.opennms.integration.api.v1.events.EventSubscriptionService" >
+    <bean class="org.opennms.features.apilayer.events.EventSubscriptionServiceImpl">
+      <argument ref="eventSubscriptionService"/>
     </bean>
   </service>
 
@@ -188,7 +202,7 @@
     <argument ref="locationAwareDetectorClient"/>
   </bean>
 
-  <!-- Service Pollers -->
+  <!-- Poller -->
   <bean id="servicePollerManager" class="org.opennms.features.apilayer.pollers.ServicePollerManager">
     <argument ref="blueprintBundleContext"/>
   </bean>
@@ -231,5 +245,18 @@
     </bean>
   </service>
 
+  <!-- Requisition Providers -->
+  <bean id="requisitionProviderManager" class="org.opennms.features.apilayer.requisition.RequisitionProviderManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.requisition.RequisitionProvider" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="requisitionProviderManager" />
+  </reference-list>
+
+  <service interface="org.opennms.integration.api.v1.requisition.RequisitionRepository" >
+    <bean class="org.opennms.features.apilayer.requisition.RequisitionRepositoryImpl">
+      <argument ref="deployedForeignSourceRepository"/>
+    </bean>
+  </service>
 
 </blueprint>

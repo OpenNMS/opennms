@@ -33,7 +33,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.opennms.core.criteria.Alias;
+import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.utils.LocationUtils;
 import org.opennms.features.apilayer.utils.ModelMappers;
 import org.opennms.integration.api.v1.dao.NodeDao;
 import org.opennms.integration.api.v1.model.Node;
@@ -50,6 +53,11 @@ public class NodeDaoImpl implements NodeDao {
     public NodeDaoImpl(org.opennms.netmgt.dao.api.NodeDao nodeDao, SessionUtils sessionUtils) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
+    }
+
+    @Override
+    public String getDefaultLocationName() {
+        return LocationUtils.DEFAULT_LOCATION_NAME;
     }
 
     @Override
@@ -90,5 +98,27 @@ public class NodeDaoImpl implements NodeDao {
     public Node getNodeByForeignSourceAndForeignId(String foreignSource, String foreignId) {
         return sessionUtils.withReadOnlyTransaction(() ->
                 ModelMappers.toNode(nodeDao.findByForeignId(foreignSource, foreignId)));
+    }
+
+    @Override
+    public List<Node> getNodesInLocation(String locationName) {
+        final Criteria criteria = new CriteriaBuilder(OnmsNode.class)
+                .alias("location", "location", Alias.JoinType.LEFT_JOIN)
+                .eq("location.id", locationName)
+                .toCriteria();
+        return getNodesMatching(criteria);
+    }
+
+    @Override
+    public List<Node> getNodesInForeignSource(String foreignSource) {
+        final Criteria criteria = new CriteriaBuilder(OnmsNode.class)
+                .eq("foreignSource", foreignSource)
+                .toCriteria();
+        return getNodesMatching(criteria);
+    }
+
+    private List<Node> getNodesMatching(Criteria criteria) {
+        return sessionUtils.withReadOnlyTransaction(() ->
+                nodeDao.findMatching(criteria).stream().map(ModelMappers::toNode).collect(Collectors.toList()));
     }
 }

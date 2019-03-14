@@ -29,6 +29,7 @@
 package org.opennms.features.apilayer.utils;
 
 import java.util.HashMap;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -67,6 +68,8 @@ public abstract class InterfaceMapper<S,T> {
             extServiceRegistrationMap.computeIfAbsent(extension, (ext) -> {
                 final T mappedExt = map(ext);
                 final Hashtable<String,Object> props = new Hashtable<>();
+                // Add any service specific properties
+                getServiceProperties(extension).forEach(props::put);
                 // Make the service available to any Spring-based listeners
                 props.put("registration.export", Boolean.TRUE.toString());
                 props.putAll(getServiceProperties(extension));
@@ -88,7 +91,7 @@ public abstract class InterfaceMapper<S,T> {
 
     //Implementations should override if specific service properties needs to be added.
     public Map<String, Object> getServiceProperties(S extension) {
-        return new HashMap<>();
+        return Collections.emptyMap();
     }
 
     public abstract T map(S ext);

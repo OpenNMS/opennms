@@ -14,6 +14,19 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${mapstructVersion}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
@@ -27,6 +40,11 @@
             </plugin>
         </plugins>
     </build>
+
+    <properties>
+        <!-- automatically run annotation processors within the incremental compilation -->
+        <m2e.apt.activation>jdt_apt</m2e.apt.activation>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -45,6 +63,11 @@
         <dependency>
             <groupId>org.opennms.integration.api</groupId>
             <artifactId>api</artifactId>
+            <version>${opennmsApiVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.integration.api</groupId>
+            <artifactId>common</artifactId>
             <version>${opennmsApiVersion}</version>
         </dependency>
         <dependency>
@@ -81,6 +104,15 @@
         <dependency>
             <groupId>org.opennms.features.ticketing</groupId>
             <artifactId>org.opennms.features.ticketing.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-provision-persistence</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${mapstructVersion}</version>
         </dependency>
 
         <!-- Test -->

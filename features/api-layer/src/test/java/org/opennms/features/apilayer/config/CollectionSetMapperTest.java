@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.apilayer.collectors.CollectionSetMapper;
 import org.opennms.integration.api.v1.collectors.CollectionSet;
@@ -58,8 +59,7 @@ import org.opennms.integration.api.v1.collectors.resource.Resource;
 import org.opennms.integration.api.v1.collectors.resource.ResourceBuilder;
 import org.opennms.integration.api.v1.collectors.resource.StringAttribute;
 import org.opennms.integration.api.v1.dao.NodeDao;
-import org.opennms.integration.api.v1.model.Node;
-import org.opennms.integration.api.v1.model.SnmpInterface;
+import org.opennms.integration.api.v1.model.beans.NodeBean;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.ResourceType;
 import org.opennms.netmgt.collection.api.ResourceTypeMapper;
@@ -77,13 +77,24 @@ public class CollectionSetMapperTest {
     private static final double COUNTER_VALUE = 45.0;
     private static final String STRING_VALUE = "collection";
 
+    private NodeBean node;
+
+    @Before
+    public void setUp() {
+        node = new NodeBean();
+        node.setId(36);
+        node.setForeignSource("fs");
+        node.setForeignId("fid");
+        node.setLabel(NODE_LABEL);
+    }
+
     @Test
     @SuppressWarnings("unchecked")
     public void testCollectionSetMappingFromIntegrationAPI() {
 
         // Mock NodeDao.
         NodeDao nodeDao = mock(NodeDao.class);
-        when(nodeDao.getNodeByCriteria(anyString())).thenReturn(new NodeImpl());
+        when(nodeDao.getNodeByCriteria(anyString())).thenReturn(node);
         // Mock the ResourceType and other storage strategies.
         ResourceType rt = mock(ResourceType.class, RETURNS_DEEP_STUBS);
         when(rt.getName()).thenReturn(RESOURCE_NAME);
@@ -92,7 +103,6 @@ public class CollectionSetMapperTest {
         when(rt.getPersistenceSelectorStrategy().getClazz()).thenReturn(PersistAllSelectorStrategy.class.getCanonicalName());
         when(rt.getPersistenceSelectorStrategy().getParameters()).thenReturn(Collections.emptyList());
         ResourceTypeMapper.getInstance().setResourceTypeMapper(type -> rt);
-
 
         // Create a CollectionSet From Integration API.
         CollectionSet collectionSet = createCollectionSetFromIntegrationAPI();
@@ -133,7 +143,6 @@ public class CollectionSetMapperTest {
     @SuppressWarnings("unchecked")
     private CollectionSet createCollectionSetFromIntegrationAPI() {
         // Every resource needs a node resource.
-        Node node = new NodeImpl();
         NodeResource nodeResource = new ResourceBuilder()
                 .withNodeId(node.getId())
                 .withNodeLabel(node.getLabel())
@@ -194,34 +203,6 @@ public class CollectionSetMapperTest {
                 .withStatus(CollectionSet.Status.SUCCEEDED)
                 .build();
         return collectionSet;
-    }
-
-    public static class NodeImpl implements Node {
-
-        @Override
-        public Integer getId() {
-            return 36;
-        }
-
-        @Override
-        public String getForeignSource() {
-            return "fs";
-        }
-
-        @Override
-        public String getForeignId() {
-            return "fid";
-        }
-
-        @Override
-        public String getLabel() {
-            return NODE_LABEL;
-        }
-
-        @Override
-        public List<SnmpInterface> getSnmpInterfaces() {
-            return null;
-        }
     }
 
     public static class CollectionAgentImpl implements CollectionAgent {

@@ -48,6 +48,11 @@
             <artifactId>org.opennms.features.rest-provider</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.container.bridge</groupId>
+            <artifactId>org.opennms.container.bridge.rest</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <!-- Required for com.eclipsesource.jaxrs/* -->

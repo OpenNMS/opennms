@@ -26,7 +26,7 @@
 
     <service interface="javax.servlet.Servlet" ref="nrtServlet" >
         <service-properties>
-            <entry key="alias" value="/nrt/starter" />
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/nrt/starter" />
         </service-properties>
     </service>
     

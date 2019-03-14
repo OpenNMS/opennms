@@ -1020,6 +1020,12 @@
       <artifactId>org.opennms.features.enlinkd.daemon</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- HTTP Rest-Bridge -->
+    <dependency>
+      <groupId>org.opennms.container.bridge</groupId>
+      <artifactId>org.opennms.container.bridge.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>

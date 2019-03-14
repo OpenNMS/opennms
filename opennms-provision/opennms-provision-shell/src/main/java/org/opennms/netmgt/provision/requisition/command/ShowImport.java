@@ -41,6 +41,7 @@ import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Completion;
 import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.LocationAwareRequisitionClient;
@@ -69,6 +70,7 @@ public class ShowImport implements Action {
     @Argument(index = 1, name = "parameters", description = "Provider parameters in key=value form", multiValued = true)
     List<String> parameters;
 
+    @Reference
     private LocationAwareRequisitionClient client;
 
     @Override
@@ -94,6 +96,7 @@ public class ShowImport implements Action {
                     System.out.println("\nInterrupted.");
                 } catch (ExecutionException e) {
                     System.out.printf("\nRequisition retrieval failed with: %s\n", e);
+                    e.printStackTrace();
                 }
                 break;
             } catch (TimeoutException e) {
@@ -103,10 +106,6 @@ public class ShowImport implements Action {
             System.out.flush();
         }
         return null;
-    }
-
-    public void setClient(LocationAwareRequisitionClient client) {
-        this.client = client;
     }
 
     private static Map<String, String> parse(List<String> attributeList) {
