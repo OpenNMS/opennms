@@ -172,7 +172,7 @@ public class SyslogMessageTest {
             final SyslogMessage message = parser.parse();
             LOG.debug("message = {}", message);
             final Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.YEAR, ZonedDateTimeBuilder.getBestYearForMonth(Month.MARCH.getValue()));
+            cal.set(Calendar.YEAR, getExpectedYear("Mar 14 17:10:25"));
             cal.set(Calendar.MONTH, Calendar.MARCH);
             cal.set(Calendar.DAY_OF_MONTH, 14);
             cal.set(Calendar.HOUR_OF_DAY, 17);
@@ -433,7 +433,7 @@ public class SyslogMessageTest {
     public static int getExpectedYear(String dateFragment) throws ParseException {
         // Return the prior year if date is after today on the calendar - this is what the syslog parsers will do
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-        Date date = new SimpleDateFormat("yyyy MMM dd hh:mm:ss").parse(Integer.toString(currentYear) + " " + dateFragment);
+        Date date = new SimpleDateFormat("yyyy MMM dd hh:mm:ss", Locale.ENGLISH).parse(Integer.toString(currentYear) + " " + dateFragment);
         return date.getTime() > System.currentTimeMillis() ? currentYear - 1 : currentYear;
     }
 
