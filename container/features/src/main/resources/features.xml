@@ -862,7 +862,7 @@
     <feature name="opennms-alarm-history-elastic" description="OpenNMS :: Features :: Alarms :: History :: Elasticsearch" version="${project.version}">
         <feature>opennms-alarm-history-rest</feature>
         <feature>opennms-jest</feature>
-        <bundle>mvn:org.mapstruct/mapstruct-jdk8/${mapstructVersion}</bundle>
+        <bundle dependency="true">mvn:org.mapstruct/mapstruct/${mapstructVersion}</bundle>
         <bundle>mvn:org.opennms.features.alarms.history/org.opennms.features.alarms.history.elastic/${project.version}</bundle>
     </feature>
 
