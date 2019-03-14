@@ -7,11 +7,28 @@ d3.document = window.document;
 
 // the color palette to map each severity to
 const colorPalette = {
-	Normal: '#336600',
-	Warning: '#ffcc00',
-	Minor: '#ff9900',
-	Major: '#ff3300',
-	Critical: '#cc0000'
+	// light ronny
+	// Normal: '#B0ECBD',
+	// Warning: '#FFFFCD',
+	// Minor: '#FFE365',
+	// Major: '#FFC266',
+	// Critical: '#E87C87'
+
+	// Dark Ronny
+	// Normal: '#28A745',
+	// Warning: '#FFFF00',
+	// Minor: '#FFD60A',
+	// Major: '#FF9F0A',
+	// Critical: '#DC3545'
+
+	// Q 1
+	Indeterminate: '#5DAFDD',
+	Cleared: '#CDCDD0',
+	Normal: '#438953',
+	Warning: '#FFF000',
+	Minor: '#FFD60A',
+	Major: '#FF9F0A',
+	Critical: '#DF5251'
 };
 
 // the size of each donut

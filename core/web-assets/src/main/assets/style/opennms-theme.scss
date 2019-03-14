@@ -348,3 +348,10 @@ iframe.vaadin-fullscreen {
 .card table:last-of-type {
   margin-bottom: 0px;
 }
+
+// Make all severity badges the same width
+[class*="badge-severity-"] {
+  min-width: 150px;
+  max-width: 150px;
+  font-size: 80%; // make it slightly bigger than default
+}

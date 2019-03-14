@@ -1,4 +1,4 @@
-@import "severity-definition.scss";
+@import "properties.scss";
 
 /* General Styles */
 .geomap {
@@ -11,19 +11,19 @@
 
 /* Cluster styles (Plugin leaflet.markercluster) */
 .geomap .marker-cluster-Critical {
-  background-color: $severity-alarm-critical-border;
+  background-color: $severity-critical;
 }
 .geomap .marker-cluster-Major {
-  background-color: $severity-alarm-major-border;
+  background-color: $severity-major;
 }
 .geomap .marker-cluster-Minor {
-  background-color: $severity-alarm-minor-border;
+  background-color: $severity-minor;
 }
 .geomap .marker-cluster-Warning {
-  background-color: $severity-alarm-warning-border;
+  background-color: $severity-warning;
 }
 .geomap .marker-cluster-Normal {
-  background-color: $severity-alarm-normal-border;
+  background-color: $severity-normal;
 }
 .geomap .marker-cluster div {
   position: absolute;
@@ -37,28 +37,28 @@
 
 /* Styles for SVG elements */
 .geomap .svg .Cleared {
-  fill: $severity-alarm-cleared-border;
-  stroke: $severity-alarm-cleared-border;
+  fill: $severity-cleared;
+  stroke: $severity-cleared;
 }
 .geomap .svg .Normal {
-  fill: $severity-alarm-normal-border;
-  stroke: $severity-alarm-normal-border;
+  fill: $severity-normal;
+  stroke: $severity-normal;
 }
 .geomap .svg .Minor {
-  fill: $severity-alarm-minor-border;
-  stroke: $severity-alarm-minor-border;
+  fill: $severity-minor;
+  stroke: $severity-minor;
 }
 .geomap .svg .Major {
-  fill: $severity-alarm-major-border;
-  stroke: $severity-alarm-major-border;
+  fill: $severity-major;
+  stroke: $severity-major;
 }
 .geomap .svg .Warning {
-  fill: $severity-alarm-warning-border;
-  stroke: $severity-alarm-warning-border;
+  fill: $severity-warning;
+  stroke: $severity-warning;
 }
 .geomap .svg .Critical {
-  fill: $severity-alarm-critical-border;
-  stroke: $severity-alarm-critical-border;
+  fill: $severity-critical;
+  stroke: $severity-critical;
 }
 
 /* General Popup styles */
@@ -90,49 +90,49 @@
 }
 
 .geomap .severity.Normal {
-  background-color: $severity-alarm-normal-border;
+  background-color: $severity-normal;
   opacity: 0.6;
 }
 .geomap .severity.Normal:hover {
-  background-color: $severity-alarm-normal-border;
+  background-color: $severity-normal;
   opacity: 1.0;
 }
 
 .geomap .severity.Warning {
-  background-color: $severity-alarm-warning-border;
+  background-color: $severity-warning;
   opacity: 0.6;
 }
 .geomap .severity.Warning:hover {
-  background-color: $severity-alarm-warning-border;
+  background-color: $severity-warning;
   opacity: 1.0;
 }
 
 .geomap .severity.Minor {
-  background-color: $severity-alarm-minor-border;
+  background-color: $severity-minor;
   opacity: 0.6;
 }
 
 .geomap .severity.Minor:hover {
-  background-color: $severity-alarm-minor-border;
+  background-color: $severity-minor;
   opacity: 1.0;
 }
 
 .geomap .severity.Major {
-  background-color: $severity-alarm-major-border;
+  background-color: $severity-major;
   opacity: 0.6;
 }
 
 .geomap .severity.Major:hover {
-  background-color: $severity-alarm-major-border;
+  background-color: $severity-major;
   opacity: 1.0;
 }
 .geomap .severity.Critical {
-  background-color: $severity-alarm-critical-border;
+  background-color: $severity-critical;
   opacity: 0.6;
 }
 
 .geomap .severity.Critical:hover {
-  background-color: $severity-alarm-critical-border;
+  background-color: $severity-critical;
   opacity: 1.0;
 }
 
