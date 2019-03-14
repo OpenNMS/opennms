@@ -373,6 +373,24 @@ public class NetworkBuilder {
         }
     }
 
+    public void setNodeMetaDataEntry(final String context, final String key, final String value) {
+        if (m_currentNode != null) {
+            m_currentNode.addMetaData(context, key, value);
+        }
+    }
+
+    public void setInterfaceMetaDataEntry(final String context, final String key, final String value) {
+        if (m_currentIf != null) {
+            m_currentIf.addMetaData(context, key, value);
+        }
+    }
+
+    public void setServiceMetaDataEntry(final String context, final String key, final String value) {
+        if (m_currentMonSvc != null) {
+            m_currentNode.addMetaData(context, key, value);
+        }
+    }
+
     public OnmsServiceType getServiceType(final String serviceName) {
         if (!m_serviceTypeCache.containsKey(serviceName)) {
             m_serviceTypeCache.put(serviceName, new OnmsServiceType(serviceName));

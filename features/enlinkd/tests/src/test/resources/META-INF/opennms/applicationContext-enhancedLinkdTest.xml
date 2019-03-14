@@ -64,7 +64,11 @@
     <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
-  
+
+    <bean id="'monitoredServiceDao" class="org.opennms.netmgt.dao.mock.MockMonitoredServiceDao"/>
+
+    <bean id="'filterDao" class="org.opennms.netmgt.dao.mock.MockFilterDao"/>
+
 	<bean id="onmsTopologyDao" class="org.opennms.netmgt.topologies.service.impl.OnmsTopologyDaoInMemoryImpl"/>
   
      <bean id="cdpLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.CdpLinkDaoHibernate">

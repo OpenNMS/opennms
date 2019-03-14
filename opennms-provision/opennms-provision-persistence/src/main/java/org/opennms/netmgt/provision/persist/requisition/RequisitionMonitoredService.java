@@ -59,12 +59,15 @@ import org.apache.commons.lang.builder.CompareToBuilder;
  * @version $Id: $
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name="", propOrder = { "m_categories" })
+@XmlType(name="", propOrder = { "m_categories", "m_metaData" })
 @XmlRootElement(name="monitored-service")
 public class RequisitionMonitoredService implements Comparable<RequisitionMonitoredService> {
 
     @XmlElement(name="category")
-    protected List<RequisitionCategory> m_categories = new ArrayList<RequisitionCategory>();;
+    protected List<RequisitionCategory> m_categories = new ArrayList<RequisitionCategory>();
+
+    @XmlElement(name="meta-data")
+    protected List<RequisitionMetaData> m_metaData = new ArrayList<>();
     
     @XmlAttribute(name="service-name", required=true)
     protected String m_serviceName;
@@ -178,6 +181,14 @@ public class RequisitionMonitoredService implements Comparable<RequisitionMonito
         m_categories.add(0, category);
     }
 
+    public List<RequisitionMetaData> getMetaData() {
+        return m_metaData;
+    }
+
+    public void setMetaData(List<RequisitionMetaData> metaData) {
+        m_metaData = metaData;
+    }
+
     /**
      * <p>getServiceName</p>
      *
@@ -212,6 +223,7 @@ public class RequisitionMonitoredService implements Comparable<RequisitionMonito
         final int prime = 31;
         int result = 1;
         result = prime * result + ((m_categories == null) ? 0 : m_categories.hashCode());
+        result = prime * result + ((m_metaData == null) ? 0 : m_categories.hashCode());
         result = prime * result + ((m_serviceName == null) ? 0 : m_serviceName.hashCode());
         return result;
     }
@@ -227,6 +239,11 @@ public class RequisitionMonitoredService implements Comparable<RequisitionMonito
         } else if (!m_categories.equals(other.m_categories)) {
             return false;
         }
+        if (m_metaData == null) {
+            if (other.m_metaData != null) return false;
+        } else if (!m_metaData.equals(other.m_metaData)) {
+            return false;
+        }
         if (m_serviceName == null) {
             if (other.m_serviceName != null) return false;
         } else if (!m_serviceName.equals(other.m_serviceName)) {
@@ -238,6 +255,7 @@ public class RequisitionMonitoredService implements Comparable<RequisitionMonito
     @Override
     public String toString() {
         return "RequisitionMonitoredService [categories=" + m_categories
+                + ", metaData=" + m_metaData
                 + ", serviceName=" + m_serviceName + "]";
     }
 
@@ -246,6 +264,7 @@ public class RequisitionMonitoredService implements Comparable<RequisitionMonito
         return new CompareToBuilder()
             .append(m_serviceName, other.m_serviceName)
             .append(m_categories, other.m_categories)
+            .append(m_metaData, other.m_metaData)
             .toComparison();
     }
 }

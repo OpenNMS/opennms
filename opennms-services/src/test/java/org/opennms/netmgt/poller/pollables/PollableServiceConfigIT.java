@@ -75,7 +75,8 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
         "classpath:/META-INF/opennms/applicationContext-serviceMonitorRegistry.xml",
-        "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml"
+        "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.jna.JnaPinger"

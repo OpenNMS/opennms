@@ -52,7 +52,7 @@ import javax.xml.bind.annotation.XmlType;
  * @version $Id: $
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "m_interfaces", "m_categories", "m_assets" })
+@XmlType(name = "", propOrder = { "m_interfaces", "m_categories", "m_assets", "m_metaData" })
 @XmlRootElement(name = "node")
 public class RequisitionNode {
 
@@ -66,6 +66,9 @@ public class RequisitionNode {
     @XmlElement(name="asset")
     protected List<RequisitionAsset> m_assets = new ArrayList<>();
     
+    @XmlElement(name="meta-data")
+    protected List<RequisitionMetaData> m_metaData = new ArrayList<>();
+
     @XmlAttribute(name = "building")
     protected String m_building;
 
@@ -374,6 +377,14 @@ public class RequisitionNode {
         m_assets.add(0, asset);
     }
 
+    public List<RequisitionMetaData> getMetaData() {
+        return m_metaData;
+    }
+
+    public void setMetaData(List<RequisitionMetaData> metaData) {
+        m_metaData = metaData;
+    }
+
     /**
      * <p>Getter for the field <code>location</code>.</p>
      *
@@ -549,7 +560,8 @@ public class RequisitionNode {
     public int hashCode() {
         return Objects.hash(m_building, m_city, m_foreignId, m_assets,
                 m_categories, m_interfaces, m_nodeLabel, m_nodeLabel,
-                m_parentForeignId, m_parentForeignSource, m_parentNodeLabel, m_location);
+                m_parentForeignId, m_parentForeignSource, m_parentNodeLabel, m_location,
+                m_metaData);
     }
 
     @Override
@@ -568,13 +580,14 @@ public class RequisitionNode {
                 Objects.equals(this.m_parentForeignId, other.m_parentForeignId) &&
                 Objects.equals(this.m_parentForeignSource, other.m_parentForeignSource) &&
                 Objects.equals(this.m_parentNodeLabel, other.m_parentNodeLabel) &&
-                Objects.equals(this.m_location, other.m_location);
+                Objects.equals(this.m_location, other.m_location) &&
+                Objects.equals(this.m_metaData, other.m_metaData);
     }
 
     @Override
     public String toString() {
         return "RequisitionNode [interfaces=" + m_interfaces
-                + ", categories=" + m_categories + ", assets=" + m_assets
+                + ", categories=" + m_categories + ", assets=" + m_assets + ", meta-data=" + m_metaData
                 + ", building=" + m_building + ", city=" + m_city
                 + ", foreignId=" + m_foreignId + ", nodeLabel=" + m_nodeLabel
                 + ", parentForeignSource=" + m_parentForeignSource

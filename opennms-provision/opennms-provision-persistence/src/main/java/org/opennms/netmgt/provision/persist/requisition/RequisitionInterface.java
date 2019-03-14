@@ -60,7 +60,7 @@ import org.opennms.netmgt.provision.persist.PrimaryTypeAdapter;
  * <p>RequisitionInterface class.</p>
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name="", propOrder = { "m_monitoredServices", "m_categories" })
+@XmlType(name="", propOrder = { "m_monitoredServices", "m_categories", "m_metaData" })
 @XmlRootElement(name = "interface")
 public class RequisitionInterface implements Comparable<RequisitionInterface> {
 
@@ -70,6 +70,9 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
 
     @XmlElement(name="category")
     protected List<RequisitionCategory> m_categories = new ArrayList<>();
+
+    @XmlElement(name="meta-data")
+    protected List<RequisitionMetaData> m_metaData = new ArrayList<>();
 
     @XmlAttribute(name="descr")
     protected String m_description;
@@ -271,6 +274,14 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
         }
     }
 
+    public List<RequisitionMetaData> getMetaData() {
+        return m_metaData;
+    }
+
+    public void setMetaData(List<RequisitionMetaData> metaData) {
+        m_metaData = metaData;
+    }
+
     /**
      * <p>getDescr</p>
      *
@@ -398,6 +409,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
         final int prime = 67;
         int result = 1;
         result = prime * result + ((m_categories == null) ? 0 : m_categories.hashCode());
+        result = prime * result + ((m_metaData == null) ? 0 : m_metaData.hashCode());
         result = prime * result + ((m_description == null) ? 0 : m_description.hashCode());
         result = prime * result + ((m_ipAddress == null) ? 0 : m_ipAddress.hashCode());
         result = prime * result + ((m_isManaged == null) ? 0 : m_isManaged.hashCode());
@@ -416,6 +428,11 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
         if (m_categories == null) {
             if (other.m_categories != null) return false;
         } else if (!m_categories.equals(other.m_categories)) {
+            return false;
+        }
+        if (m_metaData == null) {
+            if (other.m_metaData != null) return false;
+        } else if (!m_metaData.equals(other.m_metaData)) {
             return false;
         }
         if (m_description == null) {
@@ -455,6 +472,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
     public String toString() {
         return "RequisitionInterface [monitoredServices="
                 + m_monitoredServices + ", categories=" + m_categories
+                + ", metaData=" + m_metaData
                 + ", description=" + m_description + ", ipAddress="
                 + m_ipAddress + ", isManaged=" + m_isManaged
                 + ", snmpPrimary=" + m_snmpPrimary + ", status="
@@ -470,6 +488,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
             .append(getSnmpPrimary(), other.getSnmpPrimary())
             .append(m_monitoredServices, other.m_monitoredServices)
             .append(m_categories, other.m_categories)
+            .append(m_metaData, other.m_metaData)
             .append(m_description, other.m_description)
             .toComparison();
     }

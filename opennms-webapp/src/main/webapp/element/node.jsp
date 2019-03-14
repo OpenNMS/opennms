@@ -341,6 +341,13 @@ function confirmAssetEdit() {
       <a href="<c:out value="${assetLink}"/>" onclick="return confirmAssetEdit()">Asset Info</a>
     </li>
 
+    <c:url var="metaDataLink" value="element/node-metadata.jsp">
+        <c:param name="node" value="${model.id}"/>
+    </c:url>
+    <li class="list-inline-item">
+      <a href="<c:out value="${metaDataLink}"/>">Meta-Data</a>
+    </li>
+
     <c:url var="hardwareLink" value="hardware/list.jsp">
       <c:param name="node" value="${model.id}"/>
     </c:url>

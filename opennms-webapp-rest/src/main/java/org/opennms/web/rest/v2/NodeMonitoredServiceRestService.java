@@ -30,7 +30,18 @@ package org.opennms.web.rest.v2;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -44,6 +55,8 @@ import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.support.CreateIfNecessaryTemplate;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMetaData;
+import org.opennms.netmgt.model.OnmsMetaDataList;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoredServiceList;
 import org.opennms.netmgt.model.OnmsNode;
@@ -206,4 +219,126 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
         return node == null ? null : node.getIpInterfaceByIpAddress(ipAddress);
     }
 
+    protected OnmsMonitoredService getService(final UriInfo uriInfo, final String serviceName) {
+        return getInterface(uriInfo).getMonitoredServiceByServiceType(serviceName);
+    }
+
+    @GET
+    @Path("{serviceName}/metadata")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public JaxbListWrapper<OnmsMetaData> getMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") String serviceName) {
+        final OnmsMonitoredService service = getService(uriInfo, serviceName);
+
+        if (serviceName == null) {
+            throw getException(Status.BAD_REQUEST, "getMetaData: Can't find service " + serviceName);
+        }
+
+        return new OnmsMetaDataList(service.getMetaData());
+    }
+
+    @GET
+    @Path("{serviceName}/metadata/{context}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public JaxbListWrapper<OnmsMetaData> getMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") String serviceName, @PathParam("context") String context) {
+        final OnmsMonitoredService service = getService(uriInfo, serviceName);
+
+        if (serviceName == null) {
+            throw getException(Status.BAD_REQUEST, "getMetaData: Can't find service " + serviceName);
+        }
+
+        return new OnmsMetaDataList(service.getMetaData().stream()
+                .filter(e -> context.equals(e.getContext()))
+                .collect(Collectors.toList()));
+    }
+
+    @GET
+    @Path("{serviceName}/metadata/{context}/{key}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public JaxbListWrapper<OnmsMetaData> getMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") String serviceName, @PathParam("context") String context, @PathParam("key") String key) {
+        final OnmsMonitoredService service = getService(uriInfo, serviceName);
+
+        if (serviceName == null) {
+            throw getException(Status.BAD_REQUEST, "getMetaData: Can't find service " + serviceName);
+        }
+
+        return new OnmsMetaDataList(service.getMetaData().stream()
+                .filter(e -> context.equals(e.getContext()) && key.equals(e.getKey()))
+                .collect(Collectors.toList()));
+    }
+
+    @DELETE
+    @Path("{serviceName}/metadata/{context}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response deleteMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") String serviceName, @PathParam("context") String context) {
+        writeLock();
+        try {
+            final OnmsMonitoredService service = getService(uriInfo, serviceName);
+
+            if (serviceName == null) {
+                throw getException(Status.BAD_REQUEST, "getMetaData: Can't find service " + serviceName);
+            }
+            service.removeMetaData(context);
+            getDao().update(service);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @DELETE
+    @Path("{serviceName}/metadata/{context}/{key}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response deleteMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") String serviceName, @PathParam("context") String context, @PathParam("key") String key) {
+        writeLock();
+        try {
+            final OnmsMonitoredService service = getService(uriInfo, serviceName);
+
+            if (serviceName == null) {
+                throw getException(Status.BAD_REQUEST, "getMetaData: Can't find service " + serviceName);
+            }
+            service.removeMetaData(context, key);
+            getDao().update(service);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @POST
+    @Path("{serviceName}/metadata")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response postMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") String serviceName, OnmsMetaData entity) {
+        writeLock();
+        try {
+            final OnmsMonitoredService service = getService(uriInfo, serviceName);
+
+            if (serviceName == null) {
+                throw getException(Status.BAD_REQUEST, "getMetaData: Can't find service " + serviceName);
+            }
+            service.addMetaData(entity.getContext(), entity.getKey(), entity.getValue());
+            getDao().update(service);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @PUT
+    @Path("{serviceName}/metadata/{context}/{key}/{value}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response putMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") String serviceName, @PathParam("context") String context, @PathParam("key") String key, @PathParam("value") String value) {
+        writeLock();
+        try {
+            final OnmsMonitoredService service = getService(uriInfo, serviceName);
+
+            if (serviceName == null) {
+                throw getException(Status.BAD_REQUEST, "getMetaData: Can't find service " + serviceName);
+            }
+            service.addMetaData(context, key, value);
+            getDao().update(service);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
 }

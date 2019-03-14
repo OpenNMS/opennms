@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import static org.junit.matchers.JUnitMatchers.containsString;
+
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +39,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import static org.junit.matchers.JUnitMatchers.containsString;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -49,6 +50,7 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -63,8 +65,10 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
+@JUnitConfigurationEnvironment
 @JUnitSnmpAgent(host = DiskUsageMonitorTest.TEST_IP_ADDRESS, resource = "classpath:/org/opennms/netmgt/snmp/snmpTestData1.properties")
 public class DiskUsageMonitorTest implements InitializingBean {
 

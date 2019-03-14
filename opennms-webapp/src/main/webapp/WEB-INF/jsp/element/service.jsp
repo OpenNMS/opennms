@@ -151,7 +151,14 @@ function doDelete() {
         
       <ul class="list-inline">
          <li class="list-inline-item"><a href="${eventUrl}">View Events</a></li>
-         
+
+          <c:url var="metaDataLink" value="element/service-metadata.jsp">
+              <c:param name="node" value="${service.ipInterface.node.id}"/>
+              <c:param name="ipAddr" value="${service.ipInterface.ipAddress.hostAddress}"/>
+              <c:param name="service" value="${service.serviceName}"/>
+          </c:url>
+
+          <li class="list-inline-item"><a href="<c:out value="${metaDataLink}"/>">Meta-Data</a></li>
  	
        <sec:authorize url="admin/deleteService">
          <li class="list-inline-item"><a href="admin/deleteService" onClick="return doDelete()">Delete</a></li>
@@ -160,7 +167,7 @@ function doDelete() {
 	
 
       </ul>
- 
+
           
 
       <sec:authorize url="admin/deleteService">

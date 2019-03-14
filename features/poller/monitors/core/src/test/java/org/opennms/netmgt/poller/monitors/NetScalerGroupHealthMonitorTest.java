@@ -46,6 +46,7 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -60,8 +61,10 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
+@JUnitConfigurationEnvironment
 @JUnitSnmpAgent(port=NetScalerGroupHealthMonitorTest.TEST_SNMP_PORT,host=NetScalerGroupHealthMonitorTest.TEST_IP_ADDRESS, resource="classpath:/org/opennms/netmgt/snmp/netscaler-health.properties")
 public class NetScalerGroupHealthMonitorTest implements InitializingBean {
     static final int TEST_SNMP_PORT = 9161;
