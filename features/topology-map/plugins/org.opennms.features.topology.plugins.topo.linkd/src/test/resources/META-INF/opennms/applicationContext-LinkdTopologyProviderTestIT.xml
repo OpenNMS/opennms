@@ -111,6 +111,10 @@
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
 
+    <bean id="userDefinedLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.UserDefinedLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
 
     <bean id="onmsTopologyDao" class="org.opennms.netmgt.topologies.service.impl.OnmsTopologyDaoInMemoryImpl"/>
@@ -160,6 +164,8 @@
       <property name="ospfElementDao" ref="ospfElementDao" />
    </bean>
 
+    <bean id="userDefinedLinkTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.UserDefinedLinkTopologyServiceImpl" />
+
     <bean id ="bridgeOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.BridgeOnmsTopologyUpdater">
         <constructor-arg ref="onmsTopologyDao" />
         <constructor-arg ref="bridgeTopologyService" />
@@ -194,6 +200,12 @@
 		<constructor-arg ref="ospfTopologyService" />
 		<constructor-arg ref="nodeTopologyService" />
 	</bean>
+
+    <bean id ="userDefinedLinkTopologyUpdater" class="org.opennms.netmgt.enlinkd.UserDefinedLinkTopologyUpdater">
+        <constructor-arg ref="userDefinedLinkTopologyService" />
+        <constructor-arg ref="onmsTopologyDao" />
+        <constructor-arg ref="nodeTopologyService" />
+    </bean>
 
     <bean id="enLinkdTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
         <constructor-arg ref="metricRegistry"/>

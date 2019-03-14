@@ -1,0 +1,36 @@
+==== User Defined Links
+
+User defined links (UDLs) for the Enlinkd topology can be be queried, added, modified or deleted via ReST endpoints.
+
+===== GETs (Reading UDLs)
+
+[options="header", cols="5,10"]
+|===
+| Resource                         | Description
+| `api/v2/userdefinedlinks`        | Get the list of UDLs.
+| `api/v2/userdefinedlinks/{id}`   | Retrieve a specific UDL by database ID.
+|===
+
+===== POSTs (Creating UDLs)
+
+[options="header", cols="5,10"]
+|===
+| Resource                        | Description
+| `api/v2/userdefinedlinks`       | Add a new UDL.
+|===
+
+====== Usage examples with curl
+
+.Create a new UDL between node with ID 1 and node with ID 2.
+[source,bash]
+----
+curl -v -X POST -u admin:admin -H "Content-Type: application/json" -d '{"node-id-a": 1, "node-id-z": 2, "component-label-a": "tp1", "component-label-z": "tp2", "link-id": "n1:tp1->n2:tp2", "owner": "me"}' http://localhost:8980/opennms/api/v2/userdefinedlinks
+----
+
+===== DELETEs (Removing UDLs)
+
+[options="header", cols="5,10"]
+|===
+| Resource                        | Description
+| `api/v2/userdefinedlinks/{id}`  | Delete a UDL by database ID.
+|===

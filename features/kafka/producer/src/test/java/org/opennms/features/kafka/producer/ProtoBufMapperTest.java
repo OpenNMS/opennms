@@ -28,6 +28,8 @@
 
 package org.opennms.features.kafka.producer;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
@@ -40,14 +42,23 @@ import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.springframework.transaction.support.TransactionOperations;
 
 /**
  * Tests for {@link ProtobufMapper}.
  */
 public class ProtoBufMapperTest {
+
+    private ProtobufMapper protobufMapper = new ProtobufMapper(mock(EventConfDao.class), mock(HwEntityDao.class),
+            mock(TransactionOperations.class), mock(NodeDao.class), 1);
+
     /**
      * Tests that the mapper can handle related alarms.
      */
@@ -68,8 +79,7 @@ public class ProtoBufMapperTest {
         childAlarm.setLogMsg(childLogMsg);
 
         parentAlarm.setRelatedAlarms(new HashSet<>(Collections.singletonList(childAlarm)));
-        ProtobufMapper protobufMapper = new ProtobufMapper(mock(EventConfDao.class), mock(HwEntityDao.class),
-                mock(TransactionOperations.class), mock(NodeDao.class), 1);
+
         OpennmsModelProtos.Alarm.Builder mappedAlarm = protobufMapper.toAlarm(parentAlarm);
         List<OpennmsModelProtos.Alarm> relatedAlarms = mappedAlarm.getRelatedAlarmList();
         
@@ -88,5 +98,30 @@ public class ProtoBufMapperTest {
         testAlarm.setAlarmType(1);
 
         return testAlarm;
+    }
+
+    @Test
+    public void canMapTopologyEdges() {
+        // Build an edge
+        OnmsTopologyVertex v1 = OnmsTopologyVertex.create("v1", "label1", "address1", "icon1");
+        OnmsTopologyVertex v2 = OnmsTopologyVertex.create("v2", "label2", "address2", "icon2");
+        OnmsTopologyPort sourcePort = OnmsTopologyPort.create("source", v1, 1);
+        sourcePort.setAddr("source port addr");
+        OnmsTopologyPort targetPort = OnmsTopologyPort.create("target", v2, 2);
+        targetPort.setAddr("target port addr");
+        OnmsTopologyEdge edge = OnmsTopologyEdge.create("edge-id", sourcePort, targetPort);
+
+        // Map
+        OpennmsModelProtos.TopologyEdge.Builder mappedEdge = protobufMapper.toEdgeTopologyMessage(ProtocolSupported.USERDEFINED.toString(), edge);
+
+        // Verify
+        assertThat(mappedEdge.getRef().getProtocol(), equalTo(OpennmsModelProtos.TopologyRef.Protocol.USERDEFINED));
+        assertThat(mappedEdge.getRef().getId(), equalTo("edge-id"));
+
+        assertThat(mappedEdge.getSource().getVertexId(), equalTo("v1"));
+        assertThat(mappedEdge.getSource().getAddress(), equalTo("source port addr"));
+
+        assertThat(mappedEdge.getTargetPort().getVertexId(), equalTo("v2"));
+        assertThat(mappedEdge.getTargetPort().getAddress(), equalTo("target port addr"));
     }
 }

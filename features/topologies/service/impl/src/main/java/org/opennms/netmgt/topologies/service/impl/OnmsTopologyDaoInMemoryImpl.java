@@ -39,12 +39,9 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyUpdater;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
 
-    Logger LOG = LoggerFactory.getLogger(OnmsTopologyDaoInMemoryImpl.class);
     private final Map<OnmsTopologyProtocol, OnmsTopologyUpdater> m_updatersMap = new HashMap<OnmsTopologyProtocol,
             OnmsTopologyUpdater>();
     final Set<OnmsTopologyConsumer> m_consumers = new HashSet<OnmsTopologyConsumer>();

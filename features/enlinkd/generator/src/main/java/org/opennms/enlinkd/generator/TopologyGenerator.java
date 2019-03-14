@@ -35,6 +35,7 @@ import org.opennms.enlinkd.generator.protocol.CdpProtocol;
 import org.opennms.enlinkd.generator.protocol.IsIsProtocol;
 import org.opennms.enlinkd.generator.protocol.LldpProtocol;
 import org.opennms.enlinkd.generator.protocol.OspfProtocol;
+import org.opennms.enlinkd.generator.protocol.UserDefinedProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +67,7 @@ public class TopologyGenerator {
     }
 
     public enum Protocol {
-        cdp, isis, lldp, ospf, bridge
+        cdp, isis, lldp, ospf, bridge, userdefined
     }
 
     private TopologyContext topologyContext;
@@ -100,6 +101,8 @@ public class TopologyGenerator {
             return new OspfProtocol(topologySettings, topologyContext);
         } else if (Protocol.bridge == protocol) {
             return new BridgeProtocol(topologySettings, topologyContext);
+        } else if (Protocol.userdefined == protocol) {
+            return new UserDefinedProtocol(topologySettings, topologyContext);
         } else {
             throw new IllegalArgumentException("Don't know this protocol: " + topologySettings.getProtocol());
         }

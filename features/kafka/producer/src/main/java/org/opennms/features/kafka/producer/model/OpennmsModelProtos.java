@@ -16120,6 +16120,10 @@ public final class OpennmsModelProtos {
        * <code>CDP = 4;</code>
        */
       CDP(4),
+      /**
+       * <code>USERDEFINED = 5;</code>
+       */
+      USERDEFINED(5),
       UNRECOGNIZED(-1),
       ;
 
@@ -16143,6 +16147,10 @@ public final class OpennmsModelProtos {
        * <code>CDP = 4;</code>
        */
       public static final int CDP_VALUE = 4;
+      /**
+       * <code>USERDEFINED = 5;</code>
+       */
+      public static final int USERDEFINED_VALUE = 5;
 
 
       public final int getNumber() {
@@ -16168,6 +16176,7 @@ public final class OpennmsModelProtos {
           case 2: return ISIS;
           case 3: return BRIDGE;
           case 4: return CDP;
+          case 5: return USERDEFINED;
           default: return null;
         }
       }
@@ -19786,23 +19795,24 @@ public final class OpennmsModelProtos {
       "ys_description\030\t \001(\t\022\025\n\rsys_object_id\030\n " +
       "\001(\t\022\"\n\014ip_interface\030\013 \003(\0132\014.IpInterface\022" +
       "&\n\016snmp_interface\030\014 \003(\0132\016.SnmpInterface\022" +
-      "\037\n\014hw_inventory\030\r \001(\0132\t.HwEntity\"\201\001\n\013Top" +
+      "\037\n\014hw_inventory\030\r \001(\0132\t.HwEntity\"\222\001\n\013Top" +
       "ologyRef\022\n\n\002id\030\001 \001(\t\022\'\n\010protocol\030\002 \001(\0162\025" +
-      ".TopologyRef.Protocol\"=\n\010Protocol\022\010\n\004LLD" +
+      ".TopologyRef.Protocol\"N\n\010Protocol\022\010\n\004LLD" +
       "P\020\000\022\010\n\004OSPF\020\001\022\010\n\004ISIS\020\002\022\n\n\006BRIDGE\020\003\022\007\n\003C" +
-      "DP\020\004\",\n\017TopologySegment\022\031\n\003ref\030\001 \001(\0132\014.T" +
-      "opologyRef\"{\n\014TopologyPort\022\021\n\tvertex_id\030" +
-      "\001 \001(\t\022\020\n\010if_index\030\002 \001(\004\022\017\n\007if_name\030\003 \001(\t" +
-      "\022\017\n\007address\030\004 \001(\t\022$\n\rnode_criteria\030\005 \001(\013" +
-      "2\r.NodeCriteria\"\242\001\n\014TopologyEdge\022\031\n\003ref\030" +
-      "\001 \001(\0132\014.TopologyRef\022\035\n\006source\030\002 \001(\0132\r.To" +
-      "pologyPort\022#\n\ntargetPort\030\003 \001(\0132\r.Topolog" +
-      "yPortH\000\022)\n\rtargetSegment\030\004 \001(\0132\020.Topolog" +
-      "ySegmentH\000B\010\n\006target*g\n\010Severity\022\021\n\rINDE" +
-      "TERMINATE\020\000\022\013\n\007CLEARED\020\001\022\n\n\006NORMAL\020\002\022\013\n\007" +
-      "WARNING\020\003\022\t\n\005MINOR\020\004\022\t\n\005MAJOR\020\005\022\014\n\010CRITI" +
-      "CAL\020\006B?\n)org.opennms.features.kafka.prod" +
-      "ucer.modelB\022OpennmsModelProtosb\006proto3"
+      "DP\020\004\022\017\n\013USERDEFINED\020\005\",\n\017TopologySegment" +
+      "\022\031\n\003ref\030\001 \001(\0132\014.TopologyRef\"{\n\014TopologyP" +
+      "ort\022\021\n\tvertex_id\030\001 \001(\t\022\020\n\010if_index\030\002 \001(\004" +
+      "\022\017\n\007if_name\030\003 \001(\t\022\017\n\007address\030\004 \001(\t\022$\n\rno" +
+      "de_criteria\030\005 \001(\0132\r.NodeCriteria\"\242\001\n\014Top" +
+      "ologyEdge\022\031\n\003ref\030\001 \001(\0132\014.TopologyRef\022\035\n\006" +
+      "source\030\002 \001(\0132\r.TopologyPort\022#\n\ntargetPor" +
+      "t\030\003 \001(\0132\r.TopologyPortH\000\022)\n\rtargetSegmen" +
+      "t\030\004 \001(\0132\020.TopologySegmentH\000B\010\n\006target*g\n" +
+      "\010Severity\022\021\n\rINDETERMINATE\020\000\022\013\n\007CLEARED\020" +
+      "\001\022\n\n\006NORMAL\020\002\022\013\n\007WARNING\020\003\022\t\n\005MINOR\020\004\022\t\n" +
+      "\005MAJOR\020\005\022\014\n\010CRITICAL\020\006B?\n)org.opennms.fe" +
+      "atures.kafka.producer.modelB\022OpennmsMode" +
+      "lProtosb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

@@ -86,6 +86,7 @@ drop table filterfavorites cascade;
 drop table hwentity cascade;
 drop table hwentityattribute cascade;
 drop table hwentityattributetype cascade;
+drop table user_defined_links cascade;
 
 drop sequence catNxtId;
 drop sequence nodeNxtId;
@@ -2709,3 +2710,21 @@ ALTER TABLE classification_rules ADD CONSTRAINT classification_rules_unique_defi
 --#          sequence, column, table
 --# install: rulenxtid id classification_rules
 create sequence rulenxtid minvalue 1;
+
+--##################################################################
+--# User defined links
+--##################################################################
+CREATE TABLE user_defined_links (
+    id integer NOT NULL,
+    node_id_a integer NOT NULL,
+    node_id_z integer NOT NULL,
+    component_label_a text,
+    component_label_z text,
+    link_id text NOT NULL,
+    link_label text,
+    owner text NOT NULL
+);
+
+ALTER TABLE ONLY user_defined_links ADD CONSTRAINT user_defined_links_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY user_defined_links ADD CONSTRAINT fk_user_defined_links_node_id_a FOREIGN KEY (node_id_a) REFERENCES node(nodeid) ON DELETE CASCADE;
+ALTER TABLE ONLY user_defined_links ADD CONSTRAINT fk_user_defined_links_node_id_z FOREIGN KEY (node_id_z) REFERENCES node(nodeid) ON DELETE CASCADE;

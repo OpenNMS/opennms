@@ -19,6 +19,11 @@
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.enlinkd.service.api.NodeTopologyService" ref="nodeTopologyService" />
 
+    <bean id="userDefinedLinkTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.UserDefinedLinkTopologyServiceImpl">
+        <property name="topologyEntityCache" ref="topologyEntityCache" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.service.api.UserDefinedLinkTopologyService" ref="userDefinedLinkTopologyService" />
+
     <bean id="bridgeTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.BridgeTopologyServiceImpl">
         <property name="bridgeElementDao" ref="bridgeElementDao" />
         <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
