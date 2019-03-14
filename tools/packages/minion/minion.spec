@@ -204,6 +204,11 @@ if [ -d "${ROOT_INST}/data" ]; then
     fi
 fi
 
+# Clean out .m2 directory
+if [ -d "${ROOT_INST}/.m2" ]; then
+   rm -rf "${ROOT_INST}/.m2"
+fi
+
 # Generate an SSH key if necessary
 if [ ! -f "${ROOT_INST}/etc/host.key" ]; then
     /usr/bin/ssh-keygen -t rsa -N "" -b 4096 -f "${ROOT_INST}/etc/host.key"
