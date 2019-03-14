@@ -1,0 +1,50 @@
+<div>
+<!-- Alejandro Galue (agalue@opennms.org) -->
+
+<div class="modal-header">
+  <h3 class="modal-title">Service</h3>
+</div>
+
+<div class="modal-body">
+  <form name="serviceForm">
+    <div class="form-group">
+      <label class="col-form-label" for="name">Name</label>
+      <input class="form-control" type="text" id="name" name="name" placeholder="A Service Name" ng-model="service.name" required valid-service
+             ng-class="{ 'is-invalid' : serviceForm.name.$invalid }">
+      <p ng-show="serviceForm.name.$invalid" class="invalid-feedback">A valid Service name is required, and must be unique within the interface.</p>
+    </div>
+
+    <hr>
+    <div class="clearfix">
+      <button type="button" class="btn btn-sm btn-secondary pull-right" id="add-metadata" ng-click="addMetaData()" ng-disabled="serviceForm.$invalid">Add Meta-Data</button>
+      <h4>Meta-Data</h4>
+    </div>
+    <ng-form name="metadataForm" ng-repeat="entry in service.requisitionMetaData">
+      <div class="form-group" style="margin-bottom: 0.5rem;">
+        <div class="input-group input-group-sm">
+          <input class="form-control" type="text" name="metadata-key" placeholder="Meta-Data Key"
+                 ng-model="entry.key" typeahead-editable="true" typeahead-min-length="0" required
+                 ng-class="{ 'is-invalid' : metadataForm.key.$invalid }">
+          <div class="input-group-prepend input-group-append">
+            <div class="input-group-text" style="border-radius: 0; border-left: 0; border-right: 0">=</div>
+          </div>
+          <input class="form-control" type="text" name="metadata-value" placeholder="Meta-Data Value"
+                 ng-model="entry.value" typeahead-editable="true" typeahead-min-length="0" required
+                 ng-class="{ 'is-invalid' : metadataForm.value.$invalid }">
+          <span class="input-group-append">
+            <button class="btn btn-secondary" type="button" ng-click="removeMetaData($index)">
+              <i class="fa fa-trash"></i>
+            </button>
+          </span>
+        </div>
+      </div>
+    </ng-form>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" id="save-interface" ng-click="save()" ng-disabled="serviceForm.$invalid">Save</button>
+  <button type="button" class="btn btn-secondary" id="cancel-interface" ng-click="cancel()">Cancel</button>
+</div>
+
+</div>

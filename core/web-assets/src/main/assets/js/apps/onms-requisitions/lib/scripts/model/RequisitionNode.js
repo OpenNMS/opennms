@@ -4,6 +4,7 @@
 */
 
 const RequisitionInterface = require('./RequisitionInterface');
+const _ = require('lodash');
 
 // Internal function for initialization purposes
 const isEmpty = function(str) {
@@ -156,8 +157,43 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
    */
   self.assets = [];
 
+  /**
+   * @description The array of requisition metaData entries
+   * @ngdoc property
+   * @name RequisitionNode#requisitionMetaData
+   * @propertyOf RequisitionNode
+   * @returns {object} The requisition metaData entries
+   */
+  self.requisitionMetaData = [];
+
+  /**
+   * @description The array of other metaData entries
+   * @ngdoc property
+   * @name RequisitionNode#otherMetaData
+   * @propertyOf RequisitionNode
+   * @returns {object} The other metaData entries
+   */
+  self.otherMetaData = {};
+
   angular.forEach(node['interface'], function(intf) {
-    self.interfaces.push(new RequisitionInterface(intf));
+      self.interfaces.push(new RequisitionInterface(intf));
+  });
+
+  angular.forEach(node['meta-data'], function(entry) {
+    if (entry.context === 'requisition') {
+      self.requisitionMetaData.push({
+        'key': entry.key,
+        'value': entry.value,
+      });
+    } else {
+      if (!_.has(self.otherMetaData, entry.context)) {
+        self.otherMetaData[entry.context] = []
+      }
+      self.otherMetaData[entry.context].push({
+        'key': entry.key,
+        'value': entry.value,
+      });
+    }
   });
 
   angular.forEach(node['asset'], function(asset) {
@@ -218,6 +254,23 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
       value: ''
     });
     return self.assets.length -1;
+  };
+
+  /**
+   * @description Adds a new meta-data entry to the node
+   *
+   * @name RequisitionNode:addNewMetaData
+   * @ngdoc method
+   * @methodOf RequisitionNode
+   * @returns {object} the new meta-data Object
+   */
+  self.addNewMetaData = function() {
+    let entry = {
+        key: '',
+        value: ''
+    };
+    self.requisitionMetaData.push(entry);
+    return entry;
   };
 
   /**
@@ -294,6 +347,7 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
       'parent-foreign-id': self.parentForeignId,
       'parent-node-label': self.parentNodeLabel,
       'asset': [],
+      'meta-data': [],
       'category': []
     };
 
@@ -303,12 +357,47 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
         'descr': intf.description,
         'snmp-primary': intf.snmpPrimary,
         'status': (intf.status || intf.status === 'managed') ? '1' : '3',
+        'meta-data': [],
         'monitored-service': []
       };
-      angular.forEach(intf.services, function(service) {
-        interfaceObject['monitored-service'].push({
-          'service-name': service.name
+      angular.forEach(intf.requisitionMetaData, function(entry) {
+        interfaceObject['meta-data'].push({
+          'context': 'requisition',
+          'key': entry.key,
+          'value': entry.value,
         });
+      });
+      angular.forEach(intf.otherMetaData, function(entries, context) {
+        angular.forEach(entries, function(entry) {
+          interfaceObject['meta-data'].push({
+            'context': context,
+            'key': entry.key,
+            'value': entry.value,
+          });
+        });
+      });
+      angular.forEach(intf.services, function(service) {
+        var serviceObject = {
+          'service-name': service.name,
+          'meta-data': [],
+        };
+        angular.forEach(service.requisitionMetaData, function(entry) {
+          serviceObject['meta-data'].push({
+            'context': 'requisition',
+            'key': entry.key,
+            'value': entry.value,
+          });
+        });
+        angular.forEach(service.otherMetaData, function(entries, context) {
+          angular.forEach(entries, function(entry) {
+            serviceObject['meta-data'].push({
+              'context': context,
+              'key': entry.key,
+              'value': entry.value,
+            });
+          });
+        });
+        interfaceObject['monitored-service'].push(serviceObject);
       });
 
       nodeObject['interface'].push(interfaceObject);
@@ -316,6 +405,23 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
 
     angular.forEach(self.assets, function(asset) {
       nodeObject['asset'].push(asset);
+    });
+
+    angular.forEach(self.requisitionMetaData, function(entry) {
+      nodeObject['meta-data'].push({
+          'context': 'requisition',
+          'key': entry.key,
+          'value': entry.value,
+      });
+    });
+    angular.forEach(self.otherMetaData, function(entries, context) {
+      angular.forEach(entries, function(entry) {
+        nodeObject['meta-data'].push({
+            'context': context,
+            'key': entry.key,
+            'value': entry.value,
+        });
+      });
     });
 
     angular.forEach(self.categories, function(category) {

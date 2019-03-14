@@ -3,6 +3,9 @@
 * @copyright 2014 The OpenNMS Group, Inc.
 */
 
+const RequisitionService = require('./RequisitionService');
+const _ = require('lodash');
+
 /**
 * @ngdoc object
 * @name RequisitionInterface
@@ -65,25 +68,47 @@ const RequisitionInterface = function RequisitionInterface(intf) {
   self.services = [];
 
   angular.forEach(intf['monitored-service'], function(svc) {
-    self.services.push({ name: svc['service-name'] });
+    self.services.push(new RequisitionService(svc));
   });
 
   /**
-  * @description Adds a new monitored service to the interface
-  *
-  * @name RequisitionInterface:addNewService
-  * @ngdoc method
-  * @methodOf RequisitionInterface
-  * @returns {object} the new service Object
-  */
-  self.addNewService = function() {
-    self.services.push({ name: '' });
-    return self.services.length - 1;
-  };
+   * @description The array of requisition metaData entries
+   * @ngdoc property
+   * @name RequisitionNode#requisitionMetaData
+   * @propertyOf RequisitionNode
+   * @returns {object} The requisition metaData entries
+   */
+  self.requisitionMetaData = [];
+
+  /**
+   * @description The array of other metaData entries
+   * @ngdoc property
+   * @name RequisitionNode#otherMetaData
+   * @propertyOf RequisitionNode
+   * @returns {object} The other metaData entries
+   */
+  self.otherMetaData = {};
+
+  angular.forEach(intf['meta-data'], function(entry) {
+    if (entry.context === 'requisition') {
+      self.requisitionMetaData.push({
+        'key': entry.key,
+        'value': entry.value,
+      });
+    } else {
+      if (!_.has(self.otherMetaData, entry.context)) {
+        self.otherMetaData[entry.context] = []
+      }
+      self.otherMetaData[entry.context].push({
+        'key': entry.key,
+        'value': entry.value,
+      });
+    }
+  });
 
   self.className = 'RequisitionInterface';
 
   return self;
-}
+};
 
 module.exports = RequisitionInterface;

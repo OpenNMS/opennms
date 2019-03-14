@@ -43,7 +43,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
  * The Test Class for the New Provisioning UI using AngularJS.
  * <p>This test will left the current OpenNMS installation as it was before running,
  * to avoid issues related with the execution order of the smoke-tests.</p>
- * 
+ *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
@@ -92,11 +92,11 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//td[text()='" + REQUISITION_NAME + "']")));
 
         // trigger dropdown menu
-        final String moreActionsButton = "button.btn[uib-tooltip='More actions for requisition "+REQUISITION_NAME+"']";
+        final String moreActionsButton = "button.btn[uib-tooltip='More actions for requisition " + REQUISITION_NAME + "']";
         clickElement(By.cssSelector(moreActionsButton));
 
         // Edit the foreign source
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("editForeignSource-"+REQUISITION_NAME))).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("editForeignSource-" + REQUISITION_NAME))).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("ul.nav-tabs > li > a.nav-link")));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[text()='Foreign Source Definition for Requisition " + REQUISITION_NAME + "']")));
 
@@ -119,7 +119,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("save-detector"))).click();
         waitForModalClose();
         enterText(By.cssSelector("input[placeholder='Search/Filter Detectors'][ng-model='filters.detector']"), "HTTP-8980");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//td[text()='"+NODE_SERVICE+"']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//td[text()='" + NODE_SERVICE + "']")));
 
         // Add a policy to the detector
         findElementByCss("#tab-policies .ng-binding").click();
@@ -150,7 +150,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         enterText(By.id("nodeLabel"), NODE_LABEL);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("foreignId"))).clear();
         enterText(By.id("foreignId"), NODE_FOREIGNID);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("location"))).clear();
+        //wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("location"))).clear();
         saveNode();
 
         // Add an IP Interface
@@ -183,12 +183,21 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         clickId("save-asset", false);
         waitForModalClose();
 
+        // Add meta-data to the node
+        clickId("tab-metadata", false);
+        clickId("add-metadata", false);
+        findElementByCss("form[name='metaDataForm']");
+        enterText(By.id("metadata-key"), "foo");
+        enterText(By.id("metadata-value"), "bar");
+        clickId("save-metadata", false);
+        waitForModalClose();
+
         // Add a category to the node
         clickId("tab-categories", false);
         clickId("add-category", false);
         Thread.sleep(100);
         enterText(By.cssSelector("input[name='categoryName']"), NODE_CATEGORY);
-        findElementByXpath("//a[@title='"+NODE_CATEGORY+"']/strong").click();
+        findElementByXpath("//a[@title='" + NODE_CATEGORY + "']/strong").click();
 
         saveNode();
 
@@ -217,13 +226,14 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         m_driver.get(getBaseUrl() + "opennms/rest/nodes/" + REQUISITION_NAME + ":" + NODE_FOREIGNID + "/ipinterfaces/" + NODE_IPADDR + "/services/ICMP");
         m_driver.manage().timeouts().implicitlyWait(2000, TimeUnit.MILLISECONDS);
         try {
-            for (int i=0; i<30; i++) {
+            for (int i = 0; i < 30; i++) {
                 try {
                     final WebElement e = m_driver.findElement(By.xpath("//service/serviceType/name[text()='ICMP']"));
                     if (e != null) {
                         break;
                     }
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
                 m_driver.navigate().refresh();
             }
         } finally {
@@ -250,6 +260,12 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         wait.until(ExpectedConditions.elementToBeClickable(By.linkText("ICMP")));
         findElementByXpath("//a[contains(@href, 'element/interface.jsp') and text()='" + NODE_IPADDR + "']");
         findElementByLink("HTTP-8980");
+
+        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=" + REQUISITION_NAME + ":" + NODE_FOREIGNID);
+        findElementByLink("Meta-Data").click();
+        waitUntil(pageContainsText("Context requisition"));
+        waitUntil(pageContainsText("foo"));
+        waitUntil(pageContainsText("bar"));
     }
 
     protected void saveNode() throws InterruptedException {
