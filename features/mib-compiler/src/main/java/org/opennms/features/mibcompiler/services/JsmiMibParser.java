@@ -159,7 +159,6 @@ public class JsmiMibParser implements MibParser, Serializable {
             } catch (Exception e) {
                 LOG.error("Can't compile {}", mibFile, e);
                 errorHandler.addError(e.getMessage());
-                return false;
             }
             if (errorHandler.isOk()) {
                 break;
