@@ -336,8 +336,8 @@
     </dependency>
     <dependency>
       <groupId>net.lightbody.bmp</groupId>
-      <artifactId>browsermob-core</artifactId>
-      <version>2.1.5</version>
+      <artifactId>browsermob-core-littleproxy</artifactId>
+      <version>2.1.0-beta-6</version>
       <scope>test</scope>
     </dependency>
     <dependency>
