@@ -29,6 +29,7 @@
 package org.opennms.core.test.karaf;
 
 import static org.ops4j.pax.exam.CoreOptions.maven;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.provision;
 import static org.ops4j.pax.exam.CoreOptions.systemPackages;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.debugConfiguration;
@@ -61,10 +62,12 @@ import javax.security.auth.Subject;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.karaf.features.BootFinished;
 import org.apache.karaf.features.FeaturesService;
 import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.apache.karaf.shell.api.console.Session;
 import org.apache.karaf.shell.api.console.SessionFactory;
+import org.junit.Before;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.ProbeBuilder;
@@ -95,7 +98,7 @@ public abstract class KarafTestCase {
     public static final String MAX_SSH_PORT = "8888";
 
     protected static String getKarafVersion() {
-        final String karafVersion = System.getProperty("karafVersion", "4.1.5");
+        final String karafVersion = System.getProperty("karafVersion", "4.2.3");
         Objects.requireNonNull(karafVersion, "Please define a system property 'karafVersion'.");
         return karafVersion;
     }
@@ -140,6 +143,19 @@ public abstract class KarafTestCase {
 
     @Inject
     protected SessionFactory sessionFactory;
+
+    @Inject
+    private BootFinished bootFinished; // Wait for boot finished before doing anything
+
+    @Before
+    public void before() {
+        // The Aries Blueprint is no longer installed automatically,
+        // in order to have the tests pass, we first install it manually
+        installFeature("aries-blueprint");
+
+        // Install the by default missing feature "shell-compat"
+        installFeature("shell-compat");
+    }
 
     /**
      * This {@link ProbeBuilder} can be used to add OSGi metadata to the test
@@ -262,8 +278,8 @@ public abstract class KarafTestCase {
             editConfigurationFilePut("etc/org.apache.karaf.shell.cfg", "sshPort", sshPort),
 
             // Work around bug KARAF-5251
-            editConfigurationFilePut("etc/startup.properties", "mvn:net.java.dev.jna/jna/4.5.0", "5"),
-            editConfigurationFilePut("etc/startup.properties", "mvn:net.java.dev.jna/jna-platform/4.5.0", "5"),
+            mavenBundle("net.java.dev.jna", "jna", "4.4.0").start().startLevel(5),
+            mavenBundle("net.java.dev.jna", "jna-platform", "4.4.0").start().startLevel(5),
 
             // This port is already being allocated according to an org.ops4j.net.FreePort call
             //editConfigurationFilePut("etc/system.properties", "org.ops4j.pax.exam.rbc.rmi.port", paxExamRmiRegistryPort),

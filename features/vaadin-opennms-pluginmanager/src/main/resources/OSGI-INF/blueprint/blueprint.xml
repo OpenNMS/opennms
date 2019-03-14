@@ -26,19 +26,6 @@
 
   <!-- Provides OpenNMS headers for admin pages -->
   <reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="optional" />
-  
-  <!-- configure the rest service for plugin manager -->
-  <!-- ReST Servelet configuration for jersey -->
-  <service interface="javax.servlet.http.HttpServlet">
-    <service-properties>
-      <entry key="alias" value="/pluginmgr/rest/v1-0" />
-    </service-properties>
-    <bean class="com.sun.jersey.spi.container.servlet.ServletContainer">
-      <argument ref="pluginManagerRestApplication" />
-    </bean>
-  </service>
-
-  <bean id="pluginManagerRestApplication" class="org.opennms.features.pluginmgr.rest.impl.PluginManagerRestApplication" destroy-method="destroyMethod"/>
 
   <!-- ServiceLoader(FeaturesService featuresService) -->
   <bean id="serviceLoader" class="org.opennms.features.pluginmgr.rest.impl.ServiceLoader">
@@ -87,8 +74,8 @@
 
   <service id="pluginManagerRestService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="pluginManagerAdminApplicationFactory">
     <service-properties>
-      <entry key="alias" value="/admin/plugin-manager" />
-      <entry key="init.widgetset" value="org.opennms.vaadin.DefaultWidgetset" />
+      <entry key="osgi.http.whiteboard.servlet.pattern" value="/admin/plugin-manager/*" />
+      <entry key="servlet.init.widgetset" value="org.opennms.vaadin.DefaultWidgetset" />
     </service-properties>
   </service>
 
@@ -105,8 +92,8 @@
 
   <service id="featureDiagnosticsService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="featureDiagnosticsApplicationFactory">
     <service-properties>
-      <entry key="alias" value="/admin/plugin-manager-feature-diagnostics" />
-      <entry key="init.widgetset" value="org.opennms.vaadin.DefaultWidgetset" />
+      <entry key="osgi.http.whiteboard.servlet.pattern" value="/admin/plugin-manager-feature-diagnostics/*" />
+      <entry key="servlet.init.widgetset" value="org.opennms.vaadin.DefaultWidgetset" />
     </service-properties>
   </service>
 
@@ -123,8 +110,8 @@
 
   <service id="licenceDiagnosticsService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="licenceDiagnosticsApplicationFactory">
     <service-properties>
-      <entry key="alias" value="/admin/plugin-manager-licence-diagnostics" />
-      <entry key="init.widgetset" value="org.opennms.vaadin.DefaultWidgetset" />
+      <entry key="osgi.http.whiteboard.servlet.pattern" value="/admin/plugin-manager-licence-diagnostics/*" />
+      <entry key="servlet.init.widgetset" value="org.opennms.vaadin.DefaultWidgetset" />
     </service-properties>
   </service>
   
@@ -141,19 +128,10 @@
 
   <service id="pluginDiagnosticsService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="pluginDiagnosticsApplicationFactory">
     <service-properties>
-      <entry key="alias" value="/admin/plugin-manager-plugin-diagnostics" />
-      <entry key="init.widgetset" value="org.opennms.vaadin.DefaultWidgetset" />
+      <entry key="osgi.http.whiteboard.servlet.pattern" value="/admin/plugin-manager-plugin-diagnostics/*" />
+      <entry key="servlet.init.widgetset" value="org.opennms.vaadin.DefaultWidgetset" />
     </service-properties>
   </service> 
-  
-  <!-- Maps in the test resource files for serving basic test pages -->
-  <bean id="testResourceMapping" class="org.ops4j.pax.web.extender.whiteboard.runtime.DefaultResourceMapping">
-    <property name="alias" value="/pluginmgr/diagnostics" />
-    <property name="path" value="/diagnostics" />
-  </bean>
-
-  <service id="testResources" ref="testResourceMapping" auto-export="interfaces" />
-  
 
   <!-- Setting up link to plugin manager in admin page -->
 

@@ -87,7 +87,7 @@ To enable and configure a _Listener_ for NetFlow v5 on Minion, connect to the _K
 ----
 $ ssh -p 8201 admin@localhost
 ...
-admin@minion()> config:edit org.opennms.features.telemetry.listeners-udp-8877
+admin@minion()> config:edit --alias udp-8877 --factory org.opennms.features.telemetry.listeners
 admin@minion()> config:property-set name Netflow-5
 admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener
 admin@minion()> config:property-set parameters.port 8877

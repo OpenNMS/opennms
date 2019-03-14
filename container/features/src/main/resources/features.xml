@@ -7,6 +7,8 @@
     <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
     <repository>mvn:org.opennms.integration.api/karaf-features/${opennmsApiVersion}/xml</repository>
     <repository>mvn:com.eclipsesource.jaxrs/features/${osgiJaxRsVersion}/xml/features</repository>
+    <repository>mvn:org.opennms.plugins/org.opennms.plugin.licencemanager/${pluginmanagerVersion}/xml/features</repository>
+    <repository>mvn:org.opennms.plugins/org.opennms.plugin.featuremanager/${pluginmanagerVersion}/xml/features</repository>
     <feature name="opennms-amqp-event-forwarder" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Event Forwarder">
         <feature>camel-core</feature>
         <feature>camel-blueprint</feature>
@@ -205,8 +207,8 @@
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
         <bundle>mvn:org.jolokia/jolokia-client-java/1.3.3</bundle>
     </feature>
-    <feature name="jrobin" version="1.6.0-SNAPSHOT" description="JRobin">
-        <bundle>mvn:org.jrobin/jrobin/1.6.0-SNAPSHOT</bundle>
+    <feature name="jrobin" version="1.6.0" description="JRobin">
+        <bundle>mvn:org.jrobin/jrobin/1.6.0</bundle>
     </feature>
     <feature name="json-lib" version="2.2.3" description="json-lib">
         <bundle>wrap:mvn:net.sf.ezmorph/ezmorph/1.0.6</bundle>
@@ -1013,6 +1015,7 @@
         <feature>jax-rs-connector</feature>
         <feature>jax-rs-provider-jackson</feature>
         <bundle>mvn:org.opennms.features/org.opennms.features.rest-provider/${project.version}</bundle>
+        <bundle>mvn:org.opennms.container.bridge/org.opennms.container.bridge.rest/${project.version}</bundle>
     </feature>
     <feature name="opennms-jaas-login-module" version="${project.version}" description="OpenNMS :: OSGi Container :: Karaf JAAS Login Module">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
@@ -1341,26 +1344,6 @@
         <bundle>mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
         <bundle>mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
-    </feature>
-    <feature name="org.opennms.plugin.licencemanager" version="1.2.0" description="org.opennms.plugin.licencemanager">
-        <feature>http</feature>
-        <feature>http-whiteboard</feature>
-        <bundle start-level="50" dependency="true">mvn:com.sun.jersey/jersey-server/1.19.3</bundle>
-        <bundle start-level="50" dependency="true">mvn:com.sun.jersey/jersey-servlet/1.19.3</bundle>
-        <bundle start-level="50" dependency="true">mvn:com.sun.jersey/jersey-core/1.19.3</bundle>
-        <bundle start-level="50" dependency="true">mvn:com.sun.jersey/jersey-client/1.19.3</bundle>
-        <bundle start-level="50" dependency="true">mvn:javax.ws.rs/jsr311-api/1.1.1</bundle>
-        <bundle>mvn:org.opennms.plugins/org.opennms.plugin.licencemanager/1.2.0</bundle>
-    </feature>
-    <feature name="org.opennms.plugin.featuremanager" version="1.2.0" description="org.opennms.plugin.featuremanager">
-        <feature>http</feature>
-        <feature>http-whiteboard</feature>
-        <bundle start-level="50" dependency="true">mvn:com.sun.jersey/jersey-server/1.19.3</bundle>
-        <bundle start-level="50" dependency="true">mvn:com.sun.jersey/jersey-servlet/1.19.3</bundle>
-        <bundle start-level="50" dependency="true">mvn:com.sun.jersey/jersey-core/1.19.3</bundle>
-        <bundle start-level="50" dependency="true">mvn:com.sun.jersey/jersey-client/1.19.3</bundle>
-        <bundle start-level="50" dependency="true">mvn:javax.ws.rs/jsr311-api/1.1.1</bundle>
-        <bundle>mvn:org.opennms.plugins/org.opennms.plugin.featuremanager/1.2.0</bundle>
     </feature>
     <feature name="vaadin-opennms-pluginmanager" version="${project.version}" description="OpenNMS :: Plugins :: Admin UI">
         <details>OpenNMS Vaadin Administration UI for installing Plugin modules.</details>

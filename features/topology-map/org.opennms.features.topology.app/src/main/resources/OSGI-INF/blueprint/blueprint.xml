@@ -102,8 +102,8 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
 
     <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="topologyUIFactory">
         <service-properties>
-            <entry key="alias" value="/topology"/>
-            <entry key="init.widgetset" value="org.opennms.features.topology.app.internal.gwt.TopologyAppWidgetSet"/>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/topology/*"/>
+            <entry key="servlet.init.widgetset" value="org.opennms.features.topology.app.internal.gwt.TopologyAppWidgetSet"/>
         </service-properties>
     </service>
     

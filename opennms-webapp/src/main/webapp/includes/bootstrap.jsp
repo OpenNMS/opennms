@@ -151,8 +151,8 @@
   </script>
 
   <c:if test="${param.renderGraphs == 'true'}">
-    <!-- Graphing -->
-    <script type="text/javascript">
+      <!-- Graphing -->
+      <script type="text/javascript">
         // Global scope
         window.onmsGraphContainers = {
             'engine': '<%= TimeSeries.getGraphEngine() %>',
