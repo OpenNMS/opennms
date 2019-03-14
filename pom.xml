@@ -1331,7 +1331,7 @@
     <postgresqlVersion>42.2.5</postgresqlVersion>
     <powermockVersion>1.6.4</powermockVersion>
     <!-- TODO: Update to release artifact before tagging 24.0.0 -->
-    <opennmsApiVersion>1.0.0-alpha8-SNAPSHOT</opennmsApiVersion>
+    <opennmsApiVersion>1.0.0-alpha9-SNAPSHOT</opennmsApiVersion>
     <osgiVersion>6.0.0</osgiVersion>
     <osgiCompendiumVersion>5.0.0</osgiCompendiumVersion>
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>

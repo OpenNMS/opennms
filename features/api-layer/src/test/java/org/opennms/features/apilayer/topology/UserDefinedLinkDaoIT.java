@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,36 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.apilayer.model;
+package org.opennms.features.apilayer.topology;
 
-import java.net.InetAddress;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 
-import org.opennms.integration.api.v1.model.IpInterface;
-import org.opennms.integration.api.v1.model.MetaData;
-import org.opennms.netmgt.model.OnmsIpInterface;
+import org.junit.Test;
+import org.opennms.integration.api.v1.topology.UserDefinedLinkDao;
+import org.opennms.netmgt.enlinkd.model.UserDefinedLink;
 
-public class IpInterfaceBean implements IpInterface {
+public class UserDefinedLinkDaoIT {
 
-    private final OnmsIpInterface ipInterface;
-    private final List<MetaData> metaData;
+    private UserDefinedLinkDao userDefinedLinkDao;
 
-    public IpInterfaceBean(OnmsIpInterface ipInterface) {
-        this.ipInterface = Objects.requireNonNull(ipInterface);
-        this.metaData = ipInterface.getMetaData().stream()
-                .map(MetaDataBean::new)
-                .collect(Collectors.toList());
-    }
+    @Test
+    public void doIt() {
+        assertThat(userDefinedLinkDao.getLinks(), hasSize(0));
 
-    @Override
-    public InetAddress getIpAddress() {
-        return ipInterface.getIpAddress();
-    }
-
-    @Override
-    public List<MetaData> getMetaData() {
-        return metaData;
+        UserDefinedLink udl = new UserDefinedLink();
     }
 }
