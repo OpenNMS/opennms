@@ -57,17 +57,17 @@
 <div class="card-header">
 <span><a href="${outageLink}">Recent&nbsp;Outages</a></span>
 </div>
-<table class="table table-sm severity">
+<table class="table table-sm table-striped">
 <% if(outages.length == 0) { %>
   <tr>
     <td>There have been no outages on this node in the last 24 hours.</td>
   </tr>
 <% } else { %>
   <tr>
+    <th>Status</th>
     <th>Interface</th>
     <th>Service</th>
     <th>Lost</th>
-    <th>Regained</th>
     <th>Outage ID</th>
   </tr>
 
@@ -76,15 +76,16 @@
      Outage outage = outages[i];
      pageContext.setAttribute("outage", outage);
   %>
-		<% if( outages[i].getRegainedServiceTime() == null ) { %>
-      <tr class="severity-Critical">
-    <% } else { %>
-      <tr class="severity-Cleared">
-    <% } %>
+      <tr>
       <c:url var="interfaceLink" value="element/interface.jsp">
         <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
         <c:param name="intf" value="<%=outages[i].getIpAddress()%>"/>
       </c:url>
+      <% if( outages[i].getRegainedServiceTime() == null ) { %>
+      <td class="divider"><span class="badge badge-severity-critical">DOWN</span></td>
+      <% } else { %>
+      <td class="divider"><span class="badge badge-severity-cleared">CLEARED</span><onms:datetime date="${outage.regainedServiceTime}" /></td>
+      <% } %>
       <td class="divider"><a href="<c:out value="${interfaceLink}"/>"><%=outages[i].getIpAddress()%></a></td>
       <c:url var="serviceLink" value="element/service.jsp">
         <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
@@ -93,12 +94,7 @@
       </c:url>
       <td class="divider"><a href="<c:out value="${serviceLink}"/>"><c:out value="<%=outages[i].getServiceName()%>"/></a></td>
       <td class="divider"><onms:datetime date="${outage.lostServiceTime}" /></td>
-      
-      <% if( outages[i].getRegainedServiceTime() == null ) { %>
-        <td class="divider bright"><b>DOWN</b></td>
-      <% } else { %>
-        <td class="divider bright"><onms:datetime date="${outage.regainedServiceTime}" /></td>
-      <% } %>
+
       <td class="divider"><a href="outage/detail.htm?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a></td>       
     </tr>
   <% } %>

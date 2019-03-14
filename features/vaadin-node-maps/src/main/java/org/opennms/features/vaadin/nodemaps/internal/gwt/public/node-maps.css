@@ -44,29 +44,29 @@
 }
 
 .Normal {
-	fill: #336600;
-	stroke: #336600;
+	fill: #438953;
+	stroke: #438953;
 	opacity: 0.6;
 	stroke-opacity: 0.6;
 }
 
 .Minor{
-	fill: #FF9900;
-	stroke: #FF9900;
+	fill: #FFD60A;
+	stroke: #FFD60A;
 	opacity: 0.6;
 	stroke-opacity: 0.6;
 }
 
 .Major{
-	fill: #FF3300;
-	stroke: #FF3300;
+	fill: #FF9F0A;
+	stroke: #FF9F0A;
 	opacity: 0.6;
 	stroke-opacity: 0.6;
 }
 
 .Warning{
-	fill: #FFCC00;
-	stroke: #FFCC00;
+	fill: #FFF000;
+	stroke: #FFF000;
 	opacity: 0.6;
 	stroke-opacity: 0.6;
 }
@@ -79,8 +79,8 @@
 }
 
 .Critical{
-	fill: #CC0000;
-	stroke: #CC0000;
+	fill: #DF5251;
+	stroke: #DF5251;
 	opacity: 0.6;
 	stroke-opacity: 0.6;
 }
@@ -92,25 +92,25 @@
 }
 
 .Normal:hover {
-	fill: #336600;
+	fill: #438953;
 	opacity: 1.0;
 	stroke-opacity: 1.0;
 }
 
 .Minor:hover {
-	fill: #FF9900;
+	fill: #FFD60A;
 	opacity: 1.0;
 	stroke-opacity: 1.0;
 }
 
 .Major:hover {
-	fill: #FF3300;
+	fill: #FF9F0A;
 	opacity: 1.0;
 	stroke-opacity: 1.0;
 }
 
 .Warning:hover {
-	fill: #FFCC00;
+	fill: #FFF000;
 	opacity: 1.0;
 	stroke-opacity: 1.0;
 }
@@ -122,7 +122,7 @@
 }
 
 .Critical:hover {
-	fill: #CC0000;
+	fill: #DF5251;
 	opacity: 1.0;
 	stroke-opacity: 1.0;
 }

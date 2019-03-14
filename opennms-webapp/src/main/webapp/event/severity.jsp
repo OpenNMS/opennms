@@ -30,32 +30,32 @@
 --%>
 
 <table class="table table-sm severity" style="margin-bottom: 0px;">
-  <tr class="severity-critical">
-    <td class="bright"><strong>Critical</strong></td>
+  <tr>
+    <td><span class="badge badge-severity-critical">Critical</span></td>
     <td>This event means numerous devices on the network are affected by the event. Everyone who can should stop what they are doing and focus on fixing the problem.</td>
   </tr>
-  <tr class="severity-major">
-    <td class="bright"><strong>Major</strong></td>
+  <tr>
+    <td><span class="badge badge-severity-major">Major</span></td>
     <td>A device is completely down or in danger of going down. Attention needs to be paid to this problem immediately.</td>
   </tr>
-  <tr class="severity-minor">
-    <td class="bright"><strong>Minor</strong></td>
+  <tr>
+    <td><span class="badge badge-severity-minor">Minor</span></td>
     <td>A part of a device (a service, and interface, a power supply, etc.) has stopped functioning. The device needs attention.</td>
   </tr>
-  <tr class="severity-warning">
-    <td class="bright"><strong>Warning</strong></td>
+  <tr>
+    <td><span class="badge badge-severity-warning">Warning</span></td>
     <td>An event has occurred that may require action. This severity can also be used to indicate a condition that should be noted (logged) but does not require direct action.</td>
   </tr>
-  <tr class="severity-indeterminate">
-    <td class="bright"><strong>Indeterminate</strong></td>
+  <tr>
+    <td><span class="badge badge-severity-indeterminate">Indeterminate</span></td>
     <td>No Severity could be associated with this event.</td>
   </tr>
-  <tr class="severity-normal">
-    <td class="bright"><strong>Normal</strong></td>
+  <tr>
+    <td><span class="badge badge-severity-normal">Normal</span></td>
     <td>Informational message. No action required.</td>
   </tr>
-  <tr class="severity-cleared">
-    <td class="bright"><strong>Cleared</strong></td>
+  <tr>
+    <td><span class="badge badge-severity-cleared">Cleared</span></td>
     <td>This event indicates that a prior error condition has been corrected and service is restored</td>
   </tr>
 </table>

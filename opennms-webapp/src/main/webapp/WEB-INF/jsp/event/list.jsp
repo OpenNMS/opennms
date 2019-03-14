@@ -352,7 +352,7 @@
 
     <% String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge"); %>
 
-      <table class="table table-sm severity">
+      <table class="table table-sm">
         <thead>
         <tr>
           <% if( "true".equals(acknowledgeEvent) ) { %>
@@ -381,9 +381,12 @@
       <% for( int i=0; i < events.length; i++ ) {
         Event event = events[i];
       	pageContext.setAttribute("event", event);
+      	String cssBgClass = "";
+      	if (i % 2 == 0) {
+      	    cssBgClass = "bg-light";
+        }
       %>
-      
-        <tr valign="top" class="severity-<%=events[i].getSeverity().getLabel()%>">
+        <tr valign="top" class="<%=cssBgClass%>">
           <% if( "true".equals(acknowledgeEvent) ) { %>
 						<% if( request.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
 						<td valign="top" rowspan="3" class="divider">
@@ -396,9 +399,9 @@
 
           <td valign="top" rowspan="3" class="divider"><a href="event/detail.jsp?id=<%=events[i].getId()%>"><%=events[i].getId()%></a></td>
           
-          <td valign="top" rowspan="3" class="divider bright"> 
+          <td valign="top" rowspan="3" class="divider">
             <nobr>
-            <strong><%= events[i].getSeverity().getLabel() %></strong>
+            <span class="badge badge-severity-<%=events[i].getSeverity().getLabel()%>"><%= events[i].getSeverity().getLabel() %></span>
             <% Filter severityFilter = new SeverityFilter(events[i].getSeverity()); %>      
             <% if( !parms.getFilters().contains(severityFilter)) { %>
                 <a href="<%=this.makeLink(callback, parms, severityFilter, true, favorite)%>" class="filterLink" title="Show only events with this severity">${addPositiveFilter}</a>
@@ -527,8 +530,8 @@
             <% }  %>
           </td>
         </tr>
-        
-        <tr valign="top" class="severity-<%= events[i].getSeverity().getLabel() %>">
+
+        <tr valign="top" class="<%=cssBgClass%>">
           <td colspan="8">
             <% if(events[i].getUei() != null) { %>
               <% Filter exactUEIFilter = new ExactUEIFilter(events[i].getUei()); %>
@@ -547,8 +550,8 @@
             <% } %>
           </td>
         </tr>
-       
-        <tr valign="top" class="severity-<%= events[i].getSeverity().getLabel() %>">
+
+        <tr valign="top" class="<%=cssBgClass%>">
           <td colspan="8"><%=WebSecurityUtils.sanitizeString(events[i].getLogMessage(), true)%></td>
         </tr>
        

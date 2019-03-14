@@ -244,11 +244,11 @@
                         height
                     ],
                     "colorStops": [
-                        {"val": 1.0, "color": "#CC0000"},
-                        {"val": 0.4, "color": "#FF3300"},
-                        {"val": 0.2, "color": "#FF9900"},
-                        {"val": 0.1, "color": "#FFCC00"},
-                        {"val": 0.0, "color": "#336600"}
+                        {"val": 1.0, "color": "#DF5251"},
+                        {"val": 0.4, "color": "#FF9F0A"},
+                        {"val": 0.2, "color": "#FFD60A"},
+                        {"val": 0.1, "color": "#FFF000"},
+                        {"val": 0.0, "color": "#438953"}
                     ],
                     "labelsEnabled": true,
                     "nodeData": {
@@ -315,19 +315,19 @@
                 <%
                     if ("outages".equals(mode)) {
                 %>
-                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#336600"></span>&nbsp;0% down</span>
-                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FFCC00"></span>&nbsp;10% down</span>
-                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FF9900"></span>&nbsp;20% down</span>
-                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FF3300"></span>&nbsp;40% down</span>
-                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#CC0000"></span>&nbsp;100% down</span>
+                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#438953"></span>&nbsp;0% down</span>
+                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FFF000"></span>&nbsp;10% down</span>
+                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FFD60A"></span>&nbsp;20% down</span>
+                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FF9F0A"></span>&nbsp;40% down</span>
+                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#DF5251"></span>&nbsp;100% down</span>
                 <%
                 } else {
                 %>
-                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#336600"></span>&nbsp;Normal</span>
-                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FFCC00"></span>&nbsp;Warning</span>
-                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FF9900"></span>&nbsp;Minor</span>
-                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FF3300"></span>&nbsp;Major</span>
-                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#CC0000"></span>&nbsp;Critical</span>
+                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#438953"></span>&nbsp;Normal</span>
+                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FFF000"></span>&nbsp;Warning</span>
+                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FFD60A"></span>&nbsp;Minor</span>
+                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FF9F0A"></span>&nbsp;Major</span>
+                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#DF5251"></span>&nbsp;Critical</span>
                 <%
                     }
                 %>

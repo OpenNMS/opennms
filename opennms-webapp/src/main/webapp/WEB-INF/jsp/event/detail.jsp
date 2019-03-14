@@ -96,10 +96,10 @@
         <span>Event <%=event.getId()%></span>
       </div>
 
-      <table class="table table-sm severity">
-        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
+      <table class="table table-sm">
+        <tr class="d-flex">
           <th class="col-1">Severity</th>
-          <td class="col-3 bright"><%= event.getSeverity().getLabel() %></td>
+          <td class="col-3"><span class="badge badge-severity-<%= event.getSeverity().getLabel().toLowerCase() %>"><%= event.getSeverity().getLabel() %></span></td>
           <th class="col-1">Node</th>
           <td ${acknowledgeEvent ? '' : 'colspan="3"'} class="${acknowledgeEvent ? 'col-3' : 'col-7'}">
             <% if( event.getNodeId() > 0 ) { %>
@@ -113,13 +113,13 @@
             <td class="col-4"><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp;"%></td>
           </c:if>
         </tr>
-          <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
+          <tr class="d-flex">
               <th class="col-1">Event Source Location</th>
               <td class="col-3"><%=event.getLocation()%> (<%= event.getSystemId() %>)</td>
               <th class="col-1">Node Location</th>
               <td class="col-3"><%= event.getNodeLocation() %></td>
           </tr>
-          <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
+          <tr class="d-flex">
           <th class="col-1">Time</th>
           <td class="col-3"><onms:datetime date="<%=event.getTime()%>" /></td>
           <th class="col-1">Interface</th>
@@ -152,7 +152,7 @@
           </td>
           </c:if>
         </tr>
-        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
+        <tr class="d-flex">
           <th class="col-1">Service</th>
           <!-- If the node is not provisioned, then expand the service row out with colspan 5, col-11 -->
           <td ${provisioned ? '' : 'colspan="5"'} class="${provisioned ? 'col-3' : 'col-11'}">
@@ -177,7 +177,7 @@
           </c:if>
         </tr>
 
-        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
+        <tr class="d-flex">
           	<th class="col-1">UEI</th>
                 <td colspan="5" class="col-11">
           	<% if( event.getUei() != null ) { %>
@@ -189,7 +189,7 @@
         </tr>
 
           <% if (event.getAlarmId() != null && event.getAlarmId().intValue() != 0) { %>
-            <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
+            <tr class="d-flex">
               <th class="col-1">Alarm ID</th>
               <td colspan="5" class="col-11">
                   <a href="alarm/detail.htm?id=<%=event.getAlarmId()%>"><%=event.getAlarmId()%></a>
@@ -200,29 +200,29 @@
       </table>
     </div>
 
-    <div class="card severity">
+    <div class="card">
       <div class="card-header">
         <span>Log&nbsp;Message</span>
       </div>
-      <div class="card-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+      <div class="card-body">
         <%=WebSecurityUtils.sanitizeString(event.getLogMessage(), true)%>
       </div>
     </div>
 
-    <div class="card severity">
+    <div class="card">
       <div class="card-header">
         <span>Description</span>
       </div>
-      <div class="card-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+      <div class="card-body">
         <%=WebSecurityUtils.sanitizeString(event.getDescription(), true)%>
       </div>
     </div>
 
-    <div class="card severity">
+    <div class="card">
       <div class="card-header">
         <span>Operator&nbsp;Instructions</span>
       </div>
-      <div class="card-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+      <div class="card-body">
         <% if (event.getOperatorInstruction()==null) { %>
           No instructions available.
         <% } else { %>

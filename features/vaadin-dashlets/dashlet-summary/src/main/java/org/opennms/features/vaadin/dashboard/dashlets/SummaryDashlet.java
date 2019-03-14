@@ -474,12 +474,12 @@ public class SummaryDashlet extends AbstractDashlet {
                  */
                 private void injectWallboardStyles() {
                     ui.getPage().getStyles().add(".summary.cleared { background: #000000; border-left: 15px solid #858585; }");
-                    ui.getPage().getStyles().add(".summary.normal { background: #000000; border-left: 15px solid #336600; }");
+                    ui.getPage().getStyles().add(".summary.normal { background: #000000; border-left: 15px solid #438953; }");
                     ui.getPage().getStyles().add(".summary.indeterminate {  background: #000000; border-left: 15px solid #999; }");
-                    ui.getPage().getStyles().add(".summary.warning { background: #000000; border-left: 15px solid #FFCC00; }");
-                    ui.getPage().getStyles().add(".summary.minor { background: #000000;  border-left: 15px solid #FF9900; }");
-                    ui.getPage().getStyles().add(".summary.major { background: #000000; border-left: 15px solid #FF3300; }");
-                    ui.getPage().getStyles().add(".summary.critical { background: #000000; border-left: 15px solid #CC0000; }");
+                    ui.getPage().getStyles().add(".summary.warning { background: #000000; border-left: 15px solid #FFF000; }");
+                    ui.getPage().getStyles().add(".summary.minor { background: #000000;  border-left: 15px solid #FFD60A; }");
+                    ui.getPage().getStyles().add(".summary.major { background: #000000; border-left: 15px solid #FF9F0A; }");
+                    ui.getPage().getStyles().add(".summary.critical { background: #000000; border-left: 15px solid #DF5251; }");
                     ui.getPage().getStyles().add(".summary.global { background: #000000; border-left: 15px solid #000000; }");
                     ui.getPage().getStyles().add(".summary { padding: 5px 5px; margin: 1px; }");
                     ui.getPage().getStyles().add(".summary-font { font-size: 24px; line-height: normal; text-align: right; color: #3ba300; }");
@@ -544,12 +544,12 @@ public class SummaryDashlet extends AbstractDashlet {
                  */
                 private void injectDashboardStyles() {
                     ui.getPage().getStyles().add(".summary.cleared { background: #000000; border-left: 8px solid #858585; }");
-                    ui.getPage().getStyles().add(".summary.normal { background: #000000; border-left: 8px solid #336600; }");
+                    ui.getPage().getStyles().add(".summary.normal { background: #000000; border-left: 8px solid #438953; }");
                     ui.getPage().getStyles().add(".summary.indeterminate {  background: #000000; border-left: 8px solid #999; }");
-                    ui.getPage().getStyles().add(".summary.warning { background: #000000; border-left: 8px solid #FFCC00; }");
-                    ui.getPage().getStyles().add(".summary.minor { background: #000000;  border-left: 8px solid #FF9900; }");
-                    ui.getPage().getStyles().add(".summary.major { background: #000000; border-left: 8px solid #FF3300; }");
-                    ui.getPage().getStyles().add(".summary.critical { background: #000000; border-left: 8px solid #CC0000; }");
+                    ui.getPage().getStyles().add(".summary.warning { background: #000000; border-left: 8px solid #FFF000; }");
+                    ui.getPage().getStyles().add(".summary.minor { background: #000000;  border-left: 8px solid #FFD60A; }");
+                    ui.getPage().getStyles().add(".summary.major { background: #000000; border-left: 8px solid #FF9F0A; }");
+                    ui.getPage().getStyles().add(".summary.critical { background: #000000; border-left: 8px solid #DF5251; }");
                     ui.getPage().getStyles().add(".summary.global { background: #000000; border-left: 8px solid #000000; }");
                     ui.getPage().getStyles().add(".summary { padding: 5px 5px; margin: 1px; }");
                     ui.getPage().getStyles().add(".summary-font { font-size: 17px; line-height: normal; text-align: right; color: #3ba300; }");

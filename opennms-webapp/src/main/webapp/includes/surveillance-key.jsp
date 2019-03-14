@@ -64,9 +64,9 @@ Legend
 <table class="keytable">
 <tbody>
 <tr>
-<td style="background: #336600 url(images/keyGradient.png) repeat-x" title="${param.normalCaption == null ? 'NORMAL: No service outages in category.' : param.normalCaption}"></td>
-<td style="background: #FFCC00 url(images/keyGradient.png) repeat-x" title="${param.warnCaption == null ? 'WARNING: 1 service outage in category.' : param.warnCaption}"></td>
-<td style="background: #FF3300 url(images/keyGradient.png) repeat-x" title="${param.criticalCaption == null ? 'CRITICAL: 2 or more service outages in category' : param.criticalCaption}"></td>
+<td style="background: #438953 url(images/keyGradient.png) repeat-x" title="${param.normalCaption == null ? 'NORMAL: No service outages in category.' : param.normalCaption}"></td>
+<td style="background: #FFF000 url(images/keyGradient.png) repeat-x" title="${param.warnCaption == null ? 'WARNING: 1 service outage in category.' : param.warnCaption}"></td>
+<td style="background: #FF9F0A url(images/keyGradient.png) repeat-x" title="${param.criticalCaption == null ? 'CRITICAL: 2 or more service outages in category' : param.criticalCaption}"></td>
 </tr>
 </tbody>
 </table>

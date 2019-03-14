@@ -99,7 +99,7 @@ This is useful for sending messages or operating LED displays via _IFTTT_.
 
         <trigger-set name="NORMAL">
             <trigger eventName="OpenNMS" delay="0">
-                <value1>#336600</value1>
+                <value1>#438953</value1>
                 <value2>0.40</value2>
                 <value3>%os%,%ns%,%oc%,%nc%</value3>
             </trigger>
@@ -107,7 +107,7 @@ This is useful for sending messages or operating LED displays via _IFTTT_.
 
         <trigger-set name="WARNING">
             <trigger eventName="OpenNMS" delay="0">
-                <value1>#FFCC00</value1>
+                <value1>#FFF000</value1>
                 <value2>0.50</value2>
                 <value3>%os%,%ns%,%oc%,%nc%</value3>
             </trigger>
@@ -115,7 +115,7 @@ This is useful for sending messages or operating LED displays via _IFTTT_.
 
         <trigger-set name="MINOR">
             <trigger eventName="OpenNMS" delay="0">
-                <value1>#FF9900</value1>
+                <value1>#FFD60A</value1>
                 <value2>0.60</value2>
                 <value3>%os%,%ns%,%oc%,%nc%</value3>
             </trigger>

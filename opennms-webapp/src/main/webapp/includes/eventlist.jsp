@@ -171,7 +171,7 @@
 <div class="card-header">
 <span><%=header%></span>
 </div>
-<table class="table table-sm severity">
+<table class="table table-sm table-striped">
 
 <%
    String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge");
@@ -179,7 +179,8 @@
        Event event = events[i];
        pageContext.setAttribute("event", event);
 %>
-     <tr class="severity-<%= event.getSeverity().getLabel() %>">
+     <tr>
+         <td class="divider"><span class="badge badge-severity-<%= event.getSeverity().getLabel() %>"><%= event.getSeverity().getLabel() %></span></td>
        <% if( request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
            <td class="divider">
              <nobr>
@@ -191,7 +192,6 @@
            </td>
        <% } %>
        <td class="divider"><onms:datetime date="${event.time}"/></td>
-       <td class="divider bright"><%= event.getSeverity().getLabel() %></td>
        <td class="divider"><%=WebSecurityUtils.sanitizeString(event.getLogMessage(),true)%></td>
      </tr>
 <% } %>

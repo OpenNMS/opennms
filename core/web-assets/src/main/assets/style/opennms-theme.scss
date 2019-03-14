@@ -351,7 +351,8 @@ iframe.vaadin-fullscreen {
 
 // Make all severity badges the same width
 [class*="badge-severity-"] {
-  min-width: 150px;
-  max-width: 150px;
+  min-width: 100px;
+  max-width: 100px;
+  line-height: 2;
   font-size: 80%; // make it slightly bigger than default
 }

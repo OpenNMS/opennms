@@ -130,10 +130,10 @@
     <span><%= (alarm.isSituation() ? "Situation " : "Alarm ") + alarm.getId()%></span>
   </div>
 
-<table class="table table-sm severity">
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+<table class="table table-sm">
+    <tr class="d-flex">
         <th class="col-2">Severity</th>
-        <td class="col-4 bright"><%=alarm.getSeverity().getLabel()%></td>
+        <td class="col-4"><span class="badge badge-severity-<%=alarm.getSeverity().getLabel()%>"><%=alarm.getSeverity().getLabel()%></span></td>
         <th class="col-2">Node</th>
         <td class="col-4">
             <% if (alarm.getNodeId() != null && alarm.getNodeId() > 0) {%>
@@ -146,7 +146,7 @@
             <% }%>
         </td>
     </tr>
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+    <tr class="d-flex">
         <th class="col-2">Last&nbsp;Event</th>
         <td class="col-4"><span title="Event <%= alarm.getLastEvent().getId()%>"><a href="event/detail.jsp?id=<%= alarm.getLastEvent().getId()%>"><onms:datetime date="<%=alarm.getLastEventTime()%>" /></a></span></td>
         <th class="col-2">Interface</th>
@@ -166,7 +166,7 @@
             <% }%>
         </td>
     </tr>
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+    <tr class="d-flex">
         <th class="col-2">First&nbsp;Event</th>
         <td class="col-4"><onms:datetime date="<%=alarm.getFirstEventTime()%>" /></td>
         <th class="col-2">Service</th>
@@ -187,13 +187,13 @@
             <% }%>
         </td>
     </tr> 
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+    <tr class="d-flex">
         <th class="col-2">Event Source Location</th>
         <td class="col-4"><%= eventLocation == null? "&nbsp;" : eventLocation %>
         <th class="col-2">Node Location</th>
         <td class="col-4"><%= nodeLocation == null? "&nbsp;" : nodeLocation %>
     </tr>
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+    <tr class="d-flex">
         <th class="col-2">Count</th>
         <td class="col-4"><%=alarm.getCounter()%></td>
         <th class="col-2">UEI</th>
@@ -205,7 +205,7 @@
             <% }%>
         </td>
     </tr>
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+    <tr class="d-flex">
         <th class="col-2">Managed Object Type</th>
         <td class="col-4">
             <% if (alarm.getManagedObjectType() != null) {%>
@@ -223,7 +223,7 @@
             <% }%>
         </td>
     </tr>
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+    <tr class="d-flex">
         <th class="col-2">Ticket&nbsp;ID</th>
         <td class="col-4"><% if (alarm.getTTicketId() == null) {%>
             &nbsp;
@@ -239,7 +239,7 @@
             <% }%>
         </td>
     </tr>
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+    <tr class="d-flex">
         <th class="col-2">Reduction&nbsp;Key</th>
         <td class="col-10" colspan="3">
             <% if (alarm.getReductionKey() != null) {%>
@@ -252,20 +252,20 @@
 </table>
 </div>
 
-<div class="card severity">
+<div class="card">
   <div class="card-header">
     <span>Log&nbsp;Message</span>
   </div>
-  <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
+  <div class="card-body">
     <%=WebSecurityUtils.sanitizeString(alarm.getLogMsg(), true)%>
   </div>
 </div>
 
-<div class="card severity">
+<div class="card">
   <div class="card-header">
     <span>Description</span>
   </div>
-  <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
+  <div class="card-body">
     <%=WebSecurityUtils.sanitizeString(alarm.getDescription(), true)%>
   </div>
 </div>
@@ -275,7 +275,7 @@
     <div class="card-header">
         <span>Parent Situation(s)</span>
     </div>
-    <table class="table table-sm severity">
+    <table class="table table-sm">
         <thead>
         <tr>
             <th width="2%">ID</th>
@@ -297,13 +297,13 @@
             pageContext.setAttribute("sortedSet", sortedSet);
         %>
         <c:forEach var="relatedVar" items="${alarm.relatedSituations}">
-            <tr class="severity-${relatedVar.severityLabel.toLowerCase()}">
+            <tr>
                 <td class="divider" valign="middle">
                     <a style="vertical-align:middle" href="<%= Util.calculateUrlBase(request, "alarm/detail.htm?id=") %>${relatedVar.id}">${relatedVar.id}</a>
                 </td>
-                <td class="divider bright" valign="middle">
+                <td class="divide" valign="middle">
                     <nobr>
-                        <strong>${relatedVar.severityLabel}</strong>
+                        <span class="badge badge-severity-${relatedVar.severityLabel.toLowerCase()}">${relatedVar.severityLabel}</span>
                     </nobr>
                 </td>
                 <td class="divider" valign="middle">
@@ -335,7 +335,7 @@
     <div class="card-header">
         <span>Related Alarm(s)</span>
     </div>
-    <table class="table table-sm severity">
+    <table class="table table-sm">
         <thead>
         <tr>
             <th width="2%">ID</th>
@@ -358,7 +358,7 @@
             pageContext.setAttribute("sortedSet", sortedSet);
         %>
         <c:forEach var="relatedVar" items="${sortedSet}">
-            <tr class="severity-${relatedVar.severityLabel.toLowerCase()}">
+            <tr>
                 <td class="divider" valign="middle">
                     <a style="vertical-align:middle" href="<%= Util.calculateUrlBase(request, "alarm/detail.htm?id=") %>${relatedVar.id}">${relatedVar.id}</a>
                 </td>
@@ -372,9 +372,9 @@
                             </c:otherwise>
                             </c:choose>
                 </td>
-                <td class="divider bright" valign="middle">
+                <td class="divider" valign="middle">
                     <nobr>
-                        <strong>${relatedVar.severityLabel}</strong>
+                        <span class="badge badge-severity-${relatedVar.severityLabel.toLowerCase()}">${relatedVar.severityLabel}</span>
                     </nobr>
                 </td>
                 <td class="divider" valign="middle">
@@ -402,18 +402,18 @@
 <% } %>
 
 <% if (acks != null && acks.size() > 0) {%>
-<div class="card severity">
+<div class="card">
   <div class="card-header">
     <span>Acknowledgements</span>
   </div>
-<table class="table table-sm severity">
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
+<table class="table table-sm">
+    <tr>
         <th>Acknowledged&nbsp;By</th>
         <th>Acknowledged&nbsp;Type</th>
         <th>Time&nbsp;Acknowledged</th>
     </tr>
     <% for (OnmsAcknowledgment ack : acks) {%>
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
+    <tr>
         <td><%=ack.getAckUser()%></td>
         <td><%=ack.getAckAction()%></td>
         <td><onms:datetime date="<%=ack.getAckTime()%>" /></td>
@@ -425,11 +425,11 @@
 
 <div class="row">
 <div class="col-md-6">
-<div class="card severity">
+<div class="card">
   <div class="card-header">
     <span>Sticky&nbsp;Memo</span>
   </div>
-  <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
+  <div class="card-body">
 	         <form class="form" method="post" action="alarm/saveStickyMemo.htm">
 				<textarea class="w-100 mb-1" name="stickyMemoBody" ><%=(alarm.getStickyMemo() != null && alarm.getStickyMemo().getBody() != null) ? alarm.getStickyMemo().getBody() : ""%></textarea>
 				<input type="hidden" name="alarmId" value="<%=alarm.getId() %>"/>
@@ -461,11 +461,11 @@
 </div>
 
 <div class="col-md-6">
-<div class="card severity">
+<div class="card">
   <div class="card-header">
     <span>Journal&nbsp;Memo</span>
   </div>
-  <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
+  <div class="card-body">
             <form class="form" method="post" action="alarm/saveJournalMemo.htm">
                 <textarea class="w-100 mb-1" name="journalMemoBody" ><%=(alarm.getReductionKeyMemo() != null && alarm.getReductionKeyMemo().getBody() != null) ? alarm.getReductionKeyMemo().getBody() : ""%></textarea>
                 <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
@@ -499,11 +499,11 @@
 
 </div>
 
-<div class="card severity">
+<div class="card">
   <div class="card-header">
     <span>Operator&nbsp;Instructions</span>
   </div>
-  <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
+  <div class="card-body">
             <%if (alarm.getOperInstruct() == null) {%>
             No instructions available.
             <% } else {%>

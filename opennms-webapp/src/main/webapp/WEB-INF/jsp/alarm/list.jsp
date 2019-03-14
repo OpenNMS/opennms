@@ -450,7 +450,7 @@
           <%=Util.makeHiddenTags(req)%>
       <% } %>
 
-      <table class="table table-sm severity">
+      <table class="table table-sm">
 				<thead>
 					<tr>
                         <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
@@ -516,6 +516,7 @@
       %>
 
       <% if(unAckFlash){ // flash unacknowledged alarms %>
+          <!-- TODO MVR WTF? -->
         <tr class="severity-<%=alarms[i].getSeverity().getLabel()%> <%=alarms[i].isAcknowledged() ? "" : "blink_text"%>">
         
           <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
@@ -535,7 +536,7 @@
           </td>
         
       <% } else { // normal behaviour %>
-        <tr class="severity-<%=alarms[i].getSeverity().getLabel()%> ">
+        <tr>
 
           <% if( parms.getAckType().equals(AcknowledgeType.BOTH.toNormalizedAcknowledgeType()) ) { %>
               <td class="divider" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
@@ -615,9 +616,9 @@
                   }
               %>
           </td>
-          <td class="divider bright" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
+          <td class="divider" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
             <nobr>
-            <strong><%= alarms[i].getSeverity().getLabel() %></strong>
+            <span class="badge badge-severity-<%= alarms[i].getSeverity().getLabel() %>"><%= alarms[i].getSeverity().getLabel() %></span>
             <% Filter severityFilter = new SeverityFilter(alarms[i].getSeverity()); %>
             <% if( !parms.getFilters().contains(severityFilter)) { %>
               <a href="<%=this.makeLink(callback, parms, severityFilter, true, favorite)%>" class="filterLink" title="Show only events with this severity">${addPositiveFilter}</a>
@@ -759,7 +760,7 @@
           </c:if>
         </tr>
         <c:if test="${param.display == 'long'}">
-        <tr class="severity-<%=alarms[i].getSeverity().getLabel()%>">
+        <tr>
           <td colspan="7" class="divider" style="border-top: none"><%=WebSecurityUtils.sanitizeString(alarms[i].getLogMsg(), true)%></td>
         </tr> 
         </c:if>

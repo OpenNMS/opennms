@@ -124,12 +124,12 @@ public class AlarmsDashlet extends AbstractDashlet {
                  */
                 private void injectWallboardStyles() {
                     ui.getPage().getStyles().add(".alerts.cleared { background: #000000; border-left: 15px solid #858585; }");
-                    ui.getPage().getStyles().add(".alerts.normal { background: #000000; border-left: 15px solid #336600; }");
+                    ui.getPage().getStyles().add(".alerts.normal { background: #000000; border-left: 15px solid #438953; }");
                     ui.getPage().getStyles().add(".alerts.indeterminate {  background: #000000; border-left: 15px solid #999; }");
-                    ui.getPage().getStyles().add(".alerts.warning { background: #000000; border-left: 15px solid #FFCC00; }");
-                    ui.getPage().getStyles().add(".alerts.minor { background: #000000;  border-left: 15px solid #FF9900; }");
-                    ui.getPage().getStyles().add(".alerts.major { background: #000000; border-left: 15px solid #FF3300; }");
-                    ui.getPage().getStyles().add(".alerts.critical { background: #000000; border-left: 15px solid #CC0000; }");
+                    ui.getPage().getStyles().add(".alerts.warning { background: #000000; border-left: 15px solid #FFF000; }");
+                    ui.getPage().getStyles().add(".alerts.minor { background: #000000;  border-left: 15px solid #FFD60A; }");
+                    ui.getPage().getStyles().add(".alerts.major { background: #000000; border-left: 15px solid #FF9F0A; }");
+                    ui.getPage().getStyles().add(".alerts.critical { background: #000000; border-left: 15px solid #DF5251; }");
                     ui.getPage().getStyles().add(".alerts-font {color: #3ba300; font-size: 18px; line-height: normal; }");
                     ui.getPage().getStyles().add(".alerts-noalarms-font { font-size: 18px; line-height: normal; }");
                     ui.getPage().getStyles().add(".alerts { padding: 5px 5px; margin: 1px; }");
@@ -177,12 +177,12 @@ public class AlarmsDashlet extends AbstractDashlet {
                  */
                 private void injectDashboardStyles() {
                     ui.getPage().getStyles().add(".alerts.cleared { background: #000000; border-left: 8px solid #858585; }");
-                    ui.getPage().getStyles().add(".alerts.normal { background: #000000; border-left: 8px solid #336600; }");
+                    ui.getPage().getStyles().add(".alerts.normal { background: #000000; border-left: 8px solid #438953; }");
                     ui.getPage().getStyles().add(".alerts.indeterminate {  background: #000000; border-left: 8px solid #999; }");
-                    ui.getPage().getStyles().add(".alerts.warning { background: #000000; border-left: 8px solid #FFCC00; }");
-                    ui.getPage().getStyles().add(".alerts.minor { background: #000000;  border-left: 8px solid #FF9900; }");
-                    ui.getPage().getStyles().add(".alerts.major { background: #000000; border-left: 8px solid #FF3300; }");
-                    ui.getPage().getStyles().add(".alerts.critical { background: #000000; border-left: 8px solid #CC0000; }");
+                    ui.getPage().getStyles().add(".alerts.warning { background: #000000; border-left: 8px solid #FFF000; }");
+                    ui.getPage().getStyles().add(".alerts.minor { background: #000000;  border-left: 8px solid #FFD60A; }");
+                    ui.getPage().getStyles().add(".alerts.major { background: #000000; border-left: 8px solid #FF9F0A; }");
+                    ui.getPage().getStyles().add(".alerts.critical { background: #000000; border-left: 8px solid #DF5251; }");
                     ui.getPage().getStyles().add(".alerts-font {color: #3ba300; font-size: 11px; line-height: normal; }");
                     ui.getPage().getStyles().add(".alerts-noalarms-font { font-size: 11px; line-height: normal; }");
                     ui.getPage().getStyles().add(".alerts { padding: 5px 5px; margin: 1px; }");

@@ -60,24 +60,24 @@ div.v-table-header-wrap {
 
 .edge.up,
 .edge.normal {
-	stroke: #336600;
+	stroke: #438953;
 }
 
 .edge.warning {
-	stroke: #FFCC00;
+	stroke: #FFF000;
 }
 
 .edge.minor {
-	stroke: #FF9900;
+	stroke: #FFD60A;
 }
 
 .edge.major {
-	stroke:#FF3300;
+	stroke:#FF9F0A;
 }
 
 .edge.down,
 .edge.critical {
-	stroke:#CC0000;
+	stroke:#DF5251;
 }
 
 .map-layout {
@@ -137,8 +137,8 @@ div.v-table-header-wrap {
 }
 
 .vertex .status.normal{
-	stroke:#336600;
-	fill: #336600;
+	stroke:#438953;
+	fill: #438953;
 }
 
 .vertex .status.indeterminate{
@@ -147,22 +147,22 @@ div.v-table-header-wrap {
 }
 
 .vertex .status.warning{
-	stroke:#FFCC00;
-	fill:#FFCC00;
+	stroke:#FFF000;
+	fill:#FFF000;
 }
 
 .vertex .status.minor{
-	stroke:#FF9900;
-	fill:#FF9900;
+	stroke:#FFD60A;
+	fill:#FFD60A;
 }
 .vertex .status.major{
-	stroke:#FF3300;
-	fill:#FF3300;
+	stroke:#FF9F0A;
+	fill:#FF9F0A;
 }
 
 .vertex .status.critical{
-	stroke:#CC0000;
-	fill:#CC0000;
+	stroke:#DF5251;
+	fill:#DF5251;
 }
 
 .vertex .status.selected{
@@ -192,8 +192,8 @@ div.v-table-header-wrap {
 }
 
 .status-badge.status.normal {
-	stroke:#336600;
-	fill: #336600;
+	stroke:#438953;
+	fill: #438953;
 }
 
 .status-badge.status.indeterminate{
@@ -202,22 +202,22 @@ div.v-table-header-wrap {
 }
 
 .status-badge.status.warning{
-	stroke:#FFCC00;
-	fill:#FFCC00;
+	stroke:#FFF000;
+	fill:#FFF000;
 }
 
 .status-badge.status.minor{
-	stroke:#FF9900;
-	fill:#FF9900;
+	stroke:#FFD60A;
+	fill:#FFD60A;
 }
 .status-badge.status.major{
-	stroke:#FF3300;
-	fill:#FF3300;
+	stroke:#FF9F0A;
+	fill:#FF9F0A;
 }
 
 .status-badge.status.critical{
-	stroke:#CC0000;
-	fill:#CC0000;
+	stroke:#DF5251;
+	fill:#DF5251;
 }
 
 /*** End Vertex Styles***/

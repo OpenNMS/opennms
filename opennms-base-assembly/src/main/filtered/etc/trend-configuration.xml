@@ -41,7 +41,7 @@
         <trend-attributes>
             <trend-attribute key="sparkType" value="pie"/>
             <trend-attribute key="sparkHeight" value="35"/>
-            <trend-attribute key="sparkSliceColors" value="[#CC0000,#FF3300,#FF9900,#FFCC00,#999900,#336600,#999]"/>
+            <trend-attribute key="sparkSliceColors" value="[#DF5251,#FF9F0A,#FFD60A,#FFF000,#999900,#438953,#999]"/>
         </trend-attributes>
         <descriptionLink>alarm/list.htm</descriptionLink>
         <description>Go to Alarms Page</description>

@@ -27,7 +27,7 @@
 
         <trigger-set name="WARNING">
             <trigger eventName="test" delay="0">
-                <value1>#FFCC00</value1>
+                <value1>#FFF000</value1>
                 <value2>0.50</value2>
                 <value3>%os%,%ns%,%oc%,%nc%</value3>
             </trigger>
@@ -35,7 +35,7 @@
 
         <trigger-set name="MINOR">
             <trigger eventName="test" delay="0">
-                <value1>#FF9900</value1>
+                <value1>#FFD60A</value1>
                 <value2>0.60</value2>
                 <value3>%os%,%ns%,%oc%,%nc%</value3>
             </trigger>
@@ -85,7 +85,7 @@
 
         <trigger-set name="WARNING">
             <trigger eventName="test" delay="0">
-                <value1>#FFCC00</value1>
+                <value1>#FFF000</value1>
                 <value2>0.50</value2>
                 <value3>%os%,%ns%,%oc%,%nc%</value3>
             </trigger>
@@ -93,7 +93,7 @@
 
         <trigger-set name="MINOR">
             <trigger eventName="test" delay="0">
-                <value1>#FF9900</value1>
+                <value1>#FFD60A</value1>
                 <value2>0.60</value2>
                 <value3>%os%,%ns%,%oc%,%nc%</value3>
             </trigger>
@@ -143,7 +143,7 @@
 
         <trigger-set name="WARNING">
             <trigger eventName="test" delay="0">
-                <value1>#FFCC00</value1>
+                <value1>#FFF000</value1>
                 <value2>0.50</value2>
                 <value3>%os%,%ns%,%oc%,%nc%</value3>
             </trigger>
@@ -151,7 +151,7 @@
 
         <trigger-set name="MINOR">
             <trigger eventName="test" delay="0">
-                <value1>#FF9900</value1>
+                <value1>#FFD60A</value1>
                 <value2>0.60</value2>
                 <value3>%os%,%ns%,%oc%,%nc%</value3>
             </trigger>

@@ -61,7 +61,7 @@
 	<div class="card-header">
 		<span>All Path Outages</span>
 	</div>
-	<table class="table table-sm severity">
+	<table class="table table-sm table-striped">
 			<tr>
 				<th>Critical Path Node</th>
 				<th>Critical Path IP</th>
@@ -80,7 +80,7 @@
 			<td><a href="element/node.jsp?node=<%= pthData[1] %>"><%= pthData[0] %></a></td>
 			<% } %>
 			<td><%= pth[1] %></td>
-			<td class="severity-<%= pthData[3] %> bright"><%= pth[2] %></td>
+			<td><span class="badge badge-severity-<%= pthData[3] %>"><%= pth[2] %></span></td>
 			<td><a href="pathOutage/showNodes.jsp?critIp=<%= pth[1] %>&critSvc=<%= pth[2] %>"><%= pthData[2] %></a></td>
 			<%
 				final String topologyLink = new TopologyLinkBuilder()

@@ -150,12 +150,12 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                  */
                 private void injectWallboardStyles() {
                     ui.getPage().getStyles().add(".alert-details.cleared { background: #AAAAAA; border-left: 14px solid #858585; }");
-                    ui.getPage().getStyles().add(".alert-details.normal { background: #AAAAAA; border-left: 14px solid #336600; }");
+                    ui.getPage().getStyles().add(".alert-details.normal { background: #AAAAAA; border-left: 14px solid #438953; }");
                     ui.getPage().getStyles().add(".alert-details.indeterminate { background: #AAAAAA; border-left: 14px solid #999; }");
-                    ui.getPage().getStyles().add(".alert-details.warning { background: #AAAAAA; border-left: 14px solid #FFCC00; }");
-                    ui.getPage().getStyles().add(".alert-details.minor { background: #AAAAAA; border-left: 14px solid #FF9900; }");
-                    ui.getPage().getStyles().add(".alert-details.major { background: #AAAAAA; border-left: 14px solid #FF3300; }");
-                    ui.getPage().getStyles().add(".alert-details.critical { background: #AAAAAA; border-left: 14px solid #CC0000; }");
+                    ui.getPage().getStyles().add(".alert-details.warning { background: #AAAAAA; border-left: 14px solid #FFF000; }");
+                    ui.getPage().getStyles().add(".alert-details.minor { background: #AAAAAA; border-left: 14px solid #FFD60A; }");
+                    ui.getPage().getStyles().add(".alert-details.major { background: #AAAAAA; border-left: 14px solid #FF9F0A; }");
+                    ui.getPage().getStyles().add(".alert-details.critical { background: #AAAAAA; border-left: 14px solid #DF5251; }");
                     ui.getPage().getStyles().add(".alert-details-font {color: #000000; font-size: 17px; line-height: normal; }");
                     ui.getPage().getStyles().add(".alert-details-noalarms-font { font-size: 17px; line-height: normal; }");
                     ui.getPage().getStyles().add(".alert-details { padding: 5px 5px; margin: 1px; }");
