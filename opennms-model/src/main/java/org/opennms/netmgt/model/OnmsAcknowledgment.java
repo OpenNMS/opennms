@@ -121,25 +121,39 @@ public class OnmsAcknowledgment {
         
         for (Parm parm : parms) {
             final String parmValue = parm.getValue().getContent();
-            
-            if (!"ackType".equals(parm.getParmName()) && !"refId".equals(parm.getParmName()) && !"user".equals(parm.getParmName()) ) {
+            if (!"ackAction".equals(parm.getParmName()) && 
+                !"ackType".equals(parm.getParmName())   && 
+                !"refId".equals(parm.getParmName())     && 
+                !"ackUser".equals(parm.getParmName())   &&
+                !"user".equals(parm.getParmName())) {
                 throw new IllegalArgumentException("Event parm: "+parm.getParmName()+", is an invalid paramter");
-            } else {
+            } 
             
-                if ("ackType".equals(parm.getParmName())) {
+            if ("ackType".equals(parm.getParmName())) {
 
-                    if ("ALARM".equalsIgnoreCase(parmValue) || "NOTIFICATION".equalsIgnoreCase(parmValue)) {
-                        m_ackType = ("ALARM".equalsIgnoreCase(parmValue) ? AckType.ALARM : AckType.NOTIFICATION);
-                    } else {
-                        throw new IllegalArgumentException("Event parm: "+parm.getParmName()+", has invalid value, requires: \"Alarm\" or \"Notification\"." );
-                    }
-                    
-                } else if ("refId".equals(parm.getParmName())){
-                    m_refId = Integer.valueOf(parm.getValue().getContent());
+                if ("ALARM".equalsIgnoreCase(parmValue) || "NOTIFICATION".equalsIgnoreCase(parmValue)) {
+                    m_ackType = ("ALARM".equalsIgnoreCase(parmValue) ? AckType.ALARM : AckType.NOTIFICATION);
                 } else {
-                    m_ackUser = parm.getValue().getContent();
+                    throw new IllegalArgumentException("Event parm: "+parm.getParmName()+", has invalid value, requires: \"Alarm\" or \"Notification\"." );
                 }
-            }                
+                
+            } else if ("refId".equals(parm.getParmName())){
+                m_refId = Integer.valueOf(parmValue);
+            } else if ("ackUser".equals(parm.getParmName())|| "user".equals(parm.getParmName())){
+                m_ackUser = parmValue;
+            } else {
+                if ("ACKNOWLEDGE".equalsIgnoreCase(parmValue)) {
+                    m_ackAction=AckAction.ACKNOWLEDGE;
+                } else if ("ESCALATE".equalsIgnoreCase(parmValue)) {
+                    m_ackAction=AckAction.ESCALATE;
+                } else if ("UNACKNOWLEDGE".equalsIgnoreCase(parmValue)) {
+                    m_ackAction=AckAction.UNACKNOWLEDGE;
+                } else if ("CLEAR".equalsIgnoreCase(parmValue)) {
+                    m_ackAction=AckAction.CLEAR;
+                } else {
+                    m_ackAction = AckAction.UNSPECIFIED;
+                } 
+            }
         }
     }
 
