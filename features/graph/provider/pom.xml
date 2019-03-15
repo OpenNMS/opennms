@@ -13,6 +13,7 @@
     <!-- TODO MVR rename this to providers -->
     <packaging>pom</packaging>
     <modules>
+        <module>application</module>
         <module>bsm</module>
         <module>dummy</module>
         <module>graphml</module>
