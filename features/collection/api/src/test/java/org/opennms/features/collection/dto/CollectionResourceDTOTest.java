@@ -59,7 +59,7 @@ public class CollectionResourceDTOTest extends XmlTestNoCastor<CollectionResourc
                 dto,
                 "<collection-resource>\n" + 
                 "   <node-level-resource node-id=\"1\"/>\n" + 
-                "   <numeric-attribute group=\"group-x\" name=\"cores\" type=\"gauge\" identifier=\"some-oid\" value=\"1\"/>\n" + 
+                "   <numeric-attribute group=\"group-x\" name=\"cores\" type=\"gauge\" identifier=\"some-oid\" value=\"1.0\"/>\n" +
                 "</collection-resource>"
             }
         });
