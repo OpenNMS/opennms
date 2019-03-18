@@ -120,45 +120,6 @@
     }
 %>
 
-<script type="text/javascript" >
-    
-    function submitAck()
-    {
-        var isChecked = false
-        
-        if (document.acknowledge_form.event.length)
-        {
-            for( i = 0; i < document.acknowledge_form.event.length; i++ ) 
-            {
-              //make sure something is checked before proceeding
-              if (document.acknowledge_form.event[i].checked)
-              {
-                isChecked=true;
-              }
-            }
-            
-            if (isChecked)
-            {
-              document.acknowledge_form.submit();
-            }
-            else
-            {
-              alert("Please check the events that you would like to acknowledge.");
-            }
-        }
-        else
-        {
-            if (document.acknowledge_form.event.checked)
-            {
-                document.acknowledge_form.submit();
-            }
-            else
-            {
-                alert("Please check the events that you would like to acknowledge.");
-            }
-        }
-    }
-</script>
 
 <% if( request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
     <form action="event/acknowledge" method="post" name="acknowledge_form">
@@ -173,40 +134,23 @@
 </div>
 <table class="table table-sm table-striped">
 
-<%
-   String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge");
+    <%
    for( int i=0; i < events.length; i++ ) {
        Event event = events[i];
        pageContext.setAttribute("event", event);
 %>
      <tr>
-         <td class="divider"><span class="badge badge-severity-<%= event.getSeverity().getLabel() %>"><%= event.getSeverity().getLabel() %></span></td>
+       <td><span class="badge badge-severity-<%= event.getSeverity().getLabel() %>"><%= event.getSeverity().getLabel() %></span></td>
+       <td><onms:datetime date="${event.time}"/></td>
+       <td><%=WebSecurityUtils.sanitizeString(event.getLogMessage(),true)%></td>
        <% if( request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
-           <td class="divider">
-             <nobr>
-               <% if ("true".equals(acknowledgeEvent)) { %>
-               <input type="checkbox" name="event" value="<%=event.getId()%>" />
-               <% } %>
-               <a href="event/detail.jsp?id=<%=event.getId()%>"><%=event.getId()%></a>
-             </nobr>
-           </td>
-       <% } %>
-       <td class="divider"><onms:datetime date="${event.time}"/></td>
-       <td class="divider"><%=WebSecurityUtils.sanitizeString(event.getLogMessage(),true)%></td>
+         <td>
+             <a href="event/detail.jsp?id=<%=event.getId()%>" title="Show event details"><i class="fa fa-share"></i></a>
+         </td>
+        <% } %>
      </tr>
 <% } %>
 
-<% if( (request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY )) && "true".equals(acknowledgeEvent)) { %>
-     <tr>
-       <td class="standard" colspan="2">
-           <nobr>
-             <input type="button" class="btn btn-secondary" value="Acknowledge" onclick="submitAck()">
-             <input TYPE="reset" class="btn btn-secondary" />
-           </nobr>
-       </td>
-
-     </tr>
-<% } %>
       
 </table>
 

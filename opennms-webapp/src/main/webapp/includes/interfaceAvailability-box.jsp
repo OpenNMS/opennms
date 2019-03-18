@@ -127,10 +127,12 @@
         double svcValue = 0;
 
         String warnClass = "Normal";
+        String warnText = "Up";
 
         for(int o=0;o<outages.length;o++) {
             if (outages[o].getIpAddress().equals(ipAddr) && outages[o].getServiceName().equals(service.getServiceName())) {
                 warnClass = "Critical";
+                warnText = "Down";
                 break;
             }
         }
@@ -144,7 +146,9 @@
         svcValue = CategoryModel.getServiceAvailability(nodeId, ipAddr, service.getServiceId());
         serviceClass = CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, svcValue);
       } else {
-        serviceClass = "Indeterminate";
+        serviceClass = "Cleared";
+        warnText = "Unmanaged";
+        warnClass = "Cleared";
       }
     %>
     <c:url var="serviceLink" value="element/service.jsp">
@@ -152,7 +156,9 @@
       <c:param name="intf" value="<%=ipAddr%>"/>
       <c:param name="service" value="<%=String.valueOf(service.getServiceId())%>"/>
     </c:url>
-    <td class="severity-<%=warnClass%> bright"><a href="<c:out value="${serviceLink}"/>"><c:out value="<%=service.getServiceName()%>"/></a></td>
+    <td><span class="fa fa-circle text-severity-<%=warnClass%>" title="<%=warnText%>"></span>
+        <a href="<c:out value="${serviceLink}"/>"><c:out value="<%=service.getServiceName()%>"/></a>
+    </td>
     <% if( service.isManaged() ) { %>
       <td class="Cleared nobright">
         <span data-src="<%=timelineUrl%>"></span>

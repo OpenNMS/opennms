@@ -72,34 +72,36 @@
   </tr>
 <% } else { %>
   <tr>
+    <th>Status</th>
     <th>Service</th>
     <th>Lost</th>
     <th>Regained</th>
-    <th>Outage ID</th>
+    <th>Actions</th>
   </tr>
   <%
      for( int i=0; i < outages.length; i++ ) {
      Outage outage = outages[i];
      pageContext.setAttribute("outage", outage);
   %>
+    <tr>
      <% if( outages[i].getRegainedServiceTime() == null ) { %>
-       <tr class="Critical">
+         <td><span class="badge badge-severity-critical">DOWN</span></td>
      <% } else { %>
-       <tr class="Cleared">
+         <td><span class="badge badge-severity-cleared">CLEARED</span></td>
      <% } %>
       <c:url var="serviceLink" value="element/service.jsp">
         <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
         <c:param name="intf" value="<%=outages[i].getIpAddress()%>"/>
         <c:param name="service" value="<%=String.valueOf(outages[i].getServiceId())%>"/>
       </c:url>
-      <td class="divider"><a href="<c:out value="${serviceLink}"/>"><c:out value="<%=outages[i].getServiceName()%>"/></a></td>
-      <td class="divider"><onms:datetime date="${outage.lostServiceTime}" /></td>
+      <td><a href="<c:out value="${serviceLink}"/>"><c:out value="<%=outages[i].getServiceName()%>"/></a></td>
+      <td><onms:datetime date="${outage.lostServiceTime}" /></td>
       <% if( outages[i].getRegainedServiceTime() == null ) { %>
-        <td class="divider"><b>DOWN</b></td>
+        <td>-</td>
       <% } else { %>        
-        <td class="divider"><onms:datetime date="${outage.regainedServiceTime}" /></td>
+        <td><onms:datetime date="${outage.regainedServiceTime}" /></td>
       <% } %>
-      <td class="divider"><a href="outage/detail.htm?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a></td>  
+      <td><a href="outage/detail.htm?id=<%=outages[i].getId()%>" title="Show outage details"><i class="fa fa-share"></a></td>  
      </tr>
   <% } %>
 <% } %>

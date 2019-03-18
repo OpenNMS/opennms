@@ -91,7 +91,7 @@
                                                    rtcValue);
     	statusContent = CategoryUtil.formatValue(rtcValue) + "%";
     } else {
-        styleClass = "Indeterminate";
+        styleClass = "Cleared";
 		statusContent = ElementUtil.getServiceStatusString(service);
     }
 
@@ -106,10 +106,12 @@
     Outage[] outages = OutageModel.getCurrentOutagesForNode(nodeId);
 
     String warnClass = "Normal";
+    String warnText = "Up";
 
     for(int o=0;o<outages.length;o++) {
         if (outages[o].getIpAddress().equals(ipAddr) && outages[o].getServiceName().equals(service.getServiceName())) {
             warnClass = "Critical";
+            warnText = "Down";
             break;
         }
     }
@@ -127,6 +129,10 @@
         overallStatus = CategoryUtil.getCategoryClass(this.m_normalThreshold, this.m_warningThreshold, overallRtcValue);
         overallStatusString = CategoryUtil.formatValue(overallRtcValue) + "%";
     }
+    if (!service.isManaged()) {
+        warnText = "Unmanaged";
+        warnClass = "Cleared";
+    }
 
     String timelineUrl = "/opennms/rest/timeline/html/" + String.valueOf(nodeId) + "/" + java.net.URLEncoder.encode(ipAddr, "UTF-8") + "/" + java.net.URLEncoder.encode(service.getServiceName(), "UTF-8") + "/" + timelineStart + "/" + timelineEnd + "/";
 %>
@@ -136,26 +142,29 @@
     <span>Overall Availability</span>
 </div>
 <table class="table table-sm severity">
-  <tr class="CellStatus">
-    <td class="Cleared nobright" colspan="2"><%=ipAddr%></td>
-    <td class="Cleared nobright"><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>
+  <tr class="">
+    <td class="" colspan="2"><%=ipAddr%></td>
+    <td class=""><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>
     <td class="<%=overallStatus%> nobright"><%=overallStatusString%></td>
   </tr>
-  <tr class="CellStatus"/>
-    <td class="Cleared nobright"></td>
-    <td class="severity-<%=warnClass%> bright"><%=service.getServiceName()%></td>
+  <tr/>
+    <td class=""></td>
+    <td>
+        <span class="fa fa-circle text-severity-<%=warnClass%>" title="<%=warnText%>"></span>
+        <span><%=service.getServiceName()%></span>
+    </td>
     <%
         if (service.isManaged()) {
     %>
-    <td class="Cleared nobright"><span data-src="<%=timelineUrl%>"></span></td>
+    <td class=""><span data-src="<%=timelineUrl%>"></span></td>
     <%
         } else {
     %>
-    <td class="Cleared nobright"><img src="#" data-imgsrc="<%=timelineEmptyUrl%>"></td>
+    <td class=""><img src="#" data-imgsrc="<%=timelineEmptyUrl%>"></td>
     <%
         }
     %>
-    <td class="<%= styleClass %> nobright"><%= statusContent %></td>
+    <td class="severity-<%= styleClass %> nobright"><%= statusContent %></td>
   </tr>
 </table>
 </div>

@@ -146,15 +146,15 @@
                   availValue = CategoryUtil.formatValue(intfValue) + "%";
                 }
               %>
-              <td class="severity-Cleared nobright" colspan="2"><a href="<c:out value="${interfaceLink}"/>"><%=ipAddr%></a></td>
+              <td colspan="2"><a href="<c:out value="${interfaceLink}"/>"><%=ipAddr%></a></td>
               <%
                   if ("Not Monitored".equals(availValue)) {
               %>
-                <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineEmptyUrl%>"></td>
+                <td><img src="#" data-imgsrc="<%=timelineEmptyUrl%>"></td>
               <%
                   } else {
               %>
-                <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>
+                <td><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>
               <%
                   }
               %>
@@ -166,6 +166,7 @@
                 Service service = svcs[j];
 
                 String warnClass = "Indeterminate";
+                String warnText = "Unknown";
 
                 if (service.isManaged()) {
                   double svcValue = CategoryModel.getServiceAvailability(nodeId, ipAddr, service.getServiceId());
@@ -173,16 +174,20 @@
                   availValue = CategoryUtil.formatValue(svcValue) + "%";
 
                   warnClass = "Normal";
+                  warnText = "Up";
 
                   for(int o=0;o<outages.length;o++) {
                     if (outages[o].getIpAddress().equals(ipAddr) && outages[o].getServiceName().equals(service.getServiceName())) {
                       warnClass = "Critical";
+                      warnText = "Down";
                       break;
                     }
                   }
 
                 } else {
-                  availClass = "Indeterminate";
+                  availClass = "Cleared";
+                  warnClass = "Cleared";
+                  warnText = "Unmanaged";
                   availValue = ElementUtil.getServiceStatusString(service);
                 }
 
@@ -198,12 +203,14 @@
                     <%
                         if (j==0) {
                     %>
-                    <td class="severity-Cleared nobright" rowspan="<%=svcs.length%>"></td>
+                    <td rowspan="<%=svcs.length%>"></td>
                     <%
                         }
                     %>
-                  <td class="severity-<%= warnClass %> bright"><a href="<c:out value="${serviceLink}"/>"><%=service.getServiceName()%></a></td>
-                  <td class="severity-Cleared nobright">
+                  <td>
+                      <i class="fa fa-circle text-severity-<%= warnClass %>" title="<%= warnText %>"></i>
+                      <a href="<c:out value="${serviceLink}"/>"><%=service.getServiceName()%></a></td>
+                  <td>
                     <%
                          if (service.isManaged()) {
                     %>

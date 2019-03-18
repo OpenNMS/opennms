@@ -57,7 +57,7 @@
 <div class="card-header">
 <span><a href="${outageLink}">Recent&nbsp;Outages</a></span>
 </div>
-<table class="table table-sm table-striped">
+<table class="table table-sm severity">
 <% if(outages.length == 0) { %>
   <tr>
     <td>There have been no outages on this node in the last 24 hours.</td>
@@ -68,7 +68,8 @@
     <th>Interface</th>
     <th>Service</th>
     <th>Lost</th>
-    <th>Outage ID</th>
+    <th>Regained</th>
+    <th>Actions</th>
   </tr>
 
   <%
@@ -76,16 +77,16 @@
      Outage outage = outages[i];
      pageContext.setAttribute("outage", outage);
   %>
-      <tr>
+    <tr>
+		<% if( outages[i].getRegainedServiceTime() == null ) { %>
+        <td><span class="badge badge-severity-critical">DOWN</span></td>
+    <% } else { %>
+        <td><span class="badge badge-severity-cleared">CLEARED</span></td>
+    <% } %>
       <c:url var="interfaceLink" value="element/interface.jsp">
         <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
         <c:param name="intf" value="<%=outages[i].getIpAddress()%>"/>
       </c:url>
-      <% if( outages[i].getRegainedServiceTime() == null ) { %>
-      <td class="divider"><span class="badge badge-severity-critical">DOWN</span></td>
-      <% } else { %>
-      <td class="divider"><span class="badge badge-severity-cleared">CLEARED</span><onms:datetime date="${outage.regainedServiceTime}" /></td>
-      <% } %>
       <td class="divider"><a href="<c:out value="${interfaceLink}"/>"><%=outages[i].getIpAddress()%></a></td>
       <c:url var="serviceLink" value="element/service.jsp">
         <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
@@ -95,7 +96,12 @@
       <td class="divider"><a href="<c:out value="${serviceLink}"/>"><c:out value="<%=outages[i].getServiceName()%>"/></a></td>
       <td class="divider"><onms:datetime date="${outage.lostServiceTime}" /></td>
 
-      <td class="divider"><a href="outage/detail.htm?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a></td>       
+      <% if( outages[i].getRegainedServiceTime() == null ) { %>
+        <td class="divider bright">-</td>
+      <% } else { %>
+        <td class="divider bright"><onms:datetime date="${outage.regainedServiceTime}" /></td>
+      <% } %>
+        <td class="divider"><a href="outage/detail.htm?id=<%=outages[i].getId()%>" title="Show outage details"><i class="fa fa-share"></i></td>
     </tr>
   <% } %>
 <% } %>

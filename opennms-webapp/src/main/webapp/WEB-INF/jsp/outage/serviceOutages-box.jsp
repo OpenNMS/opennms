@@ -68,6 +68,7 @@
   <td colspan="3">There have been no outages on this service in the last 24 hours.</td>
 <% } else { %>
   <tr>
+    <th>Status</th>
     <th>Lost</th>
     <th>Regained</th>
     <th>Outage&nbsp;ID</th>
@@ -77,14 +78,19 @@
       Outage outage = outages[i];
       pageContext.setAttribute("outage", outage);
   %>
-     <tr class="<%=(outages[i].getRegainedServiceTime() == null) ? "Critical" : "Normal"%>">
-      <td class="divider"><onms:datetime date="${outage.lostServiceTime}"/></td>
+    <tr>
+        <%if (outages[i].getRegainedServiceTime() == null) { %>
+        <td><span class="badge badge-severity-critical">DOWN</span>
+        <%} else {%>
+        <td><span class="badge badge-severity-cleared">CLEARED</span>
+        <%} %>
+      <td><onms:datetime date="${outage.lostServiceTime}"/></td>
       <% if( outages[i].getRegainedServiceTime() == null ) { %>
-        <td class="divider bright"><b>DOWN</b></td>
+        <td>-</td>
       <% } else { %>
-        <td class="divider bright"><onms:datetime date="${outage.regainedServiceTime}"/></td>
+        <td><onms:datetime date="${outage.regainedServiceTime}"/></td>
       <% } %>
-      <td class="divider"><a href="outage/detail.htm?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a></td>
+        <td><a href="outage/detail.htm?id=<%=outages[i].getId()%>" title="Show outage details"><i class="fa fa-share"></i></a></td>
     </tr>
   <% } %>
 <% } %>
