@@ -196,6 +196,15 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
     <li class="list-inline-item">
       <a href="<c:out value="${snmpintfGraphLink}"/>">SNMP Interface Data Graphs</a>
     </li>
+
+    <c:url var="metaDataLink" value="element/interface-metadata.jsp">
+      <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+      <c:param name="ipAddr" value="<%=ipAddr%>"/>
+    </c:url>
+    <li class="list-inline-item">
+      <a href="<c:out value="${metaDataLink}"/>">Meta-Data</a>
+    </li>
+
   <% if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
     <li class="list-inline-item">
       <a href="admin/deleteInterface" onClick="return doDelete()">Delete</a>

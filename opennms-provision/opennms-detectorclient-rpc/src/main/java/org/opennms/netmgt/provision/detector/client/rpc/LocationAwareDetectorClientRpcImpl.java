@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.detector.client.rpc;
 
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.netmgt.provision.DetectorRequestBuilder;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
@@ -46,6 +47,9 @@ public class LocationAwareDetectorClientRpcImpl implements LocationAwareDetector
 
     @Autowired
     private RpcClientFactory rpcClientFactory;
+
+    @Autowired
+    private EntityScopeProvider entityScopeProvider;
 
     private RpcClient<DetectorRequestDTO, DetectorResponseDTO> delegate;
 
@@ -69,5 +73,13 @@ public class LocationAwareDetectorClientRpcImpl implements LocationAwareDetector
 
     public ServiceDetectorRegistry getRegistry() {
         return registry;
+    }
+
+    public EntityScopeProvider getEntityScopeProvider() {
+        return this.entityScopeProvider;
+    }
+
+    public void setEntityScopeProvider(final EntityScopeProvider entityScopeProvider) {
+        this.entityScopeProvider = entityScopeProvider;
     }
 }

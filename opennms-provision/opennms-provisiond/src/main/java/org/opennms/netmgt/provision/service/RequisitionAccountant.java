@@ -30,10 +30,13 @@ package org.opennms.netmgt.provision.service;
 
 import org.opennms.netmgt.provision.persist.AbstractRequisitionVisitor;
 import org.opennms.netmgt.provision.persist.OnmsAssetRequisition;
+import org.opennms.netmgt.provision.persist.OnmsInterfaceMetaDataRequisition;
 import org.opennms.netmgt.provision.persist.OnmsIpInterfaceRequisition;
+import org.opennms.netmgt.provision.persist.OnmsNodeMetaDataRequisition;
 import org.opennms.netmgt.provision.persist.OnmsMonitoredServiceRequisition;
 import org.opennms.netmgt.provision.persist.OnmsNodeCategoryRequisition;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
+import org.opennms.netmgt.provision.persist.OnmsServiceMetaDataRequisition;
 import org.opennms.netmgt.provision.service.operations.ImportOperationsManager;
 import org.opennms.netmgt.provision.service.operations.SaveOrUpdateOperation;
 
@@ -85,5 +88,20 @@ public class RequisitionAccountant extends AbstractRequisitionVisitor {
     @Override
     public void visitAsset(OnmsAssetRequisition assetReq) {
         m_currentOp.foundAsset(assetReq.getName(), assetReq.getValue());
+    }
+
+    @Override
+    public void visitNodeMetaData(OnmsNodeMetaDataRequisition metaDataReq) {
+        m_currentOp.foundNodeMetaData(metaDataReq.getContext(), metaDataReq.getKey(), metaDataReq.getValue());
+    }
+
+    @Override
+    public void visitInterfaceMetaData(OnmsInterfaceMetaDataRequisition metaDataReq) {
+        m_currentOp.foundInterfaceMetaData(metaDataReq.getContext(), metaDataReq.getKey(), metaDataReq.getValue());
+    }
+
+    @Override
+    public void visitServiceMetaData(OnmsServiceMetaDataRequisition metaDataReq) {
+        m_currentOp.foundServiceMetaData(metaDataReq.getContext(), metaDataReq.getKey(), metaDataReq.getValue());
     }
 }
