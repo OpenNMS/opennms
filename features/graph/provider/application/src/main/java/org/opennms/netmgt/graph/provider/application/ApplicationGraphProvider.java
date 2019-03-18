@@ -29,9 +29,10 @@
 package org.opennms.netmgt.graph.provider.application;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import org.opennms.netmgt.dao.api.ApplicationDao;
-import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.graph.api.Graph;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
@@ -41,21 +42,23 @@ import org.opennms.netmgt.graph.simple.SimpleGraph;
 import org.opennms.netmgt.graph.simple.SimpleVertex;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ApplicationGraphProvider implements GraphProvider, EventListener {
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+
+public class ApplicationGraphProvider implements GraphProvider {
 
     static final String TOPOLOGY_NAMESPACE = "application";
+    private final static String CACHE_KEY = "CACHE_KEY";
 
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationGraphProvider.class);
 
-    private Graph graph;
+    private final LoadingCache<String, Graph> graph = createCache(this::createGraph);
 
     private ApplicationDao applicationDao;
-
-    private boolean initialized = false;
 
     public ApplicationGraphProvider(ApplicationDao applicationDao) {
         Objects.requireNonNull(applicationDao);
@@ -63,15 +66,9 @@ public class ApplicationGraphProvider implements GraphProvider, EventListener {
         LOG.debug("Creating a new {} with namespace {}", getClass().getSimpleName(), TOPOLOGY_NAMESPACE);
     }
 
-    // TODO MVR We may need some kind of caching strategy implementation allowing each provider to deal with reloads individually if they so choose
     @Override
     public Graph<?, ?> loadGraph() {
-        // TODO MVR this is not thread safe
-        if (!initialized) {
-            graph = createGraph();
-            initialized = true;
-        }
-        return graph;
+        return graph.getUnchecked(CACHE_KEY);
     }
 
     @Override
@@ -82,7 +79,7 @@ public class ApplicationGraphProvider implements GraphProvider, EventListener {
         return graphInfo;
     }
 
-    Graph<?, ?> createGraph() {
+    private Graph<?, ?> createGraph() {
         final SimpleGraph graph = new SimpleGraph(getGraphInfo());
 
 
@@ -104,20 +101,17 @@ public class ApplicationGraphProvider implements GraphProvider, EventListener {
         return graph;
     }
 
-    @Override
-    public String getName() {
-        return getClass().getSimpleName();
-    }
-
-    @Override
-    public void onEvent(Event e) {
-        // BSM has been reloaded, force reload
-        // TODO: patrick find out if we need to listen to an event and for which one?
-//        if (e.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI)) {
-//            String daemonName = EventUtils.getParm(e, EventConstants.PARM_DAEMON_NAME);
-//            if (daemonName != null && "bsmd".equalsIgnoreCase(daemonName)) {
-//                graph = createGraph();
-//            }
-//        }
+    // TODO Patrick remove once we have a general caching strategy
+    private <KEY, VALUE> LoadingCache<KEY, VALUE> createCache(Supplier<VALUE> entitySupplier) {
+        CacheLoader<KEY, VALUE> loader = new CacheLoader<KEY, VALUE>() {
+            @Override
+            public VALUE load(KEY key) {
+                return entitySupplier.get();
+            }
+        };
+        return CacheBuilder
+                .newBuilder()
+                .expireAfterWrite(20, TimeUnit.SECONDS)
+                .build(loader);
     }
 }
