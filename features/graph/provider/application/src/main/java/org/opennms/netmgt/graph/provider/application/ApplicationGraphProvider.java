@@ -78,7 +78,7 @@ public class ApplicationGraphProvider implements GraphProvider, EventListener {
     public GraphInfo<?> getGraphInfo() {
         final DefaultGraphInfo graphInfo = new DefaultGraphInfo(TOPOLOGY_NAMESPACE, SimpleVertex.class);
         graphInfo.setLabel("Application Graph");
-        graphInfo.setDescription("This Topology Provider displays the hierarchy of TODO."); // TODO Patrick
+        graphInfo.setDescription("This Topology Provider displays all defined Applications and their calculated states.");
         return graphInfo;
     }
 
