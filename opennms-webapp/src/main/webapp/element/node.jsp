@@ -263,6 +263,7 @@
     }
 
 	pageContext.setAttribute("schedOutages", schedOutages.isEmpty() ? null : StringUtils.collectionToDelimitedString(schedOutages, ", "));
+    pageContext.setAttribute("maxInterfaceCount", System.getProperty("org.opennms.interfaceAvailabilityBox.maxInterfaceCount", "10"));
 %>
 
 <%@page import="org.opennms.core.resource.Vault"%>
@@ -524,7 +525,7 @@ function confirmAssetEdit() {
   </c:if>
 	
   <!-- Availability box -->
-  <c:if test="${fn:length( model.intfs ) < 10}">
+  <c:if test="${fn:length( model.intfs ) <= maxInterfaceCount}">
     <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" >
       <jsp:param name="node" value="${model.id}" />
     </jsp:include>
