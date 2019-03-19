@@ -111,13 +111,13 @@
             <span>Assets with Asset Numbers</span>
           </div>
           <div class="card-body">
-            <ul class="list-unstyled" style="width:48%; margin-right:2%; float:left;">
+            <ul class="list-unstyled mb-0" style="width:48%; margin-right:2%; float:left;">
             <% for( int i=0; i < middle; i++ ) {%>
               <%  Asset asset = (Asset)assetsList.get(i); %>
               <li> <%=asset.getAssetNumber()%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId())%></a></li>
             <% } %>
             </ul>
-            <ul class="list-unstyled" style="width:50%; float:left;">
+            <ul class="list-unstyled mb-0" style="width:50%; float:left;">
             <% for( int i=middle; i < assetCount; i++ ) {%>
               <%  Asset asset = (Asset)assetsList.get(i); %>
               <li><%=asset.getAssetNumber()%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId())%></a></li>
