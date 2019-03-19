@@ -22,6 +22,7 @@ chown -R "${MINIONUSER}:${MINIONUSER}" "${ETCDIR}" "${MINIONHOME}" "${MINIONDATA
 
 # Remove the directory used as the local Maven repo cache
 rm -rf "${MINIONHOME}/.local"
+rm -rf "${MINIONHOME}/.m2"
 
 # attempt to configure the kernel to allow ping as non-root
 "${MINIONHOME}/bin/ensure-user-ping.sh" minion || :

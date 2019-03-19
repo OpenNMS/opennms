@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,10 +45,7 @@ public class NumberAdapter extends XmlAdapter<String, Number> {
         if (v == null) {
             return null;
         }
-        final Double d = v.doubleValue();
-        if (!d.isNaN() && !d.isInfinite() && d == Math.rint(d)) {
-            return String.valueOf(v.intValue());
-        }
-        return v.toString();
+        //Always convert to double for consistency
+        return String.valueOf(v.doubleValue());
     }
 }
