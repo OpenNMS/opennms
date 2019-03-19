@@ -643,7 +643,7 @@ MANAGER_OPTIONS+=("-Dopennms.home=$OPENNMS_HOME")
 #MANAGER_OPTIONS+=("-Djcifs.properties=$OPENNMS_HOME/etc/jcifs.properties")
 MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}m")
 MANAGER_OPTIONS+=("-XX:+HeapDumpOnOutOfMemoryError")
-JAVA_VERSION="$("$OPENNMS_HOME/bin/runjava" -p)"
+JAVA_VERSION="$("$OPENNMS_HOME/bin/runjava" -p -f 2> /dev/null)"
 JAVA_SHORT_VERSION="$(echo "$JAVA_VERSION" | cut -d. -f1)"
 
 JAVA_MODULES=(
