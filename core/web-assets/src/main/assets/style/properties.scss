@@ -3,6 +3,16 @@ $color_horizon:                     #4c9d29;
 $color_meridian:                    #227cb8;
 $link_color:                        #265A87;
 
+// Severities
+$severity-cleared:                  #CDCDD0;
+$severity-indeterminate:            #5DAFDD;
+$severity-normal:                   #438953;
+$severity-warning:                  #FFF000;
+$severity-minor:                    #FFD60A;
+$severity-major:                    #FF9F0A;
+$severity-critical:                 #DF5251;
+
+
 $font-size-base:  0.875rem;
 //$font-family-base-sans-serif: 'Lucida Grande', Verdana, sans-serif;
 
@@ -12,10 +22,25 @@ $table-border-color: #ddd !default;
 
 // Add custom colors to the theme
 $theme-colors: (
-    "horizon": $color_horizon,
-    "meridian": $color_meridian,
-    // Additional colors may be added here, e.g. "severity-normal"
-    // to allow alerts, badges, buttons, etc to be colored accordingly
+    // Flavours
+    "horizon":                      $color_horizon,
+    "meridian":                     $color_meridian,
+
+    // Severities
+    "severity-indeterminate":       $severity-indeterminate,
+    "severity-Indeterminate":       $severity-indeterminate,
+    "severity-cleared":             $severity-cleared,
+    "severity-Cleared":             $severity-cleared,
+    "severity-normal":              $severity-normal,
+    "severity-Normal":              $severity-normal,
+    "severity-warning":             $severity-warning,
+    "severity-Warning":             $severity-warning,
+    "severity-minor":               $severity-minor,
+    "severity-Minor":               $severity-minor,
+    "severity-major":               $severity-major,
+    "severity-Major":               $severity-major,
+    "severity-critical":            $severity-critical,
+    "severity-Critical":            $severity-critical,
 );
 
 // Spacing of cards is a bit too much by default.
