@@ -91,6 +91,13 @@ public class Manager implements ManagerMBean {
     private static final String m_osName = System.getProperty("os.name") == null? "" : System.getProperty("os.name").toLowerCase();
     private static long startTime = System.currentTimeMillis();
 
+
+    /**
+     *  Register shutdown hook to handle SIGTERM signal for the process.
+     */
+    public void init() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> stop()));
+    }
     /**
      * <p>stop</p>
      */
