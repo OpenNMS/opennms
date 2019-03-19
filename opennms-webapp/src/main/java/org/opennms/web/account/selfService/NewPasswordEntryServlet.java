@@ -54,6 +54,13 @@ import org.opennms.netmgt.config.users.User;
 public class NewPasswordEntryServlet extends HttpServlet {
     private static final long serialVersionUID = 8979500859478109256L;
 
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/account/selfService/newPassword.jsp");
+        dispatcher.forward(request, response);
+    }
+
     /** {@inheritDoc} */
     @Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
