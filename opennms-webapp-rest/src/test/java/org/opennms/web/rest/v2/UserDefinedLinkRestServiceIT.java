@@ -81,12 +81,12 @@ public class UserDefinedLinkRestServiceIT extends AbstractSpringJerseyRestTestCa
         final OnmsNode node1 = m_databasePopulator.getNode1();
         final OnmsNode node2 = m_databasePopulator.getNode2();
         String linkJson = "{\n" +
-                "      \"nodeIdA\": " + node1.getId() + ",\n" +
-                "      \"componentLabelA\": \"labela\",\n" +
-                "      \"nodeIdZ\": " + node2.getId() + ",\n" +
-                "      \"componentLabelZ\": \"labelb\",\n" +
-                "      \"linkId\": \"linkid\",\n" +
-                "      \"linkLabel\": \"my link\",\n" +
+                "      \"node-id-a\": " + node1.getId() + ",\n" +
+                "      \"component-label-a\": \"labela\",\n" +
+                "      \"node-id-z\": " + node2.getId() + ",\n" +
+                "      \"component-label-z\": \"labelb\",\n" +
+                "      \"link-id\": \"linkid\",\n" +
+                "      \"link-label\": \"my link\",\n" +
                 "      \"owner\": \"me\"\n" +
                 "}\n";
         sendData(POST, MediaType.APPLICATION_JSON, "/userdefinedlinks", linkJson, 201);
