@@ -35,18 +35,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.hibernate.Hibernate;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
-import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.alarmd.Alarmd;
 import org.opennms.netmgt.alarmd.api.AlarmCallbackStateTracker;
@@ -76,7 +73,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     private static final Logger LOG = LoggerFactory.getLogger(DroolsAlarmContext.class);
 
     private static final String LOCK_TIMEOUT_MS_SYS_PROP = "org.opennms.alarms.drools.lock.timeout.ms";
-    protected static final long LOCK_TIMEOUT_MS = SystemProperties.getLong(LOCK_TIMEOUT_MS_SYS_PROP, TimeUnit.SECONDS.toMillis(20));
+    protected static final long LOCK_TIMEOUT_MS = Long.getLong(LOCK_TIMEOUT_MS_SYS_PROP, TimeUnit.SECONDS.toMillis(20));
 
     @Autowired
     private AlarmService alarmService;
@@ -283,7 +280,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             return;
         }
         tryWithLock(alarm.getId(), alarm.getReductionKey(),
-                (id, rkey) -> handleNewOrUpdatedAlarms(Collections.singleton(alarm)),
+                (id, rkey) -> handleNewOrUpdatedAlarmNoLock(alarm),
                 "Add or update");
     }
 
