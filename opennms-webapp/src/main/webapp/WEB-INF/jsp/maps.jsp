@@ -43,7 +43,7 @@
     </div>
 
     <div class="card-body">
-      <ul class="list-unstyled">
+      <ul class="list-unstyled mb-0">
         <c:forEach var="entry" items="${entries.entries}">
           <c:if test="${entry.value.display}">
             <li>

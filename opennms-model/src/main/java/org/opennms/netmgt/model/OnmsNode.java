@@ -39,12 +39,16 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -191,6 +195,8 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     private Set<String> m_requisitionedCategories = new LinkedHashSet<>();
 
     private PathElement m_pathElement;
+
+    private List<OnmsMetaData> m_metaData = new ArrayList<>();
 
     /**
      * <p>
@@ -962,6 +968,63 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         m_requisitionedCategories.remove(category);
     }
 
+    @JsonIgnore
+    @XmlTransient
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name="node_metadata", joinColumns = @JoinColumn(name = "id"))
+    public List<OnmsMetaData> getMetaData() {
+        return m_metaData;
+    }
+
+    public void setMetaData(final List<OnmsMetaData> metaData) {
+        m_metaData = metaData;
+    }
+
+    public void addMetaData(final String context, final String key, final String value) {
+        Objects.requireNonNull(context);
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(value);
+
+        final Optional<OnmsMetaData> entry = getMetaData().stream()
+            .filter(m -> m.getContext().equals(context))
+            .filter(m -> m.getKey().equals(key))
+            .findFirst();
+
+        // Update the value if present, otherwise create a new entry
+        if (entry.isPresent()) {
+            entry.get().setValue(value);
+        } else {
+            getMetaData().add(new OnmsMetaData(context, key, value));
+        }
+    }
+
+    public void removeMetaData(final String context, final String key) {
+        Objects.requireNonNull(context);
+        Objects.requireNonNull(key);
+        final Iterator<OnmsMetaData> iterator = getMetaData().iterator();
+
+        while (iterator.hasNext()) {
+            final OnmsMetaData onmsNodeMetaData = iterator.next();
+
+            if (context.equals(onmsNodeMetaData.getContext()) && key.equals(onmsNodeMetaData.getKey())) {
+                iterator.remove();
+            }
+        }
+    }
+
+    public void removeMetaData(final String context) {
+        Objects.requireNonNull(context);
+        final Iterator<OnmsMetaData> iterator = getMetaData().iterator();
+
+        while (iterator.hasNext()) {
+            final OnmsMetaData onmsNodeMetaData = iterator.next();
+
+            if (context.equals(onmsNodeMetaData.getContext())) {
+                iterator.remove();
+            }
+        }
+    }
+
     /**
      * <p>toString</p>
      *
@@ -1467,6 +1530,17 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     }
 
     /**
+     * Truly merges the node's meta-data
+     *
+     * @param scannedNode a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
+    public void mergeMetaData(OnmsNode scanned) {
+        if (!getMetaData().equals(scanned.getMetaData())) {
+            setMetaData(scanned.getMetaData());
+        }
+    }
+
+    /**
      * Simply replaces the current asset record with the new record
      *
      * @param scannedNode a {@link org.opennms.netmgt.model.OnmsNode} object.
@@ -1495,6 +1569,8 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         mergeCategorySet(scannedNode);
 
         mergeAssets(scannedNode);
+
+        mergeMetaData(scannedNode);
     }
 
     @Transient

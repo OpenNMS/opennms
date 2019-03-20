@@ -342,3 +342,9 @@ iframe.vaadin-fullscreen {
 
   }
 }
+
+// Tables have by default a margin-bottom.
+// Use no margin for the last table in cards
+.card table:last-of-type {
+  margin-bottom: 0px;
+}

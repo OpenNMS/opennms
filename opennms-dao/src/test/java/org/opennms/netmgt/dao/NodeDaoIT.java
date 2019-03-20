@@ -33,6 +33,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -62,6 +63,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PathElement;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
@@ -670,6 +672,53 @@ public class NodeDaoIT implements InitializingBean {
         m_nodeDao.saveOrUpdate(node2);
         List<OnmsNode> nodes2 = m_nodeDao.findByForeignIdForLocation("TheOpenNMSGroup", location.getLocationName());
         assertEquals(nodes2.get(0), node2);
-        
+    }    
+
+    @Test
+    public void testSaveWithMetaData() {
+        final int nodeId = m_transTemplate.execute((ts) -> {
+            OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "SomeNode");
+            node.addMetaData("ctx", "key", "val");
+            getNodeDao().save(node);
+            getNodeDao().flush();
+
+            return node.getId();
+        });
+
+        m_transTemplate.execute((ts) -> {
+            OnmsNode node = getNodeDao().get(nodeId);
+            node.addMetaData("ctx", "key", "val");
+            getNodeDao().update(node);
+            getNodeDao().flush();
+
+            return node.getId();
+        });
+
+        m_transTemplate.execute((ts) -> {
+            OnmsNode node = getNodeDao().get(nodeId);
+            assertEquals(1, node.getMetaData().size());
+            assertEquals("ctx", node.getMetaData().iterator().next().getContext());
+            assertEquals("key", node.getMetaData().iterator().next().getKey());
+            assertEquals("val", node.getMetaData().iterator().next().getValue());
+            return null;
+        });
+
+        m_transTemplate.execute((ts) -> {
+            OnmsNode node = getNodeDao().get(nodeId);
+            node.setMetaData(Arrays.asList(new OnmsMetaData("ctx", "foo", "bar")));
+            getNodeDao().update(node);
+            getNodeDao().flush();
+
+            return node.getId();
+        });
+
+        m_transTemplate.execute((ts) -> {
+            OnmsNode node = getNodeDao().get(nodeId);
+            assertEquals(1, node.getMetaData().size());
+            assertEquals("ctx", node.getMetaData().iterator().next().getContext());
+            assertEquals("foo", node.getMetaData().iterator().next().getKey());
+            assertEquals("bar", node.getMetaData().iterator().next().getValue());
+            return null;
+        });
     }
 }

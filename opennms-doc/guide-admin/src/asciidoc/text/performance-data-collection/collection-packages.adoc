@@ -59,3 +59,13 @@ _Service Configurations_ contains common _Service Attributes_ as well as _Collec
 [[ga-performance-management-collectd-configuration-xml]]
 .Configuration overview for data collection with Collectd
 image::performance-management/02_collectd-configuration-xml.png[]
+
+[[ga-collectd-packages-services-meta-data]]
+===== Meta-Data-DSL
+Each parameter value can leverage dynamic configuration by using the link:#ga-meta-data-dsl[Meta-Data-DSL].
+
+During evaluation of an expression the following scopes are available:
+
+* Node meta-data
+* Interface meta-data
+* Service meta-data
