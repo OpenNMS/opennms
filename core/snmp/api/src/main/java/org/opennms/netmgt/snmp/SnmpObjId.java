@@ -291,5 +291,18 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
         }
     }
 
+    /**
+     * If requesting a GETNEXT on the given base OID, would the
+     * current OID be expected in a response?
+     *
+     * Returns <code>true</code> if this OID is a successor (greater than)
+     * the given OID, or <code>false</code> otherwise.
+     *
+     * @param base base oid against which to compare
+     * @return true if this OID is a successor of the "base" oid, false otherwise
+     */
+    public boolean isSuccessorOf(SnmpObjId base) {
+        return compareTo(base) > 0;
+    }
 
 }
