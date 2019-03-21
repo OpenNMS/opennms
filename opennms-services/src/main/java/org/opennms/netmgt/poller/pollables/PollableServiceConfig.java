@@ -35,10 +35,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.opennms.core.rpc.api.RpcExceptionHandler;
 import org.opennms.core.rpc.api.RpcExceptionUtils;
@@ -133,7 +129,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                     continue;
                 }
 
-                final Template template = Template.parse(s.getPattern()); // TODO fooker: cache compiled pattern
+                final Template template = Template.parse(s.getPattern());
                 final Optional<Map<String, String>> match = template.match(m_service.getSvcName());
                 if (match.isPresent()) {
                     configService = s;

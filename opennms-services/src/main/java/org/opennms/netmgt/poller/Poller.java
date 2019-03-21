@@ -521,13 +521,6 @@ public class Poller extends AbstractServiceDaemon {
             LOG.info("Active service {} on {} is now configured for a package. Marking as active.", serviceName, ipAddr);
             updateServiceStatus(service, "A");
         }
-//
-//        // TODO fooker: from real service name to actual service name
-//        ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(pkgAndSvc.svc);
-//        if (monitor == null) {
-//            LOG.info("Could not find service monitor associated with service {}", pkgAndSvc.svc);
-//            return false;
-//        }
 
         InetAddress addr;
         addr = InetAddressUtils.addr(ipAddr);
