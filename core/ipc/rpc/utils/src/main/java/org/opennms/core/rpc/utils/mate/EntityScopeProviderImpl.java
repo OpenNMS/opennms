@@ -79,15 +79,15 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                             .map("node", "label", (n) -> Optional.of(n.getLabel()))
                             .map("node", "foreign-source", (n) -> Optional.of(n.getForeignSource()))
                             .map("node", "foreign-id", (n) -> Optional.of(n.getForeignId()))
-                            .map("node", "netbios-domain", (n) -> Optional.of(n.getNetBiosDomain()))
-                            .map("node", "netbios-name", (n) -> Optional.of(n.getNetBiosName()))
-                            .map("node", "os", (n) -> Optional.of(n.getOperatingSystem()))
-                            .map("node", "sys-name", (n) -> Optional.of(n.getSysName()))
-                            .map("node", "sys-location", (n) -> Optional.of(n.getSysLocation()))
-                            .map("node", "sys-contact", (n) -> Optional.of(n.getSysContact()))
-                            .map("node", "sys-description", (n) -> Optional.of(n.getSysDescription()))
-                            .map("node", "location", (n) -> Optional.of(n.getLocation().getLocationName()))
-                            .map("node", "area", (n) -> Optional.of(n.getLocation().getMonitoringArea()))
+                            .map("node", "netbios-domain", (n) -> Optional.ofNullable(n.getNetBiosDomain()))
+                            .map("node", "netbios-name", (n) -> Optional.ofNullable(n.getNetBiosName()))
+                            .map("node", "os", (n) -> Optional.ofNullable(n.getOperatingSystem()))
+                            .map("node", "sys-name", (n) -> Optional.ofNullable(n.getSysName()))
+                            .map("node", "sys-location", (n) -> Optional.ofNullable(n.getSysLocation()))
+                            .map("node", "sys-contact", (n) -> Optional.ofNullable(n.getSysContact()))
+                            .map("node", "sys-description", (n) -> Optional.ofNullable(n.getSysDescription()))
+                            .map("node", "location", (n) -> Optional.ofNullable(n.getLocation().getLocationName()))
+                            .map("node", "area", (n) -> Optional.ofNullable(n.getLocation().getMonitoringArea()))
             );
         });
 
@@ -109,12 +109,12 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
             return new FallbackScope(transform(ipInterface.getMetaData()),
                     new ObjectScope<>(ipInterface)
                             .map("interface", "hostname", (i) -> Optional.of(i.getIpHostName()))
-                            .map("interface", "address", (i) -> Optional.of(i.getIpAddress()).map(InetAddressUtils::toIpAddrString))
-                            .map("interface", "netmask", (i) -> Optional.of(i.getNetMask()).map(InetAddressUtils::toIpAddrString))
+                            .map("interface", "address", (i) -> Optional.ofNullable(i.getIpAddress()).map(InetAddressUtils::toIpAddrString))
+                            .map("interface", "netmask", (i) -> Optional.ofNullable(i.getNetMask()).map(InetAddressUtils::toIpAddrString))
                             .map("interface", "if-index", (i) -> Optional.ofNullable(i.getIfIndex()).map(Object::toString))
-                            .map("interface", "if-alias", (i) -> Optional.of(i.getSnmpInterface().getIfAlias()))
-                            .map("interface", "if-description", (i) -> Optional.of(i.getSnmpInterface().getIfDescr()))
-                            .map("interface", "phy-addr", (i) -> Optional.of(i.getSnmpInterface().getPhysAddr()))
+                            .map("interface", "if-alias", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfAlias))
+                            .map("interface", "if-description", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfDescr))
+                            .map("interface", "phy-addr", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getPhysAddr))
             );
         });
 
@@ -137,14 +137,13 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
             return new FallbackScope(transform(monitoredService.getMetaData()),
                     new ObjectScope<>(monitoredService)
                             .map("service", "name", (s) -> Optional.of(s.getServiceName()))
-                            .map("service", "type", (s) -> Optional.of(s.getServiceType().getName()))
             );
         });
 
         return metaDataScope;
     }
 
-    private static MapScope transform(Collection<OnmsMetaData> metaData) {
+    private static MapScope transform(final Collection<OnmsMetaData> metaData) {
         final Map<ContextKey, String> map = metaData.stream()
                 .collect(Collectors.toMap(e -> new ContextKey(e.getContext(), e.getKey()), e -> e.getValue()));
         return new MapScope(map);
