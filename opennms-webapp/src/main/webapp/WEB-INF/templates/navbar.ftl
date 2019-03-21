@@ -143,26 +143,46 @@
 
 <#-- Notification gathering -->
 <script type="text/javascript">
-
     var currentUser = "${request.remoteUser}";
+    var baseHref = "${baseHref}";
 
-    var updateNotificationBadges = function(teamNotifications = [] /* not assigned to the user */, userNotifications = []) {
-        console.log(teamNotifications, userNotifications);
+    var updateNotificationIndicators = function(summary) {
+        if (summary === undefined) {
+            summary = {
+                totalCount: 0,
+                totalUnacknowledgedCount:0,
+                userUnacknowledgedCount: 0,
+                teamUnacknowledgedCount: 0,
+                userUnacknowledgedNotifications: {
+                    offset: 0,
+                    count: 0,
+                    totalCount: 0,
+                    notification: []
+                }
+            };
+        };
+        updateNotificationBadges(summary);
+        updateNotificationList(summary);
+    };
+
+    var updateNotificationBadges = function(summary) {
         // Update text
-        $(".userNotificationCount").text(userNotifications.length);
-        $(".teamNotificationCount").text(teamNotifications.length);
-        $(".totalNotificationCount").text(userNotifications.length + teamNotifications.length);
+        $(".userNotificationCount").text(summary.userUnacknowledgedCount);
+        $(".teamNotificationCount").text(summary.teamUnacknowledgedCount);
+        $(".totalNotificationCount").text(summary.totalUnacknowledgedCount);
 
         // Update badges
         $("#teamNotificationsBadge").attr("class", "badge badge-pill teamNotificationCount");
         $("#userNotificationsBadge").attr("class", "badge badge-pill userNotificationCount");
 
-        if (teamNotifications.length === 0) {
+        if (summary.teamUnacknowledgedCount === 0) {
             $("#teamNotificationsBadge").addClass("badge-severity-cleared");
         } else {
             $("#teamNotificationsBadge").addClass("badge-info");
         }
 
+        // Set severity for user notifications
+        var userNotifications = summary.userUnacknowledgedNotifications.notification;
         if (userNotifications.length === 0) {
             $("#userNotificationsBadge").addClass("badge-severity-cleared");
         } else {
@@ -176,11 +196,10 @@
         }
     };
 
-    var updateNotificationList = function(notifications=[]) {
+    var updateNotificationList = function(summary) {
         $("#headerNotifications").empty();
+        var notifications = summary.userUnacknowledgedNotifications.notification;
         notifications.forEach(function(notification, index) {
-            console.log(notification);
-            var baseHref = "${baseHref}";
             // Determine time
             var date = new Date(notification.pageTime);
             var dateTime = date.toLocaleDateString() + " " + date.toLocaleTimeString();
@@ -210,29 +229,21 @@
             if (index < notifications.length - 1) {
                 $('<div class="dropdown-divider"></div>').appendTo("#headerNotifications");
             }
-        })
+        });
+
+        if (summary.userUnacknowledgedCount > notifications.length) {
+            var moreLink = baseHref + "notification/browse?acktype=unack&amp;filter=user==" + currentUser;
+            $('<div class="dropdown-divider"></div><a class="dropdown-item" href="' + moreLink + '">Show more ...</a>').appendTo("#headerNotifications");
+        }
     };
 
     $(document).ready(function() {
-        updateNotificationBadges();
-        updateNotificationList();
+        updateNotificationIndicators();
 
-        // Load current notifications
-        // FIQL uses \u0000 as null value, which is %00
-        $.get("api/v2/notifications?_s=answeredBy==%00", function(response) {
-            if (response && response.totalCount) {
-                // Notifications for the user
-                var userNotificationArray = response.notification.filter(function(notification) {
-                    return notification.destinations.filter(function(destination) {
-                        return destination.userId == currentUser;
-                    }).length > 0;
-                });
-                // Notifications not for the current user
-                var teamNotificationArray = response.notification.filter(function(notification) {
-                   return userNotificationArray.indexOf(notification) === -1;
-                });
-                updateNotificationBadges(teamNotificationArray, userNotificationArray);
-                updateNotificationList(response.notification);
+        // Load notification summary for current user
+        $.get(baseHref + "rest/notifications/summary", function(response) {
+            if (response) {
+                updateNotificationIndicators(response);
             }
         });
     });

@@ -57,8 +57,7 @@ public class NewPasswordEntryServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/account/selfService/newPassword.jsp");
-        dispatcher.forward(request, response);
+        doPost(request, response);
     }
 
     /** {@inheritDoc} */
