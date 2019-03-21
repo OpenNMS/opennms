@@ -29,8 +29,6 @@
 package org.opennms.netmgt.graph.provider.application;
 
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.graph.api.Graph;
@@ -45,18 +43,11 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-
 public class ApplicationGraphProvider implements GraphProvider {
 
     static final String TOPOLOGY_NAMESPACE = "application";
-    private final static String CACHE_KEY = "CACHE_KEY";
 
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationGraphProvider.class);
-
-    private final LoadingCache<String, Graph> graph = createCache(this::createGraph);
 
     private ApplicationDao applicationDao;
 
@@ -67,11 +58,6 @@ public class ApplicationGraphProvider implements GraphProvider {
     }
 
     @Override
-    public Graph<?, ?> loadGraph() {
-        return graph.getUnchecked(CACHE_KEY);
-    }
-
-    @Override
     public GraphInfo<?> getGraphInfo() {
         final DefaultGraphInfo graphInfo = new DefaultGraphInfo(TOPOLOGY_NAMESPACE, SimpleVertex.class);
         graphInfo.setLabel("Application Graph");
@@ -79,7 +65,8 @@ public class ApplicationGraphProvider implements GraphProvider {
         return graphInfo;
     }
 
-    private Graph<?, ?> createGraph() {
+    @Override
+    public Graph<?, ?> loadGraph() {
         final SimpleGraph graph = new SimpleGraph(getGraphInfo());
 
 
@@ -93,25 +80,10 @@ public class ApplicationGraphProvider implements GraphProvider {
                 graph.addVertex(applicationVertex);
 
                 // connect with application
-                String id = String.format("connection:%s:%s", applicationVertex.getId(), serviceVertex.getId());
                 SimpleEdge edge = new SimpleEdge(applicationVertex, serviceVertex);
                 graph.addEdge(edge);
             }
         }
         return graph;
-    }
-
-    // TODO Patrick remove once we have a general caching strategy
-    private <KEY, VALUE> LoadingCache<KEY, VALUE> createCache(Supplier<VALUE> entitySupplier) {
-        CacheLoader<KEY, VALUE> loader = new CacheLoader<KEY, VALUE>() {
-            @Override
-            public VALUE load(KEY key) {
-                return entitySupplier.get();
-            }
-        };
-        return CacheBuilder
-                .newBuilder()
-                .expireAfterWrite(20, TimeUnit.SECONDS)
-                .build(loader);
     }
 }
