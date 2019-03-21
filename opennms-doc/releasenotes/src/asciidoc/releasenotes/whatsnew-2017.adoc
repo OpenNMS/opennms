@@ -174,6 +174,36 @@ This reduces the complexity of the UI code and will make it easier for developer
 * Fix startup on systems without any IPv6 support.
 * Reverse lookups in provisioning now handle IPs without a corresponding A record.
 
+[releasenotes-changelog-Meridian-2017.1.15]
+
+==== Release Meridian-2017.1.15
+
+Release 2017.1.15 is a small update to 2017.1.14 that fixes a performance issue in the measurements API.
+
+The codename for 2017.1.15 is _Warsaw meridian_.
+
+===== Bug
+
+* Poor performance when using filters in the Measurements API (Issue http://issues.opennms.org/browse/NMS-10589[NMS-10589])
+* Update webapp copyright dates to 2019 (Issue http://issues.opennms.org/browse/NMS-10591[NMS-10591])
+
+[releasenotes-changelog-Meridian-2017.1.14]
+
+==== Release Meridian-2017.1.14
+
+Release 2017.1.14 is a minor update to OpenNMS Meridian 2017.1.13.
+It contains a few small bug fixes and documentation enhancements, including a fix for alarm
+criteria browsing, pinger initialization, and sending notifications for events without
+associated nodes.
+
+The codename for 2017.1.14 is _Tabulae Varadienses_.
+
+===== Bug
+
+* BestMatchPingerFactory returns NullPinger when better options are available (Issue http://issues.opennms.org/browse/NMS-9659[NMS-9659])
+* Alarm Dashlet CriteriaBuilder In-Restriction not working (Issue http://issues.opennms.org/browse/NMS-10479[NMS-10479])
+* syslog events are creating notifications and disregarding rules in place (Issue http://issues.opennms.org/browse/NMS-10486[NMS-10486])
+
 [releasenotes-changelog-Meridian-2017.1.13]
 
 ==== Release Meridian-2017.1.13
@@ -235,7 +265,7 @@ The codename for 2017.1.11 is _Paris meridian_.
 Release 2017.1.10 is a small update to OpenNMS Meridian 2017.1.9.
 It contains a critical RADIUS fix as well as a number of smaller enhancements.
 
-The codename for 2017.1.10 is _Capital meridian_.
+The codename for 2017.1.10 is _Capitol meridian_.
 
 ===== Breaking Change: trapd-configuration.xml
 
