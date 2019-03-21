@@ -1004,13 +1004,14 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertTrue(m_linkdConfig.useIsisDiscovery());
 
-        assertEquals(6, m_topologyDao.getSupportedProtocols().size());
+        assertEquals(7, m_topologyDao.getSupportedProtocols().size());
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.NODES.name()));
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.BRIDGE.name()));
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.CDP.name()));
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.ISIS.name()));
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.LLDP.name()));
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.OSPF.name()));
+        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.USERDEFINED.name()));
 
         //update config to suppoort only BRIDGE discovery
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
@@ -1027,9 +1028,10 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
 
         //Updated configuration will lead to support only BRIDGE updates,
         m_linkd.reload();
-        assertEquals(2, m_topologyDao.getSupportedProtocols().size());
+        assertEquals(3, m_topologyDao.getSupportedProtocols().size());
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.NODES.name()));
         assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.BRIDGE.name()));
+        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.USERDEFINED.name()));
         assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.CDP.name()));
         assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.ISIS.name()));
         assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.LLDP.name()));
