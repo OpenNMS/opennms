@@ -238,17 +238,17 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
       <%if(currConfig.getSpecifics().size()>0){
             Specific[] specs = currConfig.getSpecifics().toArray(new Specific[0]);
       %>
-				    <table class="table table-bordered table-sm">
+				    <table class="table table-sm">
 				      <tr>
-					<th class="col-xs-4">IP&nbsp;Address</th>
-					<th class="col-xs-2">Timeout&nbsp;(milliseconds)</th>
-					<th class="col-xs-2">Retries</th>
-					<th class="col-xs-2">Foreign&nbsp;Source</th>
-					<th class="col-xs-2">Location</th>
+					<th>IP&nbsp;Address</th>
+					<th>Timeout&nbsp;(milliseconds)</th>
+					<th>Retries</th>
+					<th>Foreign&nbsp;Source</th>
+					<th>Location</th>
 					<th>Action</th>
 				      </tr>
 				      <%for(int i=0; i<specs.length; i++){%>
-					 <tr class="text-center">
+					 <tr>
 					  <td><%=specs[i].getAddress()%></td>
 					  <td><%=specs[i].getTimeout().isPresent() ? "" + specs[i].getTimeout().get() : "<i>Use Default</i>" %></td>
 					  <td><%=specs[i].getRetries().isPresent() ? "" + specs[i].getRetries().get() : "<i>Use Default</i>" %></td>
@@ -264,7 +264,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
       </div>
       <% } %>
       <div class="card-footer">
-        <button type="button" class="btn btn-secondary" onclick="addSpecific();">Add New</button>
+        <button type="button" class="btn btn-secondary pull-right" onclick="addSpecific();">Add New</button>
       </div>
     </div> <!-- panel -->
   </div> <!-- column -->
@@ -279,13 +279,13 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 			    <%if(currConfig.getIncludeUrls().size()>0){
 			        IncludeUrl[] urls = currConfig.getIncludeUrls().toArray(new IncludeUrl[0]);
 			    %>
-				    <table class="table table-bordered table-sm">
+				    <table class="table table-sm">
 				      <tr>
-					<th class="col-xs-4">URL</th>
-					<th class="col-xs-2">Timeout&nbsp;(milliseconds)</th>
-					<th class="col-xs-2">Retries</th> 
-					<th class="col-xs-2">Foreign&nbsp;Source</th>
-					<th class="col-xs-2">Location</th>
+					<th>URL</th>
+					<th>Timeout&nbsp;(milliseconds)</th>
+					<th>Retries</th> 
+					<th>Foreign&nbsp;Source</th>
+					<th>Location</th>
 					<th>Action</th>
 				      </tr>
 				      <%for(int i=0; i<urls.length; i++){%>
@@ -305,7 +305,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
       </div>
       <% } %>
       <div class="card-footer">
-        <button type="button" class="btn btn-secondary" onclick="addIncludeUrl();">Add New</button>
+        <button type="button" class="btn btn-secondary pull-right" onclick="addIncludeUrl();">Add New</button>
       </div>
     </div> <!-- panel -->
   </div> <!-- column -->
@@ -320,14 +320,14 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 				    <%if(currConfig.getIncludeRanges().size()>0){
 					    IncludeRange[] irange = currConfig.getIncludeRanges().toArray(new IncludeRange[0]);
 				    %>
-					    <table class="table table-bordered table-sm">
+					    <table class="table table-sm">
 					      <tr>
-						<th class="col-xs-2">Begin&nbsp;Address</th>
-						<th class="col-xs-2">End&nbsp;Address</th>
-						<th class="col-xs-2">Timeout&nbsp;(milliseconds)</th>
-						<th class="col-xs-2">Retries</th>
-						<th class="col-xs-2">Foreign&nbsp;Source</th>
-						<th class="col-xs-2">Location</th>
+						<th>Begin&nbsp;Address</th>
+						<th>End&nbsp;Address</th>
+						<th>Timeout&nbsp;(milliseconds)</th>
+						<th>Retries</th>
+						<th>Foreign&nbsp;Source</th>
+						<th>Location</th>
 						<th>Action</th>
 					      </tr>
 					      <%for(int i=0; i<irange.length; i++){
@@ -350,7 +350,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
       </div>
       <% } %>
       <div class="card-footer">
-        <button type="button" class="btn btn-secondary" onclick="addIncludeRange();">Add New</button>
+        <button type="button" class="btn btn-secondary pull-right" onclick="addIncludeRange();">Add New</button>
       </div>
     </div> <!-- panel -->
   </div> <!-- column -->
@@ -365,10 +365,10 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 			    <%if(currConfig.getExcludeRanges().size()>0){
 				    ExcludeRange[] irange = currConfig.getExcludeRanges().toArray(new ExcludeRange[0]);
 			    %>
-				    <table class="table table-bordered table-sm">
+				    <table class="table table-sm">
 				      <tr>
-					<th class="col-xs-6">Begin</th>
-					<th class="col-xs-6">End</th>
+					<th>Begin</th>
+					<th>End</th>
 					<th>Action</th>
 				      </tr>
 				      <%for(int i=0; i<irange.length; i++){
@@ -388,7 +388,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
       </div>
       <% } %>
       <div class="card-footer">
-        <button type="button" class="btn btn-secondary" onclick="addExcludeRange();">Add New</button>
+        <button type="button" class="btn btn-secondary pull-right" onclick="addExcludeRange();">Add New</button>
       </div>
     </div> <!-- panel -->
   </div> <!-- column -->

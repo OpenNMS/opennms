@@ -83,24 +83,24 @@
 	</div>
 
 	<table class="table table-sm severity">
-		<tr>
-			<th class="col-md-1">Name</th>
-			<td class="col-md-5"><c:out value="${role.name}" /></td>
-			<th class="col-md-1">Currently&nbsp;On&nbsp;Call</th>
-			<td class="col-md-5">
+		<tr class="d-flex">
+			<th class="col-md-2">Name</th>
+			<td class="col-md-4"><c:out value="${role.name}" /></td>
+			<th class="col-md-2">Currently&nbsp;On&nbsp;Call</th>
+			<td class="col-md-4">
 			<c:forEach var="scheduledUser" items="${role.currentUsers}">
 				<c:out value="${scheduledUser}" />
 			</c:forEach></td>
 		</tr>
-		<tr>
-			<th>Supervisor</th>
-			<td><c:out value="${role.defaultUser}" /></td>
-			<th>Membership&nbsp;Group</th>
-			<td><c:out value="${role.membershipGroup}" /></td>
+		<tr class="d-flex">
+			<th class="col-md-2">Supervisor</th>
+			<td class="col-md-4"><c:out value="${role.defaultUser}" /></td>
+			<th class="col-md-2">Membership&nbsp;Group</th>
+			<td class="col-md-4"><c:out value="${role.membershipGroup}" /></td>
 		</tr>
-		<tr>
-			<th>Description</th>
-			<td colspan="3"><c:out value="${role.description}" /></td>
+		<tr class="d-flex">
+			<th class="col-md-2">Description</th>
+			<td class="col-md-10" colspan="3"><c:out value="${role.description}" /></td>
 		</tr>
 	</table>
 </div>
