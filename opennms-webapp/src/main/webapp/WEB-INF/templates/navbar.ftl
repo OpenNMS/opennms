@@ -110,7 +110,7 @@
 
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="${baseHref}notification/browse?acktype=unack">
-                        <i class="fa fa-fw fa-users"></i>&nbsp; <span class="teamNotificationCount">0</span> of <span class="totalNotificationCount"></span> assigned to anyone but me
+                        <i class="fa fa-fw fa-users"></i>&nbsp; <span class="teamNotificationCount">0</span> of <span class="totalNotificationCount"></span> assigned to anyone but you
                     </a>
                     <a class="dropdown-item" href="${baseHref}roles">
                         <i class="fa fa-fw fa-calendar"></i>&nbsp; On-Call Schedule
