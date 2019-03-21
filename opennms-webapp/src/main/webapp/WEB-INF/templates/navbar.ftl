@@ -147,6 +147,7 @@
 </script>
 
 <#-- Notification gathering -->
+<#if request.remoteUser?has_content >
 <script type="text/javascript">
     var currentUser = "${request.remoteUser}";
     var baseHref = "${baseHref}";
@@ -254,3 +255,4 @@
     });
 
 </script>
+</#if>
