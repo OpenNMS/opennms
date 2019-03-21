@@ -141,6 +141,19 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
+[releasenotes-changelog-Meridian-2016.1.19]
+
+==== Release Meridian-2016.1.19
+
+Release 2016.1.19 is a small update to 2016.1.18 that fixes a performance issue in the measurements API.
+
+The codename for 2016.1.19 is _Mollweide_.
+
+===== Bug
+
+* Poor performance when using filters in the Measurements API (Issue http://issues.opennms.org/browse/NMS-10589[NMS-10589])
+* Update webapp copyright dates to 2019 (Issue http://issues.opennms.org/browse/NMS-10591[NMS-10591])
+
 [releasenotes-changelog-Meridian-2016.1.18]
 
 ==== Release Meridian-2016.1.18
