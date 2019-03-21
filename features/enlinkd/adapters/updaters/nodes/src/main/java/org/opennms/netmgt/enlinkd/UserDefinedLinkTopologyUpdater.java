@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -72,7 +72,7 @@ public class UserDefinedLinkTopologyUpdater extends TopologyUpdater {
         // Load all of the UDLs
         final List<UserDefinedLink> udls = udlTopologyService.findAllUserDefinedLinks();
 
-        // Determine the set of notes that are referenced by the UDLs
+        // Determine the set of nodes that are referenced by the UDLs
         final Set<Integer> referencedNodes = new HashSet<>();
         // Sources
         referencedNodes.addAll(udls.stream()
@@ -90,7 +90,7 @@ public class UserDefinedLinkTopologyUpdater extends TopologyUpdater {
         for (Integer nodeId: referencedNodes) {
             final OnmsTopologyVertex nodeVertex = create(nodeMap.get(nodeId), ipMap.get(nodeId));
             nodeVertexMap.put(nodeId, nodeVertex);
-            topology.addVertex(create(nodeMap.get(nodeId), ipMap.get(nodeId)));
+            topology.addVertex(nodeVertex);
         }
 
         // Now create the edges

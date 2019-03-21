@@ -39,6 +39,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.google.common.base.MoreObjects;
+
 @Entity
 @Table(name="user_defined_links")
 @XmlRootElement(name="user-defined-link")
@@ -139,15 +141,15 @@ public class UserDefinedLink {
 
     @Override
     public String toString() {
-        return "UserDefinedLink{" +
-                "nodeIdA=" + nodeIdA +
-                ", componentLabelA='" + componentLabelA + '\'' +
-                ", nodeIdZ=" + nodeIdZ +
-                ", componentLabelZ='" + componentLabelZ + '\'' +
-                ", linkId='" + linkId + '\'' +
-                ", linkLabel='" + linkLabel + '\'' +
-                ", owner='" + owner + '\'' +
-                ", dbId=" + dbId +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("nodeIdA", nodeIdA)
+                .add("nodeIdZ", nodeIdZ)
+                .add("componentLabelA", componentLabelA)
+                .add("componentLabelZ", componentLabelZ)
+                .add("linkId", linkId)
+                .add("linkLabel", linkLabel)
+                .add("owner", owner)
+                .add("dbId", dbId)
+                .toString();
     }
 }
