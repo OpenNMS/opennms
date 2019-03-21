@@ -68,6 +68,22 @@
               </#if>
           </#list>
             <li class="nav-item dropdown">
+                <a name="nav-help" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Help</a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" name="nav-admin-help" href="${baseHref}help/index.jsp">
+                        <i class="fa fa-fw fa-question-circle"></i>&nbsp; Help
+                    </a>
+                    <a class="dropdown-item" name="nav-admin-about" href="${baseHref}about/index.jsp">
+                        <i class="fa fa-fw fa-info-circle"></i>&nbsp; About
+                    </a>
+                    <#if isAdmin >
+                        <a class="dropdown-item" name="nav-admin-support" href="${baseHref}support/index.htm" title="Support">
+                            <i class="fa fa-fw fa-life-ring"></i>&nbsp; Support
+                        </a>
+                    </#if>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
                 <a name="nav-admin-top" href="${baseHref}account/selfService/index.jsp" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                     <span class="fa fa-user"></span>
                     ${request.remoteUser}
@@ -103,17 +119,6 @@
             </li>
             </ul>
             <ul class="navbar-nav mr-4">
-            <li class="nav-item">
-                <a class="nav-link" style="font-size: 1.25rem" name="nav-admin-help" href="${baseHref}help/index.jsp" title="Help"><i class="fa fa-question-circle"></i></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" style="font-size: 1.25rem" name="nav-admin-about" href="${baseHref}about/index.jsp" title="About"><i class="fa fa-info-circle"></i></a>
-            </li>
-            <#if isAdmin >
-            <li class="nav-item">
-                <a class="nav-link" style="font-size: 1.25rem" name="nav-admin-support" href="${baseHref}support/index.htm" title="Support"><i class="fa fa-life-ring"></i></a>
-            </li>
-            </#if>
             <#if isAdmin || isProvision >
                 <li class="nav-item">
                     <a class="nav-link" style="font-size: 1.25rem" name="nav-admin-quick-add" href="${baseHref}admin/ng-requisitions/quick-add-node.jsp#/" title="Quick-Add Node">
