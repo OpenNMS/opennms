@@ -39,6 +39,7 @@ import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
@@ -90,6 +91,7 @@ public class Manager implements ManagerMBean {
     private static final String LOG4J_CATEGORY = "manager";
     private static final String m_osName = System.getProperty("os.name") == null? "" : System.getProperty("os.name").toLowerCase();
     private static long startTime = System.currentTimeMillis();
+    private static AtomicBoolean stopInitiated = new AtomicBoolean(false);
 
 
     /**
@@ -102,7 +104,11 @@ public class Manager implements ManagerMBean {
      * <p>stop</p>
      */
     @Override
-    public void stop() {
+    public synchronized void stop() {
+        if (stopInitiated.get()) {
+            return;
+        }
+        stopInitiated.set(true);
         setLogPrefix();
 
         for (MBeanServer server : getMBeanServers()) {
