@@ -1,0 +1,334 @@
+version: 2.1
+
+executors:
+  build-executor:
+    docker:
+      - image: opennms/build-env:1.0-b6
+  docker-executor:
+    docker:
+      - image: docker:18
+  integration-test-executor:
+    machine: true
+  smoke-test-executor:
+    machine: true
+
+commands:
+  cached-checkout:
+      description: "Checkout with caching"
+      steps:
+        - restore_cache:
+            keys:
+              - source-v1-{{ .Branch }}-{{ .Revision }}
+              - source-v1-{{ .Branch }}-
+              - source-v1-
+        - checkout
+        - save_cache:
+            key: source-v1-{{ .Branch }}-{{ .Revision }}
+            paths:
+              - ".git"
+
+  restore-maven-cache:
+      description: "Maven: Calculate cache key and restore cache"
+      steps:
+        - run: 
+            name: Calculate cache key from pom files
+            command: |
+              find . -type f -name "pom.xml" -exec sha256sum "{}" \; | sort -nr >> maven-dependency-cache.key
+        - restore_cache:
+            keys:
+              - maven-dependencies-v2-{{ checksum "maven-dependency-cache.key" }}
+              - maven-dependencies-v2-
+        - run:
+            name: Remove OpenNMS artifacts from cache
+            command: |
+              rm -rf ~/.m2/repository/org/opennms
+
+  save-maven-cache:
+    description: "Maven: Save cache"
+    steps:
+      - save_cache:
+          key: maven-dependencies-v2-{{ checksum "maven-dependency-cache.key" }}
+          paths:
+            - ~/.m2
+
+  restore-nodejs-cache:
+      description: "NodeJS: Calculate cache key and restore cache"
+      steps:
+        - run:
+            name: Calculate cache key
+            command: |
+              sha256sum core/web-assets/package.json > nodejs-dependency-cache.key
+              sha256sum core/web-assets/yarn.lock >> nodejs-dependency-cache.key
+        - restore_cache:
+            keys:
+              - nodejs-dependencies-v1-{{ checksum "nodejs-dependency-cache.key" }}
+              - nodejs-dependencies-v1-
+
+  save-nodejs-cache:
+    description: "NodeJS: Save cache"
+    steps:
+      - save_cache:
+          key: nodejs-dependencies-v1-{{ checksum "nodejs-dependency-cache.key" }}
+          paths:
+            - core/web-assets/node_modules
+
+  dockerhub-login:
+    description: "Connect to DockerHub"
+    steps:
+      - run:
+          name: Login to DockerHub
+          command: |
+            docker login -u ${DOCKERHUB_LOGIN} -p ${DOCKERHUB_PASS}
+
+  bash-alpine:
+    description: "Add bash support in Alpine based images"
+    steps:
+      - run:
+          name: Add bash support
+          command: |
+            apk add --no-cache bash
+
+workflows:
+  build-deploy:
+    jobs:
+      - build
+      - package:
+          requires:
+            - build
+      - build-horizon-oci:
+          requires:
+            - package
+      - build-minion-oci:
+          requires:
+            - package
+      - build-sentinel-oci:
+          requires:
+            - package
+      - integration-test:
+          requires:
+            - build
+      - smoke-test:
+          requires:
+            - build-horizon-oci
+            - build-minion-oci
+            - build-sentinel-oci
+           #- publish-horizon-oci:
+           #    requires:
+           #      - build-horizon-oci
+           #- publish-minion-oci:
+           #    requires:
+           #      - build-minion-oci
+           #- publish-sentinel-oci:
+           #    requires:
+           #      - build-sentinel-oci
+
+jobs:
+  build:
+    executor: build-executor
+    # Building currently requires the xlarge containers in order for the webpack compilation
+    # in the core/web-assets module to complete reliably
+    resource_class: xlarge
+    steps:
+      - cached-checkout
+      - restore-maven-cache
+      - restore-nodejs-cache
+      - run:
+          name: Compile
+          command: |
+            mvn clean -DskipTests=true
+            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=true
+      - save-maven-cache
+      - save-nodejs-cache
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project
+            - .m2
+  package:
+    executor: build-executor
+    resource_class: large
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install OpenJDK 11
+          command: |
+            yum install -y java-11-openjdk java-11-openjdk-devel
+      - run:
+          name: Build RPMs
+          command: |
+            ./makerpm.sh -a -d
+      - store_artifacts:
+          path: ~/project/target/rpm/RPMS/noarch
+          destination: rpms
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/target/rpm/RPMS/noarch
+
+  build-horizon-oci:
+    executor: docker-executor
+    steps:
+      - attach_workspace:
+          at: ~/
+      - setup_remote_docker
+      - bash-alpine
+      - run:
+          name: Fetch RPM artifacts and build Horizon container image
+          command: |
+            cd opennms-container/horizon
+            ./fetch-rpms.sh
+            ./build_container_image.sh
+      - store_artifacts:
+          path: ~/project/opennms-container/horizon/images/container.oci
+          destination: horizon.oci
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/opennms-container/horizon/images/
+
+  build-minion-oci:
+    executor: docker-executor
+    steps:
+      - attach_workspace:
+          at: ~/
+      - setup_remote_docker
+      - bash-alpine
+      - run:
+          name: Fetch RPM artifacts and build Minion container image
+          command: |
+            cd opennms-container/minion
+            ./fetch-rpms.sh
+            ./build_container_image.sh
+      - store_artifacts:
+          path: ~/project/opennms-container/minion/images/container.oci
+          destination: minion.oci
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/opennms-container/minion/images/
+
+  build-sentinel-oci:
+    executor: docker-executor
+    steps:
+      - attach_workspace:
+          at: ~/
+      - setup_remote_docker
+      - bash-alpine
+      - run:
+          name: Fetch RPM artifacts and build Sentinel container image
+          command: |
+            cd opennms-container/sentinel
+            ./fetch-rpms.sh
+            ./build_container_image.sh
+      - store_artifacts:
+          path: ~/project/opennms-container/sentinel/images/container.oci
+          destination: sentinel.oci
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/opennms-container/sentinel/images/
+
+  integration-test:
+    executor: integration-test-executor
+    parallelism: 6
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Integration Tests
+          no_output_timeout: 1.0h
+          command: |
+            .circleci/scripts/itest.sh
+      - run:
+          name: Gather test results
+          when: always
+          command: |
+            mkdir -p ~/test-results
+            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/ \;
+            find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} ~/test-results/ \;
+      - store_test_results:
+          path: ~/test-results
+
+  smoke-test:
+    executor: smoke-test-executor
+    parallelism: 2
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Load Horizon OCI image
+          command: |
+            cd opennms-container/horizon
+            docker image load -i images/container.oci
+      - run:
+          name: Load Minion OCI image
+          command: |
+            cd opennms-container/minion
+            docker image load -i images/container.oci
+      - run:
+          name: Load Sentinel OCI image
+          command: |
+            cd opennms-container/sentinel
+            docker image load -i images/container.oci
+      - run:
+          name: Smoke Tests
+          command: |
+            .circleci/scripts/smoke.sh
+      - run:
+          name: Gather test results
+          when: always
+          command: |
+            mkdir -p ~/test-results
+            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/ \;
+            find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} ~/test-results/ \;
+      - store_test_results:
+          path: ~/test-results
+
+  publish-horizon-oci:
+    executor: docker-executor
+    steps:
+      - attach_workspace:
+          at: ~/
+      - setup_remote_docker
+      - bash-alpine
+      - dockerhub-login
+      - run:
+          name: Load Horizon OCI image, tag it and publish to registry
+          command: |
+            cd opennms-container/horizon
+            docker image load -i images/container.oci
+            ./tag.sh
+            ./publish.sh
+
+  publish-minion-oci:
+    executor: docker-executor
+    steps:
+      - attach_workspace:
+          at: ~/
+      - setup_remote_docker
+      - bash-alpine
+      - dockerhub-login
+      - run:
+          name: Load Minion OCI image, tag it and publish to registry
+          command: |
+            cd opennms-container/minion
+            docker image load -i images/container.oci
+            ./tag.sh
+            ./publish.sh
+
+  publish-sentinel-oci:
+    executor: docker-executor
+    steps:
+      - attach_workspace:
+          at: ~/
+      - setup_remote_docker
+      - bash-alpine
+      - dockerhub-login
+      - run:
+          name: Load Sentinel OCI image, tag it and publish to registry
+          command: |
+            cd opennms-container/sentinel
+            docker image load -i images/container.oci
+            ./tag.sh
+            ./publish.sh
