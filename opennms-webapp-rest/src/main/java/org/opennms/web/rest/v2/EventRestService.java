@@ -37,10 +37,8 @@ import java.util.Set;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.ext.search.SearchBean;
@@ -52,8 +50,8 @@ import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.rest.mapper.v2.EventMapper;
-import org.opennms.web.rest.model.v2.EventDTO;
 import org.opennms.web.rest.model.v2.EventCollectionDTO;
+import org.opennms.web.rest.model.v2.EventDTO;
 import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
@@ -171,16 +169,28 @@ public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,Ev
         return getDao().get(id);
     }
 
+    /**
+     * NOTE: This method defines an unused parameter of 0 length in the @Path annotation
+     * in order to get CXF to prioritize this method definition instead of the create method
+     * defined in the parent class.
+     *
+     * We cannot simply override the parent method, since the class types are different:
+     * we want to receive a {@link org.opennms.netmgt.xml.event.Event} whereas the parent class
+     * receives a {@link  org.opennms.netmgt.model.OnmsEvent}.
+     *
+     * @param event the event to forward
+     * @return a response containing "no content" (204) when the event was succesfully forwarded
+     */
     @POST
+    @Path("{tiebreaker: $}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response create(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, Event event) {
+    public Response create(Event event) {
         if (event.getTime() == null) event.setTime(new Date());
         if (event.getSource() == null) event.setSource("ReST");
 
         sendEvent(event);
         return Response.noContent().build();
     }
-
 
     @Override
     public EventDTO mapEntityToDTO(OnmsEvent entity) {
