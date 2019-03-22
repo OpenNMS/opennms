@@ -1311,8 +1311,8 @@
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
     <karafVersion>4.2.3</karafVersion>
-    <kafkaStreamsVersion>1.0.1</kafkaStreamsVersion>
-    <kafkaStreamsBundleVersion>1.0.1_1</kafkaStreamsBundleVersion>
+    <kafkaStreamsVersion>2.1.1</kafkaStreamsVersion>
+    <kafkaStreamsBundleVersion>2.1.1_1</kafkaStreamsBundleVersion>
     <felixBridgeVersion>4.0.4</felixBridgeVersion>
     <felixProxyVersion>3.0.4</felixProxyVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>

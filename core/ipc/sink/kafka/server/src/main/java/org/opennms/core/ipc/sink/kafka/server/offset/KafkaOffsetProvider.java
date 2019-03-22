@@ -52,12 +52,12 @@ package org.opennms.core.ipc.sink.kafka.server.offset;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -68,6 +68,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.protocol.types.Field;
 import org.apache.kafka.common.protocol.types.Schema;
 import org.apache.kafka.common.protocol.types.Struct;
@@ -87,14 +88,6 @@ import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-import kafka.api.PartitionOffsetRequestInfo;
-import kafka.common.TopicAndPartition;
-import kafka.javaapi.OffsetResponse;
-import kafka.javaapi.PartitionMetadata;
-import kafka.javaapi.TopicMetadata;
-import kafka.javaapi.TopicMetadataRequest;
-import kafka.javaapi.consumer.SimpleConsumer;
-
 public class KafkaOffsetProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaOffsetProvider.class);
@@ -113,7 +106,7 @@ public class KafkaOffsetProvider {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor(threadFactory);
 
-    private static final Map<String, SimpleConsumer> consumerMap = new HashMap<String, SimpleConsumer>();
+    private static final Map<String, KafkaConsumer> consumerMap = new HashMap<String, KafkaConsumer>();
 
     private Map<String, Map<Integer, KafkaOffset>> consumerOffsetMap = new ConcurrentHashMap<>();
 
@@ -163,7 +156,7 @@ public class KafkaOffsetProvider {
                                     }
                                     String topic = struct.getString(KafkaOffsetConstants.TOPIC);
                                     int partition = struct.getInt(KafkaOffsetConstants.PARTITION);
-                                    SimpleConsumer con = getConsumer();
+                                    KafkaConsumer con = getConsumer();
                                     long realOffset = getLastOffset(con, struct.getString(KafkaOffsetConstants.TOPIC),
                                             partition, -1);
                                     long consumerOffset = readOffsetMessageValue(
@@ -237,7 +230,7 @@ public class KafkaOffsetProvider {
         return offset;
     }
 
-    public SimpleConsumer getConsumer() {
+    public KafkaConsumer getConsumer() {
         Object kafkaServer = null;
         if (kafkaHost == null) {
             kafkaServer = kafkaConfig.get("bootstrap.servers");
@@ -264,12 +257,15 @@ public class KafkaOffsetProvider {
         return getConsumer(kafkaHost.getHost(), kafkaHost.getPort());
     }
 
-    public SimpleConsumer getConsumer(String host, int port) {
+    public KafkaConsumer getConsumer(String host, int port) {
 
-        SimpleConsumer consumer = consumerMap.get(host + ":" + port);
+        KafkaConsumer consumer = consumerMap.get(host + ":" + port);
         if (consumer == null) {
-            consumer = new SimpleConsumer(host, port, KafkaOffsetConstants.TIMEOUT, KafkaOffsetConstants.BUFFERSIZE,
-                    KafkaOffsetConstants.CLIENT_NAME);
+            Properties localKafkaConfig = kafkaConfig;
+            localKafkaConfig.put("bootstrap.servers", host + ":" + port);
+            localKafkaConfig.put("session.timeout.ms", KafkaOffsetConstants.TIMEOUT);
+            localKafkaConfig.putAll(configProvider.getProperties());
+            consumer = new KafkaConsumer(localKafkaConfig);
             LOGGER.info("Created a new Kafka Consumer with host  {}:{} ", host, port);
             consumerMap.put(host + ":" + port, consumer);
         }
@@ -280,34 +276,13 @@ public class KafkaOffsetProvider {
         return consumerOffsetMap;
     }
 
-    public long getLastOffset(SimpleConsumer consumer, String topic, int partition, long whichTime) {
+    public long getLastOffset(KafkaConsumer consumer, String topic, int partition, long whichTime) {
         long lastOffset = 0;
         try {
-            List<String> topics = Collections.singletonList(topic);
-            TopicMetadataRequest req = new TopicMetadataRequest(topics);
-            kafka.javaapi.TopicMetadataResponse topicMetadataResponse = consumer.send(req);
-            TopicAndPartition topicAndPartition = new TopicAndPartition(topic, partition);
-            for (TopicMetadata topicMetadata : topicMetadataResponse.topicsMetadata()) {
-                for (PartitionMetadata partitionMetadata : topicMetadata.partitionsMetadata()) {
-                    if (partitionMetadata.partitionId() == partition) {
-                        String partitionHost = partitionMetadata.leader().host();
-                        consumer = getConsumer(partitionHost, partitionMetadata.leader().port());
-                        break;
-                    }
-                }
-            }
-            Map<TopicAndPartition, PartitionOffsetRequestInfo> requestInfo = new HashMap<TopicAndPartition, PartitionOffsetRequestInfo>();
-            requestInfo.put(topicAndPartition, new PartitionOffsetRequestInfo(whichTime, 1));
-            kafka.javaapi.OffsetRequest request = new kafka.javaapi.OffsetRequest(requestInfo,
-                    kafka.api.OffsetRequest.CurrentVersion(), KafkaOffsetConstants.CLIENT_NAME);
-            OffsetResponse response = consumer.getOffsetsBefore(request);
-            if (response.hasError()) {
-                LOGGER.trace("Error fetching Offset Data from the Broker. Reason: {}",
-                        response.errorCode(topic, partition));
-                lastOffset = 0;
-            }
-            long[] offsets = response.offsets(topic, partition);
-            lastOffset = offsets[0];
+            Set<TopicPartition> partitions = new HashSet<TopicPartition>();
+            TopicPartition actualTopicPartition = new TopicPartition(topic, partition);
+            partitions.add(actualTopicPartition);
+            lastOffset = (long)consumer.endOffsets(partitions).get(actualTopicPartition);
         } catch (Exception e) {
             LOGGER.trace("Error while collecting the log Size for topic: {}:{} ", topic, partition, e);
             // Store first partitionNumber and track errors with that partition
@@ -322,8 +297,9 @@ public class KafkaOffsetProvider {
     }
 
     public void closeConnection() throws InterruptedException {
-        for (SimpleConsumer consumer : consumerMap.values()) {
-            LOGGER.info("Closing connection for: " + consumer.host());
+        for (KafkaConsumer consumer : consumerMap.values()) {
+            //TODO Find a replacement for SimpleConsumer.host() for logging
+            LOGGER.info("Closing connection for: <Unknown Consumer Host>");
             consumer.close();
         }
     }
