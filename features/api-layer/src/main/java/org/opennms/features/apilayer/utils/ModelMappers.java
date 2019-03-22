@@ -28,8 +28,8 @@
 
 package org.opennms.features.apilayer.utils;
 
-import org.opennms.features.apilayer.model.AlarmFeedbackBean;
 import org.opennms.features.apilayer.model.AlarmBean;
+import org.opennms.features.apilayer.model.AlarmFeedbackBean;
 import org.opennms.features.apilayer.model.DatabaseEventBean;
 import org.opennms.features.apilayer.model.InMemoryEventBean;
 import org.opennms.features.apilayer.model.NodeBean;
@@ -42,12 +42,18 @@ import org.opennms.integration.api.v1.model.InMemoryEvent;
 import org.opennms.integration.api.v1.model.Node;
 import org.opennms.integration.api.v1.model.Severity;
 import org.opennms.integration.api.v1.model.SnmpInterface;
+import org.opennms.integration.api.v1.model.TopologyEdge;
+import org.opennms.integration.api.v1.model.immutables.ImmutableNodeCriteria;
+import org.opennms.integration.api.v1.model.immutables.ImmutableTopologyEdge;
+import org.opennms.integration.api.v1.model.immutables.ImmutableTopologyPort;
+import org.opennms.integration.api.v1.model.immutables.ImmutableTopologySegment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -118,7 +124,7 @@ public class ModelMappers {
         }
         return Severity.INDETERMINATE;
     }
-    
+
     public static AlarmFeedback toFeedback(org.opennms.features.situationfeedback.api.AlarmFeedback feedback) {
         return feedback == null ? null : new AlarmFeedbackBean(feedback);
     }
@@ -134,5 +140,46 @@ public class ModelMappers {
                 .withSituationKey(feedback.getSituationKey())
                 .withUser(feedback.getUser())
                 .build();
+    }
+
+    public static TopologyEdge toEdge(String protocol, OnmsTopologyEdge edge) {
+        ImmutableTopologyEdge.Builder topologyEdge = ImmutableTopologyEdge.newBuilder()
+                .setId(edge.getId())
+                .setProtocol(protocol)
+                .setTooltipText(edge.getToolTipText())
+                .setSource(ImmutableTopologyPort.newBuilder()
+                        .setId(edge.getSource().getId())
+                        .setTooltipText(edge.getSource().getToolTipText())
+                        .setIfIndex(edge.getSource().getIfindex())
+                        .setIfAddress(edge.getSource().getAddr())
+                        .setIfName(edge.getSource().getIfname())
+                        .setNodeCriteria(ImmutableNodeCriteria.newBuilder()
+                                .setId(edge.getSource().getVertex().getNodeid())
+                                .build())
+                        .build());
+
+        // If the node Id is null the target is a segment...
+        if (edge.getTarget().getVertex().getNodeid() == null) {
+            topologyEdge.setTargetSegment(ImmutableTopologySegment.newBuilder()
+                    .setId(edge.getTarget().getVertex().getId())
+                    .setTooltipText(edge.getTarget().getToolTipText())
+                    .setProtocol(protocol)
+                    .build());
+        }
+        // Otherwise the target is a port
+        else {
+            topologyEdge.setTargetPort(ImmutableTopologyPort.newBuilder()
+                    .setId(edge.getTarget().getId())
+                    .setTooltipText(edge.getTarget().getToolTipText())
+                    .setIfIndex(edge.getTarget().getIfindex())
+                    .setIfName(edge.getTarget().getIfname())
+                    .setIfAddress(edge.getTarget().getAddr())
+                    .setNodeCriteria(ImmutableNodeCriteria.newBuilder()
+                            .setId(edge.getTarget().getVertex().getNodeid())
+                            .build())
+                    .build());
+        }
+
+        return topologyEdge.build();
     }
 }

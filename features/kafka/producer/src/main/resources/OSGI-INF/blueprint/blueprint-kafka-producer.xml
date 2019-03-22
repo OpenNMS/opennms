@@ -17,7 +17,7 @@
       <cm:property name="eventTopic" value="events"/>
       <cm:property name="alarmTopic" value="alarms"/>
       <cm:property name="nodeTopic" value="nodes"/>
-      <cm:property name="topologyProtocols" value="bridge,cdp,isis,lldp,ospf"/>
+      <cm:property name="topologyProtocols" value="bridge,cdp,isis,lldp,ospf,userdefined"/>
       <cm:property name="topologyVertexTopic" value="vertices"/>
       <cm:property name="topologyEdgeTopic" value="edges"/>
       <cm:property name="alarmFeedbackTopic" value="alarmFeedback"/>

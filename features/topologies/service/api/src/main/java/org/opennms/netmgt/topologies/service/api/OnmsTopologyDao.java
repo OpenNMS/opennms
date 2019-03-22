@@ -28,11 +28,14 @@
 
 package org.opennms.netmgt.topologies.service.api;
 
+import java.util.Map;
 import java.util.Set;
 
 public interface OnmsTopologyDao {
 
     OnmsTopology getTopology(String protocol);
+
+    Map<OnmsTopologyProtocol, OnmsTopology> getTopologies();
 
     Set<String> getSupportedProtocols();
 

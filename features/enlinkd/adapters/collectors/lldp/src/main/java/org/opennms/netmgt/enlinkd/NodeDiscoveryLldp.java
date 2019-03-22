@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
+import org.opennms.netmgt.enlinkd.common.NodeCollector;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
@@ -79,7 +80,7 @@ public final class NodeDiscoveryLldp extends NodeCollector {
     	m_lldpTopologyService = lldpTopologyService;
     }
 
-    protected void collect() {
+    public void collect() {
 
     	final Date now = new Date(); 
 

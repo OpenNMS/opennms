@@ -30,6 +30,8 @@
   <reference id="userDefinedLinkTopologyService" interface="org.opennms.netmgt.enlinkd.service.api.UserDefinedLinkTopologyService" availability="optional"/>
   <reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" />
   <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
+  <!-- TODO: Check if available when enlinkd is not -->
+  <reference id="onmsTopologyDao" interface="org.opennms.netmgt.topologies.service.api.OnmsTopologyDao" availability="mandatory"/>
 
   <bean id="nodeDaoImpl" class="org.opennms.features.apilayer.dao.NodeDaoImpl">
     <argument ref="nodeDao"/>
@@ -278,5 +280,19 @@
       <argument ref="sessionUtils"/>
     </bean>
   </service>
+
+  <!-- Topology Edge Consumers -->
+  <bean id="topologyEdgeConsumerManager" class="org.opennms.features.apilayer.topology.TopologyEdgeConsumerManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.topology.TopologyEdgeConsumer" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="topologyEdgeConsumerManager" />
+  </reference-list>
+
+  <!-- Edge DAO -->
+  <bean id="edgeDaoImpl" class="org.opennms.features.apilayer.topology.EdgeDaoImpl">
+    <argument ref="onmsTopologyDao"/>
+  </bean>
+  <service ref="edgeDaoImpl" interface="org.opennms.integration.api.v1.dao.EdgeDao"/>
 
 </blueprint>
