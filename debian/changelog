@@ -1,9 +1,19 @@
-opennms (23.0.3-1) stable; urgency=low
+opennms (23.0.4-1) stable; urgency=medium
+
+  * New stable release.  It contains a number of bug fixes including fixes for
+    number handling in ReST interfaces, a possible deadlock in Alarmd, a
+    workaround for looping SNMP agents, and more.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/23.0.4/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 21 Mar 2019 13:19:17 -0400
+
+opennms (23.0.3-1) stable; urgency=medium
 
   * New stable release.  It contains a number of bug fixes including fixes for
     sending notifications for events without associated nodes, XSS issues, and
-    more.  It also includes a number of performance improvements and and update
-    to the latest Jetty web server framework.
+    more.  It also includes a number of performance improvements.
     
     For details on what has changed, see:
     http://docs.opennms.org/opennms/releases/23.0.3/releasenotes/releasenotes.html
