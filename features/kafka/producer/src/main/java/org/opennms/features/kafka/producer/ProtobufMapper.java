@@ -479,18 +479,23 @@ public class ProtobufMapper {
 
     private OpennmsModelProtos.TopologyPort getPort(org.opennms.netmgt.topologies.service.api.OnmsTopologyPort port) {
         final OpennmsModelProtos.TopologyPort.Builder builder = OpennmsModelProtos.TopologyPort.newBuilder()
-                .setVertexId(port.getVertex().getId())
-                .setIfIndex(port.getIfindex());
+                .setVertexId(port.getVertex().getId());
 
-        try {
-            builder.setNodeCriteria(nodeIdToCriteriaCache.get(Integer.toUnsignedLong(port.getVertex().getNodeid())));
-        } catch (ExecutionException e) {
-            LOG.warn("An error occurred when building node criteria for node with id: {}." +
-                            " The node foreign source and foreign id (if set) will be missing from the vertex with " +
-                            "id: {}.",
-                    port.getVertex().getNodeid(), port.getVertex().getId(), e);
-            builder.setNodeCriteria(OpennmsModelProtos.NodeCriteria.newBuilder()
-                    .setId(port.getVertex().getNodeid()));
+        if (port.getIfindex() != null) {
+            builder.setIfIndex(port.getIfindex());
+        }
+
+        if (port.getVertex().getNodeid() != null) {
+            try {
+                builder.setNodeCriteria(nodeIdToCriteriaCache.get(Integer.toUnsignedLong(port.getVertex().getNodeid())));
+            } catch (ExecutionException e) {
+                LOG.warn("An error occurred when building node criteria for node with id: {}." +
+                                " The node foreign source and foreign id (if set) will be missing from the vertex with " +
+                                "id: {}.",
+                        port.getVertex().getNodeid(), port.getVertex().getId(), e);
+                builder.setNodeCriteria(OpennmsModelProtos.NodeCriteria.newBuilder()
+                        .setId(port.getVertex().getNodeid()));
+            }
         }
 
         // The ifName and address might not be set so don't set nulls on the builder since protobuf does not allow null

@@ -119,6 +119,8 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     private OspfOnmsTopologyUpdater m_ospfTopologyUpdater;
     @Autowired    
     private DiscoveryBridgeDomains m_discoveryBridgeDomains;
+    @Autowired
+    private UserDefinedLinkTopologyUpdater m_userDefinedLinkTopologyUpdater;
 
     /**
      * <p>
@@ -157,6 +159,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         LOG.debug("init: Bridge Topology loaded.");
 
         scheduleAndRegisterOnmsTopologyUpdater(m_nodesTopologyUpdater);
+        scheduleAndRegisterOnmsTopologyUpdater(m_userDefinedLinkTopologyUpdater);
 
         if (m_linkdConfig.useBridgeDiscovery()) {
             scheduleDiscoveryBridgeDomain();
@@ -416,6 +419,10 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             m_nodesTopologyUpdater.forceRun();
             break;
 
+        case USERDEFINED:
+            m_userDefinedLinkTopologyUpdater.forceRun();
+            break;
+
         default:
             break;
         
@@ -457,6 +464,10 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
 
             case NODES:
                 m_nodesTopologyUpdater.runDiscovery();
+                break;
+
+            case USERDEFINED:
+                m_userDefinedLinkTopologyUpdater.runDiscovery();
                 break;
 
             default:

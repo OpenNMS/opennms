@@ -3,6 +3,8 @@
 
 * Added support for browser notifications to notifd.
   The browser notification can be added to a notification path and desktop notifications will pop-up for currently logged in users if a notice is delivered.
+* Added support for user defined links (UDLs) in the Enhanced Linkd topology.
+  Users may now programitically (using the REST API) create "manual" links between node and have them appear in the topology UI.
 
 === System Requirements
 

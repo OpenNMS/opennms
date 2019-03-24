@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,14 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd.service.api;
+package org.opennms.netmgt.enlinkd.persistence.api;
 
-public enum ProtocolSupported {
-    LLDP,
-    OSPF,
-    ISIS,
-    BRIDGE,
-    CDP,
-    NODES,
-    USERDEFINED
+import java.util.List;
+
+import org.opennms.netmgt.dao.api.OnmsDao;
+import org.opennms.netmgt.enlinkd.model.UserDefinedLink;
+
+public interface UserDefinedLinkDao extends OnmsDao<UserDefinedLink, Integer> {
+
+    List<UserDefinedLink> getOutLinks(int nodeIdA);
+
+    List<UserDefinedLink> getInLinks(int nodeIdZ);
+
+    List<UserDefinedLink> getLinksWithLabel(String label);
 }

@@ -31,6 +31,7 @@ package org.opennms.enlinkd.generator;
 import java.util.Arrays;
 import java.util.List;
 
+import org.opennms.enlinkd.generator.protocol.UserDefinedProtocol;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
@@ -106,6 +107,7 @@ public class TopologyPersister {
         for (Class<?> clazz : deleteOperations) {
             deleteEntities(clazz);
         }
+        deleteUserDefinedLinks();
         deleteNodes();
         deleteCategory();
     }
@@ -114,6 +116,12 @@ public class TopologyPersister {
         deleteEntities(
                 clazz,
                 String.format("SELECT e FROM %s e JOIN e.node n JOIN n.categories c WHERE c.name = '%s'", clazz.getSimpleName(), TopologyGenerator.CATEGORY_NAME));
+    }
+
+    private void deleteUserDefinedLinks() {
+        deleteEntities(
+                OnmsNode.class,
+                String.format("SELECT l FROM UserDefinedLink l WHERE l.owner = '%s'", UserDefinedProtocol.OWNER));
     }
 
     private void deleteNodes() {

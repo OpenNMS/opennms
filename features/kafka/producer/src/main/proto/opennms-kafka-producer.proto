@@ -156,6 +156,7 @@ message TopologyRef {
     ISIS = 2;
     BRIDGE = 3;
     CDP = 4;
+    USERDEFINED = 5;
   }
   Protocol protocol = 2;
 }
