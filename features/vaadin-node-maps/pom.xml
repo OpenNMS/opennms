@@ -153,6 +153,11 @@
 			<artifactId>core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.opennms.features.vaadin-components</groupId>
+			<artifactId>header</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<!-- Node Maps Dependencies -->
 
 		<dependency>
