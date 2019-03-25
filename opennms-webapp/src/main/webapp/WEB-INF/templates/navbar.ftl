@@ -68,7 +68,7 @@
               </#if>
           </#list>
             <li class="nav-item dropdown">
-                <a name="nav-help" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Help</a>
+                <a name="nav-help-top" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Help</a>
                 <div class="dropdown-menu dropdown-menu-right">
                     <a class="dropdown-item" name="nav-admin-help" href="${baseHref}help/index.jsp">
                         <i class="fa fa-fw fa-question-circle"></i>&nbsp; Help
@@ -84,7 +84,7 @@
                 </div>
             </li>
             <li class="nav-item dropdown">
-                <a name="nav-admin-top" href="${baseHref}account/selfService/index.jsp" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                <a name="nav-user-top" href="${baseHref}account/selfService/index.jsp" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                     <span class="fa fa-user"></span>
                     ${request.remoteUser}
                 </a>
