@@ -28,13 +28,8 @@
 
 package org.opennms.features.vaadin.nodemaps.internal;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.features.topology.api.HasExtraComponents;
@@ -44,9 +39,9 @@ import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.browsers.AlarmTable;
 import org.opennms.features.topology.plugins.browsers.NodeTable;
+import org.opennms.features.vaadin.components.header.HeaderComponent;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.VaadinApplicationContextImpl;
-import org.opennms.web.api.OnmsHeaderProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -57,18 +52,16 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.event.UIEvents;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomLayout;
-import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.UI;
-import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * The Class Node Maps Application.
@@ -123,16 +116,11 @@ public class NodeMapsApplication extends UI {
     private VerticalLayout m_layout;
 
     private NodeMapComponent m_nodeMapComponent;
-    private OnmsHeaderProvider m_headerProvider;
     private String m_headerHtml;
     private VaadinRequest m_request;
     private AlarmTable m_alarmTable;
     private NodeTable m_nodeTable;
     private NodeMapConfiguration configuration;
-
-    public void setHeaderProvider(final OnmsHeaderProvider headerProvider) {
-        m_headerProvider = headerProvider;
-    }
 
     public void setNodeMapComponent(final NodeMapComponent nodeMapComponent) {
         m_nodeMapComponent = nodeMapComponent;
@@ -312,44 +300,7 @@ public class NodeMapsApplication extends UI {
     }
 
     private void addHeader() {
-        if (m_headerProvider != null) {
-            try {
-                setHeaderHtml(getHeader(((VaadinServletRequest) m_request).getHttpServletRequest()));
-            } catch (final Exception e) {
-                LOG.error("failed to get header HTML for request " + m_request.getPathInfo(), e);
-            }
-        }
-        if (m_headerHtml != null) {
-            InputStream is = null;
-            try {
-                is = new ByteArrayInputStream(m_headerHtml.getBytes());
-                final CustomLayout headerLayout = new CustomLayout(is);
-                headerLayout.setWidth("100%");
-                headerLayout.addStyleName("onmsheader");
-                m_rootLayout.addComponent(headerLayout);
-            } catch (final IOException e) {
-                closeQuietly(is);
-                LOG.debug("failed to get header layout data", e);
-            }
-        }
-    }
-
-    private String getHeader(final HttpServletRequest request) throws Exception {
-        if(m_headerProvider == null) {
-            return "";
-        } else {
-            return m_headerProvider.getHeaderHtml(request);
-        }
-    }
-
-    private void closeQuietly(InputStream is) {
-        if (is != null) {
-            try {
-                is.close();
-            } catch (final IOException closeE) {
-                LOG.debug("failed to close HTML input stream", closeE);
-            }
-        }
+        m_rootLayout.addComponent(new HeaderComponent());
     }
 
     public void setupAutoRefresher(){

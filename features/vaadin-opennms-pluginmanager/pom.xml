@@ -105,6 +105,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.vaadin-components</groupId>
+      <artifactId>header</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.vaadin-components</groupId>
       <artifactId>widgetset</artifactId>
       <version>${project.version}</version>
     </dependency>

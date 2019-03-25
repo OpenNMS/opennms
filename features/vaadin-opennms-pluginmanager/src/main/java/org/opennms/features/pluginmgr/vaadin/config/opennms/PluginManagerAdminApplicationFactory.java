@@ -34,7 +34,6 @@ import java.util.Map;
 import org.opennms.features.pluginmgr.PluginManager;
 import org.opennms.features.pluginmgr.SessionPluginManager;
 import org.opennms.vaadin.extender.AbstractApplicationFactory;
-import org.opennms.web.api.OnmsHeaderProvider;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
 import com.vaadin.ui.UI;
@@ -45,23 +44,12 @@ import com.vaadin.ui.UI;
 public class PluginManagerAdminApplicationFactory extends AbstractApplicationFactory {
 	
 
-	private OnmsHeaderProvider m_headerProvider;
-    
     private PluginManager pluginManager;
     
     private BlueprintContainer blueprintContainer;
     
     // headerLinks map of key= name and value=url for links to be placed in header of page
     private Map<String, String> headerLinks;
-
-	
-	public OnmsHeaderProvider getHeaderProvider() {
-		return m_headerProvider;
-	}
-
-	public void setHeaderProvider(OnmsHeaderProvider headerProvider) {
-		this.m_headerProvider = headerProvider;
-	}
 
 	public PluginManager getPluginManager() {
 		return pluginManager;
@@ -108,7 +96,6 @@ public class PluginManagerAdminApplicationFactory extends AbstractApplicationFac
     @Override
     public UI createUI() {
         PluginManagerAdminApplication pluginManagerAdminApplication = new PluginManagerAdminApplication();
-        pluginManagerAdminApplication.setHeaderProvider(m_headerProvider);
         pluginManagerAdminApplication.setHeaderLinks(headerLinks);
         
         //local plugin model persists data for session instance

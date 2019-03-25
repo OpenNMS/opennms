@@ -28,30 +28,24 @@
 
 package org.opennms.features.pluginmgr.vaadin.config.opennms;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 
-import org.opennms.web.api.OnmsHeaderProvider;
+import org.opennms.features.vaadin.components.header.HeaderComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServletRequest;
-import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.BrowserFrame;
-import com.vaadin.ui.CustomLayout;
-import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.UI;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.VerticalLayout;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Plugin Manager Administration Application.
@@ -65,9 +59,6 @@ public class SimpleIframeInVaadinApplication extends UI {
 	private static final Logger LOG = LoggerFactory.getLogger(SimpleIframeInVaadinApplication.class);
 
 	/*- VaadinEditorProperties={"grid":"RegularGrid,20","showGrid":true,"snapToGrid":true,"snapToObject":true,"movingGuides":false,"snappingDistance":10} */
-
-	private OnmsHeaderProvider m_headerProvider;
-	private String m_headerHtml;
 
 	private VerticalLayout m_rootLayout;
 
@@ -98,55 +89,9 @@ public class SimpleIframeInVaadinApplication extends UI {
 		this.iframePageUrl = iframePageUrl;
 	}
 
-	// used ideas for adding OpenNMS header
-	// from org.opennms.features.vaadin.nodemaps.internal.NodeMapsApplication
-
-	public OnmsHeaderProvider getHeaderProvider() {
-		return m_headerProvider;
+	private void addHeader() {
+		m_rootLayout.addComponent(new HeaderComponent());
 	}
-
-	public void setHeaderProvider(OnmsHeaderProvider headerProvider) {
-		this.m_headerProvider = headerProvider;
-	}
-
-	public void setHeaderHtml(final String headerHtml) {
-		m_headerHtml = headerHtml;
-	}
-
-	private void addHeader(VaadinRequest request) {
-		if (m_headerProvider != null) {
-			try {
-				setHeaderHtml(m_headerProvider.getHeaderHtml(((VaadinServletRequest) request).getHttpServletRequest()));
-			} catch (final Exception e) {
-				LOG.error("failed to get header HTML for request " + request.getPathInfo(), e);
-			}
-		}
-		if (m_headerHtml != null) {
-			InputStream is = null;
-			try {
-				is = new ByteArrayInputStream(m_headerHtml.getBytes());
-				final CustomLayout headerLayout = new CustomLayout(is);
-				headerLayout.setWidth("100%");
-				headerLayout.addStyleName("onmsheader");
-				m_rootLayout.addComponent(headerLayout);
-			} catch (final IOException e) {
-				closeQuietly(is);
-				LOG.debug("failed to get header layout data", e);
-			}
-		}
-	}
-
-	private void closeQuietly(InputStream is) {
-		if (is != null) {
-			try {
-				is.close();
-			} catch (final IOException closeE) {
-				LOG.debug("failed to close HTML input stream", closeE);
-			}
-		}
-	}
-
-
 
 	/* (non-Javadoc)
 	 * @see com.vaadin.ui.UI#init(com.vaadin.server.VaadinRequest)
@@ -159,7 +104,7 @@ public class SimpleIframeInVaadinApplication extends UI {
 		m_rootLayout.setSizeFull();
 		m_rootLayout.addStyleName("root-layout");
 		setContent(m_rootLayout);
-		addHeader(request);
+		addHeader();
 
 		//add diagnostic page links
 		if(headerLinks!=null) {

@@ -30,7 +30,6 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
         <argument ref="layoutManager"/>
         <argument ref="transactionOperations"/>
         <property name="widgetManager" ref="widgetManager"/>
-        <property name="headerProvider" ref="onmsHeaderProvider" />
         <property name="showHeader" value="${showHeader}" />
         <property name="serviceManager" ref="blueprintBundleContext"/>
     </bean>
@@ -41,9 +40,6 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
         <property name="topologyService" ref="topologyService" />
         <property name="layoutManager" ref="layoutManager" />
     </bean>
-
-    <!--  Header reference -->
-    <reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="mandatory" />
 
     <bean id="defaultAutoRefreshSupport" class="org.opennms.features.topology.app.internal.DefaultAutoRefreshSupport" scope="prototype">
         <property name="interval" value="${autoRefresh.interval}"/>

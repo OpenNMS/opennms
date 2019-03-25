@@ -28,14 +28,11 @@
 
 package org.opennms.features.pluginmgr.vaadin.config.opennms;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 
 import org.opennms.features.pluginmgr.SessionPluginManager;
 import org.opennms.features.pluginmgr.vaadin.pluginmanager.PluginManagerUIMainPanel;
-import org.opennms.web.api.OnmsHeaderProvider;
+import org.opennms.features.vaadin.components.header.HeaderComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,9 +41,7 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page.Styles;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.UI;
 import com.vaadin.v7.shared.ui.label.ContentMode;
@@ -68,9 +63,6 @@ public class PluginManagerAdminApplication extends UI {
 	//headerLinks map of key= name and value=url for links to be placed in header of page
     private Map<String,String> headerLinks;
     
-	private OnmsHeaderProvider m_headerProvider;
-	private String m_headerHtml;
-	
 	private VerticalLayout m_rootLayout;
 
 	private SessionPluginManager sessionPluginManager;
@@ -98,52 +90,9 @@ public class PluginManagerAdminApplication extends UI {
 		this.headerLinks = headerLinks;
 	}
 
-	// imported ideas from org.opennms.features.vaadin.nodemaps.internal.NodeMapsApplication
-	public OnmsHeaderProvider getHeaderProvider() {
-		return m_headerProvider;
+	private void addHeader() {
+		m_rootLayout.addComponent(new HeaderComponent());
 	}
-
-	public void setHeaderProvider(OnmsHeaderProvider headerProvider) {
-		this.m_headerProvider = headerProvider;
-	}
-
-	public void setHeaderHtml(final String headerHtml) {
-		m_headerHtml = headerHtml;
-	}
-
-	private void addHeader(VaadinRequest request) {
-		if (m_headerProvider != null) {
-			try {
-				setHeaderHtml(m_headerProvider.getHeaderHtml(((VaadinServletRequest) request).getHttpServletRequest()));
-			} catch (final Exception e) {
-				LOG.error("failed to get header HTML for request " + request.getPathInfo(), e);
-			}
-		}
-		if (m_headerHtml != null) {
-			InputStream is = null;
-			try {
-				is = new ByteArrayInputStream(m_headerHtml.getBytes());
-				final CustomLayout headerLayout = new CustomLayout(is);
-				headerLayout.setWidth("100%");
-				headerLayout.addStyleName("onmsheader");
-				m_rootLayout.addComponent(headerLayout);
-			} catch (final IOException e) {
-				closeQuietly(is);
-				LOG.debug("failed to get header layout data", e);
-			}
-		}
-	}
-
-	private void closeQuietly(InputStream is) {
-		if (is != null) {
-			try {
-				is.close();
-			} catch (final IOException closeE) {
-				LOG.debug("failed to close HTML input stream", closeE);
-			}
-		}
-	}
-
 
 
 	/* (non-Javadoc)
@@ -175,7 +124,7 @@ public class PluginManagerAdminApplication extends UI {
 		+ "filter: none;  }"); 
 		
 		
-		addHeader(request);
+		addHeader();
 		
 		//add diagnostic page links
 		if(headerLinks!=null) {

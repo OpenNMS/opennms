@@ -32,7 +32,6 @@ package org.opennms.features.pluginmgr.vaadin.config.opennms;
 import java.util.Map;
 
 import org.opennms.vaadin.extender.AbstractApplicationFactory;
-import org.opennms.web.api.OnmsHeaderProvider;
 
 import com.vaadin.ui.UI;
 
@@ -49,8 +48,6 @@ public class SimpleIframeInVaadinApplicationFactory extends AbstractApplicationF
 	
 	private Map<String, String> headerLinks;
 	
-    private OnmsHeaderProvider m_headerProvider;
-
 	public String getIframePageUrl() {
 		return iframePageUrl;
 	}
@@ -74,21 +71,12 @@ public class SimpleIframeInVaadinApplicationFactory extends AbstractApplicationF
 		this.headerLinks = headerLinks;
 	}
 
-	public OnmsHeaderProvider getHeaderProvider() {
-		return m_headerProvider;
-	}
-
-	public void setHeaderProvider(OnmsHeaderProvider headerProvider) {
-		this.m_headerProvider = headerProvider;
-	}
-
     /* (non-Javadoc)
      * @see org.opennms.vaadin.extender.AbstractApplicationFactory#getUI()
      */
     @Override
     public UI createUI() {
         SimpleIframeInVaadinApplication simpleIframeInVaadinApplication = new SimpleIframeInVaadinApplication();
-        simpleIframeInVaadinApplication.setHeaderProvider(m_headerProvider);
         simpleIframeInVaadinApplication.setIframePageUrl(iframePageUrl);
         simpleIframeInVaadinApplication.setHeaderLinks(headerLinks);;
         return simpleIframeInVaadinApplication;

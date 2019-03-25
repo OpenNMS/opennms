@@ -18,6 +18,7 @@
     <module>bundle-refresher</module>
     <module>core</module>
     <module>graph</module>
+    <module>header</module>
     <module>extender-service</module>
     <module>widgetset</module>
   </modules>
