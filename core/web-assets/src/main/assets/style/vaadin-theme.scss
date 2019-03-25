@@ -63,10 +63,14 @@ The finished CSS file will include this line, directly:
   overflow: visible !important;
 }
 
+// TODO MVR is this really the fix?
+// Maybe add a "bootstrap" class to the root components which we wanna bootstrapify
 .v-caption {
   box-sizing: content-box;
 }
 
+// TODO MVR is this really the fix?
+//  Maybe add a "bootstrap" class to the root components which we wanna bootstrapify
 .v-button-wrap {
   box-sizing: content-box;
 }
