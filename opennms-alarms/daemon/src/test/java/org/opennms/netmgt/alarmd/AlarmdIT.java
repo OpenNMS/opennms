@@ -68,6 +68,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
+import org.opennms.netmgt.dao.api.AlarmAssociationDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -157,6 +158,9 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
 
     @Autowired
     private AlarmDao m_alarmDao;
+
+    @Autowired
+    private AlarmAssociationDao m_alarmAssociationDao;
 
     @Autowired
     private MonitoringLocationDao m_locationDao;
@@ -366,6 +370,9 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         situation = m_alarmDao.findByReductionKey("Situation1");
         assertEquals(2, situation.getRelatedAlarms().size());
 
+        // We have two related alarms, so we should have a two associations
+        assertThat(m_alarmAssociationDao.getAssociationsForSituation(situation.getId()), hasSize(2));
+
         //the association times should not have changed - gather them again and compare
         Map<Integer, Date> afterReduceAssociationTimesByRelatedAlarmId = situation.getAssociatedAlarms().stream()
                 .collect(Collectors.toMap(assoc -> assoc.getRelatedAlarm().getId(), AlarmAssociation::getMappedTime));
@@ -380,6 +387,9 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
         situation = m_alarmDao.findByReductionKey("Situation1");
         assertEquals(1, situation.getRelatedAlarms().size());
+
+        // We have one related alarm, so we should have a single association
+        assertThat(m_alarmAssociationDao.getAssociationsForSituation(situation.getId()), hasSize(1));
     }
 
     @Test
