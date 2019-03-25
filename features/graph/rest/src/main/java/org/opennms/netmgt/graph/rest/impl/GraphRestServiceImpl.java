@@ -28,8 +28,10 @@
 
 package org.opennms.netmgt.graph.rest.impl;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -61,7 +63,7 @@ public class GraphRestServiceImpl implements GraphRestService {
         if (graphContainerInfos.isEmpty()) {
             return Response.noContent().build();
         }
-        final MediaType contentType = parseContentType(acceptHeader);
+        final MediaType contentType = getContentType(acceptHeader);
         final String rendered = render(contentType, graphContainerInfos);
         return Response.ok(rendered).type(contentType).build();
     }
@@ -72,13 +74,42 @@ public class GraphRestServiceImpl implements GraphRestService {
         if (container == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        final MediaType contentType = parseContentType(acceptHeader);
+        final MediaType contentType = getContentType(acceptHeader);
         final String rendered = render(contentType, container);
         return Response.ok(rendered).type(contentType).build();
     }
 
+    private static MediaType getContentType(String type) {
+        final MediaType mediaType = parseContentType(type);
+        if (mediaType == null) {
+            return MediaType.APPLICATION_JSON_TYPE;
+        }
+        return mediaType;
+    }
+
+    // Tries to parse the provided type
     private static MediaType parseContentType(String type) {
-        return Strings.isNullOrEmpty(type) ? MediaType.APPLICATION_JSON_TYPE : javax.ws.rs.core.MediaType.valueOf(type);
+        if (Strings.isNullOrEmpty(type)) {
+            return null;
+        }
+        // If multi valued, try for each value, until one matches
+        if (type.contains(",")) {
+            final List<String> multipleTypes = Arrays.stream(type.split(","))
+                    .map(String::trim)
+                    .filter(value -> !Strings.isNullOrEmpty(value))
+                    .collect(Collectors.toList());
+            for (String eachType : multipleTypes) {
+                final MediaType parsedType = parseContentType(eachType);
+                if (parsedType != null) {
+                    return parsedType;
+                }
+            }
+        }
+        final MediaType mediaType = MediaType.valueOf(type);
+        if (mediaType.equals(MediaType.APPLICATION_JSON_TYPE) || mediaType.equals(MediaType.APPLICATION_XML_TYPE)) {
+            return mediaType;
+        }
+        return null;
     }
 
     private static String render(MediaType mediaType, List<GraphContainerInfo> infos) {

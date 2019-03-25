@@ -107,7 +107,7 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
             );
 
             // Convert graph
-            final String graphContainerId = graphML.getId() != null ? graphML.getId() : graphML.getProperty(GenericProperties.LABEL);
+            final String graphContainerId = determineGraphContainerId(graphML);
             final GenericGraphContainer graphContainer = new GenericGraphContainer();
             graphContainer.setId(graphContainerId);
             graphContainer.setLabel(graphML.getProperty(GenericProperties.LABEL));
@@ -188,6 +188,18 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
 //            return Lists.newArrayList(split);
 //        }
         return Lists.newArrayList();
+    }
+
+    // TODO MVR test me
+    // The graphML specification does not allow for an id on the graphML object itself
+    // As we always need a unique Id we check if a property called `containerId` is provided.
+    // If so we use that, otherwise we concatenate the ids of the graphs
+    protected static String determineGraphContainerId(GraphML graphML) {
+        if (graphML.getProperty("containerId") != null) {
+            return graphML.getProperty("containerId");
+        }
+        final String calculatedId = graphML.getGraphs().stream().map(g -> g.getId()).collect(Collectors.joining("."));
+        return calculatedId;
     }
 
 }

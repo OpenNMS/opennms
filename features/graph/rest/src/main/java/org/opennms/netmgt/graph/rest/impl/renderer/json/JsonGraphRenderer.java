@@ -57,7 +57,7 @@ public class JsonGraphRenderer implements GraphRenderer {
                 jsonGraphInfoObject.put("namespace", graphInfo.getNamespace());
                 jsonGraphInfoObject.put("label", graphInfo.getLabel());
                 jsonGraphInfoObject.put("description", graphInfo.getDescription());
-                graphInfoArray.put(graphInfo);
+                graphInfoArray.put(jsonGraphInfoObject);
             }
             jsonGraphContainerInfoObject.put("graphs", graphInfoArray);
             graphContainerJsonArray.put(jsonGraphContainerInfoObject);

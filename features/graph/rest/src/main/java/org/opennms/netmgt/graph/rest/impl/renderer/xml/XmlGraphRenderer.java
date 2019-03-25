@@ -31,12 +31,14 @@ package org.opennms.netmgt.graph.rest.impl.renderer.xml;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.xml.bind.JAXB;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.features.graphml.model.GraphML;
 import org.opennms.features.graphml.model.GraphMLEdge;
+import org.opennms.features.graphml.model.GraphMLElement;
 import org.opennms.features.graphml.model.GraphMLGraph;
 import org.opennms.features.graphml.model.GraphMLNode;
 import org.opennms.features.graphml.model.GraphMLWriter;
@@ -85,41 +87,42 @@ public class XmlGraphRenderer implements GraphRenderer {
         // Container
         final GenericGraphContainer genericGraphContainer = graphContainer.asGenericGraphContainer();
         final GraphML graphML = new GraphML();
-        final Map<String, Object> containerProperties = genericGraphContainer.getProperties();
         graphML.setId(genericGraphContainer.getId());
-        containerProperties.keySet().forEach(eachKey -> graphML.setProperty(eachKey, containerProperties.get(eachKey)));
+        addProperties(genericGraphContainer.getProperties(), graphML);
 
-        // Graphs
+        // Populate Graph and nodes
         genericGraphContainer.getGraphs().forEach(graph -> {
             final GenericGraph genericGraph = graph.asGenericGraph();
             final GraphMLGraph graphMLGraph = new GraphMLGraph();
             graphMLGraph.setId(genericGraph.getNamespace());
-            final Map<String, Object> graphProperties = genericGraph.getProperties();
-            graphProperties.keySet().forEach(eachKey -> graphMLGraph.setProperty(eachKey, graphProperties.get(eachKey)));
+            addProperties(genericGraph.getProperties(), graphMLGraph);
 
             // Vertices
             genericGraph.getVertices().forEach(v -> {
                 final GraphMLNode graphMLNode = new GraphMLNode();
                 final GenericVertex genericVertex = v.asGenericVertex();
                 graphMLNode.setId(v.getId());
-                final Map<String, Object> vertexProperties = genericVertex.getProperties();
-                vertexProperties.keySet().forEach(eachKey -> graphMLNode.setProperty(eachKey, vertexProperties.get(eachKey)));
+                addProperties(genericVertex.getProperties(), graphMLNode);
                 graphMLGraph.addNode(graphMLNode);
             });
+            graphML.addGraph(graphMLGraph);
+        });
 
-            // Edges
+        // Iterate again over all graphs and populate edges
+        // It is done in separate steps, as edges may reference nodes from other graphs
+        // To support this, all edges must be present.
+        genericGraphContainer.getGraphs().forEach(graph -> {
+            final GraphMLGraph graphMLGraph = getGraphByNamespace(graph.getNamespace(), graphML);
+            final GenericGraph genericGraph = graph.asGenericGraph();
             genericGraph.getEdges().forEach(e -> {
                 final GraphMLEdge graphMLEdge = new GraphMLEdge();
                 final GenericEdge genericEdge = e.asGenericEdge();
                 graphMLEdge.setId(e.getId());
-                graphMLEdge.setSource(graphMLGraph.getNodeById(genericEdge.getSource().getId()));
-                graphMLEdge.setTarget(graphMLGraph.getNodeById(genericEdge.getTarget().getId()));
-                final Map<String, Object> edgeProperties = genericEdge.getProperties();
-                edgeProperties.keySet().forEach(eachKey -> graphMLEdge.setProperty(eachKey, edgeProperties.get(eachKey)));
+                graphMLEdge.setSource(getNode(genericEdge.getSource().getId(), graphML));
+                graphMLEdge.setTarget(getNode(genericEdge.getTarget().getId(), graphML));
+                addProperties(genericEdge.getProperties(), graphMLEdge);
                 graphMLGraph.addEdge(graphMLEdge);
             });
-
-            graphML.addGraph(graphMLGraph);
         });
 
         // Now convert to String
@@ -131,5 +134,29 @@ public class XmlGraphRenderer implements GraphRenderer {
         }
         return new String(outputStream.toByteArray());
 
+    }
+
+    private static void addProperties(Map<String, Object> properties, GraphMLElement graphMLElement) {
+        properties.keySet().forEach(eachKey -> {
+            if (properties.get(eachKey) != null) {
+                graphMLElement.setProperty(eachKey, properties.get(eachKey));
+            }
+        });
+    }
+
+    private static GraphMLGraph getGraphByNamespace(String namespace, GraphML graphML) {
+        return graphML.getGraphs().stream()
+                .filter(g -> namespace.equalsIgnoreCase(g.getProperty("namespace")))
+                .findFirst().orElse(null);
+    }
+
+    private static GraphMLNode getNode(String id, GraphML graphMLContainer) {
+        final Optional<GraphMLGraph> graphMLGraph = graphMLContainer.getGraphs().stream()
+                .filter(g -> g.getNodeById(id) != null)
+                .findFirst();
+        if (graphMLGraph.isPresent()) {
+            return graphMLGraph.get().getNodeById(id);
+        }
+        return null;
     }
 }

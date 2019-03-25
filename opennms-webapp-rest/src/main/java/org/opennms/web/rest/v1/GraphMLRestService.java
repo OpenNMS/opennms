@@ -65,8 +65,8 @@ public class GraphMLRestService {
 
            try {
                // Convert to the OpenNMS GraphML representation to apply additional validation
-               GraphML convertedGraphML = GraphMLReader.convert(graphmlType);
-               String label = convertedGraphML.getProperty("label", graphname);
+               final GraphML convertedGraphML = GraphMLReader.convert(graphmlType);
+               final String label = convertedGraphML.getProperty("label", graphname);
                graphmlRepository.save(graphname, label, graphmlType);
                return Response.status(Response.Status.CREATED).build();
            } catch (InvalidGraphException ex) {

@@ -1426,6 +1426,7 @@
         <feature>opennms-graph-service</feature>
         <feature>opennms-graph-simple</feature>
         <feature>opennms-graph-shell</feature>
+        <feature>opennms-graph-rest</feature>
     </feature>
 
     <!-- TODO MVR redefine me -->
