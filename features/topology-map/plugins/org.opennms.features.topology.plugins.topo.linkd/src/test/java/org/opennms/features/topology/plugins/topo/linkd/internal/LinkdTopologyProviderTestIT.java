@@ -59,6 +59,7 @@ import org.opennms.netmgt.enlinkd.IsisOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.LldpOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.NodesOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.OspfOnmsTopologyUpdater;
+import org.opennms.netmgt.enlinkd.UserDefinedLinkTopologyUpdater;
 import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -109,6 +110,9 @@ public class LinkdTopologyProviderTestIT {
     BridgeOnmsTopologyUpdater bridgeOnmsTopologyUpdater;
 
     @Autowired
+    UserDefinedLinkTopologyUpdater userDefinedLinkTopologyUpdater;
+
+    @Autowired
     BridgeTopologyService bridgeTopologyService;
 
     private TopologyGenerator generator;
@@ -121,6 +125,7 @@ public class LinkdTopologyProviderTestIT {
         lldpOnmsTopologyUpdater.register();
         ospfOnmsTopologyUpdater.register();
         bridgeOnmsTopologyUpdater.register();
+        userDefinedLinkTopologyUpdater.register();
 
         TopologyGenerator.ProgressCallback progressCallback = new TopologyGenerator.ProgressCallback(LOG::info);
         TopologyPersister persister = new TopologyPersister(genericPersistenceAccessor, progressCallback);
@@ -151,6 +156,12 @@ public class LinkdTopologyProviderTestIT {
     @Transactional
     public void testOspf() {
         test(TopologyGenerator.Protocol.ospf);
+    }
+
+    @Test
+    @Transactional
+    public void testUserDefined() {
+        test(TopologyGenerator.Protocol.userdefined, false);
     }
 
     /**
@@ -236,11 +247,15 @@ public class LinkdTopologyProviderTestIT {
     }
 
     private void test(TopologyGenerator.Protocol protocol) {
-        testAmounts(protocol);
+        test(protocol, true);
+    }
+
+    private void test(TopologyGenerator.Protocol protocol, boolean linksAreCached) {
+        testAmounts(protocol, linksAreCached);
         testLinkingBetweenNodes(protocol);
     }
 
-    private void testAmounts(TopologyGenerator.Protocol protocol) {
+    private void testAmounts(TopologyGenerator.Protocol protocol, boolean linksAreCached) {
 
         TopologySettings settings = TopologySettings.builder()
                 .protocol(protocol)
@@ -252,7 +267,9 @@ public class LinkdTopologyProviderTestIT {
 
         // 2.) Delete the topology. The TopologyProvider should still find it due to the cache:
         generator.deleteTopology();
-        verifyAmounts(settings);
+        if (linksAreCached) {
+            verifyAmounts(settings);
+        }
 
         // 3.) Invalidate cache - nothing should be found:
         entityCache.refresh();
@@ -266,10 +283,12 @@ public class LinkdTopologyProviderTestIT {
         isisOnmsTopologyUpdater.setTopology(isisOnmsTopologyUpdater.buildTopology());
         lldpOnmsTopologyUpdater.setTopology(lldpOnmsTopologyUpdater.buildTopology());
         ospfOnmsTopologyUpdater.setTopology(ospfOnmsTopologyUpdater.buildTopology());
+        userDefinedLinkTopologyUpdater.setTopology(userDefinedLinkTopologyUpdater.buildTopology());
         bridgeTopologyService.load();
         bridgeOnmsTopologyUpdater.setTopology(bridgeOnmsTopologyUpdater.buildTopology());
         linkdTopologyProvider.refresh();
     }
+
     private void verifyAmounts(TopologySettings settings) {
         refresh();
         List<Vertex> vertices = linkdTopologyProvider.getVerticesWithoutGroups();

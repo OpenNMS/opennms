@@ -88,4 +88,9 @@
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache" ref="topologyEntityCache" />
 
+    <bean id="userDefinedLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.UserDefinedLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.UserDefinedLinkDao" ref="userDefinedLinkDao" />
+
 </beans>

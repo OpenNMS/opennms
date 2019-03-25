@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,20 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.hibernate;
+package org.opennms.netmgt.enlinkd.persistence.api;
 
 import java.util.List;
 
-import org.opennms.netmgt.dao.api.AlarmAssociationDao;
-import org.opennms.netmgt.model.AlarmAssociation;
+import org.opennms.netmgt.dao.api.OnmsDao;
+import org.opennms.netmgt.enlinkd.model.UserDefinedLink;
 
-public class AlarmAssociationDaoHibernate extends AbstractDaoHibernate<AlarmAssociation, Integer> implements AlarmAssociationDao{
-    public AlarmAssociationDaoHibernate() {
-        super(AlarmAssociation.class);
-    }
+public interface UserDefinedLinkDao extends OnmsDao<UserDefinedLink, Integer> {
 
-    @Override
-    public List<AlarmAssociation> getAssociationsForSituation(int situationId) {
-        return find("from AlarmAssociation as a where a.situationAlarm.id = ?", situationId);
-    }
+    List<UserDefinedLink> getOutLinks(int nodeIdA);
+
+    List<UserDefinedLink> getInLinks(int nodeIdZ);
+
+    List<UserDefinedLink> getLinksWithLabel(String label);
 }
