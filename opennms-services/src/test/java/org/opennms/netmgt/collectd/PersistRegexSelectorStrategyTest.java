@@ -75,6 +75,8 @@ public class PersistRegexSelectorStrategyTest {
     private IpInterfaceDao ipInterfaceDao;
     private GenericIndexResource resourceA;
     private GenericIndexResource resourceB;
+    private GenericIndexResource resourceC;
+    private GenericIndexResource resourceD;
     private ServiceParameters serviceParams;
 
     @Before
@@ -139,6 +141,24 @@ public class PersistRegexSelectorStrategyTest {
         resourceA.setAttributeValue(attributeType, snmpValue);
         
         resourceB = new GenericIndexResource(resourceType, rt.getName(), new SnmpInstId("1.2.3.4.5.6.7.8.9.1.2"));
+
+        // selector sensitive to instance IDs
+        org.opennms.netmgt.config.datacollection.ResourceType rtInst = new org.opennms.netmgt.config.datacollection.ResourceType();
+        rtInst.setName("myResourceType");
+        rtInst.setStorageStrategy(storageStrategy);
+        PersistenceSelectorStrategy persistenceSelectorStrategyInst = new PersistenceSelectorStrategy();
+        persistenceSelectorStrategyInst.setClazz("org.opennms.netmgt.collectd.PersistRegexSelectorStrategy");
+        Parameter paramInst = new Parameter();
+        paramInst.setKey(PersistRegexSelectorStrategy.MATCH_EXPRESSION);
+        paramInst.setValue("#instance matches '.3$'");
+        persistenceSelectorStrategyInst.addParameter(paramInst);
+        rtInst.setPersistenceSelectorStrategy(persistenceSelectorStrategyInst);
+        GenericIndexResourceType resourceTypeInst = new GenericIndexResourceType(agent, snmpCollection, rtInst);
+
+
+        resourceC = new GenericIndexResource(resourceTypeInst, rt.getName(), new SnmpInstId("1.2.3.4.5.6.7.8.9.1.3"));
+        resourceD = new GenericIndexResource(resourceTypeInst, rt.getName(), new SnmpInstId("1.2.3.4.5.6.7.8.9.1.4"));
+
     }
 
     @After
@@ -150,6 +170,8 @@ public class PersistRegexSelectorStrategyTest {
     public void testPersistSelector() throws Exception {
         Assert.assertTrue(resourceA.shouldPersist(serviceParams));
         Assert.assertFalse(resourceB.shouldPersist(serviceParams));
+        Assert.assertTrue(resourceC.shouldPersist(serviceParams));
+        Assert.assertFalse(resourceD.shouldPersist(serviceParams));
     }
 
     @Test
