@@ -1347,17 +1347,6 @@
         <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
         <bundle>mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
     </feature>
-    <feature name="vaadin-opennms-pluginmanager" version="${project.version}" description="OpenNMS :: Plugins :: Admin UI">
-        <details>OpenNMS Vaadin Administration UI for installing Plugin modules.</details>
-        <feature>opennms-core</feature>
-        <feature>vaadin</feature>
-        <feature>org.opennms.plugin.licencemanager</feature>
-        <feature>org.opennms.plugin.featuremanager</feature>
-        <bundle>mvn:org.opennms.plugins/vaadin-opennms-pluginmanager/${project.version}</bundle>
-        <bundle>mvn:org.opennms.plugins/org.opennms.plugin.pluginmanager.pluginmanager-core/${pluginmanagerVersion}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/core/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/widgetset/${project.version}</bundle>
-    </feature>
     <feature name="alarm-change-notifier" version="${project.version}" description="alarm-change-notifier">
         <details>Feature definition for alarm-change-notifier</details>
         <bundle>mvn:com.impossibl.pgjdbc-ng/pgjdbc-ng/0.7.1</bundle>

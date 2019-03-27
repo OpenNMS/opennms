@@ -160,9 +160,6 @@
     <module>minion</module>
     <module>scv</module>
 
-    <!-- OpenNMS Plugin Manager -->
-    <module>vaadin-opennms-pluginmanager</module>
-    
     <!-- ReST Elasticsearch Integration -->
     <module>opennms-es-rest</module>
 
