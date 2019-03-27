@@ -1433,8 +1433,8 @@
     <feature name="opennms-graph-api" description="OpenNMS :: Features :: Graph :: API" version="${project.version}">
         <feature>guava</feature>
 
-        <!-- TODO MVR topology is embedding this, maybe we should do the same here? -->
         <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.api/${project.version}</bundle>
+        <!-- TODO MVR topology is embedding this, maybe we should do the same here? -->
         <!-- TODO MVR this depends on commons-collections, verify via headers:<bundle> to see if everything can be imported -->
         <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.jung/${jungVersion}</bundle>
         <!-- TODO MVR Graph persistence ??? -->
