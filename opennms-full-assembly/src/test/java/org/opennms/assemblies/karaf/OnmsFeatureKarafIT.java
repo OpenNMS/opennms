@@ -731,13 +731,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		installFeature("opennms-es-rest");
 		System.out.println(executeCommand("feature:list -i"));
 	}
-	@Test
-	@Ignore("Does not work with Karaf 4.2.3 anymore")
-	public void testInstallFeatureInternalPluginsDescriptor() {
-		installFeature("opennms-http-whiteboard");
-		installFeature("internal-plugins-descriptor");
-		System.out.println(executeCommand("feature:list -i"));
-	}
     @Ignore("Failing since bumping 23.0.0 to 24.0.0")
     @Test
     public void testInstallFeatureOpennmsSituationFeedback() {

@@ -1385,11 +1385,6 @@
         <bundle>mvn:com.googlecode.json-simple/json-simple/1.1.1</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
     </feature>
-    <feature name="internal-plugins-descriptor" version="${project.version}">
-        <details>Module to generate list of internal plugins which can be installed</details>
-        <feature>org.opennms.plugin.licencemanager</feature>
-        <bundle>mvn:org.opennms.plugins/internal-plugins-descriptor/${project.version}</bundle>
-    </feature>
     <feature name="opennms-jest" version="${project.version}" description="OpenNMS :: Features :: Jest :: Feature definition">
         <details>Feature definition for Jest (ElasticSearch Java ReST Client)</details>
         <bundle>wrap:mvn:com.google.code.gson/gson/${jestGsonVersion}</bundle>

@@ -569,7 +569,6 @@
                 <feature>vaadin-opennms-pluginmanager</feature>
                 <feature>alarm-change-notifier</feature>
                 <feature>opennms-es-rest</feature>
-                <feature>internal-plugins-descriptor</feature>
                 <feature>ifttt-integration</feature>
                 <feature>opennms-flows</feature>
                 <feature>opennms-api-layer</feature>
