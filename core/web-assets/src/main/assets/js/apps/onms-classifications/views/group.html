@@ -43,7 +43,7 @@
     <h5 class="pt-2">{{group.description}} <span class="badge badge-secondary" ng-if="group.readOnly">read-only</span></h5>
     <div class="text-center mt-4" ng-show="rules.length == 0"><pre>No rules defined.</pre></div>
     <pagination model="query" ng-show="rules.length > 0" position="bottom" on-change="refresh">
-        <table class="table table-striped table-sm">
+        <table class="table table-striped">
             <thead>
             <tr class="d-flex">
                 <th class="col-md-1 text-nowrap">

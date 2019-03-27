@@ -265,15 +265,15 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
       %>
 				    <table class="table table-sm">
 				      <tr>
-					<th class="col-xs-4">IP&nbsp;Address</th>
-					<th class="col-xs-2">Timeout&nbsp;(milliseconds)</th>
-					<th class="col-xs-2">Retries</th>
-					<th class="col-xs-2">Foreign&nbsp;Source</th>
-					<th class="col-xs-2">Location</th>
+					<th>IP&nbsp;Address</th>
+					<th>Timeout&nbsp;(milliseconds)</th>
+					<th>Retries</th>
+					<th>Foreign&nbsp;Source</th>
+					<th>Location</th>
 					<th>Action</th>
 				      </tr>
 				      <%for(int i=0; i<specs.length; i++){%>
-					 <tr class="text-center">
+					 <tr>
 					  <td><%=specs[i].getAddress()%></td>
 					  <td><%=specs[i].getTimeout().isPresent() ? "" + specs[i].getTimeout().get() : "<i>Use Default</i>" %></td>
 					  <td><%=specs[i].getRetries().isPresent() ? "" + specs[i].getRetries().get() : "<i>Use Default</i>" %></td>
@@ -306,15 +306,15 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 			    %>
 				    <table class="table table-sm">
 				      <tr>
-					<th class="col-xs-4">URL</th>
-					<th class="col-xs-2">Timeout&nbsp;(milliseconds)</th>
-					<th class="col-xs-2">Retries</th>
-					<th class="col-xs-2">Foreign&nbsp;Source</th>
-					<th class="col-xs-2">Location</th>
+					<th>URL</th>
+					<th>Timeout&nbsp;(milliseconds)</th>
+					<th>Retries</th>
+					<th>Foreign&nbsp;Source</th>
+					<th>Location</th>
 					<th>Action</th>
 				      </tr>
 				      <%for(int i=0; i<urls.length; i++){%>
-					 <tr class="text-center">
+					 <tr>
 					  <td><%=urls[i].getUrl()%></td>
 					  <td><%=urls[i].getTimeout().isPresent() ? "" + urls[i].getTimeout().get() : "<i>Use Default</i>" %></td>
 					  <td><%=urls[i].getRetries().isPresent() ? "" + urls[i].getRetries().get() : "<i>Use Default</i>" %></td>
@@ -347,18 +347,18 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 				    %>
 					    <table class="table table-sm">
 					      <tr>
-						<th class="col-xs-2">Begin&nbsp;Address</th>
-						<th class="col-xs-2">End&nbsp;Address</th>
-						<th class="col-xs-2">Timeout&nbsp;(milliseconds)</th>
-						<th class="col-xs-2">Retries</th>
-						<th class="col-xs-2">Foreign&nbsp;Source</th>
-						<th class="col-xs-2">Location</th>
+						<th>Begin&nbsp;Address</th>
+						<th>End&nbsp;Address</th>
+						<th>Timeout&nbsp;(milliseconds)</th>
+						<th>Retries</th>
+						<th>Foreign&nbsp;Source</th>
+						<th>Location</th>
 						<th>Action</th>
 					      </tr>
 					      <%for(int i=0; i<irange.length; i++){
 
 					      %>
-						 <tr class="text-center">
+						 <tr>
 						  <td><%=irange[i].getBegin()%></td>
 						  <td><%=irange[i].getEnd()%></td>
 						  <td><%=irange[i].getTimeout().isPresent() ? "" + irange[i].getTimeout().get() : "<i>Use Default</i>" %></td>
@@ -392,14 +392,14 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 			    %>
 				    <table class="table table-sm">
 				      <tr>
-					<th class="col-xs-6">Begin</th>
-					<th class="col-xs-6">End</th>
+					<th>Begin</th>
+					<th>End</th>
 					<th>Action</th>
 				      </tr>
 				      <%for(int i=0; i<irange.length; i++){
 
 				      %>
-					 <tr class="text-center">
+					 <tr>
 					  <td><%=irange[i].getBegin()%></td>
 					  <td><%=irange[i].getEnd()%></td>
 					  <td width="1%"><button type="button" class="btn btn-sm btn-secondary" onclick="deleteER(<%=i%>);">Delete</button></td>
