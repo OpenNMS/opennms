@@ -171,6 +171,7 @@ fi
 
 # Remove the directory used as the local Maven repo cache
 rm -rf "${ROOT_INST}/repositories/.local"
+rm -rf "${ROOT_INST}/.m2"
 
 # Generate an SSH key if necessary
 if [ ! -f "${ROOT_INST}/etc/host.key" ]; then

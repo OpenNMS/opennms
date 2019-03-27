@@ -30,6 +30,7 @@ package org.opennms.netmgt.syslogd;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -679,11 +680,13 @@ public class ConvertToEventTest {
                 "Speak -> Standby", "%HSRP-5-STATECHANGE");
         testAuditPattern("<189>17460: Nov  1 01:14:41.474 CDT: %BGP-5-ADJCHANGE: neighbor 1.2.3.4 vpn vrf abc-def Up"
                 , "%BGP-5-ADJCHANGE");
+        testAuditPattern("<189>: 2019 Feb  1 00:17:15 cst: %ETHPORT-5-IF_DOWN_LINK_FAILURE: Interface Ethernet1/15 is down (Link failure)"
+                , "%ETHPORT-5-IF_DOWN_LINK_FAILURE");
     }
 
     private void testAuditPattern(String syslog, String mnemonic) {
         Event event = parseSyslog("testAuditPattern", radixConfig, syslog, new Date());
-        assertThat(event.getLogmsg().getContent().startsWith(mnemonic), is(equalTo(true)));
+        assertThat(event.getLogmsg().getContent(), startsWith(mnemonic));
     }
     
     @Test

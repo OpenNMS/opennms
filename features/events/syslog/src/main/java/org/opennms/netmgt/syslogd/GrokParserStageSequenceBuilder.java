@@ -31,6 +31,7 @@ package org.opennms.netmgt.syslogd;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
+import java.time.zone.ZoneRulesException;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.BiConsumer;
@@ -410,7 +411,15 @@ public abstract class GrokParserStageSequenceBuilder {
 				};
 			case timezone:
 				return (s,v) -> {
-					s.message.setZoneId(ZonedDateTimeBuilder.parseZoneId(v));
+					ZoneId zoneId;
+					try {
+						zoneId = ZonedDateTimeBuilder.parseZoneId(v);
+					} catch (ZoneRulesException zre) {
+						// Zone was not found, attempt to convert the zone to uppercase
+						// i.e. if the string is 'cst', then the lookup will fail unless we query for 'CST'
+						zoneId = ZonedDateTimeBuilder.parseZoneId(v.toUpperCase());
+					}
+					s.message.setZoneId(zoneId);
 				};
 			default:
 				throw new IllegalArgumentException(String.format("Semantic type %s does not have a string value", semanticString));
