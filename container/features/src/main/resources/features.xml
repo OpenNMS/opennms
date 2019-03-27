@@ -7,8 +7,6 @@
     <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
     <repository>mvn:org.opennms.integration.api/karaf-features/${opennmsApiVersion}/xml</repository>
     <repository>mvn:com.eclipsesource.jaxrs/features/${osgiJaxRsVersion}/xml/features</repository>
-    <repository>mvn:org.opennms.plugins/org.opennms.plugin.licencemanager/${pluginmanagerVersion}/xml/features</repository>
-    <repository>mvn:org.opennms.plugins/org.opennms.plugin.featuremanager/${pluginmanagerVersion}/xml/features</repository>
     <feature name="opennms-amqp-event-forwarder" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Event Forwarder">
         <feature>camel-core</feature>
         <feature>camel-blueprint</feature>
@@ -1358,7 +1356,6 @@
         <bundle>mvn:io.netty/netty-codec/${netty4Version}</bundle>
         <bundle>mvn:org.opennms.plugins/alarm-change-notifier.pg-jdbc-utils/${project.version}</bundle>
         <bundle>mvn:org.opennms.plugins/alarm-change-notifier.main-module/${project.version}</bundle>
-        <bundle>mvn:org.opennms.plugins/alarm-change-notifier.product-descriptor/${project.version}</bundle>
         <bundle>mvn:com.googlecode.json-simple/json-simple/1.1.1</bundle>
     </feature>
     <feature name="opennms-es-rest" version="${project.version}" description="OpenNMS :: Features :: ElasticSearch Rest">

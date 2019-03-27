@@ -65,27 +65,6 @@
     </resources>
   </build>
   <dependencies>
-    <!-- <dependency> -->
-    <!-- <groupId>org.opennms.plugins</groupId> -->
-    <!-- <artifactId>org.opennms.plugin.licencemanager</artifactId> -->
-    <!-- <version>${licencemanagerVersion}</version> -->
-    <!-- <type>jar</type> -->
-    <!-- <scope>provided</scope> -->
-    <!-- </dependency> -->
-    <!-- Note these dependencies match org.apache.karaf.shell.console 2.2.11 -->
-    <!-- Version may need altered for OpenNMS -->
-    <!-- <dependency> -->
-    <!-- <groupId>org.osgi</groupId> -->
-    <!-- <artifactId>org.osgi.core</artifactId> -->
-    <!-- <version>4.2.0</version> -->
-    <!-- <scope>provided</scope> -->
-    <!-- </dependency> -->
-    <!-- <dependency> -->
-    <!-- <groupId>org.osgi</groupId> -->
-    <!-- <artifactId>org.osgi.compendium</artifactId> -->
-    <!-- <version>4.2.0</version> -->
-    <!-- <scope>provided</scope> -->
-    <!-- </dependency> -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
