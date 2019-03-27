@@ -49,6 +49,7 @@ import org.opennms.web.alarm.filter.AfterFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
+import org.opennms.web.alarm.filter.AlarmTextFilter;
 import org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.BeforeLastEventTimeFilter;
 import org.opennms.web.alarm.filter.EventParmLikeFilter;
@@ -57,7 +58,6 @@ import org.opennms.web.alarm.filter.IPAddrLikeFilter;
 import org.opennms.web.alarm.filter.InterfaceFilter;
 import org.opennms.web.alarm.filter.LocationFilter;
 import org.opennms.web.alarm.filter.LogMessageMatchesAnyFilter;
-import org.opennms.web.alarm.filter.LogMessageSubstringFilter;
 import org.opennms.web.alarm.filter.NegativeAcknowledgedByFilter;
 import org.opennms.web.alarm.filter.NegativeEventParmLikeFilter;
 import org.opennms.web.alarm.filter.NegativeExactUEIFilter;
@@ -257,8 +257,8 @@ public abstract class AlarmUtil extends Object {
             filter = new NegativeAcknowledgedByFilter(value);
         } else if (type.equals(IPAddrLikeFilter.TYPE)) {
             filter = new IPAddrLikeFilter(value);
-        } else if (type.equals(LogMessageSubstringFilter.TYPE)) {
-            filter = new LogMessageSubstringFilter(value);
+        } else if (type.equals(AlarmTextFilter.TYPE)) {
+            filter = new AlarmTextFilter(value);
         } else if (type.equals(LogMessageMatchesAnyFilter.TYPE)) {
             filter = new LogMessageMatchesAnyFilter(value);
         } else if (type.equals(BeforeLastEventTimeFilter.TYPE)) {
