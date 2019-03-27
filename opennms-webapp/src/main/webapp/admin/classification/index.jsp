@@ -35,6 +35,7 @@
     <jsp:param name="headTitle" value="Flow Classification" />
     <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
     <jsp:param name="breadcrumb" value="Flow Classification" />
+    <jsp:param name="sidebar" value="admin" />
 </jsp:include>
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">

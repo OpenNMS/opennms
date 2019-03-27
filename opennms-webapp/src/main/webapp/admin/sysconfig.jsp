@@ -47,6 +47,7 @@
   <jsp:param name="location" value="admin" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
   <jsp:param name="breadcrumb" value="System Configuration" />
+  <jsp:param name="sidebar" value="admin" />
 </jsp:include>
 
 <script type="text/javascript">

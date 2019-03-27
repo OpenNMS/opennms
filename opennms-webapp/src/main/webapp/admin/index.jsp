@@ -44,7 +44,8 @@
     <jsp:param name="title" value="Admin" />
     <jsp:param name="headTitle" value="Admin" />
     <jsp:param name="location" value="admin" />
-    <jsp:param name="breadcrumb" value="Admin" />
+    <jsp:param name="nobreadcrumbs" value="true" />
+    <jsp:param name="sidebar" value="admin" />
 </jsp:include>
 
 <script type="text/javascript" >

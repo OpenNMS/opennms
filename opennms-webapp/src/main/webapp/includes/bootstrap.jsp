@@ -236,31 +236,24 @@
 <%-- This <div> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain.  See bug #1728. --%>
+<!-- TODO MVR maybe use param.location here instead -->
 <c:choose>
   <c:when test="${param.superQuiet == 'true'}">
 
+  </c:when>
+  <c:when test="${!empty param.sidebar}">
+    <div class="row h-100">
+      <jsp:include page="sidebars/admin.jsp" />
+      <main class="col">
+        <div id="content" class="container-fluid pl-0">
   </c:when>
   <c:otherwise>
     <%= "<div id=\"content\" class=\"container-fluid\">" %>
   </c:otherwise>
 </c:choose>
-<c:if test="${((param.nonavbar != 'true') && (!empty pageContext.request.remoteUser)) && param.nobreadcrumbs != 'true'}">
-  <nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="<%= baseHref %>index.jsp">Home</a></li>
-    <c:forEach var="breadcrumb" items="${paramValues.breadcrumb}" varStatus="loop">
-      <c:if test="${breadcrumb != ''}">
-          <c:choose>
-            <c:when test="${loop.last}">
-              <li class="breadcrumb-item active"><c:out value="${breadcrumb}" escapeXml="false"/></li>
-            </c:when>
-            <c:otherwise>
-              <li class="breadcrumb-item"><c:out value="${breadcrumb}" escapeXml="false"/></li>
-            </c:otherwise>
-          </c:choose>
 
-      </c:if>
-    </c:forEach>
-  </ol>
-  </nav>
-</c:if>
+<jsp:include page="breadcrumbs.jsp">
+  <jsp:param name="breadcrumbs" value="${paramValues.breadcrumb}" />
+  <jsp:param name="nonavbar" value="${param.nonavbar}" />
+  <jsp:param name="nobreadcrumbs" value="${param.nobreadcrumbs}" />
+</jsp:include>
