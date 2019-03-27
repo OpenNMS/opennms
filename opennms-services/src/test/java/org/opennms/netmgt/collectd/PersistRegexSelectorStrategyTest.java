@@ -144,7 +144,7 @@ public class PersistRegexSelectorStrategyTest {
 
         // selector sensitive to instance IDs
         org.opennms.netmgt.config.datacollection.ResourceType rtInst = new org.opennms.netmgt.config.datacollection.ResourceType();
-        rtInst.setName("myResourceType");
+        rtInst.setName("myResourceTypeTwo");
         rtInst.setStorageStrategy(storageStrategy);
         PersistenceSelectorStrategy persistenceSelectorStrategyInst = new PersistenceSelectorStrategy();
         persistenceSelectorStrategyInst.setClazz("org.opennms.netmgt.collectd.PersistRegexSelectorStrategy");
@@ -155,9 +155,8 @@ public class PersistRegexSelectorStrategyTest {
         rtInst.setPersistenceSelectorStrategy(persistenceSelectorStrategyInst);
         GenericIndexResourceType resourceTypeInst = new GenericIndexResourceType(agent, snmpCollection, rtInst);
 
-
-        resourceC = new GenericIndexResource(resourceTypeInst, rt.getName(), new SnmpInstId("1.2.3.4.5.6.7.8.9.1.3"));
-        resourceD = new GenericIndexResource(resourceTypeInst, rt.getName(), new SnmpInstId("1.2.3.4.5.6.7.8.9.1.4"));
+        resourceC = new GenericIndexResource(resourceTypeInst, rtInst.getName(), new SnmpInstId("1.2.3.4.5.6.7.8.9.1.3"));
+        resourceD = new GenericIndexResource(resourceTypeInst, rtInst.getName(), new SnmpInstId("1.2.3.4.5.6.7.8.9.1.4"));
 
     }
 
