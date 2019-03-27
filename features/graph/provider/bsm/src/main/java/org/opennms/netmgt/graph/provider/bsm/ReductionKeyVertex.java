@@ -41,15 +41,13 @@ public class ReductionKeyVertex extends AbstractBusinessServiceVertex {
     public static final int MAX_LABEL_LENGTH = 27;
     private static final Pattern REDUCTION_KEY_LABEL_PATTERN = Pattern.compile("^.*\\/(.+?):.*:(.+)$");
 
-    private final String reductionKey;
-
     public ReductionKeyVertex(GraphVertex graphVertex) {
         this(graphVertex.getReductionKey(), graphVertex.getLevel());
     }
 
     public ReductionKeyVertex(String reductionKey, int level) {
-        super(Type.ReductionKey + ":" + reductionKey, getLabelFromReductionKey(reductionKey), level);
-        this.reductionKey = reductionKey;
+        super(Type.ReductionKey + ":" + reductionKey, getLabelFromReductionKey(reductionKey), level, Type.ReductionKey,
+                true, Sets.newHashSet(reductionKey));
     }
 
     protected static String getLabelFromReductionKey(String reductionKey) {
@@ -66,27 +64,4 @@ public class ReductionKeyVertex extends AbstractBusinessServiceVertex {
         return label;
     }
 
-    public String getReductionKey() {
-        return reductionKey;
-    }
-
-    @Override
-    public Type getType() {
-        return Type.ReductionKey;
-    }
-
-    @Override
-    public boolean isLeaf() {
-        return true;
-    }
-
-    @Override
-    public Set<String> getReductionKeys() {
-        return Sets.newHashSet(getReductionKey());
-    }
-
-//    @Override
-//    public <T> T accept(BusinessServiceVertexVisitor<T> visitor) {
-//        return visitor.visit(this);
-//    }
 }

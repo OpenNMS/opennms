@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.graph.api.generic;
 
+import java.util.HashMap;
+
 import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.aware.LocationAware;
 import org.opennms.netmgt.graph.api.aware.NodeAware;
@@ -40,6 +42,11 @@ public class GenericVertex extends GenericElement implements Vertex, NodeAware, 
 
     public GenericVertex(String namespace, String id) {
         super(namespace, id);
+    }
+
+    /** Copy constructor */
+    public GenericVertex(GenericVertex copyMe){
+        super(new HashMap<>(copyMe.properties));
     }
 
 
@@ -60,7 +67,7 @@ public class GenericVertex extends GenericElement implements Vertex, NodeAware, 
     // TODO MVR implement me
     @Override
     public NodeInfo getNodeInfo() {
-        return null;
+        return this.getProperty(GenericProperties.NODE_INFO);
 //        final Optional<Object> first = graphProperties.getProperties().values().stream().filter(v -> v instanceof NodeInfo).findFirst();
 //        if (first.isPresent()) {
 //            return (NodeInfo) first.get();

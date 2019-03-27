@@ -42,8 +42,8 @@ public class GenericGraphContainerToSimpleGraphContainerTransformer implements F
         final SimpleGraphContainer simpleGraphContainer = new SimpleGraphContainer(genericGraphContainer.getId());
         simpleGraphContainer.setLabel(genericGraphContainer.getLabel());
         simpleGraphContainer.setDescription(genericGraphContainer.getDescription());
-        genericGraphContainer.getGraphs().forEach(genericGrah -> {
-            final SimpleGraph simpleGraph = new GenericGraphToSimpleGraphTransformer().apply(genericGrah); // TODO MVR this should not be necessary
+        genericGraphContainer.getGraphs().forEach(genericGraph -> {
+            final SimpleGraph simpleGraph = new SimpleGraph(genericGraph); // TODO MVR this should not be necessary
             simpleGraphContainer.addGraph(simpleGraph);
         });
         return simpleGraphContainer;

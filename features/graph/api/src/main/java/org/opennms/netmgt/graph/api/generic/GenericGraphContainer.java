@@ -80,7 +80,7 @@ public class GenericGraphContainer implements GraphContainer<GenericVertex, Gene
 
     @Override
     public List<String> getNamespaces() {
-        return graphs.stream().map(g -> g.getNamespace()).collect(Collectors.toList());
+        return graphs.stream().map(GenericGraph::getNamespace).collect(Collectors.toList());
     }
 
     @Override

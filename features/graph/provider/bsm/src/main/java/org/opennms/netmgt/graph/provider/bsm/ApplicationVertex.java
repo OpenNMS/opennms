@@ -30,14 +30,12 @@ package org.opennms.netmgt.graph.provider.bsm;
 
 import java.util.Set;
 
-import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.bsm.service.model.Application;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 
 public class ApplicationVertex extends AbstractBusinessServiceVertex {
 
-    private final Integer applicationId;
-    private final Set<String> reductionKeys;
+    private final static String PROPERTY_APPLICATION_ID = "applicationId";
 
     public ApplicationVertex(Application application, int level) {
         this(application.getId(),
@@ -51,39 +49,12 @@ public class ApplicationVertex extends AbstractBusinessServiceVertex {
     }
 
     private ApplicationVertex(int applicationId, String applicationName, Set<String> reductionKeys, int level) {
-        super(Type.Application + ":" + applicationId, applicationName, level);
-        this.applicationId = applicationId;
-        this.reductionKeys = reductionKeys;
+        super(Type.Application + ":" + applicationId, applicationName, level, Type.Application, true, reductionKeys);
+        delegate.setProperty(PROPERTY_APPLICATION_ID, applicationId);
     }
 
-    public Integer getApplicationId() {
-        return applicationId;
+    public Integer getApplicationId() { // TODO: do we really need this property?
+        return delegate.getProperty(PROPERTY_APPLICATION_ID);
     }
 
-    @Override
-    public Type getType() {
-        return Type.Application;
-    }
-
-    @Override
-    public boolean isLeaf() {
-        return true;
-    }
-
-    @Override
-    public Set<String> getReductionKeys() {
-        return reductionKeys;
-    }
-
-    @Override
-    public GenericVertex asGenericVertex() {
-        final GenericVertex genericVertex = super.asGenericVertex();
-        genericVertex.setProperty("applicationId", getApplicationId());
-        return genericVertex;
-    }
-
-    //    @Override
-//    public <T> T accept(BusinessServiceVertexVisitor<T> visitor) {
-//        return visitor.visit(this);
-//    }
 }

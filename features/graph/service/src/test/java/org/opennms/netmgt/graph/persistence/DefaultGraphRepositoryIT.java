@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.persistence.GraphRepository;
 import org.opennms.netmgt.graph.simple.SimpleGraph;
 import org.opennms.netmgt.graph.simple.SimpleGraphContainer;
@@ -71,9 +72,10 @@ public class DefaultGraphRepositoryIT {
         originalContainer.setLabel("I am soooo unique \\o/");
 
         // Create first graph
-        final SimpleGraph graph1 = new SimpleGraph(NAMESPACE);
-        graph1.setLabel("Dummy Graph");
-        graph1.setDescription("I am not so unique, I may be replaced at any time :(");
+        DefaultGraphInfo graphInfo = new DefaultGraphInfo(NAMESPACE, SimpleVertex.class);
+        graphInfo.setLabel("Dummy Graph");
+        graphInfo.setDescription("I am not so unique, I may be replaced at any time :(");
+        final SimpleGraph graph1 = SimpleGraph.fromGraphInfo(graphInfo);
 
         final SimpleVertex v1 = graph1.createVertex("v1");
         v1.setLabel("Vertex 1");
@@ -83,9 +85,10 @@ public class DefaultGraphRepositoryIT {
         graph1.createEdge(v1, v2);
 
         // Second graph is a copy of the first
+        graphInfo = new DefaultGraphInfo(NAMESPACE, SimpleVertex.class);
+        graphInfo.setLabel(graph1.getLabel() + " 2");
+        graphInfo.setDescription(NAMESPACE + "2");
         final SimpleGraph graph2 = new SimpleGraph(graph1);
-        graph2.setNamespace(NAMESPACE + "2");
-        graph2.setLabel(graph1.getLabel() + " 2");
 
         // Persist
         originalContainer.addGraph(graph1);
