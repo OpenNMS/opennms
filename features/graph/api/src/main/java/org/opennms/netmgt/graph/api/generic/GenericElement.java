@@ -48,7 +48,7 @@ public class GenericElement {
     }
 
     protected GenericElement (Map<String, Object> properties) {
-        this.properties = properties;
+        this.properties = Objects.requireNonNull(properties);
     }
 
     public void setProperty(String key, Object value) {

@@ -52,7 +52,7 @@ public class BusinessServiceVertex extends AbstractBusinessServiceVertex {
         setLabel(name);
     }
 
-    public Long getServiceId() { // TODO: do we need this property?
+    public Long getServiceId() {
         return delegate.getProperty(PROPERTY_SERVICE_ID);
     }
 

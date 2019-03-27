@@ -53,7 +53,7 @@ public class ApplicationVertex extends AbstractBusinessServiceVertex {
         delegate.setProperty(PROPERTY_APPLICATION_ID, applicationId);
     }
 
-    public Integer getApplicationId() { // TODO: do we really need this property?
+    public Integer getApplicationId() {
         return delegate.getProperty(PROPERTY_APPLICATION_ID);
     }
 

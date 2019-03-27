@@ -43,9 +43,8 @@ import org.opennms.netmgt.graph.api.info.NodeInfo;
  * It contains no data of it's own but operates on the data of it's wrapped GenericVertex.
  */
 public class SimpleVertex implements Vertex,
-        NodeAware, // TODO: patrick discuss with mvr if this is the right place for this interface
-        LocationAware // TODO: patrick discuss with mvr if this is the right place for this interface
-{
+        NodeAware,
+        LocationAware {
 
     protected final GenericVertex delegate;
 

@@ -279,11 +279,11 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         GenericGraph that = (GenericGraph) o;
-        return Objects.equals(jungGraph, that.jungGraph) &&
-                Objects.equals(vertexToIdMap, that.vertexToIdMap) &&
-                Objects.equals(edgeToIdMap, that.edgeToIdMap) &&
-                Objects.equals(focusStrategy, that.focusStrategy) &&
-                Objects.equals(graphInfo, that.graphInfo);
+        return Objects.equals(jungGraph, that.jungGraph)
+                && Objects.equals(vertexToIdMap, that.vertexToIdMap)
+                && Objects.equals(edgeToIdMap, that.edgeToIdMap)
+                && Objects.equals(focusStrategy, that.focusStrategy)
+                && Objects.equals(graphInfo, that.graphInfo);
     }
 
     @Override

@@ -56,7 +56,7 @@ public class GenericEdge extends GenericElement implements Edge {
 
     /** Copy constructor */
     public GenericEdge(GenericEdge copyMe) {
-        this(new GenericVertex(copyMe.source), new GenericVertex(copyMe.target), new HashMap<>(copyMe.getProperties()));
+        this(new GenericVertex(copyMe.source), new GenericVertex(copyMe.target), new HashMap<>(copyMe.properties));
     }
 
     public Map<String, Object> getProperties() {

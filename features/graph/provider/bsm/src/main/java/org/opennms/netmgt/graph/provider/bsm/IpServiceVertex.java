@@ -59,11 +59,11 @@ public class IpServiceVertex extends AbstractBusinessServiceVertex {
     }
 
     public void setIpServiceId(Integer ipServiceId) {
-        delegate.setProperty(PROPERTY_SERVICE_ID, ipServiceId); // TODO: do we need this property?
+        delegate.setProperty(PROPERTY_SERVICE_ID, ipServiceId);
     }
 
     public Integer getIpServiceId() {
-        return delegate.getProperty(PROPERTY_SERVICE_ID); // TODO: do we need this property?
+        return delegate.getProperty(PROPERTY_SERVICE_ID);
     }
 
 }
