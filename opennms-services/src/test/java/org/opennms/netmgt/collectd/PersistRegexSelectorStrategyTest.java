@@ -157,7 +157,6 @@ public class PersistRegexSelectorStrategyTest {
 
         resourceC = new GenericIndexResource(resourceTypeInst, rtInst.getName(), new SnmpInstId("1.2.3.4.5.6.7.8.9.1.3"));
         resourceD = new GenericIndexResource(resourceTypeInst, rtInst.getName(), new SnmpInstId("1.2.3.4.5.6.7.8.9.1.4"));
-
     }
 
     @After
@@ -167,10 +166,10 @@ public class PersistRegexSelectorStrategyTest {
 
     @Test
     public void testPersistSelector() throws Exception {
-        Assert.assertTrue(resourceA.shouldPersist(serviceParams));
-        Assert.assertFalse(resourceB.shouldPersist(serviceParams));
-        Assert.assertTrue(resourceC.shouldPersist(serviceParams));
-        Assert.assertFalse(resourceD.shouldPersist(serviceParams));
+        Assert.assertTrue("resourceA matches parameter expression", resourceA.shouldPersist(serviceParams));
+        Assert.assertFalse("resourceB doesn't matche parameter expression", resourceB.shouldPersist(serviceParams));
+        Assert.assertTrue("resourceC matches instance expression", resourceC.shouldPersist(serviceParams));
+        Assert.assertFalse("resourceD doesn't match instance expression", resourceD.shouldPersist(serviceParams));
     }
 
     @Test
