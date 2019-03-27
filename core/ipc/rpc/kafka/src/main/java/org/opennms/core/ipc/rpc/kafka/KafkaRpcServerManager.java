@@ -61,6 +61,8 @@ import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.core.ipc.rpc.kafka.model.RpcMessageProtos;
+import org.opennms.core.ipc.rpc.kafka.tracing.RequestCarrier;
+import org.opennms.core.ipc.rpc.kafka.tracing.Tracing;
 import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
@@ -74,6 +76,12 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
+
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
+import io.opentracing.propagation.TextMapAdapter;
 
 /**
  * This Manager runs on Minion, A consumer thread will be started on each RPC module which handles the request and
@@ -103,10 +111,12 @@ public class KafkaRpcServerManager {
     // Delay queue which caches rpcId and removes when rpcId reaches expiration time.
     private DelayQueue<RpcId> rpcIdQueue = new DelayQueue<>();
     private ExecutorService delayQueueExecutor = Executors.newSingleThreadExecutor();
+    private Tracer tracer;
 
     public KafkaRpcServerManager(KafkaConfigProvider configProvider, MinionIdentity minionIdentity) {
         this.kafkaConfigProvider = configProvider;
         this.minionIdentity = minionIdentity;
+        tracer = Tracing.init(minionIdentity.getId()+"@"+minionIdentity.getLocation());
     }
 
     public void init() throws IOException {
@@ -259,6 +269,16 @@ public class KafkaRpcServerManager {
                                 rpcContent = messageCache.get(rpcId);
                                 messageCache.remove(rpcId);
                             }
+                            Map<String, String> tracingInfoMap = RequestCarrier.getTracingInfoMap(rpcMessage.getTracingInfoList());
+                            Tracer.SpanBuilder spanBuilder = null;
+                            SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapAdapter(tracingInfoMap));
+                            if (context != null) {
+                                spanBuilder = tracer.buildSpan(module.getId()).asChildOf(context);
+                            } else {
+                                spanBuilder = tracer.buildSpan(module.getId());
+                            }
+                            Span minionSpan = spanBuilder.start();
+                            minionSpan.setTag("rpcId", rpcId);
                             RpcRequest request = module.unmarshalRequest(rpcContent.toStringUtf8());
                             CompletableFuture<RpcResponse> future = module.execute(request);
                             future.whenComplete((res, ex) -> {
@@ -267,11 +287,12 @@ public class KafkaRpcServerManager {
                                     // An exception occurred, store the exception in a new response
                                     LOG.warn("An error occured while executing a call in {}.", module.getId(), ex);
                                     response = module.createResponseWithException(ex);
+                                    minionSpan.log(ex.getMessage());
                                 } else {
                                     // No exception occurred, use the given response
                                     response = res;
                                 }
-
+                                minionSpan.finish();
                                 try {
                                     final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory(KafkaRpcConstants.RPC_RESPONSE_TOPIC_NAME,
                                             module.getId());

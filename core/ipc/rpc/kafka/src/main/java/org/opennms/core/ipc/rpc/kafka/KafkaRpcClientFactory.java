@@ -69,6 +69,8 @@ import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
 import org.opennms.core.ipc.rpc.kafka.model.RpcMessageProtos;
+import org.opennms.core.ipc.rpc.kafka.tracing.RequestCarrier;
+import org.opennms.core.ipc.rpc.kafka.tracing.Tracing;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.logging.Logging.MDCCloseable;
 import org.opennms.core.rpc.api.RemoteExecutionException;
@@ -87,6 +89,10 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
+
+import io.opentracing.Span;
+import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
 
 /**
  * This Client Factory runs on OpenNMS. Whenever a Client receives an RPC request, it generates a unique rpcId and
@@ -125,6 +131,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
     private DelayQueue<ResponseCallback> delayQueue = new DelayQueue<>();
     // Used to cache responses when large message are involved.
     private Map<String, ByteString> messageCache = new ConcurrentHashMap<>();
+    private Tracer tracer = Tracing.init("OpenNMS");
 
     @Override
     public <S extends RpcRequest, T extends RpcResponse> RpcClient<S, T> getClient(RpcModule<S, T> module) {
@@ -136,12 +143,14 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                     // The request is for the current location, invoke it directly
                     return module.execute(request);
                 }
+                Span span = tracer.buildSpan(module.getId()).start();
                 final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory(
                         KafkaRpcConstants.RPC_REQUEST_TOPIC_NAME, module.getId(), request.getLocation());
                 String requestTopic = topicNameFactory.getName();
                 String marshalRequest = module.marshalRequest(request);
                 // Generate RPC Id for every request to track request/response.
                 String rpcId = UUID.randomUUID().toString();
+                span.setTag("rpcId", rpcId);
                 // Calculate timeout based on ttl and default timeout.
                 Long ttl = request.getTimeToLiveMs();
                 ttl = (ttl != null && ttl > 0) ? ttl : DEFAULT_TTL;
@@ -150,7 +159,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 final CompletableFuture<T> future = new CompletableFuture<>();
                 final Map<String, String> loggingContext = Logging.getCopyOfContextMap();
                 ResponseHandler<S, T> responseHandler = new ResponseHandler<S, T>(future, module, rpcId,
-                        expirationTime, loggingContext);
+                        expirationTime, loggingContext, span);
                 delayQueue.offer(responseHandler);
                 rpcResponseMap.put(rpcId, responseHandler);
                 kafkaConsumerRunner.startConsumingForModule(module.getId());
@@ -177,6 +186,8 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                             }
                         }
                     };
+                    // Add tracing info.
+                    tracer.inject(span.context(), Format.Builtin.TEXT_MAP, new RequestCarrier(builder));
                     RpcMessageProtos.RpcMessage rpcMessage =  builder.setRpcContent(byteString)
                             .setCurrentChunkNumber(chunk)
                             .setTotalChunks(totalChunks)
@@ -263,14 +274,16 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         private final String rpcId;
         private Map<String, String> loggingContext;
         private boolean isProcessed = false;
+        private Span span;
 
         private ResponseHandler(CompletableFuture<T> responseFuture, RpcModule<S, T> rpcModule, String rpcId,
-                               long timeout, Map<String, String> loggingContext) {
+                               long timeout, Map<String, String> loggingContext, Span span) {
             this.responseFuture = responseFuture;
             this.rpcModule = rpcModule;
             this.expirationTime = timeout;
             this.rpcId = rpcId;
             this.loggingContext = loggingContext;
+            this.span = span;
         }
 
         @Override
@@ -289,6 +302,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 } else {
                     responseFuture.completeExceptionally(new RequestTimedOutException(new TimeoutException()));
                 }
+                span.finish();
                 rpcResponseMap.remove(rpcId);
                 messageCache.remove(rpcId);
             } catch (Exception e) {
