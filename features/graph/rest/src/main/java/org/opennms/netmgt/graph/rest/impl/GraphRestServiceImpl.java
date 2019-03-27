@@ -63,7 +63,11 @@ public class GraphRestServiceImpl implements GraphRestService {
         if (graphContainerInfos.isEmpty()) {
             return Response.noContent().build();
         }
-        final MediaType contentType = getContentType(acceptHeader);
+        // TODO MVR duplicate code
+        final MediaType contentType = parseContentType(acceptHeader);
+        if (contentType == null) {
+            return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build();
+        }
         final String rendered = render(contentType, graphContainerInfos);
         return Response.ok(rendered).type(contentType).build();
     }
@@ -74,21 +78,17 @@ public class GraphRestServiceImpl implements GraphRestService {
         if (container == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        final MediaType contentType = getContentType(acceptHeader);
+        // TODO MVR duplicate code
+        final MediaType contentType = parseContentType(acceptHeader);
+        if (contentType == null) {
+            return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build();
+        }
         final String rendered = render(contentType, container);
         return Response.ok(rendered).type(contentType).build();
     }
 
-    private static MediaType getContentType(String type) {
-        final MediaType mediaType = parseContentType(type);
-        if (mediaType == null) {
-            return MediaType.APPLICATION_JSON_TYPE;
-        }
-        return mediaType;
-    }
-
     // Tries to parse the provided type
-    private static MediaType parseContentType(String type) {
+    protected static MediaType parseContentType(String type) {
         if (Strings.isNullOrEmpty(type)) {
             return null;
         }
@@ -120,7 +120,7 @@ public class GraphRestServiceImpl implements GraphRestService {
         return getRenderer(mediaType).render(graphContainer);
     }
 
-    private static GraphRenderer getRenderer(MediaType mediaType) {
+    protected static GraphRenderer getRenderer(MediaType mediaType) {
         if (mediaType.equals(MediaType.APPLICATION_JSON_TYPE)) {
             return new JsonGraphRenderer();
         }
