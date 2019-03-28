@@ -106,45 +106,45 @@
           <c:forEach var="graphNum" begin="0" end="${fn:length(resultSets) - 1}">
             <c:set var="resultSet" value="${resultSets[graphNum]}"/>
             <tr>
-              <td class="col-md-1">
+              <td align="right" class="w-25">
                 <div class="btn-toolbar" role="toolbar">
                   <div class="btn-group" role="group">
                     <button class="btn btn-secondary" onclick="modifyGraph(${graphNum})">Modify</button>
                     <button class="btn btn-secondary" onclick="deleteGraph(${graphNum})">Delete</button>
                   </div>
                 </div>
-              </td>
-              <td align="right" class="col-md-3">
-                ${resultSet.title}
-                <br/>
-                <c:if test="${!empty resultSet.resource.parent}">
-                  ${resultSet.resource.parent.resourceType.label}:
+                <div>
+                  ${resultSet.title}
+                  <br/>
+                  <c:if test="${!empty resultSet.resource.parent}">
+                    ${resultSet.resource.parent.resourceType.label}:
+                    <c:choose>
+                      <c:when test="${!empty resultSet.resource.parent.link}">
+                        <a href="<c:url value='${resultSet.resource.parent.link}'/>">${resultSet.resource.parent.label}</a>
+                      </c:when>
+                      <c:otherwise>
+                        ${resultSet.resource.parent.label}
+                      </c:otherwise>
+                    </c:choose>
+                    <br />
+                  </c:if>
+                  ${resultSet.resource.resourceType.label}:
                   <c:choose>
-                    <c:when test="${!empty resultSet.resource.parent.link}">
-                      <a href="<c:url value='${resultSet.resource.parent.link}'/>">${resultSet.resource.parent.label}</a>
+                    <c:when test="${!empty resultSet.resource.link}">
+                      <a href="<c:url value='${resultSet.resource.link}'/>">${resultSet.resource.label}</a>
                     </c:when>
                     <c:otherwise>
-                      ${resultSet.resource.parent.label}
+                      ${resultSet.resource.label}
                     </c:otherwise>
                   </c:choose>
-                  <br />
-                </c:if>
-                ${resultSet.resource.resourceType.label}:
-                <c:choose>
-                  <c:when test="${!empty resultSet.resource.link}">
-                    <a href="<c:url value='${resultSet.resource.link}'/>">${resultSet.resource.label}</a>
-                  </c:when>
-                  <c:otherwise>
-                    ${resultSet.resource.label}
-                  </c:otherwise>
-                </c:choose>
-                <br/>
-                <br/>
-                From: ${resultSet.start}
-                <br/>
-                To: ${resultSet.end}
+                  <br/>
+                  <br/>
+                  From: ${resultSet.start}
+                  <br/>
+                  To: ${resultSet.end}
+                </div>
               </td>
-              <td align="left" style="col-md-8">
+              <td align="left" class="w-75">
                 <div class="graph-container" data-graph-zoomable="false" data-resource-id="${resultSet.resource.id}" data-graph-name="${resultSet.prefabGraph.name}" data-graph-title="${resultSet.prefabGraph.title}" data-graph-start="${resultSet.start.time}" data-graph-end="${resultSet.end.time}"></div>
               </td>
             </tr>

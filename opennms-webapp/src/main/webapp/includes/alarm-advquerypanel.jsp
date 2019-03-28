@@ -71,8 +71,8 @@
 <form action="alarm/query" method="get">
 
 	<div class="form-group col-sm-6">
-		<label for="msgsub">Alarm Text Contains</label>
-		<input class="form-control" type="text" name="msgsub" />
+		<label for="alarmtext">Alarm Text Contains</label>
+		<input class="form-control" type="text" name="alarmtext" />
 	</div>
 
 	<div class="form-group col-sm-6">

@@ -314,6 +314,7 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
 
             $scope.importRules = function() {
                 var modalInstance = $uibModal.open({
+                    size: 'lg',
                     backdrop: false,
                     controller: 'ClassificationImportController',
                     templateUrl: importModalTemplate,
