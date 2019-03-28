@@ -49,9 +49,9 @@
         <artifactId>org.opennms.core.camel</artifactId>
       </dependency>
       <dependency>
-        <groupId>org.apache.servicemix.bundles</groupId>
-        <artifactId>org.apache.servicemix.bundles.kafka-clients</artifactId>
-        <version>${kafkaStreamsBundleVersion}</version>
+        <groupId>org.apache.kafka</groupId>
+        <artifactId>kafka-clients</artifactId>
+        <version>${kafkaStreamsVersion}</version>
         <exclusions>
           <exclusion>
             <artifactId>log4j</artifactId>
