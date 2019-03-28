@@ -9,7 +9,7 @@
 >
     <context:annotation-config/>
     <bean id="defaultGraphRepository" class="org.opennms.netmgt.graph.persistence.DefaultGraphRepository" >
-        <constructor-arg ref="transactionTemplate" />
+        <constructor-arg ref="sessionUtils" />
         <constructor-arg ref="graphContainerDao" />
     </bean>
 </beans>
