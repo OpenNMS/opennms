@@ -49,7 +49,6 @@ import org.opennms.netmgt.graph.api.generic.GenericVertex;
 // TODO MVR implement duplication detection (e.g. adding same vertex twice
 // and as well as adding different edges with different source/target vertices, should add each vertex only once,
 // maybe not here, but at some point that check should be implemented)
-
 public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends SimpleEdge> implements Graph<V, E> {
 
     private final GenericGraph delegate;

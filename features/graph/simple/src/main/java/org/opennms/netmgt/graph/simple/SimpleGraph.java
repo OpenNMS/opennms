@@ -36,7 +36,7 @@ import org.opennms.netmgt.graph.api.info.GraphInfo;
 
 /**
  * Acts as a domain specific view on a Graph.
- * This is the most basic concrete subclass of AbstractDomainGraph and can be used as a reference for your own domain graph.
+ * This is the most basic concrete subclass of {@link AbstractDomainGraph} and can be used as a reference for your own domain graph.
  */
 public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleEdge> {
 

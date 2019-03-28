@@ -42,9 +42,7 @@ import org.opennms.netmgt.graph.api.info.NodeInfo;
  * Can be extended by domain specific Vertex classes.
  * It contains no data of it's own but operates on the data of it's wrapped GenericVertex.
  */
-public class SimpleVertex implements Vertex,
-        NodeAware,
-        LocationAware {
+public class SimpleVertex implements Vertex, NodeAware, LocationAware {
 
     protected final GenericVertex delegate;
 

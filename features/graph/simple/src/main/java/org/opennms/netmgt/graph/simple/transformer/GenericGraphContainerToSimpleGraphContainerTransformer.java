@@ -35,6 +35,7 @@ import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.simple.SimpleGraph;
 import org.opennms.netmgt.graph.simple.SimpleGraphContainer;
 
+// TODO MVR this should be obsolete if GraphREpository and GraphService operate on GenericGraph
 public class GenericGraphContainerToSimpleGraphContainerTransformer implements Function<GenericGraphContainer, SimpleGraphContainer> {
     @Override
     public SimpleGraphContainer apply(GenericGraphContainer genericGraphContainer) {

@@ -126,13 +126,6 @@ public class SimpleGraphContainer implements GraphContainer {
         this.label = label;
     }
 
-    // TODO MVR do we really want to use these methods?
-    public SimpleGraph g(String namespace) {
-        final SimpleGraph simpleGraph = new SimpleGraph(namespace);
-        addGraph(simpleGraph);
-        return simpleGraph;
-    }
-
     @Override
     public GenericGraphContainer asGenericGraphContainer() {
         final GenericGraphContainer genericGraphContainer = new GenericGraphContainer();
