@@ -30,7 +30,6 @@ package org.opennms.smoketest.graph;
 
 import java.io.IOException;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
@@ -70,6 +69,6 @@ public class GraphProviderIT extends OpenNMSSeleniumTestCase {
         karafShell.runCommand("feature:install opennms-graph-provider-dummy");
         karafShell.runCommand("feature:list -i", output -> output.contains("opennms-graphs") && output.contains("opennms-graph-provider-dummy"));
         karafShell.runCommand("graph:get --container persistent-dummy --namespace persistent-dummy.graph",
-                output -> output.contains("Vertex Details (0)"));
+                output -> output.contains("No Vertices"));
     }
 }
