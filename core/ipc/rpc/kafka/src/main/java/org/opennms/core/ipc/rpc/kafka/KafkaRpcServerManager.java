@@ -62,10 +62,10 @@ import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.core.ipc.rpc.kafka.model.RpcMessageProtos;
 import org.opennms.core.ipc.rpc.kafka.tracing.RequestCarrier;
-import org.opennms.core.ipc.rpc.kafka.tracing.Tracing;
 import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
+import org.opennms.core.rpc.api.TracerRegistry;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +81,7 @@ import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
-import io.opentracing.propagation.TextMapAdapter;
+import io.opentracing.propagation.TextMapExtractAdapter;
 
 /**
  * This Manager runs on Minion, A consumer thread will be started on each RPC module which handles the request and
@@ -111,12 +111,13 @@ public class KafkaRpcServerManager {
     // Delay queue which caches rpcId and removes when rpcId reaches expiration time.
     private DelayQueue<RpcId> rpcIdQueue = new DelayQueue<>();
     private ExecutorService delayQueueExecutor = Executors.newSingleThreadExecutor();
+    private final TracerRegistry tracerRegistry;
     private Tracer tracer;
 
-    public KafkaRpcServerManager(KafkaConfigProvider configProvider, MinionIdentity minionIdentity) {
+    public KafkaRpcServerManager(KafkaConfigProvider configProvider, MinionIdentity minionIdentity, TracerRegistry tracerRegistry) {
         this.kafkaConfigProvider = configProvider;
         this.minionIdentity = minionIdentity;
-        tracer = Tracing.init(minionIdentity.getId()+"@"+minionIdentity.getLocation());
+        this.tracerRegistry = tracerRegistry;
     }
 
     public void init() throws IOException {
@@ -147,6 +148,7 @@ public class KafkaRpcServerManager {
                 }
             }
         });
+        tracer = tracerRegistry.getTracer(minionIdentity.getId()+"@"+minionIdentity.getLocation());
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -270,8 +272,8 @@ public class KafkaRpcServerManager {
                                 messageCache.remove(rpcId);
                             }
                             Map<String, String> tracingInfoMap = RequestCarrier.getTracingInfoMap(rpcMessage.getTracingInfoList());
-                            Tracer.SpanBuilder spanBuilder = null;
-                            SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapAdapter(tracingInfoMap));
+                            Tracer.SpanBuilder spanBuilder;
+                            SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(tracingInfoMap));
                             if (context != null) {
                                 spanBuilder = tracer.buildSpan(module.getId()).asChildOf(context);
                             } else {

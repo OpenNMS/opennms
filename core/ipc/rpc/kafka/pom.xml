@@ -70,17 +70,7 @@
         <artifactId>rate-limited-logger</artifactId>
         <version>${rateLimitedLoggerVersion}</version>
       </dependency>
-      <dependency>
-        <groupId>io.opentracing</groupId>
-        <artifactId>opentracing-api</artifactId>
-        <version>0.32.0</version>
-      </dependency>
-      <dependency>
-        <groupId>io.jaegertracing</groupId>
-        <artifactId>jaeger-client</artifactId>
-        <version>0.32.0</version>
-      </dependency>
-      <dependency>
+     <dependency>
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.lib</artifactId>
         <scope>test</scope>

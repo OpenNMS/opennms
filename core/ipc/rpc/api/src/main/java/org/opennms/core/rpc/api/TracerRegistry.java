@@ -26,28 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.rpc.kafka.tracing;
+package org.opennms.core.rpc.api;
 
-import io.jaegertracing.Configuration;
-import io.jaegertracing.Configuration.ReporterConfiguration;
-import io.jaegertracing.Configuration.SamplerConfiguration;
-import io.jaegertracing.internal.JaegerTracer;
-import io.jaegertracing.internal.samplers.ConstSampler;
+import io.opentracing.Tracer;
 
-public class Tracing {
+public interface TracerRegistry {
 
-    public static JaegerTracer init(String service) {
-        SamplerConfiguration samplerConfig = SamplerConfiguration.fromEnv()
-                .withType(ConstSampler.TYPE)
-                .withParam(1);
-
-        ReporterConfiguration reporterConfig = ReporterConfiguration.fromEnv()
-                .withLogSpans(true);
-
-        Configuration config = new Configuration(service)
-                .withSampler(samplerConfig)
-                .withReporter(reporterConfig);
-
-        return config.getTracer();
-    }
+    Tracer getTracer(String serviceName);
 }

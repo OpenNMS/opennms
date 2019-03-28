@@ -272,6 +272,18 @@
     <feature name="twitter4j" version="${twitter4jVersion}" description="Twitter4J">
         <bundle>wrap:mvn:org.twitter4j/twitter4j-core/${twitter4jVersion}</bundle>
     </feature>
+    <feature name="opentracing-api" version="${opentracingVersion}" description="OpenTracing API">
+        <bundle>wrap:mvn:io.opentracing/opentracing-api/${opentracingVersion}</bundle>
+        <bundle>wrap:mvn:io.opentracing/opentracing-noop/${opentracingVersion}</bundle>
+        <bundle>wrap:mvn:io.opentracing/opentracing-util/${opentracingVersion}</bundle>
+    </feature>
+    <feature name="jeager-tracer" version="${opentracingVersion}" description="OpenTracing API">
+        <feature>opentracing-api</feature>
+        <bundle>wrap:mvn:io.jaegertracing/jaeger-client/${jeagertracingVersion}</bundle>
+        <bundle>wrap:mvn:io.jaegertracing/jaeger-core/${jeagertracingVersion}</bundle>
+        <bundle>wrap:mvn:com.google.code.gson/gson/2.8.2</bundle>
+    </feature>
+
     <feature name="opennms-activemq-pool" version="${project.version}" description="OpenNMS :: Features :: ActiveMQ :: Pool">
         <feature>activemq-client</feature>
         <feature>camel-core</feature>
@@ -496,6 +508,7 @@
         <feature>opennms-core-camel</feature>
         <feature>opennms-distributed-core-api</feature>
         <feature>opennms-dao-api</feature>
+        <feature>opentracing-api</feature>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.xml/${project.version}</bundle>
