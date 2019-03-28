@@ -150,7 +150,7 @@ public class PersistRegexSelectorStrategyTest {
         persistenceSelectorStrategyInst.setClazz("org.opennms.netmgt.collectd.PersistRegexSelectorStrategy");
         Parameter paramInst = new Parameter();
         paramInst.setKey(PersistRegexSelectorStrategy.MATCH_EXPRESSION);
-        paramInst.setValue("#instance matches '.3$'");
+        paramInst.setValue("#instance matches '.*\\.3$'");
         persistenceSelectorStrategyInst.addParameter(paramInst);
         rtInst.setPersistenceSelectorStrategy(persistenceSelectorStrategyInst);
         GenericIndexResourceType resourceTypeInst = new GenericIndexResourceType(agent, snmpCollection, rtInst);
