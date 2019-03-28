@@ -62,19 +62,6 @@ public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends Simp
         this.delegate = genericGraph;
     }
 
-    public SimpleVertex createVertex(String id) {
-        final SimpleVertex vertex = new SimpleVertex(getNamespace(), id);
-        this.delegate.addVertex(vertex.asGenericVertex());
-        return vertex;
-    }
-
-    public SimpleEdge createEdge(SimpleVertex sourceVertex, SimpleVertex targetVertex) {
-        final SimpleEdge edge = new SimpleEdge(sourceVertex, targetVertex);
-        edge.setNamespace(getNamespace());
-        this.delegate.addEdge(edge.asGenericEdge());
-        return edge;
-    }
-
     @Override
     public List<V> getVertices() {
         return this.delegate.getVertices().stream().map(this::convert).collect(Collectors.toList());
