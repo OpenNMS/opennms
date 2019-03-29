@@ -190,7 +190,7 @@ public class TrapdConfigBean implements TrapdConfig, Serializable {
 		this.numThreads = numThreads;
 	}
 
-	private static SnmpV3User toSnmpV3User(Snmpv3User snmpv3User) {
+	public static SnmpV3User toSnmpV3User(Snmpv3User snmpv3User) {
 		SnmpV3User snmpV3User = new SnmpV3User();
 		snmpV3User.setAuthPassPhrase(snmpv3User.getAuthPassphrase());
 		snmpV3User.setAuthProtocol(snmpv3User.getAuthProtocol());
@@ -198,6 +198,7 @@ public class TrapdConfigBean implements TrapdConfig, Serializable {
 		snmpV3User.setPrivPassPhrase(snmpv3User.getPrivacyPassphrase());
 		snmpV3User.setPrivProtocol(snmpv3User.getPrivacyProtocol());
 		snmpV3User.setSecurityName(snmpv3User.getSecurityName());
+		snmpV3User.setSecurityLevel(snmpv3User.getSecurityLevel());
 		return snmpV3User;
 	}
 

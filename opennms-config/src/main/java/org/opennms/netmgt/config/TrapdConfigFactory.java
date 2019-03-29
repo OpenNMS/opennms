@@ -242,6 +242,7 @@ public final class TrapdConfigFactory implements TrapdConfig {
             Snmpv3User newUser = new Snmpv3User();
             newUser.setEngineId(u.getEngineId());
             newUser.setSecurityName(u.getSecurityName());
+            newUser.setSecurityLevel(u.getSecurityLevel());
             newUser.setAuthProtocol(u.getAuthProtocol());
             newUser.setAuthPassphrase(u.getAuthPassPhrase());
             newUser.setPrivacyProtocol(u.getPrivProtocol());
