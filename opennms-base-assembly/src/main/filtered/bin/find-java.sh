@@ -4,10 +4,12 @@ MYDIR="$(dirname "$0")"
 MYDIR="$(cd "$MYDIR" || exit 1; pwd)"
 
 # shellcheck disable=SC1090
-. "${MYDIR}/_lib.sh"
+if [ -e "${MYDIR}/_lib.sh" ]; then
+	. "${MYDIR}/_lib.sh"
 
-# if $JAVA_SEARCH_DIRS is already set, make sure it is treated as an array
-__onms_convert_to_array JAVA_SEARCH_DIRS
+	# if $JAVA_SEARCH_DIRS is already set, make sure it is treated as an array
+	__onms_convert_to_array JAVA_SEARCH_DIRS
+fi
 
 compare_versions() {
 	a="$(printf '%s.0.0.0' "${1}" | sed -e 's,^1\.\([123456789]\),\1.0,' -e 's,_,.,g')"
