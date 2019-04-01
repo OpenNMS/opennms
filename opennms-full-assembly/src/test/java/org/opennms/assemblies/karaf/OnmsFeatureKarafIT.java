@@ -711,8 +711,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	@Ignore("Does not work with Karaf 4.2.3 anymore")
 	public void testInstallFeatureAlarmChangeNotifier() {
 		installFeature("opennms-http-whiteboard");
-		installFeature("org.opennms.plugin.licencemanager"); // Plugin manager
-		installFeature("org.opennms.plugin.featuremanager"); // Plugin manager
 		installFeature("opennms-core"); // System classpath
 		installFeature("opennms-core-db"); // System classpath
 		installFeature("opennms-events-api"); // System classpath
@@ -724,18 +722,9 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	@Ignore("Does not work with Karaf 4.2.3 anymore")
 	public void testInstallFeatureOpennmsEsRest() {
 		installFeature("opennms-http-whiteboard");
-		installFeature("org.opennms.plugin.licencemanager"); // Plugin manager
-		installFeature("org.opennms.plugin.featuremanager"); // Plugin manager
 		installFeature("opennms-core"); // System classpath
 		installFeature("opennms-dao-api"); // System classpath
 		installFeature("opennms-es-rest");
-		System.out.println(executeCommand("feature:list -i"));
-	}
-	@Test
-	@Ignore("Does not work with Karaf 4.2.3 anymore")
-	public void testInstallFeatureInternalPluginsDescriptor() {
-		installFeature("opennms-http-whiteboard");
-		installFeature("internal-plugins-descriptor");
 		System.out.println(executeCommand("feature:list -i"));
 	}
     @Ignore("Failing since bumping 23.0.0 to 24.0.0")
