@@ -364,9 +364,6 @@
 
         <p><b>SNMP MIB Compiler</b>: Compile MIBs in order to generate events definitions from traps or
             data collection groups for performance metrics.</p>
-            
-        <p><b>OpenNMS Plugin Manager</b>: Manage optional OpenNMS OSGi plugins installed in local and remote Karaf Containers.</p>
-
       </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
