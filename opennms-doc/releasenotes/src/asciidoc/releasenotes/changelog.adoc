@@ -17,6 +17,8 @@ The codename for 24.0.0 is _TODO NOT DEFINED YET_.
 * The NCS-Alarm page and the NCS-Topology-Plugin have been removed. See issue HZN-1422.
 * The usage of `config:edit` may be changed. This affects all configuration edits, where the configuration consists a `-`,
   e.g. `org.opennms.features.telemetry.listeners-udp-50003`. See "Karaf configuration Command changed" for more details.
+* The _Plugin Manager_ is no longer available.
+  Features or bundles should be installed via the Karaf Shell.
 * The `HttpService` can no longer be consumed.
   This will only affect custom implementations of HTTP Servlets and Resources, but only if they are exposed via `httpServices.register(...)`.
   If you need those, please expose the according services via the OSGi Service Registration.

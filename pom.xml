@@ -1373,11 +1373,6 @@
     <skipPdfGeneration>true</skipPdfGeneration>
     <skipSignJar>true</skipSignJar>
 
-    <!-- change to match which version of opennms-pluginmanger you want to run -->
-    <pluginmanagerVersion>1.3.0</pluginmanagerVersion>
-    <licencemanagerVersion>${pluginmanagerVersion}</licencemanagerVersion>
-    <featuremanagerVersion>${pluginmanagerVersion}</featuremanagerVersion>
-
     <!-- nodejs development -->
     <frontendPluginVersion>1.6</frontendPluginVersion>
     <nodeVersion>v8.11.3</nodeVersion>

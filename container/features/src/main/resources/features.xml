@@ -7,8 +7,6 @@
     <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
     <repository>mvn:org.opennms.integration.api/karaf-features/${opennmsApiVersion}/xml</repository>
     <repository>mvn:com.eclipsesource.jaxrs/features/${osgiJaxRsVersion}/xml/features</repository>
-    <repository>mvn:org.opennms.plugins/org.opennms.plugin.licencemanager/${pluginmanagerVersion}/xml/features</repository>
-    <repository>mvn:org.opennms.plugins/org.opennms.plugin.featuremanager/${pluginmanagerVersion}/xml/features</repository>
     <feature name="opennms-amqp-event-forwarder" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Event Forwarder">
         <feature>camel-core</feature>
         <feature>camel-blueprint</feature>
@@ -1347,17 +1345,6 @@
         <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
         <bundle>mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
     </feature>
-    <feature name="vaadin-opennms-pluginmanager" version="${project.version}" description="OpenNMS :: Plugins :: Admin UI">
-        <details>OpenNMS Vaadin Administration UI for installing Plugin modules.</details>
-        <feature>opennms-core</feature>
-        <feature>vaadin</feature>
-        <feature>org.opennms.plugin.licencemanager</feature>
-        <feature>org.opennms.plugin.featuremanager</feature>
-        <bundle>mvn:org.opennms.plugins/vaadin-opennms-pluginmanager/${project.version}</bundle>
-        <bundle>mvn:org.opennms.plugins/org.opennms.plugin.pluginmanager.pluginmanager-core/${pluginmanagerVersion}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/core/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/widgetset/${project.version}</bundle>
-    </feature>
     <feature name="alarm-change-notifier" version="${project.version}" description="alarm-change-notifier">
         <details>Feature definition for alarm-change-notifier</details>
         <bundle>mvn:com.impossibl.pgjdbc-ng/pgjdbc-ng/0.7.1</bundle>
@@ -1369,7 +1356,6 @@
         <bundle>mvn:io.netty/netty-codec/${netty4Version}</bundle>
         <bundle>mvn:org.opennms.plugins/alarm-change-notifier.pg-jdbc-utils/${project.version}</bundle>
         <bundle>mvn:org.opennms.plugins/alarm-change-notifier.main-module/${project.version}</bundle>
-        <bundle>mvn:org.opennms.plugins/alarm-change-notifier.product-descriptor/${project.version}</bundle>
         <bundle>mvn:com.googlecode.json-simple/json-simple/1.1.1</bundle>
     </feature>
     <feature name="opennms-es-rest" version="${project.version}" description="OpenNMS :: Features :: ElasticSearch Rest">
@@ -1384,11 +1370,6 @@
         <bundle>mvn:org.opennms.features/org.opennms.features.opennms-es-rest/${project.version}</bundle>
         <bundle>mvn:com.googlecode.json-simple/json-simple/1.1.1</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
-    </feature>
-    <feature name="internal-plugins-descriptor" version="${project.version}">
-        <details>Module to generate list of internal plugins which can be installed</details>
-        <feature>org.opennms.plugin.licencemanager</feature>
-        <bundle>mvn:org.opennms.plugins/internal-plugins-descriptor/${project.version}</bundle>
     </feature>
     <feature name="opennms-jest" version="${project.version}" description="OpenNMS :: Features :: Jest :: Feature definition">
         <details>Feature definition for Jest (ElasticSearch Java ReST Client)</details>

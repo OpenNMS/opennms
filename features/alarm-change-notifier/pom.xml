@@ -36,8 +36,6 @@
   <modules>
     <module>pg-jdbc-utils</module>
     <module>main-module</module>
-    <module>product-descriptor</module>
-    <module>feature</module>
   </modules>
 
   <build>
