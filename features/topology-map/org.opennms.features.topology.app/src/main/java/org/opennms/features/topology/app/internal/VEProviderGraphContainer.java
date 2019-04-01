@@ -497,11 +497,12 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private static void addRefTreeToSet(TopologyServiceClient topologyServiceClient, VertexRef vertexId, Set<VertexRef> processed, Criteria[] criteria) {
 		processed.add(vertexId);
 
-		for(VertexRef childId : topologyServiceClient.getChildren(vertexId, criteria)) {
-			if (!processed.contains(childId)) {
-				addRefTreeToSet(topologyServiceClient, childId, processed, criteria);
-			}
-		}
+		// TODO MVR ???
+//		for(VertexRef childId : topologyServiceClient.getChildren(vertexId, criteria)) {
+//			if (!processed.contains(childId)) {
+//				addRefTreeToSet(topologyServiceClient, childId, processed, criteria);
+//			}
+//		}
 	}
 
 	@Override

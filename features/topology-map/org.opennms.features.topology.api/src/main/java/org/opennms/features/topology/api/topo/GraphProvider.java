@@ -37,7 +37,7 @@ public interface GraphProvider extends VertexProvider, EdgeProvider, SelectionAw
 
 	void refresh();
 
-	void resetContainer();
+    void resetContainer();
 
 	void addVertices(Vertex... vertices);
 
@@ -46,9 +46,8 @@ public interface GraphProvider extends VertexProvider, EdgeProvider, SelectionAw
 	/**
 	 * @deprecated Convert calls to this to addVertices
 	 */
+	// TODO MVR remove me as well
 	Vertex addVertex(int x, int y);
-
-	Vertex addGroup(String label, String iconKey);
 
 	EdgeRef[] getEdgeIdsForVertex(VertexRef vertex);
 

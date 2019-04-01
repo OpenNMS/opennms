@@ -46,6 +46,7 @@ import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAware;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
+import org.opennms.features.topology.api.topo.CollapsibleRef;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Defaults;
@@ -556,34 +557,15 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
     }
 
     /**
-     * TODO: Is this correct?
+     * Returns the vertices of the collapsible.
+     * @param collapsibleRef
+     * @param criteria
+     * @return
      */
     @Override
-    public List<Vertex> getRootGroup() {
-        return getVertices();
-    }
-
-    @Override
-    public boolean hasChildren(VertexRef group) {	
-        return false;
-    }
-
-    @Override
-    public Vertex getParent(VertexRef vertex) {
-        // throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
-        return null;
-    }
-
-    @Override
-    public boolean setParent(VertexRef child, VertexRef parent) {
-        // throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
-        return false;
-    }
-
-    @Override
-    public List<Vertex> getChildren(VertexRef group, Criteria... criteria) {
+    public List<Vertex> getVertices(CollapsibleRef collapsibleRef, Criteria... criteria) {
         for (CollapsibleCriteria criterium : getCollapsedCriteria(criteria)) {
-            if (new RefComparator().compare(criterium.getCollapsedRepresentation(), group) == 0) {
+            if (new RefComparator().compare(criterium.getCollapsedRepresentation(), collapsibleRef) == 0) {
                 return getVertices(criterium.getVertices());
             }
         }
@@ -670,11 +652,6 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
     @Override
     public Vertex addVertex(int x, int y) {
         return m_delegate.addVertex(x, y);
-    }
-
-    @Override
-    public Vertex addGroup(String label, String iconKey) {
-        throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
     }
 
     @Override

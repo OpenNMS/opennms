@@ -33,10 +33,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -44,7 +42,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Criteria.ElementType;
@@ -54,8 +51,6 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexListener;
-import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.enlinkd.LldpOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.NodesOnmsTopologyUpdater;
@@ -174,12 +169,6 @@ public class EnhancedLinkdTopologyProviderTest {
     }
 
     @Test
-    public void testAddGroup() {
-        Vertex parentId = m_topologyProvider.addGroup("Linkd Group", "linkd:group");
-        Assert.assertEquals(true, m_topologyProvider.containsVertexId(parentId));
-    }
-
-    @Test
     public void test() throws Exception {
         m_topologyProvider.refresh();
         assertEquals(8, m_topologyProvider.getVertices().size());
@@ -214,17 +203,6 @@ public class EnhancedLinkdTopologyProviderTest {
         Vertex vertexE = m_topologyProvider.addVertex(200, 200);
         assertEquals(13, m_topologyProvider.getVertices().size());
 
-        // Add 2 groups
-        Vertex group1 = m_topologyProvider.addGroup("Group 1", Constants.GROUP_ICON_KEY);
-        Vertex group2 = m_topologyProvider.addGroup("Group 2", Constants.GROUP_ICON_KEY);
-        assertEquals(15, m_topologyProvider.getVertices().size());
-
-        // Link v0, v1 to Group 1 and v2, v3 to Group 2
-        m_topologyProvider.setParent(vertexA, group1);
-        m_topologyProvider.setParent(vertexB, group1);
-        m_topologyProvider.setParent(vertexC, group2);
-        m_topologyProvider.setParent(vertexD, group2);
-
         // Connect various vertices together
         m_topologyProvider.connectVertices(vertexA, vertexB);
         m_topologyProvider.connectVertices(vertexA, vertexC);
@@ -236,11 +214,9 @@ public class EnhancedLinkdTopologyProviderTest {
 
         assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(vertexAref)).size());
         assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(vertexBref)).size());
-        assertEquals(15, m_topologyProvider.getVertices().size());
+        assertEquals(13, m_topologyProvider.getVertices().size());
         assertEquals(3, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(vertexAref)).length);
         assertEquals(3, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(vertexBref)).length);
-        assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
-        assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group2));
         assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertexA));
         assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertexB));
         assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertexC));
@@ -255,8 +231,6 @@ public class EnhancedLinkdTopologyProviderTest {
         assertEquals(0, m_topologyProvider.getVertices().size());
         assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(vertexAref)).length);
         assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(vertexBref)).length);
-        assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
-        assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group2));
         assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexA));
         assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexB));
         assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexC));
@@ -271,15 +245,9 @@ public class EnhancedLinkdTopologyProviderTest {
         assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(vertexAref)).size());
         assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(vertexBref)).size());
         // Groups should not be reloaded, because they are not persisted
-        assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(group1)).size());
-        assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(group2)).size());
         assertEquals(8, m_topologyProvider.getVertices().size());
         assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(vertexAref)).length);
         assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(vertexBref)).length);
-        assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(group1)).length);
-        assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(group2)).length);
-        assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
-        assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group2));
         assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexA));
         assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexB));
         assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexC));
@@ -390,44 +358,6 @@ public class EnhancedLinkdTopologyProviderTest {
         EdgeRef[] edgeIds = m_topologyProvider.getEdgeIdsForVertex(vertexId);
         assertEquals(1, edgeIds.length);
         assertEquals(edgeId, edgeIds[0]);
-
-    }
-
-    @Test
-    public void testTopoProviderSetParent() {
-        VertexRef vertexId1 = addVertexToTopr();
-        VertexRef vertexId2 = addVertexToTopr();
-
-        final AtomicInteger eventsReceived = new AtomicInteger(0);
-
-        m_topologyProvider.addVertexListener(new VertexListener() {
-
-            @Override
-            public void vertexSetChanged(VertexProvider provider,
-                                         Collection<? extends Vertex> added,
-                                         Collection<? extends Vertex> update,
-                                         Collection<String> removedVertexIds) {
-                eventsReceived.incrementAndGet();
-            }
-
-            @Override
-            public void vertexSetChanged(VertexProvider provider) {
-                eventsReceived.incrementAndGet();
-            }
-        });
-
-        Vertex groupId = m_topologyProvider.addGroup("Test Group", "groupIcon.jpg");
-        assertEquals(1, eventsReceived.get());
-        eventsReceived.set(0);
-
-        m_topologyProvider.setParent(vertexId1, groupId);
-        m_topologyProvider.setParent(vertexId2, groupId);
-
-        assertEquals(2, eventsReceived.get());
-    }
-
-    private VertexRef addVertexToTopr() {
-        return m_topologyProvider.addVertex(0, 0);
     }
 
     @After

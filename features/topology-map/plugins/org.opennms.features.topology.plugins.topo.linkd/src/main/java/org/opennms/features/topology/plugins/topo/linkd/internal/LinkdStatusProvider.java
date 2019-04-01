@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.features.topology.api.topo.CollapsibleRef;
 import org.opennms.features.topology.api.topo.CollapsibleVertex;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultStatus;
@@ -100,7 +101,7 @@ public class LinkdStatusProvider implements StatusProvider {
         for (VertexRef eachRef : otherRefs) {
             if (isCollapsible(eachRef)) {
                 List<AlarmSummary> alarmSummariesForGroup = new ArrayList<>();
-                List<Vertex> children = vertexProvider.getChildren(eachRef, criteria);
+                List<Vertex> children = vertexProvider.getVertices((CollapsibleRef) eachRef, criteria);
                 for (Vertex eachChildren : children) {
                     AlarmSummary eachChildrenAlarmSummary = nodeIdToAlarmSummaryMap.get(eachChildren.getNodeID());
                     if (eachChildrenAlarmSummary != null) {
@@ -157,7 +158,7 @@ public class LinkdStatusProvider implements StatusProvider {
         for (VertexRef eachRef : vertices) {
             if ("nodes".equals(eachRef.getNamespace())) {
                 if(isCollapsible(eachRef)) {
-                    addChildrenRecursively(vertexProvider, eachRef, returnList, criteria);
+                    addChildrenRecursively(vertexProvider, (CollapsibleRef) eachRef, returnList, criteria);
                 } else {
                     if (!returnList.contains(eachRef)) {
                         returnList.add(eachRef);
@@ -178,15 +179,15 @@ public class LinkdStatusProvider implements StatusProvider {
         return returnList;
     }
 
-    private static void addChildrenRecursively(VertexProvider vertexProvider, VertexRef groupRef, Collection<VertexRef> vertexRefs, Criteria[] criteria) {
-        List<Vertex> vertices = vertexProvider.getChildren(groupRef, criteria);
+    private static void addChildrenRecursively(VertexProvider vertexProvider, CollapsibleRef collapsibleRef, Collection<VertexRef> vertexRefs, Criteria[] criteria) {
+        List<Vertex> vertices = vertexProvider.getVertices(collapsibleRef, criteria);
         for(Vertex vertex : vertices) {
             if(!isCollapsible(vertex)) {
                 if (!vertexRefs.contains(vertex)) {
                     vertexRefs.add(vertex);
                 }
             } else {
-                addChildrenRecursively(vertexProvider, vertex, vertexRefs, criteria);
+                addChildrenRecursively(vertexProvider, collapsibleRef, vertexRefs, criteria);
             }
         }
     }

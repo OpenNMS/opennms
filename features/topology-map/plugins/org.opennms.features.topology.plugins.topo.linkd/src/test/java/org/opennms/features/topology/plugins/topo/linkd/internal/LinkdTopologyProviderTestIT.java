@@ -164,7 +164,7 @@ public class LinkdTopologyProviderTestIT {
         // 3.) Invalidate cache - nothing should be found:
         entityCache.refresh();
         refresh();
-        assertEquals(0, linkdTopologyProvider.getVerticesWithoutGroups().size());
+        assertEquals(0, linkdTopologyProvider.getVerticesWithoutCollapsibleVertices().size());
     }
 
     private void refresh() {
@@ -177,7 +177,7 @@ public class LinkdTopologyProviderTestIT {
     }
     private void verifyAmounts(TopologySettings settings) {
         refresh();
-        List<Vertex> vertices = linkdTopologyProvider.getVerticesWithoutGroups();
+        List<Vertex> vertices = linkdTopologyProvider.getVerticesWithoutCollapsibleVertices();
 
         // Check amount nodes
         assertEquals(settings.getAmountNodes(), vertices.size());
@@ -212,10 +212,10 @@ public class LinkdTopologyProviderTestIT {
                 .topology(TopologyGenerator.Topology.ring) // deterministic behaviour: each node is connected to its neighbors
                 .build();
         generateTopologyAndRefreshCaches(settings);
-        assertEquals(settings.getAmountNodes(), linkdTopologyProvider.getVerticesWithoutGroups().size());
+        assertEquals(settings.getAmountNodes(), linkdTopologyProvider.getVerticesWithoutCollapsibleVertices().size());
 
         // 2.) sort the nodes by it's label name.
-        List<Vertex> vertices = linkdTopologyProvider.getVerticesWithoutGroups();
+        List<Vertex> vertices = linkdTopologyProvider.getVerticesWithoutCollapsibleVertices();
         Vertex[] verticesArray = vertices.toArray(new Vertex[vertices.size()]);
         Arrays.sort(verticesArray, Comparator.comparing(Vertex::getLabel).thenComparing(Vertex::getNodeID));
         vertices = Arrays.asList(verticesArray);

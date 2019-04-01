@@ -108,10 +108,10 @@ public class DefaultTopologyServiceClient implements TopologyServiceClient {
         return topologyService.getGraphProvider(metaTopologyId, namespace).getDefaults();
     }
 
-    @Override
-    public List<Vertex> getChildren(VertexRef vertexId, Criteria[] criteria) {
-        return topologyService.getGraphProvider(metaTopologyId, namespace).getChildren(vertexId, criteria);
-    }
+//    @Override
+//    public List<Vertex> getChildren(VertexRef vertexId, Criteria[] criteria) {
+//        return topologyService.getGraphProvider(metaTopologyId, namespace).getChildren(vertexId, criteria);
+//    }
 
     @Override
     public Collection<GraphProvider> getGraphProviders() {

@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.api.topo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.features.topology.api.browsers.ContentType;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
+// TODO MVR if this is no longer used, we can probably safely remove it
 public class SimpleGraphProvider extends AbstractTopologyProvider implements GraphProvider {
 
 	protected static final String TOPOLOGY_NAMESPACE_SIMPLE = "simple";
@@ -70,5 +72,11 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
     @Override
     public boolean contributesTo(ContentType type) {
         return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
+    }
+
+    // TODO MVR ???
+    @Override
+    public List<Vertex> getVertices(CollapsibleRef collapsibleRef, Criteria... criteria) {
+        return new ArrayList<>();
     }
 }

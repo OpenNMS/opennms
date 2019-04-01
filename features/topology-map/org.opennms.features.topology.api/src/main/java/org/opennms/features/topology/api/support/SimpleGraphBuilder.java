@@ -34,7 +34,6 @@ import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.SimpleGraphProvider;
-import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class SimpleGraphBuilder {
@@ -50,12 +49,6 @@ public class SimpleGraphBuilder {
 	public SimpleGraphBuilder vertex(String id) {
 		m_currentVertex = new AbstractVertex(ns(), id);
 		m_graphProvider.addVertices(m_currentVertex);
-		return this;
-	}
-	
-	public SimpleGraphBuilder parent(String parentId) {
-		Vertex parent = m_graphProvider.getVertex(ns(), parentId);
-		m_graphProvider.setParent(m_currentVertex, parent);
 		return this;
 	}
 	

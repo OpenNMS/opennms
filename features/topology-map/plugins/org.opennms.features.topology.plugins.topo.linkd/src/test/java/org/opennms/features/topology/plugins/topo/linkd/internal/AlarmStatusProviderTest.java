@@ -31,6 +31,7 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Ref;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexProvider;
@@ -63,7 +65,6 @@ public class AlarmStatusProviderTest {
         m_statusProvider = new LinkdStatusProvider(m_alarmDao);
 
         m_vertexProvider = EasyMock.createMock(VertexProvider.class);
-        EasyMock.expect(m_vertexProvider.getChildren(EasyMock.<VertexRef>anyObject())).andReturn(new ArrayList<>());
         EasyMock.replay(m_vertexProvider);
     }
     
@@ -82,7 +83,7 @@ public class AlarmStatusProviderTest {
         
         Map<VertexRef, Status> statusMap = m_statusProvider.getStatusForVertices(m_vertexProvider, vertexList, new Criteria[0]);
         assertEquals(3, statusMap.size());
-        assertEquals(vertex, statusMap.keySet().stream().sorted((v1, v2) -> v1.getId().compareTo(v2.getId())).collect(Collectors.toList()).get(0));
+        assertEquals(vertex, statusMap.keySet().stream().sorted(Comparator.comparing(Ref::getId)).collect(Collectors.toList()).get(0));
         assertEquals("major", statusMap.get(vertex).computeStatus()); // use defined status
         assertEquals("normal", statusMap.get(vertex2).computeStatus()); // fallback to normal
         assertEquals("indeterminate", statusMap.get(vertex3).computeStatus()); // use defined status

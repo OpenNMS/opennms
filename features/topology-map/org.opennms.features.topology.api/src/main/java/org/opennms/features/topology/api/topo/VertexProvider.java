@@ -38,6 +38,7 @@ public interface VertexProvider extends NamespaceAware {
 	/**
 	 * @deprecated Use {@link #containsVertexId(VertexRef, Criteria...)} instead.
 	 */
+	// TODO MVR remove me as well
 	@Deprecated
 	boolean containsVertexId(String id);
 
@@ -46,7 +47,11 @@ public interface VertexProvider extends NamespaceAware {
 	Vertex getVertex(String namespace, String id);
 	
 	Vertex getVertex(VertexRef reference, Criteria... criteria);
-	
+
+	// Returns the content of the collapsible
+	List<Vertex> getVertices(CollapsibleRef collapsibleRef, Criteria... criteria);
+
+	// TODO MVR remove as well
 	int getSemanticZoomLevel(VertexRef vertex);
 	
 	/**
@@ -55,16 +60,6 @@ public interface VertexProvider extends NamespaceAware {
 	List<Vertex> getVertices(Criteria... criteria);
 	
 	List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria);
-	
-	List<Vertex> getRootGroup();
-	
-	boolean hasChildren(VertexRef group);
-	
-	Vertex getParent(VertexRef vertex);
-	
-	boolean setParent(VertexRef child, VertexRef parent);
-	
-	List<Vertex> getChildren(VertexRef group, Criteria... criteria);
 	
 	void addVertexListener(VertexListener vertexListener);
 	

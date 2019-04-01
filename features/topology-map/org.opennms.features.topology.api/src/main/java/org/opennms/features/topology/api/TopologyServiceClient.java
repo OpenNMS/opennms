@@ -29,7 +29,6 @@
 package org.opennms.features.topology.api;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.opennms.features.topology.api.browsers.SelectionAware;
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
@@ -56,7 +55,7 @@ public interface TopologyServiceClient extends SelectionAware {
 
     Defaults getDefaults();
 
-    List<Vertex> getChildren(VertexRef vertexId, Criteria[] criteria);
+//    List<Vertex> getChildren(VertexRef vertexId, Criteria[] criteria);
 
     Collection<GraphProvider> getGraphProviders();
 

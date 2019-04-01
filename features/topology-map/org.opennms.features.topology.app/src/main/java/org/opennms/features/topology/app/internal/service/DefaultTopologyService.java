@@ -154,11 +154,14 @@ public class DefaultTopologyService implements TopologyService {
 
         // Determine visible vertices and edges
         final List<Vertex> displayVertices = new ArrayList<>();
-        for(Vertex v : graphProvider.getVertices(criteria)) {
+        for (Vertex v : graphProvider.getVertices(criteria)) {
             int vzl = graphProvider.getSemanticZoomLevel(v);
-            if (vzl == semanticZoomLevel || (vzl < semanticZoomLevel && !graphProvider.hasChildren(v))) {
+            if (vzl <= semanticZoomLevel) {
                 displayVertices.add(v);
             }
+//            if (vzl == semanticZoomLevel || (vzl < semanticZoomLevel && !graphProvider.hasChildren(v))) {
+//                displayVertices.add(v);
+//            }
         }
         final Collection<Edge> displayEdges = graphProvider.getEdges(criteria);
 

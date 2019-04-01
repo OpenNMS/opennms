@@ -95,23 +95,8 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	}
 
 	@Override
-	public final List<Vertex> getChildren(VertexRef group, Criteria... criteria) {
-		return m_vertexProvider.getChildren(group, criteria);
-	}
-
-	@Override
 	public final String getNamespace() {
 		return m_vertexProvider.getNamespace();
-	}
-
-	@Override
-	public final Vertex getParent(VertexRef vertex) {
-		return m_vertexProvider.getParent(vertex);
-	}
-
-	@Override
-	public final List<Vertex> getRootGroup() {
-		return m_vertexProvider.getRootGroup();
 	}
 
 	@Override
@@ -130,6 +115,11 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	}
 
 	@Override
+	public List<Vertex> getVertices(CollapsibleRef collapsibleRef, Criteria... criteria) {
+		return m_vertexProvider.getVertices(collapsibleRef, criteria);
+	}
+
+	@Override
 	public final List<Vertex> getVertices(Criteria... criteria) {
 		return m_vertexProvider.getVertices(criteria);
 	}
@@ -140,18 +130,8 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	}
 
 	@Override
-	public final boolean hasChildren(VertexRef group) {
-		return m_vertexProvider.hasChildren(group);
-	}
-
-	@Override
 	public final void removeVertexListener(VertexListener vertexListener) {
 		m_vertexProvider.removeVertexListener(vertexListener);
-	}
-
-	@Override
-	public final boolean setParent(VertexRef child, VertexRef parent) {
-		return m_vertexProvider.setParent(child, parent);
 	}
 
 	@Override

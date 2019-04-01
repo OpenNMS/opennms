@@ -41,11 +41,8 @@ import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-
 public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {
     protected static final String SIMPLE_VERTEX_ID_PREFIX = "v";
-	protected static final String SIMPLE_GROUP_ID_PREFIX = "g";
 	protected static final String SIMPLE_EDGE_ID_PREFIX = "e";
     protected TopologyProviderInfo topologyProviderInfo = new DefaultTopologyProviderInfo();
 
@@ -168,13 +165,6 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
         public abstract List<Ref> getContent();
     }
 
-//	private IdGenerator groupIdGenerator = new IdGenerator(SIMPLE_GROUP_ID_PREFIX, this) {
-//        @Override
-//        public List<Ref> getContent() {
-//            return new ArrayList<Ref>(getGroups());
-//        }
-//	};
-	
 	private IdGenerator edgeIdGenerator = new IdGenerator(SIMPLE_EDGE_ID_PREFIX, this) {
         @Override
         public List<Ref> getContent() {
@@ -185,17 +175,13 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
 	private IdGenerator vertexIdGenerator = new IdGenerator(SIMPLE_VERTEX_ID_PREFIX, this) {
 	    @Override
 	    public List<Ref> getContent() {
-	        return new ArrayList<Ref>(getVerticesWithoutGroups());
+	        return new ArrayList<>(getVertices());
         }
 	};
 	
 	protected String getNextVertexId() {
 	    return vertexIdGenerator.getNextId();
 	}
-
-//	protected String getNextGroupId() {
-//	    return groupIdGenerator.getNextId();
-//	}
 
 	protected String getNextEdgeId() {
 	    return edgeIdGenerator.getNextId();
@@ -210,16 +196,11 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     }
 
     // TODO MVR ..
-    public List<Vertex> getVerticesWithoutGroups() {
-	    return Lists.newArrayList();
-//        return new ArrayList<>(
-//                Collections2.filter(getVertices(), input -> input != null && !input.isGroup()));
+    public List<Vertex> getVerticesWithoutCollapsibleVertices() {
+        return getVertices().stream()
+                .filter(input -> input != null && !(input instanceof CollapsibleVertex))
+                .collect(Collectors.toList());
     }
-//
-//    public List<Vertex> getGroups() {
-//        return new ArrayList<>(
-//                Collections2.filter(getVertices(), input -> input != null && input.isGroup()));
-//    }
 
     @Override
     public final void removeVertex(VertexRef... vertexId) {
@@ -248,28 +229,6 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
         AbstractVertex vertex = new SimpleLeafVertex(getNamespace(), id, x, y);
         getSimpleVertexProvider().add(vertex);
         return vertex;
-    }
-
-    @Override
-    public final AbstractVertex addGroup(String groupName, String groupIconKey) {
-//        String nextGroupId = getNextGroupId();
-//        return addGroup(nextGroupId, groupIconKey, groupName);
-        // TODO MVR
-        return null;
-    }
-
-    // TODO MVR ...
-    protected final AbstractVertex addGroup(String groupId, String iconKey, String label) {
-//        AbstractVertex vertex = new SimpleGroup(getNamespace(), groupId);
-//        if (containsVertexId(vertex)) {
-//            throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
-//        }
-//        LoggerFactory.getLogger(this.getClass()).debug("Adding a group: {}", groupId);
-//        vertex.setLabel(label);
-//        vertex.setIconKey(iconKey);
-//        addVertices(vertex);
-//        return vertex;
-        return null;
     }
 
     @Override
@@ -351,7 +310,6 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
 
     protected void clearCounters() {
         vertexIdGenerator.reset();
-//        groupIdGenerator.reset();
         edgeIdGenerator.reset();
     }
 
