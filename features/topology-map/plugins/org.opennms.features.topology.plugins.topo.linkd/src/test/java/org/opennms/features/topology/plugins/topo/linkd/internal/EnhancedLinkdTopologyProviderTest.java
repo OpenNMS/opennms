@@ -174,7 +174,9 @@ public class EnhancedLinkdTopologyProviderTest {
         assertEquals(8, m_topologyProvider.getVertices().size());
 
         // Add v0 vertex
-        Vertex vertexA = m_topologyProvider.addVertex(50, 100);
+
+        Vertex vertexA = new SimpleLeafVertex(m_topologyProvider.getNamespace(), m_topologyProvider.getNextVertexId(), 50, 100);
+        m_topologyProvider.addVertices(vertexA);
         assertEquals(9, m_topologyProvider.getVertices().size());
         assertEquals("v0", vertexA.getId());
         //LoggerFactory.getLogger(this.getClass()).debug(m_topologyProvider.getVertices().get(0).toString());
@@ -191,16 +193,18 @@ public class EnhancedLinkdTopologyProviderTest {
         assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(vertexBref)).size());
 
         // Add v1 vertex
-        Vertex vertexB = m_topologyProvider.addVertex(100, 50);
+        Vertex vertexB = new SimpleLeafVertex(m_topologyProvider.getNamespace(), m_topologyProvider.getNextVertexId(), 100, 50);
+        m_topologyProvider.addVertices(vertexB);
         assertEquals("v1", vertexB.getId());
         assertTrue(m_topologyProvider.containsVertexId(vertexB));
         assertTrue(m_topologyProvider.containsVertexId("v1"));
         assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(vertexBref)).size());
 
         // Added 3 more vertices
-        Vertex vertexC = m_topologyProvider.addVertex(100, 150);
-        Vertex vertexD = m_topologyProvider.addVertex(150, 100);
-        Vertex vertexE = m_topologyProvider.addVertex(200, 200);
+        Vertex vertexC = new SimpleLeafVertex(m_topologyProvider.getNamespace(), m_topologyProvider.getNextVertexId(), 100, 150);
+        Vertex vertexD = new SimpleLeafVertex(m_topologyProvider.getNamespace(), m_topologyProvider.getNextVertexId(), 150, 100);
+        Vertex vertexE = new SimpleLeafVertex(m_topologyProvider.getNamespace(), m_topologyProvider.getNextVertexId(), 200, 200);
+        m_topologyProvider.addVertices(vertexC, vertexD, vertexE);
         assertEquals(13, m_topologyProvider.getVertices().size());
 
         // Connect various vertices together
@@ -338,13 +342,15 @@ public class EnhancedLinkdTopologyProviderTest {
     public void testConnectVertices() {
         m_topologyProvider.resetContainer();
 
-        Vertex vertexId = m_topologyProvider.addVertex(0, 0);
+        Vertex vertexId = new SimpleLeafVertex(m_topologyProvider.getNamespace(), m_topologyProvider.getNextVertexId(), 0, 0);
+        m_topologyProvider.addVertices(vertexId);
 
         assertEquals(1, m_topologyProvider.getVertices().size());
         Vertex vertex0 = m_topologyProvider.getVertices().iterator().next();
         assertEquals("v0", vertex0.getId());
 
-        Vertex vertex1 = m_topologyProvider.addVertex(0, 0);
+        Vertex vertex1 = new SimpleLeafVertex(m_topologyProvider.getNamespace(), m_topologyProvider.getNextVertexId(), 0, 0);
+        m_topologyProvider.addVertices(vertex1);
         assertEquals(2, m_topologyProvider.getVertices().size());
 
         Edge edgeId = m_topologyProvider.connectVertices(vertex0, vertex1);

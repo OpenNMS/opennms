@@ -650,11 +650,6 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
     }
 
     @Override
-    public Vertex addVertex(int x, int y) {
-        return m_delegate.addVertex(x, y);
-    }
-
-    @Override
     public EdgeRef[] getEdgeIdsForVertex(VertexRef vertex) {
         return m_delegate.getEdgeIdsForVertex(vertex);
     }

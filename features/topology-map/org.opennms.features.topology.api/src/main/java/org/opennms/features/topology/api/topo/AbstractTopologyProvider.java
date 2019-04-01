@@ -179,7 +179,7 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
         }
 	};
 	
-	protected String getNextVertexId() {
+	public String getNextVertexId() {
 	    return vertexIdGenerator.getNextId();
 	}
 
@@ -216,19 +216,6 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     @Override
     public final void addVertices(Vertex... vertices) {
         getSimpleVertexProvider().add(vertices);
-    }
-
-    @Override
-    public final AbstractVertex addVertex(int x, int y) {
-        String id = getNextVertexId();
-        return addVertex(id, x, y);
-    }
-    
-    protected final AbstractVertex addVertex(String id, int x, int y) {
-        LoggerFactory.getLogger(getClass()).debug("Adding vertex in {} with ID: {}", getClass().getSimpleName(), id);
-        AbstractVertex vertex = new SimpleLeafVertex(getNamespace(), id, x, y);
-        getSimpleVertexProvider().add(vertex);
-        return vertex;
     }
 
     @Override

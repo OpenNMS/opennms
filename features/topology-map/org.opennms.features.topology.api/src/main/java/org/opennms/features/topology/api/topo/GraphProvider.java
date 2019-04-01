@@ -43,12 +43,6 @@ public interface GraphProvider extends VertexProvider, EdgeProvider, SelectionAw
 
 	void removeVertex(VertexRef... vertexId);
 
-	/**
-	 * @deprecated Convert calls to this to addVertices
-	 */
-	// TODO MVR remove me as well
-	Vertex addVertex(int x, int y);
-
 	EdgeRef[] getEdgeIdsForVertex(VertexRef vertex);
 
 	/**
