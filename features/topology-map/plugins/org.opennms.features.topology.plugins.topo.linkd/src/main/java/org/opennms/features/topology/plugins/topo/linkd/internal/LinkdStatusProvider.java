@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.features.topology.api.topo.CollapsibleVertex;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultStatus;
 import org.opennms.features.topology.api.topo.Status;
@@ -97,7 +98,7 @@ public class LinkdStatusProvider implements StatusProvider {
 
         // calculate status for groups and nodes which are neither group nor node
         for (VertexRef eachRef : otherRefs) {
-            if (isGroup(eachRef)) {
+            if (isCollapsible(eachRef)) {
                 List<AlarmSummary> alarmSummariesForGroup = new ArrayList<>();
                 List<Vertex> children = vertexProvider.getChildren(eachRef, criteria);
                 for (Vertex eachChildren : children) {
@@ -155,7 +156,7 @@ public class LinkdStatusProvider implements StatusProvider {
         List<VertexRef> returnList = new ArrayList<>();
         for (VertexRef eachRef : vertices) {
             if ("nodes".equals(eachRef.getNamespace())) {
-                if(isGroup(eachRef)) {
+                if(isCollapsible(eachRef)) {
                     addChildrenRecursively(vertexProvider, eachRef, returnList, criteria);
                 } else {
                     if (!returnList.contains(eachRef)) {
@@ -180,7 +181,7 @@ public class LinkdStatusProvider implements StatusProvider {
     private static void addChildrenRecursively(VertexProvider vertexProvider, VertexRef groupRef, Collection<VertexRef> vertexRefs, Criteria[] criteria) {
         List<Vertex> vertices = vertexProvider.getChildren(groupRef, criteria);
         for(Vertex vertex : vertices) {
-            if(!vertex.isGroup()) {
+            if(!isCollapsible(vertex)) {
                 if (!vertexRefs.contains(vertex)) {
                     vertexRefs.add(vertex);
                 }
@@ -190,11 +191,8 @@ public class LinkdStatusProvider implements StatusProvider {
         }
     }
 
-    private static boolean isGroup(VertexRef vertexRef) {
-        if(vertexRef instanceof Vertex) {
-            return ((Vertex) vertexRef).isGroup();
-        }
-        return false;
+    private static boolean isCollapsible(VertexRef vertexRef) {
+        return vertexRef instanceof CollapsibleVertex;
     }
 
     private static AlarmStatus createDefaultStatus() {

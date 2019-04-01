@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,37 +28,38 @@
 
 package org.opennms.features.topology.api.topo;
 
-import com.vaadin.v7.data.Item;
+import java.util.ArrayList;
+import java.util.List;
 
-public interface Vertex extends VertexRef {
+// TODO MVR ...
+// TODO MVR this is only used in the application vertex, and that could be rewritten just using different
+// types, such as applicationVertex, IpVertex, ServiceVertex, etc.
+public abstract class AbstractLevelAwareVertex extends AbstractVertex implements LevelAware {
 
-	/**
-	 * @deprecated Use namespace/id tuple
-	 */
-	String getKey();
+    private VertexRef m_parent;
+    private List<VertexRef> m_children = new ArrayList<>();
 
-	Item getItem();
+    public AbstractLevelAwareVertex(String namespace, String id, String label) {
+        super(namespace, id, label);
+    }
 
-        @Override
-	String getLabel();
+    public final VertexRef getParent() {
+        return m_parent;
+    }
 
-	String getTooltipText();
+    public final void setParent(VertexRef parent) {
+        if (this.equals(parent)) return;
+        m_parent = parent;
+    }
 
-	String getIconKey();
+    public void addChildren(AbstractLevelAwareVertex vertex) {
+        if (!m_children.contains(vertex)) {
+            m_children.add(vertex);
+            vertex.setParent(this);
+        }
+    }
 
-	String getStyleName();
-
-	Integer getX();
-
-	Integer getY();
-
-	boolean isLocked();
-
-	boolean isSelected();
-
-	String getIpAddress();
-
-	Integer getNodeID();
-
-	Integer getEdgePathOffset();
+    public List<VertexRef> getChildren() {
+        return m_children;
+    }
 }

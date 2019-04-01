@@ -36,7 +36,6 @@ public class AbstractVertex extends DefaultVertexRef implements Vertex {
 	private String m_tooltipText;
 	private String m_iconKey;
 	private String m_styleName;
-	private VertexRef m_parent;
 	private Integer m_x;
 	private Integer m_y;
 	private boolean m_selected;
@@ -111,20 +110,6 @@ public class AbstractVertex extends DefaultVertexRef implements Vertex {
 		m_y = y;
 	}
 
-        @Override
-	public final VertexRef getParent() {
-		return m_parent;
-	}
-
-	/**
-	 * @param parent
-	 */
-	@Override
-	public final void setParent(VertexRef parent) {
-		if (this.equals(parent)) return;
-		m_parent = parent;
-	}
-
 	@Override
 	public final boolean isLocked() {
 		return m_locked;
@@ -132,11 +117,6 @@ public class AbstractVertex extends DefaultVertexRef implements Vertex {
 
 	public final void setLocked(boolean locked) {
 		m_locked = locked;
-	}
-
-	@Override
-	public boolean isGroup() {
-		return false;
 	}
 
 	@Override

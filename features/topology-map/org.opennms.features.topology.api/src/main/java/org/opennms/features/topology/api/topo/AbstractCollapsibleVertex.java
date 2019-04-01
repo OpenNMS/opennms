@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,32 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.pathoutage;
+package org.opennms.features.topology.api.topo;
 
-import org.opennms.features.topology.api.topo.AbstractLevelAwareVertex;
-import org.opennms.features.topology.api.topo.LevelAware;
-import org.opennms.netmgt.model.OnmsNode;
+import java.util.HashSet;
+import java.util.Set;
 
-/**
- * Vertex class for the {@link PathOutageProvider} object
- */
-class PathOutageVertex extends AbstractLevelAwareVertex implements LevelAware {
+public abstract class AbstractCollapsibleVertex extends AbstractVertex implements CollapsibleVertex {
 
-	private int level;
+    protected Set<VertexRef> m_children = new HashSet<>();
 
-	public PathOutageVertex(OnmsNode node) {
-		super(PathOutageProvider.NAMESPACE, String.valueOf(node.getId()), node.getLabel());
-		setNodeID(node.getId());
-		this.level = 0;
-		this.setIconKey("pathoutage.default");
-	}
+    public AbstractCollapsibleVertex(String namespace, String id, String label) {
+        super(namespace, id, label);
+    }
 
-	@Override
-	public int getLevel() {
-		return this.level;
-	}
+    @Override
+    public Set<VertexRef> getChildren() {
+        return m_children;
+    }
 
-	public void setLevel(int level) {
-		this.level = level;
-	}
+    public void setChildren(Set<VertexRef> children) {
+        m_children = children;
+    }
 }

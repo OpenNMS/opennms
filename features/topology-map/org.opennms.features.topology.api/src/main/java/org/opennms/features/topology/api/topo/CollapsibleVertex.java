@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,9 +28,6 @@
 
 package org.opennms.features.topology.api.topo;
 
-import java.util.Set;
+public interface CollapsibleVertex extends Vertex, CollapsibleRef {
 
-public interface GroupRef extends VertexRef {
-
-    public Set<VertexRef> getChildren();
 }

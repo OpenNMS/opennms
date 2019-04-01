@@ -120,7 +120,7 @@ public class SimpleVertexProvider implements VertexProvider {
 	    if (child.equals(parent)) return false;
 
 	    // Set the parent value on the vertex object
-		getVertex(child).setParent(parent);
+//		getVertex(child).setParent(parent);
 
 		// Add a parent mapping
 		if (parent == null) {
