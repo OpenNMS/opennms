@@ -40,6 +40,8 @@ import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 
+import com.google.common.base.MoreObjects;
+
 /**
  * Acts as a domain specific view on a graph.
  * Can be extended by a domain specific graph class.
@@ -205,5 +207,26 @@ public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends Simp
     @Override
     public Class getVertexType() {
         return delegate.getVertexType();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractDomainGraph<?, ?> that = (AbstractDomainGraph<?, ?>) o;
+        return Objects.equals(delegate, that.delegate);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(delegate);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("delegate", delegate)
+                .toString();
     }
 }

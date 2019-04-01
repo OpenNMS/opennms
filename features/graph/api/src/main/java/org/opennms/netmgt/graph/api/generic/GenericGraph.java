@@ -60,7 +60,7 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
     protected GraphInfo<GenericVertex> graphInfo;
 
     public GenericGraph() {
-        super(new HashMap<>());
+        this(new HashMap<>());
     }
 
     public GenericGraph(GenericGraph copyMe) {

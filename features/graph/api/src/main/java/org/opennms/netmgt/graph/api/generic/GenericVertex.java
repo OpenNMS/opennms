@@ -67,7 +67,7 @@ public class GenericVertex extends GenericElement implements Vertex, NodeAware, 
     // TODO MVR implement me
     @Override
     public NodeInfo getNodeInfo() {
-        return this.getProperty(GenericProperties.NODE_INFO);
+        return null;
 //        final Optional<Object> first = graphProperties.getProperties().values().stream().filter(v -> v instanceof NodeInfo).findFirst();
 //        if (first.isPresent()) {
 //            return (NodeInfo) first.get();

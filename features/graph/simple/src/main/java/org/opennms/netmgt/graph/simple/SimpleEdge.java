@@ -56,7 +56,7 @@ public class SimpleEdge implements Edge {
         // copy the delegate to have a clone down to the properties maps
         this(new GenericEdge(copyMe.asGenericEdge()));
 
-        // TODO: patrick: discuss with mvr: is this the expected behaviour?
+        // TODO: patrick, mvr rework when we support edges that connect to other namespaces
         // We must copy the source and target as well, otherwise changing it's properties will change
         // the "copyMe" properties as well
     }
