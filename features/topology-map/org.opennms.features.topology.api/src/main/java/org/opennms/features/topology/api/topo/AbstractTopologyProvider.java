@@ -29,6 +29,7 @@
 package org.opennms.features.topology.api.topo;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,23 +42,18 @@ import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {
-    protected static final String SIMPLE_VERTEX_ID_PREFIX = "v";
-	protected static final String SIMPLE_EDGE_ID_PREFIX = "e";
-    protected TopologyProviderInfo topologyProviderInfo = new DefaultTopologyProviderInfo();
+public abstract class AbstractTopologyProvider implements GraphProvider {
 
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractTopologyProvider.class);
-
-	/**
-	 * This class generates an unique id. 
-	 * The generated id has the format '<prefix><counter>' (e.g. v100). 
-	 * So the generator must be initialized with a prefix and the initial counter.
-	 * 
-	 * @author Markus von Rüden
-	 *
-	 */
+    /**
+     * This class generates an unique id.
+     * The generated id has the format '<prefix><counter>' (e.g. v100).
+     * So the generator must be initialized with a prefix and the initial counter.
+     *
+     * @author Markus von Rüden
+     *
+     */
     protected abstract static class IdGenerator {
-        /** 
+        /**
          * The topology provider. It is needed to initialize the counter.
          */
         private final AbstractTopologyProvider provider;
@@ -80,12 +76,12 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
         }
 
         /**
-         * Returns the next id in format '<prefix><counter>' (e.g. v100). 
-         * 
-         * If an entry with the generated id (see {@link #createId()} 
-         * already exists in {@link #provider} a new one is created. 
+         * Returns the next id in format '<prefix><counter>' (e.g. v100).
+         *
+         * If an entry with the generated id (see {@link #createId()}
+         * already exists in {@link #provider} a new one is created.
          * This process is done until a key is created which is not already in {@link #provider}
-         * @return The next id in format '<prefix><counter>' (e.g. v100). 
+         * @return The next id in format '<prefix><counter>' (e.g. v100).
          */
         public String getNextId() {
             try {
@@ -106,13 +102,13 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
         }
 
         /**
-         * Returns the initial value of counter. 
-         * 
+         * Returns the initial value of counter.
+         *
          * Therefore the maximum number of each id from the {@link #getContent()} values are used.
          * A id can start with any prefix (or none) so only ids which starts with the same id as {@link #idPrefix} are considered.
          * If there is no matching content, 0 is returned.
-         *   
-         * @return The initial value of counter. 
+         *
+         * @return The initial value of counter.
          */
         private int getInitValue() {
             int max = 0;
@@ -124,7 +120,7 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
         }
 
         /**
-         * Returns true if the {@link #provider} does not contain a vertex id '<generatedId>', false otherwise. 
+         * Returns true if the {@link #provider} does not contain a vertex id '<generatedId>', false otherwise.
          * @param generatedId The generated id
          * @return true if the {@link #provider} does not contain a vertex id '<generatedId>', false otherwise.
          */
@@ -139,9 +135,9 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
         }
 
         /**
-         * Gets the integer value from the id. 
+         * Gets the integer value from the id.
          * If the id does not match to this generator or the id cannot be parsed as an integer 0 is returned.
-         * 
+         *
          * @param id the generated id. Should start with {@link #idPrefix}.
          * @return the integer value from the id. If the id does not match to this generator or the id cannot be parsed as an integer 0 is returned.
          */
@@ -161,9 +157,16 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
                 initialized = true;
             }
         }
-        
+
         public abstract List<Ref> getContent();
     }
+
+    protected static final String SIMPLE_VERTEX_ID_PREFIX = "v";
+	protected static final String SIMPLE_EDGE_ID_PREFIX = "e";
+    protected TopologyProviderInfo topologyProviderInfo = new DefaultTopologyProviderInfo();
+
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractTopologyProvider.class);
+
 
 	private IdGenerator edgeIdGenerator = new IdGenerator(SIMPLE_EDGE_ID_PREFIX, this) {
         @Override
@@ -178,21 +181,28 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
 	        return new ArrayList<>(getVertices());
         }
 	};
-	
-	public String getNextVertexId() {
-	    return vertexIdGenerator.getNextId();
-	}
 
-	protected String getNextEdgeId() {
-	    return edgeIdGenerator.getNextId();
-	}
-	
+    protected SimpleVertexProvider m_vertexProvider;
+    protected SimpleEdgeProvider m_edgeProvider;
+
     protected AbstractTopologyProvider(String namespace) {
-		super(namespace);
+        this(new SimpleVertexProvider(namespace), new SimpleEdgeProvider(namespace));
 	}
 
     protected AbstractTopologyProvider(SimpleVertexProvider vertexProvider, SimpleEdgeProvider edgeProvider) {
-        super(vertexProvider, edgeProvider);
+        m_vertexProvider = vertexProvider;
+        m_edgeProvider = edgeProvider;
+        if (!m_edgeProvider.getNamespace().equals(edgeProvider.getNamespace())) {
+            throw new IllegalStateException("Namespace of edge and vertex provider must match");
+        }
+    }
+
+    public String getNextVertexId() {
+        return vertexIdGenerator.getNextId();
+    }
+
+    protected String getNextEdgeId() {
+        return edgeIdGenerator.getNextId();
     }
 
     // TODO MVR ..
@@ -286,6 +296,124 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
         addEdges(edge);
         
         return edge;
+    }
+
+    protected final SimpleVertexProvider getSimpleVertexProvider() {
+        return m_vertexProvider;
+    }
+
+    protected final SimpleEdgeProvider getSimpleEdgeProvider() {
+        return m_edgeProvider;
+    }
+
+    @Override
+    public final void addVertexListener(VertexListener vertexListener) {
+        m_vertexProvider.addVertexListener(vertexListener);
+    }
+
+    @Override
+    public final void clearVertices() {
+        m_vertexProvider.clearVertices();
+    }
+
+    @Override
+    public int getVertexTotalCount() {
+        return m_vertexProvider.getVertexTotalCount();
+    }
+
+    @Override
+    public int getEdgeTotalCount() {
+        return m_edgeProvider.getEdgeTotalCount();
+    }
+
+    @Override
+    public final boolean contributesTo(String namespace) {
+        return m_vertexProvider.contributesTo(namespace);
+    }
+
+    @Override
+    public boolean containsVertexId(String id) {
+        return m_vertexProvider.containsVertexId(id);
+    }
+
+    @Override
+    public boolean containsVertexId(VertexRef id, Criteria... criteria) {
+        return m_vertexProvider.containsVertexId(id, criteria);
+    }
+
+    @Override
+    public final String getNamespace() {
+        return m_vertexProvider.getNamespace();
+    }
+
+    @Override
+    public final int getSemanticZoomLevel(VertexRef vertex) {
+        return m_vertexProvider.getSemanticZoomLevel(vertex);
+    }
+
+    @Override
+    public final Vertex getVertex(String namespace, String id) {
+        return m_vertexProvider.getVertex(namespace, id);
+    }
+
+    @Override
+    public final Vertex getVertex(VertexRef reference, Criteria... criteria) {
+        return m_vertexProvider.getVertex(reference, criteria);
+    }
+
+    @Override
+    public List<Vertex> getVertices(CollapsibleRef collapsibleRef, Criteria... criteria) {
+        return m_vertexProvider.getVertices(collapsibleRef, criteria);
+    }
+
+    @Override
+    public final List<Vertex> getVertices(Criteria... criteria) {
+        return m_vertexProvider.getVertices(criteria);
+    }
+
+    @Override
+    public final List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria) {
+        return m_vertexProvider.getVertices(references, criteria);
+    }
+
+    @Override
+    public final void removeVertexListener(VertexListener vertexListener) {
+        m_vertexProvider.removeVertexListener(vertexListener);
+    }
+
+    @Override
+    public final void addEdgeListener(EdgeListener listener) {
+        m_edgeProvider.addEdgeListener(listener);
+    }
+
+    @Override
+    public final void clearEdges() {
+        m_edgeProvider.clearEdges();
+    }
+
+    @Override
+    public final Edge getEdge(String namespace, String id) {
+        return m_edgeProvider.getEdge(namespace, id);
+    }
+
+    @Override
+    public final Edge getEdge(EdgeRef reference) {
+        return m_edgeProvider.getEdge(reference);
+    }
+
+    @Override
+    public final List<Edge> getEdges(Criteria... criteria) {
+        return m_edgeProvider.getEdges(criteria);
+    }
+
+    @Override
+    public final List<Edge> getEdges(Collection<? extends EdgeRef> references) {
+        return m_edgeProvider.getEdges(references);
+    }
+
+    @Override
+    public final void removeEdgeListener(EdgeListener listener) {
+        m_edgeProvider.removeEdgeListener(listener);
     }
 
     @Override
