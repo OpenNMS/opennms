@@ -36,12 +36,12 @@ import java.util.List;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraphImpl;
+import org.opennms.features.topology.api.topo.simple.SimpleGraph;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 
-public class BusinessServiceGraph extends XXXGraphImpl {
+public class BusinessServiceGraph extends SimpleGraph {
 
     public BusinessServiceGraph() {
         super(BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE);

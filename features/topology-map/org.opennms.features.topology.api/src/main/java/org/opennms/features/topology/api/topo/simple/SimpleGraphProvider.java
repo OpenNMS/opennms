@@ -26,30 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.topo;
+package org.opennms.features.topology.api.topo.simple;
 
 import java.util.List;
 
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
+import org.opennms.features.topology.api.topo.BackendGraph;
+import org.opennms.features.topology.api.topo.Defaults;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.google.common.collect.Sets;
 
-// TODO MVR if this is no longer used, we can probably safely remove it
 public class SimpleGraphProvider extends AbstractTopologyProvider implements GraphProvider {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SimpleGraphProvider.class);
-
-	public SimpleGraphProvider(XXXGraph graph) {
+	public SimpleGraphProvider(BackendGraph graph) {
 	    super(graph);
-    }
-
-    public SimpleGraphProvider(String namespace) {
-        super(namespace);
-        LOG.debug("Creating a new SimpleTopologyProvider with namespace {}", namespace);
     }
 
     @Override

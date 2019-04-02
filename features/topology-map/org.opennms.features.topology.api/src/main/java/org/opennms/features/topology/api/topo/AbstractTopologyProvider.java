@@ -35,23 +35,22 @@ import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraphImpl;
+import org.opennms.features.topology.api.topo.simple.SimpleGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractTopologyProvider implements GraphProvider {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTopologyProvider.class);
 
-    protected final XXXGraph graph;
+    protected final BackendGraph graph;
 
     protected TopologyProviderInfo topologyProviderInfo = new DefaultTopologyProviderInfo();
 
     public AbstractTopologyProvider(String namespace) {
-        this(new XXXGraphImpl(Objects.requireNonNull(namespace)));
+        this(new SimpleGraph(Objects.requireNonNull(namespace)));
     }
 
-    public AbstractTopologyProvider(XXXGraph graph) {
+    public AbstractTopologyProvider(BackendGraph graph) {
         this.graph = Objects.requireNonNull(graph);
         LOG.debug("Creating a new {} with namespace {}", getClass().getSimpleName(), graph.getNamespace());
     }
@@ -70,7 +69,7 @@ public abstract class AbstractTopologyProvider implements GraphProvider {
     }
 
     @Override
-    public XXXGraph getCurrentGraph() {
+    public BackendGraph getCurrentGraph() {
         return graph;
     }
 

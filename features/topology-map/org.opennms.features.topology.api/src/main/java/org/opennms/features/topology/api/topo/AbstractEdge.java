@@ -28,6 +28,8 @@
 
 package org.opennms.features.topology.api.topo;
 
+import org.opennms.features.topology.api.topo.simple.SimpleConnector;
+
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.util.BeanItem;
 

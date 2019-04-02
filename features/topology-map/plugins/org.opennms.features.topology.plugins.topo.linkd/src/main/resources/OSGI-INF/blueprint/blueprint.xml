@@ -49,7 +49,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="linkdSearchProvider" />
 
     <!-- Meta topology provider -->
-    <bean id="linkdMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
+    <bean id="linkdMetaTopologyProvider" class="org.opennms.features.topology.api.topo.simple.SimpleMetaTopologyProvider">
         <argument ref="topologyProvider" />
     </bean>
 

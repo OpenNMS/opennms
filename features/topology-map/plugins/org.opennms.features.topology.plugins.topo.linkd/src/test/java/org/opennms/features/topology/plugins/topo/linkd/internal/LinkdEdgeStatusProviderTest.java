@@ -44,7 +44,7 @@ import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Status;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.enlinkd.TopologyUpdater;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
@@ -61,7 +61,7 @@ public class LinkdEdgeStatusProviderTest {
 
     private AlarmDao m_alarmDao;
     private LinkdEdgeStatusProvider m_statusProvider;
-    private XXXGraph m_graph;
+    private BackendGraph m_graph;
     private OnmsNode m_node1;
     private OnmsNode m_node2;
     private OnmsNode m_node3;
@@ -158,7 +158,7 @@ public class LinkdEdgeStatusProviderTest {
         m_edges.add(LinkdEdge.create("310|314", dehliport12, chennaiport13, ProtocolSupported.OSPF));
 
         m_alarmDao = EasyMock.createMock(AlarmDao.class);
-        m_graph = EasyMock.createMock(XXXGraph.class);
+        m_graph = EasyMock.createMock(BackendGraph.class);
         m_statusProvider = new LinkdEdgeStatusProvider();
         m_statusProvider.setAlarmDao(m_alarmDao);
 

@@ -66,10 +66,10 @@ import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.SearchCriteria;
 import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.SearchResult;
-import org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider;
+import org.opennms.features.topology.api.topo.simple.SimpleMetaTopologyProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.app.internal.AlarmProvider;
 import org.opennms.features.topology.app.internal.AlarmSearchProvider;
 import org.opennms.features.topology.app.internal.CategoryProvider;
@@ -378,7 +378,7 @@ public class BundleContextHistoryManagerTest  {
     }
 
     private void setBehaviour(GraphProvider graphProviderMock) {
-        XXXGraph graphMock = Mockito.mock(XXXGraph.class);
+        BackendGraph graphMock = Mockito.mock(BackendGraph.class);
         Mockito.when(graphMock.getVertices(Matchers.any())).thenReturn(Lists.newArrayList());
         Mockito.when(graphMock.getNamespace()).thenReturn("test");
 

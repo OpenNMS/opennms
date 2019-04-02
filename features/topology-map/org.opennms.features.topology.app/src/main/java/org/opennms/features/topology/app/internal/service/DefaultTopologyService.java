@@ -48,7 +48,7 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.blablabla.CollapsibleGraph;
+import org.opennms.features.topology.api.topo.CollapsibleGraph;
 import org.opennms.features.topology.app.internal.jung.D3TopoLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.operations.LayoutOperation;
 import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;

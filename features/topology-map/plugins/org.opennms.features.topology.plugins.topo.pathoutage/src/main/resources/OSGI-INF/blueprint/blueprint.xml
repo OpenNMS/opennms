@@ -10,7 +10,7 @@
         <argument ref="pathOutageStatusProvider"></argument>
         <property name="topologyProviderInfo" ref="pathoutageTopologyProviderInfo" />
     </bean>
-    <bean id="pathOutageMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
+    <bean id="pathOutageMetaTopologyProvider" class="org.opennms.features.topology.api.topo.simple.SimpleMetaTopologyProvider">
         <argument ref="pathOutageProvider"/>
     </bean>
 

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.topo.blablabla;
+package org.opennms.features.topology.api.topo;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,16 +34,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.features.topology.api.NamespaceAware;
-import org.opennms.features.topology.api.topo.CollapsibleRef;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.EdgeListener;
-import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexListener;
-import org.opennms.features.topology.api.topo.VertexRef;
 
-public interface XXXGraph extends NamespaceAware {
+/**
+ * Graph interface which are provided by a {@link org.opennms.features.topology.api.topo.GraphProvider}.
+ * Name is {@link BackendGraph} as there is already a {@link org.opennms.features.topology.api.Graph} used in the UI.
+ */
+public interface BackendGraph extends NamespaceAware {
 
     /**
      * @deprecated Use {@link #containsVertexId(VertexRef, Criteria...)} instead.

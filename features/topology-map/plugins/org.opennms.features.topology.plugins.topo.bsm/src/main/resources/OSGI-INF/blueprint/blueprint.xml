@@ -23,7 +23,7 @@
         <property name="topologyProviderInfo" ref="bsmTopologyProviderInfo"/>
     </bean>
     <!-- Meta topology provider -->
-    <bean id="bsmMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
+    <bean id="bsmMetaTopologyProvider" class="org.opennms.features.topology.api.topo.simple.SimpleMetaTopologyProvider">
         <argument ref="bsmTopologyProvider" />
     </bean>
 

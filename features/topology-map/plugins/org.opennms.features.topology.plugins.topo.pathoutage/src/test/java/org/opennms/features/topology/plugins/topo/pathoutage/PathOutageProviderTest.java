@@ -47,7 +47,7 @@ import org.opennms.features.topology.api.support.FocusStrategy;
 import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -109,7 +109,7 @@ public class PathOutageProviderTest {
 
 	private void setBehaviour(PathOutageStatusProvider statusProvider) {
 		Mockito.when(statusProvider.getStatusForVertices(
-					Matchers.any(XXXGraph.class),
+					Matchers.any(BackendGraph.class),
 					Matchers.anyCollection(),
 					Matchers.any()))
 				.thenReturn(new HashMap());

@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
+import org.opennms.features.topology.api.topo.BackendGraph;
 
 import com.google.common.collect.Lists;
 
@@ -91,7 +91,7 @@ public enum FocusStrategy {
         this.implementation = implementation;
     }
 
-    public List<VertexHopCriteria> getFocusCriteria(XXXGraph graph, String... arguments) {
+    public List<VertexHopCriteria> getFocusCriteria(BackendGraph graph, String... arguments) {
         return implementation.determine(graph, arguments);
     }
 

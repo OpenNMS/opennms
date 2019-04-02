@@ -37,10 +37,10 @@ import org.mockito.Mockito;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.Point;
-import org.opennms.features.topology.api.support.SimpleGraphBuilder;
+import org.opennms.features.topology.api.topo.simple.SimpleGraphBuilder;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.app.internal.jung.GridLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.LayoutManager;
 import org.opennms.netmgt.topology.persistence.api.LayoutEntity;
@@ -56,7 +56,7 @@ public class ManualLayoutAlgorithmTest {
         private final LayoutManager layoutManager;
         private final DefaultLayout layout;
 
-        private ManualTest(XXXGraph backendGraph) {
+        private ManualTest(BackendGraph backendGraph) {
             Objects.requireNonNull(backendGraph);
 
             graph = Mockito.mock(Graph.class);
@@ -105,7 +105,7 @@ public class ManualLayoutAlgorithmTest {
      */
     @Test
     public void verifyLayoutCoordinatesHavePriority() {
-        final XXXGraph backendGraph = new SimpleGraphBuilder("dummy").vertex("vertex1").vX(1).vY(1).get();
+        final BackendGraph backendGraph = new SimpleGraphBuilder("dummy").vertex("vertex1").vX(1).vY(1).get();
         final ManualTest test = new ManualTest(backendGraph);
 
         final LayoutEntity persistedLayout = new LayoutEntity();

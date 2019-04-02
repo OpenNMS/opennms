@@ -34,7 +34,7 @@ import java.util.Objects;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.SearchQuery;
-import org.opennms.features.topology.api.topo.SimpleSearchProvider;
+import org.opennms.features.topology.api.topo.simple.SimpleSearchProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class PathOutageSearchProvider extends SimpleSearchProvider {

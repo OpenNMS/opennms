@@ -32,9 +32,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.opennms.features.topology.api.NamespaceAware;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
 
 public interface StatusProvider extends NamespaceAware {
 
-	Map<? extends VertexRef, ? extends Status> getStatusForVertices(XXXGraph graph, Collection<VertexRef> vertices, Criteria[] criteria);
+	Map<? extends VertexRef, ? extends Status> getStatusForVertices(BackendGraph graph, Collection<VertexRef> vertices, Criteria[] criteria);
 }

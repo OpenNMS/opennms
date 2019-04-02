@@ -29,11 +29,10 @@
 package org.opennms.features.topology.api.topo;
 
 import org.opennms.features.topology.api.browsers.SelectionAware;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
 
 public interface GraphProvider extends SelectionAware {
 
-	XXXGraph getCurrentGraph();
+	BackendGraph getCurrentGraph();
 
 	void refresh();
 

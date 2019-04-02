@@ -46,7 +46,7 @@ import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLVertex;
 import org.opennms.features.topology.plugins.topo.graphml.internal.AlarmSummaryWrapper;
 import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
@@ -91,7 +91,7 @@ public class GraphMLScriptVertexStatusProvider implements StatusProvider {
     }
 
     @Override
-    public Map<? extends VertexRef, ? extends Status> getStatusForVertices(final XXXGraph graph,
+    public Map<? extends VertexRef, ? extends Status> getStatusForVertices(final BackendGraph graph,
                                                                            final Collection<VertexRef> vertices,
                                                                            final Criteria[] criteria) {
         // All vertices for the current vertexProvider

@@ -26,24 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.support;
+package org.opennms.features.topology.api.topo.simple;
 
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
-import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraphImpl;
+import org.opennms.features.topology.api.topo.BackendGraph;
 
 public class SimpleGraphBuilder {
 
-	private final XXXGraph m_simpleGraph;
+	private final BackendGraph m_simpleGraph;
 	private AbstractVertex m_currentVertex;
 	private AbstractEdge m_currentEdge;
 	
 	public SimpleGraphBuilder(String namespace) {
-		m_simpleGraph = new XXXGraphImpl(namespace);
+		m_simpleGraph = new SimpleGraph(namespace);
 	}
 	
 	public SimpleGraphBuilder vertex(String id) {
@@ -117,7 +115,7 @@ public class SimpleGraphBuilder {
 		return this;
 	}
 	
-	public XXXGraph get() {
+	public BackendGraph get() {
 		return m_simpleGraph;
 	}
 

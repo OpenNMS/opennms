@@ -39,7 +39,7 @@ import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
-import org.opennms.features.topology.api.topo.SimpleSearchProvider;
+import org.opennms.features.topology.api.topo.simple.SimpleSearchProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 /**

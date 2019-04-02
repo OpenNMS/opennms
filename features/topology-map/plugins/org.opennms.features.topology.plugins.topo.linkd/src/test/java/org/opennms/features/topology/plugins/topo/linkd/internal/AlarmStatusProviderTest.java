@@ -46,7 +46,7 @@ import org.opennms.features.topology.api.topo.Ref;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
@@ -57,14 +57,14 @@ public class AlarmStatusProviderTest {
 
     private AlarmDao m_alarmDao;
     private LinkdStatusProvider m_statusProvider;
-    private XXXGraph m_graph;
+    private BackendGraph m_graph;
     
     @Before
     public void setUp() {
         m_alarmDao = EasyMock.createMock(AlarmDao.class);
         m_statusProvider = new LinkdStatusProvider(m_alarmDao);
 
-        m_graph = EasyMock.createMock(XXXGraph.class);
+        m_graph = EasyMock.createMock(BackendGraph.class);
         EasyMock.replay(m_graph);
     }
     

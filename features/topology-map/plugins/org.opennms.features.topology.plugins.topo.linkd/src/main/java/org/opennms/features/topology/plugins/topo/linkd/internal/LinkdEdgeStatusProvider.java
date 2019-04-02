@@ -39,7 +39,7 @@ import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.Status;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -94,7 +94,7 @@ public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
     }
 
     @Override
-    public Map<EdgeRef, Status> getStatusForEdges(XXXGraph graph, Collection<EdgeRef> edges, Criteria[] criteria) {
+    public Map<EdgeRef, Status> getStatusForEdges(BackendGraph graph, Collection<EdgeRef> edges, Criteria[] criteria) {
         Map<EdgeRef, Status> retVal = new LinkedHashMap<EdgeRef, Status>();
 EDGES:        for (EdgeRef edgeRef : edges) {
                 LinkdEdge edge = (LinkdEdge) graph.getEdge(edgeRef);

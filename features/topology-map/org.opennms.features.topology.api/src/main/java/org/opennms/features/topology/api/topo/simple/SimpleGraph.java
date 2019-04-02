@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.topo.blablabla;
+package org.opennms.features.topology.api.topo.simple;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,58 +50,26 @@ import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.Ref;
 import org.opennms.features.topology.api.topo.RefComparator;
-import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class XXXGraphImpl implements XXXGraph {
+public class SimpleGraph implements BackendGraph {
 
-    protected static final String SIMPLE_VERTEX_ID_PREFIX = "v";
-    protected static final String SIMPLE_EDGE_ID_PREFIX = "e";
-
-    private static final Logger LOG = LoggerFactory.getLogger(XXXGraphImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleGraph.class);
 
     private final String m_namespace;
     private final Map<String, Edge> m_edgeMap = new LinkedHashMap<>();
     private final Set<EdgeListener> m_edgeListeners = new CopyOnWriteArraySet<>();
     private final Map<String, Vertex> m_vertexMap = new LinkedHashMap<>();
     private final Set<VertexListener> m_vertexListeners = new CopyOnWriteArraySet<>();
-    private final String m_contributesTo;
 
-    private IdGenerator edgeIdGenerator = new IdGenerator(SIMPLE_EDGE_ID_PREFIX, this) {
-        @Override
-        public List<Ref> getContent() {
-            return new ArrayList<>(getEdges());
-        }
-    };
-
-    private IdGenerator vertexIdGenerator = new IdGenerator(SIMPLE_VERTEX_ID_PREFIX, this) {
-        @Override
-        public List<Ref> getContent() {
-            return new ArrayList<>(getVertices());
-        }
-    };
-
-    public String getNextVertexId() {
-        return vertexIdGenerator.getNextId();
-    }
-
-    public String getNextEdgeId() {
-        return edgeIdGenerator.getNextId();
-    }
-
-    public XXXGraphImpl(String namespace) {
-        this(namespace, null);
-    }
-
-    public XXXGraphImpl(String namespace, String contributesTo) {
+    public SimpleGraph(String namespace) {
         m_namespace = Objects.requireNonNull(namespace);
-        m_contributesTo = contributesTo;
     }
 
     @Override
@@ -111,7 +79,7 @@ public class XXXGraphImpl implements XXXGraph {
 
     @Override
     public boolean contributesTo(String namespace) {
-        return m_contributesTo != null && m_contributesTo.equals(namespace);
+        return m_namespace.equals(namespace);
     }
 
     @Override
@@ -235,7 +203,6 @@ public class XXXGraphImpl implements XXXGraph {
     public void clearVertices() {
         List<? extends Vertex> all = getVertices();
         removeVertices(all);
-        vertexIdGenerator.reset();
     }
 
     @Override
@@ -338,7 +305,6 @@ public class XXXGraphImpl implements XXXGraph {
     public void clearEdges() {
         List<Edge> all = getEdges();
         removeEdges(all);
-        edgeIdGenerator.reset();
     }
 
     @Override

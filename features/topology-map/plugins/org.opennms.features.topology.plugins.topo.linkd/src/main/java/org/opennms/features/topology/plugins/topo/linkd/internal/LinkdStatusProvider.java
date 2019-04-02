@@ -45,7 +45,7 @@ import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
@@ -77,7 +77,7 @@ public class LinkdStatusProvider implements StatusProvider {
     }
 
     @Override
-    public Map<VertexRef, Status> getStatusForVertices(XXXGraph graph, Collection<VertexRef> vertices, Criteria[] criteria) {
+    public Map<VertexRef, Status> getStatusForVertices(BackendGraph graph, Collection<VertexRef> vertices, Criteria[] criteria) {
         Map<VertexRef, Status> returnMap = new HashMap<>();
 
         // split nodes from groups and others
@@ -153,7 +153,7 @@ public class LinkdStatusProvider implements StatusProvider {
         return vertexRefToNodeIdMap;
     }
 
-    private static List<VertexRef> getNodeVertexRefs(XXXGraph graph, Collection<VertexRef> vertices, Criteria[] criteria) {
+    private static List<VertexRef> getNodeVertexRefs(BackendGraph graph, Collection<VertexRef> vertices, Criteria[] criteria) {
         List<VertexRef> returnList = new ArrayList<>();
         for (VertexRef eachRef : vertices) {
             if ("nodes".equals(eachRef.getNamespace())) {
@@ -179,7 +179,7 @@ public class LinkdStatusProvider implements StatusProvider {
         return returnList;
     }
 
-    private static void addChildrenRecursively(XXXGraph graph, CollapsibleRef collapsibleRef, Collection<VertexRef> vertexRefs, Criteria[] criteria) {
+    private static void addChildrenRecursively(BackendGraph graph, CollapsibleRef collapsibleRef, Collection<VertexRef> vertexRefs, Criteria[] criteria) {
         List<Vertex> vertices = graph.getVertices(collapsibleRef, criteria);
         for(Vertex vertex : vertices) {
             if(!isCollapsible(vertex)) {

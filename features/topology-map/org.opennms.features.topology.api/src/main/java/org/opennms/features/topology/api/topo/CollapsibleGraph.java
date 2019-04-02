@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.topo.blablabla;
+package org.opennms.features.topology.api.topo;
 
 import static org.opennms.features.topology.api.support.hops.CriteriaUtils.getCollapsedCriteria;
 import static org.opennms.features.topology.api.support.hops.CriteriaUtils.getCollapsibleCriteria;
@@ -46,24 +46,13 @@ import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.support.SemanticZoomLevelCriteria;
 import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.CollapsibleCriteria;
-import org.opennms.features.topology.api.topo.CollapsibleRef;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
-import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.EdgeListener;
-import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.RefComparator;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexListener;
-import org.opennms.features.topology.api.topo.VertexRef;
 
-public class CollapsibleGraph implements XXXGraph {
+public class CollapsibleGraph implements BackendGraph {
 
     private final Map<VertexRef,Integer> m_semanticZoomLevels = new LinkedHashMap<>();
-    private final XXXGraph m_delegate;
+    private final BackendGraph m_delegate;
 
-    public CollapsibleGraph(XXXGraph delegate) {
+    public CollapsibleGraph(BackendGraph delegate) {
         m_delegate = Objects.requireNonNull(delegate);
     }
 

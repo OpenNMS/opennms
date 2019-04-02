@@ -39,7 +39,7 @@ import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLMetaTopologyProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -123,7 +123,7 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
     }
 
     @Override
-    public Map<? extends VertexRef, ? extends Status> getStatusForVertices(final XXXGraph graph,
+    public Map<? extends VertexRef, ? extends Status> getStatusForVertices(final BackendGraph graph,
                                                                            final Collection<VertexRef> vertices,
                                                                            final Criteria[] criteria) {
         final List<Criteria> criteriaList = Lists.newArrayList(criteria);

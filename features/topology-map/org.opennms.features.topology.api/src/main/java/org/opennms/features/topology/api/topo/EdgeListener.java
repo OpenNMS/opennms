@@ -30,10 +30,8 @@ package org.opennms.features.topology.api.topo;
 
 import java.util.Collection;
 
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
-
 public interface EdgeListener {
 	
-	void edgeSetChanged(XXXGraph graph);
-	void edgeSetChanged(XXXGraph graph, Collection<? extends Edge> added, Collection<? extends Edge> updated, Collection<String> removedEdgeIds);
+	void edgeSetChanged(BackendGraph graph);
+	void edgeSetChanged(BackendGraph graph, Collection<? extends Edge> added, Collection<? extends Edge> updated, Collection<String> removedEdgeIds);
 }

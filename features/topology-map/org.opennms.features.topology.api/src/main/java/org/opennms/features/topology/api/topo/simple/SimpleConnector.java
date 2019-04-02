@@ -26,9 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.topo;
+package org.opennms.features.topology.api.topo.simple;
 
 import javax.xml.bind.annotation.XmlID;
+
+import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.Connector;
+import org.opennms.features.topology.api.topo.Ref;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 public class SimpleConnector implements Connector {
 
@@ -42,17 +47,6 @@ public class SimpleConnector implements Connector {
 	private VertexRef m_vertex;
 	private AbstractEdge m_edge;
 
-	/**
-	 * No-arg constructor for JAXB.
-	 */
-	public SimpleConnector() {}
-
-	/**
-	 * @param namespace
-	 * @param id
-	 * @param label
-	 * @param vertex
-	 */
 	public SimpleConnector(String namespace, String id, String label, VertexRef vertex) {
 		if (namespace == null) {
 			throw new IllegalArgumentException("Namespace is null");
@@ -69,11 +63,6 @@ public class SimpleConnector implements Connector {
 		m_vertex = vertex;
 	}
 
-	/**
-	 * @param namespace
-	 * @param id
-	 * @param vertex
-	 */
 	public SimpleConnector(String namespace, String id, VertexRef vertex) {
 		this(namespace, id, namespace + ":" + id, vertex);
 	}
@@ -90,23 +79,11 @@ public class SimpleConnector implements Connector {
 		return retval;
 	}
 
-	/**
-	 * @param namespace
-	 * @param id
-	 * @param vertex
-	 * @param edge
-	 */
 	public SimpleConnector(String namespace, String id, String label, VertexRef vertex, AbstractEdge edge) {
 		this(namespace, id, label, vertex);
 		m_edge = edge;
 	}
 
-	/**
-	 * @param namespace
-	 * @param id
-	 * @param vertex
-	 * @param edge
-	 */
 	public SimpleConnector(String namespace, String id, VertexRef vertex, AbstractEdge edge) {
 		this(namespace, id, namespace + ":" + id, vertex, edge);
 	}

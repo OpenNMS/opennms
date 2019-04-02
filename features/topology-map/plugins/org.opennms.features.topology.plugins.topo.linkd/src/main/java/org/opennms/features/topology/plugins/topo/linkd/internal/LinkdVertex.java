@@ -31,7 +31,7 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.opennms.features.topology.api.topo.SimpleLeafVertex;
+import org.opennms.features.topology.api.topo.simple.SimpleLeafVertex;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;

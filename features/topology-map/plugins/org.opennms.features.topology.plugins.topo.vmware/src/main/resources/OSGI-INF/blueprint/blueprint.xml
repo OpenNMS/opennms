@@ -19,7 +19,7 @@
     </bean>
 
     <!-- Meta topology provider -->
-    <bean id="vmwareMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
+    <bean id="vmwareMetaTopologyProvider" class="org.opennms.features.topology.api.topo.simple.SimpleMetaTopologyProvider">
         <argument ref="vmwareTopologyProvider" />
     </bean>
 

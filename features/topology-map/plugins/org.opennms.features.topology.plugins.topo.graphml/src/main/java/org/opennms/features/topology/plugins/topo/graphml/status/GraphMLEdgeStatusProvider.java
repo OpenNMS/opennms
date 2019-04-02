@@ -42,9 +42,9 @@ import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
-import org.opennms.features.topology.api.topo.SimpleConnector;
+import org.opennms.features.topology.api.topo.simple.SimpleConnector;
 import org.opennms.features.topology.api.topo.Status;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLEdge;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLTopologyProvider;
 import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
@@ -81,7 +81,7 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
     }
 
     @Override
-    public Map<? extends EdgeRef, ? extends Status> getStatusForEdges(XXXGraph graph, Collection<EdgeRef> edges, Criteria[] criteria) {
+    public Map<? extends EdgeRef, ? extends Status> getStatusForEdges(BackendGraph graph, Collection<EdgeRef> edges, Criteria[] criteria) {
         return serviceAccessor.getTransactionOperations().execute(
                 t -> this.scripting.compute(edges.stream()
                                                  .filter(edge -> edge instanceof GraphMLEdge)

@@ -41,14 +41,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.TopologyServiceClient;
-import org.opennms.features.topology.api.support.SimpleGraphBuilder;
+import org.opennms.features.topology.api.topo.simple.SimpleGraphBuilder;
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
-import org.opennms.features.topology.api.topo.SimpleGraphProvider;
+import org.opennms.features.topology.api.topo.simple.SimpleGraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.app.internal.DefaultTopologyServiceClient;
 import org.opennms.features.topology.app.internal.service.DefaultTopologyService;
 import org.opennms.features.topology.app.internal.service.SimpleServiceLocator;
@@ -63,17 +63,17 @@ public class BreadcrumbPathCalculatorTest {
 
     @Before
     public void setUp() {
-        final XXXGraph layer1 = new SimpleGraphBuilder("layer1")
+        final BackendGraph layer1 = new SimpleGraphBuilder("layer1")
                 .vertex("A1")
                 .vertex("A2")
                 .get();
-        final XXXGraph layer2 = new SimpleGraphBuilder("layer2")
+        final BackendGraph layer2 = new SimpleGraphBuilder("layer2")
                 .vertex("B1")
                 .vertex("B2")
                 .vertex("B3")
                 .vertex("B4")
                 .get();
-        final XXXGraph layer3 = new SimpleGraphBuilder("layer3")
+        final BackendGraph layer3 = new SimpleGraphBuilder("layer3")
                 .vertex("C1")
                 .vertex("C2")
                 .vertex("C3")

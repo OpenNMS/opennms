@@ -32,7 +32,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
+import org.opennms.features.topology.api.topo.BackendGraph;
+import org.opennms.features.topology.api.topo.simple.SimpleGraphBuilder;
 
 import com.google.common.collect.Lists;
 
@@ -40,7 +41,7 @@ public class FocusStrategyTest {
 
     @Test
     public void testFocusStrategies() {
-        final XXXGraph graph = new SimpleGraphBuilder("namespace1")
+        final BackendGraph graph = new SimpleGraphBuilder("namespace1")
                 .vertex("1")
                 .vertex("2")
                 .vertex("3")

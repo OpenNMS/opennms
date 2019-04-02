@@ -43,7 +43,7 @@ import org.opennms.features.topology.api.topo.SearchCriteria;
 import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.app.internal.CategoryProvider;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
@@ -116,7 +116,7 @@ public class CategoryHopCriteria extends VertexHopCriteria implements SearchCrit
 			final List<OnmsNode> nodes = categoryProvider.findNodesForCategory(category);
 			final List<Integer> nodeIds = nodes.stream().map(n -> n.getId()).collect(Collectors.toList());
 			final GraphProvider graphProvider = graphContainer.getTopologyServiceClient().getGraphProviderBy(graphContainer.getTopologyServiceClient().getNamespace());
-			final XXXGraph currentGraph = graphProvider.getCurrentGraph();
+			final BackendGraph currentGraph = graphProvider.getCurrentGraph();
 			return currentGraph.getVertices().stream()
 					.filter(v -> v.getNodeID() != null)
 					.filter(v -> nodeIds.contains(v.getNodeID()))

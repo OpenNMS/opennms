@@ -55,7 +55,7 @@ import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.plugins.topo.graphml.internal.AlarmSummaryWrapper;
 import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
 import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLDefaultVertexStatusProvider;
@@ -140,7 +140,7 @@ public class GraphMLVertexStatusProviderIT {
         GraphML graphML = GraphMLReader.read(getClass().getResourceAsStream("/test-graph.xml"));
         GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(graphML.getGraphs().get(0), new GraphMLServiceAccessor());
         GraphMLDefaultVertexStatusProvider statusProvider = new GraphMLDefaultVertexStatusProvider(topologyProvider.getNamespace(), this.alarmSummaryWrapper);
-        XXXGraph graph = topologyProvider.getCurrentGraph();
+        BackendGraph graph = topologyProvider.getCurrentGraph();
 
         List<VertexRef> vertices = graph.getVertices().stream().map(eachVertex -> (VertexRef) eachVertex).collect(Collectors.toList());
         Assert.assertEquals(4, vertices.size());
