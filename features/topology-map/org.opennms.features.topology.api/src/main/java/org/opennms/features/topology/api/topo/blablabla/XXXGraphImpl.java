@@ -232,14 +232,6 @@ public class XXXGraphImpl implements XXXGraph {
     }
 
     @Override
-    public int getSemanticZoomLevel(VertexRef vertex) {
-        // TODO MVR ??
-        return 0;
-//		Vertex parent = getParent(vertex);
-//		return parent == null ? 0 : 1 + getSemanticZoomLevel(parent);
-    }
-
-    @Override
     public void clearVertices() {
         List<? extends Vertex> all = getVertices();
         removeVertices(all);

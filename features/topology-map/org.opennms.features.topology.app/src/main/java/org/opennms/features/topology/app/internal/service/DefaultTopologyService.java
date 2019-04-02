@@ -155,14 +155,7 @@ public class DefaultTopologyService implements TopologyService {
         final CollapsibleGraph collapsibleGraph = new CollapsibleGraph(graphProvider.getCurrentGraph());
 
         // Determine visible vertices and edges
-        final List<Vertex> displayVertices = new ArrayList<>();
-        // TODO MVR have collapsibleGraph.getVertices() consider the szl already
-        for (Vertex v : collapsibleGraph.getVertices(criteria)) {
-            int vzl = collapsibleGraph.getSemanticZoomLevel(v);
-            if (vzl <= semanticZoomLevel) {
-                displayVertices.add(v);
-            }
-        }
+        final Collection<Vertex> displayVertices = collapsibleGraph.getVertices(semanticZoomLevel, criteria);
         final Collection<Edge> displayEdges = collapsibleGraph.getEdges(criteria);
 
         // Create graph object

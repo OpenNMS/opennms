@@ -61,9 +61,6 @@ public interface XXXGraph extends NamespaceAware {
     // Returns the content of the collapsible
     List<Vertex> getVertices(CollapsibleRef collapsibleRef, Criteria... criteria);
 
-    // TODO MVR remove as well
-    int getSemanticZoomLevel(VertexRef vertex);
-
     /**
      * Return an immutable list of vertices that match the criteria.
      */

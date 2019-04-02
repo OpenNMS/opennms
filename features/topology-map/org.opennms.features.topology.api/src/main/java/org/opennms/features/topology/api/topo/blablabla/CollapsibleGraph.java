@@ -99,8 +99,18 @@ public class CollapsibleGraph implements XXXGraph {
         return m_delegate.getVertex(reference, criteria);
     }
 
-    @Override
-    public int getSemanticZoomLevel(VertexRef vertex) {
+    public Collection<Vertex> getVertices(int semanticZoomLevel, Criteria... criteria) {
+        final List<Vertex> displayVertices = new ArrayList<>();
+        for (Vertex v : getVertices(criteria)) {
+            int vzl = getSemanticZoomLevel(v);
+            if (vzl <= semanticZoomLevel) {
+                displayVertices.add(v);
+            }
+        }
+        return displayVertices;
+    }
+
+    private int getSemanticZoomLevel(VertexRef vertex) {
         Integer szl = m_semanticZoomLevels.get(vertex);
         return szl == null ? 0 : szl;
     }
