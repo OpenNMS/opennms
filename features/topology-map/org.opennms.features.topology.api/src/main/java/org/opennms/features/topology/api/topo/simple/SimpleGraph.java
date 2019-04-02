@@ -40,11 +40,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.topo.AbstractEdge;
-import org.opennms.features.topology.api.topo.CollapsibleRef;
-import org.opennms.features.topology.api.topo.CollapsibleVertex;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
@@ -54,7 +52,6 @@ import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.BackendGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,12 +89,6 @@ public class SimpleGraph implements BackendGraph {
         return getSimpleVertex(reference);
     }
 
-    @Override
-    // TODO MVR ??
-    public List<Vertex> getVertices(CollapsibleRef collapsibleRef, Criteria... criteria) {
-        return new ArrayList<>();
-    }
-
     private Vertex getSimpleVertex(VertexRef reference) {
         if (reference != null && getNamespace().equals(reference.getNamespace())) {
             return m_vertexMap.get(reference.getId());
@@ -115,11 +106,6 @@ public class SimpleGraph implements BackendGraph {
             }
         }
         return vertices;
-    }
-
-    @Override
-    public List<Vertex> getVerticesWithoutCollapsibleVertices() {
-        return getVertices().stream().filter(v -> v != null && !(v instanceof CollapsibleVertex)).collect(Collectors.toList());
     }
 
     private void fireVertexSetChanged() {

@@ -237,7 +237,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             context.stop();
         }
         
-        LOG.info("refresh: Found {} vertices", graph.getVerticesWithoutCollapsibleVertices().size());
+        LOG.info("refresh: Found {} vertices", graph.getVertices().size());
         LOG.info("refresh: Found {} edges", graph.getEdges().size());
     }
     public OnmsTopologyDao getOnmsTopologyDao() {

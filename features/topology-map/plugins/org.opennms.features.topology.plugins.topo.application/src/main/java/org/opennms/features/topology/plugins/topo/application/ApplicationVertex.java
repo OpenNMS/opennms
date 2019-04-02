@@ -65,12 +65,10 @@ public class ApplicationVertex extends AbstractLevelAwareVertex implements Level
         this.serviceType = serviceType;
     }
 
-    // TODO MVR may move too parent
     public boolean isRoot() {
         return getParent() == null;
     }
 
-    // TODO MVR may move too parent
     public boolean isLeaf() {
         return getChildren().isEmpty();
     }
@@ -83,7 +81,6 @@ public class ApplicationVertex extends AbstractLevelAwareVertex implements Level
         return applicationId != null && applicationId.equals(getRoot().getId());
     }
 
-    // TODO MVR may move too parent
     public ApplicationVertex getRoot() {
         if (isRoot()) {
             return this;

@@ -269,7 +269,6 @@ public class CollapsibleGraph implements BackendGraph {
         return retval;
     }
 
-    // TODO MVR CriteriaUtils?
     public static Map<VertexRef,Set<Vertex>> getMapOfVerticesToCollapsedVertices(CollapsibleCriteria[] criteria) {
         // Make a map of all of the vertices to their new collapsed representations
         Map<VertexRef,Set<Vertex>> vertexToCollapsedVertices = new TreeMap<>(new RefComparator());
@@ -365,13 +364,7 @@ public class CollapsibleGraph implements BackendGraph {
         }
     }
 
-    /**
-     * Returns the vertices of the collapsible.
-     * @param collapsibleRef
-     * @param criteria
-     * @return
-     */
-    @Override
+    // Returns the content of the collapsible
     public List<Vertex> getVertices(CollapsibleRef collapsibleRef, Criteria... criteria) {
         for (CollapsibleCriteria criterium : getCollapsedCriteria(criteria)) {
             if (new RefComparator().compare(criterium.getCollapsedRepresentation(), collapsibleRef) == 0) {
@@ -441,11 +434,6 @@ public class CollapsibleGraph implements BackendGraph {
     @Override
     public void resetContainer() {
         m_delegate.resetContainer();
-    }
-
-    @Override
-    public List<Vertex> getVerticesWithoutCollapsibleVertices() {
-        return m_delegate.getVerticesWithoutCollapsibleVertices();
     }
 
     @Override

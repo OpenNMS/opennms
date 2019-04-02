@@ -482,7 +482,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 	public Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs) {
 		Set<VertexRef> processed = new LinkedHashSet<>();
 		for(VertexRef vertexRef : vertexRefs) {
-			addRefTreeToSet(getTopologyServiceClient(), vertexRef, processed, getCriteria());
+            processed.add(vertexRef);
 		}
 		return processed;
 	}
@@ -492,17 +492,6 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         getTopologyServiceClient().setNamespace(namespace);
         setDirty(true);
     }
-
-    private static void addRefTreeToSet(TopologyServiceClient topologyServiceClient, VertexRef vertexId, Set<VertexRef> processed, Criteria[] criteria) {
-		processed.add(vertexId);
-
-		// TODO MVR ???
-//		for(VertexRef childId : topologyServiceClient.getChildren(vertexId, criteria)) {
-//			if (!processed.contains(childId)) {
-//				addRefTreeToSet(topologyServiceClient, childId, processed, criteria);
-//			}
-//		}
-	}
 
 	@Override
 	public void edgeSetChanged(BackendGraph graph) {

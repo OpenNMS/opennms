@@ -31,9 +31,6 @@ package org.opennms.features.topology.api.topo;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO MVR ...
-// TODO MVR this is only used in the application vertex, and that could be rewritten just using different
-// types, such as applicationVertex, IpVertex, ServiceVertex, etc.
 public abstract class AbstractLevelAwareVertex extends AbstractVertex implements LevelAware {
 
     private VertexRef m_parent;

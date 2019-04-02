@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.features.topology.api.topo.BackendGraph;
+import org.opennms.features.topology.api.topo.CollapsibleGraph;
 import org.opennms.features.topology.api.topo.CollapsibleRef;
 import org.opennms.features.topology.api.topo.CollapsibleVertex;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -45,7 +47,6 @@ import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
@@ -101,14 +102,13 @@ public class LinkdStatusProvider implements StatusProvider {
         for (VertexRef eachRef : otherRefs) {
             if (isCollapsible(eachRef)) {
                 List<AlarmSummary> alarmSummariesForGroup = new ArrayList<>();
-                List<Vertex> children = graph.getVertices((CollapsibleRef) eachRef, criteria);
+                List<Vertex> children = new CollapsibleGraph(graph).getVertices((CollapsibleRef) eachRef, criteria);
                 for (Vertex eachChildren : children) {
                     AlarmSummary eachChildrenAlarmSummary = nodeIdToAlarmSummaryMap.get(eachChildren.getNodeID());
                     if (eachChildrenAlarmSummary != null) {
                         alarmSummariesForGroup.add(eachChildrenAlarmSummary);
                     }
                 }
-
                 AlarmStatus groupStatus = calculateAlarmStatusForGroup(alarmSummariesForGroup);
                 returnMap.put(eachRef, groupStatus);
             } else {
@@ -180,7 +180,7 @@ public class LinkdStatusProvider implements StatusProvider {
     }
 
     private static void addChildrenRecursively(BackendGraph graph, CollapsibleRef collapsibleRef, Collection<VertexRef> vertexRefs, Criteria[] criteria) {
-        List<Vertex> vertices = graph.getVertices(collapsibleRef, criteria);
+        List<Vertex> vertices = new CollapsibleGraph(graph).getVertices(collapsibleRef, criteria);
         for(Vertex vertex : vertices) {
             if(!isCollapsible(vertex)) {
                 if (!vertexRefs.contains(vertex)) {
