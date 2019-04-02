@@ -37,7 +37,7 @@ public interface OnmsTopologyDao {
 
     Map<OnmsTopologyProtocol, OnmsTopology> getTopologies();
 
-    Set<String> getSupportedProtocols();
+    Set<OnmsTopologyProtocol> getSupportedProtocols();
 
     void register(OnmsTopologyUpdater updater);
     void unregister(OnmsTopologyUpdater updater);

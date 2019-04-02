@@ -43,6 +43,7 @@ import org.opennms.integration.api.v1.model.Node;
 import org.opennms.integration.api.v1.model.Severity;
 import org.opennms.integration.api.v1.model.SnmpInterface;
 import org.opennms.integration.api.v1.model.TopologyEdge;
+import org.opennms.integration.api.v1.model.TopologyProtocol;
 import org.opennms.integration.api.v1.model.immutables.ImmutableNodeCriteria;
 import org.opennms.integration.api.v1.model.immutables.ImmutableTopologyEdge;
 import org.opennms.integration.api.v1.model.immutables.ImmutableTopologyPort;
@@ -54,6 +55,7 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -142,10 +144,10 @@ public class ModelMappers {
                 .build();
     }
 
-    public static TopologyEdge toEdge(String protocol, OnmsTopologyEdge edge) {
+    public static TopologyEdge toEdge(OnmsTopologyProtocol protocol, OnmsTopologyEdge edge) {
         ImmutableTopologyEdge.Builder topologyEdge = ImmutableTopologyEdge.newBuilder()
                 .setId(edge.getId())
-                .setProtocol(protocol)
+                .setProtocol(toTopologyProtocol(protocol))
                 .setTooltipText(edge.getToolTipText())
                 .setSource(ImmutableTopologyPort.newBuilder()
                         .setId(edge.getSource().getId())
@@ -163,7 +165,7 @@ public class ModelMappers {
             topologyEdge.setTargetSegment(ImmutableTopologySegment.newBuilder()
                     .setId(edge.getTarget().getVertex().getId())
                     .setTooltipText(edge.getTarget().getToolTipText())
-                    .setProtocol(protocol)
+                    .setProtocol(toTopologyProtocol(protocol))
                     .build());
         }
         // Otherwise the target is a port
@@ -181,5 +183,13 @@ public class ModelMappers {
         }
 
         return topologyEdge.build();
+    }
+    
+    public static OnmsTopologyProtocol toOnmsTopologyProtocol(TopologyProtocol protocol) {
+        return OnmsTopologyProtocol.create(protocol.name());
+    }
+    
+    public static TopologyProtocol toTopologyProtocol(OnmsTopologyProtocol protocol) {
+        return TopologyProtocol.valueOf(protocol.getId());
     }
 }

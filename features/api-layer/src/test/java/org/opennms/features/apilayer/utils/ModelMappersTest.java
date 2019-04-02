@@ -39,6 +39,7 @@ import org.opennms.integration.api.v1.model.TopologyPort;
 import org.opennms.integration.api.v1.model.TopologySegment;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 public class ModelMappersTest {
@@ -86,7 +87,7 @@ public class ModelMappersTest {
 
         // Map when the target is a port
         String protocol = "test-protocol";
-        TopologyEdge mappedEdge = ModelMappers.toEdge(protocol, sourceEdgeMock);
+        TopologyEdge mappedEdge = ModelMappers.toEdge(OnmsTopologyProtocol.create(protocol), sourceEdgeMock);
 
         assertThat(mappedEdge.getId(), equalTo(id));
         assertThat(mappedEdge.getProtocol(), equalTo(protocol));
@@ -108,7 +109,7 @@ public class ModelMappersTest {
 
         // Map when the target is a segment
         when(targetVertexMock.getId()).thenReturn(null);
-        mappedEdge = ModelMappers.toEdge("test-protocol", sourceEdgeMock);
+        mappedEdge = ModelMappers.toEdge(OnmsTopologyProtocol.create("test-protocol"), sourceEdgeMock);
 
         mappedEdge.visitTarget(new TopologyEdge.TopologyEdgeTargetVisitor() {
             @Override

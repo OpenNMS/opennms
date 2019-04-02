@@ -119,12 +119,8 @@ public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
     }
 
     @Override
-    public Set<String> getSupportedProtocols() {
-        final Set<String> protocols = new HashSet<String>();
-        synchronized (m_updatersMap) {
-            m_updatersMap.keySet().stream().forEach(p -> protocols.add(p.getId()));
-        }
-        return protocols;
+    public Set<OnmsTopologyProtocol> getSupportedProtocols() {
+        return m_updatersMap.keySet();
     }
 
     @Override
@@ -144,10 +140,11 @@ public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
             m_consumers
                     .stream()
                     .filter(consumer -> {
-                        if (consumer.getProtocols() == null) {
+                        if (consumer.getProtocols() == null || consumer.getProtocols().isEmpty()) {
                             return false;
                         }
-                        return consumer.getProtocols().contains(protocol);
+                        return consumer.getProtocols().contains(OnmsTopologyProtocol.allProtocols()) ||
+                                consumer.getProtocols().contains(protocol);
                     })
                     .forEach(consumer -> consumer.consume(message));
         }

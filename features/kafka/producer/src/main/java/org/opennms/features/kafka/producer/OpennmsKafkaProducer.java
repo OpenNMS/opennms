@@ -29,9 +29,9 @@
 package org.opennms.features.kafka.producer;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -109,7 +109,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private boolean forwardAlarmFeedback;
     private boolean suppressIncrementalAlarms;
     private boolean forwardNodes;
-    private boolean forwardTopologyMessages;
     private Expression eventFilterExpression;
     private Expression alarmFilterExpression;
 
@@ -133,7 +132,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private final ExecutorService kafkaSendQueueExecutor =
             Executors.newSingleThreadExecutor(runnable -> new Thread(runnable, "KafkaSendQueueProcessor"));
 
-    private Set<OnmsTopologyProtocol> topologyProtocols = new HashSet<>();
     private String encoding = "UTF8";
 
     public OpennmsKafkaProducer(ProtobufMapper protobufMapper, NodeCache nodeCache,
@@ -174,12 +172,8 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         if (forwardEvents) {
             eventSubscriptionService.addEventListener(this);
         }
-        
-        if (forwardTopologyMessages) {
-            topologyDao.subscribe(this);
-        }
-        
-        
+
+        topologyDao.subscribe(this);
     }
 
     public void destroy() {
@@ -193,11 +187,8 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         if (forwardEvents) {
             eventSubscriptionService.removeEventListener(this);
         }
-        
-        if (forwardTopologyMessages) {
-            topologyDao.unsubscribe(this);
-        }
 
+        topologyDao.unsubscribe(this);
     }
 
     private void forwardTopologyMessage(OnmsTopologyMessage message) {
@@ -487,7 +478,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     @Override
     public Set<OnmsTopologyProtocol> getProtocols() {
-        return topologyProtocols;
+        return Collections.singleton(OnmsTopologyProtocol.allProtocols());
     }
 
     @Override
@@ -495,17 +486,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         forwardTopologyMessage(message);
     }
 
-    public void setTopologyProtocols(String protocols) {
-        for (String protocol: protocols.split(",")) {
-            try {
-                topologyProtocols.add(OnmsTopologyProtocol.create(protocol));
-            } catch (Exception e) {
-                LOG.error("Cannot add protocol", e);
-            }
-        }
-        forwardTopologyMessages=!Strings.isNullOrEmpty(protocols);
-    }
-    
     public void setTopologyVertexTopic(String topologyVertexTopic) {
         this.topologyVertexTopic = topologyVertexTopic;
     }

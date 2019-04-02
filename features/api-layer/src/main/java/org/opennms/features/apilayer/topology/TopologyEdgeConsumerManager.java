@@ -29,8 +29,8 @@
 package org.opennms.features.apilayer.topology;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.opennms.features.apilayer.utils.InterfaceMapper;
 import org.opennms.features.apilayer.utils.ModelMappers;
@@ -62,21 +62,16 @@ public class TopologyEdgeConsumerManager extends InterfaceMapper<TopologyEdgeCon
 
             @Override
             public Set<OnmsTopologyProtocol> getProtocols() {
-                if(ext.getProtocols() == null) {
+                if (ext.getProtocols() == null) {
+                    LOG.debug("Protocols was null, returning empty set");
                     return Collections.emptySet();
                 }
 
-                Set<OnmsTopologyProtocol> protocols = new HashSet<>();
-
-                for (String protocol : ext.getProtocols().split(",")) {
-                    try {
-                        protocols.add(OnmsTopologyProtocol.create(protocol));
-                    } catch (Exception e) {
-                        LOG.warn("Cannot add protocol {} for consumer {}", protocol, ext, e);
-                    }
-                }
-
-                return protocols;
+                LOG.trace("Returning mapped protocols from {}", ext.getProtocols());
+                return ext.getProtocols()
+                        .stream()
+                        .map(ModelMappers::toOnmsTopologyProtocol)
+                        .collect(Collectors.toSet());
             }
 
             @Override
@@ -84,7 +79,7 @@ public class TopologyEdgeConsumerManager extends InterfaceMapper<TopologyEdgeCon
                 message.getMessagebody().accept(new TopologyVisitor() {
                     @Override
                     public void visit(OnmsTopologyEdge edge) {
-                        TopologyEdge topologyEdge = ModelMappers.toEdge(message.getProtocol().getId(), edge);
+                        TopologyEdge topologyEdge = ModelMappers.toEdge(message.getProtocol(), edge);
 
                         switch (message.getMessagestatus()) {
                             case UPDATE:
