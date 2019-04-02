@@ -285,7 +285,7 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
     @Override
     public void refresh() {
         m_delegate.refresh();
-        this.graph = new CollapsibleGraph(graph);
+        this.graph = new CollapsibleGraph(m_delegate.getCurrentGraph());
     }
 
     @Override
