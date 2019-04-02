@@ -273,15 +273,19 @@
         <bundle>wrap:mvn:org.twitter4j/twitter4j-core/${twitter4jVersion}</bundle>
     </feature>
     <feature name="opentracing-api" version="${opentracingVersion}" description="OpenTracing API">
-        <bundle>wrap:mvn:io.opentracing/opentracing-api/${opentracingVersion}</bundle>
-        <bundle>wrap:mvn:io.opentracing/opentracing-noop/${opentracingVersion}</bundle>
-        <bundle>wrap:mvn:io.opentracing/opentracing-util/${opentracingVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-api/${opentracingVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-noop/${opentracingVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-util/${opentracingVersion}</bundle>
     </feature>
-    <feature name="jeager-tracer" version="${opentracingVersion}" description="OpenTracing API">
+    <feature name="opennms-core-tracing" version="${project.version}" description="OpenNMS :: Core :: Tracing">
         <feature>opentracing-api</feature>
-        <bundle>wrap:mvn:io.jaegertracing/jaeger-client/${jeagertracingVersion}</bundle>
-        <bundle>wrap:mvn:io.jaegertracing/jaeger-core/${jeagertracingVersion}</bundle>
-        <bundle>wrap:mvn:com.google.code.gson/gson/2.8.2</bundle>
+        <bundle>mvn:org.opennms.core.tracing/org.opennms.core.tracing.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.tracing/org.opennms.core.tracing.registry/${project.version}</bundle>
+    </feature>
+    <feature name="jeager-tracer" version="${project.version}" description="OpenNMS:: Jeager Tracer Wrapper">
+        <feature>opennms-core-tracing</feature>
+        <bundle>mvn:org.opennms.core.tracing/org.opennms.core.tracing.jaeger-osgi/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.tracing/org.opennms.core.tracing.jaeger-tracer/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-activemq-pool" version="${project.version}" description="OpenNMS :: Features :: ActiveMQ :: Pool">
@@ -508,7 +512,6 @@
         <feature>opennms-core-camel</feature>
         <feature>opennms-distributed-core-api</feature>
         <feature>opennms-dao-api</feature>
-        <feature>opentracing-api</feature>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.xml/${project.version}</bundle>
@@ -529,6 +532,7 @@
     <feature name="opennms-core-ipc-rpc-kafka" version="${project.version}" description="OpenNMS :: Core :: IPC :: RPC :: Kafka Impl.">
         <feature>opennms-kafka</feature>
         <feature>opennms-core-ipc-rpc-api</feature>
+        <feature>opennms-core-tracing</feature>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.kafka/${project.version}</bundle>

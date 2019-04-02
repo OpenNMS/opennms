@@ -71,10 +71,14 @@ import org.opennms.core.rpc.echo.EchoResponse;
 import org.opennms.core.rpc.echo.EchoRpcModule;
 import org.opennms.core.rpc.echo.MyEchoException;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
+import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 import com.google.common.base.Strings;
+
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 
 public class RpcKafkaIT {
 
@@ -110,6 +114,18 @@ public class RpcKafkaIT {
         System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG), kafkaServer.getKafkaConnectString());
         System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "earliest");
         rpcClient = new KafkaRpcClientFactory();
+        TracerRegistry tracerRegistry = new TracerRegistry() {
+            @Override
+            public Tracer getTracer(String serviceName) {
+                return GlobalTracer.get();
+            }
+
+            @Override
+            public boolean isRegistered() {
+                return false;
+            }
+        };
+        rpcClient.setTracerRegistry(tracerRegistry);
         echoClient = new MockEchoClient(rpcClient);
         rpcClient.start();
         kafkaConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
@@ -118,7 +134,7 @@ public class RpcKafkaIT {
         when(configAdmin.getConfiguration(KafkaRpcConstants.KAFKA_CONFIG_PID).getProperties())
                 .thenReturn(kafkaConfig);
         minionIdentity = new MockMinionIdentity(REMOTE_LOCATION_NAME);
-        kafkaRpcServer = new KafkaRpcServerManager(new OsgiKafkaConfigProvider(KafkaRpcConstants.KAFKA_CONFIG_PID, configAdmin), minionIdentity);
+        kafkaRpcServer = new KafkaRpcServerManager(new OsgiKafkaConfigProvider(KafkaRpcConstants.KAFKA_CONFIG_PID, configAdmin), minionIdentity,tracerRegistry);
         kafkaRpcServer.init();
         kafkaRpcServer.bind(echoRpcModule);
     }

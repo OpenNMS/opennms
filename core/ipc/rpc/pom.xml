@@ -21,7 +21,5 @@
     <module>shell-commands</module>
     <module>utils</module>
     <module>xml</module>
-    <module>jaeger-tracer</module>
-    <module>tracer-registry</module>
   </modules>
 </project>

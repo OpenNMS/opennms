@@ -26,6 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+
 package org.opennms.core.ipc.rpc.kafka;
 
 import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.DEFAULT_TTL;
@@ -79,7 +80,7 @@ import org.opennms.core.rpc.api.RpcClientFactory;
 import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
-import org.opennms.core.rpc.api.TracerRegistry;
+import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,8 +136,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
 
     @Autowired
     private TracerRegistry tracerRegistry;
-    private Tracer tracer = tracerRegistry.getTracer(SystemInfoUtils.getInstanceId());
-
+    private Tracer tracer;
 
     @Override
     public <S extends RpcRequest, T extends RpcResponse> RpcClient<S, T> getClient(RpcModule<S, T> module) {
@@ -156,6 +156,9 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 // Generate RPC Id for every request to track request/response.
                 String rpcId = UUID.randomUUID().toString();
                 span.setTag("rpcId", rpcId);
+                if(request.getSystemId() != null) {
+                    span.setTag("systemId", request.getSystemId());
+                }
                 // Calculate timeout based on ttl and default timeout.
                 Long ttl = request.getTimeToLiveMs();
                 ttl = (ttl != null && ttl > 0) ? ttl : DEFAULT_TTL;
@@ -228,6 +231,11 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         this.tracerRegistry = tracerRegistry;
     }
 
+    public TracerRegistry getTracerRegistry() {
+        return tracerRegistry;
+    }
+
+
 
     public void start() {
         try (MDCCloseable mdc = Logging.withPrefixCloseable(RpcClientFactory.LOG_PREFIX)) {
@@ -251,6 +259,8 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(kafkaConfig);
             kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConsumer);
             executor.execute(kafkaConsumerRunner);
+            // Initialize tracer from tracer registry.
+            tracer = tracerRegistry.getTracer(SystemInfoUtils.getInstanceId());
             LOG.info("started  kafka consumer with : {}", kafkaConfig);
             // Start a new thread which handles timeouts from delayQueue and calls response callback.
             timerExecutor.execute(() -> {
@@ -305,12 +315,14 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                    T response = rpcModule.unmarshalResponse(message);
                     if (response.getErrorMessage() != null) {
                         responseFuture.completeExceptionally(new RemoteExecutionException(response.getErrorMessage()));
+                        span.log(response.getErrorMessage());
                     } else {
                         responseFuture.complete(response);
                     }
                     isProcessed = true;
                 } else {
                     responseFuture.completeExceptionally(new RequestTimedOutException(new TimeoutException()));
+                    span.setTag("timeout", "true");
                 }
                 span.finish();
                 rpcResponseMap.remove(rpcId);

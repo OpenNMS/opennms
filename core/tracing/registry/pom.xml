@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <groupId>org.opennms.core.ipc</groupId>
-    <artifactId>org.opennms.core.ipc.rpc</artifactId>
+    <groupId>org.opennms.core</groupId>
+    <artifactId>org.opennms.core.tracing</artifactId>
     <version>24.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms.core.ipc.rpc</groupId>
-  <artifactId>org.opennms.core.ipc.rpc.common</artifactId>
-  <name>OpenNMS :: Core :: IPC :: RPC :: Common</name>
+  <groupId>org.opennms.core.tracing</groupId>
+  <artifactId>org.opennms.core.tracing.registry</artifactId>
+  <name>OpenNMS :: Core :: Tracing :: Registry </name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -28,17 +28,14 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.core.ipc.rpc</groupId>
-      <artifactId>org.opennms.core.ipc.rpc.xml</artifactId>
+      <groupId>org.opennms.core.tracing</groupId>
+      <artifactId>org.opennms.core.tracing.api</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
       <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
     </dependency>
   </dependencies>
 </project>

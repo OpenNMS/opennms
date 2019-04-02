@@ -22,7 +22,7 @@
 
     <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/>
 
-    <reference id="tracerRegistry" interface="org.opennms.core.rpc.api.TracerRegistry"/>
+    <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
 
     <!-- Config Provider -->
     <bean id="kafkaConfigProvider" class="org.opennms.core.ipc.common.kafka.OsgiKafkaConfigProvider">
