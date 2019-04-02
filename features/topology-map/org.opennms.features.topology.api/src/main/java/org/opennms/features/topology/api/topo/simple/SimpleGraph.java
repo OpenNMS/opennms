@@ -401,9 +401,8 @@ public class SimpleGraph implements BackendGraph {
     }
 
     @Override
-    public Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId) {
-        String nextEdgeId = "TODO MVR";// TODO MVR use getNextEdgeId() ??? getNextEdgeId();
-        return connectVertices(nextEdgeId, sourceVertextId, targetVertextId, getNamespace());
+    public Edge connectVertices(String edgeId, VertexRef sourceVertextId, VertexRef targetVertextId) {
+        return connectVertices(edgeId, sourceVertextId, targetVertextId, getNamespace());
     }
 
     @Override
@@ -412,23 +411,23 @@ public class SimpleGraph implements BackendGraph {
         clearVertices();
     }
 
-    protected final AbstractEdge connectVertices(String id, VertexRef sourceId, VertexRef targetId, String namespace) {
-        if (sourceId == null) {
-            if (targetId == null) {
+    protected final AbstractEdge connectVertices(String edgeId, VertexRef sourceVertexRef, VertexRef targetVertexRef, String namespace) {
+        if (sourceVertexRef == null) {
+            if (targetVertexRef == null) {
                 LOG.warn("Source and target vertices are null");
                 return null;
             } else {
                 LOG.warn("Source vertex is null");
                 return null;
             }
-        } else if (targetId == null) {
+        } else if (targetVertexRef == null) {
             LOG.warn("Target vertex is null");
             return null;
         }
-        SimpleConnector source = new SimpleConnector(sourceId.getNamespace(), sourceId.getId()+"-"+id+"-connector", sourceId);
-        SimpleConnector target = new SimpleConnector(targetId.getNamespace(), targetId.getId()+"-"+id+"-connector", targetId);
+        SimpleConnector source = new SimpleConnector(sourceVertexRef.getNamespace(), sourceVertexRef.getId()+"-"+edgeId+"-connector", sourceVertexRef);
+        SimpleConnector target = new SimpleConnector(targetVertexRef.getNamespace(), targetVertexRef.getId()+"-"+edgeId+"-connector", targetVertexRef);
 
-        AbstractEdge edge = new AbstractEdge(namespace, id, source, target);
+        AbstractEdge edge = new AbstractEdge(namespace, edgeId, source, target);
 
         addEdges(edge);
 

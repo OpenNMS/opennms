@@ -110,7 +110,7 @@ public interface BackendGraph extends NamespaceAware {
 
     void removeEdges(EdgeRef... edges);
 
-    Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId);
+    Edge connectVertices(String edgeId, VertexRef sourceVertextId, VertexRef targetVertextId);
 
     void resetContainer();
 

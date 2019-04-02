@@ -255,14 +255,21 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
         graph.addVertices(datacenterVertex);
 
         if (!hostSystemVertex.equals(datacenterVertex)) {
-            graph.connectVertices(hostSystemVertex, datacenterVertex);
+            graph.connectVertices(
+                    datacenterName + "/" + vmwareManagementServer + "/" + vmwareManagedObjectId,
+                    hostSystemVertex,
+                    datacenterVertex);
         }
 
         parsedEntities.values().stream().filter(e -> "network".equals(e.getEntityType())).forEach(
                 e -> {
                     AbstractVertex networkVertex = createNetworkVertex(vmwareManagementServer + "/" + e.getEntityId(), parsedEntities.get(e.getEntityId()).getEntityName());
                     graph.addVertices(networkVertex);
-                    graph.connectVertices(hostSystemVertex, networkVertex);
+                    graph.connectVertices(
+                            vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + e.getEntityId(),
+                            hostSystemVertex,
+                            networkVertex
+                    );
                 }
         );
 
@@ -270,8 +277,11 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
                 e -> {
                     AbstractVertex datastoreVertex = createDatastoreVertex(vmwareManagementServer + "/" + e.getEntityId(), parsedEntities.get(e.getEntityId()).getEntityName());
                     graph.addVertices(datastoreVertex);
-
-                    graph.connectVertices(hostSystemVertex, datastoreVertex);
+                    graph.connectVertices(
+                            vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + e.getEntityId(),
+                            hostSystemVertex,
+                            datastoreVertex)
+                    ;
                 }
         );
     }
@@ -302,6 +312,10 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
             LOG.warn("Cannot find associated vertex for host system {}/{}", vmwareManagementServer, vmwareHostSystemId);
         }
 
-        graph.connectVertices(virtualMachineVertex, graph.getVertex(getNamespace(), vmwareManagementServer + "/" + vmwareHostSystemId));
+        graph.connectVertices(
+                vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + vmwareManagementServer + "/" + vmwareHostSystemId,
+                virtualMachineVertex,
+                graph.getVertex(getNamespace(), vmwareManagementServer + "/" + vmwareHostSystemId)
+        );
     }
 }

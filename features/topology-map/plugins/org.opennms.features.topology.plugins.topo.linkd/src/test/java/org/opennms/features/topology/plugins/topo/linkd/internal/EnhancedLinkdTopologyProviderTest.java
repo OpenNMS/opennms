@@ -43,6 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.CollapsibleGraph;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Criteria.ElementType;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
@@ -206,25 +207,27 @@ public class EnhancedLinkdTopologyProviderTest {
         assertEquals(13, m_topologyProvider.getCurrentGraph().getVertices().size());
 
         // Connect various vertices together
-        m_topologyProvider.getCurrentGraph().connectVertices(vertexA, vertexB);
-        m_topologyProvider.getCurrentGraph().connectVertices(vertexA, vertexC);
-        m_topologyProvider.getCurrentGraph().connectVertices(vertexB, vertexC);
-        m_topologyProvider.getCurrentGraph().connectVertices(vertexB, vertexD);
-        m_topologyProvider.getCurrentGraph().connectVertices(vertexC, vertexD);
-        m_topologyProvider.getCurrentGraph().connectVertices(vertexA, vertexE);
-        m_topologyProvider.getCurrentGraph().connectVertices(vertexD, vertexE);
+        m_topologyProvider.getCurrentGraph().connectVertices("e0", vertexA, vertexB);
+        m_topologyProvider.getCurrentGraph().connectVertices("e1", vertexA, vertexC);
+        m_topologyProvider.getCurrentGraph().connectVertices("e2", vertexB, vertexC);
+        m_topologyProvider.getCurrentGraph().connectVertices("e3", vertexB, vertexD);
+        m_topologyProvider.getCurrentGraph().connectVertices("e4", vertexC, vertexD);
+        m_topologyProvider.getCurrentGraph().connectVertices("e5", vertexA, vertexE);
+        m_topologyProvider.getCurrentGraph().connectVertices("e6", vertexD, vertexE);
 
         assertEquals(1, m_topologyProvider.getCurrentGraph().getVertices(Collections.singletonList(vertexAref)).size());
         assertEquals(1, m_topologyProvider.getCurrentGraph().getVertices(Collections.singletonList(vertexBref)).size());
         assertEquals(13, m_topologyProvider.getCurrentGraph().getVertices().size());
         assertEquals(3, m_topologyProvider.getCurrentGraph().getEdgeIdsForVertex(m_topologyProvider.getCurrentGraph().getVertex(vertexAref)).length);
         assertEquals(3, m_topologyProvider.getCurrentGraph().getEdgeIdsForVertex(m_topologyProvider.getCurrentGraph().getVertex(vertexBref)).length);
-        // TODO MVR verify this...
-//        assertEquals(1, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(vertexA));
-//        assertEquals(1, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(vertexB));
-//        assertEquals(1, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(vertexC));
-//        assertEquals(1, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(vertexD));
-//        assertEquals(0, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(vertexE));
+
+        CollapsibleGraph collapsibleGraph = new CollapsibleGraph(m_topologyProvider.getCurrentGraph());
+        collapsibleGraph.getVertices();
+        assertEquals(1, collapsibleGraph.getSemanticZoomLevel(vertexA));
+        assertEquals(1, collapsibleGraph.getSemanticZoomLevel(vertexB));
+        assertEquals(1, collapsibleGraph.getSemanticZoomLevel(vertexC));
+        assertEquals(1, collapsibleGraph.getSemanticZoomLevel(vertexD));
+        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexE));
 
         m_topologyProvider.getCurrentGraph().resetContainer();
 
@@ -234,12 +237,14 @@ public class EnhancedLinkdTopologyProviderTest {
         assertEquals(0, m_topologyProvider.getCurrentGraph().getVertices().size());
         assertEquals(0, m_topologyProvider.getCurrentGraph().getEdgeIdsForVertex(m_topologyProvider.getCurrentGraph().getVertex(vertexAref)).length);
         assertEquals(0, m_topologyProvider.getCurrentGraph().getEdgeIdsForVertex(m_topologyProvider.getCurrentGraph().getVertex(vertexBref)).length);
-        // TODO MVR verify this...
-//        assertEquals(0, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(vertexA));
-//        assertEquals(0, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(vertexB));
-//        assertEquals(0, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(vertexC));
-//        assertEquals(0, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(vertexD));
-//        assertEquals(0, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(vertexE));
+
+        collapsibleGraph = new CollapsibleGraph(m_topologyProvider.getCurrentGraph());
+        collapsibleGraph.getVertices();
+        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexA));
+        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexB));
+        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexC));
+        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexD));
+        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexE));
 
         m_topologyProvider.refresh();
 
@@ -252,12 +257,14 @@ public class EnhancedLinkdTopologyProviderTest {
         assertEquals(8, m_topologyProvider.getCurrentGraph().getVertices().size());
         assertEquals(0, m_topologyProvider.getCurrentGraph().getEdgeIdsForVertex(m_topologyProvider.getCurrentGraph().getVertex(vertexAref)).length);
         assertEquals(0, m_topologyProvider.getCurrentGraph().getEdgeIdsForVertex(m_topologyProvider.getCurrentGraph().getVertex(vertexBref)).length);
-        // TODO MVR verify this...
-//        assertEquals(0, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(vertexA));
-//        assertEquals(0, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(vertexB));
-//        assertEquals(0, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(vertexC));
-//        assertEquals(0, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(vertexD));
-//        assertEquals(0, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(vertexE));
+
+        collapsibleGraph = new CollapsibleGraph(m_topologyProvider.getCurrentGraph());
+        collapsibleGraph.getVertices();
+        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexA));
+        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexB));
+        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexC));
+        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexD));
+        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexE));
     }
 
     @Test
@@ -295,13 +302,14 @@ public class EnhancedLinkdTopologyProviderTest {
         assertEquals(new Integer(0), v1.getX());
         assertEquals(new Integer(0), v1.getY());
 
-        // TODO MVR verify this...
-//        assertEquals(0, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(v1));
-//        assertEquals(0, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(v2));
-//        assertEquals(0, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(v3));
-//        assertEquals(0, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(v4));
-//        assertEquals(0, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(v5));
-//        assertEquals(0, m_topologyProvider.getCurrentGraph().getSemanticZoomLevel(v6));
+        final CollapsibleGraph collapsibleGraph = new CollapsibleGraph(m_topologyProvider.getCurrentGraph());
+        collapsibleGraph.getVertices();
+        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(v1));
+        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(v2));
+        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(v3));
+        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(v4));
+        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(v5));
+        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(v6));
 
         assertEquals(3, m_topologyProvider.getCurrentGraph().getEdgeIdsForVertex(v1).length);
         assertEquals(3, m_topologyProvider.getCurrentGraph().getEdgeIdsForVertex(v2).length);
@@ -355,7 +363,7 @@ public class EnhancedLinkdTopologyProviderTest {
         m_topologyProvider.getCurrentGraph().addVertices(vertex1);
         assertEquals(2, m_topologyProvider.getCurrentGraph().getVertices().size());
 
-        Edge edgeId = m_topologyProvider.getCurrentGraph().connectVertices(vertex0, vertex1);
+        Edge edgeId = m_topologyProvider.getCurrentGraph().connectVertices("e0", vertex0, vertex1);
         assertEquals(1, m_topologyProvider.getCurrentGraph().getEdges().size());
         SimpleLeafVertex sourceLeafVert = (SimpleLeafVertex) edgeId.getSource().getVertex();
         SimpleLeafVertex targetLeafVert = (SimpleLeafVertex) edgeId.getTarget().getVertex();

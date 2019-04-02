@@ -99,7 +99,7 @@ public class CollapsibleGraph implements BackendGraph {
         return displayVertices;
     }
 
-    private int getSemanticZoomLevel(VertexRef vertex) {
+    public int getSemanticZoomLevel(VertexRef vertex) {
         Integer szl = m_semanticZoomLevels.get(vertex);
         return szl == null ? 0 : szl;
     }
@@ -269,6 +269,7 @@ public class CollapsibleGraph implements BackendGraph {
         return retval;
     }
 
+    // TODO MVR CriteriaUtils?
     public static Map<VertexRef,Set<Vertex>> getMapOfVerticesToCollapsedVertices(CollapsibleCriteria[] criteria) {
         // Make a map of all of the vertices to their new collapsed representations
         Map<VertexRef,Set<Vertex>> vertexToCollapsedVertices = new TreeMap<>(new RefComparator());
@@ -433,8 +434,8 @@ public class CollapsibleGraph implements BackendGraph {
     }
 
     @Override
-    public Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId) {
-        return m_delegate.connectVertices(sourceVertextId, targetVertextId);
+    public Edge connectVertices(String edgeId, VertexRef sourceVertextId, VertexRef targetVertextId) {
+        return m_delegate.connectVertices(edgeId, sourceVertextId, targetVertextId);
     }
 
     @Override
