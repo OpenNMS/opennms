@@ -30,9 +30,11 @@ package org.opennms.features.topology.api.topo;
 
 import java.util.Collection;
 
+import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
+
 public interface VertexListener {
 	
-	void vertexSetChanged(VertexProvider provider);
-	void vertexSetChanged(VertexProvider provider, Collection<? extends Vertex> added, Collection<? extends Vertex> update, Collection<String> removedVertexIds);
+	void vertexSetChanged(XXXGraph graph);
+	void vertexSetChanged(XXXGraph provider, Collection<? extends Vertex> added, Collection<? extends Vertex> update, Collection<String> removedVertexIds);
 	
 }

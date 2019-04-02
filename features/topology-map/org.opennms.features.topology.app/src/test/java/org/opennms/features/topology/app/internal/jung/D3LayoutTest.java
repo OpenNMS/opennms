@@ -46,9 +46,9 @@ import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.support.SimpleGraphBuilder;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
 
 import edu.uci.ics.jung.graph.SparseGraph;
 
@@ -57,7 +57,7 @@ public class D3LayoutTest extends AbstractLayoutTest {
     private static final double ELBOW_ROOM = 50.0;
 
     @Override
-    protected GraphProvider getGraphProvider() {
+    protected XXXGraph getGraph() {
         final SimpleGraphBuilder bldr = new SimpleGraphBuilder("nodes");
         for(int i = 0; i < 100; i++) {
             bldr.vertex("v"+i).vLabel("vertex"+i).vIconKey("server").vTooltip("tooltip").vStyleName("vertex");

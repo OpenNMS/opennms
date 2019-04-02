@@ -31,24 +31,24 @@ package org.opennms.features.topology.api.support;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
-import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleConnector;
-import org.opennms.features.topology.api.topo.SimpleGraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
+import org.opennms.features.topology.api.topo.blablabla.XXXGraphImpl;
 
 public class SimpleGraphBuilder {
 
-	private final GraphProvider m_graphProvider;
+	private final XXXGraph m_simpleGraph;
 	private AbstractVertex m_currentVertex;
 	private AbstractEdge m_currentEdge;
 	
 	public SimpleGraphBuilder(String namespace) {
-		m_graphProvider = new SimpleGraphProvider(namespace);
+		m_simpleGraph = new XXXGraphImpl(namespace);
 	}
 	
 	public SimpleGraphBuilder vertex(String id) {
 		m_currentVertex = new AbstractVertex(ns(), id);
-		m_graphProvider.addVertices(m_currentVertex);
+		m_simpleGraph.addVertices(m_currentVertex);
 		return this;
 	}
 	
@@ -83,28 +83,22 @@ public class SimpleGraphBuilder {
 	}
 	
 	public SimpleGraphBuilder edge(String id, String srcId, String tgtId) {
-		
-		VertexRef srcVertex = m_graphProvider.getVertex(ns(), srcId);
+		VertexRef srcVertex = m_simpleGraph.getVertex(ns(), srcId);
 		if (srcVertex == null) {
 			srcVertex = new DefaultVertexRef(ns(), srcId);
 		}
-		
-		VertexRef tgtVertex = m_graphProvider.getVertex(ns(), tgtId);
+		VertexRef tgtVertex = m_simpleGraph.getVertex(ns(), tgtId);
 		if (tgtVertex == null) {
 			tgtVertex = new DefaultVertexRef(ns(), tgtId);
 		}
-		
-		
 		SimpleConnector source = new SimpleConnector(ns(), srcId+"-"+id+"-connector", srcVertex);
 		SimpleConnector target = new SimpleConnector(ns(), tgtId+"-"+id+"-connector", tgtVertex);
-		
+
 		m_currentEdge = new AbstractEdge(ns(), id, source, target);
-		
 		source.setEdge(m_currentEdge);
 		target.setEdge(m_currentEdge);
-		
-		m_graphProvider.addEdges(m_currentEdge);
-		
+
+		m_simpleGraph.addEdges(m_currentEdge);
 		return this;
 	}
 	
@@ -123,12 +117,12 @@ public class SimpleGraphBuilder {
 		return this;
 	}
 	
-	public GraphProvider get() {
-		return m_graphProvider;
+	public XXXGraph get() {
+		return m_simpleGraph;
 	}
 
 	private String ns() {
-		return m_graphProvider.getNamespace();
+		return m_simpleGraph.getNamespace();
 	}
 	
 }

@@ -53,7 +53,7 @@ public class VmwareTopologySearchProvider extends SimpleSearchProvider {
 
     @Override
     public List<? extends VertexRef> queryVertices(SearchQuery searchQuery, GraphContainer container) {
-        final List<Vertex> vertices = vmwareTopologyProvider.getVertices();
+        final List<Vertex> vertices = vmwareTopologyProvider.getCurrentGraph().getVertices();
         return vertices.stream().filter(v -> searchQuery.matches(v.getLabel())).collect(Collectors.toList());
     }
 }

@@ -44,6 +44,7 @@ import org.opennms.features.topology.api.topo.SearchCriteria;
 import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
 import org.opennms.features.topology.app.internal.CategoryProvider;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
@@ -107,21 +108,17 @@ public class CategoryHopCriteria extends VertexHopCriteria implements SearchCrit
         return false;
     }
 
-    public String getCategoryName() {
-		return m_categoryName;
-	}
-
 	@Override
 	public Set<VertexRef> getVertices() {
-		OnmsCategory category = categoryProvider.findCategoryByName(m_categoryName);
+		final OnmsCategory category = categoryProvider.findCategoryByName(m_categoryName);
 		if (category == null) {
 			return Collections.emptySet();
 		} else {
-			List<OnmsNode> nodes = categoryProvider.findNodesForCategory(category);
-			List<Integer> nodeIds = nodes.stream().map(n -> n.getId()).collect(Collectors.toList());
-
-			GraphProvider graphProvider = graphContainer.getTopologyServiceClient().getGraphProviderBy(graphContainer.getTopologyServiceClient().getNamespace());
-			return graphProvider.getVertices(new IgnoreHopCriteria()).stream()
+			final List<OnmsNode> nodes = categoryProvider.findNodesForCategory(category);
+			final List<Integer> nodeIds = nodes.stream().map(n -> n.getId()).collect(Collectors.toList());
+			final GraphProvider graphProvider = graphContainer.getTopologyServiceClient().getGraphProviderBy(graphContainer.getTopologyServiceClient().getNamespace());
+			final XXXGraph currentGraph = graphProvider.getCurrentGraph();
+			return currentGraph.getVertices(new IgnoreHopCriteria()).stream()
 					.filter(v -> v.getNodeID() != null)
 					.filter(v -> nodeIds.contains(v.getNodeID()))
 					.collect(Collectors.toSet());

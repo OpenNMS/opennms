@@ -38,6 +38,7 @@ import org.opennms.features.topology.api.topo.SimpleSearchProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class PathOutageSearchProvider extends SimpleSearchProvider {
+
 	private final PathOutageProvider pathOutageProvider;
 
 	public PathOutageSearchProvider(PathOutageProvider provider) {
@@ -57,7 +58,7 @@ public class PathOutageSearchProvider extends SimpleSearchProvider {
 		List<PathOutageVertex> results = new ArrayList<>();
 
 		String queryString = searchQuery.getQueryString();
-		this.pathOutageProvider.getVertices(null).stream()
+		pathOutageProvider.getCurrentGraph().getVertices().stream()
 				.filter(v -> matches((PathOutageVertex) v, queryString))
 				.forEach(v -> results.add((PathOutageVertex) v));
 		return results;

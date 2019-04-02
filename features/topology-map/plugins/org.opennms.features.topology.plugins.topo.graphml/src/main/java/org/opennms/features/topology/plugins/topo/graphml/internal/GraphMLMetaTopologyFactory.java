@@ -109,7 +109,7 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 				// Create and register additional services
 				final Set<String> iconKeys = metaTopologyProvider.getGraphProviders().stream()
 						.map(GraphProvider::getNamespace)
-						.flatMap(eachNamespace -> metaTopologyProvider.getRawTopologyProvider(eachNamespace).getVertices().stream())
+						.flatMap(eachNamespace -> metaTopologyProvider.getRawTopologyProvider(eachNamespace).getCurrentGraph().getVertices().stream())
 						.map(Vertex::getIconKey)
 						.filter(Objects::nonNull)
 						.collect(Collectors.toSet());

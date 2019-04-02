@@ -28,7 +28,6 @@
 
 package org.opennms.features.topology.app.internal;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.features.topology.api.browsers.ContentType;
@@ -37,52 +36,34 @@ import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class TestTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
     public TestTopologyProvider() {
         super("test");
+
+        graph.resetContainer();
         
-        resetContainer();
+        final TestVertex v1 = new TestVertex("v1", "a leaf");
+        final TestVertex v2 = new TestVertex("v2", "another leaf");
+
+        graph.addVertices(v1);
+        graph.addVertices(v2);
         
-        String vId1 = getNextVertexId();
-        TestVertex v1 = new TestVertex(vId1, 0, 0);
-        v1.setLabel("a leaf");
-        
-        addVertices(v1);
-        
-        String vId2 = getNextVertexId();
-        TestVertex v2 = new TestVertex(vId2, 0, 0);
-        v2.setLabel("another leaf");
-        addVertices(v2);
-        
-        Edge edge = connectVertices(v1, v2);
+        final Edge edge = graph.connectVertices(v1, v2);
         edge.setStyleName("default");
     }
 
     @Override
     public void refresh() {
-        clearEdges();
-        clearVertices();
+        graph.resetContainer();
 
-        List<TestVertex> vertices = new ArrayList<>();
+        final TestVertex v1 = new TestVertex("v1", "a leaf vertex");
+        final TestVertex v2 = new TestVertex("v2",  "another leaf");
 
-        String vId1 = getNextVertexId();
-        TestVertex v1 = new TestVertex(vId1, 0, 0);
-        v1.setLabel("a leaf vertex");
-
-        vertices.add(v1);
-
-        String vId2 = getNextVertexId();
-        TestVertex v2 = new TestVertex(vId2, 0, 0);
-        v2.setLabel("another leaf");
-        vertices.add(v2);
-
-        addVertices(vertices.toArray(new Vertex[0]));
-
-        connectVertices(v1, v2);
+        graph.addVertices(v1, v2);
+        graph.connectVertices(v1, v2);
     }
 
     @Override

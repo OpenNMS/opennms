@@ -44,8 +44,8 @@ import org.opennms.features.topology.api.topo.DefaultStatus;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
@@ -77,11 +77,11 @@ public class LinkdStatusProvider implements StatusProvider {
     }
 
     @Override
-    public Map<VertexRef, Status> getStatusForVertices(VertexProvider vertexProvider, Collection<VertexRef> vertices, Criteria[] criteria) {
-        Map<VertexRef, Status> returnMap = new HashMap<VertexRef, Status>();
+    public Map<VertexRef, Status> getStatusForVertices(XXXGraph graph, Collection<VertexRef> vertices, Criteria[] criteria) {
+        Map<VertexRef, Status> returnMap = new HashMap<>();
 
         // split nodes from groups and others
-        List<VertexRef> nodeRefs = getNodeVertexRefs(vertexProvider, vertices, criteria); // nodes
+        List<VertexRef> nodeRefs = getNodeVertexRefs(graph, vertices, criteria); // nodes
         List<VertexRef> otherRefs = getOtherVertexRefs(vertices);  // groups
 
         Map<Integer, VertexRef> nodeIdMap = extractNodeIds(nodeRefs);
@@ -101,7 +101,7 @@ public class LinkdStatusProvider implements StatusProvider {
         for (VertexRef eachRef : otherRefs) {
             if (isCollapsible(eachRef)) {
                 List<AlarmSummary> alarmSummariesForGroup = new ArrayList<>();
-                List<Vertex> children = vertexProvider.getVertices((CollapsibleRef) eachRef, criteria);
+                List<Vertex> children = graph.getVertices((CollapsibleRef) eachRef, criteria);
                 for (Vertex eachChildren : children) {
                     AlarmSummary eachChildrenAlarmSummary = nodeIdToAlarmSummaryMap.get(eachChildren.getNodeID());
                     if (eachChildrenAlarmSummary != null) {
@@ -120,9 +120,9 @@ public class LinkdStatusProvider implements StatusProvider {
     }
 
     private Map<Integer , AlarmSummary> getAlarmSummaries(Set<Integer> nodeIds) {
-        Map<Integer, AlarmSummary> resultMap = new HashMap<Integer, AlarmSummary>();
+        Map<Integer, AlarmSummary> resultMap = new HashMap<>();
 
-        List<AlarmSummary> alarmSummaries = m_alarmDao.getNodeAlarmSummariesIncludeAcknowledgedOnes(new ArrayList<Integer>(nodeIds));
+        List<AlarmSummary> alarmSummaries = m_alarmDao.getNodeAlarmSummariesIncludeAcknowledgedOnes(new ArrayList<>(nodeIds));
         for (AlarmSummary eachSummary : alarmSummaries) {
             resultMap.put(eachSummary.getNodeId(), eachSummary);
         }
@@ -135,7 +135,7 @@ public class LinkdStatusProvider implements StatusProvider {
     }
 
     private static Map<Integer, VertexRef> extractNodeIds(Collection<VertexRef> inputList) {
-        Map<Integer, VertexRef> vertexRefToNodeIdMap = new HashMap<Integer, VertexRef>();
+        Map<Integer, VertexRef> vertexRefToNodeIdMap = new HashMap<>();
 
         for (VertexRef eachRef : inputList) {
             if ("nodes".equals(eachRef.getNamespace())) {
@@ -153,12 +153,12 @@ public class LinkdStatusProvider implements StatusProvider {
         return vertexRefToNodeIdMap;
     }
 
-    private static List<VertexRef> getNodeVertexRefs(VertexProvider vertexProvider, Collection<VertexRef> vertices, Criteria[] criteria) {
+    private static List<VertexRef> getNodeVertexRefs(XXXGraph graph, Collection<VertexRef> vertices, Criteria[] criteria) {
         List<VertexRef> returnList = new ArrayList<>();
         for (VertexRef eachRef : vertices) {
             if ("nodes".equals(eachRef.getNamespace())) {
                 if(isCollapsible(eachRef)) {
-                    addChildrenRecursively(vertexProvider, (CollapsibleRef) eachRef, returnList, criteria);
+                    addChildrenRecursively(graph, (CollapsibleRef) eachRef, returnList, criteria);
                 } else {
                     if (!returnList.contains(eachRef)) {
                         returnList.add(eachRef);
@@ -179,15 +179,15 @@ public class LinkdStatusProvider implements StatusProvider {
         return returnList;
     }
 
-    private static void addChildrenRecursively(VertexProvider vertexProvider, CollapsibleRef collapsibleRef, Collection<VertexRef> vertexRefs, Criteria[] criteria) {
-        List<Vertex> vertices = vertexProvider.getVertices(collapsibleRef, criteria);
+    private static void addChildrenRecursively(XXXGraph graph, CollapsibleRef collapsibleRef, Collection<VertexRef> vertexRefs, Criteria[] criteria) {
+        List<Vertex> vertices = graph.getVertices(collapsibleRef, criteria);
         for(Vertex vertex : vertices) {
             if(!isCollapsible(vertex)) {
                 if (!vertexRefs.contains(vertex)) {
                     vertexRefs.add(vertex);
                 }
             } else {
-                addChildrenRecursively(vertexProvider, collapsibleRef, vertexRefs, criteria);
+                addChildrenRecursively(graph, collapsibleRef, vertexRefs, criteria);
             }
         }
     }

@@ -69,7 +69,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
     private final GraphMLServiceAccessor m_serviceAccessor;
 
     private File graphMLFile;
-    private final Map<String, GraphProvider> graphsByNamespace = Maps.newLinkedHashMap();
+    private final Map<String, GraphProvider> graphProvidersByNamespace = Maps.newLinkedHashMap();
     private final Map<String, GraphMLTopologyProvider> rawGraphsByNamespace = Maps.newLinkedHashMap();
     private final Map<VertexRef, List<VertexRef>> oppositeVertices = Maps.newLinkedHashMap();
     private BreadcrumbStrategy breadcrumbStrategy;
@@ -79,8 +79,8 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
     }
 
     private VertexRef getVertex(GraphMLNode node) {
-        return graphsByNamespace.values().stream()
-                .map(g -> g.getVertex(g.getNamespace(), node.getId()))
+        return graphProvidersByNamespace.values().stream()
+                .map(provider -> provider.getCurrentGraph().getVertex(provider.getNamespace(), node.getId()))
                 .filter(Objects::nonNull)
                 .findFirst().orElse(null);
     }
@@ -94,7 +94,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
     }
 
     public void reload() throws IOException, InvalidGraphException {
-        graphsByNamespace.clear();
+        graphProvidersByNamespace.clear();
         oppositeVertices.clear();
         rawGraphsByNamespace.clear();
         if (graphMLFile == null) {
@@ -110,9 +110,9 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
             validate(graphML);
 
             for (GraphMLGraph eachGraph : graphML.getGraphs()) {
-                final GraphMLTopologyProvider topoProvider = new GraphMLTopologyProvider(this, eachGraph, m_serviceAccessor);
+                final GraphMLTopologyProvider topoProvider = new GraphMLTopologyProvider(eachGraph, m_serviceAccessor);
                 final VertexHopGraphProvider vertexHopGraphProvider = new VertexHopGraphProvider(topoProvider);
-                graphsByNamespace.put(topoProvider.getNamespace(), vertexHopGraphProvider);
+                graphProvidersByNamespace.put(topoProvider.getNamespace(), vertexHopGraphProvider);
                 rawGraphsByNamespace.put(topoProvider.getNamespace(), topoProvider);
             }
 
@@ -136,12 +136,12 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
 
     @Override
     public GraphProvider getDefaultGraphProvider() {
-        return Iterables.getFirst(graphsByNamespace.values(), null);
+        return Iterables.getFirst(graphProvidersByNamespace.values(), null);
     }
 
     @Override
     public Collection<GraphProvider> getGraphProviders() {
-        return graphsByNamespace.values();
+        return graphProvidersByNamespace.values();
     }
 
     @Override
@@ -151,7 +151,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
 
     @Override
     public GraphProvider getGraphProviderBy(String namespace) {
-        return graphsByNamespace.get(namespace);
+        return graphProvidersByNamespace.get(namespace);
     }
 
     @Override

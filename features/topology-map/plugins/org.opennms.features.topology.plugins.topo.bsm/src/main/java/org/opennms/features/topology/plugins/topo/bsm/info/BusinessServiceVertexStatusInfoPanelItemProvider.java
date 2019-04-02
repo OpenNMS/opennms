@@ -113,7 +113,7 @@ public class BusinessServiceVertexStatusInfoPanelItemProvider extends VertexInfo
         final Set<GraphVertex> impactingVertices = getImpactingVertices(stateMachine, graph, businessService);
         for (final Edge edge : businessService.getEdges()) {
             // Get the topology vertex for the child to determine the display label
-            final Vertex childVertex = businessServicesTopologyProvider.getVertex(edge.accept(new EdgeVisitor<VertexRef>() {
+            final Vertex childVertex = businessServicesTopologyProvider.getCurrentGraph().getVertex(edge.accept(new EdgeVisitor<VertexRef>() {
                 @Override
                 public VertexRef visit(final IpServiceEdge edge) {
                     return new IpServiceVertex(edge.getIpService(), 0);

@@ -74,43 +74,40 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         PROPAGATE_STATUS_PROVIDER,
     }
 
-    private final GraphMLMetaTopologyProvider metaTopologyProvider;
     private final int defaultSzl;
     private final String preferredLayout;
     private final FocusStrategy focusStrategy;
     private final List<String> focusIds;
     private final VertexStatusProviderType vertexStatusProviderType;
 
-    public GraphMLTopologyProvider(final GraphMLMetaTopologyProvider metaTopologyProvider,
-                                   final GraphMLGraph graph,
+    public GraphMLTopologyProvider(final GraphMLGraph graphMLGraph,
                                    final GraphMLServiceAccessor serviceAccessor) {
-        super(graph.getProperty(GraphMLProperties.NAMESPACE));
-        this.metaTopologyProvider = metaTopologyProvider;
+        super((String)graphMLGraph.getProperty(GraphMLProperties.NAMESPACE));
 
         m_serviceAccessor = serviceAccessor;
 
-        for (GraphMLNode graphMLNode : graph.getNodes()) {
+        for (GraphMLNode graphMLNode : graphMLGraph.getNodes()) {
             GraphMLVertex newVertex = new GraphMLVertex(this.getNamespace(), graphMLNode);
             setNodeIdForVertex(newVertex);
-            addVertices(newVertex);
+            graph.addVertices(newVertex);
         }
-        for (org.opennms.features.graphml.model.GraphMLEdge eachEdge : graph.getEdges()) {
-            GraphMLVertex sourceVertex = (GraphMLVertex) getVertex(getNamespace(), eachEdge.getSource().getId());
-            GraphMLVertex targetVertex = (GraphMLVertex) getVertex(getNamespace(), eachEdge.getTarget().getId());
+        for (org.opennms.features.graphml.model.GraphMLEdge eachEdge : graphMLGraph.getEdges()) {
+            GraphMLVertex sourceVertex = (GraphMLVertex) graph.getVertex(getNamespace(), eachEdge.getSource().getId());
+            GraphMLVertex targetVertex = (GraphMLVertex) graph.getVertex(getNamespace(), eachEdge.getTarget().getId());
             if (sourceVertex == null || targetVertex == null) {
                 // Skip edges where either the source of target vertices are outside of this graph
                 continue;
             }
             GraphMLEdge newEdge = new GraphMLEdge(getNamespace(), eachEdge, sourceVertex, targetVertex);
-            addEdges(newEdge);
+            graph.addEdges(newEdge);
         }
-        setTopologyProviderInfo(createTopologyProviderInfo(graph));
-        defaultSzl = getDefaultSzl(graph);
-        focusStrategy = getFocusStrategy(graph);
-        focusIds = getFocusIds(graph);
-        preferredLayout = graph.getProperty(GraphMLProperties.PREFERRED_LAYOUT);
+        setTopologyProviderInfo(createTopologyProviderInfo(graphMLGraph));
+        defaultSzl = getDefaultSzl(graphMLGraph);
+        focusStrategy = getFocusStrategy(graphMLGraph);
+        focusIds = getFocusIds(graphMLGraph);
+        preferredLayout = graphMLGraph.getProperty(GraphMLProperties.PREFERRED_LAYOUT);
 
-        this.vertexStatusProviderType = getVertexProviderTypeFromGraph(graph);
+        this.vertexStatusProviderType = getVertexProviderTypeFromGraph(graphMLGraph);
 
         if (focusStrategy != FocusStrategy.SPECIFIC && !focusIds.isEmpty()) {
             LOG.warn("Focus ids is defined, but strategy is {}. Did you mean to specify {}={}. Ignoring focusIds.", GraphMLProperties.FOCUS_STRATEGY, FocusStrategy.SPECIFIC.name());
@@ -172,7 +169,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
                 .withSemanticZoomLevel(defaultSzl)
                 .withPreferredLayout(preferredLayout)
                 .withCriteria(() -> {
-                    List<VertexHopGraphProvider.VertexHopCriteria> focusCriteria = focusStrategy.getFocusCriteria(this, focusIds.toArray(new String[focusIds.size()]));
+                    List<VertexHopGraphProvider.VertexHopCriteria> focusCriteria = focusStrategy.getFocusCriteria(graph, focusIds.toArray(new String[focusIds.size()]));
                     return Lists.newArrayList(focusCriteria);
                 });
     }

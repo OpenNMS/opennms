@@ -37,7 +37,6 @@ import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public interface TopologyServiceClient extends SelectionAware {
@@ -63,7 +62,7 @@ public interface TopologyServiceClient extends SelectionAware {
 
     GraphProvider getGraphProviderBy(String namespace);
 
-    VertexProvider getDefaultGraphProvider();
+    GraphProvider getDefaultGraphProvider();
 
     LayoutAlgorithm getPreferredLayoutAlgorithm();
 

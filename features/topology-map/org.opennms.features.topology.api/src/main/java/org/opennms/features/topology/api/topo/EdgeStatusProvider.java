@@ -32,7 +32,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.opennms.features.topology.api.NamespaceAware;
+import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
 
 public interface EdgeStatusProvider extends NamespaceAware {
-    Map<? extends EdgeRef, ? extends Status> getStatusForEdges(EdgeProvider edgeProvider, Collection<EdgeRef> edges, Criteria[] criteria);
+    Map<? extends EdgeRef, ? extends Status> getStatusForEdges(XXXGraph graph, Collection<EdgeRef> edges, Criteria[] criteria);
 }

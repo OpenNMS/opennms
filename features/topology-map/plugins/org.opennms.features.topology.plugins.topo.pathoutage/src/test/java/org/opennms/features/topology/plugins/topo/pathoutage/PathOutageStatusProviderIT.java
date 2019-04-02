@@ -235,8 +235,8 @@ public class PathOutageStatusProviderIT {
 	 * @return Map with {@link Status} information for all vertices
 	 */
 	private Map<VertexRef, Status> calculateStatuses() {
-		Map<VertexRef, Status> retvals = this.pathOutageStatusProvider.getStatusForVertices(pathOutageProvider,
-				Lists.newArrayList(pathOutageProvider.getVertices()), null);
+		Map<VertexRef, Status> retvals = this.pathOutageStatusProvider.getStatusForVertices(pathOutageProvider.getCurrentGraph(),
+				Lists.newArrayList(pathOutageProvider.getCurrentGraph().getVertices()), null);
 		return retvals;
 	}
 

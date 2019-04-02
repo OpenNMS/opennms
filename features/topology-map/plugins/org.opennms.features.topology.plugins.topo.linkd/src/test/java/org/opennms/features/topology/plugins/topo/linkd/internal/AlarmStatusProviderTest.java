@@ -45,8 +45,8 @@ import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Ref;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
@@ -57,15 +57,15 @@ public class AlarmStatusProviderTest {
 
     private AlarmDao m_alarmDao;
     private LinkdStatusProvider m_statusProvider;
-    private VertexProvider m_vertexProvider;
+    private XXXGraph m_graph;
     
     @Before
     public void setUp() {
         m_alarmDao = EasyMock.createMock(AlarmDao.class);
         m_statusProvider = new LinkdStatusProvider(m_alarmDao);
 
-        m_vertexProvider = EasyMock.createMock(VertexProvider.class);
-        EasyMock.replay(m_vertexProvider);
+        m_graph = EasyMock.createMock(XXXGraph.class);
+        EasyMock.replay(m_graph);
     }
     
     
@@ -81,7 +81,7 @@ public class AlarmStatusProviderTest {
         
         EasyMock.replay(m_alarmDao);
         
-        Map<VertexRef, Status> statusMap = m_statusProvider.getStatusForVertices(m_vertexProvider, vertexList, new Criteria[0]);
+        Map<VertexRef, Status> statusMap = m_statusProvider.getStatusForVertices(m_graph, vertexList, new Criteria[0]);
         assertEquals(3, statusMap.size());
         assertEquals(vertex, statusMap.keySet().stream().sorted(Comparator.comparing(Ref::getId)).collect(Collectors.toList()).get(0));
         assertEquals("major", statusMap.get(vertex).computeStatus()); // use defined status

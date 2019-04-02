@@ -28,11 +28,11 @@
 
 package org.opennms.features.topology.api.topo;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
+import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,12 +41,10 @@ import com.google.common.collect.Sets;
 // TODO MVR if this is no longer used, we can probably safely remove it
 public class SimpleGraphProvider extends AbstractTopologyProvider implements GraphProvider {
 
-	protected static final String TOPOLOGY_NAMESPACE_SIMPLE = "simple";
-
 	private static final Logger LOG = LoggerFactory.getLogger(SimpleGraphProvider.class);
 
-    public SimpleGraphProvider() {
-        this(TOPOLOGY_NAMESPACE_SIMPLE);
+	public SimpleGraphProvider(XXXGraph graph) {
+	    super(graph);
     }
 
     public SimpleGraphProvider(String namespace) {
@@ -66,17 +64,11 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
 
     @Override
     public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType contentType) {
-        return getSelection(TOPOLOGY_NAMESPACE_SIMPLE, selectedVertices, contentType);
+        return getSelection(getNamespace(), selectedVertices, contentType);
     }
 
     @Override
     public boolean contributesTo(ContentType type) {
         return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
-    }
-
-    // TODO MVR ???
-    @Override
-    public List<Vertex> getVertices(CollapsibleRef collapsibleRef, Criteria... criteria) {
-        return new ArrayList<>();
     }
 }

@@ -42,7 +42,6 @@ import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.bsm.AbstractBusinessServiceVertex.Type;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
@@ -69,47 +68,47 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
     private final TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory;
 
     public BusinessServicesTopologyProvider(TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory) {
-        super(new BusinessServiceVertexProvider(TOPOLOGY_NAMESPACE), new SimpleEdgeProvider(TOPOLOGY_NAMESPACE));
+        super(new org.opennms.features.topology.plugins.topo.bsm.BusinessServiceGraph());
         this.transactionAwareBeanProxyFactory = Objects.requireNonNull(transactionAwareBeanProxyFactory);
         LOG.debug("Creating a new {} with namespace {}", getClass().getSimpleName(), TOPOLOGY_NAMESPACE);
     }
 
     private void load() {
-        resetContainer();
+        graph.resetContainer();
         BusinessServiceGraph graph = businessServiceManager.getGraph();
         for (GraphVertex topLevelBusinessService : graph.getVerticesByLevel(0)) {
             addVertex(graph, topLevelBusinessService, null);
         }
     }
 
-    private void addVertex(BusinessServiceGraph graph, GraphVertex graphVertex, AbstractBusinessServiceVertex topologyVertex) {
+    private void addVertex(BusinessServiceGraph bsmGraph, GraphVertex graphVertex, AbstractBusinessServiceVertex topologyVertex) {
         if (topologyVertex == null) {
             // Create a topology vertex for the current vertex
             topologyVertex = createTopologyVertex(graphVertex);
-            addVertices(topologyVertex);
+            graph.addVertices(topologyVertex);
         }
 
-        for (GraphEdge graphEdge : graph.getOutEdges(graphVertex)) {
-            GraphVertex childVertex = graph.getOpposite(graphVertex, graphEdge);
+        for (GraphEdge graphEdge : bsmGraph.getOutEdges(graphVertex)) {
+            GraphVertex childVertex = bsmGraph.getOpposite(graphVertex, graphEdge);
 
             // Create a topology vertex for the child vertex
 
             AbstractBusinessServiceVertex childTopologyVertex = createTopologyVertex(childVertex);
-            graph.getInEdges(childVertex).stream()
+            bsmGraph.getInEdges(childVertex).stream()
                     .map(GraphEdge::getFriendlyName)
                     .filter(s -> !Strings.isNullOrEmpty(s))
                     .findFirst()
                     .ifPresent(childTopologyVertex::setLabel);
 
-            addVertices(childTopologyVertex);
+            graph.addVertices(childTopologyVertex);
 
             // Connect the two
             childTopologyVertex.setParent(topologyVertex);
             Edge edge = new BusinessServiceEdge(graphEdge, topologyVertex, childTopologyVertex);
-            addEdges(edge);
+            graph.addEdges(edge);
 
             // Recurse
-            addVertex(graph, childVertex, childTopologyVertex);
+            addVertex(bsmGraph, childVertex, childTopologyVertex);
         }
     }
 
@@ -142,11 +141,6 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
                     }
                     return null;
                 });
-    }
-
-    @Override
-    public void resetContainer() {
-        super.resetContainer();
     }
 
     @Override

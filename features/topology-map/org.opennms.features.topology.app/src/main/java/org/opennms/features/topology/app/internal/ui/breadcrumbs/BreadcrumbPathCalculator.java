@@ -107,14 +107,16 @@ public class BreadcrumbPathCalculator {
         // We build one big graph out of all graph providers in order to determine the shortest path between each vertex
         // when we want to calculate the SHORTEST_PATH_TO_ROOT
         final DirectedSparseGraph<VertexRef, EdgeRef> sparseGraph = new DirectedSparseGraph<>();
-        topologyServiceClient.getGraphProviders().forEach(eachGraph -> {
-            for (Vertex eachVertex : eachGraph.getVertices(new IgnoreHopCriteria())) {
-                sparseGraph.addVertex(eachVertex);
-            }
-            for (EdgeRef eachEdge : eachGraph.getEdges()) {
-                sparseGraph.addEdge(eachEdge, ((Edge) eachEdge).getSource().getVertex(), ((Edge) eachEdge).getTarget().getVertex());
-            }
-        });
+        topologyServiceClient.getGraphProviders().stream()
+                .map(eachProvider -> eachProvider.getCurrentGraph())
+                .forEach(eachGraph -> {
+                    for (Vertex eachVertex : eachGraph.getVertices(new IgnoreHopCriteria())) {
+                        sparseGraph.addVertex(eachVertex);
+                    }
+                    for (EdgeRef eachEdge : eachGraph.getEdges()) {
+                        sparseGraph.addEdge(eachEdge, ((Edge) eachEdge).getSource().getVertex(), ((Edge) eachEdge).getTarget().getVertex());
+                    }
+                });
 
         // Link the layers
         final IdGenerator idGenerator = new IdGenerator();
@@ -126,7 +128,7 @@ public class BreadcrumbPathCalculator {
 
         // Create dummy root
         sparseGraph.addVertex(rootVertex);
-        for (Vertex eachVertex : topologyServiceClient.getDefaultGraphProvider().getVertices(new IgnoreHopCriteria())) {
+        for (Vertex eachVertex : topologyServiceClient.getDefaultGraphProvider().getCurrentGraph().getVertices(new IgnoreHopCriteria())) {
             sparseGraph.addEdge(new AbstractEdge("$$outer-space$$", "" + idGenerator.nextId(), rootVertex, eachVertex), rootVertex, eachVertex);
         }
 

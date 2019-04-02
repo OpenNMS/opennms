@@ -34,7 +34,9 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.support.SimpleGraphBuilder;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
+import org.opennms.features.topology.api.topo.SimpleGraphProvider;
 import org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider;
+import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
 import org.opennms.features.topology.app.internal.VEProviderGraphContainer;
 import org.opennms.features.topology.app.internal.service.DefaultTopologyService;
 import org.opennms.features.topology.app.internal.service.SimpleServiceLocator;
@@ -86,5 +88,11 @@ public abstract class AbstractLayoutTest {
         m_graphContainer = graphContainer;
     }
 
-    protected abstract GraphProvider getGraphProvider();
+    protected GraphProvider getGraphProvider() {
+        final XXXGraph graph = getGraph();
+        final SimpleGraphProvider graphProvider = new SimpleGraphProvider(graph);
+        return graphProvider;
+    }
+
+    protected abstract XXXGraph getGraph();
 }
