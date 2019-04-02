@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
@@ -89,9 +89,9 @@ public class PathOutageProvider extends AbstractTopologyProvider {
 					final Map<? extends VertexRef, ? extends Status> resultMap = statusProvider.getStatusForVertices(graph, Lists.newArrayList(graph.getVertices()), new Criteria[0]);
 					final Optional<? extends Map.Entry<? extends VertexRef, ? extends Status>> max = resultMap.entrySet().stream().max(Comparator.comparing(e -> OnmsSeverity.get(e.getValue().computeStatus())));
 					if (max.isPresent()) {
-						return Lists.newArrayList(new VertexHopGraphProvider.DefaultVertexHopCriteria(max.get().getKey()));
+						return Lists.newArrayList(new DefaultVertexHopCriteria(max.get().getKey()));
 					} else if (graph.getVertexTotalCount() > 0) {
-						return Lists.newArrayList(new VertexHopGraphProvider.DefaultVertexHopCriteria(graph.getVertices().get(0)));
+						return Lists.newArrayList(new DefaultVertexHopCriteria(graph.getVertices().get(0)));
 					} else {
 						return Lists.newArrayList();
 					}

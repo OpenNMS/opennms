@@ -37,7 +37,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
@@ -137,7 +137,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
                     if (!businessServices.isEmpty()) {
                         BusinessService businessService = businessServices.iterator().next();
                         BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(businessService, 0);
-                        return Lists.newArrayList(new VertexHopGraphProvider.DefaultVertexHopCriteria(businessServiceVertex));
+                        return Lists.newArrayList(new DefaultVertexHopCriteria(businessServiceVertex));
                     }
                     return null;
                 });

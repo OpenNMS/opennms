@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractCollapsibleVertex;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.RefComparator;

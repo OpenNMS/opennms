@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,35 +26,54 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.support;
+package org.opennms.features.topology.api.support.hops;
 
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.GraphProvider;
+import java.util.Objects;
+import java.util.Set;
+
+import org.opennms.features.topology.api.topo.VertexRef;
+
+import com.google.common.collect.Sets;
 
 /**
- * Allows to get ALL vertices from the {@link GraphProvider}, even if it is a {@link VertexHopGraphProvider}.
- * Please use with care, as it overwrites the default behaviour (consider focus and szl)
- *
- * @author mvrueden
+ * Helper criteria class to reference to existing VertexRefs.
+ * This should be used anytime you want to add a vertex to the current focus (e.g. from the mouse context menu).
  */
-public class IgnoreHopCriteria extends Criteria {
+public class DefaultVertexHopCriteria extends VertexHopCriteria {
+
+    private final VertexRef vertexRef;
+
+    public DefaultVertexHopCriteria(VertexRef vertexRef) {
+        super(vertexRef.getId(), vertexRef.getLabel());
+        this.vertexRef = vertexRef;
+    }
+
     @Override
-    public ElementType getType() {
-        return ElementType.GRAPH;
+    public Set<VertexRef> getVertices() {
+        return Sets.newHashSet(vertexRef);
     }
 
     @Override
     public String getNamespace() {
-        return "$$internal$$";
+        return vertexRef.getNamespace();
     }
 
     @Override
     public int hashCode() {
-        return -17;
+        return vertexRef.hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof IgnoreHopCriteria;
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof DefaultVertexHopCriteria) {
+            return Objects.equals(vertexRef, ((DefaultVertexHopCriteria) obj).vertexRef);
+        }
+        return false;
     }
 }

@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.opennms.features.topology.api.TopologyServiceClient;
-import org.opennms.features.topology.api.support.IgnoreHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
@@ -110,7 +109,7 @@ public class BreadcrumbPathCalculator {
         topologyServiceClient.getGraphProviders().stream()
                 .map(eachProvider -> eachProvider.getCurrentGraph())
                 .forEach(eachGraph -> {
-                    for (Vertex eachVertex : eachGraph.getVertices(new IgnoreHopCriteria())) {
+                    for (Vertex eachVertex : eachGraph.getVertices()) {
                         sparseGraph.addVertex(eachVertex);
                     }
                     for (EdgeRef eachEdge : eachGraph.getEdges()) {
@@ -128,7 +127,7 @@ public class BreadcrumbPathCalculator {
 
         // Create dummy root
         sparseGraph.addVertex(rootVertex);
-        for (Vertex eachVertex : topologyServiceClient.getDefaultGraphProvider().getCurrentGraph().getVertices(new IgnoreHopCriteria())) {
+        for (Vertex eachVertex : topologyServiceClient.getDefaultGraphProvider().getCurrentGraph().getVertices()) {
             sparseGraph.addEdge(new AbstractEdge("$$outer-space$$", "" + idGenerator.nextId(), rootVertex, eachVertex), rootVertex, eachVertex);
         }
 

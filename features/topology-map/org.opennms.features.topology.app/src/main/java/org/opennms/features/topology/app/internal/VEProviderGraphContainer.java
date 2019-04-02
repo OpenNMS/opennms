@@ -48,7 +48,7 @@ import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.TopologyService;
 import org.opennms.features.topology.api.TopologyServiceClient;
 import org.opennms.features.topology.api.support.SemanticZoomLevelCriteria;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;

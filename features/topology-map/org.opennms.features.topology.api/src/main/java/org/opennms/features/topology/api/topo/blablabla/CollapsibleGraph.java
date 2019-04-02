@@ -28,8 +28,8 @@
 
 package org.opennms.features.topology.api.topo.blablabla;
 
-import static org.opennms.features.topology.api.support.VertexHopGraphProvider.getCollapsedCriteria;
-import static org.opennms.features.topology.api.support.VertexHopGraphProvider.getCollapsibleCriteria;
+import static org.opennms.features.topology.api.support.hops.CriteriaUtils.getCollapsedCriteria;
+import static org.opennms.features.topology.api.support.hops.CriteriaUtils.getCollapsibleCriteria;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,9 +44,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import org.opennms.features.topology.api.support.IgnoreHopCriteria;
 import org.opennms.features.topology.api.support.SemanticZoomLevelCriteria;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.CollapsibleRef;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -110,7 +109,7 @@ public class CollapsibleGraph implements XXXGraph {
         Set<VertexRef> focusNodes = new HashSet<VertexRef>();
         for(Criteria criterium : criteria) {
             try {
-                VertexHopGraphProvider.VertexHopCriteria hopCriterium = (VertexHopGraphProvider.VertexHopCriteria)criterium;
+                VertexHopCriteria hopCriterium = (VertexHopCriteria)criterium;
                 focusNodes.addAll(hopCriterium.getVertices());
             } catch (ClassCastException e) {}
         }
@@ -131,14 +130,6 @@ public class CollapsibleGraph implements XXXGraph {
 
     @Override
     public List<Vertex> getVertices(Criteria... criteria) {
-        // If we have a IgnoreHopCriteria, just return all existing vertices
-        for (Criteria criterium : criteria) {
-            try {
-                IgnoreHopCriteria ignoreHopCriteria = (IgnoreHopCriteria)criterium;
-                return m_delegate.getVertices();
-            } catch (ClassCastException e) {}
-        }
-
         // Otherwise consider vertices szl and focus nodes
         Set<VertexRef> focusNodes = getFocusNodes(criteria);
         int maxSemanticZoomLevel = getMaxSemanticZoomLevel(criteria);

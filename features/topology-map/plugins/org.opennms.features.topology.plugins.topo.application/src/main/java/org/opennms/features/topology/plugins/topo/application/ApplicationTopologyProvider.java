@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Defaults;
@@ -92,7 +92,7 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
                     // Only show the first application by default
                     List<OnmsApplication> applications = applicationDao.findAll();
                     if (!applications.isEmpty()) {
-                        return Lists.newArrayList(new VertexHopGraphProvider.DefaultVertexHopCriteria(new ApplicationVertex(applications.get(0))));
+                        return Lists.newArrayList(new DefaultVertexHopCriteria(new ApplicationVertex(applications.get(0))));
                     }
                     return null;
                 });

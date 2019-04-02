@@ -49,7 +49,6 @@ import org.opennms.features.graphml.model.GraphMLGraph;
 import org.opennms.features.graphml.model.GraphMLNode;
 import org.opennms.features.graphml.model.GraphMLReader;
 import org.opennms.features.graphml.model.InvalidGraphException;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
@@ -69,8 +68,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
     private final GraphMLServiceAccessor m_serviceAccessor;
 
     private File graphMLFile;
-    private final Map<String, GraphProvider> graphProvidersByNamespace = Maps.newLinkedHashMap();
-    private final Map<String, GraphMLTopologyProvider> rawGraphsByNamespace = Maps.newLinkedHashMap();
+    private final Map<String, GraphMLTopologyProvider> graphProvidersByNamespace = Maps.newLinkedHashMap();
     private final Map<VertexRef, List<VertexRef>> oppositeVertices = Maps.newLinkedHashMap();
     private BreadcrumbStrategy breadcrumbStrategy;
 
@@ -96,7 +94,6 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
     public void reload() throws IOException, InvalidGraphException {
         graphProvidersByNamespace.clear();
         oppositeVertices.clear();
-        rawGraphsByNamespace.clear();
         if (graphMLFile == null) {
             LOG.warn("No graph defined");
             return;
@@ -111,9 +108,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
 
             for (GraphMLGraph eachGraph : graphML.getGraphs()) {
                 final GraphMLTopologyProvider topoProvider = new GraphMLTopologyProvider(eachGraph, m_serviceAccessor);
-                final VertexHopGraphProvider vertexHopGraphProvider = new VertexHopGraphProvider(topoProvider);
-                graphProvidersByNamespace.put(topoProvider.getNamespace(), vertexHopGraphProvider);
-                rawGraphsByNamespace.put(topoProvider.getNamespace(), topoProvider);
+                graphProvidersByNamespace.put(topoProvider.getNamespace(), topoProvider);
             }
 
             for (GraphMLGraph eachGraph : graphML.getGraphs()) {
@@ -141,7 +136,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
 
     @Override
     public Collection<GraphProvider> getGraphProviders() {
-        return graphProvidersByNamespace.values();
+        return Collections.unmodifiableCollection(graphProvidersByNamespace.values());
     }
 
     @Override
@@ -209,15 +204,8 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
         }
     }
 
-    /**
-     * Returns the RAW {@link GraphMLTopologyProvider} and NOT the wrapped one.
-     * This is sometimes required to have full access to the Topology Provider, e.g. to get all vertices (usually they would be limited by the SZL)
-     *
-     * @param vertexNamespace the namespace of the {@link GraphProvider}
-     * @return the RAW {@link GraphMLTopologyProvider} and NOT the wrapped one.
-     */
-    public GraphMLTopologyProvider getRawTopologyProvider(String vertexNamespace) {
-        return rawGraphsByNamespace.get(vertexNamespace);
+    public GraphMLTopologyProvider getGraphProvider(String vertexNamespace) {
+        return graphProvidersByNamespace.get(vertexNamespace);
     }
 
     private static BreadcrumbStrategy getBreadcrumbStrategy(GraphML graphML) {

@@ -30,6 +30,7 @@ package org.opennms.features.topology.api.support;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
 
@@ -55,8 +56,8 @@ public class FocusStrategyTest {
                 hopCriteria("namespace1", "2")), FocusStrategy.SPECIFIC.getFocusCriteria(graph, "2"));
     }
 
-    private VertexHopGraphProvider.DefaultVertexHopCriteria hopCriteria(String namespace, String id) {
-        return new VertexHopGraphProvider.DefaultVertexHopCriteria(new AbstractVertex(namespace, id));
+    private DefaultVertexHopCriteria hopCriteria(String namespace, String id) {
+        return new DefaultVertexHopCriteria(new AbstractVertex(namespace, id));
     }
 
 }

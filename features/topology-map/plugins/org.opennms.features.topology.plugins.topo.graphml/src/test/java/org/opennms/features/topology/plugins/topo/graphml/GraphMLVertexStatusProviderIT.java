@@ -165,7 +165,7 @@ public class GraphMLVertexStatusProviderIT {
         metaTopoProvider.setTopologyLocation(graphXml.getAbsolutePath());
         metaTopoProvider.reload();
 
-        final GraphMLTopologyProvider childTopologyProvider = metaTopoProvider.getRawTopologyProvider("acme:markets");
+        final GraphMLTopologyProvider childTopologyProvider = metaTopoProvider.getGraphProvider("acme:markets");
         final GraphMLDefaultVertexStatusProvider childStatusProvider = new GraphMLDefaultVertexStatusProvider(childTopologyProvider.getNamespace(), this.alarmSummaryWrapper);
 
         final ServiceReference<StatusProvider> statusProviderReference = EasyMock.niceMock(ServiceReference.class);
@@ -175,7 +175,7 @@ public class GraphMLVertexStatusProviderIT {
         EasyMock.expect(bundleContext.getService(statusProviderReference)).andReturn(childStatusProvider);
         EasyMock.replay(statusProviderReference, bundleContext);
 
-        final GraphMLTopologyProvider topologyProvider = metaTopoProvider.getRawTopologyProvider("acme:regions");
+        final GraphMLTopologyProvider topologyProvider = metaTopoProvider.getGraphProvider("acme:regions");
         final GraphMLPropagateVertexStatusProvider statusProvider = new GraphMLPropagateVertexStatusProvider(topologyProvider.getNamespace(),
                                                                                                              metaTopoProvider,
                                                                                                              bundleContext);

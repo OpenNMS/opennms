@@ -38,7 +38,7 @@ import org.opennms.features.graphml.model.GraphMLNode;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.support.FocusStrategy;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo;
 import org.opennms.features.topology.api.topo.Defaults;
@@ -169,7 +169,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
                 .withSemanticZoomLevel(defaultSzl)
                 .withPreferredLayout(preferredLayout)
                 .withCriteria(() -> {
-                    List<VertexHopGraphProvider.VertexHopCriteria> focusCriteria = focusStrategy.getFocusCriteria(graph, focusIds.toArray(new String[focusIds.size()]));
+                    List<VertexHopCriteria> focusCriteria = focusStrategy.getFocusCriteria(graph, focusIds.toArray(new String[focusIds.size()]));
                     return Lists.newArrayList(focusCriteria);
                 });
     }

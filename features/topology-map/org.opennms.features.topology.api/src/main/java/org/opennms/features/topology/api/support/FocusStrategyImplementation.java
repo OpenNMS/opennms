@@ -30,6 +30,7 @@ package org.opennms.features.topology.api.support;
 
 import java.util.List;
 
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.blablabla.XXXGraph;
 
 /**
@@ -46,5 +47,5 @@ public interface FocusStrategyImplementation {
      * @param vertexIdsWithoutNamespace
      * @return A list of vertices in focus. The list may be empty, but should not be null.
      */
-    List<VertexHopGraphProvider.VertexHopCriteria> determine(XXXGraph graph, String... vertexIdsWithoutNamespace);
+    List<VertexHopCriteria> determine(XXXGraph graph, String... vertexIdsWithoutNamespace);
 }

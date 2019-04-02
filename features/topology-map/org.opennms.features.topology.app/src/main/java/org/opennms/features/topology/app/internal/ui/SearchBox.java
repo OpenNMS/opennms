@@ -41,9 +41,9 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.DefaultVertexHopCriteria;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
+import org.opennms.features.topology.api.support.hops.CriteriaUtils;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractSearchQuery;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -193,7 +193,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
             }
 
             // Hack for now, change to a better way.
-            VertexHopCriteria criteria = VertexHopGraphProvider.getWrappedVertexHopCriteria(m_operationContext.getGraphContainer());
+            VertexHopCriteria criteria = CriteriaUtils.getWrappedVertexHopCriteria(m_operationContext.getGraphContainer());
             DefaultVertexRef vertexRef = new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
             if(criteria.getVertices().contains(vertexRef)){
                 vRefs.add(vertexRef);

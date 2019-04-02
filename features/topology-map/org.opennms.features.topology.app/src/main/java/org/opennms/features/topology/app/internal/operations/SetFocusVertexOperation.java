@@ -33,7 +33,7 @@ import java.util.List;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class SetFocusVertexOperation implements Operation {
@@ -45,7 +45,7 @@ public class SetFocusVertexOperation implements Operation {
         }
 
         final GraphContainer graphContainer = operationContext.getGraphContainer();
-        graphContainer.findCriteria(VertexHopGraphProvider.VertexHopCriteria.class)
+        graphContainer.findCriteria(VertexHopCriteria.class)
                         .forEach(graphContainer::removeCriteria);
         new AddFocusVerticesOperation().execute(targets, operationContext);
     }

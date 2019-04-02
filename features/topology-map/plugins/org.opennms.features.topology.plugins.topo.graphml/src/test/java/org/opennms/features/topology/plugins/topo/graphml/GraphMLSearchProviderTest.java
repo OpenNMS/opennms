@@ -72,7 +72,7 @@ public class GraphMLSearchProviderTest {
         Assert.assertNotNull(metaTopologyProvider.getDefaultGraphProvider());
 
         List<SearchProvider> searchProviders = metaTopologyProvider.getGraphProviders().stream()
-                .map(eachProvider -> new GraphMLSearchProvider(metaTopologyProvider.getRawTopologyProvider(eachProvider.getNamespace())))
+                .map(eachProvider -> new GraphMLSearchProvider(metaTopologyProvider.getGraphProvider(eachProvider.getNamespace())))
                 .collect(Collectors.toList());
         Assert.assertEquals(2, searchProviders.size());
 

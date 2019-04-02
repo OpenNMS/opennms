@@ -36,8 +36,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.support.IgnoreHopCriteria;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractCollapsibleVertex;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SearchCriteria;
@@ -118,7 +117,7 @@ public class CategoryHopCriteria extends VertexHopCriteria implements SearchCrit
 			final List<Integer> nodeIds = nodes.stream().map(n -> n.getId()).collect(Collectors.toList());
 			final GraphProvider graphProvider = graphContainer.getTopologyServiceClient().getGraphProviderBy(graphContainer.getTopologyServiceClient().getNamespace());
 			final XXXGraph currentGraph = graphProvider.getCurrentGraph();
-			return currentGraph.getVertices(new IgnoreHopCriteria()).stream()
+			return currentGraph.getVertices().stream()
 					.filter(v -> v.getNodeID() != null)
 					.filter(v -> nodeIds.contains(v.getNodeID()))
 					.collect(Collectors.toSet());
