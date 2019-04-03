@@ -647,10 +647,8 @@ JAVA_VERSION="$("$OPENNMS_HOME/bin/runjava" -p -f 2> /dev/null)"
 JAVA_SHORT_VERSION="$(echo "$JAVA_VERSION" | cut -d. -f1)"
 
 JAVA_MODULES=(
-	java.activation \
 	java.base \
 	java.compiler \
-	java.corba \
 	java.datatransfer \
 	java.desktop \
 	java.instrument \
@@ -665,11 +663,7 @@ JAVA_MODULES=(
 	java.security.sasl \
 	java.sql \
 	java.sql.rowset \
-	java.transaction \
 	java.xml \
-	java.xml.bind \
-	java.xml.ws \
-	java.xml.ws.annotation \
 	jdk.attach \
 	jdk.httpserver \
 	jdk.jdi \
