@@ -63,14 +63,14 @@ The finished CSS file will include this line, directly:
   overflow: visible !important;
 }
 
-// TODO MVR is this really the fix?
-// Maybe add a "bootstrap" class to the root components which we wanna bootstrapify
+// HACK to make the buttons size correctly.
+// This is needed when embeeding the bootstrap header, which includes bs4
 .v-caption {
   box-sizing: content-box;
 }
 
-// TODO MVR is this really the fix?
-//  Maybe add a "bootstrap" class to the root components which we wanna bootstrapify
+// HACK to make the buttons size correctly.
+// This is needed when embeeding the bootstrap header, which includes bs4
 .v-button-wrap {
   box-sizing: content-box;
 }

@@ -34,11 +34,5 @@
             <groupId>org.opennms.core</groupId>
             <artifactId>org.opennms.core.lib</artifactId>
         </dependency>
-        <!-- TODO MVR do we need this? -->
-        <dependency>
-            <groupId>org.opennms.features.themes</groupId>
-            <artifactId>dashboard-theme</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>
