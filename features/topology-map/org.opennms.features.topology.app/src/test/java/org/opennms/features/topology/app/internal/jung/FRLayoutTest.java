@@ -40,6 +40,7 @@ import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.simple.SimpleGraphBuilder;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -84,6 +85,11 @@ public class FRLayoutTest extends AbstractLayoutTest {
                 .edge("e13", "v6", "v8").eStyleName("edge")
                 .edge("e14", "v7", "v8").eStyleName("edge")
                 .get();
+    }
+
+    @Override
+    protected VertexRef getDefaultFocus() {
+        return new DefaultVertexRef("nodes", "v1");
     }
 
     @Test

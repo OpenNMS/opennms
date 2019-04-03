@@ -31,12 +31,14 @@ package org.opennms.features.topology.app.internal.jung;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.topo.simple.SimpleGraphBuilder;
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.simple.SimpleGraphBuilder;
 import org.opennms.features.topology.api.topo.simple.SimpleGraphProvider;
 import org.opennms.features.topology.api.topo.simple.SimpleMetaTopologyProvider;
-import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.app.internal.VEProviderGraphContainer;
 import org.opennms.features.topology.app.internal.service.DefaultTopologyService;
 import org.opennms.features.topology.app.internal.service.SimpleServiceLocator;
@@ -85,6 +87,11 @@ public abstract class AbstractLayoutTest {
         graphContainer.setSelectedNamespace(metaTopologyProvider.getDefaultGraphProvider().getNamespace());
         graphContainer.setMetaTopologyId(metaTopologyProvider.getId());
 
+        final VertexRef defaultFocus = getDefaultFocus();
+        if (defaultFocus != null) {
+            graphContainer.addCriteria(new DefaultVertexHopCriteria(defaultFocus));
+        }
+
         m_graphContainer = graphContainer;
     }
 
@@ -95,4 +102,6 @@ public abstract class AbstractLayoutTest {
     }
 
     protected abstract BackendGraph getGraph();
+
+    protected abstract VertexRef getDefaultFocus();
 }

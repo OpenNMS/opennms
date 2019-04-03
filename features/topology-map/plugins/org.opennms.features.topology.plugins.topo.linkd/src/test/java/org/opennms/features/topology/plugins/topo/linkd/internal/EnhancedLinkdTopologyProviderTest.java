@@ -50,9 +50,9 @@ import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.simple.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.simple.SimpleLeafVertex;
 import org.opennms.netmgt.enlinkd.LldpOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.NodesOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.OspfOnmsTopologyUpdater;
@@ -221,14 +221,6 @@ public class EnhancedLinkdTopologyProviderTest {
         assertEquals(3, m_topologyProvider.getCurrentGraph().getEdgeIdsForVertex(m_topologyProvider.getCurrentGraph().getVertex(vertexAref)).length);
         assertEquals(3, m_topologyProvider.getCurrentGraph().getEdgeIdsForVertex(m_topologyProvider.getCurrentGraph().getVertex(vertexBref)).length);
 
-        CollapsibleGraph collapsibleGraph = new CollapsibleGraph(m_topologyProvider.getCurrentGraph());
-        collapsibleGraph.getVertices();
-        assertEquals(1, collapsibleGraph.getSemanticZoomLevel(vertexA));
-        assertEquals(1, collapsibleGraph.getSemanticZoomLevel(vertexB));
-        assertEquals(1, collapsibleGraph.getSemanticZoomLevel(vertexC));
-        assertEquals(1, collapsibleGraph.getSemanticZoomLevel(vertexD));
-        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexE));
-
         m_topologyProvider.getCurrentGraph().resetContainer();
 
         // Ensure that the topology provider has been erased
@@ -237,14 +229,6 @@ public class EnhancedLinkdTopologyProviderTest {
         assertEquals(0, m_topologyProvider.getCurrentGraph().getVertices().size());
         assertEquals(0, m_topologyProvider.getCurrentGraph().getEdgeIdsForVertex(m_topologyProvider.getCurrentGraph().getVertex(vertexAref)).length);
         assertEquals(0, m_topologyProvider.getCurrentGraph().getEdgeIdsForVertex(m_topologyProvider.getCurrentGraph().getVertex(vertexBref)).length);
-
-        collapsibleGraph = new CollapsibleGraph(m_topologyProvider.getCurrentGraph());
-        collapsibleGraph.getVertices();
-        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexA));
-        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexB));
-        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexC));
-        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexD));
-        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexE));
 
         m_topologyProvider.refresh();
 
@@ -257,14 +241,6 @@ public class EnhancedLinkdTopologyProviderTest {
         assertEquals(8, m_topologyProvider.getCurrentGraph().getVertices().size());
         assertEquals(0, m_topologyProvider.getCurrentGraph().getEdgeIdsForVertex(m_topologyProvider.getCurrentGraph().getVertex(vertexAref)).length);
         assertEquals(0, m_topologyProvider.getCurrentGraph().getEdgeIdsForVertex(m_topologyProvider.getCurrentGraph().getVertex(vertexBref)).length);
-
-        collapsibleGraph = new CollapsibleGraph(m_topologyProvider.getCurrentGraph());
-        collapsibleGraph.getVertices();
-        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexA));
-        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexB));
-        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexC));
-        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexD));
-        assertEquals(0, collapsibleGraph.getSemanticZoomLevel(vertexE));
     }
 
     @Test

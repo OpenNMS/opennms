@@ -43,12 +43,13 @@ import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
-import org.opennms.features.topology.api.topo.simple.SimpleGraphBuilder;
+import org.opennms.features.topology.api.topo.BackendGraph;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.BackendGraph;
+import org.opennms.features.topology.api.topo.simple.SimpleGraphBuilder;
 
 import edu.uci.ics.jung.graph.SparseGraph;
 
@@ -78,6 +79,11 @@ public class D3LayoutTest extends AbstractLayoutTest {
                 .edge("e14", "v7", "v8").eStyleName("edge");
 
         return bldr.get();
+    }
+
+    @Override
+    protected VertexRef getDefaultFocus() {
+        return new DefaultVertexRef("nodes", "v1");
     }
 
     @Test
