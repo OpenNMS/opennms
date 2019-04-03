@@ -77,9 +77,9 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
 
             return new FallbackScope(transform(node.getMetaData()),
                     new ObjectScope<>(node)
-                            .map("node", "label", (n) -> Optional.of(n.getLabel()))
-                            .map("node", "foreign-source", (n) -> Optional.of(n.getForeignSource()))
-                            .map("node", "foreign-id", (n) -> Optional.of(n.getForeignId()))
+                            .map("node", "label", (n) -> Optional.ofNullable(n.getLabel()))
+                            .map("node", "foreign-source", (n) -> Optional.ofNullable(n.getForeignSource()))
+                            .map("node", "foreign-id", (n) -> Optional.ofNullable(n.getForeignId()))
                             .map("node", "netbios-domain", (n) -> Optional.ofNullable(n.getNetBiosDomain()))
                             .map("node", "netbios-name", (n) -> Optional.ofNullable(n.getNetBiosName()))
                             .map("node", "os", (n) -> Optional.ofNullable(n.getOperatingSystem()))
@@ -109,7 +109,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
 
             return new FallbackScope(transform(ipInterface.getMetaData()),
                     new ObjectScope<>(ipInterface)
-                            .map("interface", "hostname", (i) -> Optional.of(i.getIpHostName()))
+                            .map("interface", "hostname", (i) -> Optional.ofNullable(i.getIpHostName()))
                             .map("interface", "address", (i) -> Optional.ofNullable(i.getIpAddress()).map(InetAddressUtils::toIpAddrString))
                             .map("interface", "netmask", (i) -> Optional.ofNullable(i.getNetMask()).map(InetAddressUtils::toIpAddrString))
                             .map("interface", "if-index", (i) -> Optional.ofNullable(i.getIfIndex()).map(Object::toString))
