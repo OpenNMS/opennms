@@ -267,25 +267,33 @@ div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.
   font-size: 12px;
 }
 /* active & hover links */
-.resource-graphs-sidebar .nav-link.active,
-.resource-graphs-sidebar .nav-link:hover,
-.resource-graphs-sidebar .nav-link:focus {
+.resource-graphs-sidebar .nav>li>a.active,
+.resource-graphs-sidebar .nav>li>a:hover,
+.resource-graphs-sidebar .nav>li>a:focus {
   color: $link-color;
   text-decoration: none;
   background-color: transparent;
   border-left-color: $link-color;
 }
 /* all active links */
-.resource-graphs-sidebar .nav .nav-link.active,
-.resource-graphs-sidebar .nav .nav-link.active:hover,
-.resource-graphs-sidebar .nav .nav-link.active:focus {
+.resource-graphs-sidebar .nav>li>a.active,
+.resource-graphs-sidebar .nav>li>a.active:hover,
+.resource-graphs-sidebar .nav>li>a.active:focus {
   font-weight: 700;
 }
 /* nested active links */
-.resource-graphs-sidebar .nav .nav .nav-link.active,
-.resource-graphs-sidebar .nav .nav .nav-link.active:hover,
-.resource-graphs-sidebar .nav .nav .nav-link.active:focus {
+.resource-graphs-sidebar .nav .nav>li>a.active,
+.resource-graphs-sidebar .nav .nav>li>a.active:hover,
+.resource-graphs-sidebar .nav .nav>li>a.active:focus {
   font-weight: 500;
+}
+/* hide inactive nested list */
+.resource-graphs-sidebar .nav ul.nav {
+  display: none;
+}
+/* show active nested list */
+.resource-graphs-sidebar .nav>li>a.active ~ ul.nav {
+  display: block;
 }
 /* Resource Graph sidebar classes inspired by Bootstrap Docs: End */
 
