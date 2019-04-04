@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.graph.simple;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.opennms.netmgt.graph.simple.TestObjectCreator.createEdge;
 import static org.opennms.netmgt.graph.simple.TestObjectCreator.createVertex;
 
@@ -79,7 +79,7 @@ public class SimpleGraphTest {
     }
 
     private void equalsButNotSame(Object original, Object copy){
-        Assert.assertEquals(original, copy);
+        assertEquals(original, copy);
         Assert.assertNotSame(original, copy);
     }
 

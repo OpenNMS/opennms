@@ -190,6 +190,10 @@ public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends Simp
         delegate.setNamespace(namespace);
     }
 
+    public void setDescription(String description) {
+        delegate.setDescription(description);
+    }
+
     @Override
     public String getDescription() {
         return delegate.getDescription();

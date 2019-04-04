@@ -73,10 +73,9 @@ public class DefaultGraphRepositoryIT {
         originalContainer.setLabel("I am soooo unique \\o/");
 
         // Create first graph
-        DefaultGraphInfo graphInfo = new DefaultGraphInfo(NAMESPACE, SimpleVertex.class);
-        graphInfo.setLabel("Dummy Graph");
-        graphInfo.setDescription("I am not so unique, I may be replaced at any time :(");
-        final SimpleGraph graph1 = SimpleGraph.fromGraphInfo(graphInfo);
+        final SimpleGraph graph1 = new SimpleGraph(NAMESPACE);
+        graph1.setLabel("Dummy Graph");
+        graph1.setDescription("I am not so unique, I may be replaced at any time :(");
 
         final SimpleVertex v1 = new SimpleVertex(graph1.getNamespace(), "v1");
         v1.setLabel("Vertex 1");
@@ -88,10 +87,9 @@ public class DefaultGraphRepositoryIT {
         graph1.addEdge(new SimpleEdge(v1, v2));
 
         // Second graph is a copy of the first
-        graphInfo = new DefaultGraphInfo(NAMESPACE, SimpleVertex.class);
-        graphInfo.setLabel(graph1.getLabel() + " 2");
-        graphInfo.setDescription(NAMESPACE + "2");
         final SimpleGraph graph2 = new SimpleGraph(graph1);
+        graph2.setNamespace(NAMESPACE + "2");
+        graph2.setLabel(graph1.getLabel() + " 2");
 
         // Persist
         originalContainer.addGraph(graph1);

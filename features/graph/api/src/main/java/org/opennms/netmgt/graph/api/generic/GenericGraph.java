@@ -63,8 +63,16 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
         this(new HashMap<>());
     }
 
+    /** Copy constructor. */
     public GenericGraph(GenericGraph copyMe) {
         this(new HashMap<>(copyMe.properties));
+        this.setFocusStrategy(copyMe.focusStrategy);
+        for(GenericVertex originalVertex : copyMe.vertexToIdMap.values()){
+            this.addVertex(new GenericVertex(originalVertex));
+        }
+        for(GenericEdge originalEdge : copyMe.edgeToIdMap.values()){
+            this.addEdge(new GenericEdge(originalEdge));
+        }
     }
 
     public GenericGraph(Map<String, Object> properties) {
@@ -279,17 +287,16 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         GenericGraph that = (GenericGraph) o;
-        return Objects.equals(jungGraph, that.jungGraph)
-                && Objects.equals(vertexToIdMap, that.vertexToIdMap)
+        return Objects.equals(vertexToIdMap, that.vertexToIdMap)
                 && Objects.equals(edgeToIdMap, that.edgeToIdMap)
-                && Objects.equals(focusStrategy, that.focusStrategy)
-                && Objects.equals(graphInfo, that.graphInfo);
+                && Objects.equals(focusStrategy, that.focusStrategy);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(super.hashCode(), jungGraph, vertexToIdMap, edgeToIdMap, focusStrategy, graphInfo);
+        return Objects.hash(super.hashCode(),
+                vertexToIdMap, edgeToIdMap, focusStrategy);
     }
 
     private class GenericGraphInfo implements GraphInfo<GenericVertex> {
@@ -313,5 +320,7 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
         public Class<GenericVertex> getVertexType() {
             return GenericVertex.class;
         }
+
+
     }
 }
