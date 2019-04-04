@@ -112,6 +112,8 @@
         <entry key="wsman-config.xml" value="wsManConfigDao"/>
         <entry key="wsman-datacollection-config.xml" value="wsManDataCollectionConfigDao"/>
         <entry key="opennms.properties.d" value="directory" />
+        <entry key="imports" value="directory:org.opennms.netmgt.provision.persist.requisition.Requisition" />
+        <entry key="foreign-sources" value="directory:org.opennms.netmgt.provision.persist.foreignsource.ForeignSource" />
       </map>
     </property>
   </bean>
