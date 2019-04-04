@@ -313,23 +313,7 @@
 
 <script type="text/javascript">
 
-    $(document).ready(function() {
-        // Hide all sub elements
-        $("ul.nav ul.nav").css("display", "none");
-
-        // For each navigation click, ensure the child navigation is visible
-        $('.nav .nav-link').click(function() {
-            $("ul.nav ul.nav").css("display", "none"); // Hide all sub-elements on click
-
-            if ($(this).parent("li").children("ul").length == 0) { // nested element
-                $(this).parent("li").parent("ul").css("display", "block"); // show parent element
-            } else { // parent element
-                $(this).parent("li").children("ul").css("display", "block"); // show child element
-            }
-        });
-    });
-
-    function relativeTimeFormChange() {
+     function relativeTimeFormChange() {
         for (i = 0; i < document.reltimeform.rtstatus.length; i++) {
             if (document.reltimeform.rtstatus[i].selected) {
                 var value = document.reltimeform.rtstatus[i].value;
