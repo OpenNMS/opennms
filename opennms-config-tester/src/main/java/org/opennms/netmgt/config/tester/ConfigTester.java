@@ -63,7 +63,7 @@ public class ConfigTester implements ApplicationContextAware {
 
 	private ApplicationContext m_context;
 	private Map<String, String> m_configs;
-	private final Pattern m_pattern = Pattern.compile("^directory:(.+)$");
+	private final static Pattern DIRECTORY_AND_CLASS_PATTERN = Pattern.compile("^directory:(.+)$");
 
 	public Map<String, String> getConfigs() {
 		return m_configs;
@@ -85,7 +85,7 @@ public class ConfigTester implements ApplicationContextAware {
 	public void testConfig(final String name, final boolean ignoreUnknown) {
 		checkConfigNameValid(name, ignoreUnknown);
 		final String beanName = m_configs.get(name);
-		final Matcher matcher = m_pattern.matcher(beanName);
+		final Matcher matcher = DIRECTORY_AND_CLASS_PATTERN.matcher(beanName);
 		if (matcher.matches()) {
 			final String xmlModelName = matcher.group(1);
 			checkDirectoryForXmlFiles(name, xmlModelName);
@@ -99,6 +99,12 @@ public class ConfigTester implements ApplicationContextAware {
 	}
 
 	private void checkDirectoryForXmlFiles(final String name, final String xmlModelName) {
+		final Path directory = Paths.get(ConfigFileConstants.getFilePathString(), name);
+
+		if (!Files.exists(directory)) {
+			return;
+		}
+
 		final Class clazz;
 		try {
 			clazz = Class.forName(xmlModelName);
@@ -106,18 +112,12 @@ public class ConfigTester implements ApplicationContextAware {
 			throw new RuntimeException(e);
 		}
 
-		final Path directory = Paths.get(ConfigFileConstants.getFilePathString(), name);
-
-		if (!Files.exists(directory)) {
-			return;
-		}
-
 		try (final DirectoryStream<Path> stream = Files.newDirectoryStream(directory, "*.xml")) {
 			for (final Path entry : stream) {
 				try {
 					JaxbUtils.unmarshal(clazz, entry.toFile(), true);
 				} catch (final Exception e) {
-					throw new ConfigCheckValidationException(e);
+					throw new ConfigCheckValidationException("File " + entry.toString() + " not valid!", e);
 				}
 			}
 		} catch (final IOException e) {

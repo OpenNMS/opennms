@@ -672,33 +672,28 @@ public class ConfigTesterTest {
         testConfigFile("opennms.properties.d");
     }
 
+    private void testXmlFile(final String directory, final String xml) throws IOException {
+        setUpOpennmsHomeInTmpDir();
+        final Path etcDir = java.nio.file.Files.createDirectories(Paths.get(this.opennmsHomeDir.getPath(), "etc/" + directory));
+        final File file = new File(etcDir.toFile(), "ABC.xml");
+        Files.write(xml, file, StandardCharsets.UTF_8);
+        testConfigFile(directory);
+    }
+
     @Test
     public void testValidImports() throws IOException {
-        setUpOpennmsHomeInTmpDir();
         final String validXml = "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" date-stamp=\"2019-04-04T07:49:24.053+02:00\" foreign-source=\"ABC\" last-import=\"2019-04-04T07:49:30.777+02:00\"/>";
-
-        final Path etcDir = java.nio.file.Files.createDirectories(Paths.get(this.opennmsHomeDir.getPath(), "etc/imports"));
-        final File file = new File(etcDir.toFile(), "ABC.xml");
-        Files.write(validXml, file, StandardCharsets.UTF_8);
-
-        testConfigFile("imports");
+        testXmlFile("imports", validXml);
     }
 
     @Test(expected = ConfigCheckValidationException.class)
     public void testInvalidImports() throws IOException {
-        setUpOpennmsHomeInTmpDir();
-        final String validXml = "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" date-stamp=\"2019-04-04T07:49:24.053+02:00\" foreign-source=\"ABC\" last-import=\"2019-04-04T07:49:30.777+02:00\"><foo></foo></model-import>";
-
-        final Path etcDir = java.nio.file.Files.createDirectories(Paths.get(this.opennmsHomeDir.getPath(), "etc/imports"));
-        final File file = new File(etcDir.toFile(), "ABC.xml");
-        Files.write(validXml, file, StandardCharsets.UTF_8);
-
-        testConfigFile("imports");
+        final String invalidXml = "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" date-stamp=\"2019-04-04T07:49:24.053+02:00\" foreign-source=\"ABC\" last-import=\"2019-04-04T07:49:30.777+02:00\"><foo></foo></model-import>";
+        testXmlFile("imports", invalidXml);
     }
 
     @Test
     public void testValidForeignSources() throws IOException {
-        setUpOpennmsHomeInTmpDir();
         final String validXml = "<foreign-source xmlns=\"http://xmlns.opennms.org/xsd/config/foreign-source\" name=\"DHCP\" date-stamp=\"2019-01-24T13:57:44.250+01:00\">\n" +
                 "   <scan-interval>1d</scan-interval>\n" +
                 "   <detectors>\n" +
@@ -706,18 +701,12 @@ public class ConfigTesterTest {
                 "   </detectors>\n" +
                 "   <policies/>\n" +
                 "</foreign-source>";
-
-        final Path etcDir = java.nio.file.Files.createDirectories(Paths.get(this.opennmsHomeDir.getPath(), "etc/foreign-sources"));
-        final File file = new File(etcDir.toFile(), "ABC.xml");
-        Files.write(validXml, file, StandardCharsets.UTF_8);
-
-        testConfigFile("foreign-sources");
+        testXmlFile("foreign-sources", validXml);
     }
 
     @Test(expected = ConfigCheckValidationException.class)
     public void testInvalidForeignSources() throws IOException {
-        setUpOpennmsHomeInTmpDir();
-        final String validXml = "<foreign-source xmlns=\"http://xmlns.opennms.org/xsd/config/foreign-source\" name=\"DHCP\" date-stamp=\"2019-01-24T13:57:44.250+01:00\">\n" +
+        final String invalidXml = "<foreign-source xmlns=\"http://xmlns.opennms.org/xsd/config/foreign-source\" name=\"DHCP\" date-stamp=\"2019-01-24T13:57:44.250+01:00\">\n" +
                 "   <scan-interval>1d</scan-interval>\n" +
                 "   <detectors>\n" +
                 "      <detector name=\"ICMP\" class=\"org.opennms.netmgt.provision.detector.icmp.IcmpDetector\"/>\n" +
@@ -725,12 +714,7 @@ public class ConfigTesterTest {
                 "   <foo/>\n" +
                 "   <policies/>\n" +
                 "</foreign-source>";
-
-        final Path etcDir = java.nio.file.Files.createDirectories(Paths.get(this.opennmsHomeDir.getPath(), "etc/foreign-sources"));
-        final File file = new File(etcDir.toFile(), "ABC.xml");
-        Files.write(validXml, file, StandardCharsets.UTF_8);
-
-        testConfigFile("foreign-sources");
+        testXmlFile("foreign-sources", invalidXml);
     }
 
     @Test(expected = ConfigCheckValidationException.class)
