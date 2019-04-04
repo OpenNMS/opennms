@@ -98,4 +98,9 @@ public class InMemoryEventBean implements InMemoryEvent {
                 .filter(p -> Objects.equals(name, p.getName()))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Integer getNodeId() {
+        return null;
+    }
 }
