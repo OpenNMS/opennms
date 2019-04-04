@@ -34,8 +34,8 @@ import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public abstract class VertexHopCriteria extends Criteria {
-    private String m_label = "";
     private String m_id = "";
+    private String m_label;
 
     @Override
     public String toString() {
