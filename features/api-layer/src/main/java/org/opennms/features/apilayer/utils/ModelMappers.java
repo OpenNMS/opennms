@@ -43,7 +43,10 @@ import org.opennms.integration.api.v1.model.Node;
 import org.opennms.integration.api.v1.model.Severity;
 import org.opennms.integration.api.v1.model.SnmpInterface;
 import org.opennms.integration.api.v1.model.TopologyEdge;
+import org.opennms.integration.api.v1.model.TopologyPort;
 import org.opennms.integration.api.v1.model.TopologyProtocol;
+import org.opennms.integration.api.v1.model.TopologySegment;
+import org.opennms.integration.api.v1.model.immutables.ImmutableNode;
 import org.opennms.integration.api.v1.model.immutables.ImmutableNodeCriteria;
 import org.opennms.integration.api.v1.model.immutables.ImmutableTopologyEdge;
 import org.opennms.integration.api.v1.model.immutables.ImmutableTopologyPort;
@@ -55,6 +58,7 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -148,41 +152,60 @@ public class ModelMappers {
         ImmutableTopologyEdge.Builder topologyEdge = ImmutableTopologyEdge.newBuilder()
                 .setId(edge.getId())
                 .setProtocol(toTopologyProtocol(protocol))
-                .setTooltipText(edge.getToolTipText())
-                .setSource(ImmutableTopologyPort.newBuilder()
-                        .setId(edge.getSource().getId())
-                        .setTooltipText(edge.getSource().getToolTipText())
-                        .setIfIndex(edge.getSource().getIfindex())
-                        .setIfAddress(edge.getSource().getAddr())
-                        .setIfName(edge.getSource().getIfname())
-                        .setNodeCriteria(ImmutableNodeCriteria.newBuilder()
-                                .setId(edge.getSource().getVertex().getNodeid())
-                                .build())
-                        .build());
+                .setTooltipText(edge.getToolTipText());
 
-        // If the node Id is null the target is a segment...
-        if (edge.getTarget().getVertex().getNodeid() == null) {
-            topologyEdge.setTargetSegment(ImmutableTopologySegment.newBuilder()
-                    .setId(edge.getTarget().getVertex().getId())
-                    .setTooltipText(edge.getTarget().getToolTipText())
-                    .setProtocol(toTopologyProtocol(protocol))
-                    .build());
+        // Set the source
+        if (edge.getSource().getVertex().getNodeid() == null) {
+            // Source is a segment
+            topologyEdge.setSource(getSegment(edge.getSource(), protocol));
+        } else if (edge.getSource().getIfindex() != null) {
+            // Source is a port
+            topologyEdge.setSource(getPort(edge.getSource()));
+        } else {
+            // Source is a node
+            topologyEdge.setSource(getNode(edge.getSource()));
         }
-        // Otherwise the target is a port
-        else {
-            topologyEdge.setTargetPort(ImmutableTopologyPort.newBuilder()
-                    .setId(edge.getTarget().getId())
-                    .setTooltipText(edge.getTarget().getToolTipText())
-                    .setIfIndex(edge.getTarget().getIfindex())
-                    .setIfName(edge.getTarget().getIfname())
-                    .setIfAddress(edge.getTarget().getAddr())
-                    .setNodeCriteria(ImmutableNodeCriteria.newBuilder()
-                            .setId(edge.getTarget().getVertex().getNodeid())
-                            .build())
-                    .build());
+
+        // Set the target
+        if (edge.getTarget().getVertex().getNodeid() == null) {
+            // Target is a segment
+            topologyEdge.setTarget(getSegment(edge.getTarget(), protocol));
+        } else if (edge.getTarget().getIfindex() != null) {
+            // Target is a port
+            topologyEdge.setTarget(getPort(edge.getTarget()));
+        } else {
+            // Target is a node
+            topologyEdge.setTarget(getNode(edge.getTarget()));
         }
 
         return topologyEdge.build();
+    }
+
+    private static TopologySegment getSegment(OnmsTopologyPort port, OnmsTopologyProtocol protocol) {
+        return ImmutableTopologySegment.newBuilder()
+                .setId(port.getVertex().getId())
+                .setTooltipText(port.getToolTipText())
+                .setProtocol(toTopologyProtocol(protocol))
+                .build();
+    }
+
+    private static TopologyPort getPort(OnmsTopologyPort port) {
+        return ImmutableTopologyPort.newBuilder()
+                .setId(port.getId())
+                .setTooltipText(port.getToolTipText())
+                .setIfIndex(port.getIfindex())
+                .setIfName(port.getIfname())
+                .setIfAddress(port.getAddr())
+                .setNodeCriteria(ImmutableNodeCriteria.newBuilder()
+                        .setId(port.getVertex().getNodeid())
+                        .build())
+                .build();
+    }
+
+    private static Node getNode(OnmsTopologyPort port) {
+        return ImmutableNode.newBuilder()
+                .setId(Integer.parseInt(port.getId()))
+                .build();
     }
     
     public static OnmsTopologyProtocol toOnmsTopologyProtocol(TopologyProtocol protocol) {
