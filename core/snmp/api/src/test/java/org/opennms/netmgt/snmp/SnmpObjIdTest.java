@@ -28,8 +28,7 @@
 
 package org.opennms.netmgt.snmp;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -46,18 +45,18 @@ public class SnmpObjIdTest {
         SnmpObjId ifIndex2 = SnmpObjId.get("1.3.6.1.2.1.2.2.1.1.2");
         SnmpObjId ifIndex3 = SnmpObjId.get("1.3.6.1.2.1.2.2.1.1.3");
 
-        assertThat(ifIndex.isSuccessorOf(ifIndex), equalTo(false));
-        assertThat(ifIndex2.isSuccessorOf(ifIndex), equalTo(true));
-        assertThat(ifIndex3.isSuccessorOf(ifIndex), equalTo(true));
+        assertEquals(false, ifIndex.isSuccessorOf(ifIndex));
+        assertEquals(true, ifIndex2.isSuccessorOf(ifIndex));
+        assertEquals(true, ifIndex3.isSuccessorOf(ifIndex));
 
-        assertThat(ifIndex2.isSuccessorOf(ifIndex2), equalTo(false));
-        assertThat(ifIndex2.isSuccessorOf(ifIndex3), equalTo(false));
+        assertEquals(false, ifIndex2.isSuccessorOf(ifIndex2));
+        assertEquals(false, ifIndex2.isSuccessorOf(ifIndex3));
 
-        assertThat(ifIndex3.isSuccessorOf(ifIndex3), equalTo(false));
-        assertThat(ifIndex3.isSuccessorOf(ifIndex2), equalTo(true));
+        assertEquals(false, ifIndex3.isSuccessorOf(ifIndex3));
+        assertEquals(true, ifIndex3.isSuccessorOf(ifIndex2));
 
         SnmpObjId mib2 = SnmpObjId.get("1.3.6.1.2.1");
-        assertThat(ifIndex.isSuccessorOf(mib2), equalTo(true));
-        assertThat(mib2.isSuccessorOf(ifIndex), equalTo(false));
+        assertEquals(true, ifIndex.isSuccessorOf(mib2));
+        assertEquals(false, mib2.isSuccessorOf(ifIndex));
     }
 }

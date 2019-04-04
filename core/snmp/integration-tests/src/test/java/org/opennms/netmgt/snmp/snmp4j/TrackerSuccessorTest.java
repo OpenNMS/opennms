@@ -28,8 +28,7 @@
 
 package org.opennms.netmgt.snmp.snmp4j;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -63,8 +62,8 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
  * agent responds with VBs that come *before* or
  * are *equal to* the requested VBs.
  */
-public class TrackerSuccessorIT {
-    private static final Logger LOG = LoggerFactory.getLogger(TrackerSuccessorIT.class);
+public class TrackerSuccessorTest {
+    private static final Logger LOG = LoggerFactory.getLogger(TrackerSuccessorTest.class);
 
     private DefaultUdpTransportMapping transportMapping;
 
@@ -150,7 +149,7 @@ public class TrackerSuccessorIT {
 
         // Wait and verify
         walker.waitFor();
-        assertThat(walker.failed(), equalTo(false));
+        assertEquals(false, walker.failed());
 
         // We don't care about the actual results of the tracker, only that it did finish successfully
     }
