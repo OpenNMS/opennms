@@ -158,7 +158,7 @@ public class ModelMappers {
         if (edge.getSource().getVertex().getNodeid() == null) {
             // Source is a segment
             topologyEdge.setSource(getSegment(edge.getSource(), protocol));
-        } else if (edge.getSource().getIfindex() != null) {
+        } else if (edge.getSource().getIfindex() != null && edge.getSource().getIfindex() >= 0) {
             // Source is a port
             topologyEdge.setSource(getPort(edge.getSource()));
         } else {
@@ -170,7 +170,7 @@ public class ModelMappers {
         if (edge.getTarget().getVertex().getNodeid() == null) {
             // Target is a segment
             topologyEdge.setTarget(getSegment(edge.getTarget(), protocol));
-        } else if (edge.getTarget().getIfindex() != null) {
+        } else if (edge.getTarget().getIfindex() != null && edge.getTarget().getIfindex() >= 0) {
             // Target is a port
             topologyEdge.setTarget(getPort(edge.getTarget()));
         } else {
@@ -183,7 +183,7 @@ public class ModelMappers {
 
     private static TopologySegment getSegment(OnmsTopologyPort port, OnmsTopologyProtocol protocol) {
         return ImmutableTopologySegment.newBuilder()
-                .setId(port.getVertex().getId())
+                .setId(port.getId())
                 .setTooltipText(port.getToolTipText())
                 .setProtocol(toTopologyProtocol(protocol))
                 .build();
@@ -204,7 +204,7 @@ public class ModelMappers {
 
     private static Node getNode(OnmsTopologyPort port) {
         return ImmutableNode.newBuilder()
-                .setId(Integer.parseInt(port.getId()))
+                .setId(port.getVertex().getNodeid())
                 .build();
     }
     

@@ -28,7 +28,6 @@
 
 package org.opennms.features.apilayer.topology;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -66,7 +65,7 @@ public class EdgeDaoImpl implements EdgeDao {
                 .sum();
     }
 
-    private Collection<TopologyEdge> getEdges(Predicate<OnmsTopologyProtocol> filter) {
+    private Set<TopologyEdge> getEdges(Predicate<OnmsTopologyProtocol> filter) {
         Set<TopologyEdge> currentEdges = new HashSet<>();
         onmsTopologyDao.getTopologies()
                 .entrySet()
@@ -93,12 +92,12 @@ public class EdgeDaoImpl implements EdgeDao {
     }
 
     @Override
-    public Collection<TopologyEdge> getEdges() {
+    public Set<TopologyEdge> getEdges() {
         return getEdges(EdgeDaoImpl::includeAll);
     }
 
     @Override
-    public Collection<TopologyEdge> getEdges(TopologyProtocol protocol) {
+    public Set<TopologyEdge> getEdges(TopologyProtocol protocol) {
         if(protocol == TopologyProtocol.ALL) {
             return getEdges();
         }

@@ -30,94 +30,154 @@ package org.opennms.features.apilayer.utils;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.opennms.topologies.service.api.EdgeMockUtil.PROTOCOL;
+import static org.opennms.topologies.service.api.EdgeMockUtil.SOURCE_ID;
+import static org.opennms.topologies.service.api.EdgeMockUtil.TARGET_NODE_ID;
+import static org.opennms.topologies.service.api.EdgeMockUtil.addPort;
+import static org.opennms.topologies.service.api.EdgeMockUtil.createEdge;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
+import org.opennms.integration.api.v1.model.Node;
 import org.opennms.integration.api.v1.model.TopologyEdge;
 import org.opennms.integration.api.v1.model.TopologyPort;
 import org.opennms.integration.api.v1.model.TopologySegment;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
+import org.opennms.topologies.service.api.EdgeMockUtil;
 
 public class ModelMappersTest {
     @Test
-    public void canMapEdge() {
-        String id = "id";
-        String tooltipText = "tooltip";
+    public void canMapNodeToNodeEdge() {
+        OnmsTopologyEdge mockEdge = createEdge();
+        EdgeMockUtil.addNode(true, mockEdge);
+        EdgeMockUtil.addNode(false, mockEdge);
+        TopologyEdge mappedEdge = ModelMappers.toEdge(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
 
-        OnmsTopologyEdge sourceEdgeMock = mock(OnmsTopologyEdge.class);
-        when(sourceEdgeMock.getId()).thenReturn(id);
-        when(sourceEdgeMock.getToolTipText()).thenReturn(tooltipText);
+        assertThat(mappedEdge.getId(), equalTo(EdgeMockUtil.EDGE_ID));
+        assertThat(mappedEdge.getProtocol().name(), equalTo(PROTOCOL));
 
-        // Source port
-        String sourceId = "sourceId";
-        String sourceTooltipText = "sourceTooltip";
-        Integer sourceIfIndex = 1;
-        Integer sourceVertexNodeId = 1;
-        OnmsTopologyVertex sourceVertexMock = mock(OnmsTopologyVertex.class);
-        when(sourceVertexMock.getNodeid()).thenReturn(sourceVertexNodeId);
-
-        OnmsTopologyPort sourcePortMock = mock(OnmsTopologyPort.class);
-        when(sourcePortMock.getId()).thenReturn(sourceId);
-        when(sourcePortMock.getToolTipText()).thenReturn(sourceTooltipText);
-        when(sourcePortMock.getIfindex()).thenReturn(sourceIfIndex);
-        when(sourcePortMock.getVertex()).thenReturn(sourceVertexMock);
-
-        // Target port
-        String targetId = "targetId";
-        String targetTooltipText = "targetTooltip";
-        Integer targetIfIndex = 2;
-        Integer targetVertexNodeId = 2;
-        String targetVertexId = "vertex-id";
-        OnmsTopologyVertex targetVertexMock = mock(OnmsTopologyVertex.class);
-        when(targetVertexMock.getId()).thenReturn(targetVertexId);
-        when(targetVertexMock.getNodeid()).thenReturn(targetVertexNodeId);
-
-        OnmsTopologyPort targetPortMock = mock(OnmsTopologyPort.class);
-        when(targetPortMock.getId()).thenReturn(targetId);
-        when(targetPortMock.getToolTipText()).thenReturn(targetTooltipText);
-        when(targetPortMock.getIfindex()).thenReturn(targetIfIndex);
-        when(targetPortMock.getVertex()).thenReturn(targetVertexMock);
-
-        when(sourceEdgeMock.getSource()).thenReturn(sourcePortMock);
-        when(sourceEdgeMock.getTarget()).thenReturn(targetPortMock);
-
-        // Map when the target is a port
-        String protocol = "test-protocol";
-        TopologyEdge mappedEdge = ModelMappers.toEdge(OnmsTopologyProtocol.create(protocol), sourceEdgeMock);
-
-        assertThat(mappedEdge.getId(), equalTo(id));
-        assertThat(mappedEdge.getProtocol(), equalTo(protocol));
-        assertThat(mappedEdge.getTooltipText(), equalTo(tooltipText));
-        assertThat(mappedEdge.getSource().getId(), equalTo(sourceId));
-        assertThat(mappedEdge.getSource().getIfIndex(), equalTo(sourceIfIndex));
-        assertThat(mappedEdge.getSource().getTooltipText(), equalTo(sourceTooltipText));
-        assertThat(mappedEdge.getSource().getNodeCriteria().getId(), equalTo(sourceVertexNodeId));
-
-        mappedEdge.visitTarget(new TopologyEdge.TopologyEdgeTargetVisitor() {
+        AtomicBoolean visitedSourceNode = new AtomicBoolean(false);
+        AtomicBoolean visitedTargetNode = new AtomicBoolean(false);
+        mappedEdge.visitEndpoints(new TopologyEdge.EndpointVisitor() {
             @Override
-            public void visitTargetPort(TopologyPort port) {
-                assertThat(port.getId(), equalTo(targetId));
-                assertThat(port.getIfIndex(), equalTo(targetIfIndex));
-                assertThat(port.getTooltipText(), equalTo(targetTooltipText));
-                assertThat(port.getNodeCriteria().getId(), equalTo(targetVertexNodeId));
+            public void visitSource(Node node) {
+                assertThat(node.getId(), equalTo(EdgeMockUtil.SOURCE_NODE_ID));
+                visitedSourceNode.set(true);
+            }
+
+            @Override
+            public void visitTarget(Node node) {
+                assertThat(node.getId(), equalTo(TARGET_NODE_ID));
+                visitedTargetNode.set(true);
             }
         });
+        assertThat(visitedSourceNode.get(), equalTo(true));
+        assertThat(visitedTargetNode.get(), equalTo(true));
+    }
 
-        // Map when the target is a segment
-        when(targetVertexMock.getId()).thenReturn(null);
-        mappedEdge = ModelMappers.toEdge(OnmsTopologyProtocol.create("test-protocol"), sourceEdgeMock);
+    @Test
+    public void canMapPortToPortEdge() {
+        OnmsTopologyEdge mockEdge = createEdge();
+        addPort(true, mockEdge);
+        addPort(false, mockEdge);
+        TopologyEdge mappedEdge = ModelMappers.toEdge(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
 
-        mappedEdge.visitTarget(new TopologyEdge.TopologyEdgeTargetVisitor() {
+        assertThat(mappedEdge.getId(), equalTo(EdgeMockUtil.EDGE_ID));
+        assertThat(mappedEdge.getProtocol().name(), equalTo(PROTOCOL));
+
+        AtomicBoolean visitedSourcePort = new AtomicBoolean(false);
+        AtomicBoolean visitedTargetPort = new AtomicBoolean(false);
+        mappedEdge.visitEndpoints(new TopologyEdge.EndpointVisitor() {
             @Override
-            public void visitTargetSegement(TopologySegment segment) {
-                assertThat(segment.getId(), equalTo(targetVertexId));
-                assertThat(segment.getTooltipText(), equalTo(targetTooltipText));
-                assertThat(segment.getSegmentCriteria(), equalTo(String.format("%s:%s", protocol, targetId)));
+            public void visitSource(TopologyPort port) {
+                assertThat(port.getId(), equalTo(SOURCE_ID));
+                assertThat(port.getIfIndex(), equalTo(EdgeMockUtil.SOURCE_IFINDEX));
+                assertThat(port.getTooltipText(), equalTo(EdgeMockUtil.SOURCE_TOOLTIP));
+                assertThat(port.getNodeCriteria().getId(), equalTo(EdgeMockUtil.SOURCE_NODE_ID));
+                visitedSourcePort.set(true);
+            }
+
+            @Override
+            public void visitTarget(TopologyPort port) {
+                assertThat(port.getId(), equalTo(EdgeMockUtil.TARGET_ID));
+                assertThat(port.getIfIndex(), equalTo(EdgeMockUtil.TARGET_IFINDEX));
+                assertThat(port.getTooltipText(), equalTo(EdgeMockUtil.TARGET_TOOLTIP));
+                assertThat(port.getNodeCriteria().getId(), equalTo(TARGET_NODE_ID));
+                visitedTargetPort.set(true);
             }
         });
+        assertThat(visitedSourcePort.get(), equalTo(true));
+        assertThat(visitedTargetPort.get(), equalTo(true));
+    }
+
+    @Test
+    public void canMapSegmentToSegmentEdge() {
+        OnmsTopologyEdge mockEdge = createEdge();
+        EdgeMockUtil.addSegment(true, mockEdge);
+        EdgeMockUtil.addSegment(false, mockEdge);
+        TopologyEdge mappedEdge = ModelMappers.toEdge(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
+
+        assertThat(mappedEdge.getId(), equalTo(EdgeMockUtil.EDGE_ID));
+        assertThat(mappedEdge.getProtocol().name(), equalTo(PROTOCOL));
+
+        AtomicBoolean visitedSourceSegment = new AtomicBoolean(false);
+        AtomicBoolean visitedTargetSegment = new AtomicBoolean(false);
+        mappedEdge.visitEndpoints(new TopologyEdge.EndpointVisitor() {
+            @Override
+            public void visitSource(TopologySegment segment) {
+                assertThat(segment.getId(), equalTo(SOURCE_ID));
+                assertThat(segment.getTooltipText(), equalTo(EdgeMockUtil.SOURCE_TOOLTIP));
+                assertThat(segment.getSegmentCriteria(), equalTo(String.format("%s:%s", PROTOCOL, SOURCE_ID)));
+                visitedSourceSegment.set(true);
+            }
+
+            @Override
+            public void visitTarget(TopologySegment segment) {
+                assertThat(segment.getId(), equalTo(EdgeMockUtil.TARGET_ID));
+                assertThat(segment.getTooltipText(), equalTo(EdgeMockUtil.TARGET_TOOLTIP));
+                assertThat(segment.getSegmentCriteria(), equalTo(String.format("%s:%s", PROTOCOL,
+                        EdgeMockUtil.TARGET_ID)));
+                visitedTargetSegment.set(true);
+            }
+        });
+        assertThat(visitedSourceSegment.get(), equalTo(true));
+        assertThat(visitedTargetSegment.get(), equalTo(true));
+    }
+
+    @Test
+    public void canMapPortToSegmentEdge() {
+        OnmsTopologyEdge mockEdge = createEdge();
+        addPort(true, mockEdge);
+        EdgeMockUtil.addSegment(false, mockEdge);
+        TopologyEdge mappedEdge = ModelMappers.toEdge(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
+
+        assertThat(mappedEdge.getId(), equalTo(EdgeMockUtil.EDGE_ID));
+        assertThat(mappedEdge.getProtocol().name(), equalTo(PROTOCOL));
+
+        AtomicBoolean visitedSourcePort = new AtomicBoolean(false);
+        AtomicBoolean visitedTargetSegment = new AtomicBoolean(false);
+        mappedEdge.visitEndpoints(new TopologyEdge.EndpointVisitor() {
+            @Override
+            public void visitSource(TopologyPort port) {
+                assertThat(port.getId(), equalTo(SOURCE_ID));
+                assertThat(port.getIfIndex(), equalTo(EdgeMockUtil.SOURCE_IFINDEX));
+                assertThat(port.getTooltipText(), equalTo(EdgeMockUtil.SOURCE_TOOLTIP));
+                assertThat(port.getNodeCriteria().getId(), equalTo(EdgeMockUtil.SOURCE_NODE_ID));
+                visitedSourcePort.set(true);
+            }
+
+            @Override
+            public void visitTarget(TopologySegment segment) {
+                assertThat(segment.getId(), equalTo(EdgeMockUtil.TARGET_ID));
+                assertThat(segment.getTooltipText(), equalTo(EdgeMockUtil.TARGET_TOOLTIP));
+                assertThat(segment.getSegmentCriteria(), equalTo(String.format("%s:%s", PROTOCOL,
+                        EdgeMockUtil.TARGET_ID)));
+                visitedTargetSegment.set(true);
+            }
+        });
+        assertThat(visitedSourcePort.get(), equalTo(true));
+        assertThat(visitedTargetSegment.get(), equalTo(true));
     }
 }

@@ -290,9 +290,10 @@
   </reference-list>
 
   <!-- Edge DAO -->
-  <bean id="edgeDaoImpl" class="org.opennms.features.apilayer.topology.EdgeDaoImpl">
-    <argument ref="onmsTopologyDao"/>
-  </bean>
-  <service ref="edgeDaoImpl" interface="org.opennms.integration.api.v1.dao.EdgeDao"/>
+  <service interface="org.opennms.integration.api.v1.dao.EdgeDao">
+    <bean class="org.opennms.features.apilayer.topology.EdgeDaoImpl">
+      <argument ref="onmsTopologyDao"/>
+    </bean>
+  </service>
 
 </blueprint>

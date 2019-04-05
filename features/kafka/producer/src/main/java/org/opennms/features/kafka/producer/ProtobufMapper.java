@@ -50,6 +50,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -467,35 +468,35 @@ public class ProtobufMapper {
         }
     }
 
-    public OpennmsModelProtos.TopologyRef.Builder toTopologyRef(String protocol, String id) {
+    public OpennmsModelProtos.TopologyRef.Builder toTopologyRef(OnmsTopologyProtocol protocol, String id) {
         return OpennmsModelProtos.TopologyRef.newBuilder()
                 .setId(id)
-                .setProtocol(Enums.getIfPresent(OpennmsModelProtos.TopologyRef.Protocol.class, protocol).orNull());
+                .setProtocol(Enums.getIfPresent(OpennmsModelProtos.TopologyRef.Protocol.class, protocol.getId()).orNull());
     }
 
-    private OpennmsModelProtos.TopologyRef getTopologyRef(String protocol, String id) {
+    private OpennmsModelProtos.TopologyRef getTopologyRef(OnmsTopologyProtocol protocol, String id) {
         return toTopologyRef(protocol, id).build();
     }
 
     private OpennmsModelProtos.TopologyPort getPort(org.opennms.netmgt.topologies.service.api.OnmsTopologyPort port) {
-        final OpennmsModelProtos.TopologyPort.Builder builder = OpennmsModelProtos.TopologyPort.newBuilder()
-                .setVertexId(port.getVertex().getId());
+        final OpennmsModelProtos.TopologyPort.Builder builder = OpennmsModelProtos.TopologyPort.newBuilder();
+        if(port.getVertex().getId() != null) {
+                builder.setVertexId(port.getVertex().getId());
+        }
 
         if (port.getIfindex() != null) {
             builder.setIfIndex(port.getIfindex());
         }
 
-        if (port.getVertex().getNodeid() != null) {
-            try {
-                builder.setNodeCriteria(nodeIdToCriteriaCache.get(Integer.toUnsignedLong(port.getVertex().getNodeid())));
-            } catch (ExecutionException e) {
-                LOG.warn("An error occurred when building node criteria for node with id: {}." +
-                                " The node foreign source and foreign id (if set) will be missing from the vertex with " +
-                                "id: {}.",
-                        port.getVertex().getNodeid(), port.getVertex().getId(), e);
-                builder.setNodeCriteria(OpennmsModelProtos.NodeCriteria.newBuilder()
-                        .setId(port.getVertex().getNodeid()));
-            }
+        try {
+            builder.setNodeCriteria(nodeIdToCriteriaCache.get(Integer.toUnsignedLong(port.getVertex().getNodeid())));
+        } catch (CacheLoader.InvalidCacheLoadException | ExecutionException e) {
+            LOG.warn("An error occurred when building node criteria for node with id: {}." +
+                            " The node foreign source and foreign id (if set) will be missing from the vertex with " +
+                            "id: {}.",
+                    port.getVertex().getNodeid(), port.getVertex().getId(), e);
+            builder.setNodeCriteria(OpennmsModelProtos.NodeCriteria.newBuilder()
+                    .setId(port.getVertex().getNodeid()));
         }
 
         // The ifName and address might not be set so don't set nulls on the builder since protobuf does not allow null
@@ -511,14 +512,64 @@ public class ProtobufMapper {
         return builder.build();
     }
 
-    public OpennmsModelProtos.TopologyEdge.Builder toEdgeTopologyMessage(String protocol,
-                                                                         org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge edge) {
+    private OpennmsModelProtos.TopologySegment getSegment(org.opennms.netmgt.topologies.service.api.OnmsTopologyPort port,
+                                                          OnmsTopologyProtocol protocol) {
+        return OpennmsModelProtos.TopologySegment.newBuilder()
+                .setRef(getTopologyRef(protocol, port.getId()))
+                .build();
+    }
 
-        return OpennmsModelProtos.TopologyEdge.newBuilder()
-                .setRef(getTopologyRef(protocol, edge.getId()))
-                .setSource(getPort(edge.getSource()))
-                // Note: this doesn't currently support a target segment
-                .setTargetPort(getPort(edge.getTarget()));
+    private OpennmsModelProtos.Node getNode(org.opennms.netmgt.topologies.service.api.OnmsTopologyPort port) {
+        OpennmsModelProtos.Node.Builder nodeBuilder = OpennmsModelProtos.Node.newBuilder();
+
+        if (port.getVertex().getNodeid() != null) {
+            nodeBuilder.setId(port.getVertex().getNodeid());
+        }
+
+        try {
+            OpennmsModelProtos.NodeCriteria nodeCriteria =
+                    nodeIdToCriteriaCache.get(Integer.toUnsignedLong(port.getVertex().getNodeid()));
+            if (nodeCriteria != null) {
+                nodeBuilder.setForeignSource(nodeCriteria.getForeignSource());
+                nodeBuilder.setForeignId(nodeCriteria.getForeignId());
+            }
+        } catch (Exception ignore) {
+        }
+
+        return nodeBuilder.build();
+    }
+
+    public OpennmsModelProtos.TopologyEdge toEdgeTopologyMessage(OnmsTopologyProtocol protocol,
+                                                                 org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge edge) {
+
+        OpennmsModelProtos.TopologyEdge.Builder edgeBuilder = OpennmsModelProtos.TopologyEdge.newBuilder();
+        edgeBuilder.setRef(getTopologyRef(protocol, edge.getId()));
+
+        // Set the source
+        if (edge.getSource().getVertex().getNodeid() == null) {
+            // Source is a segment
+            edgeBuilder.setSourceSegment(getSegment(edge.getSource(), protocol));
+        } else if (edge.getSource().getIfindex() != null && edge.getSource().getIfindex() >= 0) {
+            // Source is a port
+            edgeBuilder.setSourcePort(getPort(edge.getSource()));
+        } else {
+            // Source is a node
+            edgeBuilder.setSourceNode(getNode(edge.getSource()));
+        }
+
+        // Set the target
+        if (edge.getTarget().getVertex().getNodeid() == null) {
+            // Target is a segment
+            edgeBuilder.setTargetSegment(getSegment(edge.getTarget(), protocol));
+        } else if (edge.getTarget().getIfindex() != null && edge.getTarget().getIfindex() >= 0) {
+            // Target is a port
+            edgeBuilder.setTargetPort(getPort(edge.getTarget()));
+        } else {
+            // Target is a node
+            edgeBuilder.setTargetNode(getNode(edge.getTarget()));
+        }
+        
+        return edgeBuilder.build();
     }
 
 }
