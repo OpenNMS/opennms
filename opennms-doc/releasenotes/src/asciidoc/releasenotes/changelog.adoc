@@ -26,8 +26,9 @@ The codename for 24.0.0 is _TODO NOT DEFINED YET_.
 * Exposing Servlets follow now the OSGi Specification.
   Refer to the  link:https://osgi.org/specification/osgi.cmpn/7.0.0/service.http.whiteboard.html[OSGi Http Whiteboard Specification] for more details.
 * Properties to expose Vaadin Applications have changed:
-** `init.widgetset` becomes `servlet.init.widgetset`
-** `alias` becomes `osgi.http.whiteboard.servlet.pattern`
+   ** `init.widgetset` becomes `servlet.init.widgetset`
+   ** `alias` becomes `osgi.http.whiteboard.servlet.pattern`
+* We upgrade the Karaf Container to 4.2.3 and with that, the `users.properties` have changed. Ensure that the `admingroup` in `${OPENNMS_HOME}/etc/users.properties` contains the role `ssh`. If unsure link:https://github.com/OpenNMS/opennms/blob/release-24.0.0/container/karaf/src/main/filtered-resources/etc/users.properties[here] is the default one.
 
 ====== Karaf Configuration Command changed
 

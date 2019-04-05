@@ -62,7 +62,7 @@ public class RpcMetaDataUtilsTest {
         attributes.put("attribute9", "aaa${ctx1:key4|${nodeLabel}}bbb");
         attributes.put("attribute10", "aaa${abc}bbb");
 
-        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, new SimpleScope(this.metaData));
+        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, new MapScope(this.metaData));
 
         Assert.assertEquals(attributes.size(), interpolatedAttributes.size());
         Assert.assertEquals("aaaval1bbb", interpolatedAttributes.get("attribute1"));
