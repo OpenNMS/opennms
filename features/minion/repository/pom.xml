@@ -60,7 +60,7 @@
                                 <feature>minion-telemetryd-receivers</feature>
                                 <feature>hawtio-offline</feature>
 				                <feature>cxf-commands/${cxfVersion}</feature>
-                                <feature>jeager-tracer</feature>
+                                <feature>opennms-core-tracing-jaeger</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>

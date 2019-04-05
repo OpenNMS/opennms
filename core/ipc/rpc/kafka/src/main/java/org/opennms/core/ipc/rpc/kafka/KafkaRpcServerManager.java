@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.rpc.kafka;
 
+import static org.opennms.core.tracing.api.TracerConstants.*;
+
 import java.io.IOException;
 import java.math.RoundingMode;
 import java.util.Arrays;
@@ -285,9 +287,9 @@ public class KafkaRpcServerManager {
 
                             Span minionSpan = spanBuilder.start();
                             RpcRequest request = module.unmarshalRequest(rpcContent.toStringUtf8());
-                            minionSpan.setTag("rpcId", rpcId);
+                            minionSpan.setTag(TAG_LOCATION, request.getLocation());
                             if(request.getSystemId() != null) {
-                                minionSpan.setTag("systemId", request.getSystemId());
+                                minionSpan.setTag(TAG_SYSTEM_ID, request.getSystemId());
                             }
                             CompletableFuture<RpcResponse> future = module.execute(request);
                             future.whenComplete((res, ex) -> {
@@ -355,7 +357,7 @@ public class KafkaRpcServerManager {
     }
 
     private Tracer getTracer() {
-        return tracerRegistry.getTracer(minionIdentity.getId()+"@"+minionIdentity.getLocation());
+        return tracerRegistry.getTracer(minionIdentity.getLocation() + "@" + minionIdentity.getId());
     }
     /**
      * RpcId is used to remove rpcId from DelayQueue after it reaches expirationTime.

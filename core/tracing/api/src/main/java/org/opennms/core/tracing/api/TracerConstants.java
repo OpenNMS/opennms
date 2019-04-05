@@ -29,4 +29,9 @@
 package org.opennms.core.tracing.api;
 
 public interface TracerConstants {
+
+    // Common tags for RPC.
+    public static final String TAG_SYSTEM_ID = "systemId";
+    public static final String TAG_LOCATION = "location";
+    public static final String TAG_TIMEOUT = "timeout";
 }

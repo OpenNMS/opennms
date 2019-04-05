@@ -23,7 +23,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>2.4.2</version>
+        <version>${maven.shade.plugin.version}</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -71,7 +71,7 @@
             <Export-Package>
               io.jaegertracing,
               io.jaegertracing.internal,
-              io.jaegertracing.internal.reporters.*
+              io.jaegertracing.internal.reporters
             </Export-Package>
           </instructions>
           <unpackBundle>true</unpackBundle>

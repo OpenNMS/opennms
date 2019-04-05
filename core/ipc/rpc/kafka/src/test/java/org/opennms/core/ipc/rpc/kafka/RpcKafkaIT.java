@@ -107,6 +107,18 @@ public class RpcKafkaIT {
     private Hashtable<String, Object> kafkaConfig = new Hashtable<>();
 
     private AtomicInteger count = new AtomicInteger(0);
+
+    private TracerRegistry tracerRegistry = new TracerRegistry() {
+        @Override
+        public Tracer getTracer(String serviceName) {
+            return GlobalTracer.get();
+        }
+
+        @Override
+        public boolean isRegistered() {
+            return false;
+        }
+    };
     
 
     @Before
@@ -114,17 +126,6 @@ public class RpcKafkaIT {
         System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG), kafkaServer.getKafkaConnectString());
         System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "earliest");
         rpcClient = new KafkaRpcClientFactory();
-        TracerRegistry tracerRegistry = new TracerRegistry() {
-            @Override
-            public Tracer getTracer(String serviceName) {
-                return GlobalTracer.get();
-            }
-
-            @Override
-            public boolean isRegistered() {
-                return false;
-            }
-        };
         rpcClient.setTracerRegistry(tracerRegistry);
         echoClient = new MockEchoClient(rpcClient);
         rpcClient.start();

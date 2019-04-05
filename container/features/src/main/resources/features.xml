@@ -282,7 +282,7 @@
         <bundle>mvn:org.opennms.core.tracing/org.opennms.core.tracing.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.tracing/org.opennms.core.tracing.registry/${project.version}</bundle>
     </feature>
-    <feature name="jeager-tracer" version="${project.version}" description="OpenNMS:: Jeager Tracer Wrapper">
+    <feature name="opennms-core-tracing-jaeger" version="${project.version}" description="OpenNMS :: Core :: Tracing :: Jeager Tracer">
         <feature>opennms-core-tracing</feature>
         <bundle>mvn:org.opennms.core.tracing/org.opennms.core.tracing.jaeger-osgi/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.tracing/org.opennms.core.tracing.jaeger-tracer/${project.version}</bundle>

@@ -31,6 +31,7 @@ package org.opennms.core.ipc.rpc.kafka;
 
 import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.DEFAULT_TTL;
 import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.MAX_BUFFER_SIZE;
+import static org.opennms.core.tracing.api.TracerConstants.*;
 
 import java.math.RoundingMode;
 import java.util.HashSet;
@@ -155,9 +156,9 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 String marshalRequest = module.marshalRequest(request);
                 // Generate RPC Id for every request to track request/response.
                 String rpcId = UUID.randomUUID().toString();
-                span.setTag("rpcId", rpcId);
+                span.setTag(TAG_LOCATION, request.getLocation());
                 if(request.getSystemId() != null) {
-                    span.setTag("systemId", request.getSystemId());
+                    span.setTag(TAG_SYSTEM_ID, request.getSystemId());
                 }
                 // Calculate timeout based on ttl and default timeout.
                 Long ttl = request.getTimeToLiveMs();
@@ -322,7 +323,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                     isProcessed = true;
                 } else {
                     responseFuture.completeExceptionally(new RequestTimedOutException(new TimeoutException()));
-                    span.setTag("timeout", "true");
+                    span.setTag(TAG_TIMEOUT, "true");
                 }
                 span.finish();
                 rpcResponseMap.remove(rpcId);
