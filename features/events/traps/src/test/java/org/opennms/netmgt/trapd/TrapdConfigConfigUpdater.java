@@ -28,9 +28,17 @@
 
 package org.opennms.netmgt.trapd;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 
 import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.config.trapd.Snmpv3User;
+import org.opennms.netmgt.snmp.SnmpV3User;
+import org.snmp4j.security.SecurityLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -55,6 +63,22 @@ public class TrapdConfigConfigUpdater {
         config.setBatchSize(1);
         config.setQueueSize(1);
         config.setBatchIntervalMs(0);
+
+        // Include an SNMPv3 users for all security levels
+        final List<SnmpV3User> v3users = new ArrayList<>();
+        for (SecurityLevel securityLevel : SecurityLevel.values()) {
+            Snmpv3User user = new Snmpv3User();
+            user.setSecurityName("some-security-name-" + securityLevel); // Include the security level to make this unique
+            user.setSecurityLevel(securityLevel.getSnmpValue());
+            user.setAuthProtocol("MD5");
+            user.setAuthPassphrase("0p3nNMSv3");
+            user.setEngineId("some-engine-id-" + securityLevel);
+            user.setPrivacyPassphrase("0p3nNMSv3");
+            user.setPrivacyProtocol("DES");
+            v3users.add(TrapdConfigBean.toSnmpV3User(user));
+        }
+        config.setSnmpV3Users(v3users);
+
         m_config.update(config);
     }
 }
