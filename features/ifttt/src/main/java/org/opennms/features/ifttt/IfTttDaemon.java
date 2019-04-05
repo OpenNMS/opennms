@@ -166,18 +166,22 @@ public class IfTttDaemon {
             private List<OnmsAlarm> filterAlarms(List<OnmsAlarm> alarms, TriggerPackage triggerPackage) {
                 if (triggerPackage.getOnlyUnacknowledged()) {
                     return alarms.stream()
-                            .filter(alarm -> alarm.getNodeId() != null)
                             .filter(alarm -> !alarm.isAcknowledged())
+                            .filter(alarm -> Strings.isNullOrEmpty(triggerPackage.getCategoryFilter()) || alarm.getNodeId() != null)
                             .filter(alarm -> Strings.isNullOrEmpty(triggerPackage.getCategoryFilter()) ||
                                     alarm.getNode().getCategories().stream()
                                             .anyMatch(category -> category.getName().matches(triggerPackage.getCategoryFilter())))
+                            .filter(alarm -> Strings.isNullOrEmpty(triggerPackage.getUeiFilter()) ||
+                                    alarm.getUei().matches(triggerPackage.getUeiFilter()))
                             .collect(Collectors.toList());
                 } else {
                     return alarms.stream()
-                            .filter(alarm -> alarm.getNodeId() != null)
+                            .filter(alarm -> Strings.isNullOrEmpty(triggerPackage.getCategoryFilter()) || alarm.getNodeId() != null)
                             .filter(alarm -> Strings.isNullOrEmpty(triggerPackage.getCategoryFilter()) ||
                                     alarm.getNode().getCategories().stream()
                                             .anyMatch(category -> category.getName().matches(triggerPackage.getCategoryFilter())))
+                            .filter(alarm -> Strings.isNullOrEmpty(triggerPackage.getUeiFilter()) ||
+                                    alarm.getUei().matches(triggerPackage.getUeiFilter()))
                             .collect(Collectors.toList());
                 }
             }
@@ -204,16 +208,15 @@ public class IfTttDaemon {
                             // Retrieve the alarms with an associated node and filter for matching categories.
 
                             final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsAlarm.class)
-                                    .isNotNull("node")
                                     .gt("severity", OnmsSeverity.NORMAL);
 
                             final List<OnmsAlarm> alarms = alarmDao.findMatching(criteriaBuilder.toCriteria());
 
                             for (final TriggerPackage triggerPackage : ifTttConfig.getTriggerPackages()) {
 
-                                if (!oldSeverity.get(triggerPackage.getOnlyUnacknowledged()).containsKey(triggerPackage.getCategoryFilter())) {
-                                    oldSeverity.get(triggerPackage.getOnlyUnacknowledged()).put(triggerPackage.getCategoryFilter(), OnmsSeverity.INDETERMINATE);
-                                    oldAlarmCount.get(triggerPackage.getOnlyUnacknowledged()).put(triggerPackage.getCategoryFilter(), 0);
+                                if (!oldSeverity.get(triggerPackage.getOnlyUnacknowledged()).containsKey(triggerPackage.getFilterKey())) {
+                                    oldSeverity.get(triggerPackage.getOnlyUnacknowledged()).put(triggerPackage.getFilterKey(), OnmsSeverity.INDETERMINATE);
+                                    oldAlarmCount.get(triggerPackage.getOnlyUnacknowledged()).put(triggerPackage.getFilterKey(), 0);
                                 }
 
                                 final List<OnmsAlarm> filteredAlarms = filterAlarms(alarms, triggerPackage);
@@ -230,24 +233,24 @@ public class IfTttDaemon {
                                 LOG.debug("Received {} filtered, {} new severity", newAlarmCount, newSeverity);
 
                                 final DefaultVariableNameExpansion defaultVariableNameExpansion = new DefaultVariableNameExpansion(
-                                        oldSeverity.get(triggerPackage.getOnlyUnacknowledged()).get(triggerPackage.getCategoryFilter()), newSeverity,
-                                        oldAlarmCount.get(triggerPackage.getOnlyUnacknowledged()).get(triggerPackage.getCategoryFilter()), newAlarmCount
+                                        oldSeverity.get(triggerPackage.getOnlyUnacknowledged()).get(triggerPackage.getFilterKey()), newSeverity,
+                                        oldAlarmCount.get(triggerPackage.getOnlyUnacknowledged()).get(triggerPackage.getFilterKey()), newAlarmCount
                                 );
 
                                 // Trigger IFTTT event if necessary.
 
-                                if (!newSeverity.equals(oldSeverity.get(triggerPackage.getOnlyUnacknowledged()).get(triggerPackage.getCategoryFilter())) ||
-                                        newAlarmCount != oldAlarmCount.get(triggerPackage.getOnlyUnacknowledged()).get(triggerPackage.getCategoryFilter())) {
-                                    fireIfTttTriggerSet(ifTttConfig, triggerPackage.getCategoryFilter(), newSeverity, defaultVariableNameExpansion);
+                                if (!newSeverity.equals(oldSeverity.get(triggerPackage.getOnlyUnacknowledged()).get(triggerPackage.getFilterKey())) ||
+                                        newAlarmCount != oldAlarmCount.get(triggerPackage.getOnlyUnacknowledged()).get(triggerPackage.getFilterKey())) {
+                                    fireIfTttTriggerSet(ifTttConfig, triggerPackage.getFilterKey(), newSeverity, defaultVariableNameExpansion);
                                 }
 
                                 LOG.debug("Old severity: {}, new severity: {}, old alarm count: {}, new alarm count: {}",
-                                        oldSeverity.get(triggerPackage.getOnlyUnacknowledged()).get(triggerPackage.getCategoryFilter()), newSeverity,
-                                        oldAlarmCount.get(triggerPackage.getOnlyUnacknowledged()).get(triggerPackage.getCategoryFilter()), newAlarmCount
+                                        oldSeverity.get(triggerPackage.getOnlyUnacknowledged()).get(triggerPackage.getFilterKey()), newSeverity,
+                                        oldAlarmCount.get(triggerPackage.getOnlyUnacknowledged()).get(triggerPackage.getFilterKey()), newAlarmCount
                                 );
 
-                                oldSeverity.get(triggerPackage.getOnlyUnacknowledged()).put(triggerPackage.getCategoryFilter(), newSeverity);
-                                oldAlarmCount.get(triggerPackage.getOnlyUnacknowledged()).put(triggerPackage.getCategoryFilter(), newAlarmCount);
+                                oldSeverity.get(triggerPackage.getOnlyUnacknowledged()).put(triggerPackage.getFilterKey(), newSeverity);
+                                oldAlarmCount.get(triggerPackage.getOnlyUnacknowledged()).put(triggerPackage.getFilterKey(), newAlarmCount);
                             }
                         }
                     });
@@ -297,7 +300,7 @@ public class IfTttDaemon {
         }
 
         for (final TriggerPackage triggerPackage : ifTttConfig.getTriggerPackages()) {
-            fireIfTttTriggerSet(ifTttConfig, triggerPackage.getCategoryFilter(), name.toUpperCase(), string -> string);
+            fireIfTttTriggerSet(ifTttConfig, triggerPackage.getFilterKey(), name.toUpperCase(), string -> string);
         }
     }
 
@@ -305,28 +308,28 @@ public class IfTttDaemon {
      * Executes a configured trigger set with a given OnmsSeverity instance.
      *
      * @param ifTttConfig           the IFTTT config instance
-     * @param categoryFilter        the category filter
+     * @param filterKey             the filter
      * @param newSeverity           the new severity
      * @param variableNameExpansion the VariableNameExpansion to be used
      */
-    private void fireIfTttTriggerSet(final IfTttConfig ifTttConfig, final String categoryFilter, final OnmsSeverity newSeverity, final VariableNameExpansion variableNameExpansion) {
-        fireIfTttTriggerSet(ifTttConfig, categoryFilter, newSeverity.getLabel().toUpperCase(), variableNameExpansion);
+    private void fireIfTttTriggerSet(final IfTttConfig ifTttConfig, final String filterKey, final OnmsSeverity newSeverity, final VariableNameExpansion variableNameExpansion) {
+        fireIfTttTriggerSet(ifTttConfig, filterKey, newSeverity.getLabel().toUpperCase(), variableNameExpansion);
     }
 
     /**
      * Executes a configured trigger set with a given String value.
      *
      * @param ifTttConfig           the IFTTT config instance
-     * @param categoryFilter        the category filter
+     * @param filterKey             the filter
      * @param name                  the event name
      * @param variableNameExpansion the VariableNameExpansion to be used
      */
-    protected void fireIfTttTriggerSet(final IfTttConfig ifTttConfig, final String categoryFilter, final String name, final VariableNameExpansion variableNameExpansion) {
+    protected void fireIfTttTriggerSet(final IfTttConfig ifTttConfig, final String filterKey, final String name, final VariableNameExpansion variableNameExpansion) {
         if (ifTttConfig == null) {
             return;
         }
 
-        final TriggerPackage triggerPackage = ifTttConfig.getTriggerPackageForCategoryFilter(categoryFilter);
+        final TriggerPackage triggerPackage = ifTttConfig.getTriggerPackageForFilters(filterKey);
 
         if (triggerPackage != null) {
 
@@ -353,7 +356,7 @@ public class IfTttDaemon {
                 LOG.debug("No trigger-set with name '{}' defined.", name);
             }
         } else {
-            LOG.error("Error retrieving trigger package for category filter{}.", categoryFilter);
+            LOG.error("Error retrieving trigger package for filter {}.", filterKey);
         }
     }
 }

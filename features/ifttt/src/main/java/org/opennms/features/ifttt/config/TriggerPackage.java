@@ -41,6 +41,10 @@ public class TriggerPackage {
      */
     private String categoryFilter;
     /**
+     * uei filter
+     */
+    private String ueiFilter;
+    /**
      * trigger sets for firing IFTTT events
      */
     private List<TriggerSet> triggerSets = new ArrayList<>();
@@ -51,11 +55,20 @@ public class TriggerPackage {
 
     @XmlAttribute
     public String getCategoryFilter() {
-        return categoryFilter != null ? categoryFilter : ".*";
+        return categoryFilter != null ? categoryFilter : "";
     }
 
     public void setCategoryFilter(final String categoryFilter) {
         this.categoryFilter = categoryFilter;
+    }
+
+    @XmlAttribute
+    public String getUeiFilter() {
+        return ueiFilter != null ? ueiFilter : ".*";
+    }
+
+    public void setUeiFilter(final String ueiFilter) {
+        this.ueiFilter = ueiFilter;
     }
 
     @XmlAttribute
@@ -93,12 +106,17 @@ public class TriggerPackage {
         final TriggerPackage that = (TriggerPackage) o;
 
         return Objects.equals(categoryFilter, that.categoryFilter) &&
-               Objects.equals(triggerSets, that.triggerSets) &&
-               Objects.equals(onlyUnacknowledged, that.onlyUnacknowledged);
+                Objects.equals(ueiFilter, that.ueiFilter) &&
+                Objects.equals(triggerSets, that.triggerSets) &&
+                Objects.equals(onlyUnacknowledged, that.onlyUnacknowledged);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(categoryFilter, triggerSets, onlyUnacknowledged);
+        return Objects.hash(categoryFilter, ueiFilter, triggerSets, onlyUnacknowledged);
+    }
+
+    public String getFilterKey() {
+        return getCategoryFilter() + " / " + getUeiFilter();
     }
 }
