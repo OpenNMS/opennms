@@ -24,13 +24,10 @@
   <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" availability="mandatory"/>
   <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
   <reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
-  <!-- Only available when Enlinkd is enabled -->
-  <reference id="userDefinedLinkDao" interface="org.opennms.netmgt.enlinkd.persistence.api.UserDefinedLinkDao" availability="optional"/>
-  <!-- Only available when Enlinkd is enabled -->
-  <reference id="userDefinedLinkTopologyService" interface="org.opennms.netmgt.enlinkd.service.api.UserDefinedLinkTopologyService" availability="optional"/>
+  <reference id="userDefinedLinkDao" interface="org.opennms.netmgt.enlinkd.persistence.api.UserDefinedLinkDao" availability="mandatory"/>
+  <reference id="userDefinedLinkTopologyService" interface="org.opennms.netmgt.enlinkd.service.api.UserDefinedLinkTopologyService" availability="mandatory"/>
   <reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" />
   <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
-  <!-- TODO: Check if available when enlinkd is not -->
   <reference id="onmsTopologyDao" interface="org.opennms.netmgt.topologies.service.api.OnmsTopologyDao" availability="mandatory"/>
 
   <bean id="nodeDaoImpl" class="org.opennms.features.apilayer.dao.NodeDaoImpl">
@@ -42,13 +39,6 @@
   <!-- Runtime -->
   <service interface="org.opennms.integration.api.v1.runtime.RuntimeInfo" >
     <bean class="org.opennms.features.apilayer.RuntimeInfoImpl" />
-  </service>
-
-  <service interface="org.opennms.integration.api.v1.dao.NodeDao" >
-    <bean class="org.opennms.features.apilayer.dao.NodeDaoImpl">
-      <argument ref="nodeDao"/>
-      <argument ref="sessionUtils"/>
-    </bean>
   </service>
 
   <service interface="org.opennms.integration.api.v1.dao.AlarmDao" >
@@ -290,9 +280,10 @@
   </reference-list>
 
   <!-- Edge DAO -->
-  <bean id="edgeDaoImpl" class="org.opennms.features.apilayer.topology.EdgeDaoImpl">
-    <argument ref="onmsTopologyDao"/>
-  </bean>
-  <service ref="edgeDaoImpl" interface="org.opennms.integration.api.v1.dao.EdgeDao"/>
+  <service interface="org.opennms.integration.api.v1.dao.EdgeDao">
+    <bean class="org.opennms.features.apilayer.topology.EdgeDaoImpl">
+      <argument ref="onmsTopologyDao"/>
+    </bean>
+  </service>
 
 </blueprint>

@@ -40,9 +40,7 @@ public interface RequisitionInterfaceMapper {
     @Mappings({
             @Mapping(source = "ipAddr", target = "ipAddress"),
             @Mapping(source = "descr", target = "description"),
-            @Mapping(target = "monitoredService", ignore = true),
-            @Mapping(target = "monitoredServices", ignore = true),
-            @Mapping(target = "metaData", ignore = true)
+            @Mapping(target = "monitoredService", ignore = true)
     })
     RequisitionInterfaceBean map(RequisitionInterface iface);
 

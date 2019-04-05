@@ -644,11 +644,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         }
 
         @Override
-        public void visit(OnmsTopologyVertex vertex) {
-            // Note: Handling of segments (vertices with no node Id) should go here when they are being published
-        }
-
-        @Override
         public void visit(OnmsTopologyEdge edge) {
             forwardTopologyEdgeMessage(getKeyForEdge(edge), null);
         }
@@ -665,15 +660,13 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             if (forwardNodes && vertex.getNodeid() != null) {
                 maybeUpdateNode(vertex.getNodeid());
             }
-
-            // Note: Segments (vertices with no node id) are currently unsupported
         }
 
         @Override
         public void visit(OnmsTopologyEdge edge) {
             Objects.requireNonNull(onmsTopologyMessage);
             final OpennmsModelProtos.TopologyEdge mappedTopoMsg =
-                    protobufMapper.toEdgeTopologyMessage(onmsTopologyMessage.getProtocol().getId(), edge).build();
+                    protobufMapper.toEdgeTopologyMessage(onmsTopologyMessage.getProtocol(), edge);
             forwardTopologyEdgeMessage(getKeyForEdge(edge), mappedTopoMsg.toByteArray());
         }
     }
