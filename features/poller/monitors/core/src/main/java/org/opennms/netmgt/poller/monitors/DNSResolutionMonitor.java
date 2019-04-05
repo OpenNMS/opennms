@@ -143,10 +143,10 @@ public class DNSResolutionMonitor extends ParameterSubstitutingMonitor {
                     // hostname with port number
                     final Integer pos = nameserver.lastIndexOf(":");
                     final String hostname = nameserver.substring(0, pos);
-                    final String port = nameserver.substring(pos + 1);
+                    final Integer port = Integer.valueOf(nameserver.substring(pos + 1));
                     LOG.debug("nameserver: hostname={}, port={}", hostname, port);
                     resolver = new SimpleResolver(hostname);
-                    resolver.setPort(SystemProperties.getInteger(port));
+                    resolver.setPort(port);
 
                 } else {
                     // hostname or ip address
