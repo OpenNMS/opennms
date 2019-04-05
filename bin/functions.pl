@@ -186,9 +186,15 @@ if ((defined $JAVA_HOME and -d $JAVA_HOME) or (exists $ENV{'JAVA_HOME'} and -d $
 
 	my ($shortversion) = get_version_from_java(File::Spec->catfile($JAVA_HOME, 'bin', 'java'));
 	my $minimumversion = get_minimum_java();
+	my $maximumversion = get_maximum_java();
 
 	if ($shortversion < $minimumversion) {
 		warning("You specified a Java home of $JAVA_HOME, but it does not meet minimum java version $minimumversion!  Will attempt to search for one instead.");
+		$JAVA_HOME = undef;
+		delete $ENV{'JAVA_HOME'};
+	}
+	if ($shortversion >= $maximumversion) {
+		warning("You specified a Java home of $JAVA_HOME, but it meets or exceeds maximum java version $maximumversion!  Will attempt to search for one instead.");
 		$JAVA_HOME = undef;
 		delete $ENV{'JAVA_HOME'};
 	}
@@ -208,7 +214,7 @@ if (defined $JAVA_HOME and $JAVA_HOME ne "") {
 	$ENV{'PATH'}      = File::Spec->catfile($JAVA_HOME, 'bin') . $PATHSEP . $ENV{'PATH'};
 
         my ($shortversion) = get_version_from_java(File::Spec->catfile($JAVA_HOME, 'bin', 'java'));
-        if ($shortversion >= '9') {
+        if ($shortversion >= 9) {
                 $JDK9_OR_GT = 1;
         };
 }
@@ -348,6 +354,11 @@ sub get_minimum_java {
 	return $minimum_java;
 }
 
+# for now
+sub get_maximum_java {
+	return 9;
+}
+
 sub get_version_from_java {
 	my $javacmd = shift;
 
@@ -378,6 +389,7 @@ sub get_version_from_java {
 	if (defined $version) {
 		($version, $build) = $version =~ /^([\d\.]+)(?:[\+\-\_](.*?))?$/;
 		($shortversion) = $version =~ /^(\d+\.\d+|\d+)/;
+		$shortversion += 0; # make sure it's a number
 	}
 	$build = 0 if (not defined $build);
 
@@ -389,6 +401,7 @@ sub get_version_from_java {
 
 sub find_java_home {
 	my $minimum_java = get_minimum_java();
+	my $maximum_java = get_maximum_java();
 
 	my $versions = {};
 	my $javacmd = 'java';
@@ -426,7 +439,7 @@ sub find_java_home {
 	my $highest_valid = undef;
 
 	for my $majorversion (sort keys %$versions) {
-		if (looks_like_number($majorversion) and looks_like_number($minimum_java) and $majorversion < $minimum_java) {
+		if (looks_like_number($majorversion) and looks_like_number($minimum_java) and ($majorversion < $minimum_java or $majorversion >= $maximum_java)) {
 			next;
 		}
 
