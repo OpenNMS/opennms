@@ -29,23 +29,22 @@
 package org.opennms.features.apilayer.requisition.mappers;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+import org.opennms.integration.api.v1.config.requisition.beans.RequisitionMonitoredServiceBean;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 
-@Mapper
+@Mapper(uses={RequisitionMetaDataMapper.class})
 public interface RequisitionMonitoredServiceMapper {
 
-    default String map(RequisitionMonitoredService service) {
-        if (service == null) {
-            return null;
-        }
-        return service.getServiceName();
-    }
+    @Mappings({
+            @Mapping(source = "serviceName", target = "name")
+    })
+    RequisitionMonitoredServiceBean map(RequisitionMonitoredService service);
 
-    default RequisitionMonitoredService map(String service) {
-        if (service == null) {
-            return null;
-        }
-        return new RequisitionMonitoredService(service);
-    }
+    @Mappings({
+            @Mapping(source = "name", target = "serviceName")
+    })
+    RequisitionMonitoredService map(org.opennms.integration.api.v1.config.requisition.RequisitionMonitoredService service);
 
 }

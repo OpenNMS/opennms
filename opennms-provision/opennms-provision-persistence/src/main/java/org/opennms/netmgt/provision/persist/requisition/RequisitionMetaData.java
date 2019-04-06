@@ -98,4 +98,19 @@ public class RequisitionMetaData implements Comparable<RequisitionMetaData> {
             .append(m_value, other.m_value)
             .toComparison();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RequisitionMetaData that = (RequisitionMetaData) o;
+        return Objects.equals(m_context, that.m_context) &&
+                Objects.equals(m_key, that.m_key) &&
+                Objects.equals(m_value, that.m_value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_context, m_key, m_value);
+    }
 }

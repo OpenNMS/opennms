@@ -131,6 +131,10 @@
             <artifactId>mockito-all</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.enlinkd</groupId>
+            <artifactId>org.opennms.features.enlinkd.service.api</artifactId>
+        </dependency>
     </dependencies>
 
     <repositories>

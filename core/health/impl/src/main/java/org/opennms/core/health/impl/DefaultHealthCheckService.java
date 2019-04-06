@@ -50,6 +50,8 @@ import org.opennms.core.health.api.Status;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -61,6 +63,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  * @author mvrueden
  */
 public class DefaultHealthCheckService implements HealthCheckService {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultHealthCheckService.class);
 
     // HealthChecks are performed asynchronously with this executor.
     private final ExecutorService executorService = Executors.newFixedThreadPool(1, new ThreadFactoryBuilder().setNameFormat("health-check-%d").build());
@@ -121,6 +124,8 @@ public class DefaultHealthCheckService implements HealthCheckService {
                         }
                         return response;
                     } catch (Exception ex) {
+                        // Log the stack trace
+                        LOG.warn("Health check {} failed with exception: {}", check, ex.getMessage(), ex);
                         return new Response(ex);
                     }
                 });
