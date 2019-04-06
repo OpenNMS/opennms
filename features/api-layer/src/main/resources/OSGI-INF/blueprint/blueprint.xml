@@ -24,6 +24,12 @@
   <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" availability="mandatory"/>
   <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
   <reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
+  <!-- Only available when Enlinkd is enabled -->
+  <reference id="userDefinedLinkDao" interface="org.opennms.netmgt.enlinkd.persistence.api.UserDefinedLinkDao" availability="optional"/>
+  <!-- Only available when Enlinkd is enabled -->
+  <reference id="userDefinedLinkTopologyService" interface="org.opennms.netmgt.enlinkd.service.api.UserDefinedLinkTopologyService" availability="optional"/>
+  <reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" />
+  <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
 
   <bean id="nodeDaoImpl" class="org.opennms.features.apilayer.dao.NodeDaoImpl">
     <argument ref="nodeDao"/>
@@ -235,13 +241,18 @@
 
   <reference id="locationAwareCollectorClient" interface="org.opennms.netmgt.collection.api.LocationAwareCollectorClient"/>
 
-  <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
-
   <service interface="org.opennms.integration.api.v1.collectors.ServiceCollectorClient" >
     <bean class="org.opennms.features.apilayer.collectors.ServiceCollectorClientImpl">
       <argument ref="locationAwareCollectorClient"/>
       <argument ref="collectionAgentFactory" />
       <argument ref="nodeDaoImpl" />
+    </bean>
+  </service>
+
+  <service interface="org.opennms.integration.api.v1.collectors.CollectionSetPersistenceService">
+    <bean class="org.opennms.features.apilayer.collectors.CollectionSetPersistenceServiceImpl">
+      <argument ref="collectionAgentFactory"/>
+      <argument ref="persisterFactory"/>
     </bean>
   </service>
 
@@ -256,6 +267,15 @@
   <service interface="org.opennms.integration.api.v1.requisition.RequisitionRepository" >
     <bean class="org.opennms.features.apilayer.requisition.RequisitionRepositoryImpl">
       <argument ref="deployedForeignSourceRepository"/>
+    </bean>
+  </service>
+
+  <!-- Topology -->
+  <service interface="org.opennms.integration.api.v1.topology.UserDefinedLinkDao" >
+    <bean class="org.opennms.features.apilayer.topology.UserDefinedLinkDaoImpl">
+      <argument ref="userDefinedLinkDao"/>
+      <argument ref="userDefinedLinkTopologyService"/>
+      <argument ref="sessionUtils"/>
     </bean>
   </service>
 

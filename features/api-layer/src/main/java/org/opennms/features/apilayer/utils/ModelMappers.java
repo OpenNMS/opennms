@@ -65,6 +65,9 @@ public class ModelMappers {
 
     public static Event toEvent(InMemoryEvent event) {
         final EventBuilder builder = new EventBuilder(event.getUei(), event.getSource());
+        if (event.getNodeId() != null) {
+            builder.setNodeid(event.getNodeId().longValue());
+        }
         if (event.getSeverity() != null) {
             builder.setSeverity(OnmsSeverity.get(event.getSeverity().getId()).getLabel());
         }

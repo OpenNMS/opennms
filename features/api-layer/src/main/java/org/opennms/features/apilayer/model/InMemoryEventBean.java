@@ -46,11 +46,13 @@ public class InMemoryEventBean implements InMemoryEvent {
 
     private final Event event;
     private final Severity severity;
+    private final Integer nodeId;
     private final List<EventParameter> parameters;
 
     public InMemoryEventBean(Event event) {
         this.event = Objects.requireNonNull(event);
         this.severity = ModelMappers.toSeverity(OnmsSeverity.get(event.getSeverity()));
+        this.nodeId = event.getNodeid() != null ? event.getNodeid().intValue() : null;
         this.parameters = ImmutableList.copyOf(event.getParmCollection().stream()
                 .filter(Objects::nonNull) // Skip null parameters
                 .map(EventParameterBean::new)
@@ -70,6 +72,11 @@ public class InMemoryEventBean implements InMemoryEvent {
     @Override
     public Severity getSeverity() {
         return severity;
+    }
+
+    @Override
+    public Integer getNodeId() {
+        return nodeId;
     }
 
     @Override

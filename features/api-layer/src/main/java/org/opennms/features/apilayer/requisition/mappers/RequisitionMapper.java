@@ -28,13 +28,14 @@
 
 package org.opennms.features.apilayer.requisition.mappers;
 
-import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
-@Mapper(uses={RequisitionMonitoredServiceMapper.class, RequisitionNodeMapper.class, RequisitionCategoryMapper.class, RequisitionAssetMapper.class, PrimaryTypeMapper.class})
+@Mapper(uses={RequisitionMonitoredServiceMapper.class, RequisitionNodeMapper.class,
+        RequisitionCategoryMapper.class, RequisitionAssetMapper.class,
+        PrimaryTypeMapper.class, RequisitionMetaDataMapper.class})
 public interface RequisitionMapper {
 
     @Mappings({
