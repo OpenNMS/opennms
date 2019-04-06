@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 
 export DH_VERBOSE=1
-export JAVA_HOME=$(shell bin/find-java.sh 1.8 1.8.9999)
+export JAVA_HOME=$(shell bin/find-java.sh 1.8 11.9999)
 export PACKAGE_NAME="opennms-sentinel"
 
 export SENTINEL_PREFIX=/usr/share/sentinel

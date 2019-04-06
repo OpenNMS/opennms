@@ -224,6 +224,9 @@ Several constants and arrays are also predefined as references in the context by
 |__diff_time
 |Time span between start and end of samples
 
+|__step
+|Difference in time between subsequent values
+
 |__i
 |Index into the samples array which the present calculation is referencing
 
