@@ -209,9 +209,7 @@ public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends Simp
     }
 
     @Override
-    public Class getVertexType() {
-        return delegate.getVertexType();
-    }
+    public abstract Class getVertexType();
 
     @Override
     public boolean equals(Object o) {

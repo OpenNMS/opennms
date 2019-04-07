@@ -37,6 +37,7 @@ import java.util.UUID;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 
 public class SimpleGraphTest {
 
@@ -81,6 +82,18 @@ public class SimpleGraphTest {
     private void equalsButNotSame(Object original, Object copy){
         assertEquals(original, copy);
         Assert.assertNotSame(original, copy);
+    }
+
+    @Test
+    public void simpleGraphShouldBeConstructedFromGraphInfo() {
+        DefaultGraphInfo info = new DefaultGraphInfo(TestObjectCreator.NAMESPACE, SimpleVertex.class);
+        info.setDescription("description");
+        info.setLabel("label");
+        SimpleGraph graph = SimpleGraph.fromGraphInfo(info);
+        assertEquals(info.getNamespace(), graph.getNamespace());
+        assertEquals(info.getLabel(), graph.getLabel());
+        assertEquals(info.getDescription(), graph.getDescription());
+        assertEquals(info.getVertexType(), graph.getVertexType());
     }
 
 }

@@ -36,7 +36,9 @@ import org.opennms.netmgt.graph.api.info.GraphInfo;
 
 /**
  * Acts as a domain specific view on a Graph.
- * This is the most basic concrete subclass of {@link AbstractDomainGraph} and can be used as a reference for your own domain graph.
+ * This is the most basic concrete subclass of {@link AbstractDomainGraph} and can be used as a reference for your own
+ * domain graph. It is a final class since it exposes class information about it's associated vertex and edge types.
+ * If you need more functionality please extend AbstractDomainGraph.
  */
 public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleEdge> {
 
@@ -47,10 +49,10 @@ public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleE
 
     public static SimpleGraph fromGraphInfo(GraphInfo graphInfo) {
         // we can't have a constructor SimpleGraph(GraphInfo graphInfo) since it conflicts with SimpleGraph(GenericGraph graph)
-        // thats why we have a factory method instead
+        // that's why we have a factory method instead
         GenericGraph graph = new GenericGraph();
         graph.setNamespace(graphInfo.getNamespace());
-        graph.setLabel(graphInfo.getDescription());
+        graph.setLabel(graphInfo.getLabel());
         graph.setDescription(graphInfo.getDescription());
         return new SimpleGraph(graph);
     }
@@ -77,5 +79,10 @@ public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleE
     @Override
     protected Graph<SimpleVertex, SimpleEdge> convert(GenericGraph graph) {
         return new SimpleGraph(graph);
+    }
+
+    @Override
+    public Class getVertexType() {
+        return SimpleVertex.class;
     }
 }
