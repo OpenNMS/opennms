@@ -73,7 +73,10 @@ public class ColumnTracker extends CollectionTracker {
             .append("finished?", isFinished())
             .toString();
     }
-        @Override
+
+
+
+    @Override
     public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
         if (pduBuilder.getMaxVarsPerPdu() < 1) {
             throw new IllegalArgumentException("maxVarsPerPdu < 1");
@@ -93,6 +96,17 @@ public class ColumnTracker extends CollectionTracker {
                 }
                 LOG.debug("Processing varBind: {} = {}", responseObjId, val);
 
+                // We requested OIDs following the m_last
+                // If the response OID is not a successor of m_last, then we have received an invalid response
+                // and should stop processing
+                // See NMS-10621 for details
+                if (!responseObjId.isSuccessorOf(m_last)) {
+                    LOG.info("Received varBind: {} = {} after requesting an OID following: {}. "
+                            + "The received varBind is not a successor! Marking tracker as finished.",
+                            responseObjId, val, m_last);
+                    setFinished(true);
+                    return;
+                }
 
                 m_last = responseObjId;
                 if (m_base.isPrefixOf(responseObjId) && !m_base.equals(responseObjId)) {
