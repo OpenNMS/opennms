@@ -200,7 +200,7 @@ public class EventdIT implements InitializingBean {
         final List<OnmsEvent> matching = m_eventDao.findMatching(cb.toCriteria());
         System.err.println("matching = " + matching);
         assertEquals(1, matching.size());
-        assertEquals(new Integer(1), matching.get(0).getNodeId());
+        assertEquals(node.getId(), matching.get(0).getNodeId());
     }
 
     /**
