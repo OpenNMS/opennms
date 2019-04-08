@@ -1101,9 +1101,12 @@
         <bundle>mvn:org.opennms.features.geolocation/org.opennms.features.geolocation.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.geolocation/org.opennms.features.geolocation.services/${project.version}</bundle>
         <bundle>mvn:com.google.guava/guava/${guavaVersion}</bundle>
-        <bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.google/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.nominatim/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.api/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.noop/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.rest/${project.version}</bundle>
+        <bundle start-level="100">mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.google/${project.version}</bundle>
+        <bundle start-level="100">mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.mapquest/${project.version}</bundle>
+        <bundle start-level="100">mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.nominatim/${project.version}</bundle>
     </feature>
     <feature name="vaadin-snmp-events-and-metrics" version="${project.version}" description="OpenNMS :: Features :: SNMP Events and Metrics Admin UI">
         <details>OpenNMS Vaadin Administration UI for handling SNMP related configuration files for events and data collection.</details>
@@ -1122,16 +1125,9 @@
         <feature>vaadin</feature>
         <feature>geolocation</feature>
         <bundle>mvn:org.opennms.features/vaadin-node-maps/${project.version}</bundle>
-        <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
-        <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
-        <bundle>mvn:org.opennms.core/org.opennms.core.web/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.google/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.nominatim/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.geolocation/org.opennms.features.geolocation.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.vaadin-components/core/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.topology.plugins/org.opennms.features.topology.plugins.browsers/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.geolocation/org.opennms.features.geolocation.api/${project.version}</bundle>
     </feature>
     <feature name="osgi-nrtg-api" version="${project.version}" description="OpenNMS :: Features :: NRTG :: Features :: API">
         <details>The API contains the models for the NRTG OSGI projects. It has models for collection jobs, measurements and protocol collectors.</details>

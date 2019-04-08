@@ -13,6 +13,9 @@
   <modules>
     <module>api</module>
     <module>google</module>
+    <module>mapquest</module>
     <module>nominatim</module>
+    <module>noop</module>
+    <module>rest</module>
   </modules>
 </project>

@@ -3,21 +3,13 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.geocoder</artifactId>
-    <version>24.1.0-SNAPSHOT</version>
+    <version>24.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.geocoder</groupId>
-  <artifactId>org.opennms.features.geocoder.nominatim</artifactId>
+  <artifactId>org.opennms.features.geocoder.rest</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS :: Features :: Geocoder :: Nominatim</name>
-
-  <description>Nominatim Geocoder implementation</description>
-  <properties>
-    <bundle.symbolicName>org.opennms.features.geocoder.nominatim</bundle.symbolicName>
-    <bundle.namespace>org.opennms.features.geocoder.nominatim</bundle.namespace>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-
+  <name>OpenNMS :: Features :: Geocoder :: Rest</name>
   <build>
     <plugins>
       <plugin>
@@ -28,44 +20,38 @@
           <instructions>
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>!${bundle.namespace}.internal.*,${bundle.namespace}.*;version="${project.version}"</Export-Package>
-            <Private-Package>${bundle.namespace}.internal.*</Private-Package>
           </instructions>
         </configuration>
       </plugin>
     </plugins>
   </build>
-
   <dependencies>
     <dependency>
       <groupId>org.opennms.features.geocoder</groupId>
       <artifactId>org.opennms.features.geocoder.api</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
-        <groupId>org.json</groupId>
-        <artifactId>json</artifactId>
-        <version>${jsonVersion}</version>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-web-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>cxf-dependencies</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
-
-  <repositories>
-    <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-    </repository>
-  </repositories>
-
 </project>

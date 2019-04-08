@@ -1,0 +1,122 @@
+<div class="panel">
+    <h3 class="panel-heading">
+       Geocoding Service Configuration
+    </h3>
+    <div class="panel-body">
+        <div class="col-md-6">
+            <form class="form">
+                <label>Status</label>
+
+                <toggle ng-model="active"
+                        ng-change="toggleState(active)"
+                        on="Enabled"
+                        off="Disabled"
+                        off-class="btn-danger"></toggle>
+
+                <div class="form-group" ng-if="active === true">
+                    <label for="geocoderService">Geocoder Service</label>
+                    <!-- TODO MVR define id -->
+                    <select id="geocoderService"
+                            class="form-control custom-select"
+                            ng-model="activeGeocoder"
+                            ng-required="true"
+                            ng-change="onGeocoderChange(activeGeocoder)">
+                        <option ng-repeat="geocoder in geocoders" value="{{geocoder.id}}">{{geocoder.name}}</option>
+                    </select>
+                </div>
+
+                <div ng-if="activeGeocoder === 'google'">
+                    <div>
+                        The Google Geocoding API is a service that provides geocoding and reverse geocoding of addresses.
+                        For more information refer to the <a href="https://developers.google.com/maps/documentation/geocoding/start" target="_blank">official documentation</a>.
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="googleClientIdAuthentication" ng-model="config.clientIdAuthentication">
+                            <label class="form-check-label" for="googleClientIdAuthentication">
+                                Use clientId and signature to authenticate
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-show="!config.clientIdAuthentication">
+                        <label for="googleApiKey">API Key</label>
+                        <input id="googleApiKey" class="form-control" type="text" ng-required="true" ng-model="config.apiKey"/>
+                    </div>
+                    <div class="form-group" ng-show="config.clientIdAuthentication">
+                        <label for="googleClientId">clientId</label>
+                        <input id="googleClientId" class="form-control" type="text" ng-required="true" ng-model="config.clientId"/>
+                    </div>
+                    <div class="form-group" ng-show="config.clientIdAuthentication">
+                        <label for="googleClientKey">signature</label>
+                        <input id="googleClientKey" class="form-control" type="text" ng-required="true" ng-model="config.signature"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="googleTimeout">timeout</label>
+                        <input id="googleTimeout" class="form-control" type="text" ng-model="config.timeout"/>
+                    </div>
+                    <toggle id="gogleSystemProxy" ng-model="config.useSystemProxy" on="Yes" off="No"></toggle>
+                </div>
+
+                <div ng-if="activeGeocoder === 'mapquest'">
+                    <div class="form-group">
+                        <label for="mapquestUrl">URL</label>
+                        <input id="mapquestUrl" class="form-control" type="text" ng-required="true" ng-model="config.url"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="mapquestApiKey">API Key</label>
+                        <input id="mapquestApiKey" class="form-control" type="text" ng-required="true" ng-model="config.apiKey"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="mapquestSystemProxy">Use System Proxy</label>
+                        <toggle id="mapquestSystemProxy" ng-model="config.useSystemProxy" on="Yes" off="No"></toggle>
+                    </div>
+                </div>
+
+                <div ng-if="activeGeocoder === 'nominatim'">
+                    <div class="form-group">
+                        <label for="nominatimUrl">URL</label>
+                        <input id="nominatimUrl" class="form-control" type="text" ng-required="true" ng-model="config.url"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="nominatimEmail">Email</label>
+                        <input id="nominatimEmail" class="form-control" type="email" ng-required="true" ng-model="config.email"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="nominatimUserAgent">User Agent</label>
+                        <input id="nominatimUserAgent" class="form-control" type="text" ng-required="true" ng-model="config.userAgent"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="nominatimReferer">Referer</label>
+                        <input id="nominatimReferer" class="form-control" type="text" ng-required="true" ng-model="config.referer"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="nominatimAcceptUsageTerms">Accept Usage Terms</label>
+                        <toggle id="nominatimAcceptUsageTerms" on="Yes" off="No" ng-required="true" ng-model="config.acceptUsageTerms"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="nominatimSystemProxy">Use System Proxy</label>
+                        <toggle id="nominatimSystemProxy" ng-model="config.useSystemProxy" on="Yes" off="No"></toggle>
+                    </div>
+                </div>
+                <button class="btn btn-primary" ng-click="save()">Save</button>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <form class="form">
+                <label>Address</label>
+                <input class="form-control" type="text" ng-model="addressQuery" />
+                <button class="btn btn-primary" type="button" ng-click="verify()">Verify</button>
+            </form>
+            <div ng-if="resolvedAddress">
+                <pre>{{resolvedAddress}}</pre>
+                <iframe frameborder="0" src="{{getIframeSrc()}}" width="500px" height="500px"/>
+            </div>
+
+
+        </div>
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>

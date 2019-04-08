@@ -9,6 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.geolocation</groupId>
     <artifactId>geolocation</artifactId>
+    <!-- TODO MVR this module can be removed -->
     <name>OpenNMS :: Features :: Geolocation :: Feature</name>
     <packaging>pom</packaging>
     <dependencies>

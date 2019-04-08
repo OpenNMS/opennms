@@ -10,17 +10,22 @@
     <cm:property-placeholder id="googleGeocoderConfig" persistent-id="org.opennms.features.geocoder.google" update-strategy="reload">
         <cm:default-properties>
             <cm:property name="clientId" value="" />
-            <cm:property name="clientKey" value="" />
-			<cm:property name="timeout" value="500"/>
+            <cm:property name="signature" value="" />
+			<cm:property name="apiKey" value=""/>
+			<cm:property name="useEnterpriseCredentials" value="false"/>
+			<cm:property name="useSystemProxy" value="false"/>
+			<cm:property name="timeout" value="500"/> <!-- in ms -->
         </cm:default-properties>
     </cm:property-placeholder>
 
 	<bean id="googleGeocoderService" class="org.opennms.features.geocoder.google.GoogleGeocoderService">
-		<argument value="${timeout}" />
+		<property name="timeout" value="${timeout}" />
 		<property name="clientId" value="${clientId}" />
-		<property name="clientKey" value="${clientKey}" />
+		<property name="signature" value="${signature}" />
+		<property name="apiKey" value="${apiKey}" />
+		<property name="useEnterpriseCredentials" value="${useEnterpriseCredentials}" />
+		<property name="useSystemProxy" value="${useSystemProxy}" />
 	</bean>
-
     <service interface="org.opennms.features.geocoder.GeocoderService" ref="googleGeocoderService" />
 
 </blueprint>

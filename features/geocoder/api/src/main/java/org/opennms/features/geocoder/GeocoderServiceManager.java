@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,37 +28,18 @@
 
 package org.opennms.features.geocoder;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
-// TODO MVR make the service return its configuration
-public interface GeocoderService {
+public interface GeocoderServiceManager {
+    // TODO MVR no exception ???
+    void setActiveGeocodingService(String geocoderId) throws IOException;
 
-    /**
-     * A unique identifier for this {@link GeocoderService}.
-     * @return The unique identifier for this {@link GeocoderService}.
-     */
-    String getId();
+    GeocoderService getActiveGeocoderService();
 
-    // TODO MVR add label?
-    // TODO MVR add description?
+    // TODO MVR no exception ???
+    void updateGeocoderConfiguration(String geocoderId, Map<String, Object> properties) throws IOException;
 
-    // TODO MVR remove Exception
-
-    /**
-     * Resolves the given address string to valid coordinates.
-     * Originally it returned only the {@link Coordinates} but that makes it hard to distinguish
-     * if there was no valid address or an exception occurred.
-     *
-     * @param address The address to resolve
-     * @return The result of the resolution
-     * @throws GeocoderException
-     */
-    GeocoderResult resolveAddress(final String address) throws GeocoderException;
-
-    /**
-     * Returns configuration properties of the {@link GeocoderService}.
-     *
-     * @return configuration properties.
-     */
-    Map<String, Object> getProperties();
+    List<GeocoderService> getGeocoderServices();
 }

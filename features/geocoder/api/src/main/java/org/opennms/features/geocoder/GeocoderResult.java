@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,37 +28,35 @@
 
 package org.opennms.features.geocoder;
 
-import java.util.Map;
+// TODO MVR add a result builder and make this a bit nicer
+public class GeocoderResult {
+    private Coordinates result;
+    private Throwable throwable;
 
-// TODO MVR make the service return its configuration
-public interface GeocoderService {
+    public GeocoderResult(Coordinates coordinates) {
+        this.result = coordinates;
+    }
 
-    /**
-     * A unique identifier for this {@link GeocoderService}.
-     * @return The unique identifier for this {@link GeocoderService}.
-     */
-    String getId();
+    public GeocoderResult(Throwable throwable) {
+        this.throwable = throwable;
+    }
 
-    // TODO MVR add label?
-    // TODO MVR add description?
+    public GeocoderResult() {
+    }
 
-    // TODO MVR remove Exception
+    public boolean hasError() {
+        return throwable != null;
+    }
 
-    /**
-     * Resolves the given address string to valid coordinates.
-     * Originally it returned only the {@link Coordinates} but that makes it hard to distinguish
-     * if there was no valid address or an exception occurred.
-     *
-     * @param address The address to resolve
-     * @return The result of the resolution
-     * @throws GeocoderException
-     */
-    GeocoderResult resolveAddress(final String address) throws GeocoderException;
+    public boolean isEmpty() {
+        return result == null;
+    }
 
-    /**
-     * Returns configuration properties of the {@link GeocoderService}.
-     *
-     * @return configuration properties.
-     */
-    Map<String, Object> getProperties();
+    public Throwable getThrowable() {
+        return throwable;
+    }
+
+    public Coordinates getCoordinates() {
+        return result;
+    }
 }
