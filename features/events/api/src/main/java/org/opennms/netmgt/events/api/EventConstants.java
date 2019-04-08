@@ -501,6 +501,9 @@ public abstract class EventConstants {
     public static final String PARAM_REPORT_TITLE = "reportTitle";
     public static final String PARAM_REPORT_GRAPH_COUNT = "graphCount";
 
+    public static final String GEOCODER_ADDRESS_RESOLUTION_SUCCESS_UEI = "uei.opennms.org/internal/geocoder/addressResolutionSuccessful";
+    public static final String GEOCODER_DISABLED_UEI = "uei.opennms.org/internal/geocoder/disabled";
+    public static final String GEOCODER_ADDRESS_RESOLUTION_FAILED_UEI = "uei.opennms.org/internal/geocoder/addressResolutionFailed";
 
     public static final String MONITORING_SYSTEM_ADDED_UEI = "uei.opennms.org/internal/monitoringSystemAdded";
     public static final String MONITORING_SYSTEM_LOCATION_CHANGED_UEI = "uei.opennms.org/internal/monitoringSystemLocationChanged";

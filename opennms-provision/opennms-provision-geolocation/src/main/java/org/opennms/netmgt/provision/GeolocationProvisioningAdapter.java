@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.provision;
 
+import java.util.Date;
 import java.util.Objects;
 
 import org.opennms.core.soa.ServiceRegistry;
@@ -35,8 +36,12 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.features.geolocation.api.Coordinates;
 import org.opennms.features.geolocation.api.GeolocationResolver;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -129,10 +134,41 @@ public class GeolocationProvisioningAdapter extends SimplerQueuedProvisioningAda
                 geolocation.setLongitude(coordinates.getLongitude());
                 geolocation.setLatitude(coordinates.getLatitude());
                 nodeDao.saveOrUpdate(node);
+                sendSuccessEvent(node);
             } else {
                 LOG.warn("Could not resolve address string '{}' for node with id {}", geolocation.asAddressString(), node.getId());
+                sendFailedEvent(node, new RuntimeException("TODO MVR. Fill me with content")); // TODO MVR ...
             }
         }
+    }
+
+    // TODO MVR this is not active at the moment
+    private void sendDisabledEvent(OnmsNode node) {
+        final Event event = new EventBuilder(EventConstants.GEOCODER_DISABLED_UEI, getClass().getSimpleName(), new Date())
+                .setNode(node)
+                .addParam("foreignSource", node.getForeignSource())
+                .addParam("foreignId", node.getForeignId())
+                .getEvent();
+        EventIpcManagerFactory.getIpcManager().sendNow(event);
+    }
+
+    private void sendSuccessEvent(OnmsNode node) {
+        final Event event = new EventBuilder(EventConstants.GEOCODER_ADDRESS_RESOLUTION_SUCCESS_UEI, getClass().getSimpleName(), new Date())
+                .setNode(node)
+                .addParam("foreignSource", node.getForeignSource())
+                .addParam("foreignId", node.getForeignId())
+                .getEvent();
+        EventIpcManagerFactory.getIpcManager().sendNow(event);
+    }
+
+    private void sendFailedEvent(OnmsNode node, Exception exception) {
+        final Event event = new EventBuilder(EventConstants.GEOCODER_ADDRESS_RESOLUTION_FAILED_UEI, getClass().getSimpleName(), new Date())
+                .setNode(node)
+                .addParam("foreignSource", node.getForeignSource())
+                .addParam("foreignId", node.getForeignId())
+                .addParam("reason", exception.getMessage())
+                .getEvent();
+        EventIpcManagerFactory.getIpcManager().sendNow(event);
     }
 
 }

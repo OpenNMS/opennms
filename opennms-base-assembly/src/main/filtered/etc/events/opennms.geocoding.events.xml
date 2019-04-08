@@ -1,0 +1,39 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <uei>uei.opennms.org/internal/geocoder/disabled</uei>
+      <event-label>OpenNMS-defined Geocoding Event: disabled</event-label>
+      <descr>TODO MVR add descr</descr>
+      <logmsg dest="logndisplay">
+            &lt;p>
+                The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]%
+                has address information which should be converted to coordintes, but the Geocoding Service is disabled.
+            &lt;/p>
+        </logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/geocoder/addressResolutionSuccessful</uei>
+      <event-label>OpenNMS-defined internal event: address resolution successful</event-label>
+      <descr>TODO MVR</descr>
+      <logmsg dest="logndisplay">
+          The address resolution for node with id %nodeid% (ForeignSource: %parm[foreignSource]%, ForeignId: %parm[foreignId]%) was successful.
+        </logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="2" clear-key="%uei%:%nodeid%" auto-clean="true"/>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/geocoder/addressResolutionFailed</uei>
+      <event-label>OpenNMS-defined internal event: address resolution failed</event-label>
+      <descr>
+         TODO MVR
+      </descr>
+      <logmsg dest="logndisplay">
+            &lt;p>
+                The address resolution for node with id %nodeid% (ForeignSource: %parm[foreignSource]%, ForeignId: %parm[foreignId]%) failed.
+                Reason: %parm[reason]%
+            &lt;/p>
+        </logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+   </event>
+</events>
