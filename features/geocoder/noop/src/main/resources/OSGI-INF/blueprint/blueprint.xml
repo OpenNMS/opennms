@@ -10,6 +10,6 @@
 
 
 	<!-- TODO MVR we may need to get rid of this -->
-	 <bean id="noopGeocoder" class="org.opennms.features.geocoder.nominatim.NoOpGeocoderService"/>
+	 <bean id="noopGeocoder" class="org.opennms.features.geocoder.noop.NoOpGeocoderService"/>
 	 <service interface="org.opennms.features.geocoder.GeocoderService"  ref="noopGeocoder" />
 </blueprint>
