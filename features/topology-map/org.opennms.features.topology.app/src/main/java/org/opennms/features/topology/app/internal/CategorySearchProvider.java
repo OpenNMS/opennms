@@ -39,7 +39,7 @@ import java.util.Set;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.TopologyService;
 import org.opennms.features.topology.api.support.HistoryAwareSearchProvider;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.hops.CriteriaUtils;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -142,7 +142,7 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Hi
     }
 
     private static CollapsibleCriteria getMatchingCriteria(GraphContainer graphContainer, String id) {
-        CollapsibleCriteria[] criteria = VertexHopGraphProvider.getCollapsibleCriteriaForContainer(graphContainer);
+        CollapsibleCriteria[] criteria = CriteriaUtils.getCollapsibleCriteriaForContainer(graphContainer);
         for (CollapsibleCriteria criterion : criteria) {
             if (criterion.getId().equals(id)) {
                 return criterion;

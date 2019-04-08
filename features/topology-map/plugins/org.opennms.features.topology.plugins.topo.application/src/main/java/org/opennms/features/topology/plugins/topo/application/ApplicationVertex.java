@@ -28,19 +28,13 @@
 
 package org.opennms.features.topology.plugins.topo.application;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.AbstractLevelAwareVertex;
 import org.opennms.features.topology.api.topo.LevelAware;
-import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsServiceType;
 
-public class ApplicationVertex extends AbstractVertex implements LevelAware {
-
-    private List<VertexRef> children = new ArrayList<>();
+public class ApplicationVertex extends AbstractLevelAwareVertex implements LevelAware {
 
     private OnmsServiceType serviceType;
 
@@ -66,13 +60,6 @@ public class ApplicationVertex extends AbstractVertex implements LevelAware {
     public ApplicationVertex(String id, String label) {
         super(ApplicationTopologyProvider.TOPOLOGY_NAMESPACE, id, label);
     }
-
-    public void addChildren(AbstractVertex vertex) {
-        if (!children.contains(vertex)) {
-            children.add(vertex);
-            vertex.setParent(this);
-        }
-    }
     
     public void setServiceType(OnmsServiceType serviceType) {
         this.serviceType = serviceType;
@@ -83,11 +70,7 @@ public class ApplicationVertex extends AbstractVertex implements LevelAware {
     }
 
     public boolean isLeaf() {
-        return children.isEmpty();
-    }
-
-    public List<VertexRef> getChildren() {
-        return children;
+        return getChildren().isEmpty();
     }
 
     public OnmsServiceType getServiceType() {

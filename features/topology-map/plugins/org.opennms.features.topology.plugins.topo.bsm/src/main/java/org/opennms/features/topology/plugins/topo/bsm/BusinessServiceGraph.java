@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,17 +34,17 @@ import java.util.Collection;
 import java.util.List;
 
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.bsm.AbstractBusinessServiceVertex.Type;
+import org.opennms.features.topology.api.topo.simple.SimpleGraph;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 
-public class BusinessServiceVertexProvider extends SimpleVertexProvider {
-    public BusinessServiceVertexProvider(String namespace) {
-        super(namespace);
+public class BusinessServiceGraph extends SimpleGraph {
+
+    public BusinessServiceGraph() {
+        super(BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class BusinessServiceVertexProvider extends SimpleVertexProvider {
         // In these cases we assume a Business Service and update the id
         // We need to do this, otherwise linking from outside the Topology UI may not work
         if (!isValidVertexId(id)) {
-            id = Type.BusinessService + ":" + id;
+            id = AbstractBusinessServiceVertex.Type.BusinessService + ":" + id;
         }
         return super.getVertex(namespace, id);
     }
@@ -104,7 +104,7 @@ public class BusinessServiceVertexProvider extends SimpleVertexProvider {
         if (Strings.isNullOrEmpty(id)) {
             return false;
         }
-        for (Type eachType : Type.values()) {
+        for (AbstractBusinessServiceVertex.Type eachType : AbstractBusinessServiceVertex.Type.values()) {
             if (id.startsWith(eachType.name())) {
                 return true;
             }

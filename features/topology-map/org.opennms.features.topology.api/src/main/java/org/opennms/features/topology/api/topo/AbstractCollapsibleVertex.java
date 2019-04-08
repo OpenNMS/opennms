@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,9 +28,23 @@
 
 package org.opennms.features.topology.api.topo;
 
+import java.util.HashSet;
 import java.util.Set;
 
-public interface GroupRef extends VertexRef {
+public abstract class AbstractCollapsibleVertex extends AbstractVertex implements CollapsibleVertex {
 
-    public Set<VertexRef> getChildren();
+    protected Set<VertexRef> m_children = new HashSet<>();
+
+    public AbstractCollapsibleVertex(String namespace, String id, String label) {
+        super(namespace, id, label);
+    }
+
+    @Override
+    public Set<VertexRef> getChildren() {
+        return m_children;
+    }
+
+    public void setChildren(Set<VertexRef> children) {
+        m_children = children;
+    }
 }

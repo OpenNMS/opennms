@@ -28,50 +28,9 @@
 
 package org.opennms.features.topology.api.topo;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
-import org.opennms.features.topology.api.NamespaceAware;
+public interface CollapsibleRef extends VertexRef {
 
-public interface VertexProvider extends NamespaceAware {
-
-	/**
-	 * @deprecated Use {@link #containsVertexId(VertexRef, Criteria...)} instead.
-	 */
-	@Deprecated
-	boolean containsVertexId(String id);
-
-	boolean containsVertexId(VertexRef id, Criteria... criteria);
-
-	Vertex getVertex(String namespace, String id);
-	
-	Vertex getVertex(VertexRef reference, Criteria... criteria);
-	
-	int getSemanticZoomLevel(VertexRef vertex);
-	
-	/**
-	 * Return an immutable list of vertices that match the criteria.
-	 */
-	List<Vertex> getVertices(Criteria... criteria);
-	
-	List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria);
-	
-	List<Vertex> getRootGroup();
-	
-	boolean hasChildren(VertexRef group);
-	
-	Vertex getParent(VertexRef vertex);
-	
-	boolean setParent(VertexRef child, VertexRef parent);
-	
-	List<Vertex> getChildren(VertexRef group, Criteria... criteria);
-	
-	void addVertexListener(VertexListener vertexListener);
-	
-	void removeVertexListener(VertexListener vertexListener);
-
-	void clearVertices();
-
-    int getVertexTotalCount();
-
+    Set<VertexRef> getChildren();
 }

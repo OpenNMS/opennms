@@ -26,63 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.api.topo.simple;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.api.topo.Defaults;
-import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-public class TestTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
+import com.google.common.collect.Sets;
 
-    public TestTopologyProvider() {
-        super("test");
-        
-        resetContainer();
-        
-        String vId1 = getNextVertexId();
-        TestVertex v1 = new TestVertex(vId1, 0, 0);
-        v1.setLabel("a leaf");
-        
-        addVertices(v1);
-        
-        String vId2 = getNextVertexId();
-        TestVertex v2 = new TestVertex(vId2, 0, 0);
-        v2.setLabel("another leaf");
-        addVertices(v2);
-        
-        Edge edge = connectVertices(v1, v2);
-        edge.setStyleName("default");
+public class SimpleGraphProvider extends AbstractTopologyProvider implements GraphProvider {
+
+	public SimpleGraphProvider(BackendGraph graph) {
+	    super(graph);
     }
 
     @Override
     public void refresh() {
-        clearEdges();
-        clearVertices();
-
-        List<TestVertex> vertices = new ArrayList<>();
-
-        String vId1 = getNextVertexId();
-        TestVertex v1 = new TestVertex(vId1, 0, 0);
-        v1.setLabel("a leaf vertex");
-
-        vertices.add(v1);
-
-        String vId2 = getNextVertexId();
-        TestVertex v2 = new TestVertex(vId2, 0, 0);
-        v2.setLabel("another leaf");
-        vertices.add(v2);
-
-        addVertices(vertices.toArray(new Vertex[0]));
-
-        connectVertices(v1, v2);
+        // We don't do anything
     }
 
     @Override
@@ -91,12 +57,12 @@ public class TestTopologyProvider extends AbstractTopologyProvider implements Gr
     }
 
     @Override
-    public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
-        return SelectionChangedListener.Selection.NONE;
+    public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType contentType) {
+        return getSelection(getNamespace(), selectedVertices, contentType);
     }
 
     @Override
     public boolean contributesTo(ContentType type) {
-        return false;
+        return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
     }
 }

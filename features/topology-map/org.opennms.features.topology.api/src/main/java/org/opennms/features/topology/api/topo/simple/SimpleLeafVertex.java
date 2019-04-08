@@ -26,7 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.topo;
+package org.opennms.features.topology.api.topo.simple;
+
+import org.opennms.features.topology.api.topo.AbstractVertex;
 
 public class SimpleLeafVertex extends AbstractVertex {
 

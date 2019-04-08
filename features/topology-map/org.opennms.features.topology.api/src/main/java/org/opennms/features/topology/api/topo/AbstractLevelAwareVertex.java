@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,32 +28,35 @@
 
 package org.opennms.features.topology.api.topo;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.features.topology.api.NamespaceAware;
+public abstract class AbstractLevelAwareVertex extends AbstractVertex implements LevelAware {
 
-public interface EdgeProvider extends NamespaceAware {
+    private VertexRef m_parent;
+    private List<VertexRef> m_children = new ArrayList<>();
 
-	Edge getEdge(String namespace, String id);
-	
-	Edge getEdge(EdgeRef reference);
-	
-	/**
-	 * Return an immutable list of edges that match the criteria.
-	 */
-	List<Edge> getEdges(Criteria... criteria);
-	
-	/**
-	 * Return an immutable list of all edges that match this set of references.
-	 */
-	List<Edge> getEdges(Collection<? extends EdgeRef> references);
-	
-	void addEdgeListener(EdgeListener listener);
-	
-	void removeEdgeListener(EdgeListener listener);
+    public AbstractLevelAwareVertex(String namespace, String id, String label) {
+        super(namespace, id, label);
+    }
 
-	void clearEdges();
+    public final VertexRef getParent() {
+        return m_parent;
+    }
 
-    int getEdgeTotalCount();
+    public final void setParent(VertexRef parent) {
+        if (this.equals(parent)) return;
+        m_parent = parent;
+    }
+
+    public void addChildren(AbstractLevelAwareVertex vertex) {
+        if (!m_children.contains(vertex)) {
+            m_children.add(vertex);
+            vertex.setParent(this);
+        }
+    }
+
+    public List<VertexRef> getChildren() {
+        return m_children;
+    }
 }

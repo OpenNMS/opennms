@@ -40,7 +40,7 @@ import org.opennms.netmgt.bsm.service.model.Node;
 import org.opennms.netmgt.bsm.test.BsmTestUtils;
 import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 
-public class BusinessServiceVertexProviderTest {
+public class BusinessServiceGraphTest {
 
     @Test
     public void testVertexRefId() {
@@ -80,28 +80,28 @@ public class BusinessServiceVertexProviderTest {
         ReductionKeyVertex rkVertex3 = new ReductionKeyVertex("key2", 0);
 
         // Add all the above vertices. Some of them even twice to ensure that the getRefId() methods work correctly
-        BusinessServiceVertexProvider vertexProvider = new BusinessServiceVertexProvider(BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE);
-        vertexProvider.add(bsVertex1, bsVertex1, bsVertex2, bsVertex2, bsVertex3, bsVertex3); // adding twice on purpose
-        vertexProvider.add(ipServiceVertex1, ipServiceVertex1, ipServiceVertex2, ipServiceVertex2); // adding twice on purpose
-        vertexProvider.add(rkVertex1, rkVertex1); // adding twice on purpose
-        vertexProvider.add(rkVertex2, rkVertex2); // adding twice on purpose
-        vertexProvider.add(rkVertex3, rkVertex3); // adding twice on purpose
+        BusinessServiceGraph businessServiceGraph = new BusinessServiceGraph();
+        businessServiceGraph.add(bsVertex1, bsVertex1, bsVertex2, bsVertex2, bsVertex3, bsVertex3); // adding twice on purpose
+        businessServiceGraph.add(ipServiceVertex1, ipServiceVertex1, ipServiceVertex2, ipServiceVertex2); // adding twice on purpose
+        businessServiceGraph.add(rkVertex1, rkVertex1); // adding twice on purpose
+        businessServiceGraph.add(rkVertex2, rkVertex2); // adding twice on purpose
+        businessServiceGraph.add(rkVertex3, rkVertex3); // adding twice on purpose
 
         // In total there should be 5 vertices
-        Assert.assertEquals(5, vertexProvider.getVertices().size());
-        Assert.assertSame(ipServiceVertex2, vertexProvider.getVertex(ipServiceVertex1));
-        Assert.assertSame(ipServiceVertex2, vertexProvider.getVertex(ipServiceVertex2));
+        Assert.assertEquals(5, businessServiceGraph.getVertices().size());
+        Assert.assertSame(ipServiceVertex2, businessServiceGraph.getVertex(ipServiceVertex1));
+        Assert.assertSame(ipServiceVertex2, businessServiceGraph.getVertex(ipServiceVertex2));
 
-        Assert.assertSame(bsVertex2, vertexProvider.getVertex(bsVertex1));
-        Assert.assertSame(bsVertex2, vertexProvider.getVertex(bsVertex2));
-        Assert.assertSame(bsVertex3, vertexProvider.getVertex(bsVertex3));
-        Assert.assertNotSame(bsVertex1, vertexProvider.getVertex(bsVertex3));
-        Assert.assertNotSame(bsVertex2, vertexProvider.getVertex(bsVertex3));
+        Assert.assertSame(bsVertex2, businessServiceGraph.getVertex(bsVertex1));
+        Assert.assertSame(bsVertex2, businessServiceGraph.getVertex(bsVertex2));
+        Assert.assertSame(bsVertex3, businessServiceGraph.getVertex(bsVertex3));
+        Assert.assertNotSame(bsVertex1, businessServiceGraph.getVertex(bsVertex3));
+        Assert.assertNotSame(bsVertex2, businessServiceGraph.getVertex(bsVertex3));
 
-        Assert.assertSame(rkVertex2, vertexProvider.getVertex(rkVertex1));
-        Assert.assertSame(rkVertex2, vertexProvider.getVertex(rkVertex2));
-        Assert.assertNotSame(rkVertex1, vertexProvider.getVertex(rkVertex3));
-        Assert.assertSame(rkVertex3, vertexProvider.getVertex(rkVertex3));
+        Assert.assertSame(rkVertex2, businessServiceGraph.getVertex(rkVertex1));
+        Assert.assertSame(rkVertex2, businessServiceGraph.getVertex(rkVertex2));
+        Assert.assertNotSame(rkVertex1, businessServiceGraph.getVertex(rkVertex3));
+        Assert.assertSame(rkVertex3, businessServiceGraph.getVertex(rkVertex3));
 
         EasyMock.verify(managerMock);
     }

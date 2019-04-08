@@ -37,10 +37,10 @@ import org.mockito.Mockito;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.Point;
-import org.opennms.features.topology.api.support.SimpleGraphBuilder;
+import org.opennms.features.topology.api.topo.simple.SimpleGraphBuilder;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
-import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.app.internal.jung.GridLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.LayoutManager;
 import org.opennms.netmgt.topology.persistence.api.LayoutEntity;
@@ -56,14 +56,14 @@ public class ManualLayoutAlgorithmTest {
         private final LayoutManager layoutManager;
         private final DefaultLayout layout;
 
-        private ManualTest(GraphProvider graphProvider) {
-            Objects.requireNonNull(graphProvider);
+        private ManualTest(BackendGraph backendGraph) {
+            Objects.requireNonNull(backendGraph);
 
             graph = Mockito.mock(Graph.class);
             layoutManager = Mockito.mock(LayoutManager.class);
             layout = new DefaultLayout();
             Mockito.when(graph.getLayout()).thenReturn(layout);
-            Mockito.when(graph.getDisplayVertices()).thenReturn(graphProvider.getVertices());
+            Mockito.when(graph.getDisplayVertices()).thenReturn(backendGraph.getVertices());
         }
     }
 
@@ -105,13 +105,13 @@ public class ManualLayoutAlgorithmTest {
      */
     @Test
     public void verifyLayoutCoordinatesHavePriority() {
-        final GraphProvider graphProvider = new SimpleGraphBuilder("dummy").vertex("vertex1").vX(1).vY(1).get();
-        final ManualTest test = new ManualTest(graphProvider);
+        final BackendGraph backendGraph = new SimpleGraphBuilder("dummy").vertex("vertex1").vX(1).vY(1).get();
+        final ManualTest test = new ManualTest(backendGraph);
 
         final LayoutEntity persistedLayout = new LayoutEntity();
         int x=5;
         int y=5;
-        for (VertexRef eachVertex : graphProvider.getVertices()) {
+        for (VertexRef eachVertex : backendGraph.getVertices()) {
             VertexPositionEntity vertexPositionEntity = new VertexPositionEntity();
             vertexPositionEntity.setVertexRef(LayoutManager.toVertexRefEntity(eachVertex));
             vertexPositionEntity.setPosition(new PointEntity(x++, y++));

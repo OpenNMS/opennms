@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,7 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.support;
+package org.opennms.features.topology.api.topo;
+
+import static org.opennms.features.topology.api.support.hops.CriteriaUtils.getCollapsedCriteria;
+import static org.opennms.features.topology.api.support.hops.CriteriaUtils.getCollapsibleCriteria;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,254 +44,18 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.browsers.ContentType;
-import org.opennms.features.topology.api.browsers.SelectionAware;
-import org.opennms.features.topology.api.browsers.SelectionChangedListener;
-import org.opennms.features.topology.api.topo.CollapsibleCriteria;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
-import org.opennms.features.topology.api.topo.Defaults;
-import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.EdgeListener;
-import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.RefComparator;
-import org.opennms.features.topology.api.topo.TopologyProviderInfo;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexListener;
-import org.opennms.features.topology.api.topo.VertexRef;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.features.topology.api.support.SemanticZoomLevelCriteria;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 
-import com.google.common.collect.Sets;
+public class CollapsibleGraph implements BackendGraph {
 
-/**
- * This class will be used to filter a topology so that the semantic zoom level is
- * interpreted as a hop distance away from a set of selected vertices. The vertex 
- * selection is specified using sets of {@link VertexHopCriteria} filters.
- * 
- * @author Seth
- */
-public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
-    @SuppressWarnings("unused")
-    private static final Logger LOG = LoggerFactory.getLogger(VertexHopGraphProvider.class);
+    private final Map<VertexRef,Integer> m_semanticZoomLevels = new LinkedHashMap<>();
+    private final BackendGraph m_delegate;
 
-    public static WrappedVertexHopCriteria getWrappedVertexHopCriteria(GraphContainer graphContainer) {
-        final Set<VertexHopCriteria> vertexHopCriterias = Criteria.getCriteriaForGraphContainer(graphContainer, VertexHopCriteria.class);
-        return new WrappedVertexHopCriteria(vertexHopCriterias);
+    public CollapsibleGraph(BackendGraph delegate) {
+        m_delegate = Objects.requireNonNull(delegate);
     }
 
-    public static CollapsibleCriteria[] getCollapsedCriteriaForContainer(GraphContainer graphContainer) {
-        return getCollapsedCriteria(graphContainer.getCriteria());
-    }
-
-    public static CollapsibleCriteria[] getCollapsedCriteria(Criteria[] criteria) {
-        return getCollapsibleCriteria(criteria, true);
-    }
-
-    public static CollapsibleCriteria[] getCollapsibleCriteriaForContainer(GraphContainer graphContainer) {
-        return getCollapsibleCriteria(graphContainer.getCriteria());
-    }
-
-    public static CollapsibleCriteria[] getCollapsibleCriteria(Criteria[] criteria) {
-        return getCollapsibleCriteria(criteria, false);
-    }
-
-    public static CollapsibleCriteria[] getCollapsibleCriteria(Criteria[] criteria, boolean onlyCollapsed) {
-        List<CollapsibleCriteria> retval = new ArrayList<CollapsibleCriteria>();
-        if (criteria != null) {
-            for (Criteria criterium : criteria) {
-                try {
-                    CollapsibleCriteria hopCriteria = (CollapsibleCriteria)criterium;
-                    if (onlyCollapsed) {
-                        if (hopCriteria.isCollapsed()) {
-                            retval.add(hopCriteria);
-                        }
-                    } else {
-                        retval.add(hopCriteria);
-                    }
-                } catch (ClassCastException e) {}
-            }
-        }
-        return retval.toArray(new CollapsibleCriteria[0]);
-    }
-
-    public abstract static class VertexHopCriteria extends Criteria {
-        private String m_label = "";
-        private String m_id = "";
-        
-        @Override
-        public String toString() {
-            return "Namespace:"+getNamespace()+", ID:"+getId()+", Label:"+getLabel();
-        }
-
-        //Adding explicit constructor because I found that this label must be set
-        //for the focus list to have meaningful information in the focus list.
-        public VertexHopCriteria(String label) {
-        	m_label = label;
-        }
-        
-        public VertexHopCriteria(String id, String label) {
-        	m_id = id;
-        	m_label = label;
-        }
-
-        @Override
-        public ElementType getType() {
-            return ElementType.VERTEX;
-        }
-
-        public abstract Set<VertexRef> getVertices();
-
-        public String getLabel() {
-            return m_label;
-        }
-
-        public void setLabel(String label) {
-            m_label = label;
-        }
-
-        public void setId(String id){
-            m_id = id;
-        }
-
-        public String getId(){
-            return m_id;
-        }
-
-        public boolean isEmpty() {
-            Set<VertexRef> vertices = getVertices();
-            if (vertices == null) {
-                return false;
-            }
-            return vertices.isEmpty();
-        }
-    }
-
-    /**
-     * Wrapper class to wrap a bunch of {@link VertexHopCriteria}.
-     * There may be multiple {@link VertexHopCriteria} objects available.
-     * However in the end it is easier to use this criteria object to wrap all available {@link VertexHopCriteria}
-     * instead of iterating over all all the time and determine all vertices.
-     */
-    public static class WrappedVertexHopCriteria extends VertexHopCriteria {
-
-        private final Set<VertexHopCriteria> criteriaList;
-
-        public WrappedVertexHopCriteria(Set<VertexHopCriteria> vertexHopCriterias) {
-            super("Wrapped Vertex Hop Criteria for all VertexHopCriteria in the currently selected GraphProvider");
-            criteriaList = Objects.requireNonNull(vertexHopCriterias);
-        }
-
-        public void addCriteria(VertexHopCriteria criteria) {
-            this.criteriaList.add(criteria);
-        }
-
-        @Override
-        public Set<VertexRef> getVertices() {
-            Set<VertexRef> vertices = criteriaList.stream()
-                    .flatMap(criteria -> criteria.getVertices().stream())
-                    .collect(Collectors.toSet());
-            return vertices;
-        }
-
-        @Override
-        public String getNamespace() {
-            return "$wrapped$";
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(criteriaList);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) {
-                return false;
-            }
-            if (obj == this) {
-                return true;
-            }
-            if (obj instanceof WrappedVertexHopCriteria) {
-                WrappedVertexHopCriteria other = (WrappedVertexHopCriteria) obj;
-                return Objects.equals(criteriaList, other.criteriaList);
-            }
-            return false;
-        }
-
-        public boolean contains(VertexRef vertexRef) {
-            return getVertices().contains(vertexRef);
-        }
-    }
-
-    /**
-     * Helper criteria class to reference to existing VertexRefs.
-     * This should be used anytime you want to add a vertex to the current focus (e.g. from the mouse context menu).
-     */
-    public static class DefaultVertexHopCriteria extends VertexHopCriteria {
-
-        private final VertexRef vertexRef;
-
-        public DefaultVertexHopCriteria(VertexRef vertexRef) {
-            super(vertexRef.getId(), vertexRef.getLabel());
-            this.vertexRef = vertexRef;
-        }
-
-        @Override
-        public Set<VertexRef> getVertices() {
-            return Sets.newHashSet(vertexRef);
-        }
-
-        @Override
-        public String getNamespace() {
-            return vertexRef.getNamespace();
-        }
-
-        @Override
-        public int hashCode() {
-            return vertexRef.hashCode();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) {
-                return false;
-            }
-            if (obj == this) {
-                return true;
-            }
-            if (obj instanceof DefaultVertexHopCriteria) {
-                return Objects.equals(vertexRef, ((DefaultVertexHopCriteria) obj).vertexRef);
-            }
-            return false;
-        }
-    }
-
-    private final GraphProvider m_delegate;
-    private final Map<VertexRef,Integer> m_semanticZoomLevels = new LinkedHashMap<VertexRef,Integer>();
-
-    public VertexHopGraphProvider(GraphProvider delegate) {
-        m_delegate = delegate;
-    }
-
-    @Override
-    public void refresh() {
-        m_delegate.refresh();
-    }
-
-    @Override
-    public String getNamespace() {
-        return m_delegate.getNamespace();
-    }
-
-    @Override
-    public boolean contributesTo(String namespace) {
-        return m_delegate.contributesTo(namespace);
-    }
-
-    @Deprecated
     @Override
     public boolean containsVertexId(String id) {
         return containsVertexId(new DefaultVertexRef(getNamespace(), id));
@@ -321,7 +88,17 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
         return m_delegate.getVertex(reference, criteria);
     }
 
-    @Override
+    public Collection<Vertex> getVertices(int semanticZoomLevel, Criteria... criteria) {
+        final List<Vertex> displayVertices = new ArrayList<>();
+        for (Vertex v : getVertices(criteria)) {
+            int vzl = getSemanticZoomLevel(v);
+            if (vzl <= semanticZoomLevel) {
+                displayVertices.add(v);
+            }
+        }
+        return displayVertices;
+    }
+
     public int getSemanticZoomLevel(VertexRef vertex) {
         Integer szl = m_semanticZoomLevels.get(vertex);
         return szl == null ? 0 : szl;
@@ -352,14 +129,6 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
 
     @Override
     public List<Vertex> getVertices(Criteria... criteria) {
-        // If we have a IgnoreHopCriteria, just return all existing vertices
-        for (Criteria criterium : criteria) {
-            try {
-                IgnoreHopCriteria ignoreHopCriteria = (IgnoreHopCriteria)criterium;
-                return m_delegate.getVertices();
-            } catch (ClassCastException e) {}
-        }
-
         // Otherwise consider vertices szl and focus nodes
         Set<VertexRef> focusNodes = getFocusNodes(criteria);
         int maxSemanticZoomLevel = getMaxSemanticZoomLevel(criteria);
@@ -375,29 +144,29 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
         }
 
 
-        Map<VertexRef, Set<VertexRef>> neighborMap = new HashMap<VertexRef, Set<VertexRef>>();
+        Map<VertexRef, Set<VertexRef>> neighborMap = new HashMap<>();
         List<Edge> edges = m_delegate.getEdges(criteria);
         for(Edge edge : edges) {
             VertexRef src = edge.getSource().getVertex();
             VertexRef tgt = edge.getTarget().getVertex();
             Set<VertexRef> srcNeighbors = neighborMap.get(src);
             if (srcNeighbors == null) {
-                srcNeighbors = new HashSet<VertexRef>();
+                srcNeighbors = new HashSet<>();
                 neighborMap.put(src, srcNeighbors);
             }
             srcNeighbors.add(tgt);
 
             Set<VertexRef> tgtNeighbors = neighborMap.get(tgt);
             if (tgtNeighbors == null) {
-                tgtNeighbors = new HashSet<VertexRef>();
+                tgtNeighbors = new HashSet<>();
                 neighborMap.put(tgt, tgtNeighbors);
             }
             tgtNeighbors.add(src);
         }
 
-        Set<Vertex> processed = new HashSet<Vertex>();
-        Set<VertexRef> neighbors = new HashSet<VertexRef>();
-        Set<VertexRef> workingSet = new HashSet<VertexRef>(focusNodes);
+        Set<Vertex> processed = new HashSet<>();
+        Set<VertexRef> neighbors = new HashSet<>();
+        Set<VertexRef> workingSet = new HashSet<>(focusNodes);
         // Put a limit on the SZL in case we infinite loop for some reason
         while (semanticZoomLevel <= maxSemanticZoomLevel && workingSet.size() > 0) {
             neighbors.clear();
@@ -432,6 +201,51 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
         return new ArrayList<Vertex>(processed);
     }
 
+    @Override
+    public List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria) {
+        return m_delegate.getVertices(references, criteria);
+    }
+
+    @Override
+    public void addVertexListener(VertexListener vertexListener) {
+        m_delegate.addVertexListener(vertexListener);
+    }
+
+    @Override
+    public void removeVertexListener(VertexListener vertexListener) {
+        m_delegate.removeVertexListener(vertexListener);
+    }
+
+    @Override
+    public void clearVertices() {
+        m_delegate.clearVertices();
+    }
+
+    @Override
+    public int getVertexTotalCount() {
+        return m_delegate.getVertexTotalCount();
+    }
+
+    @Override
+    public void addVertices(Vertex... vertices) {
+        m_delegate.addVertices(vertices);
+    }
+
+    @Override
+    public void removeVertex(VertexRef... vertexId) {
+        m_delegate.removeVertex(vertexId);
+    }
+
+    @Override
+    public Edge getEdge(String namespace, String id) {
+        return m_delegate.getEdge(namespace, id);
+    }
+
+    @Override
+    public Edge getEdge(EdgeRef reference) {
+        return m_delegate.getEdge(reference);
+    }
+
     public static Set<Vertex> collapseVertices(Set<Vertex> vertices, CollapsibleCriteria[] criteria) {
         final Set<Vertex> retval = new HashSet<>();
         final Set<Vertex> verticesToProcess = new HashSet<>(vertices);
@@ -457,7 +271,7 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
 
     public static Map<VertexRef,Set<Vertex>> getMapOfVerticesToCollapsedVertices(CollapsibleCriteria[] criteria) {
         // Make a map of all of the vertices to their new collapsed representations
-        Map<VertexRef,Set<Vertex>> vertexToCollapsedVertices = new TreeMap<VertexRef,Set<Vertex>>(new RefComparator());
+        Map<VertexRef,Set<Vertex>> vertexToCollapsedVertices = new TreeMap<>(new RefComparator());
         for (CollapsibleCriteria criterium : criteria) {
             Set<VertexRef> criteriaVertices = criterium.getVertices();
             if (criteriaVertices.size() > 0) {
@@ -465,7 +279,7 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
                 for (VertexRef criteriaVertex : criteriaVertices) {
                     Set<Vertex> collapsedVertices = vertexToCollapsedVertices.get(criteriaVertex);
                     if (collapsedVertices == null) {
-                        collapsedVertices = new HashSet<Vertex>();
+                        collapsedVertices = new HashSet<>();
                         vertexToCollapsedVertices.put(criteriaVertex, collapsedVertices);
                     }
                     collapsedVertices.add(collapsedVertex);
@@ -487,7 +301,7 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
         Map<VertexRef,Set<Vertex>> vertexToCollapsedVertices = getMapOfVerticesToCollapsedVertices(criteria);
 
         if (vertexToCollapsedVertices.size() > 0) {
-            Set<Edge> retval = new HashSet<Edge>();
+            Set<Edge> retval = new HashSet<>();
             for (Edge edge : edges) {
                 // Add the original edge to retval unless we replace it with an edge that points to a
                 // collapsed vertex
@@ -505,7 +319,7 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
                     }
                     // Since we just added a replacement edge, don't add the original
                     addOriginalEdge = false;
-                } 
+                }
 
                 Set<Vertex> collapsedTargets = vertexToCollapsedVertices.get(edge.getTarget().getVertex());
                 if (collapsedTargets != null) {
@@ -550,40 +364,10 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
         }
     }
 
-    @Override
-    public List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria) {
-        return m_delegate.getVertices(references, criteria);
-    }
-
-    /**
-     * TODO: Is this correct?
-     */
-    @Override
-    public List<Vertex> getRootGroup() {
-        return getVertices();
-    }
-
-    @Override
-    public boolean hasChildren(VertexRef group) {	
-        return false;
-    }
-
-    @Override
-    public Vertex getParent(VertexRef vertex) {
-        // throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
-        return null;
-    }
-
-    @Override
-    public boolean setParent(VertexRef child, VertexRef parent) {
-        // throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
-        return false;
-    }
-
-    @Override
-    public List<Vertex> getChildren(VertexRef group, Criteria... criteria) {
+    // Returns the content of the collapsible
+    public List<Vertex> getVertices(CollapsibleRef collapsibleRef, Criteria... criteria) {
         for (CollapsibleCriteria criterium : getCollapsedCriteria(criteria)) {
-            if (new RefComparator().compare(criterium.getCollapsedRepresentation(), group) == 0) {
+            if (new RefComparator().compare(criterium.getCollapsedRepresentation(), collapsibleRef) == 0) {
                 return getVertices(criterium.getVertices());
             }
         }
@@ -591,43 +375,8 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
     }
 
     @Override
-    public void addVertexListener(VertexListener vertexListener) {
-        m_delegate.addVertexListener(vertexListener);
-    }
-
-    @Override
-    public void removeVertexListener(VertexListener vertexListener) {
-        m_delegate.removeVertexListener(vertexListener);
-    }
-
-    @Override
-    public void clearVertices() {
-        m_delegate.clearVertices();
-    }
-
-    @Override
-    public int getVertexTotalCount() {
-        return m_delegate.getVertexTotalCount();
-    }
-
-    @Override
-    public int getEdgeTotalCount() {
-        return m_delegate.getEdgeTotalCount();
-    }
-
-    @Override
-    public Edge getEdge(String namespace, String id) {
-        return m_delegate.getEdge(namespace, id);
-    }
-
-    @Override
-    public Edge getEdge(EdgeRef reference) {
-        return m_delegate.getEdge(reference);
-    }
-
-    @Override
     public List<Edge> getEdges(Criteria... criteria) {
-        Set<Edge> retval = new HashSet<Edge>(m_delegate.getEdges(criteria));
+        Set<Edge> retval = new HashSet<>(m_delegate.getEdges(criteria));
         retval = collapseEdges(retval, getCollapsedCriteria(criteria));
         return new ArrayList<>(retval);
     }
@@ -653,28 +402,8 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
     }
 
     @Override
-    public void resetContainer() {
-        m_delegate.resetContainer();
-    }
-
-    @Override
-    public void addVertices(Vertex... vertices) {
-        m_delegate.addVertices(vertices);
-    }
-
-    @Override
-    public void removeVertex(VertexRef... vertexId) {
-        m_delegate.removeVertex(vertexId);
-    }
-
-    @Override
-    public Vertex addVertex(int x, int y) {
-        return m_delegate.addVertex(x, y);
-    }
-
-    @Override
-    public Vertex addGroup(String label, String iconKey) {
-        throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
+    public int getEdgeTotalCount() {
+        return m_delegate.getEdgeTotalCount();
     }
 
     @Override
@@ -682,9 +411,6 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
         return m_delegate.getEdgeIdsForVertex(vertex);
     }
 
-    /**
-     * TODO This will miss edges provided by auxiliary edge providers
-     */
     @Override
     public Map<VertexRef, Set<EdgeRef>> getEdgeIdsForVertices(VertexRef... vertices) {
         return m_delegate.getEdgeIdsForVertices(vertices);
@@ -701,26 +427,22 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
     }
 
     @Override
-    public Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId) {
-        return m_delegate.connectVertices(sourceVertextId, targetVertextId);
+    public Edge connectVertices(String edgeId, VertexRef sourceVertextId, VertexRef targetVertextId) {
+        return m_delegate.connectVertices(edgeId, sourceVertextId, targetVertextId);
     }
 
     @Override
-    public Defaults getDefaults() {
-        return m_delegate.getDefaults();
+    public void resetContainer() {
+        m_delegate.resetContainer();
     }
 
     @Override
-    public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
-        return m_delegate.getSelection(selectedVertices, type);
+    public String getNamespace() {
+        return m_delegate.getNamespace();
     }
 
     @Override
-    public boolean contributesTo(ContentType type) {
-        return m_delegate.contributesTo(type);
-    }
-
-    public TopologyProviderInfo getTopologyProviderInfo() {
-        return m_delegate.getTopologyProviderInfo();
+    public boolean contributesTo(String namespace) {
+        return m_delegate.contributesTo(namespace);
     }
 }

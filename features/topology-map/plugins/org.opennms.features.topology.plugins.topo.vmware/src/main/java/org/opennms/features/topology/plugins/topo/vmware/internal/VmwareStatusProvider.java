@@ -42,8 +42,8 @@ import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultStatus;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
-import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 
@@ -58,7 +58,7 @@ public class VmwareStatusProvider implements StatusProvider {
     }
 
     @Override
-    public Map<VertexRef, Status> getStatusForVertices(VertexProvider vertexProvider, Collection<VertexRef> vertices, Criteria[] criteria) {
+    public Map<VertexRef, Status> getStatusForVertices(BackendGraph graph, Collection<VertexRef> vertices, Criteria[] criteria) {
         final List<AbstractVertex> vmwareVertices = vertices.stream()
                 .filter(v -> v.getNamespace().equals(getNamespace()))
                 .map(v -> (AbstractVertex) v)

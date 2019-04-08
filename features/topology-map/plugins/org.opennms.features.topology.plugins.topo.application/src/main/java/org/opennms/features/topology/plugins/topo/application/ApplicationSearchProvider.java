@@ -36,7 +36,7 @@ import java.util.Set;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.SearchProvider;
@@ -112,7 +112,7 @@ public class ApplicationSearchProvider extends AbstractSearchProvider implements
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         LOG.debug("ApplicationServiceSearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
 
-        VertexHopGraphProvider.DefaultVertexHopCriteria criterion = new VertexHopGraphProvider.DefaultVertexHopCriteria(new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel()));
+        DefaultVertexHopCriteria criterion = new DefaultVertexHopCriteria(new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel()));
         container.addCriteria(criterion);
 
         LOG.debug("ApplicationServiceSearchProvider->addVertexHop: adding hop criteria {}.", criterion);
@@ -123,7 +123,7 @@ public class ApplicationSearchProvider extends AbstractSearchProvider implements
     public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         LOG.debug("ApplicationServiceSearchProvider->removeVertexHopCriteria: called with search result: '{}'", searchResult);
 
-        VertexHopGraphProvider.DefaultVertexHopCriteria criterion = new VertexHopGraphProvider.DefaultVertexHopCriteria(new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel()));
+        DefaultVertexHopCriteria criterion = new DefaultVertexHopCriteria(new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel()));
         container.removeCriteria(criterion);
 
         LOG.debug("ApplicationServiceSearchProvider->removeVertexHopCriteria: current criteria {}.", Arrays.toString(container.getCriteria()));

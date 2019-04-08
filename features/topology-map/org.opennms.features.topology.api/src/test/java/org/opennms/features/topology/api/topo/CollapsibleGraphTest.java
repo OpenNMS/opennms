@@ -26,11 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.support;
+package org.opennms.features.topology.api.topo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -41,31 +40,18 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.DefaultVertexHopCriteria;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.CollapsibleCriteria;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
-import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.simple.SimpleGraphBuilder;
 
-public class VertexHopGraphProviderTest {
-
-	private VertexHopGraphProvider m_provider;
+public class CollapsibleGraphTest {
 
 	private static final String TEST_ID = "TEST";
 
 	private static class TestCollapsibleCriteria extends VertexHopCriteria implements CollapsibleCriteria {
-		
+
 		public TestCollapsibleCriteria() {
 			super("TEST VERTEX");
-		}
-		
-		public TestCollapsibleCriteria(String label) {
-			super(label);
 		}
 
 		@Override
@@ -107,19 +93,20 @@ public class VertexHopGraphProviderTest {
 		}
 	}
 
+	private CollapsibleGraph collapsibleGraph;
+
 	@Before
 	public void setUp() {
-
 		MockLogAppender.setupLogging();
 
-		GraphProvider baseProvider = new SimpleGraphBuilder("nodes")
+		final BackendGraph baseGraph = new SimpleGraphBuilder("nodes")
 			.vertex("g0").vLabel("group0").vIconKey("group").vTooltip("root group").vStyleName("vertex")
-			.vertex("g1").parent("g0").vLabel("group1").vIconKey("group").vTooltip("group 1").vStyleName("vertex")
-			.vertex("v1").parent("g1").vLabel("vertex1").vIconKey("server").vTooltip("tooltip").vStyleName("vertex")
-			.vertex("v2").parent("g1").vLabel("vertex2").vIconKey("server").vTooltip("tooltip").vStyleName("vertex")
-			.vertex("g2").parent("g0").vLabel("group2").vIconKey("group").vTooltip("group 2").vStyleName("vertex")
-			.vertex("v3").parent("g2").vLabel("vertex3").vIconKey("server").vTooltip("tooltip").vStyleName("vertex")
-			.vertex("v4").parent("g2").vLabel("vertex4").vIconKey("server").vTooltip("tooltip").vStyleName("vertex")
+			.vertex("g1").vLabel("group1").vIconKey("group").vTooltip("group 1").vStyleName("vertex")
+			.vertex("v1").vLabel("vertex1").vIconKey("server").vTooltip("tooltip").vStyleName("vertex")
+			.vertex("v2").vLabel("vertex2").vIconKey("server").vTooltip("tooltip").vStyleName("vertex")
+			.vertex("g2").vLabel("group2").vIconKey("group").vTooltip("group 2").vStyleName("vertex")
+			.vertex("v3").vLabel("vertex3").vIconKey("server").vTooltip("tooltip").vStyleName("vertex")
+			.vertex("v4").vLabel("vertex4").vIconKey("server").vTooltip("tooltip").vStyleName("vertex")
 			.edge("e1", "g0", "g1").eLabel("edge1").eStyleName("edge")
 			.edge("e2", "g0", "g2").eLabel("edge2").eStyleName("edge")
 			.edge("e3", "g1", "v1").eLabel("edge3").eStyleName("edge")
@@ -128,63 +115,52 @@ public class VertexHopGraphProviderTest {
 			.edge("e6", "g2", "v4").eLabel("edge6").eStyleName("edge")
 			.get();
 
-		m_provider = new VertexHopGraphProvider(baseProvider);
+		collapsibleGraph = new CollapsibleGraph(baseGraph);
 	}
-	
+
 	@Test
 	public void testCollapseEdges() {
 		CollapsibleCriteria collapseMe = new CollapsibleCriteria() {
-			
+
 			@Override
 			public void setCollapsed(boolean collapsed) {}
-			
+
 			@Override
 			public boolean isCollapsed() {
 				return true;
 			}
-			
+
 			@Override
 			public Set<VertexRef> getVertices() {
 				Set<VertexRef> retval = new HashSet<>();
 				retval.add(new DefaultVertexRef("nodes", "g2"));
 				return retval;
 			}
-			
+
 			@Override
 			public String getNamespace() {
 				return "nodes";
 			}
-			
+
 			@Override
 			public String getLabel() {
 				return "Test Criteria";
 			}
-			
+
 			@Override
 			public String getId() {
 				return "Test Criteria";
 			}
-			
+
 			@Override
 			public Vertex getCollapsedRepresentation() {
 				return new AbstractVertex("category", "c");
 			}
 		};
 
-		Set<Edge> edges = VertexHopGraphProvider.collapseEdges(new HashSet<Edge>(m_provider.getEdges()), new CollapsibleCriteria[] { collapseMe });
+		final Set<Edge> edges = CollapsibleGraph.collapseEdges(new HashSet<>(collapsibleGraph.getEdges()), new CollapsibleCriteria[] { collapseMe });
 		for (Edge edge : edges) {
 			assertEquals("nodes", edge.getNamespace());
-
-			/*
-			Here's the original list of edges
-
-			.edge("e1", "g0", "g1").eLabel("edge1").eStyleName("edge")
-			.edge("e2", "g0", "g2").eLabel("edge2").eStyleName("edge")
-			.edge("e3", "g1", "v1").eLabel("edge3").eStyleName("edge")
-			.edge("e4", "g1", "v2").eLabel("edge4").eStyleName("edge")
-			.edge("e5", "g2", "v3").eLabel("edge5").eStyleName("edge")
-			.edge("e6", "g2", "v4").eLabel("edge6").eStyleName("edge")
-			*/
 			if (edge.getId().equals("e1")) {
 				assertEquals("nodes", edge.getSource().getVertex().getNamespace());
 				assertEquals("g0", edge.getSource().getVertex().getId());
@@ -224,51 +200,31 @@ public class VertexHopGraphProviderTest {
 	@Test
 	public void testGraphProvider() {
 		DefaultVertexHopCriteria criteria = new DefaultVertexHopCriteria(new DefaultVertexRef("nodes", "g0"));
-		m_provider.getVertices(criteria);
+		collapsibleGraph.getVertices(criteria); // calculate szl
 
-		assertEquals(0, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "g0")));
-		assertEquals(1, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "g1")));
-		assertEquals(1, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "g2")));
-		assertEquals(2, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v1")));
-		assertEquals(2, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v2")));
-		assertEquals(2, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v3")));
-		assertEquals(2, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v4")));
-
-		// Make sure that the hop provider isn't showing nodes with parent/child relationships like the
-		// older grouping providers did
-		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "g0")));
-		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "g1")));
-		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "g2")));
-		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "v1")));
-		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "v2")));
-		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "v3")));
-		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "v4")));
+		assertEquals(0, collapsibleGraph.getSemanticZoomLevel(new DefaultVertexRef("nodes", "g0")));
+		assertEquals(1, collapsibleGraph.getSemanticZoomLevel(new DefaultVertexRef("nodes", "g1")));
+		assertEquals(1, collapsibleGraph.getSemanticZoomLevel(new DefaultVertexRef("nodes", "g2")));
+		assertEquals(2, collapsibleGraph.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v1")));
+		assertEquals(2, collapsibleGraph.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v2")));
+		assertEquals(2, collapsibleGraph.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v3")));
+		assertEquals(2, collapsibleGraph.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v4")));
 
 		criteria = new DefaultVertexHopCriteria(new DefaultVertexRef("nodes", "v1"));
-		m_provider.getVertices(criteria);
+		collapsibleGraph.getVertices(criteria); // re-calculate szl
 
-		assertEquals(2, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "g0")));
-		assertEquals(1, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "g1")));
-		assertEquals(3, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "g2")));
-		assertEquals(0, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v1")));
-		assertEquals(2, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v2")));
-		assertEquals(4, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v3")));
-		assertEquals(4, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v4")));
-
-		// Make sure that the hop provider isn't showing nodes with parent/child relationships like the
-		// older grouping providers did
-		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "g0")));
-		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "g1")));
-		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "g2")));
-		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "v1")));
-		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "v2")));
-		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "v3")));
-		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "v4")));
+		assertEquals(2, collapsibleGraph.getSemanticZoomLevel(new DefaultVertexRef("nodes", "g0")));
+		assertEquals(1, collapsibleGraph.getSemanticZoomLevel(new DefaultVertexRef("nodes", "g1")));
+		assertEquals(3, collapsibleGraph.getSemanticZoomLevel(new DefaultVertexRef("nodes", "g2")));
+		assertEquals(0, collapsibleGraph.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v1")));
+		assertEquals(2, collapsibleGraph.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v2")));
+		assertEquals(4, collapsibleGraph.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v3")));
+		assertEquals(4, collapsibleGraph.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v4")));
 	}
 
 	@Test
 	public void testCollapseVertices() {
-		List<Vertex> vertices = m_provider.getVertices(new Criteria[] { new TestCollapsibleCriteria() });
+		final List<Vertex> vertices = collapsibleGraph.getVertices(new Criteria[] { new TestCollapsibleCriteria() });
 
 		// Test vertex that replaces the collapsed vertices
 		assertTrue(vertices.contains(new DefaultVertexRef("nodes", TEST_ID)));
@@ -277,7 +233,7 @@ public class VertexHopGraphProviderTest {
 		assertFalse(vertices.contains(new DefaultVertexRef("nodes", "g0")));
 		assertFalse(vertices.contains(new DefaultVertexRef("nodes", "g1")));
 		assertFalse(vertices.contains(new DefaultVertexRef("nodes", "g2")));
-		
+
 		// These vertices remain uncollapsed
 		assertTrue(vertices.contains(new DefaultVertexRef("nodes", "v1")));
 		assertTrue(vertices.contains(new DefaultVertexRef("nodes", "v2")));

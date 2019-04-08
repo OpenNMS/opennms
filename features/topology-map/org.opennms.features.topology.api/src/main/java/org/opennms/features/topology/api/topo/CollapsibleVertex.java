@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,35 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.support;
+package org.opennms.features.topology.api.topo;
 
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.GraphProvider;
+public interface CollapsibleVertex extends Vertex, CollapsibleRef {
 
-/**
- * Allows to get ALL vertices from the {@link GraphProvider}, even if it is a {@link VertexHopGraphProvider}.
- * Please use with care, as it overwrites the default behaviour (consider focus and szl)
- *
- * @author mvrueden
- */
-public class IgnoreHopCriteria extends Criteria {
-    @Override
-    public ElementType getType() {
-        return ElementType.GRAPH;
-    }
-
-    @Override
-    public String getNamespace() {
-        return "$$internal$$";
-    }
-
-    @Override
-    public int hashCode() {
-        return -17;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof IgnoreHopCriteria;
-    }
 }

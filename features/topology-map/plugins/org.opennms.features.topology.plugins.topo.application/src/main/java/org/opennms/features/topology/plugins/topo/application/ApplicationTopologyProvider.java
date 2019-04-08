@@ -29,25 +29,22 @@
 package org.opennms.features.topology.plugins.topo.application;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
-import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -56,31 +53,28 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
 
     public static final String TOPOLOGY_NAMESPACE = "application";
 
-    private static final Logger LOG = LoggerFactory.getLogger(ApplicationTopologyProvider.class);
-
     private ApplicationDao applicationDao;
 
     public ApplicationTopologyProvider(ApplicationDao applicationDao) {
-        super(new SimpleVertexProvider(TOPOLOGY_NAMESPACE), new SimpleEdgeProvider(TOPOLOGY_NAMESPACE));
-        this.applicationDao = applicationDao;
-        LOG.debug("Creating a new {} with namespace {}", getClass().getSimpleName(), TOPOLOGY_NAMESPACE);
+        super(TOPOLOGY_NAMESPACE);
+        this.applicationDao = Objects.requireNonNull(applicationDao);
     }
 
     private void load() {
-        resetContainer();
+        graph.resetContainer();
         for (OnmsApplication application : applicationDao.findAll()) {
-            ApplicationVertex applicationVertex = new ApplicationVertex(application);
-            addVertices(applicationVertex);
+            final ApplicationVertex applicationVertex = new ApplicationVertex(application);
+            graph.addVertices(applicationVertex);
 
             for (OnmsMonitoredService eachMonitoredService : application.getMonitoredServices()) {
                 final ApplicationVertex serviceVertex = new ApplicationVertex(eachMonitoredService);
                 applicationVertex.addChildren(serviceVertex);
-                addVertices(serviceVertex);
+                graph.addVertices(serviceVertex);
 
                 // connect with application
-                String id = String.format("connection:%s:%s", applicationVertex.getId(), serviceVertex.getId());
-                Edge edge = new AbstractEdge(getNamespace(), id, applicationVertex, serviceVertex);
-                addEdges(edge);
+                final String id = String.format("connection:%s:%s", applicationVertex.getId(), serviceVertex.getId());
+                final Edge edge = new AbstractEdge(getNamespace(), id, applicationVertex, serviceVertex);
+                graph.addEdges(edge);
             }
         }
     }
@@ -98,15 +92,10 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
                     // Only show the first application by default
                     List<OnmsApplication> applications = applicationDao.findAll();
                     if (!applications.isEmpty()) {
-                        return Lists.newArrayList(new VertexHopGraphProvider.DefaultVertexHopCriteria(new ApplicationVertex(applications.get(0))));
+                        return Lists.newArrayList(new DefaultVertexHopCriteria(new ApplicationVertex(applications.get(0))));
                     }
                     return null;
                 });
-    }
-
-    @Override
-    public void resetContainer() {
-        super.resetContainer();
     }
 
     @Override

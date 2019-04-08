@@ -28,7 +28,7 @@
 
 package org.opennms.features.topology.app.internal;
 
-import static org.opennms.features.topology.api.support.VertexHopGraphProvider.getWrappedVertexHopCriteria;
+import static org.opennms.features.topology.api.support.hops.CriteriaUtils.getWrappedVertexHopCriteria;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -67,8 +67,9 @@ import org.opennms.features.topology.api.browsers.SelectionAwareTable;
 import org.opennms.features.topology.api.info.InfoPanelItemProvider;
 import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
 import org.opennms.features.topology.api.info.item.InfoPanelItem;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
+import org.opennms.features.topology.api.support.hops.CriteriaUtils;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo;
@@ -114,7 +115,6 @@ import com.google.common.collect.Lists;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
-import com.vaadin.v7.data.Property;
 import com.vaadin.event.UIEvents;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
@@ -129,16 +129,17 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.UI;
-import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
 @Theme("topo_default")
@@ -319,10 +320,10 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                     }
                 }
                 // We have to update the vertices in focus (in our case only nodes) only if the focus has changed
-                VertexHopGraphProvider.VertexHopCriteria criteria = VertexHopGraphProvider.getWrappedVertexHopCriteria(m_graphContainer);
+                VertexHopCriteria criteria = CriteriaUtils.getWrappedVertexHopCriteria(m_graphContainer);
                 if (!criteria.getVertices().equals(refs)) {
                     m_graphContainer.clearCriteria();
-                    refs.forEach(vertexRef -> m_graphContainer.addCriteria(new VertexHopGraphProvider.DefaultVertexHopCriteria(vertexRef)));
+                    refs.forEach(vertexRef -> m_graphContainer.addCriteria(new DefaultVertexHopCriteria(vertexRef)));
                     m_graphContainer.setSemanticZoomLevel(1);
                 }
                 return true;

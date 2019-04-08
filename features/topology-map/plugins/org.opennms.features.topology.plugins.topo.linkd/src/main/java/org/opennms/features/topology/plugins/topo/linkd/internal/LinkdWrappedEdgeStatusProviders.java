@@ -35,10 +35,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.Status;
+import org.opennms.features.topology.api.topo.BackendGraph;
 
 public class LinkdWrappedEdgeStatusProviders implements EdgeStatusProvider {
 
@@ -51,10 +51,10 @@ public class LinkdWrappedEdgeStatusProviders implements EdgeStatusProvider {
     }
 
     @Override
-    public Map<EdgeRef, Status> getStatusForEdges(EdgeProvider edgeProvider, Collection<EdgeRef> edges, Criteria[] criteria) {
+    public Map<EdgeRef, Status> getStatusForEdges(BackendGraph graph, Collection<EdgeRef> edges, Criteria[] criteria) {
         final Map<EdgeRef,Status> edgeRefStatusMap = new HashMap<>();
         for (EdgeStatusProvider statusProvider : m_providers) {
-            edgeRefStatusMap.putAll(statusProvider.getStatusForEdges(edgeProvider, edges, criteria));
+            edgeRefStatusMap.putAll(statusProvider.getStatusForEdges(graph, edges, criteria));
         }
         return edgeRefStatusMap;
     }
