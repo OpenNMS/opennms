@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.graph.api.persistence;
 
-import java.util.function.Function;
-
 import org.opennms.netmgt.graph.api.GraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
@@ -41,8 +39,6 @@ public interface GraphRepository {
     void save(GraphContainer graphContainer);
 
     void save(GraphContainerInfo containerInfo);
-
-    <C extends GraphContainer> C findContainerById(String containerId, Function<GenericGraphContainer, C> transformer);
 
     GenericGraphContainer findContainerById(String containerId);
 

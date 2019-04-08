@@ -34,10 +34,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.graph.api.Edge;
-import org.opennms.netmgt.graph.api.Graph;
 import org.opennms.netmgt.graph.api.GraphContainer;
-import org.opennms.netmgt.graph.api.Vertex;
+import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
@@ -58,10 +57,10 @@ public class DefaultGraphService implements GraphService {
     }
 
     @Override
-    public GraphContainer getGraphContainer(String containerId) {
+    public GenericGraphContainer getGraphContainer(String containerId) {
         final Optional<GraphContainerProvider> any = graphContainerProviders.stream().filter(cp -> cp.getContainerInfo().getId().equalsIgnoreCase(containerId)).findAny();
         if (any.isPresent()) {
-            return any.get().loadGraphContainer(); // TODO MVR implement lazy loading of graphs
+            return any.get().loadGraphContainer().asGenericGraphContainer(); // TODO MVR implement lazy loading of graphs
         }
         return null;
     }
@@ -77,16 +76,16 @@ public class DefaultGraphService implements GraphService {
     }
 
     @Override
-    public <V extends Vertex, E extends Edge> Graph<V, E> getGraph(String containerId, String graphNamespace) {
+    public GenericGraph getGraph(String containerId, String graphNamespace) {
         final GraphContainer graphContainer = getGraphContainer(containerId);
         if (graphContainer != null) {
-            return graphContainer.getGraph(graphNamespace);
+            return graphContainer.getGraph(graphNamespace).asGenericGraph();
         }
         return null;
     }
 
     @Override
-    public <V extends Vertex, E extends Edge> Graph<V, E> getGraph(String namespace) {
+    public GenericGraph getGraph(String namespace) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 

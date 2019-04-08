@@ -30,10 +30,8 @@ package org.opennms.netmgt.graph.api.service;
 
 import java.util.List;
 
-import org.opennms.netmgt.graph.api.Edge;
-import org.opennms.netmgt.graph.api.Graph;
-import org.opennms.netmgt.graph.api.GraphContainer;
-import org.opennms.netmgt.graph.api.Vertex;
+import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
@@ -43,12 +41,12 @@ public interface GraphService {
 
     GraphContainerInfo getGraphContainerInfo(String containerId);
 
-    GraphContainer getGraphContainer(String containerId);
-
     GraphInfo getGraphInfo(String graphNamespace);
 
-    <V extends Vertex, E extends Edge> Graph<V, E> getGraph(String containerId, String graphNamespace);
+    GenericGraphContainer getGraphContainer(String containerId);
 
-    <V extends Vertex, E extends Edge> Graph<V, E> getGraph(String namespace);
+    GenericGraph getGraph(String containerId, String graphNamespace);
+
+    GenericGraph getGraph(String namespace);
 
 }

@@ -39,7 +39,6 @@ import org.opennms.netmgt.graph.simple.SimpleEdge;
 import org.opennms.netmgt.graph.simple.SimpleGraph;
 import org.opennms.netmgt.graph.simple.SimpleGraphContainer;
 import org.opennms.netmgt.graph.simple.SimpleVertex;
-import org.opennms.netmgt.graph.simple.transformer.GenericGraphContainerToSimpleGraphContainerTransformer;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -97,7 +96,7 @@ public class DefaultGraphRepositoryIT {
         graphRepository.save(originalContainer);
 
         // Verify
-        verifyEquals(originalContainer, graphRepository.findContainerById(CONTAINER_ID, new GenericGraphContainerToSimpleGraphContainerTransformer()));
+        verifyEquals(originalContainer, new SimpleGraphContainer(graphRepository.findContainerById(CONTAINER_ID)));
 
         /*
          * Update
@@ -119,13 +118,13 @@ public class DefaultGraphRepositoryIT {
         graphRepository.save(originalContainer);
 
         // Verify
-        verifyEquals(originalContainer, graphRepository.findContainerById(CONTAINER_ID, new GenericGraphContainerToSimpleGraphContainerTransformer()));
+        verifyEquals(originalContainer, new SimpleGraphContainer(graphRepository.findContainerById(CONTAINER_ID)));
 
         /*
          * Delete
          */
         graphRepository.deleteContainer(CONTAINER_ID);
-        Assert.assertNull(graphRepository.findContainerById(CONTAINER_ID, new GenericGraphContainerToSimpleGraphContainerTransformer()));
+        Assert.assertNull(graphRepository.findContainerById(CONTAINER_ID));
     }
 
     private void verifyEquals(SimpleGraphContainer originalContainer, SimpleGraphContainer persistedContainer) {

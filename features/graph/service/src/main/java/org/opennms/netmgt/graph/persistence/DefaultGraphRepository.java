@@ -30,7 +30,6 @@ package org.opennms.netmgt.graph.persistence;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.graph.api.GraphContainer;
@@ -74,21 +73,8 @@ public class DefaultGraphRepository implements GraphRepository {
     }
 
     @Override
-    public <C extends GraphContainer> C findContainerById(String containerId, Function<GenericGraphContainer, C> transformer) {
-        return sessionUtils.withTransaction(() -> {
-            final GraphContainerEntity entity = graphContainerDao.findContainerById(containerId);
-            if (entity != null) {
-                final GenericGraphContainer genericGraphContainer = entityToGenericMapper.fromEntity(entity);
-                final C convertedGraphContainer = transformer.apply(genericGraphContainer);
-                return convertedGraphContainer;
-            }
-            return null;
-        });
-    }
-
-    @Override
     public GenericGraphContainer findContainerById(String containerId) {
-        return findContainerById(containerId, Function.identity());
+        return findContainerById(containerId);
     }
 
     @Override
