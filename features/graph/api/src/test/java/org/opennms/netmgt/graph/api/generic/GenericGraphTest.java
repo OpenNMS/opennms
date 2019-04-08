@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,35 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.provider.bsm;
+package org.opennms.netmgt.graph.api.generic;
 
-import java.util.Set;
+import static org.junit.Assert.*;
 
-import org.opennms.netmgt.bsm.service.model.Application;
-import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
+import org.junit.Test;
 
-public class ApplicationVertex extends AbstractBusinessServiceVertex {
+public class GenericGraphTest {
 
-    private final static String PROPERTY_APPLICATION_ID = "applicationId";
-
-    public ApplicationVertex(Application application, int level) {
-        this(application.getId(),
-                application.getApplicationName(),
-                application.getReductionKeys(),
-                level);
-    }
-
-    public ApplicationVertex(GraphVertex graphVertex) {
-        this(graphVertex.getApplication(), graphVertex.getLevel());
-    }
-
-    private ApplicationVertex(int applicationId, String applicationName, Set<String> reductionKeys, int level) {
-        super(Type.Application + ":" + applicationId, applicationName, level, Type.Application, true, reductionKeys);
-        delegate.setProperty(PROPERTY_APPLICATION_ID, applicationId);
-    }
-
-    public Integer getApplicationId() {
-        return delegate.getProperty(PROPERTY_APPLICATION_ID);
+    @Test
+    public void shouldCloneCorrectly() {
+        GenericGraph original = TestObjectCreator.createGraph();
+        GenericGraph clone = new GenericGraph(original);
+        assertEquals(original, clone);
+        assertNotSame(original, clone);
     }
 
 }

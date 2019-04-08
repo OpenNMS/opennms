@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.graph.simple;
 
-import java.util.Objects;
+import static org.opennms.netmgt.graph.simple.TestObjectCreator.createVertex;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -59,11 +59,5 @@ public class SimpleTest {
         Assert.assertNotSame(original.getTarget(), copy.getTarget());
     }
 
-    private static SimpleVertex createVertex(String namespace, String id) {
-        Objects.requireNonNull(namespace);
-        Objects.requireNonNull(id);
-        final SimpleVertex vertex = new SimpleVertex(namespace, id);
-        vertex.setLabel("label");
-        return vertex;
-    }
+
 }

@@ -28,83 +28,61 @@
 
 package org.opennms.netmgt.graph.simple;
 
-import java.util.Objects;
-
-import org.opennms.netmgt.graph.api.AbstractGraph;
 import org.opennms.netmgt.graph.api.Graph;
-import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
+import org.opennms.netmgt.graph.api.generic.GenericEdge;
+import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
-// TODO MVR enforce namespace
-// TODO MVR this is basically a copy of GenericGraph :'(
-// TODO MVR implement duplication detection (e.g. adding same vertex twice
-// and as well as adding different edges with different source/target vertices, should add each vertex only once,
-// maybe not here, but at some point that check should be implemented)
-public class SimpleGraph extends AbstractGraph<SimpleVertex, SimpleEdge> implements Graph<SimpleVertex, SimpleEdge> {
+/**
+ * Acts as a domain specific view on a Graph.
+ * This is the most basic concrete subclass of {@link AbstractDomainGraph} and can be used as a reference for your own
+ * domain graph. It is a final class since it exposes class information about it's associated vertex and edge types.
+ * If you need more functionality please extend AbstractDomainGraph.
+ */
+public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleEdge> {
+
 
     public SimpleGraph(String namespace) {
-        this(namespace, SimpleVertex.class);
+        super(namespace);
     }
 
-    public SimpleGraph(String namespace, Class<SimpleVertex> vertexType) {
-        super(new DefaultGraphInfo(namespace, vertexType));
+    public static SimpleGraph fromGraphInfo(GraphInfo graphInfo) {
+        // we can't have a constructor SimpleGraph(GraphInfo graphInfo) since it conflicts with SimpleGraph(GenericGraph graph)
+        // that's why we have a factory method instead
+        GenericGraph graph = new GenericGraph();
+        graph.setNamespace(graphInfo.getNamespace());
+        graph.setLabel(graphInfo.getLabel());
+        graph.setDescription(graphInfo.getDescription());
+        return new SimpleGraph(graph);
     }
 
-    // Copy constructor.
-    public SimpleGraph(SimpleGraph copyMe) {
-        super(new DefaultGraphInfo(Objects.requireNonNull(copyMe)));
-        // TODO MVR copy focus strategy? :(
-
-        copyMe.getVertices().forEach(v -> {
-            final SimpleVertex clonedVertex = new SimpleVertex(v);
-            clonedVertex.setNamespace(copyMe.getNamespace());
-            addVertex(clonedVertex);
-        });
-
-        copyMe.getEdges().forEach(e -> {
-            final SimpleEdge clonedEdge = new SimpleEdge(e);
-            clonedEdge.setNamespace(getNamespace());
-            addEdge(clonedEdge); // TODO MVR ... gnaaa, this is wrong
-        });
+    public SimpleGraph(GenericGraph graph) {
+        super(graph);
     }
 
-    public SimpleGraph(GraphInfo graphInfo) {
-        super(graphInfo);
+    /** copy constructor */
+    public SimpleGraph(SimpleGraph graph) {
+        super(new GenericGraph(graph.asGenericGraph()));
     }
 
-    public void setLabel(String label) {
-        ((DefaultGraphInfo) graphInfo).setLabel(label);
+    @Override
+    public SimpleVertex convert(GenericVertex vertex) {
+        return new SimpleVertex(vertex);
     }
 
-    public void setDescription(String description) {
-        ((DefaultGraphInfo) graphInfo).setDescription(description);
+    @Override
+    public SimpleEdge convert(GenericEdge edge) {
+        return new SimpleEdge(edge);
     }
 
-    public void setNamespace(String namespace) {
-        ((DefaultGraphInfo) graphInfo).setNamespace(namespace);
-        getVertices().forEach(v -> v.setNamespace(namespace));
-        getEdges().forEach(e -> {
-            if (e.getSource().getNamespace().equalsIgnoreCase(e.getNamespace())) {
-                ((SimpleVertex) e.getSource()).setNamespace(namespace);
-            }
-            if (e.getTarget().getNamespace().equalsIgnoreCase(e.getNamespace())) {
-                ((SimpleVertex) e.getTarget()).setNamespace(namespace);
-            }
-            e.setNamespace(namespace);
-        });
+    @Override
+    protected Graph<SimpleVertex, SimpleEdge> convert(GenericGraph graph) {
+        return new SimpleGraph(graph);
     }
 
-    public SimpleVertex createVertex(String id) {
-        final SimpleVertex vertex = new SimpleVertex(getNamespace(), id);
-        addVertex(vertex);
-        return vertex;
+    @Override
+    public Class getVertexType() {
+        return SimpleVertex.class;
     }
-
-    public SimpleEdge createEdge(SimpleVertex sourceVertex, SimpleVertex targetVertex) {
-        final SimpleEdge edge = new SimpleEdge(sourceVertex, targetVertex);
-        edge.setNamespace(getNamespace());
-        addEdge(edge);
-        return edge;
-    }
-
 }

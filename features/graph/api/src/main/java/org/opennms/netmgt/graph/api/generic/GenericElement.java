@@ -35,17 +35,20 @@ import java.util.Objects;
 import com.google.common.base.MoreObjects;
 
 public class GenericElement {
-    protected final Map<String, Object> properties = new HashMap<>();
-
-    protected final Map<String, Object> computedProperties = new HashMap<>();
+    protected final Map<String, Object> properties;
 
     public GenericElement() {
-
+        this(new HashMap<>());
     }
 
     public GenericElement(String namespace, String id) {
+        this(new HashMap<>());
         setNamespace(namespace);
         setId(id);
+    }
+
+    protected GenericElement (Map<String, Object> properties) {
+        this.properties = Objects.requireNonNull(properties);
     }
 
     public void setProperty(String key, Object value) {
@@ -65,14 +68,6 @@ public class GenericElement {
         this.properties.putAll(properties);
     }
 
-    public void setComputedProperty(String key, Object value) {
-        computedProperties.put(key, value);
-    }
-
-    public Map<String, Object> getComputedProperties() {
-        return computedProperties;
-    }
-
     public Map<String, Object> getProperties() {
         return properties;
     }
@@ -83,6 +78,14 @@ public class GenericElement {
 
     public void setNamespace(String namespace) {
         setProperty(GenericProperties.NAMESPACE, namespace);
+    }
+
+    public void setLabel(String label){
+        setProperty(GenericProperties.LABEL, label);
+    }
+
+    public String getLabel(){
+        return getProperty(GenericProperties.LABEL);
     }
 
     public String getId() {
@@ -98,13 +101,12 @@ public class GenericElement {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final GenericElement that = (GenericElement) o;
-        return Objects.equals(properties, that.properties) &&
-                Objects.equals(computedProperties, that.computedProperties);
+        return Objects.equals(properties, that.properties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(properties, computedProperties);
+        return Objects.hash(properties);
     }
 
     @Override
@@ -112,7 +114,6 @@ public class GenericElement {
         return MoreObjects.toStringHelper(this)
                 .omitNullValues()
                 .add("properties", properties)
-                .add("computedProperties", computedProperties)
                 .toString();
     }
 }

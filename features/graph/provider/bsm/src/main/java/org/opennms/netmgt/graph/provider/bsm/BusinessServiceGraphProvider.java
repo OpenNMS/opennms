@@ -92,7 +92,7 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
     }
 
     private Graph<?, ?> createGraph() {
-        final SimpleGraph bsmGraph = new SimpleGraph(getGraphInfo());
+        final SimpleGraph bsmGraph = SimpleGraph.fromGraphInfo(getGraphInfo());
         final BusinessServiceGraph sourceGraph = businessServiceManager.getGraph();
         for (GraphVertex topLevelBusinessService : sourceGraph.getVerticesByLevel(0)) {
             addVertex(bsmGraph, sourceGraph, topLevelBusinessService, null);

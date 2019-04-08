@@ -37,91 +37,76 @@ import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.NodeInfo;
 
+/**
+ * Acts as a domain specific view on a Vertex.
+ * Can be extended by domain specific Vertex classes.
+ * It contains no data of it's own but operates on the data of it's wrapped GenericVertex.
+ */
 public class SimpleVertex implements Vertex, NodeAware, LocationAware {
 
-    private final String id;
-    private String namespace; // TODO MVR this should be enforced, shouldn't it?
-    private String iconKey; // TODO MVR remove me
-    private String tooltip; // TODO MVR remove me
-    private String label;
-    // Either nodeId as string or foreignSource:foreignId combination
-    private String nodeRefString;
+    protected final GenericVertex delegate;
 
-//    @Enrich(name="node", processor = NodeInfoEnrichmentProcessor.class)
-    private NodeInfo nodeInfo;
+    public SimpleVertex(GenericVertex genericVertex) {
+        this.delegate = genericVertex;
+    }
 
     public SimpleVertex(String namespace, String id) {
-        this.namespace = namespace;
-        this.id = id;
+        this.delegate = new GenericVertex();
+        this.delegate.setId(id);
+        this.delegate.setNamespace(namespace);
     }
 
     public SimpleVertex(SimpleVertex copyMe) {
-        this(copyMe.getNamespace(), copyMe.getId());
-        setLabel(copyMe.getLabel());
-        setNodeInfo(copyMe.getNodeInfo()); // TODO MVR also clone this
-        setNodeRefString(copyMe.getNodeRefString());
+        // copy the delegate to have a clone down to the properties maps
+        this(new GenericVertex(copyMe.asGenericVertex()));
     }
 
     @Override
     public String getNamespace() {
-        return namespace;
+        return delegate.getNamespace();
     }
 
     public void setNamespace(String namespace) {
-        this.namespace = namespace;
+        delegate.setNamespace(namespace);
     }
 
     @Override
     public String getId() {
-        return id;
+        return delegate.getId();
     }
 
     public String getLabel() {
-        return label;
+        return delegate.getProperty(GenericProperties.LABEL);
     }
 
     public void setLabel(String label) {
-        this.label = label;
+        this.delegate.setProperty(GenericProperties.LABEL, label);
     }
 
     @Override
-    public GenericVertex asGenericVertex() {
-        final GenericVertex vertex = new GenericVertex();
-        vertex.setId(getId());
-        vertex.setNamespace(getNamespace());
-        if (getLabel() != null) {
-            vertex.setProperty(GenericProperties.LABEL, getLabel());
-        }
-        if (getNodeRefString() != null) {
-            vertex.setProperty(GenericProperties.NODE_REF, getNodeRefString());
-        }
-        return vertex;
+    public final GenericVertex asGenericVertex() {
+        return delegate;
     }
 
     public NodeInfo getNodeInfo() {
-        return nodeInfo;
+        return delegate.getNodeInfo();
     }
 
     public void setNodeInfo(NodeInfo nodeInfo) {
-        this.nodeInfo = nodeInfo;
+        this.delegate.setProperty(GenericProperties.NODE_INFO, nodeInfo);
     }
 
-//    @Override
-//    public NodeRef getNodeRef() {
-//        return NodeRefs.from(getNodeRefString());
-//    }
-
     public String getNodeRefString() {
-        return nodeRefString;
+        return delegate.getProperty(GenericProperties.NODE_REF);
     }
 
     public void setNodeRefString(String nodeRefString) {
-        this.nodeRefString = nodeRefString;
+        delegate.setProperty(GenericProperties.NODE_REF, nodeRefString);
     }
 
     @Override
     public String toString() {
-        return asGenericVertex().toString();
+        return delegate.toString();
     }
 
     @Override
@@ -137,17 +122,11 @@ public class SimpleVertex implements Vertex, NodeAware, LocationAware {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SimpleVertex that = (SimpleVertex) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(namespace, that.namespace) &&
-                Objects.equals(iconKey, that.iconKey) &&
-                Objects.equals(tooltip, that.tooltip) &&
-                Objects.equals(label, that.label) &&
-                Objects.equals(nodeRefString, that.nodeRefString) &&
-                Objects.equals(nodeInfo, that.nodeInfo);
+        return Objects.equals(this.delegate, that.delegate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, namespace, iconKey, tooltip, label, nodeRefString, nodeInfo);
+        return Objects.hash(delegate);
     }
 }

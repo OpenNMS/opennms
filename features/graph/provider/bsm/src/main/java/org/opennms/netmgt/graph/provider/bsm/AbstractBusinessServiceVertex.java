@@ -44,7 +44,10 @@ public abstract class AbstractBusinessServiceVertex extends SimpleVertex {
         Application
     }
 
-    private final int level;
+    private final static String PROPERTY_LEVEL = "level";
+    private final static String PROPERTY_TYPE = "type";
+    private final static String PROPERTY_REDUCTION_KEYS = "reductionKeys";
+    private final static String PROPERTY_IS_LEAF = "isLeaf";
 
     /**
      * Creates a new {@link AbstractBusinessServiceVertex}.
@@ -52,31 +55,46 @@ public abstract class AbstractBusinessServiceVertex extends SimpleVertex {
      * @param label a human readable label
      * @param level the level of the vertex in the Business Service Hierarchy. The root element is level 0.
      */
-    protected AbstractBusinessServiceVertex(String id, String label, int level) {
+    protected AbstractBusinessServiceVertex(String id, String label, int level, Type type, boolean isLeaf,
+                                            Set<String> reductionKeys) {
         super(NAMESPACE, id);
         setLabel(label);
-        this.level = level;
+        setLevel(level);
+        setType(type);
+        setIsLeaf(isLeaf);
+        setReductionKeys(reductionKeys);
     }
 
     public int getLevel() {
-        return level;
+        return this.delegate.getProperty(PROPERTY_LEVEL);
     }
 
-    public abstract boolean isLeaf();
-
-    public abstract Type getType();
-
-    public abstract Set<String> getReductionKeys();
-
-    @Override
-    public GenericVertex asGenericVertex() {
-        final GenericVertex genericVertex = super.asGenericVertex();
-        genericVertex.setProperty("type", getType());
-        genericVertex.setProperty("level", getLevel());
-        genericVertex.setProperty("isLeaf", isLeaf());
-        genericVertex.setProperty("reductionKeys", getReductionKeys()); // TODO MVR collections cannot be persisted
-        return genericVertex;
+    public void setLevel(int level){
+        this.delegate.setProperty(PROPERTY_LEVEL, level);
     }
 
-    //    public abstract <T> T accept(BusinessServiceVertexVisitor<T> visitor);
+    public boolean isLeaf(){
+        return this.delegate.getProperty(PROPERTY_IS_LEAF);
+    }
+
+    public void setIsLeaf(boolean isLeaf){
+        this.delegate.setProperty(PROPERTY_IS_LEAF, isLeaf);
+    }
+
+    public Type getType() {
+        return this.delegate.getProperty(PROPERTY_TYPE);
+    }
+
+    public void setType(Type type) {
+        this.delegate.setProperty(PROPERTY_TYPE, type);
+    }
+
+    public Set<String> getReductionKeys() {
+        return this.delegate.getProperty(PROPERTY_REDUCTION_KEYS);
+    }
+
+    public void setReductionKeys(Set<String> reductionKeys) {
+        this.delegate.setProperty(PROPERTY_REDUCTION_KEYS, reductionKeys);// TODO MVR collections cannot be persisted
+    }
+
 }

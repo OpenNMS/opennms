@@ -30,14 +30,12 @@ package org.opennms.netmgt.graph.provider.bsm;
 
 import java.util.Set;
 
-import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 
 public class IpServiceVertex extends AbstractBusinessServiceVertex {
 
-    private final Integer ipServiceId;
-    private final Set<String> reductionKeys;
+    private final static String PROPERTY_SERVICE_ID = "ipServiceId";
 
     public IpServiceVertex(IpService ipService, int level) {
         this(ipService.getId(),
@@ -53,42 +51,19 @@ public class IpServiceVertex extends AbstractBusinessServiceVertex {
     }
 
     private IpServiceVertex(int ipServiceId, String ipServiceName, String ipAddress, Set<String> reductionKeys, int nodeId, int level) {
-        super(Type.IpService + ":" + ipServiceId, ipServiceName, level);
-        this.ipServiceId = ipServiceId;
-        this.reductionKeys = reductionKeys;
+        super(Type.IpService + ":" + ipServiceId, ipServiceName, level, Type.IpService, true, reductionKeys);
+        setIpServiceId(ipServiceId);
+
 //        setIpAddress(ipAddress); // TODO MVR this is not yet supported. Maybe IpRef or something like this could be added
-        setLabel(ipServiceName);
         setNodeRefString(Integer.toString(nodeId));
     }
 
+    public void setIpServiceId(Integer ipServiceId) {
+        delegate.setProperty(PROPERTY_SERVICE_ID, ipServiceId);
+    }
+
     public Integer getIpServiceId() {
-        return ipServiceId;
+        return delegate.getProperty(PROPERTY_SERVICE_ID);
     }
 
-    @Override
-    public Type getType() {
-        return Type.IpService;
-    }
-
-    @Override
-    public boolean isLeaf() {
-        return true;
-    }
-
-    @Override
-    public Set<String> getReductionKeys() {
-        return reductionKeys;
-    }
-
-    @Override
-    public GenericVertex asGenericVertex() {
-        final GenericVertex genericVertex = super.asGenericVertex();
-        genericVertex.setProperty("ipServiceId", getIpServiceId());
-        return genericVertex;
-    }
-
-//    @Override
-//    public <T> T accept(BusinessServiceVertexVisitor<T> visitor) {
-//        return visitor.visit(this);
-//    }
 }

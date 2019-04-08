@@ -39,6 +39,8 @@ import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
+import com.google.common.base.MoreObjects;
+
 // TODO MVR probably implement ContainerGraphInfo instead of a property
 // TODO MVR make more type safe
 // TODO MVR why is there a DefaultGraphContainerInfo, but no SimpleGraphContainerInfo... this is weird
@@ -126,13 +128,6 @@ public class SimpleGraphContainer implements GraphContainer {
         this.label = label;
     }
 
-    // TODO MVR do we really want to use these methods?
-    public SimpleGraph g(String namespace) {
-        final SimpleGraph simpleGraph = new SimpleGraph(namespace);
-        addGraph(simpleGraph);
-        return simpleGraph;
-    }
-
     @Override
     public GenericGraphContainer asGenericGraphContainer() {
         final GenericGraphContainer genericGraphContainer = new GenericGraphContainer();
@@ -157,5 +152,15 @@ public class SimpleGraphContainer implements GraphContainer {
     @Override
     public int hashCode() {
         return Objects.hash(id, description, label, graphs);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("description", description)
+                .add("label", label)
+                .add("graphs", graphs)
+                .toString();
     }
 }

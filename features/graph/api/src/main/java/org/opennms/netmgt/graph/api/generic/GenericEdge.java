@@ -32,34 +32,63 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.opennms.netmgt.graph.api.AbstractEdge;
+import org.opennms.netmgt.graph.api.Edge;
 import org.opennms.netmgt.graph.api.VertexRef;
 
-public class GenericEdge extends AbstractEdge<GenericVertex> {
+import com.google.common.base.MoreObjects;
 
-    private Map<String, Object> properties = new HashMap<>();
+public class GenericEdge extends GenericElement implements Edge {
+
+    private final GenericVertex source;
+    private final GenericVertex target;
 
     public GenericEdge(GenericVertex source, GenericVertex target) {
-        this((VertexRef) source, (VertexRef) target);
+        this(source, target, new HashMap<>());
     }
 
-    public GenericEdge(VertexRef source, VertexRef target) {
-        super(source, target);
-        properties.put(GenericProperties.LABEL, getLabel());
-        properties.put(GenericProperties.NAMESPACE, getNamespace());
-        properties.put(GenericProperties.ID, getId());
+    public GenericEdge(GenericVertex source, GenericVertex target, Map<String, Object> properties) {
+        super(properties);
+        this.source = Objects.requireNonNull(source);
+        this.target = Objects.requireNonNull(target);
+        this.setNamespace(source.getNamespace());
+        this.setId(source.getId() + "->" + target.getId());
+    }
+
+    /** Copy constructor */
+    public GenericEdge(GenericEdge copyMe) {
+        this(new GenericVertex(copyMe.source), new GenericVertex(copyMe.target), new HashMap<>(copyMe.properties));
     }
 
     public Map<String, Object> getProperties() {
         return new HashMap<>(properties);
     }
 
-    public void setProperties(Map<String, Object> properties) {
-        this.properties = new HashMap<>(properties);
+    @Override
+    public VertexRef getSource() {
+        return source;
     }
 
-    public void setProperty(String key, Object value) {
-        properties.put(key, value);
+    @Override
+    public VertexRef getTarget() {
+        return target;
+    }
+
+    @Override
+    public GenericEdge asGenericEdge() {
+        final GenericEdge genericEdge = new GenericEdge(source, target);
+        genericEdge.setLabel(getLabel());
+        genericEdge.setId(getId());
+        genericEdge.setNamespace(getNamespace());
+        return genericEdge;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("source", source)
+                .add("target", target)
+                .add("properties", properties)
+                .toString();
     }
 
     @Override
@@ -68,11 +97,13 @@ public class GenericEdge extends AbstractEdge<GenericVertex> {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         GenericEdge that = (GenericEdge) o;
-        return Objects.equals(properties, that.properties);
+        return Objects.equals(source, that.source) &&
+                Objects.equals(target, that.target);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), properties);
+
+        return Objects.hash(super.hashCode(), source, target);
     }
 }

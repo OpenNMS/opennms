@@ -29,37 +29,73 @@
 // TODO MVR fix package name opennsm vs opennms
 package org.opennms.netmgt.graph.simple;
 
-import org.opennms.netmgt.graph.api.AbstractEdge;
+import java.util.Objects;
+
+import org.opennms.netmgt.graph.api.Edge;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
-import org.opennms.netmgt.graph.api.generic.GenericProperties;
 
-public class SimpleEdge extends AbstractEdge<SimpleVertex> {
+/**
+ * Acts as a domain specific view on a Edge.
+ * Can be extended by domain specific edge classes.
+ * It contains no data of it's own but operates on the data of it's wrapped GenericEdge.
+ */
+public class SimpleEdge implements Edge {
+
+    protected GenericEdge delegate;
 
     public SimpleEdge(SimpleVertex source, SimpleVertex target) {
-        super(source, target);
+        delegate = new GenericEdge(source.asGenericVertex(), target.asGenericVertex());
+    }
+
+    public SimpleEdge(GenericEdge genericEdge) {
+        this.delegate = genericEdge;
     }
 
     public SimpleEdge(SimpleEdge copyMe) {
+        // copy the delegate to have a clone down to the properties maps
+        this(new GenericEdge(copyMe.asGenericEdge()));
+
+        // TODO: patrick, mvr rework when we support edges that connect to other namespaces
         // We must copy the source and target as well, otherwise changing it's properties will change
         // the "copyMe" properties as well
-        super(copyVertex(copyMe.getSource()), copyVertex(copyMe.getTarget()));
-        setLabel(copyMe.getLabel());
+    }
+
+    @Override
+    public String getNamespace() {
+        return delegate.getNamespace();
+    }
+
+    public void setNamespace(String namespace) {
+        delegate.setNamespace(namespace);
+    }
+
+    @Override
+    public String getId() {
+        return delegate.getId();
+    }
+
+    @Override
+    public VertexRef getSource() {
+        return delegate.getSource();
+    }
+
+    @Override
+    public VertexRef getTarget() {
+        return delegate.getTarget();
     }
 
     @Override
     public GenericEdge asGenericEdge() {
-        final GenericEdge genericEdge = new GenericEdge(getSource(), getTarget());
-        if (getLabel() != null) {
-            genericEdge.setProperty(GenericProperties.LABEL, getLabel());
-        } else {
-            genericEdge.setProperty(GenericProperties.LABEL, String.format("connection:%s:%s", getSource().getId(), getTarget().getId()));
-        }
-        // TODO MVR Tooltip?
-//        if (getTooltip() != null) {
-//            genericEdge.setProperty(GenericProperties.TOOLTIP, getTooltip());
-//        }
-        return genericEdge;
+        return delegate;
+    }
+
+    public void setLabel(String label){
+        delegate.setLabel(label);
+    }
+
+    public String getLabel(){
+        return delegate.getLabel();
     }
 
     private static VertexRef copyVertex(VertexRef ref) {
@@ -67,5 +103,19 @@ public class SimpleEdge extends AbstractEdge<SimpleVertex> {
             return new SimpleVertex((SimpleVertex) ref);
         }
         return new SimpleVertexRef(ref);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SimpleEdge that = (SimpleEdge) o;
+        return Objects.equals(delegate, that.delegate);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(delegate);
     }
 }

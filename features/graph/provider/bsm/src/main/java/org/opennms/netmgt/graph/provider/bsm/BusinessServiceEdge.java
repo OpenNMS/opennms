@@ -35,21 +35,19 @@ import org.opennms.netmgt.graph.simple.SimpleEdge;
 
 public class BusinessServiceEdge extends SimpleEdge {
 
-    private final MapFunction mapFunction;
-    private final float weight;
+    private final static String PROPERTY_MAP_FUNCTION = "mapFunction";
+    private final static String PROPERTY_WEIGHT = "weight";
 
     public BusinessServiceEdge(GraphEdge graphEdge, AbstractBusinessServiceVertex source, AbstractBusinessServiceVertex target) {
         super(source, target);
-        this.mapFunction = graphEdge.getMapFunction();
-        this.weight = graphEdge.getWeight();
+        setMapFunction(graphEdge.getMapFunction());
+        setWeight(graphEdge.getWeight());
         // TODO MVR ToolTips are not yet supported
 //        setTooltipText(String.format("Map function: %s, Weight: %s", graphEdge.getMapFunction().getClass().getSimpleName(), graphEdge.getWeight()));
     }
 
     private BusinessServiceEdge(BusinessServiceEdge edgeToClone) {
         super(edgeToClone);
-        mapFunction = edgeToClone.mapFunction;
-        weight = edgeToClone.weight;
     }
 
     public AbstractBusinessServiceVertex getBusinessServiceSource() {
@@ -60,19 +58,19 @@ public class BusinessServiceEdge extends SimpleEdge {
         return (AbstractBusinessServiceVertex) getTarget();
     }
 
+    private void setMapFunction(MapFunction mapFunction){
+        this.delegate.setProperty(PROPERTY_MAP_FUNCTION, mapFunction);
+    }
+
     public MapFunction getMapFunction() {
-        return mapFunction;
+        return this.delegate.getProperty(PROPERTY_MAP_FUNCTION);
     }
 
     public float getWeight() {
-        return weight;
+        return this.delegate.getProperty(PROPERTY_WEIGHT);
     }
 
-    @Override
-    public GenericEdge asGenericEdge() {
-        final GenericEdge genericEdge = super.asGenericEdge();
-        genericEdge.setProperty("weight", getWeight());
-        genericEdge.setProperty("mapFunction", MapFunction.class.getSimpleName()); // TODO MVR ???
-        return genericEdge;
+    private void setWeight(float weight){
+        this.delegate.setProperty(PROPERTY_WEIGHT, weight);
     }
 }

@@ -33,7 +33,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.persistence.GraphRepository;
+import org.opennms.netmgt.graph.simple.SimpleEdge;
 import org.opennms.netmgt.graph.simple.SimpleGraph;
 import org.opennms.netmgt.graph.simple.SimpleGraphContainer;
 import org.opennms.netmgt.graph.simple.SimpleVertex;
@@ -75,12 +77,14 @@ public class DefaultGraphRepositoryIT {
         graph1.setLabel("Dummy Graph");
         graph1.setDescription("I am not so unique, I may be replaced at any time :(");
 
-        final SimpleVertex v1 = graph1.createVertex("v1");
+        final SimpleVertex v1 = new SimpleVertex(graph1.getNamespace(), "v1");
         v1.setLabel("Vertex 1");
-        final SimpleVertex v2 = graph1.createVertex("v2");
+        final SimpleVertex v2 = new SimpleVertex(graph1.getNamespace(), "v2");
         v2.setLabel("Vertex 2");
 
-        graph1.createEdge(v1, v2);
+        graph1.addVertex(v1);
+        graph1.addVertex(v2);
+        graph1.addEdge(new SimpleEdge(v1, v2));
 
         // Second graph is a copy of the first
         final SimpleGraph graph2 = new SimpleGraph(graph1);
@@ -131,5 +135,4 @@ public class DefaultGraphRepositoryIT {
         Assert.assertEquals(originalContainer.getGraphs().size(), persistedContainer.getGraphs().size());
         Assert.assertEquals(originalContainer, persistedContainer);
     }
-
 }

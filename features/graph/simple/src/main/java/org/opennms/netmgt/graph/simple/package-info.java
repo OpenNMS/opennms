@@ -32,4 +32,4 @@
  */
 package org.opennms.netmgt.graph.simple;
 
-// TODO MVR simple should probably be name ddefault?
+// TODO MVR simple should probably be name default or domain?

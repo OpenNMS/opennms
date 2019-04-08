@@ -28,9 +28,7 @@
 
 package org.opennms.netmgt.graph.provider.bsm;
 
-import java.util.Set;
 
-import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 
@@ -38,7 +36,7 @@ import com.google.common.collect.Sets;
 
 public class BusinessServiceVertex extends AbstractBusinessServiceVertex {
 
-    private final Long serviceId;
+    private final static String PROPERTY_SERVICE_ID = "serviceId";
 
     public BusinessServiceVertex(BusinessService businessService, int level) {
         this(businessService.getId(), businessService.getName(), level);
@@ -49,39 +47,17 @@ public class BusinessServiceVertex extends AbstractBusinessServiceVertex {
     }
 
     public BusinessServiceVertex(Long serviceId, String name, int level) {
-        super(Type.BusinessService + ":" + serviceId, name, level);
-        this.serviceId = serviceId;
+        super(Type.BusinessService + ":" + serviceId, name, level, Type.BusinessService, false, Sets.newHashSet());
+        setServiceId(serviceId);
         setLabel(name);
     }
 
     public Long getServiceId() {
-        return serviceId;
+        return delegate.getProperty(PROPERTY_SERVICE_ID);
     }
 
-    @Override
-    public Type getType() {
-        return Type.BusinessService;
+    public void setServiceId(Long serviceId) {
+        delegate.setProperty(PROPERTY_SERVICE_ID, serviceId);
     }
 
-    @Override
-    public Set<String> getReductionKeys() {
-        return Sets.newHashSet();
-    }
-
-    @Override
-    public boolean isLeaf() {
-        return false;
-    }
-
-    @Override
-    public GenericVertex asGenericVertex() {
-        final GenericVertex genericVertex = super.asGenericVertex();
-        genericVertex.setProperty("serviceId", getServiceId());
-        return genericVertex;
-    }
-
-//    @Override
-//    public <T> T accept(BusinessServiceVertexVisitor<T> visitor) {
-//        return visitor.visit(this);
-//    }
 }
