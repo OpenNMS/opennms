@@ -73,6 +73,7 @@ public abstract class GrokParserStageSequenceBuilder {
 	}
 
 	enum GrokPattern {
+		CHAR,
 		HOSTNAME,
 		HOSTNAMEORIP,
 		INT,
@@ -493,6 +494,8 @@ public abstract class GrokParserStageSequenceBuilder {
 				switch(c) {
 				case '\\':
 					switch(patternType) {
+					case CHAR:
+						throw new UnsupportedOperationException("Cannot support escape sequence directly after a CHAR pattern yet");
 					case HOSTNAME:
 					case HOSTNAMEORIP:
 					case IPADDRESS:
@@ -529,6 +532,9 @@ public abstract class GrokParserStageSequenceBuilder {
 					continue;
 				case '%':
 					switch(patternType) {
+					case CHAR:
+						factory.character(semanticStringToField(semanticString));
+						break;
 					case NOSPACE:
 						// This is probably not an intended behavior
 						LOG.warn("NOSPACE pattern followed immediately by another pattern will greedily consume until whitespace is encountered");
@@ -557,6 +563,9 @@ public abstract class GrokParserStageSequenceBuilder {
 					continue;
 				case ' ':
 					switch(patternType) {
+					case CHAR:
+						factory.character(semanticStringToField(semanticString));
+						break;
 					case NOSPACE:
 					case STRING:
 						factory.stringUntilWhitespace(semanticStringToField(semanticString));
@@ -582,6 +591,9 @@ public abstract class GrokParserStageSequenceBuilder {
 					break;
 				default:
 					switch(patternType) {
+					case CHAR:
+						factory.character(semanticStringToField(semanticString));
+						break;
 					case NOSPACE:
 						factory.stringUntil(MatchUntil.WHITESPACE + c, semanticStringToField(semanticString));
 						factory.character(c);

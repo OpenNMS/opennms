@@ -96,6 +96,10 @@
 <%{INT:facilityPriority}> %{INT:year} %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:timezone} *%{HOSTNAME:hostname}* %{STRING:message}
 <%{INT:facilityPriority}> %{INT:year} %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:timezone} %{STRING:message}
 
+# see issue HZN-1504
+<%{INT:facilityPriority}>%{INT:parmSequenceNum}: %{CHAR:ignore}%{MONTH:month}%{WHITESPACE:ignore}%{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second}: %{STRING:message}
+<%{INT:facilityPriority}>%{INT:parmSequenceNum}: %{CHAR:ignore}%{STRING:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction}: %{STRING:message}
+
 # Note: This pattern '%{STRING:message}' should always come last as it will greedily match anything. If a pattern is
 # placed after this one it will never be matched since this pattern matches anything.
 %{STRING:message}
