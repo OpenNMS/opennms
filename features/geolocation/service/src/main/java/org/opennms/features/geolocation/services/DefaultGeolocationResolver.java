@@ -54,10 +54,10 @@ public class DefaultGeolocationResolver implements GeolocationResolver {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultGeolocationResolver.class);
 
     private final NodeDao nodeDao;
-    private final GeocoderServiceManager geocoderAccessor;
+    private final GeocoderServiceManager geocoderServiceManager;
 
     public DefaultGeolocationResolver(GeocoderServiceManager geocoderServiceManager, NodeDao nodeDao) {
-        this.geocoderAccessor = Objects.requireNonNull(geocoderServiceManager);
+        this.geocoderServiceManager = Objects.requireNonNull(geocoderServiceManager);
         this.nodeDao = Objects.requireNonNull(nodeDao);
     }
 
@@ -103,8 +103,9 @@ public class DefaultGeolocationResolver implements GeolocationResolver {
 
     @Override
     public Coordinates resolve(String addressString) {
+        // TODO MVR also return the result here ...
         try {
-            GeocoderResult result = geocoderAccessor.getActiveGeocoderService().resolveAddress(addressString);
+            GeocoderResult result = geocoderServiceManager.getActiveGeocoderService().resolveAddress(addressString);
             if (result.hasError()) {
                 LOG.error("Error resolving address {}: {}", addressString, result.getThrowable().getMessage(), result.getThrowable());
             }
