@@ -36,4 +36,8 @@ public class ConfigCheckValidationException extends RuntimeException{
     public ConfigCheckValidationException(Exception e){
         super(e);
     }
+
+    public ConfigCheckValidationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

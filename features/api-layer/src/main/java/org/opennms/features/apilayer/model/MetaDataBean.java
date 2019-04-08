@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,34 +28,32 @@
 
 package org.opennms.features.apilayer.model;
 
-import java.net.InetAddress;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.opennms.integration.api.v1.model.IpInterface;
 import org.opennms.integration.api.v1.model.MetaData;
-import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMetaData;
 
-public class IpInterfaceBean implements IpInterface {
+public class MetaDataBean implements MetaData {
+    private final String context;
+    private final String key;
+    private final String value;
 
-    private final OnmsIpInterface ipInterface;
-    private final List<MetaData> metaData;
-
-    public IpInterfaceBean(OnmsIpInterface ipInterface) {
-        this.ipInterface = Objects.requireNonNull(ipInterface);
-        this.metaData = ipInterface.getMetaData().stream()
-                .map(MetaDataBean::new)
-                .collect(Collectors.toList());
+    public MetaDataBean(OnmsMetaData metaData) {
+        this.context = metaData.getContext();
+        this.key = metaData.getKey();
+        this.value = metaData.getValue();
     }
 
     @Override
-    public InetAddress getIpAddress() {
-        return ipInterface.getIpAddress();
+    public String getContext() {
+        return context;
     }
 
     @Override
-    public List<MetaData> getMetaData() {
-        return metaData;
+    public String getKey() {
+        return key;
+    }
+
+    @Override
+    public String getValue() {
+        return value;
     }
 }

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.model;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.regex.Pattern;
 
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -42,6 +43,13 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 public abstract class ResourceTypeUtils {
     
     private static final Logger LOG = LoggerFactory.getLogger(ResourceTypeUtils.class);
+
+    /**
+     * Default folder where RRD files are stored.
+     *
+     * Working directory defaults to $OPENNMS_HOME, so we can find these in $OPENNMS_HOME/share/rrd.
+     */
+    public static final File DEFAULT_RRD_ROOT = Paths.get("share", "rrd").toAbsolutePath().toFile();
 
     /**
      * Directory name of where latency data is stored.

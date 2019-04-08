@@ -209,6 +209,11 @@ public class ParserStageSequenceBuilder {
 		return this;
 	}
 
+	public ParserStageSequenceBuilder character(BiConsumer<ParserState, String> consumer) {
+		addStage(new MatchAny(consumer, 1));
+		return this;
+	}
+
 	public ParserStageSequenceBuilder character(char character) {
 		addStage(new MatchChar(character));
 		return this;
