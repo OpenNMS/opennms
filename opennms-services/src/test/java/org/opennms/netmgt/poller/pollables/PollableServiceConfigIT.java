@@ -34,6 +34,8 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -44,6 +46,7 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mockito;
 import org.opennms.core.rpc.api.RequestTimedOutException;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -61,6 +64,7 @@ import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerRequestBuilder;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.scheduler.Timer;
 import org.opennms.netmgt.threshd.ThresholdingService;
@@ -114,6 +118,41 @@ public class PollableServiceConfigIT {
                                                                     m_locationAwarePollerClient);
         PollStatus pollStatus = psc.poll();
         assertThat(pollStatus.getReason(), not(containsString("Unexpected exception")));
+    }
+
+    @Test
+    public void testPollableServiceConfigWithWildcard() throws Exception {
+        final FilterDao fd = mock(FilterDao.class);
+        FilterDaoFactory.setInstance(fd);
+
+        InputStream is = new FileInputStream(new File("src/test/resources/etc/wildcard-poller-configuration.xml"));
+        PollerConfigFactory factory = new PollerConfigFactory(0, is);
+        PollerConfigFactory.setInstance(factory);
+        IOUtils.closeQuietly(is);
+
+        PersisterFactory persisterFactory = new MockPersisterFactory();
+        ResourceStorageDao resourceStorageDao = new FilesystemResourceStorageDao();
+
+        final PollContext context = mock(PollContext.class);
+        final PollableNetwork network = new PollableNetwork(context);
+        final PollableNode node = network.createNodeIfNecessary(1, "foo", null);
+        final PollableInterface iface = new PollableInterface(node, InetAddressUtils.addr("127.0.0.1"));
+        final PollOutagesConfig pollOutagesConfig = mock(PollOutagesConfig.class);
+        final Package pkg = factory.getPackage("Default");
+        final Timer timer = mock(Timer.class);
+
+        final PollerRequestBuilder pollerRequestBuilder = mock(PollerRequestBuilder.class);
+        when(pollerRequestBuilder.withMonitor(any())).thenReturn(pollerRequestBuilder);
+        when(pollerRequestBuilder.withService(any())).thenReturn(pollerRequestBuilder);
+        
+        final LocationAwarePollerClient locationAwarePollerClient = mock(LocationAwarePollerClient.class);
+        when(locationAwarePollerClient.poll()).thenReturn(pollerRequestBuilder);
+
+        final PollableService svc = new PollableService(iface, "HTTP-www.example.com");
+        final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pollOutagesConfig, pkg, timer, persisterFactory, resourceStorageDao, locationAwarePollerClient);
+        psc.poll();
+
+        verify(pollerRequestBuilder).withMonitor(factory.getServiceMonitor("HTTP"));
     }
 
     /**
