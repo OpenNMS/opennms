@@ -5,7 +5,7 @@
 
 Well, what does that mean?
 
-*	World's First
+*	World's First and Best
 
 	The OpenNMS Project was started in July of 1999 and registered on SourceForge in March of 2000. It has years of experience on the alternatives.
 
