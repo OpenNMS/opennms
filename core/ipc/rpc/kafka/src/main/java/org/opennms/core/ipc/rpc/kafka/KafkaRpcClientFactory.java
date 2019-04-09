@@ -31,7 +31,9 @@ package org.opennms.core.ipc.rpc.kafka;
 
 import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.DEFAULT_TTL;
 import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.MAX_BUFFER_SIZE;
-import static org.opennms.core.tracing.api.TracerConstants.*;
+import static org.opennms.core.tracing.api.TracerConstants.TAG_LOCATION;
+import static org.opennms.core.tracing.api.TracerConstants.TAG_SYSTEM_ID;
+import static org.opennms.core.tracing.api.TracerConstants.TAG_TIMEOUT;
 
 import java.math.RoundingMode;
 import java.util.HashSet;
@@ -71,7 +73,6 @@ import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
 import org.opennms.core.ipc.rpc.kafka.model.RpcMessageProtos;
-import org.opennms.core.ipc.rpc.kafka.tracing.RequestCarrier;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.logging.Logging.MDCCloseable;
 import org.opennms.core.rpc.api.RemoteExecutionException;
@@ -82,6 +83,7 @@ import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.core.tracing.api.TracerRegistry;
+import org.opennms.core.tracing.util.TracingInfoCarrier;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -195,8 +197,9 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                             }
                         }
                     };
-                    // Add tracing info.
-                    tracer.inject(span.context(), Format.Builtin.TEXT_MAP, new RequestCarrier(builder));
+                    // Add tracing info to message builder.
+                    addTracingInfoToRpcMessage(span, builder);
+                    // Build message.
                     RpcMessageProtos.RpcMessage rpcMessage =  builder.setRpcContent(byteString)
                             .setCurrentChunkNumber(chunk)
                             .setTotalChunks(totalChunks)
@@ -219,6 +222,19 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                     }
                 }
                 return future;
+            }
+
+            private void addTracingInfoToRpcMessage(Span span, RpcMessageProtos.RpcMessage.Builder builder) {
+                TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
+                tracer.inject(span.context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
+                if(tracingInfoCarrier.getTracingInfoMap().size() > 0) {
+                    tracingInfoCarrier.getTracingInfoMap().forEach( (key, value) -> {
+                        RpcMessageProtos.TracingInfo tracingInfo = RpcMessageProtos.TracingInfo.newBuilder()
+                                .setKey(key)
+                                .setValue(value).build();
+                        builder.addTracingInfo(tracingInfo);
+                    });
+                }
             }
         };
 
@@ -261,7 +277,8 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConsumer);
             executor.execute(kafkaConsumerRunner);
             // Initialize tracer from tracer registry.
-            tracer = tracerRegistry.getTracer(SystemInfoUtils.getInstanceId());
+            tracerRegistry.init(SystemInfoUtils.getInstanceId());
+            tracer = tracerRegistry.getTracer();
             LOG.info("started  kafka consumer with : {}", kafkaConfig);
             // Start a new thread which handles timeouts from delayQueue and calls response callback.
             timerExecutor.execute(() -> {

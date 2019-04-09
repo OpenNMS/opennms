@@ -34,4 +34,5 @@ public interface TracerConstants {
     public static final String TAG_SYSTEM_ID = "systemId";
     public static final String TAG_LOCATION = "location";
     public static final String TAG_TIMEOUT = "timeout";
+    public static final String TAG_RPC_FAILED = "failed";
 }

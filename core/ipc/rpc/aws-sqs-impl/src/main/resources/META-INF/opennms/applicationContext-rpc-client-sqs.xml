@@ -26,7 +26,8 @@
     <property name="targetMethod" value="getLocation"/>
   </bean>
 
-  <bean id="camelRpcClientFactory" class="org.opennms.core.rpc.camel.CamelRpcClientFactory" primary="true" >
+  <bean id="camelRpcClientFactory" class="org.opennms.core.rpc.camel.CamelRpcClientFactory" primary="true"
+        init-method="start" destroy-method="stop" >
      <property name="location" ref="location"/>
   </bean>
 

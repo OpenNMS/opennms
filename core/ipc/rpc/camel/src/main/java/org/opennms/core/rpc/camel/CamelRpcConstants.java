@@ -34,4 +34,5 @@ public interface CamelRpcConstants {
     static final String JMS_REPLY_TO_QUEUE_NAME_HEADER = "JmsReplyToQueueName";
     static final String CAMEL_JMS_REQUEST_TIMEOUT_HEADER = "CamelJmsRequestTimeout";
     static final String JMS_SYSTEM_ID_HEADER = "SystemId";
+    static final String JMS_TRACING_INFO = "RpcTracingInfo";
 }

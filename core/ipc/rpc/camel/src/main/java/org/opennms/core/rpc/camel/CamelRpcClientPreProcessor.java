@@ -31,6 +31,7 @@ package org.opennms.core.rpc.camel;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.opennms.core.camel.JmsQueueNameFactory;
+import org.opennms.core.tracing.util.TracingInfoCarrier;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.core.utils.PropertiesUtils;
@@ -67,6 +68,13 @@ public class CamelRpcClientPreProcessor implements Processor {
         exchange.getIn().setHeader(CamelRpcConstants.CAMEL_JMS_REQUEST_TIMEOUT_HEADER, wrapper.getRequest().getTimeToLiveMs() != null ? wrapper.getRequest().getTimeToLiveMs() : CAMEL_JMS_REQUEST_TIMEOUT);
         if (wrapper.getRequest().getSystemId() != null) {
             exchange.getIn().setHeader(CamelRpcConstants.JMS_SYSTEM_ID_HEADER, wrapper.getRequest().getSystemId());
+        }
+        if(wrapper.getTracingInfo().size() > 0) {
+            // Message mapping between camel and JMS ignores non-primitive headers there by need for marshalling.
+            String tracingInfo = TracingInfoCarrier.marshalTracingInfo(wrapper.getTracingInfo());
+            if(tracingInfo != null) {
+                exchange.getIn().setHeader(CamelRpcConstants.JMS_TRACING_INFO, tracingInfo);
+            }
         }
         final String request = wrapper.getModule().marshalRequest((RpcRequest)wrapper.getRequest());
         exchange.getIn().setBody(request);

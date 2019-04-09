@@ -31,22 +31,21 @@ package org.opennms.core.tracing.api;
 import io.opentracing.Tracer;
 
 /**
- * This registry will fetch the tracer from any @{@link TracerWrapper} registered.
+ * This registry will fetch the tracer from any @{@link TracerWrapper} that was already registered.
  * If no @{@link TracerWrapper} is registered, it will get @{@link io.opentracing.noop.NoopTracer} from
  * {@link io.opentracing.util.GlobalTracer}
  */
 public interface TracerRegistry {
 
     /**
-     *
-     * @param serviceName Service that should be associated for tracing.
-     * @return Tracer that is registered or by default NoopTracer.
+     * {@link #init(String)} should be performed first otherwise it would return NoopTracer.
+     * @return Tracer that was registered by TracerWrapper or by default NoopTracer.
      */
-    Tracer getTracer(String serviceName);
+    Tracer getTracer();
 
     /**
-     * This will allow clients to fetch any new tracer that is registered after initialization.
-     * @return true if any tracer is registered.
+     * Initialize tracer registry with servicename.
+     * @param serviceName
      */
-    boolean isRegistered();
+    void init(String serviceName);
 }

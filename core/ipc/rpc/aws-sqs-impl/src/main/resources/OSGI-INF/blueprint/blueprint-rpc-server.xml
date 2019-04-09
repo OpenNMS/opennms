@@ -23,6 +23,8 @@
     <!-- Provided by minion-core -->
     <reference id="minionIdentity" interface="org.opennms.distributed.core.api.MinionIdentity" />
 
+    <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
+
     <reference id="sqsConfig" interface="org.opennms.core.ipc.common.aws.sqs.AmazonSQSConfig" />
 
     <bean id="sqsManager" class="org.opennms.core.ipc.common.aws.sqs.DefaultAmazonSQSManager">
@@ -49,6 +51,7 @@
         <argument ref="rpcServer"/>
         <argument ref="minionIdentity"/>
         <argument ref="sqsManager"/>
+        <argument ref="tracerRegistry"/>
     </bean>
 
     <reference-list id="rpcModulesRef" interface="org.opennms.core.rpc.api.RpcModule" availability="optional">
