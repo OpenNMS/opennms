@@ -1,0 +1,25 @@
+<div class="">
+    <form class="form" name="configForm">
+        <label>Status</label>
+
+        <toggle ng-model="config.enabled"
+                ng-change="toggleState(active)"
+                on="Enabled"
+                off="Disabled"
+                off-class="btn-danger"></toggle>
+
+        <div class="form-group" ng-if="config.enabled === true">
+            <label for="geocoderService">Geocoder Service</label>
+            <!-- TODO MVR define id -->
+            <select id="geocoderService"
+                    class="form-control custom-select"
+                    ng-model="config.activeGeocoderId"
+                    ng-required="true"
+                    ng-change="onGeocoderChange(config.activeGeocoderId)">
+                <option ng-repeat="geocoder in geocoders" value="{{geocoder.id}}">{{geocoder.name}}</option>
+            </select>
+        </div>
+
+        <button class="btn btn-primary" ng-click="save()" ng-disabled="!configForm.$dirty || configForm.$invalid">Save</button>
+    </form>
+</div>

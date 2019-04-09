@@ -9,7 +9,8 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
 
     <cm:property-placeholder id="geocoderConfig" persistent-id="org.opennms.features.geocoder" update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="geocoderId" value="noop" /> <!-- by default noop geocoder is used -->
+            <cm:property name="enabled" value="false" />
+            <cm:property name="activeGeocoderId" value="" /> <!-- by default no geocoder is used -->
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -18,10 +19,15 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
     <reference id="nodeStatusCalculator" interface="org.opennms.features.status.api.node.NodeStatusCalculator" availability="mandatory"/>
     <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
 
+    <bean id="geocoderServiceManagerConfig" class="org.opennms.features.geocoder.GeocoderServiceManagerConfiguration">
+        <property name="enabled" value="${enabled}" />
+        <property name="activeGeocoderId" value="${activeGeocoderId}" />
+    </bean>
+
     <bean id="geocoderServiceManager" class="org.opennms.features.geolocation.services.DefaultGeocoderServiceManager">
         <argument ref="blueprintBundleContext" />
         <argument ref="configAdmin" />
-        <argument value="${geocoderId}"/>
+        <argument ref="geocoderServiceManagerConfig"/>
     </bean>
     <service ref="geocoderServiceManager" interface="org.opennms.features.geocoder.GeocoderServiceManager">
         <service-properties>

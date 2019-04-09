@@ -33,12 +33,13 @@ import java.net.Proxy;
 import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.features.geocoder.Coordinates;
+import org.opennms.features.geocoder.GeocoderConfigurationException;
 import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderResult;
 import org.opennms.features.geocoder.GeocoderService;
@@ -50,12 +51,12 @@ import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 
 public class GoogleGeocoderService implements GeocoderService {
-    private int timeout; // in ms
-    private boolean useEnterpriseCredentials;
-    private boolean useSystemProxy;
-    private String clientId;
-    private String signature;
-    private String apiKey;
+
+    private final GoogleConfiguration configuration;
+
+    public GoogleGeocoderService(GoogleConfiguration configuration) {
+        this.configuration = Objects.requireNonNull(configuration);
+    }
 
     @Override
     public String getId() {
@@ -65,10 +66,10 @@ public class GoogleGeocoderService implements GeocoderService {
     @Override
     public synchronized GeocoderResult resolveAddress(final String address) throws GeocoderException {
         final GeoApiContext.Builder builder = new GeoApiContext.Builder()
-                .readTimeout(timeout, TimeUnit.MILLISECONDS)
-                .connectTimeout(timeout, TimeUnit.MILLISECONDS)
+                .readTimeout(configuration.getTimeout(), TimeUnit.MILLISECONDS)
+                .connectTimeout(configuration.getTimeout(), TimeUnit.MILLISECONDS)
                 .maxRetries(1);
-        if (useSystemProxy) {
+        if (configuration.isUseSystemProxy()) {
             try {
                 final Proxy proxy = selectProxy("https://maps.googleapis.com");
                 builder.proxy(proxy);
@@ -76,10 +77,10 @@ public class GoogleGeocoderService implements GeocoderService {
                 return new GeocoderResult(e);
             }
         }
-        if (useEnterpriseCredentials) {
-            builder.enterpriseCredentials(clientId, signature);
+        if (configuration.isUseEnterpriseCredentials()) {
+            builder.enterpriseCredentials(configuration.getClientId(), configuration.getSignature());
         } else {
-            builder.apiKey(apiKey);
+            builder.apiKey(configuration.getApiKey());
         }
         try {
             final GeoApiContext context = builder.build();
@@ -99,15 +100,13 @@ public class GoogleGeocoderService implements GeocoderService {
     }
 
     @Override
-    public Map<String, Object> getProperties() {
-        final Map<String, Object> properties = new HashMap<>();
-        properties.put("timeout", timeout);
-        properties.put("useEnterpriseCredentials", useEnterpriseCredentials);
-        properties.put("clientId", clientId);
-        properties.put("signature", signature);
-        properties.put("apiKey", apiKey);
-        properties.put("useSystemProxy", useSystemProxy);
-        return properties;
+    public GoogleConfiguration getConfiguration() {
+        return configuration;
+    }
+
+    @Override
+    public void validateConfiguration(Map<String, Object> properties) throws GeocoderConfigurationException {
+        GoogleConfiguration.fromMap(properties).validate();
     }
 
     private Proxy selectProxy(String targetUri) throws URISyntaxException {
@@ -116,29 +115,5 @@ public class GoogleGeocoderService implements GeocoderService {
                 .filter(proxy -> proxy.type() == Proxy.Type.DIRECT || proxy.type() == Proxy.Type.HTTP)
                 .findFirst()
                 .orElse(Proxy.NO_PROXY);
-    }
-
-    public void setTimeout(int timeout) {
-        this.timeout = timeout;
-    }
-
-    public void setUseEnterpriseCredentials(boolean useEnterpriseCredentials) {
-        this.useEnterpriseCredentials = useEnterpriseCredentials;
-    }
-
-    public void setUseSystemProxy(boolean useSystemProxy) {
-        this.useSystemProxy = useSystemProxy;
-    }
-
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
-
-    public void setSignature(String signature) {
-        this.signature = signature;
-    }
-
-    public void setApiKey(String apiKey) {
-        this.apiKey = apiKey;
     }
 }

@@ -15,7 +15,13 @@
     <module>google</module>
     <module>mapquest</module>
     <module>nominatim</module>
-    <module>noop</module>
     <module>rest</module>
   </modules>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>

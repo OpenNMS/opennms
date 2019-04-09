@@ -41,8 +41,11 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import org.opennms.features.geocoder.GeocoderConfiguration;
+import org.opennms.features.geocoder.GeocoderConfigurationException;
 import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.features.geocoder.GeocoderServiceManager;
+import org.opennms.features.geocoder.GeocoderServiceManagerConfiguration;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.cm.Configuration;
@@ -52,35 +55,37 @@ import org.osgi.service.cm.ConfigurationAdmin;
 public class DefaultGeocoderServiceManager implements GeocoderServiceManager {
 
     private static final String PID = "org.opennms.features.geocoder";
-    private static final String GEOCODER_ID_KEY = "geocoderId";
 
     private BundleContext bundleContext;
     private ConfigurationAdmin configurationAdmin;
-    private String activeGeocoderId;
+    private GeocoderServiceManagerConfiguration configuration;
 
-    public DefaultGeocoderServiceManager(BundleContext bundleContext, ConfigurationAdmin configurationAdmin, String currentGeocoderLookupString) {
+    public DefaultGeocoderServiceManager(BundleContext bundleContext, ConfigurationAdmin configurationAdmin, GeocoderServiceManagerConfiguration configuration) {
         this.bundleContext = Objects.requireNonNull(bundleContext);
         this.configurationAdmin = Objects.requireNonNull(configurationAdmin);
-        this.activeGeocoderId = Objects.requireNonNull(currentGeocoderLookupString);
+        this.configuration = Objects.requireNonNull(configuration);
     }
 
     @Override
-    public void setActiveGeocodingService(String geocoderId) throws IOException {
-        getGeocoderService(geocoderId); // Invoking this will ensure it exists
-
-        // If we reach this, no exception was thrown, so we persist the change, which will
-        // result in a bundle reload and then the new geocoderService will be used
+    public void updateConfiguration(GeocoderServiceManagerConfiguration newConfiguration) throws IOException {
         final Configuration configuration = configurationAdmin.getConfiguration(PID);
-        final Dictionary currentProperties = configuration.getProperties() == null ? new Hashtable<>() : configuration.getProperties();
-        if (!geocoderId.equals(currentProperties.get(GEOCODER_ID_KEY))) {
-            currentProperties.put(GEOCODER_ID_KEY, geocoderId);
+        final Dictionary<String, Object> currentProperties = configuration.getProperties() == null ? new Hashtable<>() : configuration.getProperties();
+
+        // Only update if changed
+        if (!Objects.equals(newConfiguration, configuration)) {
+            applyProperties(currentProperties, newConfiguration.asMap());
             configuration.update(currentProperties);
         }
     }
 
     @Override
+    public GeocoderServiceManagerConfiguration getConfiguration() {
+        return configuration;
+    }
+
+    @Override
     public GeocoderService getActiveGeocoderService() {
-        return getGeocoderService(activeGeocoderId);
+        return getGeocoderService(configuration.getActiveGeocoderId());
     }
 
     @Override
@@ -97,39 +102,49 @@ public class DefaultGeocoderServiceManager implements GeocoderServiceManager {
     }
 
     @Override
-    public void updateGeocoderConfiguration(String geocoderId, Map<String, Object> properties) throws IOException {
-        // Activate geocoder
-        setActiveGeocodingService(geocoderId);
+    public void updateGeocoderConfiguration(String geocoderId, Map<String, Object> newProperties) throws IOException, GeocoderConfigurationException {
+        final GeocoderService geocoderService = getGeocoderService(geocoderId);
+        final GeocoderConfiguration currentConfiguration = geocoderService.getConfiguration();
 
-        // Now update the configuration
-        // This will result in a bundle reload of the according bundle
-        // Please keep in mind, that the config pid of the geocoder must be PID + geocoderId
-        final String configPID = PID + "." + geocoderId;
-        final Configuration configuration = configurationAdmin.getConfiguration(configPID, null);
-        final Dictionary<String, Object> currentProperties = configuration.getProperties() != null ? configuration.getProperties() : new Hashtable<>();
-        properties.entrySet().forEach(e -> {
-            if (e.getValue() instanceof Boolean) {
-                currentProperties.put(e.getKey(), Boolean.toString((Boolean)e.getValue()));
-            } else {
-                currentProperties.put(e.getKey(), e.getValue());
+        // Only update if configuration has not yet changed
+        if (!Objects.equals(currentConfiguration.asMap(), newProperties)) {
+            geocoderService.validateConfiguration(newProperties);
+
+            // Updating the configuration will result in a bundle reload to which the configuration belongs
+            // Please keep in mind, that the config pid of the geocoder must be PID + geocoderId
+            final String configPID = PID + "." + geocoderId;
+            final Configuration configuration = configurationAdmin.getConfiguration(configPID, null);
+            final Dictionary<String, Object> currentProperties = configuration.getProperties() != null ? configuration.getProperties() : new Hashtable<>();
+            applyProperties(currentProperties, newProperties);
+
+            // Ensure file will be created if it does not yet exist
+            if (currentProperties.get("felix.fileinstall.filename") == null) {
+                final Path configFile = Paths.get(System.getProperty("karaf.etc"), configPID + ".cfg");
+                final Properties persistentProperties = new Properties();
+                newProperties.entrySet().forEach(e -> persistentProperties.put(e.getKey(), e.getValue().toString()));
+                persistentProperties.store(new FileOutputStream(configFile.toFile()), null);
             }
-        });
-        // Ensure file will be created if it does not yet exist
-        if (currentProperties.get("felix.fileinstall.filename") == null) {
-            final Path configFile = Paths.get(System.getProperty("karaf.etc"), configPID + ".cfg");
-            final Properties persistentProperties = new Properties();
-            properties.entrySet().forEach(e -> persistentProperties.put(e.getKey(), e.getValue().toString()));
-            persistentProperties.store(new FileOutputStream(configFile.toFile()), null);
+            configuration.update(currentProperties);
         }
-        configuration.update(currentProperties);
     }
 
-
-    private GeocoderService getGeocoderService(String geocoderId) {
+    @Override
+    public GeocoderService getGeocoderService(String geocoderId) {
         Objects.requireNonNull(geocoderId);
         final GeocoderService geocoderService = getGeocoderServices().stream()
                 .filter(service -> geocoderId.equalsIgnoreCase(service.getId())).findFirst()
                 .orElseThrow(() -> new NoSuchElementException("Could not find GeocoderService with id " + geocoderId));
         return geocoderService;
+    }
+
+    // Updates the currentProperties with values from newProperties. Deletes null values. Does not remove keys.
+    private static void applyProperties(Dictionary<String, Object> currentProperties, Map<String, Object> newProperties) {
+        newProperties.entrySet().forEach(e -> {
+            if (e.getValue() == null) {
+                currentProperties.remove(e.getKey());
+            } else {
+                currentProperties.put(e.getKey(), e.getValue().toString());
+            }
+        });
     }
 }

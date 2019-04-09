@@ -28,24 +28,46 @@
 
 package org.opennms.features.geocoder;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
-public interface GeocoderServiceManager {
+public class Configuration {
 
-    // TODO MVR no exception ???
-    void updateConfiguration(GeocoderServiceManagerConfiguration configuration) throws IOException;
 
-    // TODO MVR no exception ???
-    GeocoderServiceManagerConfiguration getConfiguration() throws IOException;
+    public static <T> T getValue(Map<String, Object> properties, String key, T defaultValue) {
+        final Object value = properties.get(key);
+        if (value == null) {
+            return defaultValue;
+        }
+        return (T) value;
+    }
 
-    GeocoderService getActiveGeocoderService();
+    public static Boolean getBoolean(Map<String, Object> properties, String key, Boolean defaultValue) {
+        Object value = properties.get(key);
+        if (value == null) {
+            return defaultValue;
+        }
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        if (value instanceof String) {
+            return Boolean.valueOf(((String) value).toLowerCase());
+        }
+        return defaultValue;
+    }
 
-    // TODO MVR no exception ???
-    void updateGeocoderConfiguration(String geocoderId, Map<String, Object> newProperties) throws IOException;
+    public static Integer getInteger(Map<String, Object> properties, String key, Integer defaultValue) {
+        Object value = properties.get(key);
+        if (value == null) {
+            return defaultValue;
+        }
+        if (value instanceof Integer) {
+            return (Integer)value;
+        }
+        if (value instanceof String) {
+            return Integer.valueOf(value.toString());
+        }
+        return defaultValue;
+    }
 
-    List<GeocoderService> getGeocoderServices();
 
-    GeocoderService getGeocoderService(String geocoderId);
 }

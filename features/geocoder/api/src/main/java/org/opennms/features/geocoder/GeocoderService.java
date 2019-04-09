@@ -56,9 +56,11 @@ public interface GeocoderService {
     GeocoderResult resolveAddress(final String address) throws GeocoderException;
 
     /**
-     * Returns configuration properties of the {@link GeocoderService}.
+     * Returns configuration of the {@link GeocoderService}.
      *
-     * @return configuration properties.
+     * @return configuration.
      */
-    Map<String, Object> getProperties();
+    GeocoderConfiguration getConfiguration();
+
+    void validateConfiguration(Map<String, Object> properties) throws GeocoderConfigurationException;
 }

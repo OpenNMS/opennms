@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -45,27 +44,19 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.features.geocoder.Coordinates;
+import org.opennms.features.geocoder.GeocoderConfigurationException;
 import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderResult;
 import org.opennms.features.geocoder.GeocoderService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
 public class NominatimGeocoderService implements GeocoderService {
 
-    private String referer;
-    private String urlTemplate;
-    private String userAgent;
-    private String emailAddress;
-    private boolean useSystemProxy;
-    private boolean acceptUsageTerms;
+    private final NominatimConfiguration configuration;
 
-    private Logger m_log = LoggerFactory.getLogger(getClass());
-
-    public NominatimGeocoderService() {
-
+    public NominatimGeocoderService(NominatimConfiguration configuration) {
+        this.configuration = Objects.requireNonNull(configuration);
     }
 
     @Override
@@ -75,21 +66,20 @@ public class NominatimGeocoderService implements GeocoderService {
 
     @Override
     public GeocoderResult resolveAddress(final String address) throws GeocoderException {
-        if (!acceptUsageTerms) {
+        if (!configuration.isAcceptUsageTerms()) {
             return new GeocoderResult(new GeocoderException("Cannot resolve coordinates. Usage Terms must be accepted before."));
         }
         try (HttpClientWrapper clientWrapper = HttpClientWrapper.create().dontReuseConnections()) {
-            if (useSystemProxy) {
+            if (configuration.isUseSystemProxy()) {
                 clientWrapper.useSystemProxySettings();
             }
-
-            final String url = buildUrl(emailAddress, address);
+            final String url = buildUrl(configuration.getEmailAddress(), address);
             final HttpUriRequest method = new HttpGet(url);
-            if (!Strings.isNullOrEmpty(userAgent)) {
-                method.addHeader("User-Agent", userAgent);
+            if (!Strings.isNullOrEmpty(configuration.getUserAgent())) {
+                method.addHeader("User-Agent", configuration.getUserAgent());
             }
-            if (!Strings.isNullOrEmpty(referer)) {
-                method.addHeader("Referer", referer);
+            if (!Strings.isNullOrEmpty(configuration.getReferer())) {
+                method.addHeader("Referer", configuration.getReferer());
             }
 
             try (CloseableHttpResponse response = clientWrapper.execute(method)) {
@@ -116,47 +106,22 @@ public class NominatimGeocoderService implements GeocoderService {
     }
 
     @Override
-    public Map<String, Object> getProperties() {
-        final Map<String, Object> properties = new HashMap<>();
-        properties.put("email", emailAddress);
-        properties.put("referer", referer);
-        properties.put("userAgent", userAgent);
-        properties.put("useSystemProxy", useSystemProxy);
-        properties.put("url", urlTemplate);
-        properties.put("acceptUsageTerms", acceptUsageTerms);
-        return properties;
+    public NominatimConfiguration getConfiguration() {
+        return configuration;
+    }
+
+    @Override
+    public void validateConfiguration(Map<String, Object> properties) throws GeocoderConfigurationException {
+        NominatimConfiguration.fromMap(properties).validate();
     }
 
     private String buildUrl(final String emailAddress, final String addressToResolve) throws UnsupportedEncodingException {
         Objects.requireNonNull(emailAddress);
         Objects.requireNonNull(addressToResolve);
-
-        final String url = urlTemplate.replaceAll("\\{email\\}", URLEncoder.encode(emailAddress, "UTF-8"))
-                                      .replaceAll("\\{query\\}", URLEncoder.encode(addressToResolve, "UTF-8"));
+        final String url = configuration.getUrlTemplate()
+                                .replaceAll("\\{email\\}", URLEncoder.encode(emailAddress, "UTF-8"))
+                                .replaceAll("\\{query\\}", URLEncoder.encode(addressToResolve, "UTF-8"));
         return url;
     }
 
-    public void setReferer(String referer) {
-        this.referer = referer;
-    }
-
-    public void setUrlTemplate(String urlTemplate) {
-        this.urlTemplate = urlTemplate;
-    }
-
-    public void setUserAgent(String userAgent) {
-        this.userAgent = userAgent;
-    }
-
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
-    }
-
-    public void setUseSystemProxy(boolean useSystemProxy) {
-        this.useSystemProxy = useSystemProxy;
-    }
-
-    public void setAcceptUsageTerms(boolean acceptUsageTerms) {
-        this.acceptUsageTerms = acceptUsageTerms;
-    }
 }

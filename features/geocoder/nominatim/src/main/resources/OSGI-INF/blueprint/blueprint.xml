@@ -8,7 +8,7 @@
 		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 	">
 
-	<cm:property-placeholder id="geocoderConfig" persistent-id="org.opennms.features.geocoder.nominatim" update-strategy="reload">
+	<cm:property-placeholder persistent-id="org.opennms.features.geocoder.nominatim" update-strategy="reload">
 		<cm:default-properties>
 			<!-- We don't want to set these by default, we want to fail if we don't find a valid email address. -->
 			<cm:property name="url" value="https://nominatim.openstreetmap.org/search?format=json&amp;email={email}&amp;limit=1&amp;q={query}" />
@@ -20,13 +20,16 @@
 		</cm:default-properties>
 	</cm:property-placeholder>
 
+	 <bean id="nominatimGeocoderConfig" class="org.opennms.features.geocoder.nominatim.NominatimConfiguration">
+		 <property name="urlTemplate" value="${url}" />
+		 <property name="emailAddress" value="${email}" />
+		 <property name="referer" value="${referer}" />
+		 <property name="userAgent" value="${userAgent}" />
+		 <property name="useSystemProxy" value="${useSystemProxy}" />
+		 <property name="acceptUsageTerms" value="${acceptUsageTerms}" />
+	 </bean>
 	<bean id="nominatimGeocoderService" class="org.opennms.features.geocoder.nominatim.NominatimGeocoderService">
-    	<property name="emailAddress" value="${email}" />
-        <property name="referer" value="${referer}" />
-		<property name="useSystemProxy" value="${useSystemProxy}" />
-		<property name="acceptUsageTerms" value="${acceptUsageTerms}" />
-		<property name="userAgent" value="${userAgent}" />
-		<property name="urlTemplate" value="${url}" />
+    	<argument ref="nominatimGeocoderConfig" />
 	</bean>
     <service interface="org.opennms.features.geocoder.GeocoderService"  ref="nominatimGeocoderService" />
 </blueprint>

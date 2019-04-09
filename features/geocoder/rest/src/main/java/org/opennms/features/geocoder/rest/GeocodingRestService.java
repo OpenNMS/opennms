@@ -28,6 +28,7 @@
 
 package org.opennms.features.geocoder.rest;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.ws.rs.Consumes;
@@ -46,18 +47,24 @@ import javax.ws.rs.core.Response;
 public interface GeocodingRestService {
 
     @GET
-    @Path("/")
-    @Produces("application/json")
-    Response listConfigurations();
+    @Path("/config")
+    Response getConfiguration() throws IOException;
+
+    @POST
+    @Path("/config")
+    Response updateConfiguration(InputStream inputStream) throws IOException;
+
+    @GET
+    @Path("/geocoders")
+    Response listGeocoderConfigurations();
+
+    @POST
+    @Path("/geocoders/{geocoderId}")
+    Response updateGeocoderConfiguration(@PathParam("geocoderId") final String geocoderId, InputStream inputStream);
 
     // TODO MVR make this query paramater
     // TODO MVR add query parameter for geocoderId
     @GET
-    @Path("/resolve")
-    @Produces("application/json")
+    @Path("/")
     Response resolveAddress(@QueryParam("query") final String addressToResolve);
-
-    @POST
-    @Path("/{geocoderId}")
-    Response updateConfiguration(@PathParam("geocoderId") final String geocoderId, InputStream inputStream);
 }

@@ -7,7 +7,7 @@
 		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 	">
 
-    <cm:property-placeholder id="googleGeocoderConfig" persistent-id="org.opennms.features.geocoder.google" update-strategy="reload">
+    <cm:property-placeholder persistent-id="org.opennms.features.geocoder.google" update-strategy="reload">
         <cm:default-properties>
             <cm:property name="clientId" value="" />
             <cm:property name="signature" value="" />
@@ -18,13 +18,17 @@
         </cm:default-properties>
     </cm:property-placeholder>
 
+	<bean id="googleGeocoderConfig" class="org.opennms.features.geocoder.google.GoogleConfiguration">
+		<property name="clientId" value="${clientId}"/>
+		<property name="signature" value="${signature}"/>
+		<property name="apiKey" value="${apiKey}"/>
+		<property name="useEnterpriseCredentials" value="${useEnterpriseCredentials}"/>
+		<property name="useSystemProxy" value="${useSystemProxy}"/>
+		<property name="timeout" value="${timeout}"/>
+	</bean>
+
 	<bean id="googleGeocoderService" class="org.opennms.features.geocoder.google.GoogleGeocoderService">
-		<property name="timeout" value="${timeout}" />
-		<property name="clientId" value="${clientId}" />
-		<property name="signature" value="${signature}" />
-		<property name="apiKey" value="${apiKey}" />
-		<property name="useEnterpriseCredentials" value="${useEnterpriseCredentials}" />
-		<property name="useSystemProxy" value="${useSystemProxy}" />
+		<argument ref="googleGeocoderConfig" />
 	</bean>
     <service interface="org.opennms.features.geocoder.GeocoderService" ref="googleGeocoderService" />
 

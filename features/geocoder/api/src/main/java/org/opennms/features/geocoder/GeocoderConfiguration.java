@@ -26,27 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.geocoder.noop;
+package org.opennms.features.geocoder;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-import org.opennms.features.geocoder.GeocoderResult;
-import org.opennms.features.geocoder.GeocoderService;
+public abstract class GeocoderConfiguration extends Configuration {
 
-public class NoOpGeocoderService implements GeocoderService {
+    public abstract void validate() throws GeocoderConfigurationException;
+
+    public abstract Map<String, Object> asMap();
+
     @Override
-    public String getId() {
-        return "noop";
+    public int hashCode() {
+        return Objects.hash(asMap());
     }
 
     @Override
-    public GeocoderResult resolveAddress(String address) {
-        return new GeocoderResult();
-    }
-
-    @Override
-    public Map<String, Object> getProperties() {
-        return new HashMap<>();
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null) return false;
+        if (obj instanceof GeocoderConfiguration) {
+            boolean equals = Objects.equals(asMap(), ((GeocoderConfiguration) obj).asMap());
+            return equals;
+        }
+        return false;
     }
 }

@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -45,18 +44,18 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.features.geocoder.Coordinates;
+import org.opennms.features.geocoder.GeocoderConfiguration;
+import org.opennms.features.geocoder.GeocoderConfigurationException;
 import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderResult;
 import org.opennms.features.geocoder.GeocoderService;
 
 public class MapquestGeocoderService implements GeocoderService {
-    private final String urlTemplate;
-    private final String apiKey;
-    private boolean useSystemProxy;
 
-    public MapquestGeocoderService(String urlTemplate, String apiKey) {
-        this.urlTemplate = urlTemplate;
-        this.apiKey = apiKey;
+    private final MapquestConfiguration configuration;
+
+    public MapquestGeocoderService(MapquestConfiguration configuration) {
+        this.configuration = Objects.requireNonNull(configuration);
     }
 
     @Override
@@ -67,10 +66,10 @@ public class MapquestGeocoderService implements GeocoderService {
     @Override
     public GeocoderResult resolveAddress(final String address) {
         try (HttpClientWrapper clientWrapper = HttpClientWrapper.create().dontReuseConnections()) {
-            if(useSystemProxy) {
+            if(configuration.isUseSystemProxy()) {
                 clientWrapper.useSystemProxySettings();
             }
-            final String requestUrl = buildURL(urlTemplate, apiKey, address);
+            final String requestUrl = buildURL(configuration.getUrlTemplate(), configuration.getApiKey(), address);
             final HttpUriRequest request = new HttpGet(requestUrl);
             try (CloseableHttpResponse response = clientWrapper.execute(request)) {
                 final StatusLine statusLine = response.getStatusLine();
@@ -102,26 +101,23 @@ public class MapquestGeocoderService implements GeocoderService {
         }
     }
 
+    @Override
+    public GeocoderConfiguration getConfiguration() {
+        return configuration;
+    }
+
+    @Override
+    public void validateConfiguration(Map<String, Object> properties) throws GeocoderConfigurationException {
+        MapquestConfiguration.fromMap(properties).validate();
+    }
+
     private String buildURL(String urlTemplate, String apiKey, String addressToResolve) throws UnsupportedEncodingException {
         Objects.requireNonNull(urlTemplate);
         Objects.requireNonNull(apiKey);
         Objects.requireNonNull(addressToResolve);
         final String url = urlTemplate.replaceAll("\\{apiKey\\}", apiKey)
-                                .replaceAll("\\{query\\}", URLEncoder.encode(addressToResolve, "UTF-8"));
+                .replaceAll("\\{query\\}", URLEncoder.encode(addressToResolve, "UTF-8"));
         return url;
-
     }
 
-    public void setUseSystemProxy(boolean useSystemProxy) {
-        this.useSystemProxy = useSystemProxy;
-    }
-
-    @Override
-    public Map<String, Object> getProperties() {
-        final Map<String, Object> properties = new HashMap<>();
-        properties.put("url", urlTemplate);
-        properties.put("apiKey", apiKey);
-        properties.put("useSystemProxy", useSystemProxy);
-        return properties;
-    }
 }

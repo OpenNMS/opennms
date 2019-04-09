@@ -1,4 +1,3 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -27,22 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
---%>
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="norequirejs" value="true" />
+package org.opennms.features.geocoder;
 
-    <jsp:param name="title" value="Flow Classification" />
-    <jsp:param name="headTitle" value="Flow Classification" />
-    <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-    <jsp:param name="breadcrumb" value="Geocoder Configuration" />
-</jsp:include>
+import java.text.MessageFormat;
+import java.util.Objects;
 
-<jsp:include page="/assets/load-assets.jsp" flush="false">
-    <jsp:param name="asset" value="onms-geoservice" />
-</jsp:include>
+public class GeocoderConfigurationException extends RuntimeException {
+    private final String context;
 
-<div ng-app="onms.geoservice" ui-view>
+    public GeocoderConfigurationException(String context, String message) {
+        super(Objects.requireNonNull(message));
+        this.context = Objects.requireNonNull(context);
+    }
 
-</div>
+    public GeocoderConfigurationException(String context, String messageFormat, Object... arguments) {
+        this(context, new MessageFormat(messageFormat).format(arguments));
+    }
 
-<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
+    @Override
+    public String getMessage() {
+        return this.context + ":" + super.getMessage();
+    }
+
+    public String getContext() {
+        return context;
+    }
+
+    public String getRawMessage() {
+        return super.getMessage();
+    }
+}

@@ -17,10 +17,13 @@
 		 </cm:default-properties>
 	 </cm:property-placeholder>
 
-	 <bean id="mapquestGeocoderService" class="org.opennms.features.geocoder.mapquest.MapquestGeocoderService">
-		 <argument value="${url}" />
-		 <argument value="${apiKey}" />
+	 <bean id="mapquestGeocoderConfig" class="org.opennms.features.geocoder.mapquest.MapquestConfiguration">
+		 <property name="urlTemplate" value="${url}"></property>
+		 <property name="apiKey" value="${apiKey}"></property>
 		 <property name="useSystemProxy" value="${useSystemProxy}"></property>
+	 </bean>
+	 <bean id="mapquestGeocoderService" class="org.opennms.features.geocoder.mapquest.MapquestGeocoderService">
+		 <argument ref="mapquestGeocoderConfig" />
 	 </bean>
 	 <service interface="org.opennms.features.geocoder.GeocoderService"  ref="mapquestGeocoderService" />
 

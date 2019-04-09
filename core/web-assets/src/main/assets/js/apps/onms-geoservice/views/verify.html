@@ -1,0 +1,14 @@
+<!-- TODO MVR hok this into the UI -->
+<div class="col-md-6">
+    <form class="form">
+        <label>Address</label>
+        <input class="form-control" type="text" ng-model="addressQuery" />
+        <button class="btn btn-primary" type="button" ng-click="verify()">Verify</button>
+    </form>
+    <div ng-if="resolvedAddress">
+        <pre>{{resolvedAddress}}</pre>
+        <iframe frameborder="0" src="{{getIframeSrc()}}" width="500px" height="500px"/>
+    </div>
+
+
+</div>
