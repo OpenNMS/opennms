@@ -68,6 +68,7 @@
                         name="nominatimAcceptUsageTerms"
                         on="Yes"
                         off="No"
+                        size="btn-sm"
                         ng-model="geocoder.config.acceptUsageTerms"
                         ng-class="{ 'is-invalid' : nominatimForm.nominatimAcceptUsageTerms.$invalid || geocoder.config.acceptUsageTerms === false || configError.acceptUsageTerms }"
                 />
@@ -79,6 +80,7 @@
                     name="nominatimSystemProxy"
                     on="Yes"
                     off="No"
+                    size="btn-sm"
                     ng-model="geocoder.config.useSystemProxy"
                     ng-class="{ 'is-invalid' : nominatimForm.nominatimSystemProxy.$invalid || configError.useSystemProxy }"
             />

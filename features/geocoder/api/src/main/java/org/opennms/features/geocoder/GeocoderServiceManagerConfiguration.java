@@ -34,9 +34,7 @@ import java.util.Map;
 public class GeocoderServiceManagerConfiguration extends Configuration {
 
     private static final String ACTIVE_GEOCODER_ID_KEY = "activeGeocoderId";
-    private static final String ENABLED_KEY = "enabled";
 
-    private boolean enabled;
     private String activeGeocoderId;
 
     public GeocoderServiceManagerConfiguration() {
@@ -45,19 +43,6 @@ public class GeocoderServiceManagerConfiguration extends Configuration {
 
     public GeocoderServiceManagerConfiguration(Map<String, Object> fromMap) {
         setActiveGeocoderId(getValue(fromMap, ACTIVE_GEOCODER_ID_KEY, null));
-        setEnabled(getBoolean(fromMap, ENABLED_KEY, false));
-        // If we are disabled, the activeGeocoderId should be null
-        if (!isEnabled() && getActiveGeocoderId() != null) {
-            setActiveGeocoderId(null);
-        }
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     public String getActiveGeocoderId() {
@@ -71,7 +56,6 @@ public class GeocoderServiceManagerConfiguration extends Configuration {
     public Map<String, Object> asMap() {
         final Map<String, Object> properties =  new HashMap<>();
         properties.put(ACTIVE_GEOCODER_ID_KEY, getActiveGeocoderId());
-        properties.put(ENABLED_KEY, isEnabled());
         return properties;
     }
 

@@ -4,7 +4,12 @@
     }
 </style>
 
-<div class="" class="w-100">
+<div class="alert alert-danger" ng-if="globalError">
+    <span>{{globalError}}</span>
+    <pre ng-show="globalErrorDetails">{{globalErrorDetails}}</pre>
+</div>
+
+<div class="" class="w-100" ng-if="!globalError">
     <ul id="tabs" class="nav nav-tabs">
         <li role="presentation" class="nav-item">
             <a ui-sref-active="active" ui-sref="geocoding.config" data-name="settings" class="nav-link">Settings</a>

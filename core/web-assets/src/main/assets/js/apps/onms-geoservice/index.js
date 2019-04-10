@@ -78,88 +78,56 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
 
         // TODO MVR error handling for all rest requests not implemented
         .controller('GeocoderController', ['$scope', '$http', '$sce', 'GeocodingConfigService', 'GeocodingGeocoderService', function($scope, $http, $sce, GeocodingConfigService, GeocodingGeocoderService) {
-            $scope.config = {
-                enabled : false,
-                activeGeocoderId: undefined
+
+            $scope.handleGlobalError = function(errorResponse) {
+                $scope.globalError = "An unexpected error occurred: " + errorResponse.statusText;
+                $scope.globalErrorDetails = JSON.stringify(errorResponse, null, 2);
             };
-            $scope.geocoders = [];
 
             $scope.refreshTabs = function() {
-                GeocodingConfigService.get(function(configResponse) {
+                $scope.config = {
+                    enabled: false,
+                    activeGeocoderId: undefined
+                };
+                $scope.geocoders = [];
+                $scope.globalError = undefined;
+
+                GeocodingConfigService.get(function (configResponse) {
                     $scope.config = configResponse;
-                    $scope.config.enabled = $scope.config.enabled === true || $scope.config.enabled === 'true'; // Convert to boolean
-                    $scope.config.activeGeocoderId = $scope.config.enabled ? $scope.config.activeGeocoderId : undefined; // ensure it is not set if disabled
-
-                    console.log("CONFIG", $scope.config);
-                    GeocodingGeocoderService.list(function(response) {
-                        console.log(response);
-                        if (response) {
-                            // Remove noop
-                            $scope.geocoders = response.filter(function(item) {
-                                return item.id !== 'noop'
-                            });
-                            $scope.geocoders.forEach(function(item) {
+                }, function (errorResponse) {
+                    $scope.handleGlobalError(errorResponse);
+                }).$promise
+                    .then(function () {
+                        return GeocodingGeocoderService.list(function (response) {
+                            $scope.geocoders = response;
+                            $scope.geocoders.forEach(function (item) {
                                 item.name = item.id;
+                                item.active = $scope.config.activeGeocoderId === item.id;
                             });
-                        }
-                    }, function(response) {
-                        console.log("ERROR2", response);
+                            $scope.geocoders.sort(function (a, b) {
+                                return a.name.localeCompare(b.name);
+                            });
+                        }, function (errorResponse) {
+                            $scope.handleGlobalError(errorResponse);
+                        }).$promise;
                     });
-
-                }, function(errorResponse) {
-                   console.log("ERROR", errorResponse);
-                });
             };
 
             $scope.refreshTabs();
         }])
 
-        // TODO MVR error handling for all rest requests not implemented
-        .controller('GeocoderConfigController', ['$scope', '$http', '$sce', 'GeocodingGeocoderService', function($scope, $http, $sce, GeocodingGeocoderService) {
-            $scope.save = function() {
-                console.log("Saved", $scope.config);
-                // TODO MVR only do stuff, if we actually made any changes
-
-                $scope.config.$update({}, function(response) {
-                    console.log("SAVED SUCCESSFUL", response);
-                    $scope.refreshTabs();
+        .controller('GeocoderConfigController', ['$scope', function($scope) {
+            $scope.onGeocoderChange = function(selection) {
+                $scope.config.activeGeocoderId = selection.active ? selection.id : undefined;
+                $scope.config.$update(function(response) {
+                    $scope.success = "Changes saved";
+                    $scope.geocoders.forEach(function(item) {
+                        item.active = $scope.config.activeGeocoderId === item.id;
+                    });
                 }, function(response) {
-                    console.log("SAVED FAILED", response);
+                    $scope.handleGlobalError(response);
                 });
             };
-
-            $scope.onGeocoderChange = function(selection) {
-                // $scope.config = {};
-                // $scope.config = $scope.geocoders.filter(function(item) {
-                //     return item.id == selection;
-                // })[0].config;
-                // $scope.activeGeocoder = selection;
-            };
-
-            // $scope.refresh = function() {
-            //     GeocodingGeocoderService.list(function(response) {
-            //         console.log(response);
-            //         $scope.config = {};
-            //         if (response) {
-            //             // Remove noop
-            //             $scope.geocoders = response.filter(function(item) {
-            //                return item.id !== 'noop'
-            //             });
-            //             $scope.geocoders.forEach(function(item) {
-            //                 item.name = item.id;
-            //             });
-            //             var activeGeocoder = response.filter(function(item) {
-            //                 return item.active === true;
-            //             })[0];
-            //             $scope.toggleState((activeGeocoder && activeGeocoder.id !== 'noop') || false);
-            //         }
-            //     }, function(response) {
-            //         console.log("ERROR", response);
-            //     });
-            // };
-            //
-            // $scope.refresh();
-
         }])
 
         .controller('GeocodingDetailsController', ['$scope', '$stateParams', function($scope, $stateParams) {
@@ -190,25 +158,28 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
                     if (!$scope.validateFieldsManually()) {
                         return;
                     }
-
                     // Now update
                     $scope.configError = {};
                     $scope.geocoder.$update(function () {
                         $scope.success = "Changes saved successfully."
                     }, function (response) {
-                        console.log("ERROR", response);
                         if (response.status === 400 && response.data) {
-                            $scope.configError[response.data.context] = response.data.message ? response.data.message : "Invalid value";
-                            console.log("WIUWIU", $scope.configError);
+                            if (response.data.context && response.data.message) {
+                                $scope.configError[response.data.context] = response.data.message;
+                            } else if (response.data.context) {
+                                $scope.configError[response.data.context] = "Invalid value";
+                            } else {
+                                // TODO MVR show this
+                                $scope.configError['entity'] = "The configuration is not valid. Details were not provided";
+                            }
                         } else {
-                            $scope.error = "An unexpected error occurred while saving the changes.";
+                            $scope.handleGlobalError(response);
                         }
                     });
                 }
             };
 
             // Some fields need manual validation
-            // TODO MVR only relevant for nominatim
             $scope.validateFieldsManually = function() {
                var manualValidation = $scope.manualValidation[$scope.geocoder.id];
                if (manualValidation) {
@@ -225,7 +196,6 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
                     $scope.geocoder = matchingGeocoders[0];
                 }
             });
-
             // TODO MVR block as long as geocoder is not initialized
 
         }])

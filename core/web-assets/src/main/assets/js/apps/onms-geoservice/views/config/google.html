@@ -78,6 +78,7 @@
                     ng-model="geocoder.config.useSystemProxy" 
                     on="Yes" 
                     off="No"
+                    size="btn-sm"
                     ng-class="{ 'is-invalid' : googleForm.googleSystemProxy.$invalid || configError.useSystemProxy }"
             />
             <p id="configError.useSystemProxy" class="invalid-feedback">{{configError.useSystemProxy}}</p>
