@@ -195,7 +195,8 @@ public class IfTttDaemonTest {
 
         addAlarm(12, null, EventConstants.BUSINESS_SERVICE_PROBLEM_UEI, OnmsSeverity.MINOR);
         addAlarm(13, null, EventConstants.BUSINESS_SERVICE_PROBLEM_UEI, OnmsSeverity.CRITICAL);
-        addAlarm(14, null, EventConstants.BUSINESS_SERVICE_PROBLEM_UEI, OnmsSeverity.MAJOR);
+        addAlarm(14, null, "", OnmsSeverity.CRITICAL);
+        addAlarm(15, null, EventConstants.BUSINESS_SERVICE_PROBLEM_UEI, OnmsSeverity.MAJOR);
     }
 
     @Test
@@ -265,8 +266,8 @@ public class IfTttDaemonTest {
         await().atMost(timeout, SECONDS).until(() -> allEntrySizesMatch(receivedEntries, entryCount - 2));
         LOG.debug("#1: {}", receivedEntries);
 
-        addAlarm(15, 4, OnmsSeverity.MAJOR);
-        addAlarm(16, 4, "uei.opennms.org/bsm/serviceProblem", OnmsSeverity.MAJOR);
+        addAlarm(100, 4, OnmsSeverity.MAJOR);
+        addAlarm(101, 4, "uei.opennms.org/bsm/serviceProblem", OnmsSeverity.MAJOR);
         when(alarmDao.findMatching((Criteria) Matchers.anyObject())).thenReturn(alarmMap.values().stream().collect(Collectors.toList()));
 
         await().atMost(timeout, SECONDS).until(() -> allEntrySizesMatch(receivedEntries, entryCount - 1));

@@ -39,6 +39,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.spring.FileReloadContainer;
@@ -164,26 +165,25 @@ public class IfTttDaemon {
             }
 
             private List<OnmsAlarm> filterAlarms(List<OnmsAlarm> alarms, TriggerPackage triggerPackage) {
+
+                Stream<OnmsAlarm> stream = alarms.stream();
+
                 if (triggerPackage.getOnlyUnacknowledged()) {
-                    return alarms.stream()
-                            .filter(alarm -> !alarm.isAcknowledged())
-                            .filter(alarm -> Strings.isNullOrEmpty(triggerPackage.getCategoryFilter()) || alarm.getNodeId() != null)
-                            .filter(alarm -> Strings.isNullOrEmpty(triggerPackage.getCategoryFilter()) ||
-                                    alarm.getNode().getCategories().stream()
-                                            .anyMatch(category -> category.getName().matches(triggerPackage.getCategoryFilter())))
-                            .filter(alarm -> Strings.isNullOrEmpty(triggerPackage.getUeiFilter()) ||
-                                    alarm.getUei().matches(triggerPackage.getUeiFilter()))
-                            .collect(Collectors.toList());
-                } else {
-                    return alarms.stream()
-                            .filter(alarm -> Strings.isNullOrEmpty(triggerPackage.getCategoryFilter()) || alarm.getNodeId() != null)
-                            .filter(alarm -> Strings.isNullOrEmpty(triggerPackage.getCategoryFilter()) ||
-                                    alarm.getNode().getCategories().stream()
-                                            .anyMatch(category -> category.getName().matches(triggerPackage.getCategoryFilter())))
-                            .filter(alarm -> Strings.isNullOrEmpty(triggerPackage.getUeiFilter()) ||
-                                    alarm.getUei().matches(triggerPackage.getUeiFilter()))
-                            .collect(Collectors.toList());
+                    stream = stream.filter(alarm -> !alarm.isAcknowledged());
                 }
+
+                if (!Strings.isNullOrEmpty(triggerPackage.getCategoryFilter())) {
+                    stream = stream
+                            .filter(alarm -> alarm.getNodeId() != null)
+                            .filter(alarm -> alarm.getNode().getCategories().stream()
+                                    .anyMatch(category -> category.getName().matches(triggerPackage.getCategoryFilter())));
+                }
+
+                if (!Strings.isNullOrEmpty(triggerPackage.getUeiFilter())) {
+                    stream = stream.filter(alarm -> alarm.getUei().matches(triggerPackage.getUeiFilter()));
+                }
+
+                return stream.collect(Collectors.toList());
             }
 
             @Override

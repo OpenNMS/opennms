@@ -35,6 +35,8 @@ import java.util.Objects;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
+import com.google.common.base.Strings;
+
 public class TriggerPackage {
     /**
      * category filter
@@ -64,7 +66,7 @@ public class TriggerPackage {
 
     @XmlAttribute
     public String getUeiFilter() {
-        return ueiFilter != null ? ueiFilter : ".*";
+        return Strings.isNullOrEmpty(ueiFilter) ? ".*" : ueiFilter;
     }
 
     public void setUeiFilter(final String ueiFilter) {
