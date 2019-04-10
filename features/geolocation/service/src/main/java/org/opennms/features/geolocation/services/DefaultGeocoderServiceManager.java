@@ -85,6 +85,9 @@ public class DefaultGeocoderServiceManager implements GeocoderServiceManager {
 
     @Override
     public GeocoderService getActiveGeocoderService() {
+        if (configuration.getActiveGeocoderId() == null) {
+            return null;
+        }
         return getGeocoderService(configuration.getActiveGeocoderId());
     }
 

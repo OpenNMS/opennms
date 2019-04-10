@@ -69,7 +69,7 @@ public class NominatimGeocoderService implements GeocoderService {
     }
 
     @Override
-    public GeocoderResult resolveAddress(final String address) throws GeocoderException {
+    public GeocoderResult resolveAddress(final String address) throws GeocoderConfigurationException {
         configuration.validate();
         LOG.debug("Configuration: {}", configuration.asMap());
         try (HttpClientWrapper clientWrapper = HttpClientWrapper.create().dontReuseConnections()) {
@@ -89,7 +89,7 @@ public class NominatimGeocoderService implements GeocoderService {
                 final StatusLine statusLine = response.getStatusLine();
                 LOG.trace("Invoking URL {} returned {}:{} => {}", url, statusLine.getStatusCode(), statusLine.getReasonPhrase(), statusLine.getStatusCode() == 200 ? "OK" : "NOK" );
                 if (statusLine.getStatusCode() != 200) {
-                    throw new GeocoderException("Nominatim returned a non-OK response code: " + statusLine.getStatusCode() + " " + statusLine.getReasonPhrase());
+                    return new GeocoderResult(new GeocoderException("Nominatim returned a non-OK response code: " + statusLine.getStatusCode() + " " + statusLine.getReasonPhrase()));
                 }
                 final InputStream responseStream = response.getEntity().getContent();
                 final JSONTokener tokener = new JSONTokener(responseStream);

@@ -68,7 +68,7 @@ public class MapquestGeocoderService implements GeocoderService {
     }
 
     @Override
-    public GeocoderResult resolveAddress(final String address) {
+    public GeocoderResult resolveAddress(final String address) throws GeocoderConfigurationException {
         configuration.validate();
         LOG.debug("Configuration: {}", configuration.asMap());
         try (HttpClientWrapper clientWrapper = HttpClientWrapper.create().dontReuseConnections()) {

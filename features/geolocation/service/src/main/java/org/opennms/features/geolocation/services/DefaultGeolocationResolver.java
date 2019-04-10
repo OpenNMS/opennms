@@ -37,8 +37,8 @@ import java.util.stream.Collectors;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.geocoder.GeocoderConfigurationException;
-import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderResult;
+import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.features.geocoder.GeocoderServiceManager;
 import org.opennms.features.geolocation.api.Coordinates;
 import org.opennms.features.geolocation.api.GeolocationResolver;
@@ -104,24 +104,30 @@ public class DefaultGeolocationResolver implements GeolocationResolver {
 
     @Override
     public Coordinates resolve(String addressString) {
-        // TODO MVR also return the result here ...
+        final GeocoderService activeGeocoder = geocoderServiceManager.getActiveGeocoderService();
+        if (activeGeocoder == null) {
+            LOG.warn("Error resolving address '{}': No active Geocoder", addressString);
+            return null;
+        }
         try {
-            GeocoderResult result = geocoderServiceManager.getActiveGeocoderService().resolveAddress(addressString);
+            final GeocoderResult result = activeGeocoder.resolveAddress(addressString);
             if (result.hasError()) {
-                LOG.error("Error resolving address {}: {}", addressString, result.getThrowable().getMessage(), result.getThrowable());
+                LOG.error("Error resolving address '{}': {}", addressString, result.getThrowable().getMessage(), result.getThrowable());
+                return null;
             }
             if (result.isEmpty()) {
-                LOG.warn("Address {} could not be resolved. Got an empty response from service", addressString);
+                LOG.warn("Error resolving address '{}': Response was empty", addressString);
                 return null;
             }
             org.opennms.features.geocoder.Coordinates coordinates = result.getCoordinates();
             return new Coordinates(coordinates.getLongitude(), coordinates.getLatitude());
-        } catch (GeocoderException e) {
-            LOG.warn("Couldn't resolve address '{}'", addressString, e);
         } catch (GeocoderConfigurationException ex) {
-            LOG.warn("Geocoder is not configured properly", ex);
+            LOG.warn("Error resolving address '{}': Active Geocoder with id {} is not configured properly", activeGeocoder.getId(), ex);
+            return null;
+        } catch (Exception ex) {
+            LOG.warn("Error resolving address '{}': An unexpected exception occurred", ex);
+            return null;
         }
-        return null;
     }
 
     private static OnmsGeolocation getGeoLocation(OnmsNode node) {

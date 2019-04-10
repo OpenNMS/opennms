@@ -49,7 +49,7 @@ public interface GeocoderService {
      * @return The result of the resolution
      * @throws GeocoderException
      */
-    GeocoderResult resolveAddress(final String address) throws GeocoderException;
+    GeocoderResult resolveAddress(final String address) throws GeocoderConfigurationException;
 
     /**
      * Returns configuration of the {@link GeocoderService}.
