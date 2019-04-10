@@ -65,6 +65,7 @@ public class MapquestGeocoderService implements GeocoderService {
 
     @Override
     public GeocoderResult resolveAddress(final String address) {
+        configuration.validate();
         try (HttpClientWrapper clientWrapper = HttpClientWrapper.create().dontReuseConnections()) {
             if(configuration.isUseSystemProxy()) {
                 clientWrapper.useSystemProxySettings();

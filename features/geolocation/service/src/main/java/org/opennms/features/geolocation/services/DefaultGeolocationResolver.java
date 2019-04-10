@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.features.geocoder.GeocoderConfigurationException;
 import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderResult;
 import org.opennms.features.geocoder.GeocoderServiceManager;
@@ -117,6 +118,8 @@ public class DefaultGeolocationResolver implements GeolocationResolver {
             return new Coordinates(coordinates.getLongitude(), coordinates.getLatitude());
         } catch (GeocoderException e) {
             LOG.warn("Couldn't resolve address '{}'", addressString, e);
+        } catch (GeocoderConfigurationException ex) {
+            LOG.warn("Geocoder is not configured properly", ex);
         }
         return null;
     }

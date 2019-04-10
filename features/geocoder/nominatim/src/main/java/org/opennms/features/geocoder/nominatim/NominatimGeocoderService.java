@@ -66,9 +66,7 @@ public class NominatimGeocoderService implements GeocoderService {
 
     @Override
     public GeocoderResult resolveAddress(final String address) throws GeocoderException {
-        if (!configuration.isAcceptUsageTerms()) {
-            return new GeocoderResult(new GeocoderException("Cannot resolve coordinates. Usage Terms must be accepted before."));
-        }
+        configuration.validate();
         try (HttpClientWrapper clientWrapper = HttpClientWrapper.create().dontReuseConnections()) {
             if (configuration.isUseSystemProxy()) {
                 clientWrapper.useSystemProxySettings();

@@ -64,7 +64,8 @@ public class GoogleGeocoderService implements GeocoderService {
     }
 
     @Override
-    public synchronized GeocoderResult resolveAddress(final String address) throws GeocoderException {
+    public synchronized GeocoderResult resolveAddress(final String address) {
+        configuration.validate();
         final GeoApiContext.Builder builder = new GeoApiContext.Builder()
                 .readTimeout(configuration.getTimeout(), TimeUnit.MILLISECONDS)
                 .connectTimeout(configuration.getTimeout(), TimeUnit.MILLISECONDS)
