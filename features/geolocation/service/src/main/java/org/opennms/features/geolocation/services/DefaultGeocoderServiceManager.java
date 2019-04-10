@@ -85,7 +85,7 @@ public class DefaultGeocoderServiceManager implements GeocoderServiceManager {
 
     @Override
     public GeocoderService getActiveGeocoderService() {
-        if (configuration.getActiveGeocoderId() == null) {
+        if (configuration.getActiveGeocoderId() == null || "".equals(configuration.getActiveGeocoderId())) {
             return null;
         }
         return getGeocoderService(configuration.getActiveGeocoderId());
@@ -136,7 +136,7 @@ public class DefaultGeocoderServiceManager implements GeocoderServiceManager {
         Objects.requireNonNull(geocoderId);
         final GeocoderService geocoderService = getGeocoderServices().stream()
                 .filter(service -> geocoderId.equalsIgnoreCase(service.getId())).findFirst()
-                .orElseThrow(() -> new NoSuchElementException("Could not find GeocoderService with id " + geocoderId));
+                .orElseThrow(() -> new NoSuchElementException("Could not find GeocoderService with id '" + geocoderId + "'"));
         return geocoderService;
     }
 

@@ -120,12 +120,13 @@ public class DefaultGeolocationResolver implements GeolocationResolver {
                 return null;
             }
             org.opennms.features.geocoder.Coordinates coordinates = result.getCoordinates();
+            LOG.debug("Successfully resolved address '{}': Active Geocoder with id '{}' resolved to long/lat: {}/{}", addressString, activeGeocoder.getId(), coordinates.getLongitude(), coordinates.getLatitude());
             return new Coordinates(coordinates.getLongitude(), coordinates.getLatitude());
         } catch (GeocoderConfigurationException ex) {
-            LOG.warn("Error resolving address '{}': Active Geocoder with id {} is not configured properly", activeGeocoder.getId(), ex);
+            LOG.warn("Error resolving address '{}': Active Geocoder with id '{}' is not configured properly", addressString, activeGeocoder.getId(), ex);
             return null;
         } catch (Exception ex) {
-            LOG.warn("Error resolving address '{}': An unexpected exception occurred", ex);
+            LOG.warn("Error resolving address '{}': An unexpected exception occurred", addressString, ex);
             return null;
         }
     }
