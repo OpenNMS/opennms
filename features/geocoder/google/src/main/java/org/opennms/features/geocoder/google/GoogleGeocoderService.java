@@ -43,6 +43,8 @@ import org.opennms.features.geocoder.GeocoderConfigurationException;
 import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderResult;
 import org.opennms.features.geocoder.GeocoderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
@@ -51,6 +53,8 @@ import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 
 public class GoogleGeocoderService implements GeocoderService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GoogleGeocoderService.class);
 
     private final GoogleConfiguration configuration;
 
@@ -66,6 +70,7 @@ public class GoogleGeocoderService implements GeocoderService {
     @Override
     public synchronized GeocoderResult resolveAddress(final String address) {
         configuration.validate();
+        LOG.debug("Configuration: {}", configuration.asMap());
         final GeoApiContext.Builder builder = new GeoApiContext.Builder()
                 .readTimeout(configuration.getTimeout(), TimeUnit.MILLISECONDS)
                 .connectTimeout(configuration.getTimeout(), TimeUnit.MILLISECONDS)
@@ -86,11 +91,16 @@ public class GoogleGeocoderService implements GeocoderService {
         try {
             final GeoApiContext context = builder.build();
             final GeocodingResult[] results = GeocodingApi.geocode(context, address).await();
-            if (results.length == 0) {
-                return new GeocoderResult(new GeocoderException("No result found")); // TODO MVR maybe empty response?
+            LOG.trace("API returned {} results. If multiple, first is used.", results.length);
+            if (results.length > 0 && results[0].geometry != null && results[0].geometry.location != null) {
+                final LatLng location = results[0].geometry.location;
+                LOG.trace("API returned a result with valid long/lat fields: {}/{}", location.lng, location.lat);
+                return new GeocoderResult(new Coordinates(location.lng, location.lat));
+            } else {
+                LOG.debug("API returned a result, but long/lat fields were missing: {}", results[0]);
             }
-            final LatLng location = results[0].geometry.location;
-            return new GeocoderResult(new Coordinates(location.lng, location.lat));
+            LOG.debug("Couldn't resolve coordinates for address {}", address);
+            return new GeocoderResult(new GeocoderException("No results found for address " + address));
         } catch (ApiException e) {
             return new GeocoderResult(e);
         } catch (InterruptedException e) {

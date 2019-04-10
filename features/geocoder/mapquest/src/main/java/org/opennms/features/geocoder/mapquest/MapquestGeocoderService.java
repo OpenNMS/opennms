@@ -49,8 +49,12 @@ import org.opennms.features.geocoder.GeocoderConfigurationException;
 import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderResult;
 import org.opennms.features.geocoder.GeocoderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MapquestGeocoderService implements GeocoderService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MapquestGeocoderService.class);
 
     private final MapquestConfiguration configuration;
 
@@ -66,6 +70,7 @@ public class MapquestGeocoderService implements GeocoderService {
     @Override
     public GeocoderResult resolveAddress(final String address) {
         configuration.validate();
+        LOG.debug("Configuration: {}", configuration.asMap());
         try (HttpClientWrapper clientWrapper = HttpClientWrapper.create().dontReuseConnections()) {
             if(configuration.isUseSystemProxy()) {
                 clientWrapper.useSystemProxySettings();
@@ -74,6 +79,7 @@ public class MapquestGeocoderService implements GeocoderService {
             final HttpUriRequest request = new HttpGet(requestUrl);
             try (CloseableHttpResponse response = clientWrapper.execute(request)) {
                 final StatusLine statusLine = response.getStatusLine();
+                LOG.trace("Invoking URL {} returned {}:{} => {}", requestUrl, statusLine.getStatusCode(), statusLine.getReasonPhrase(), statusLine.getStatusCode() == 200 ? "OK" : "NOK" );
                 if (statusLine.getStatusCode() != 200) {
                     return new GeocoderResult(
                         new GeocoderException("MapQuest returned a non-OK response code: " + statusLine.getStatusCode() + " " + statusLine.getReasonPhrase())
@@ -87,16 +93,23 @@ public class MapquestGeocoderService implements GeocoderService {
                         && jsonObject.getJSONArray("results").getJSONObject(0).has("locations")) {
                     final JSONArray locationResults = jsonObject.getJSONArray("results").getJSONObject(0).getJSONArray("locations");
                     if (locationResults.length() > 0) {
+                        LOG.trace("API returned {} of results. If multiple, the first is used.", locationResults.length());
                         final JSONObject location = (JSONObject) locationResults.get(0);
                         if (location.has("latLng")) {
                             final double lat = location.getJSONObject("latLng").getDouble("lat");
                             final double lng = location.getJSONObject("latLng").getDouble("lng");
+                            LOG.trace("API returned a result with valid long/lat fields: {}/{}", lng, lat);
                             return new GeocoderResult(new Coordinates(lng, lat));
+                        } else {
+                            LOG.trace("API returned a result which does not contain lon/lat fields: {}", location);
                         }
+                    } else {
+                        LOG.trace("API returned an empty result");
                     }
                 }
             }
-            return new GeocoderResult();
+            LOG.debug("Couldn't resolve coordinates for address {}", address);
+            return new GeocoderResult(new GeocoderException("No results found for address " + address));
         } catch (IOException e) {
             return new GeocoderResult(e);
         }

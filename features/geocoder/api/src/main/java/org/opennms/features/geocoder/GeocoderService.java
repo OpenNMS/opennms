@@ -30,7 +30,6 @@ package org.opennms.features.geocoder;
 
 import java.util.Map;
 
-// TODO MVR make the service return its configuration
 public interface GeocoderService {
 
     /**
@@ -38,9 +37,6 @@ public interface GeocoderService {
      * @return The unique identifier for this {@link GeocoderService}.
      */
     String getId();
-
-    // TODO MVR add label?
-    // TODO MVR add description?
 
     // TODO MVR remove Exception
 
