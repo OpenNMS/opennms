@@ -196,7 +196,8 @@ public class DiscoveryBridgeDomains extends Discovery {
                                       e.getMessage(),
                                       e.printTopology());
                         } catch (ConcurrentModificationException e) {
-                            LOG.error("run: bridge:[{}], saving topology failed: {}. {}", 
+                            LOG.error("run: bridge:[{}], saving topology failed: {}. {}",
+                                      nodebridgetopology,
                                       e.getMessage(),
                                       domain.printTopology());
                         }

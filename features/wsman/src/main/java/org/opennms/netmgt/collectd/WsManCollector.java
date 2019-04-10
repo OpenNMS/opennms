@@ -147,7 +147,7 @@ public class WsManCollector extends AbstractRemoteServiceCollector {
 
     @Override
     public CollectionSet collect(CollectionAgent agent, Map<String, Object> parameters) throws CollectionException {
-        LOG.debug("collect({}, {}, {})", agent, parameters);
+        LOG.debug("collect(agent={}, parameters={})", agent, parameters);
 
         final WsmanAgentConfig config = (WsmanAgentConfig)parameters.get(WSMAN_AGENT_CONFIG_KEY);
         final Groups groups = (Groups)parameters.get(WSMAN_GROUPS_KEY);
