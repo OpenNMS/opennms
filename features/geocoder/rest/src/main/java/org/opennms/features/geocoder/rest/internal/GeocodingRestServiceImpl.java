@@ -39,10 +39,7 @@ import javax.ws.rs.core.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderConfigurationException;
-import org.opennms.features.geocoder.GeocoderException;
-import org.opennms.features.geocoder.GeocoderResult;
 import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.features.geocoder.GeocoderServiceManager;
 import org.opennms.features.geocoder.GeocoderServiceManagerConfiguration;
@@ -117,39 +114,6 @@ public class GeocodingRestServiceImpl implements GeocodingRestService {
         } catch (IOException ex) {
             // TODO MVR add data
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .build();
-        }
-    }
-
-    @Override
-    public Response resolveAddress(final String addressToResolve) {
-        // TODO MVR make this return a result or something like that, so we know if there is no coordinate or
-        // if there was an error
-        try {
-            final GeocoderResult geocoderResult = geocoderServiceManager.getActiveGeocoderService().resolveAddress(addressToResolve);
-            if (geocoderResult.isEmpty() && !geocoderResult.hasError()) {
-                return Response.noContent().build();
-            }
-            if (geocoderResult.hasError()) {
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .header("content-type", "application/json")
-                        .entity("{\"error\": \"" + geocoderResult.getThrowable().getMessage() + "\"}")
-                        .build();
-            }
-            // TODO MVR convert
-            final Coordinates coordinates = geocoderResult.getCoordinates();
-            if (coordinates != null) {
-                return Response.ok()
-                        .header("content-type", "application/json")
-                        .entity("{ \"longitude\": " + coordinates.getLongitude() + ", \"latitude\": " + coordinates.getLatitude() + "}")
-                        .build();
-            }
-            return Response.noContent().build();
-        } catch (GeocoderException e) {
-            // TODO MVR return error object
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                  .header("content-type", "application/json")
-                    .entity("{\"error\": \"" + e.getMessage() + "\"}")
                     .build();
         }
     }

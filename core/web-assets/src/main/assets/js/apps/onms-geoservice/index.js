@@ -229,35 +229,5 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
             // TODO MVR block as long as geocoder is not initialized
 
         }])
-
-        .controller('TODOController', function($scope) {
-            $scope.addressQuery = "";
-
-            $scope.getIframeSrc = function() {
-                var iframeSrc = "http://maps.google.com/maps?output=embed&z=15&t=m&q=loc:" + encodeURIComponent($scope.resolvedAddress.latitude) +  "+" + encodeURIComponent($scope.resolvedAddress.longitude);
-                return $sce.trustAsResourceUrl(iframeSrc);
-            };
-
-            $scope.verify = function() {
-                if ($scope.addressQuery !== '') {
-                    $scope.resolvedAddress = undefined;
-                    // Simple GET request example:
-                    $http({
-                        method: 'GET',
-                        url: 'api/v2/geocoding/resolve',
-                        params: {query: $scope.addressQuery}
-                    }).then(function successCallback(response) {
-                        console.log("SUCCESS", response);
-                        $scope.resolvedAddress = response.data;
-                        // this callback will be called asynchronously
-                        // when the response is available
-                    }, function errorCallback(response) {
-                        // called asynchronously if an error occurs
-                        // or server returns response with an error status.
-                        console.log("ERROR", response);
-                    });
-                }
-            };
-        })
     ;
 }());

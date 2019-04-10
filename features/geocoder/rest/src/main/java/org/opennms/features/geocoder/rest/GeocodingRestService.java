@@ -37,7 +37,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 
@@ -62,9 +61,4 @@ public interface GeocodingRestService {
     @Path("/geocoders/{geocoderId}")
     Response updateGeocoderConfiguration(@PathParam("geocoderId") final String geocoderId, InputStream inputStream);
 
-    // TODO MVR make this query paramater
-    // TODO MVR add query parameter for geocoderId
-    @GET
-    @Path("/")
-    Response resolveAddress(@QueryParam("query") final String addressToResolve);
 }
