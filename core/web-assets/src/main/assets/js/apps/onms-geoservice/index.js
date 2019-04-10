@@ -20,15 +20,20 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
 
     angular.module(MODULE_NAME, [
             'angular-loading-bar',
+            'angular-growl',
             'ngResource',
             'ui.router',
             'ui.toggle',
             'onms.http',
             'onms.elementList',
         ])
-        .config( ['$locationProvider', function ($locationProvider) {
+        .config(['$locationProvider', function ($locationProvider) {
             $locationProvider.hashPrefix('!');
             $locationProvider.html5Mode(false);
+        }])
+        .config(['growlProvider', function(growlProvider) {
+            growlProvider.globalTimeToLive({success: 2000, error: 5000, warning: 3000, info: 4000});
+            growlProvider.globalPosition('bottom-center');
         }])
         .config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
             $stateProvider
@@ -48,7 +53,7 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
                         return require('./views/config/' + $stateParams.id + '.html');
                     },
                     url: '/:id',
-                    controller: 'GeocodingDetailsController'
+                    controller: 'GeocoderDetailsController'
                 })
             ;
             $urlRouterProvider.otherwise('/geocoding/config');
@@ -76,7 +81,6 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
             );
         })
 
-        // TODO MVR error handling for all rest requests not implemented
         .controller('GeocoderController', ['$scope', '$http', '$sce', 'GeocodingConfigService', 'GeocodingGeocoderService', function($scope, $http, $sce, GeocodingConfigService, GeocodingGeocoderService) {
 
             $scope.handleGlobalError = function(errorResponse) {
@@ -116,11 +120,11 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
             $scope.refreshTabs();
         }])
 
-        .controller('GeocoderConfigController', ['$scope', function($scope) {
+        .controller('GeocoderConfigController', ['$scope', 'growl', function($scope, growl) {
             $scope.onGeocoderChange = function(selection) {
                 $scope.config.activeGeocoderId = selection.active ? selection.id : undefined;
                 $scope.config.$update(function(response) {
-                    $scope.success = "Changes saved";
+                    growl.success('Changes saved successfully');
                     $scope.geocoders.forEach(function(item) {
                         item.active = $scope.config.activeGeocoderId === item.id;
                     });
@@ -130,7 +134,7 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
             };
         }])
 
-        .controller('GeocodingDetailsController', ['$scope', '$stateParams', function($scope, $stateParams) {
+        .controller('GeocoderDetailsController', ['$scope', '$stateParams', 'growl', function($scope, $stateParams, growl) {
             $scope.geocoder = undefined;
             $scope.configError = {};
             $scope.manualValidation = {
@@ -161,16 +165,15 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
                     // Now update
                     $scope.configError = {};
                     $scope.geocoder.$update(function () {
-                        $scope.success = "Changes saved successfully."
+                        growl.success('Changes saved successfully.');
                     }, function (response) {
                         if (response.status === 400 && response.data) {
                             if (response.data.context && response.data.message) {
                                 $scope.configError[response.data.context] = response.data.message;
                             } else if (response.data.context) {
-                                $scope.configError[response.data.context] = "Invalid value";
+                                $scope.configError[response.data.context] = 'Invalid value';
                             } else {
-                                // TODO MVR show this
-                                $scope.configError['entity'] = "The configuration is not valid. Details were not provided";
+                                growl.error('The configuration is not valid. Details were not provided');
                             }
                         } else {
                             $scope.handleGlobalError(response);

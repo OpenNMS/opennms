@@ -87,6 +87,7 @@
             <p id="configError.useSystemProxy" class="invalid-feedback">{{configError.useSystemProxy}}</p>
         </div>
 
-        <button class="btn btn-primary" ng-click="save()" ng-disabled="!nominatimForm.$dirty || nominatimForm.$invalid">Save</button>
+        <p class="text-warning" ng-if="nominatimForm.$dirty">You have unsaved changes</p>
+        <button class="btn btn-primary" type="button" ng-click="save()" ng-disabled="!nominatimForm.$dirty || nominatimForm.$invalid"><i class="fa fa-save"></i> Save</button>
     </form>
 </div>

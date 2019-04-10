@@ -1,18 +1,9 @@
 <div class="">
-
-    <div class="alert alert-success" ng-show="success">
-        <span>{{success}}</span>
-    </div>
-    <div class="alert alert-danger" ng-show="error">
-        <span>{{error}}</span>
-    </div>
-
     <form class="form" name="configForm">
         <div ng-repeat="geocoder in geocoders">
-            <div class="form-group row">
-                <label for="" class="col-sm-1 col-form-label">{{geocoder.id | capitalize}}</label>
-                <toggle class="col-sm-11"
-                        ng-change="onGeocoderChange(geocoder)"
+            <div class="form-group">
+                <label style="width: 100px">{{geocoder.id | capitalize}}</label>
+                <toggle ng-change="onGeocoderChange(geocoder)"
                         ng-model="geocoder.active"
                         on="Enabled"
                         off="Disabled"
