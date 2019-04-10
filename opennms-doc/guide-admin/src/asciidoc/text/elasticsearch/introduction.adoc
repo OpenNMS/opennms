@@ -64,6 +64,11 @@ The following properties can be set:
 | optional
 | -
 
+| _httpCompression_
+| Allows the use of HTTP compression.
+| optional
+| -
+
 | _retries_
 | Defines how many times an operation is retried before considered failed.
 | optional
