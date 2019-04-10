@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,8 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
-package org.opennms.netmgt.flows.elastic.health;
+package org.opennms.plugins.elasticsearch.rest;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -55,13 +54,16 @@ public class ElasticHealthCheck implements HealthCheck {
 
     private final JestClient client;
 
-    public ElasticHealthCheck(JestClient jestClient) {
+    private final String featureName;
+
+    public ElasticHealthCheck(JestClient jestClient, String featureName) {
         this.client = Objects.requireNonNull(jestClient);
+        this.featureName = Objects.requireNonNull(featureName);
     }
 
     @Override
     public String getDescription() {
-        return "Connecting to ElasticSearch ReST API (Flows)";
+        return "Connecting to ElasticSearch ReST API (" + featureName + ")";
     }
 
     @Override
@@ -79,4 +81,3 @@ public class ElasticHealthCheck implements HealthCheck {
         }
     }
 }
-

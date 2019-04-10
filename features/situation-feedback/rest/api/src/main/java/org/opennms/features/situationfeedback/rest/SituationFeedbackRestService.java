@@ -36,20 +36,26 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
 
-@Path("situation-feedback")
+@Path("/situation-feedback")
 public interface SituationFeedbackRestService {
 
     @GET
-    @Path("/{situationId}")
+    @Path("/tags")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Collection<String> getTags(@QueryParam("prefix") String prefix);
+
+    @GET
+    @Path("/{situationId : \\d+}")
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<AlarmFeedback> getFeedback(@PathParam("situationId") int situationId);
 
     @POST
-    @Path("/{situationId}")
+    @Path("/{situationId : \\d+}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public void setFeedback(@PathParam("situationId") int situationId, List<AlarmFeedback> feedback);
