@@ -173,7 +173,7 @@ public class DocumentEnricher {
 
                     return Optional.of(nodeInfo);
                 } else {
-                    LOG.warn("Node with id: {} at location: {} with IP address: {} is in the interface to node cache, but wasn't found in the database.");
+                    LOG.warn("Node with id: {} at location: {} with IP address: {} is in the interface to node cache, but wasn't found in the database.", nodeId, location, ipAddress);
                 }
             }
         }
