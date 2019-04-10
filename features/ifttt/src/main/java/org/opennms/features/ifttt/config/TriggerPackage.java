@@ -66,7 +66,7 @@ public class TriggerPackage {
 
     @XmlAttribute
     public String getUeiFilter() {
-        return Strings.isNullOrEmpty(ueiFilter) ? ".*" : ueiFilter;
+        return ueiFilter != null ? ueiFilter : "";
     }
 
     public void setUeiFilter(final String ueiFilter) {
