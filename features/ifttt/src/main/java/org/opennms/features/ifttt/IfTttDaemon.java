@@ -179,8 +179,10 @@ public class IfTttDaemon {
                                     .anyMatch(category -> category.getName().matches(triggerPackage.getCategoryFilter())));
                 }
 
-                if (!Strings.isNullOrEmpty(triggerPackage.getUeiFilter())) {
-                    stream = stream.filter(alarm -> alarm.getUei().matches(triggerPackage.getUeiFilter()));
+                if (!Strings.isNullOrEmpty(triggerPackage.getReductionKeyFilter())) {
+                    stream = stream
+                            .filter(alarm -> !Strings.isNullOrEmpty(alarm.getReductionKey()))
+                            .filter(alarm -> alarm.getReductionKey().matches(triggerPackage.getReductionKeyFilter()));
                 }
 
                 return stream.collect(Collectors.toList());

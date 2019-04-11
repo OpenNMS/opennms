@@ -41,11 +41,11 @@ public class TriggerPackage {
     /**
      * category filter
      */
-    private String categoryFilter;
+    private String categoryFilter = "";
     /**
      * uei filter
      */
-    private String ueiFilter;
+    private String reductionKeyFilter = "";
     /**
      * trigger sets for firing IFTTT events
      */
@@ -57,7 +57,7 @@ public class TriggerPackage {
 
     @XmlAttribute
     public String getCategoryFilter() {
-        return categoryFilter != null ? categoryFilter : "";
+        return categoryFilter;
     }
 
     public void setCategoryFilter(final String categoryFilter) {
@@ -65,12 +65,12 @@ public class TriggerPackage {
     }
 
     @XmlAttribute
-    public String getUeiFilter() {
-        return ueiFilter != null ? ueiFilter : "";
+    public String getReductionKeyFilter() {
+        return reductionKeyFilter;
     }
 
-    public void setUeiFilter(final String ueiFilter) {
-        this.ueiFilter = ueiFilter;
+    public void setReductionKeyFilter(final String reductionKeyFilter) {
+        this.reductionKeyFilter = reductionKeyFilter;
     }
 
     @XmlAttribute
@@ -108,17 +108,27 @@ public class TriggerPackage {
         final TriggerPackage that = (TriggerPackage) o;
 
         return Objects.equals(categoryFilter, that.categoryFilter) &&
-                Objects.equals(ueiFilter, that.ueiFilter) &&
+                Objects.equals(reductionKeyFilter, that.reductionKeyFilter) &&
                 Objects.equals(triggerSets, that.triggerSets) &&
                 Objects.equals(onlyUnacknowledged, that.onlyUnacknowledged);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(categoryFilter, ueiFilter, triggerSets, onlyUnacknowledged);
+        return Objects.hash(categoryFilter, reductionKeyFilter, triggerSets, onlyUnacknowledged);
     }
 
     public String getFilterKey() {
-        return getCategoryFilter() + " / " + getUeiFilter();
+        return getCategoryFilter() + " / " + getReductionKeyFilter();
+    }
+
+    @Override
+    public String toString() {
+        return "TriggerPackage{" +
+                "categoryFilter='" + categoryFilter + '\'' +
+                ", reductionKeyFilter='" + reductionKeyFilter + '\'' +
+                ", triggerSets=" + triggerSets +
+                ", onlyUnacknowledged=" + onlyUnacknowledged +
+                '}';
     }
 }
