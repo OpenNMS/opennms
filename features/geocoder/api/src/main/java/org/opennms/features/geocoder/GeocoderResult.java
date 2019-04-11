@@ -28,20 +28,12 @@
 
 package org.opennms.features.geocoder;
 
-// TODO MVR add a result builder and make this a bit nicer
 public class GeocoderResult {
-    private Coordinates result;
+    private String address;
+    private Coordinates coordinates;
     private Throwable throwable;
 
-    public GeocoderResult(Coordinates coordinates) {
-        this.result = coordinates;
-    }
-
-    public GeocoderResult(Throwable throwable) {
-        this.throwable = throwable;
-    }
-
-    public GeocoderResult() {
+    private GeocoderResult() {
     }
 
     public boolean hasError() {
@@ -49,7 +41,7 @@ public class GeocoderResult {
     }
 
     public boolean isEmpty() {
-        return result == null;
+        return coordinates == null;
     }
 
     public Throwable getThrowable() {
@@ -57,6 +49,88 @@ public class GeocoderResult {
     }
 
     public Coordinates getCoordinates() {
-        return result;
+        return coordinates;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    private void setAddress(String address) {
+        this.address = address;
+    }
+
+    private void setCoordinates(Coordinates coordinates) {
+        this.coordinates = coordinates;
+    }
+
+    private void setError(String errorMessage) {
+        setError(new GeocoderException(errorMessage));
+    }
+
+    private void setError(Throwable throwable) {
+        this.throwable = throwable;
+    }
+
+
+    public static GeocoderResult.Builder builder() {
+        return new Builder();
+    }
+
+    public static GeocoderResult.Builder success(String address, double lng, double lat) {
+        return new Builder().withAddress(address).withCoordinates(lng, lat);
+    }
+
+    public static GeocoderResult.Builder noResult(String address) {
+        return new Builder().withAddress(address).noResult();
+    }
+    public static Builder error(String errorMessage) {
+        return new Builder().withError(errorMessage);
+    }
+
+    public static Builder error(Exception exception) {
+        return new Builder().withError(exception);
+    }
+
+    public static class Builder {
+        final GeocoderResult result = new GeocoderResult();
+
+        private Builder() {
+
+        }
+
+        public Builder noResult() {
+            if (result.getAddress() != null) {
+                result.setError(String.format("No results found for address '%s'", result.getAddress()));
+            } else {
+                result.setError("No results found for address");
+            }
+            return this;
+        }
+
+        public Builder withAddress(String address) {
+            result.setAddress(address);
+            return this;
+        }
+
+        public Builder withCoordinates(double lng, double lat) {
+            result.setCoordinates(new Coordinates(lng, lat));
+            return this;
+        }
+
+        public Builder withError(String errorMessage) {
+            result.setError(errorMessage);
+            return this;
+        }
+
+        public Builder withError(Throwable t) {
+            result.setError(t);
+            return this;
+        }
+
+        public GeocoderResult build() {
+            return result;
+        }
+
     }
 }

@@ -38,9 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderConfigurationException;
-import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderResult;
 import org.opennms.features.geocoder.GeocoderService;
 import org.slf4j.Logger;
@@ -76,11 +74,12 @@ public class GoogleGeocoderService implements GeocoderService {
                 .connectTimeout(configuration.getTimeout(), TimeUnit.MILLISECONDS)
                 .maxRetries(1);
         if (configuration.isUseSystemProxy()) {
+            final String targetUrl = "https://maps.googleapis.com";
             try {
-                final Proxy proxy = selectProxy("https://maps.googleapis.com");
+                final Proxy proxy = selectProxy(targetUrl);
                 builder.proxy(proxy);
             } catch (URISyntaxException e) {
-                return new GeocoderResult(e);
+                return GeocoderResult.error("Couldn't find proxy for URL: '" + targetUrl + "'").build();
             }
         }
         if (configuration.isUseEnterpriseCredentials()) {
@@ -95,18 +94,14 @@ public class GoogleGeocoderService implements GeocoderService {
             if (results.length > 0 && results[0].geometry != null && results[0].geometry.location != null) {
                 final LatLng location = results[0].geometry.location;
                 LOG.trace("API returned a result with valid long/lat fields: {}/{}", location.lng, location.lat);
-                return new GeocoderResult(new Coordinates(location.lng, location.lat));
+                return GeocoderResult.success(address, location.lng, location.lat).build();
             } else {
                 LOG.debug("API returned a result, but long/lat fields were missing: {}", results[0]);
             }
             LOG.debug("Couldn't resolve coordinates for address {}", address);
-            return new GeocoderResult(new GeocoderException("No results found for address " + address));
-        } catch (ApiException e) {
-            return new GeocoderResult(e);
-        } catch (InterruptedException e) {
-            return new GeocoderResult(e);
-        } catch (IOException e) {
-            return new GeocoderResult(e);
+            return GeocoderResult.noResult(address).build();
+        } catch (ApiException | InterruptedException | IOException e) {
+            return GeocoderResult.error(e).build();
         }
     }
 

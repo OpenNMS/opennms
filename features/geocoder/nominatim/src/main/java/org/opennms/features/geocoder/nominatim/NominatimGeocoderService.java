@@ -43,9 +43,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.opennms.core.web.HttpClientWrapper;
-import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderConfigurationException;
-import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderResult;
 import org.opennms.features.geocoder.GeocoderService;
 import org.slf4j.Logger;
@@ -89,7 +87,9 @@ public class NominatimGeocoderService implements GeocoderService {
                 final StatusLine statusLine = response.getStatusLine();
                 LOG.trace("Invoking URL {} returned {}:{} => {}", url, statusLine.getStatusCode(), statusLine.getReasonPhrase(), statusLine.getStatusCode() == 200 ? "OK" : "NOK" );
                 if (statusLine.getStatusCode() != 200) {
-                    return new GeocoderResult(new GeocoderException("Nominatim returned a non-OK response code: " + statusLine.getStatusCode() + " " + statusLine.getReasonPhrase()));
+                    return GeocoderResult.error(String.format("Nominatim returned a non-OK response code: %s: %s",
+                            statusLine.getStatusCode(),
+                            statusLine.getReasonPhrase())).build();
                 }
                 final InputStream responseStream = response.getEntity().getContent();
                 final JSONTokener tokener = new JSONTokener(responseStream);
@@ -101,7 +101,7 @@ public class NominatimGeocoderService implements GeocoderService {
                         final Float longitude = result.getFloat("lon");
                         final Float latitude = result.getFloat("lat");
                         LOG.trace("API returned a result with valid long/lat fields: {}/{}", longitude, latitude);
-                        return new GeocoderResult(new Coordinates(longitude, latitude));
+                        return GeocoderResult.success(address, longitude, latitude).build();
                     } else {
                         LOG.trace("API returned a result which does not contain lon/lat fields: {}", result);
                     }
@@ -109,10 +109,10 @@ public class NominatimGeocoderService implements GeocoderService {
                     LOG.trace("API returned an empty result");
                 }
                 LOG.debug("Couldn't resolve coordinates for address {}", address);
-                return new GeocoderResult(new GeocoderException("No results found for address " + address));
+                return GeocoderResult.noResult(address).build();
             }
         } catch (IOException e) {
-            return new GeocoderResult(e);
+            return GeocoderResult.error(e).build();
         }
     }
 

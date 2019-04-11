@@ -43,10 +43,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.opennms.core.web.HttpClientWrapper;
-import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderConfiguration;
 import org.opennms.features.geocoder.GeocoderConfigurationException;
-import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderResult;
 import org.opennms.features.geocoder.GeocoderService;
 import org.slf4j.Logger;
@@ -81,9 +79,9 @@ public class MapquestGeocoderService implements GeocoderService {
                 final StatusLine statusLine = response.getStatusLine();
                 LOG.trace("Invoking URL {} returned {}:{} => {}", requestUrl, statusLine.getStatusCode(), statusLine.getReasonPhrase(), statusLine.getStatusCode() == 200 ? "OK" : "NOK" );
                 if (statusLine.getStatusCode() != 200) {
-                    return new GeocoderResult(
-                        new GeocoderException("MapQuest returned a non-OK response code: " + statusLine.getStatusCode() + " " + statusLine.getReasonPhrase())
-                    );
+                    return GeocoderResult.error(String.format("MapQuest returned a non-OK response code: %s: %s",
+                            statusLine.getStatusCode(),
+                            statusLine.getReasonPhrase())).build();
                 }
                 final InputStream responseStream = response.getEntity().getContent();
                 final JSONTokener jsonTokener = new JSONTokener(responseStream);
@@ -99,7 +97,7 @@ public class MapquestGeocoderService implements GeocoderService {
                             final double lat = location.getJSONObject("latLng").getDouble("lat");
                             final double lng = location.getJSONObject("latLng").getDouble("lng");
                             LOG.trace("API returned a result with valid long/lat fields: {}/{}", lng, lat);
-                            return new GeocoderResult(new Coordinates(lng, lat));
+                            return GeocoderResult.success(address, lng, lat).build();
                         } else {
                             LOG.trace("API returned a result which does not contain lon/lat fields: {}", location);
                         }
@@ -109,9 +107,9 @@ public class MapquestGeocoderService implements GeocoderService {
                 }
             }
             LOG.debug("Couldn't resolve coordinates for address {}", address);
-            return new GeocoderResult(new GeocoderException("No results found for address " + address));
+            return GeocoderResult.noResult(address).build();
         } catch (IOException e) {
-            return new GeocoderResult(e);
+            return GeocoderResult.error(e).build();
         }
     }
 
