@@ -30,7 +30,6 @@
   <reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" />
   <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
   <reference id="onmsTopologyDao" interface="org.opennms.netmgt.topologies.service.api.OnmsTopologyDao" availability="mandatory"/>
-  <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" />
 
   <bean id="nodeDaoImpl" class="org.opennms.features.apilayer.dao.NodeDaoImpl">
     <argument ref="nodeDao"/>
@@ -39,7 +38,7 @@
   <service interface="org.opennms.integration.api.v1.dao.NodeDao" ref="nodeDaoImpl"/>
 
   <bean id="nodeCriteriaCache" class="org.opennms.features.apilayer.utils.NodeCriteriaLoadingCacheImpl">
-    <argument ref="transactionOperations"/>
+    <argument ref="sessionUtils"/>
     <argument ref="nodeDao"/>
     <argument value="${nodeIdToCriteriaMaxCacheSize}"/>
   </bean>

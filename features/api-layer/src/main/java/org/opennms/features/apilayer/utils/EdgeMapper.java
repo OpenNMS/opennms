@@ -28,6 +28,8 @@
 
 package org.opennms.features.apilayer.utils;
 
+import java.util.Objects;
+
 import org.opennms.integration.api.v1.model.Node;
 import org.opennms.integration.api.v1.model.TopologyEdge;
 import org.opennms.integration.api.v1.model.TopologyPort;
@@ -45,7 +47,7 @@ public class EdgeMapper {
     private final NodeCriteriaCache nodeCriteriaCache;
 
     public EdgeMapper(NodeCriteriaCache nodeCriteriaCache) {
-        this.nodeCriteriaCache = nodeCriteriaCache;
+        this.nodeCriteriaCache = Objects.requireNonNull(nodeCriteriaCache);
     }
 
     public TopologyEdge toEdge(OnmsTopologyProtocol protocol, OnmsTopologyEdge edge) {

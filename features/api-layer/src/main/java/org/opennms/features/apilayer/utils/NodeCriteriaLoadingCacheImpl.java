@@ -34,8 +34,8 @@ import java.util.Optional;
 import org.opennms.integration.api.v1.model.NodeCriteria;
 import org.opennms.integration.api.v1.model.immutables.ImmutableNodeCriteria;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsNode;
-import org.springframework.transaction.support.TransactionOperations;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -44,14 +44,13 @@ import com.google.common.cache.LoadingCache;
 public class NodeCriteriaLoadingCacheImpl implements NodeCriteriaCache {
     private final LoadingCache<Long, NodeCriteria> nodeIdToCriteriaCache;
 
-    public NodeCriteriaLoadingCacheImpl(TransactionOperations transactionOperations,
-                                        NodeDao nodeDao, long nodeIdToCriteriaMaxCacheSize) {
+    public NodeCriteriaLoadingCacheImpl(SessionUtils sessionUtils, NodeDao nodeDao, long nodeIdToCriteriaMaxCacheSize) {
         //noinspection NullableProblems
         nodeIdToCriteriaCache = CacheBuilder.newBuilder()
                 .maximumSize(nodeIdToCriteriaMaxCacheSize)
                 .build(new CacheLoader<Long, NodeCriteria>() {
                     public NodeCriteria load(Long nodeId) {
-                        return transactionOperations.execute(status -> {
+                        return sessionUtils.withTransaction(() -> {
                             Objects.requireNonNull(nodeId);
                             final OnmsNode node = nodeDao.get(nodeId.intValue());
                             if (node != null && node.getForeignId() != null && node.getForeignSource() != null) {
