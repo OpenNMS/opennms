@@ -35,10 +35,12 @@ import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
 import org.opennms.core.rpc.api.RpcExceptionHandler;
 import org.opennms.core.rpc.api.RpcExceptionUtils;
+import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.echo.EchoRequest;
 import org.opennms.core.rpc.echo.EchoResponse;
 import org.opennms.core.rpc.echo.EchoRpcModule;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -85,6 +87,10 @@ public class MinionRpcMonitor extends AbstractServiceMonitor implements RpcExcep
         request.setLocation(node.getLocation().getLocationName());
         request.setSystemId(node.getForeignId());
         request.setTimeToLiveMs(ttlInMs);
+        request.addTracingInfo(RpcRequest.TAG_NODE_ID, String.valueOf(node.getId()));
+        request.addTracingInfo(RpcRequest.TAG_NODE_LABEL, node.getLabel());
+        request.addTracingInfo(RpcRequest.TAG_CLASS_NAME, MinionRpcMonitor.class.getCanonicalName());
+        request.addTracingInfo(RpcRequest.TAG_IP_ADDRESS, InetAddressUtils.toIpAddrString(svc.getAddress()));
 
         try {
             final EchoResponse response = client.execute(request).get();

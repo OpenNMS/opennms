@@ -29,7 +29,9 @@
 package org.opennms.netmgt.snmp.proxy.common;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -66,6 +68,8 @@ public class SnmpRequestDTO implements RpcRequest {
 
     @XmlTransient
     private Long timeToLive;
+
+    private Map<String, String> tracingInfo = new HashMap<>();
 
     @Override
     public String getLocation() {
@@ -128,6 +132,15 @@ public class SnmpRequestDTO implements RpcRequest {
     @Override
     public Long getTimeToLiveMs() {
         return timeToLive;
+    }
+
+    @Override
+    public Map<String, String> getTracingInfo() {
+        return tracingInfo;
+    }
+
+    public void addTracingInfo(String key, String value) {
+        tracingInfo.put(key, value);
     }
 
     @Override

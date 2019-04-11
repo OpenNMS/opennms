@@ -81,6 +81,8 @@ public class PollerRequestDTO implements RpcRequest, PollerRequest{
 
     private Long timeToLiveMs;
 
+    private Map<String, String> tracingInfo = new HashMap<>();
+
     @Override
     public String getLocation() {
         return location;
@@ -197,6 +199,15 @@ public class PollerRequestDTO implements RpcRequest, PollerRequest{
     @Override
     public Long getTimeToLiveMs() {
         return timeToLiveMs;
+    }
+
+    @Override
+    public Map<String, String> getTracingInfo() {
+        return tracingInfo;
+    }
+
+    public void addTracingInfo(String key, String value) {
+        tracingInfo.put(key, value);
     }
 
     @Override

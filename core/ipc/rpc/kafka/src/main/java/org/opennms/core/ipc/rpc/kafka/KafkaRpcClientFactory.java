@@ -156,6 +156,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                         KafkaRpcConstants.RPC_REQUEST_TOPIC_NAME, module.getId(), request.getLocation());
                 String requestTopic = topicNameFactory.getName();
                 String marshalRequest = module.marshalRequest(request);
+                request.getTracingInfo().forEach(span::setTag);
                 // Generate RPC Id for every request to track request/response.
                 String rpcId = UUID.randomUUID().toString();
                 span.setTag(TAG_LOCATION, request.getLocation());

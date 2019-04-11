@@ -99,6 +99,7 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                 if(request.getSystemId() != null) {
                     span.setTag(TAG_SYSTEM_ID, request.getSystemId());
                 }
+                request.getTracingInfo().forEach(span::setTag);
                 TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
                 tracer.inject(span.context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
                 // Wrap the request in a CamelRpcRequest and forward it to the Camel route
