@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.opennms.features.apilayer.utils.EdgeMapper;
 import org.opennms.features.apilayer.utils.ModelMappers;
 import org.opennms.integration.api.v1.dao.EdgeDao;
 import org.opennms.integration.api.v1.model.TopologyEdge;
@@ -47,9 +48,11 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
  */
 public class EdgeDaoImpl implements EdgeDao {
     private final OnmsTopologyDao onmsTopologyDao;
+    private final EdgeMapper edgeMapper;
 
-    public EdgeDaoImpl(OnmsTopologyDao onmsTopologyDao) {
+    public EdgeDaoImpl(OnmsTopologyDao onmsTopologyDao, EdgeMapper edgeMapper) {
         this.onmsTopologyDao = Objects.requireNonNull(onmsTopologyDao);
+        this.edgeMapper = Objects.requireNonNull(edgeMapper);
     }
 
     private static boolean includeAll(OnmsTopologyProtocol protocol) {
@@ -73,7 +76,7 @@ public class EdgeDaoImpl implements EdgeDao {
                 .filter(entry -> filter.test(entry.getKey()))
                 .forEach(entry -> entry.getValue().getEdges()
                         .stream()
-                        .map(edge -> ModelMappers.toEdge(entry.getKey(), edge))
+                        .map(edge -> edgeMapper.toEdge(entry.getKey(), edge))
                         .forEach(currentEdges::add));
         return currentEdges;
     }

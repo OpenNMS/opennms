@@ -30,15 +30,20 @@ package org.opennms.features.apilayer.utils;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.opennms.topologies.service.api.EdgeMockUtil.PROTOCOL;
 import static org.opennms.topologies.service.api.EdgeMockUtil.SOURCE_ID;
 import static org.opennms.topologies.service.api.EdgeMockUtil.TARGET_NODE_ID;
 import static org.opennms.topologies.service.api.EdgeMockUtil.addPort;
 import static org.opennms.topologies.service.api.EdgeMockUtil.createEdge;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.opennms.integration.api.v1.model.Node;
 import org.opennms.integration.api.v1.model.TopologyEdge;
 import org.opennms.integration.api.v1.model.TopologyPort;
@@ -48,12 +53,20 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.topologies.service.api.EdgeMockUtil;
 
 public class ModelMappersTest {
+    private final NodeCriteriaCache nodeCriteriaCache = mock(NodeCriteriaCache.class);
+    private final EdgeMapper edgeMapper = new EdgeMapper(nodeCriteriaCache);
+
+    @Before
+    public void setup() {
+        when(nodeCriteriaCache.getNodeCriteria(Matchers.any(Long.class))).thenReturn(Optional.empty());
+    }
+
     @Test
     public void canMapNodeToNodeEdge() {
         OnmsTopologyEdge mockEdge = createEdge();
         EdgeMockUtil.addNode(true, mockEdge);
         EdgeMockUtil.addNode(false, mockEdge);
-        TopologyEdge mappedEdge = ModelMappers.toEdge(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
+        TopologyEdge mappedEdge = edgeMapper.toEdge(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
 
         assertThat(mappedEdge.getId(), equalTo(EdgeMockUtil.EDGE_ID));
         assertThat(mappedEdge.getProtocol().name(), equalTo(PROTOCOL));
@@ -82,7 +95,7 @@ public class ModelMappersTest {
         OnmsTopologyEdge mockEdge = createEdge();
         addPort(true, mockEdge);
         addPort(false, mockEdge);
-        TopologyEdge mappedEdge = ModelMappers.toEdge(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
+        TopologyEdge mappedEdge = edgeMapper.toEdge(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
 
         assertThat(mappedEdge.getId(), equalTo(EdgeMockUtil.EDGE_ID));
         assertThat(mappedEdge.getProtocol().name(), equalTo(PROTOCOL));
@@ -117,7 +130,7 @@ public class ModelMappersTest {
         OnmsTopologyEdge mockEdge = createEdge();
         EdgeMockUtil.addSegment(true, mockEdge);
         EdgeMockUtil.addSegment(false, mockEdge);
-        TopologyEdge mappedEdge = ModelMappers.toEdge(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
+        TopologyEdge mappedEdge = edgeMapper.toEdge(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
 
         assertThat(mappedEdge.getId(), equalTo(EdgeMockUtil.EDGE_ID));
         assertThat(mappedEdge.getProtocol().name(), equalTo(PROTOCOL));
@@ -151,7 +164,7 @@ public class ModelMappersTest {
         OnmsTopologyEdge mockEdge = createEdge();
         addPort(true, mockEdge);
         EdgeMockUtil.addSegment(false, mockEdge);
-        TopologyEdge mappedEdge = ModelMappers.toEdge(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
+        TopologyEdge mappedEdge = edgeMapper.toEdge(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
 
         assertThat(mappedEdge.getId(), equalTo(EdgeMockUtil.EDGE_ID));
         assertThat(mappedEdge.getProtocol().name(), equalTo(PROTOCOL));

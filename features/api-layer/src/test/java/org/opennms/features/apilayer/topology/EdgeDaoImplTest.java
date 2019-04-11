@@ -42,6 +42,8 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.features.apilayer.utils.EdgeMapper;
+import org.opennms.features.apilayer.utils.NodeCriteriaCache;
 import org.opennms.integration.api.v1.dao.EdgeDao;
 import org.opennms.integration.api.v1.model.TopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
@@ -53,7 +55,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 public class EdgeDaoImplTest {
     private final OnmsTopologyDao onmsTopologyDao = mock(OnmsTopologyDao.class);
-    private final EdgeDao edgeDao = new EdgeDaoImpl(onmsTopologyDao);
+    private final EdgeDao edgeDao = new EdgeDaoImpl(onmsTopologyDao, new EdgeMapper(mock(NodeCriteriaCache.class)));
     private static final String CDP_EDGE_ID = "cdp.edge.id";
     private static final String ISIS_EDGE_ID = "isis.edge.id";
 

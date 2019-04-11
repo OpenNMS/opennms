@@ -42,23 +42,13 @@ import org.opennms.integration.api.v1.model.InMemoryEvent;
 import org.opennms.integration.api.v1.model.Node;
 import org.opennms.integration.api.v1.model.Severity;
 import org.opennms.integration.api.v1.model.SnmpInterface;
-import org.opennms.integration.api.v1.model.TopologyEdge;
-import org.opennms.integration.api.v1.model.TopologyPort;
 import org.opennms.integration.api.v1.model.TopologyProtocol;
-import org.opennms.integration.api.v1.model.TopologySegment;
-import org.opennms.integration.api.v1.model.immutables.ImmutableNode;
-import org.opennms.integration.api.v1.model.immutables.ImmutableNodeCriteria;
-import org.opennms.integration.api.v1.model.immutables.ImmutableTopologyEdge;
-import org.opennms.integration.api.v1.model.immutables.ImmutableTopologyPort;
-import org.opennms.integration.api.v1.model.immutables.ImmutableTopologySegment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -130,7 +120,7 @@ public class ModelMappers {
         }
         return Severity.INDETERMINATE;
     }
-
+    
     public static AlarmFeedback toFeedback(org.opennms.features.situationfeedback.api.AlarmFeedback feedback) {
         return feedback == null ? null : new AlarmFeedbackBean(feedback);
     }
@@ -145,66 +135,6 @@ public class ModelMappers {
                 .withSituationFingerprint(feedback.getSituationFingerprint())
                 .withSituationKey(feedback.getSituationKey())
                 .withUser(feedback.getUser())
-                .build();
-    }
-
-    public static TopologyEdge toEdge(OnmsTopologyProtocol protocol, OnmsTopologyEdge edge) {
-        ImmutableTopologyEdge.Builder topologyEdge = ImmutableTopologyEdge.newBuilder()
-                .setId(edge.getId())
-                .setProtocol(toTopologyProtocol(protocol))
-                .setTooltipText(edge.getToolTipText());
-
-        // Set the source
-        if (edge.getSource().getVertex().getNodeid() == null) {
-            // Source is a segment
-            topologyEdge.setSource(getSegment(edge.getSource(), protocol));
-        } else if (edge.getSource().getIfindex() != null && edge.getSource().getIfindex() >= 0) {
-            // Source is a port
-            topologyEdge.setSource(getPort(edge.getSource()));
-        } else {
-            // Source is a node
-            topologyEdge.setSource(getNode(edge.getSource()));
-        }
-
-        // Set the target
-        if (edge.getTarget().getVertex().getNodeid() == null) {
-            // Target is a segment
-            topologyEdge.setTarget(getSegment(edge.getTarget(), protocol));
-        } else if (edge.getTarget().getIfindex() != null && edge.getTarget().getIfindex() >= 0) {
-            // Target is a port
-            topologyEdge.setTarget(getPort(edge.getTarget()));
-        } else {
-            // Target is a node
-            topologyEdge.setTarget(getNode(edge.getTarget()));
-        }
-
-        return topologyEdge.build();
-    }
-
-    private static TopologySegment getSegment(OnmsTopologyPort port, OnmsTopologyProtocol protocol) {
-        return ImmutableTopologySegment.newBuilder()
-                .setId(port.getId())
-                .setTooltipText(port.getToolTipText())
-                .setProtocol(toTopologyProtocol(protocol))
-                .build();
-    }
-
-    private static TopologyPort getPort(OnmsTopologyPort port) {
-        return ImmutableTopologyPort.newBuilder()
-                .setId(port.getId())
-                .setTooltipText(port.getToolTipText())
-                .setIfIndex(port.getIfindex())
-                .setIfName(port.getIfname())
-                .setIfAddress(port.getAddr())
-                .setNodeCriteria(ImmutableNodeCriteria.newBuilder()
-                        .setId(port.getVertex().getNodeid())
-                        .build())
-                .build();
-    }
-
-    private static Node getNode(OnmsTopologyPort port) {
-        return ImmutableNode.newBuilder()
-                .setId(port.getVertex().getNodeid())
                 .build();
     }
     

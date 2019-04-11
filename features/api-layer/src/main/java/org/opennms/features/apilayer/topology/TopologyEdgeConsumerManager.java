@@ -29,9 +29,11 @@
 package org.opennms.features.apilayer.topology;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.opennms.features.apilayer.utils.EdgeMapper;
 import org.opennms.features.apilayer.utils.InterfaceMapper;
 import org.opennms.features.apilayer.utils.ModelMappers;
 import org.opennms.integration.api.v1.model.TopologyEdge;
@@ -47,9 +49,11 @@ import org.slf4j.LoggerFactory;
 
 public class TopologyEdgeConsumerManager extends InterfaceMapper<TopologyEdgeConsumer, OnmsTopologyConsumer> {
     private static final Logger LOG = LoggerFactory.getLogger(TopologyEdgeConsumerManager.class);
+    private final EdgeMapper edgeMapper;
 
-    public TopologyEdgeConsumerManager(BundleContext bundleContext) {
+    public TopologyEdgeConsumerManager(BundleContext bundleContext, EdgeMapper edgeMapper) {
         super(OnmsTopologyConsumer.class, bundleContext);
+        this.edgeMapper = Objects.requireNonNull(edgeMapper);
     }
 
     @Override
@@ -79,7 +83,7 @@ public class TopologyEdgeConsumerManager extends InterfaceMapper<TopologyEdgeCon
                 message.getMessagebody().accept(new TopologyVisitor() {
                     @Override
                     public void visit(OnmsTopologyEdge edge) {
-                        TopologyEdge topologyEdge = ModelMappers.toEdge(message.getProtocol(), edge);
+                        TopologyEdge topologyEdge = edgeMapper.toEdge(message.getProtocol(), edge);
 
                         switch (message.getMessagestatus()) {
                             case UPDATE:
