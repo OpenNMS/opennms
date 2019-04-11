@@ -165,10 +165,12 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
                     // Now update
                     $scope.configError = {};
                     $scope.geocoder.$update(function () {
+                        // TODO MVR $scope.geocoder.error is not reset, but should to reflect the changes
                         growl.success('Changes saved successfully.');
                         $scope.form.$setPristine();
                     }, function (response) {
                         if (response.status === 400 && response.data) {
+                            // TODO MVR duplicated code
                             if (response.data.context && response.data.message) {
                                 $scope.configError[response.data.context] = response.data.message;
                             } else if (response.data.context) {
@@ -192,16 +194,25 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
                return true;
             };
 
+            // TODO MVR block as long as geocoder is not initialized
             $scope.$watch('geocoders', function(newValue, oldValue) {
                 var matchingGeocoders = newValue.filter(function(item) {
                     return item.id === $stateParams.id
                 });
                 if (matchingGeocoders.length > 0) {
                     $scope.geocoder = matchingGeocoders[0];
+                    // TODO MVR duplicated code
+                    if ($scope.geocoder.error) {
+                        if ($scope.geocoder.error && $scope.geocoder.error) {
+                            $scope.configError[$scope.geocoder.error.context] = $scope.geocoder.error.message;
+                        } else if (response.data.context) {
+                            $scope.configError[$scope.geocoder.error.context] = 'Invalid value';
+                        } else {
+                            growl.error('The configuration is not valid. Details were not provided');
+                        }
+                    }
                 }
             });
-            // TODO MVR block as long as geocoder is not initialized
-
         }])
     ;
 }());

@@ -17,7 +17,9 @@
 
         <li role="presentation" ng-repeat="geocoder in geocoders" class="nav-item">
             <a ui-sref-active="active" ui-sref="geocoding.details({'id': geocoder.id})" title="{{geocoder.name | capitalize}}" data-name={{geocoder.id}} class="nav-link">
-                {{geocoder.name | capitalize}} <span ng-if="geocoder.id == config.activeGeocoderId" class="badge badge-primary" title="Geocoder is enabled">active</span>
+                {{geocoder.name | capitalize}}
+                <span ng-if="geocoder.id === config.activeGeocoderId" class="badge badge-primary" title="Geocoder is enabled">active</span>
+                <span ng-if="geocoder.id === config.activeGeocoderId && geocoder.error" class="badge badge-danger" title="Geocoder not configured properly">invalid</span>
             </a>
         </li>
     </ul>

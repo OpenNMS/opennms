@@ -3,12 +3,16 @@
         <div ng-repeat="geocoder in geocoders">
             <div class="form-group">
                 <label style="width: 100px">{{geocoder.id | capitalize}}</label>
-                <toggle ng-change="onGeocoderChange(geocoder)"
+                <toggle class="mr-2"
+                        ng-change="onGeocoderChange(geocoder)"
                         ng-model="geocoder.active"
                         on="Enabled"
                         off="Disabled"
                         size="btn-sm"
                 />
+                <span class="text-danger" ng-show="geocoder.active && geocoder.error">
+                    The Geocoder is not properly configured.
+                </span>
             </div>
         </div>
     </form>
