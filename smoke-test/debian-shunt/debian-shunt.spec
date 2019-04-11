@@ -4,7 +4,7 @@
 Name:			debian-shunt
 Summary:		Placeholder package to make RPM on debian happy
 Version:		1.0
-Release:		2
+Release:		3
 License:		Public Domain
 Group:			Development/Tools
 BuildArch:		noarch
@@ -20,6 +20,14 @@ Provides: postgresql-server = 9.3
 Provides: jdk = 2000:1.8.0
 Provides: java-1.8.0
 Provides: jre-1.8.0
+Provides: java-11
+Provides: java-11-openjdk
+Provides: jre-11
+Provides: jre-11-openjdk
+Provides: java-11-devel
+Provides: java-11-openjdk-devel
+Provides: java-sdk-11
+Provides: java-sdk-11-openjdk
 
 %description
 This is a placeholder wrapper package to provide the dependencies necessary
