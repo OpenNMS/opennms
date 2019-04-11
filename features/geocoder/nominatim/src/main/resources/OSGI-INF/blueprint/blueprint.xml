@@ -14,7 +14,7 @@
 			<cm:property name="url" value="https://nominatim.openstreetmap.org/search?format=json&amp;email={email}&amp;limit=1&amp;q={query}" />
 			<cm:property name="email" value="" />
 			<cm:property name="referer" value="" />
-			<cm:property name="userAgent" value="OpenNMS-NominatimGeocoderService/1.0" />
+			<cm:property name="userAgent" value="OpenNMS-NominatimGeocoderService/2.0" />
 			<cm:property name="useSystemProxy" value="false" />
 			<cm:property name="acceptUsageTerms" value="false" />
 		</cm:default-properties>
