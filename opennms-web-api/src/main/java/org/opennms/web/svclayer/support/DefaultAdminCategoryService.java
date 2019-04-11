@@ -487,6 +487,10 @@ public class DefaultAdminCategoryService implements
             for (OnmsNode node : memberNodes) {
                 m_nodes.remove(node);
             }
+                
+            m_nodes =
+                    new ArrayList<OnmsNode>(nodes);
+                Collections.sort(m_nodes);  
             
             m_sortedMemberNodes =
                 new ArrayList<OnmsNode>(memberNodes);
