@@ -151,6 +151,32 @@ The _IP Interface_ and _Service_ page show which _Polling Package_ and _Service_
 .Polling Package applied to IP interface and Service
 image::service-assurance/03_polling-package.png[]
 
+[[ga-pollerd-packages-patterns]]
+==== Service Patterns
+
+Usually, the _Poller_ used to monitor a _Service_ is found by the matching the pollers name with the service name.
+In addition, a matching poller can be found if an additional parameter `pattern` is specified for the poller.
+If so, the poller is used for all services matching the pattern, too.
+
+The pattern allows to specify variable parts which consists of a name and a optional _RegEx_.
+There can be multiple variables inside of a pattern, but each must have a unique name.
+
+If a poller is matched using its pattern, the variable parts of the service name are available as parameters to the link:#ga-pollerd-configuration-meta-data[Meta-Data-DSL] using the context `pattern` and the variable name as key.
+
+Examples:
+
+`pattern="HTTP-{vhost}"`::
+Matches all services which names starts with `HTTP-` followed by a host name.
+If the services is called `HTTP-www.example.com`, the Meta-DSL expression `${pattern:vhost}` will resolved to `www.example.com`.
+
+`pattern="HTTP-{vhost}:{port:[0-9]+}"`::
+Matches all services which names starts with `HTTP-` followed by a hostname and a port.
+There will be two variables (`${pattern:vhost}` and `${pattern:port}`) which can be used in the poller parameters.
+
+The service pattern mechanism can be used to whenever there are multiple instances of a service on the same interface.
+By specifying a distinct service name to each instance, the services is identifiable, but there is no need to add a poller definition per service.
+Common use-cases for such services are HTTP Virtual Hosts, where multiple web applications run on the same web-server or BGP session monitoring where each router has multiple neighbours.
+
 [[ga-pollerd-packages-test-service-manually]]
 ==== Test Services on manually
 
