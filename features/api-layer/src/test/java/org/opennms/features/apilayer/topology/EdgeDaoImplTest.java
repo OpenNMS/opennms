@@ -31,6 +31,7 @@ package org.opennms.features.apilayer.topology;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,6 +39,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.Before;
@@ -55,12 +57,14 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 public class EdgeDaoImplTest {
     private final OnmsTopologyDao onmsTopologyDao = mock(OnmsTopologyDao.class);
-    private final EdgeDao edgeDao = new EdgeDaoImpl(onmsTopologyDao, new EdgeMapper(mock(NodeCriteriaCache.class)));
+    private final NodeCriteriaCache mockNodeCriteriaCache = mock(NodeCriteriaCache.class);
+    private final EdgeDao edgeDao = new EdgeDaoImpl(onmsTopologyDao, new EdgeMapper(mockNodeCriteriaCache));
     private static final String CDP_EDGE_ID = "cdp.edge.id";
     private static final String ISIS_EDGE_ID = "isis.edge.id";
 
     @Before
     public void setup() {
+        when(mockNodeCriteriaCache.getNodeCriteria(anyLong())).thenReturn(Optional.empty());
         Map<OnmsTopologyProtocol, OnmsTopology> topologyMap = new HashMap<>();
 
         when(onmsTopologyDao.getSupportedProtocols()).thenReturn(
