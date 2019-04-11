@@ -15,18 +15,6 @@
 
     <form class="form" name="nominatimForm">
         <div class="form-group">
-            <label for="nominatimUrl">URL</label>
-            <input id="nominatimUrl"
-                   name="nominatimUrl"
-                   class="form-control"
-                   type="text"
-                   ng-required="true"
-                   ng-model="geocoder.config.url"
-                   ng-class="{ 'is-invalid' : nominatimForm.nominatimUrl.$invalid || configError.url }"
-            />
-            <p id="configError.url" class="invalid-feedback">{{configError.url || "Please provide a value"}}</p>
-        </div>
-        <div class="form-group">
             <label for="nominatimEmail">Email</label>
             <input id="nominatimEmail"
                    name="nominatimEmail"
