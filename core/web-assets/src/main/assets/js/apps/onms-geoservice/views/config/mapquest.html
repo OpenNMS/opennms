@@ -9,7 +9,7 @@
         </p>
     </div>
 
-    <form class="form" name="mapquestForm">
+    <form class="form" name="form">
         <div class="form-group">
             <label for="mapquestApiKey">API Key</label>
             <input id="mapquestApiKey"
@@ -18,7 +18,7 @@
                    type="text"
                    ng-required="true"
                    ng-model="geocoder.config.apiKey"
-                   ng-class="{ 'is-invalid' : mapquestForm.mapquestApiKey.$invalid || configError.apiKey }"
+                   ng-class="{ 'is-invalid' : form.mapquestApiKey.$invalid || configError.apiKey }"
             />
             <p id="configError.apiKey" class="invalid-feedback">{{configError.apiKey || "Please provide a value"}}</p>
         </div>
@@ -30,12 +30,12 @@
                     on="Yes"
                     off="No"
                     size="btn-sm"
-                    ng-class="{ 'is-invalid' : mapquestForm.mapquestSystemProxy.$invalid || configError.useSystemProxy }"
+                    ng-class="{ 'is-invalid' : form.mapquestSystemProxy.$invalid || configError.useSystemProxy }"
             />
             <p id="configError.useSystemProxy" class="invalid-feedback">{{configError.useSystemProxy}}</p>
         </div>
 
-        <p class="text-warning" ng-if="mapquestForm.$dirty">You have unsaved changes</p>
-        <button class="btn btn-primary" type="button" ng-click="save()" ng-disabled="!mapquestForm.$dirty || mapquestForm.$invalid"><i class="fa fa-save"></i> Save</button>
+        <p class="text-warning" ng-if="form.$dirty">You have unsaved changes</p>
+        <button class="btn btn-primary" type="button" ng-click="save()" ng-disabled="!form.$dirty || form.$invalid"><i class="fa fa-save"></i> Save</button>
     </form>
 </div>

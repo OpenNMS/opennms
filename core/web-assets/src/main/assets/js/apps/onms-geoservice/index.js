@@ -166,6 +166,7 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
                     $scope.configError = {};
                     $scope.geocoder.$update(function () {
                         growl.success('Changes saved successfully.');
+                        $scope.form.$setPristine();
                     }, function (response) {
                         if (response.status === 400 && response.data) {
                             if (response.data.context && response.data.message) {
