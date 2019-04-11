@@ -234,6 +234,12 @@ The HTML has been simplified, the UI wastes less space, and the login page featu
   The browser notification can be added to a notification path and desktop notifications will pop-up for currently logged in users if a notice is delivered.
 * *Sessions*: Browser session timeout is now disabled by default.
 
+==== Geocoder Services
+
+The _Geocoder Service_s have been reworked and must be re-configured.
+The recommended way for this is to delete all `etc/org.opennms.features.geocoder*.cfg` files and
+Navigate the `Configure Geocoder Services` page from the Admin page and configure the _Geocoder Service_ of your choice.
+
 ==== Other Core Changes
 
 Support was added for OpenTracing distributed tracing for RPC/Sink requests.
