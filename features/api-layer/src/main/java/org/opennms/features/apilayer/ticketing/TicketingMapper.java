@@ -28,8 +28,8 @@
 
 package org.opennms.features.apilayer.ticketing;
 
+import org.opennms.integration.api.v1.ticketing.immutables.ImmutableTicket;
 import org.opennms.integration.api.v1.ticketing.Ticket;
-import org.opennms.integration.api.v1.ticketing.TicketBuilder;
 
 import com.google.common.base.Enums;
 
@@ -39,15 +39,15 @@ import com.google.common.base.Enums;
 public class TicketingMapper {
 
     public static Ticket buildTicket(org.opennms.api.integration.ticketing.Ticket ticket) {
-        return new TicketBuilder()
-                .withAlarmId(ticket.getAlarmId())
-                .withAttributes(ticket.getAttributes())
-                .withDetails(ticket.getDetails())
-                .withId(ticket.getId())
-                .withIpAddress(ticket.getIpAddress())
-                .withNodeId(ticket.getNodeId())
-                .withState(ticket.getState().name())
-                .withSummary(ticket.getSummary())
+        return ImmutableTicket.newBuilder()
+                .setAlarmId(ticket.getAlarmId())
+                .setAttributes(ticket.getAttributes())
+                .setDetails(ticket.getDetails())
+                .setId(ticket.getId())
+                .setIpAddress(ticket.getIpAddress())
+                .setNodeId(ticket.getNodeId())
+                .setState(Ticket.State.valueOf(ticket.getState().name()))
+                .setSummary(ticket.getSummary())
                 .build();
     }
 

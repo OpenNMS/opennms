@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.integration.api.v1.topology.UserDefinedLink;
 import org.opennms.integration.api.v1.topology.UserDefinedLinkDao;
-import org.opennms.integration.api.v1.topology.beans.UserDefinedLinkBean;
+import org.opennms.integration.api.v1.topology.immutables.ImmutableUserDefinedLink;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.enlinkd.service.api.UserDefinedLinkTopologyService;
 
@@ -112,15 +112,15 @@ public class UserDefinedLinkDaoImpl implements UserDefinedLinkDao {
     }
 
     protected static UserDefinedLink toApiLink(org.opennms.netmgt.enlinkd.model.UserDefinedLink modelLink) {
-        return UserDefinedLinkBean.builder()
-                .dbId(modelLink.getDbId())
-                .owner(modelLink.getOwner())
-                .linkId(modelLink.getLinkId())
-                .linkLabel(modelLink.getLinkLabel())
-                .nodeIdA(modelLink.getNodeIdA())
-                .nodeIdZ(modelLink.getNodeIdZ())
-                .componentLabelA(modelLink.getComponentLabelA())
-                .componentLabelZ(modelLink.getComponentLabelZ())
+        return ImmutableUserDefinedLink.newBuilder()
+                .setDbId(modelLink.getDbId())
+                .setOwner(modelLink.getOwner())
+                .setLinkId(modelLink.getLinkId())
+                .setLinkLabel(modelLink.getLinkLabel())
+                .setNodeIdA(modelLink.getNodeIdA())
+                .setNodeIdZ(modelLink.getNodeIdZ())
+                .setComponentLabelA(modelLink.getComponentLabelA())
+                .setComponentLabelZ(modelLink.getComponentLabelZ())
                 .build();
     }
 

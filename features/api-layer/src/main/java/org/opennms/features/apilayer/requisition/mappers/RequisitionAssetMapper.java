@@ -29,14 +29,14 @@
 package org.opennms.features.apilayer.requisition.mappers;
 
 import org.mapstruct.Mapper;
-import org.opennms.integration.api.v1.config.requisition.beans.RequisitionAssetBean;
+import org.opennms.integration.api.v1.config.requisition.immutables.ImmutableRequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 
 @Mapper
 public interface RequisitionAssetMapper {
 
-    RequisitionAssetBean map(RequisitionAsset asset);
+    ImmutableRequisitionAsset map(RequisitionAsset asset);
 
-    RequisitionAsset v(RequisitionAssetBean asset);
+    RequisitionAsset v(ImmutableRequisitionAsset asset);
 
 }
