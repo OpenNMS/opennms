@@ -60,7 +60,7 @@ import io.opentracing.util.GlobalTracer;
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-jms.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-echo.xml",
-        "classpath:/applicationContext-test-tracer-registry.xml"
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml"
 })
 @JUnitConfigurationEnvironment
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)

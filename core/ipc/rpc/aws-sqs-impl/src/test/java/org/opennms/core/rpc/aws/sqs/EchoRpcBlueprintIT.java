@@ -51,7 +51,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-sqs.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-echo.xml",
-        "classpath:/applicationContext-test-tracer-registry.xml"
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.core.ipc.aws.sqs.aws_use_http=true",

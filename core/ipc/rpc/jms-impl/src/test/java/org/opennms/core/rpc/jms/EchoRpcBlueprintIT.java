@@ -54,7 +54,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-jms.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-echo.xml",
-        "classpath:/applicationContext-test-tracer-registry.xml"
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml"
 })
 @JUnitConfigurationEnvironment
 public class EchoRpcBlueprintIT extends org.opennms.core.rpc.camel.EchoRpcBlueprintIT {
