@@ -29,7 +29,7 @@
   <!-- Only available when Enlinkd is enabled -->
   <reference id="userDefinedLinkTopologyService" interface="org.opennms.netmgt.enlinkd.service.api.UserDefinedLinkTopologyService" availability="optional"/>
   <reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" />
-  <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
+  <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" availability="optional"/>
 
   <bean id="nodeDaoImpl" class="org.opennms.features.apilayer.dao.NodeDaoImpl">
     <argument ref="nodeDao"/>
@@ -216,10 +216,10 @@
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="servicePollerManager" />
   </reference-list>
 
-  <reference id="locationAwarePollerClient" interface="org.opennms.netmgt.poller.LocationAwarePollerClient"/>
+  <reference id="locationAwarePollerClient" interface="org.opennms.netmgt.poller.LocationAwarePollerClient" availability="optional"/>
   <service ref="pollerClient" interface="org.opennms.integration.api.v1.pollers.ServicePollerClient" >
   </service>
-  <bean id="pollerClient" class="org.opennms.features.apilayer.pollers.ServicePollerClientImpl">
+  <bean id="pollerClient" class="org.opennms.features.apilayer.pollers.ServicePollerClientImpl" >
     <argument ref="locationAwarePollerClient"/>
   </bean>
   
@@ -239,7 +239,7 @@
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="serviceCollectorManager" />
   </reference-list>
 
-  <reference id="locationAwareCollectorClient" interface="org.opennms.netmgt.collection.api.LocationAwareCollectorClient"/>
+  <reference id="locationAwareCollectorClient" interface="org.opennms.netmgt.collection.api.LocationAwareCollectorClient" availability="optional"/>
 
   <service interface="org.opennms.integration.api.v1.collectors.ServiceCollectorClient" >
     <bean class="org.opennms.features.apilayer.collectors.ServiceCollectorClientImpl">
