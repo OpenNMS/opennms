@@ -28,8 +28,8 @@
 
 package org.opennms.features.apilayer.utils;
 
-import org.opennms.features.apilayer.model.AlarmFeedbackBean;
 import org.opennms.features.apilayer.model.AlarmBean;
+import org.opennms.features.apilayer.model.AlarmFeedbackBean;
 import org.opennms.features.apilayer.model.DatabaseEventBean;
 import org.opennms.features.apilayer.model.InMemoryEventBean;
 import org.opennms.features.apilayer.model.NodeBean;
@@ -42,12 +42,14 @@ import org.opennms.integration.api.v1.model.InMemoryEvent;
 import org.opennms.integration.api.v1.model.Node;
 import org.opennms.integration.api.v1.model.Severity;
 import org.opennms.integration.api.v1.model.SnmpInterface;
+import org.opennms.integration.api.v1.model.TopologyProtocol;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -134,5 +136,13 @@ public class ModelMappers {
                 .withSituationKey(feedback.getSituationKey())
                 .withUser(feedback.getUser())
                 .build();
+    }
+    
+    public static OnmsTopologyProtocol toOnmsTopologyProtocol(TopologyProtocol protocol) {
+        return OnmsTopologyProtocol.create(protocol.name());
+    }
+    
+    public static TopologyProtocol toTopologyProtocol(OnmsTopologyProtocol protocol) {
+        return TopologyProtocol.valueOf(protocol.getId());
     }
 }

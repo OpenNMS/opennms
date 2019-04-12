@@ -33,6 +33,7 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
+import org.opennms.netmgt.enlinkd.common.NodeCollector;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia.IpNetToMediaType;
 import org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService;
@@ -72,7 +73,7 @@ public final class NodeDiscoveryIpNetToMedia extends NodeCollector {
     	m_ipNetToMediaTopologyService = ipNetToMediaTopologyService;
     }
 
-    protected void collect() {
+    public void collect() {
 
     	final Date now = new Date(); 
 

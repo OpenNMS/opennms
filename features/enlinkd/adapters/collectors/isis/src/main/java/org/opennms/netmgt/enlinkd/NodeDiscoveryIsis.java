@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import org.opennms.netmgt.enlinkd.common.NodeCollector;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
@@ -73,7 +74,7 @@ public final class NodeDiscoveryIsis extends NodeCollector {
     	m_isisTopologyService = isisTopologyService;
     }
 
-    protected void collect() {
+    public void collect() {
 
     	final Date now = new Date(); 
 

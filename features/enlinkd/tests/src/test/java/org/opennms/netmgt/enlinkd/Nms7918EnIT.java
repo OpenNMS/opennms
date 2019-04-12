@@ -61,6 +61,7 @@ import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
@@ -1004,14 +1005,14 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertTrue(m_linkdConfig.useIsisDiscovery());
 
-        assertEquals(7, m_topologyDao.getSupportedProtocols().size());
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.NODES.name()));
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.BRIDGE.name()));
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.CDP.name()));
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.ISIS.name()));
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.LLDP.name()));
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.OSPF.name()));
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.USERDEFINED.name()));
+        assertEquals(7, getSupportedProtocolsAsProtocolSupported().size());
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NODES));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.BRIDGE));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.CDP));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.ISIS));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.LLDP));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.OSPF));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.USERDEFINED));
 
         //update config to suppoort only BRIDGE discovery
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
@@ -1028,14 +1029,14 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
 
         //Updated configuration will lead to support only BRIDGE updates,
         m_linkd.reload();
-        assertEquals(3, m_topologyDao.getSupportedProtocols().size());
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.NODES.name()));
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.BRIDGE.name()));
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.USERDEFINED.name()));
-        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.CDP.name()));
-        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.ISIS.name()));
-        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.LLDP.name()));
-        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.OSPF.name()));
+        assertEquals(3, getSupportedProtocolsAsProtocolSupported().size());
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NODES));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.BRIDGE));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.USERDEFINED));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.CDP));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.ISIS));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.LLDP));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.OSPF));
         
         final OnmsNode pe01 = m_nodeDao.findByForeignId("linkd", PE01_NAME);
         final OnmsNode asw01 = m_nodeDao.findByForeignId("linkd", ASW01_NAME);

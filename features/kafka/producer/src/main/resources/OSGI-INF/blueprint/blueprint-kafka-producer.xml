@@ -17,7 +17,6 @@
       <cm:property name="eventTopic" value="events"/>
       <cm:property name="alarmTopic" value="alarms"/>
       <cm:property name="nodeTopic" value="nodes"/>
-      <cm:property name="topologyProtocols" value="bridge,cdp,isis,lldp,ospf"/>
       <cm:property name="topologyVertexTopic" value="vertices"/>
       <cm:property name="topologyEdgeTopic" value="edges"/>
       <cm:property name="alarmFeedbackTopic" value="alarmFeedback"/>
@@ -65,7 +64,6 @@
     <argument ref="eventSubscriptionService"/>
     <argument ref="onmsTopologyDao"/>
 
-    <property name="topologyProtocols" value="${topologyProtocols}"/>
     <property name="topologyVertexTopic" value="${topologyVertexTopic}"/>
     <property name="topologyEdgeTopic" value="${topologyEdgeTopic}"/>
     <property name="eventTopic" value="${eventTopic}"/>

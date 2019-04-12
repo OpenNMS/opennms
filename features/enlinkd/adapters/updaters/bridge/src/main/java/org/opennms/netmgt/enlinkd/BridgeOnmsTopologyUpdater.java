@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
@@ -54,7 +55,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Table;
 
-public class BridgeOnmsTopologyUpdater extends TopologyUpdater  {
+public class BridgeOnmsTopologyUpdater extends TopologyUpdater {
 
     public static BridgeOnmsTopologyUpdater clone(BridgeOnmsTopologyUpdater bpu) {
         

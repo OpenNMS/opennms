@@ -88,6 +88,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
+import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.model.CdpLink.CiscoNetworkProtocolType;
@@ -747,14 +748,14 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         //update configuration to support only CDP updates
         //need to reload daemon
         m_linkd.reload();
-        assertEquals(3, m_topologyDao.getSupportedProtocols().size());
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.NODES.name()));               
-        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.BRIDGE.name()));
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.CDP.name()));
-        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.ISIS.name()));
-        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.LLDP.name()));
-        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.OSPF.name()));
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.USERDEFINED.name()));
+        assertEquals(3, getSupportedProtocolsAsProtocolSupported().size());
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NODES));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.BRIDGE));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.CDP));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.ISIS));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.LLDP));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.OSPF));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.USERDEFINED));
 
         final OnmsNode switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME);
         final OnmsNode switch2 = m_nodeDao.findByForeignId("linkd", SWITCH2_NAME);
@@ -866,14 +867,14 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         
         // reload daemon and support only: LLDP updates
         m_linkd.reload();
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.NODES.name()));
-        assertEquals(3, m_topologyDao.getSupportedProtocols().size());
-        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.BRIDGE.name()));
-        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.CDP.name()));
-        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.ISIS.name()));
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.LLDP.name()));
-        assertTrue(!m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.OSPF.name()));
-        assertTrue(m_topologyDao.getSupportedProtocols().contains(ProtocolSupported.USERDEFINED.name()));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NODES));
+        assertEquals(3, getSupportedProtocolsAsProtocolSupported().size());
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.BRIDGE));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.CDP));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.ISIS));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.LLDP));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.OSPF));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.USERDEFINED));
 
         final OnmsNode switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME);
         final OnmsNode switch2 = m_nodeDao.findByForeignId("linkd", SWITCH2_NAME);

@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import org.opennms.netmgt.enlinkd.common.NodeCollector;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
@@ -72,7 +73,7 @@ public final class NodeDiscoveryCdp extends NodeCollector {
     	m_cdpTopologyService = cdpTopologyService;
     }
 
-    protected void collect() {
+    public void collect() {
 
     	final Date now = new Date(); 
         final CdpGlobalGroupTracker cdpGlobalGroup = new CdpGlobalGroupTracker();

@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
+import org.opennms.netmgt.enlinkd.common.NodeCollector;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
@@ -93,7 +94,7 @@ public final class NodeDiscoveryBridge extends NodeCollector {
         m_maxSize = maxSize;
     }
 
-    protected void collect() {
+    public void collect() {
         final Date now = new Date();
 
         SnmpAgentConfig peer = getSnmpAgentConfig();

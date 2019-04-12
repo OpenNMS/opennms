@@ -42,6 +42,8 @@ import org.opennms.netmgt.config.EnhancedLinkdConfig;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.enlinkd.api.ReloadableTopologyDaemon;
+import org.opennms.netmgt.enlinkd.common.NodeCollector;
+import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;

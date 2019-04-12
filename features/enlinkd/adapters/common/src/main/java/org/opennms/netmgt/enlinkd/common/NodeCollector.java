@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd;
+package org.opennms.netmgt.enlinkd.common;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
@@ -68,7 +68,7 @@ public abstract class NodeCollector extends Discovery {
     }
 
 
-    protected abstract void collect(); 
+    public abstract void collect(); 
     /**
      * <p>
      * Performs the collection for the targeted IP address. The success or

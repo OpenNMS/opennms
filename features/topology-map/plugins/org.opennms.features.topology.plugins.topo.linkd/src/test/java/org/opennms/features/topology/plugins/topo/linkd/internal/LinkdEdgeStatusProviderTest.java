@@ -46,7 +46,7 @@ import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.enlinkd.TopologyUpdater;
+import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.events.api.EventConstants;

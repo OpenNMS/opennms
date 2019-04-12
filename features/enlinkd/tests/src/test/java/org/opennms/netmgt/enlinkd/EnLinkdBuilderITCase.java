@@ -29,6 +29,8 @@
 package org.opennms.netmgt.enlinkd;
 
 import java.util.Properties;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.Before;
@@ -59,6 +61,7 @@ import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.impl.OnmsTopologyLogger;
@@ -184,6 +187,13 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
         OnmsTopologyLogger tl = new OnmsTopologyLogger(protocol);
         m_topologyDao.subscribe(tl);
         return tl;
+    }
+
+    Set<ProtocolSupported> getSupportedProtocolsAsProtocolSupported() {
+        return m_topologyDao.getSupportedProtocols()
+                .stream()
+                .map(p -> ProtocolSupported.valueOf(p.getId()))
+                .collect(Collectors.toSet());
     }
     
 }

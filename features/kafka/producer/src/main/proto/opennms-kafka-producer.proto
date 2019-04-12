@@ -175,9 +175,14 @@ message TopologyPort {
 
 message TopologyEdge {
   TopologyRef ref = 1;
-  TopologyPort source = 2;
+  oneof source {
+    TopologyPort sourcePort = 3;
+    TopologySegment sourceSegment = 4;
+    Node sourceNode = 5;
+  }
   oneof target {
-    TopologyPort targetPort = 3;
-    TopologySegment targetSegment = 4;
+    TopologyPort targetPort = 6;
+    TopologySegment targetSegment = 7;
+    Node targetNode = 8;
   }
 }
