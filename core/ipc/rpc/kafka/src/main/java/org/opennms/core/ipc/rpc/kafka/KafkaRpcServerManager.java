@@ -276,6 +276,10 @@ public class KafkaRpcServerManager {
                             Tracer.SpanBuilder spanBuilder = buildSpanFromRpcMessage(rpcMessage);
                             // Start minion span.
                             Span minionSpan = spanBuilder.start();
+                            // Retrieve custom tags from rpcMessage and add them as tags.
+                            rpcMessage.getTracingInfoList().forEach(tracingInfo -> {
+                                minionSpan.setTag(tracingInfo.getKey(), tracingInfo.getValue());
+                            });
                             RpcRequest request = module.unmarshalRequest(rpcContent.toStringUtf8());
                             // Set tags for minion span
                             minionSpan.setTag(TAG_LOCATION, request.getLocation());

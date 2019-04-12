@@ -200,6 +200,13 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                     };
                     // Add tracing info to message builder.
                     addTracingInfoToRpcMessage(span, builder);
+                    //Add custom tags to Rpc Message
+                    request.getTracingInfo().forEach((key, value) -> {
+                        RpcMessageProtos.TracingInfo tracingInfo = RpcMessageProtos.TracingInfo.newBuilder()
+                                .setKey(key)
+                                .setValue(value).build();
+                        builder.addTracingInfo(tracingInfo);
+                    });
                     // Build message.
                     RpcMessageProtos.RpcMessage rpcMessage =  builder.setRpcContent(byteString)
                             .setCurrentChunkNumber(chunk)

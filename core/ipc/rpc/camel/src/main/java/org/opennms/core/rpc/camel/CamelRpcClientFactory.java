@@ -102,6 +102,8 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                 request.getTracingInfo().forEach(span::setTag);
                 TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
                 tracer.inject(span.context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
+                //Add custom tags to tracing info.
+                request.getTracingInfo().forEach(tracingInfoCarrier::put);
                 // Wrap the request in a CamelRpcRequest and forward it to the Camel route
                 final CompletableFuture<T> future = new CompletableFuture<>();
                 try {
