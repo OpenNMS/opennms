@@ -33,6 +33,7 @@ import java.util.Hashtable;
 
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -72,10 +73,10 @@ public class KafkaPersisterActivator implements BundleActivator {
         if (forwardMetrics) {
             try {
                 NodeDao nodeDao = context.getService(context.getServiceReference(NodeDao.class));
-                TransactionOperations transactionOperations = context
-                        .getService(context.getServiceReference(TransactionOperations.class));
+                SessionUtils sessionUtils = context
+                        .getService(context.getServiceReference(SessionUtils.class));
 
-                CollectionSetMapper collectionSetMapper = new CollectionSetMapper(nodeDao, transactionOperations);
+                CollectionSetMapper collectionSetMapper = new CollectionSetMapper(nodeDao, sessionUtils);
                 KafkaPersisterFactory kafkaPersisterFactory = new KafkaPersisterFactory();
                 kafkaPersisterFactory.setCollectionSetMapper(collectionSetMapper);
                 kafkaPersisterFactory.setConfigAdmin(configAdmin);

@@ -39,6 +39,7 @@ import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -54,7 +55,6 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.support.TransactionOperations;
 
 import com.google.common.base.Enums;
 import com.google.common.cache.CacheBuilder;
@@ -65,23 +65,23 @@ public class ProtobufMapper {
     private static final Logger LOG = LoggerFactory.getLogger(ProtobufMapper.class);
 
     private final EventConfDao eventConfDao;
-    private final TransactionOperations transactionOperations;
+    private final SessionUtils sessionUtils;
     private final NodeDao nodeDao;
     private final HwEntityDao hwEntityDao;
     private final LoadingCache<Long, OpennmsModelProtos.NodeCriteria> nodeIdToCriteriaCache;
 
-    public ProtobufMapper(EventConfDao eventConfDao, HwEntityDao hwEntityDao, TransactionOperations transactionOperations,
+    public ProtobufMapper(EventConfDao eventConfDao, HwEntityDao hwEntityDao, SessionUtils sessionUtils,
                           NodeDao nodeDao, long nodeIdToCriteriaMaxCacheSize) {
         this.eventConfDao = Objects.requireNonNull(eventConfDao);
         this.hwEntityDao = Objects.requireNonNull(hwEntityDao);
-        this.transactionOperations = Objects.requireNonNull(transactionOperations);
+        this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.nodeDao = Objects.requireNonNull(nodeDao);
 
         nodeIdToCriteriaCache = CacheBuilder.newBuilder()
             .maximumSize(nodeIdToCriteriaMaxCacheSize)
             .build(new CacheLoader<Long, OpennmsModelProtos.NodeCriteria>() {
                 public OpennmsModelProtos.NodeCriteria load(Long nodeId)  {
-                    return transactionOperations.execute(status -> {
+                    return sessionUtils.withReadOnlyTransaction(() -> {
                         final OnmsNode node = nodeDao.get(nodeId.intValue());
                         if (node != null && node.getForeignId() != null && node.getForeignSource() != null) {
                             return OpennmsModelProtos.NodeCriteria.newBuilder()
