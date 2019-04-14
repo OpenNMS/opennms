@@ -12,6 +12,7 @@
       <cm:property name="alarmFeedback.gracePeriodInMs" value="5000"/>
       <cm:property name="alarmFeedback.sleepTimeInMs" value="1000"/>
       <cm:property name="alarmFeedback.waitTimeMs" value="500"/>
+      <cm:property name="nodeIdToCriteriaMaxCacheSize" value="10000"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -24,12 +25,11 @@
   <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" availability="mandatory"/>
   <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
   <reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
-  <!-- Only available when Enlinkd is enabled -->
-  <reference id="userDefinedLinkDao" interface="org.opennms.netmgt.enlinkd.persistence.api.UserDefinedLinkDao" availability="optional"/>
-  <!-- Only available when Enlinkd is enabled -->
-  <reference id="userDefinedLinkTopologyService" interface="org.opennms.netmgt.enlinkd.service.api.UserDefinedLinkTopologyService" availability="optional"/>
+  <reference id="userDefinedLinkDao" interface="org.opennms.netmgt.enlinkd.persistence.api.UserDefinedLinkDao" availability="mandatory"/>
+  <reference id="userDefinedLinkTopologyService" interface="org.opennms.netmgt.enlinkd.service.api.UserDefinedLinkTopologyService" availability="mandatory"/>
   <reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" />
   <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" availability="optional"/>
+  <reference id="onmsTopologyDao" interface="org.opennms.netmgt.topologies.service.api.OnmsTopologyDao" availability="mandatory"/>
 
   <bean id="nodeDaoImpl" class="org.opennms.features.apilayer.dao.NodeDaoImpl">
     <argument ref="nodeDao"/>
@@ -37,16 +37,16 @@
   </bean>
   <service interface="org.opennms.integration.api.v1.dao.NodeDao" ref="nodeDaoImpl"/>
 
+  <bean id="nodeCriteriaCache" class="org.opennms.features.apilayer.utils.NodeCriteriaLoadingCacheImpl">
+    <argument ref="sessionUtils"/>
+    <argument ref="nodeDao"/>
+    <argument value="${nodeIdToCriteriaMaxCacheSize}"/>
+  </bean>
+  <service interface="org.opennms.features.apilayer.utils.NodeCriteriaCache" ref="nodeCriteriaCache"/>
+  
   <!-- Runtime -->
   <service interface="org.opennms.integration.api.v1.runtime.RuntimeInfo" >
     <bean class="org.opennms.features.apilayer.RuntimeInfoImpl" />
-  </service>
-
-  <service interface="org.opennms.integration.api.v1.dao.NodeDao" >
-    <bean class="org.opennms.features.apilayer.dao.NodeDaoImpl">
-      <argument ref="nodeDao"/>
-      <argument ref="sessionUtils"/>
-    </bean>
   </service>
 
   <service interface="org.opennms.integration.api.v1.dao.AlarmDao" >
@@ -276,6 +276,27 @@
       <argument ref="userDefinedLinkDao"/>
       <argument ref="userDefinedLinkTopologyService"/>
       <argument ref="sessionUtils"/>
+    </bean>
+  </service>
+
+  <!-- Topology Edge Consumers -->
+  <bean id="edgeMapper" class="org.opennms.features.apilayer.utils.EdgeMapper">
+    <argument ref="nodeCriteriaCache"/>
+  </bean>
+  
+  <bean id="topologyEdgeConsumerManager" class="org.opennms.features.apilayer.topology.TopologyEdgeConsumerManager">
+    <argument ref="blueprintBundleContext"/>
+    <argument ref="edgeMapper"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.topology.TopologyEdgeConsumer" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="topologyEdgeConsumerManager" />
+  </reference-list>
+
+  <!-- Edge DAO -->
+  <service interface="org.opennms.integration.api.v1.dao.EdgeDao">
+    <bean class="org.opennms.features.apilayer.topology.EdgeDaoImpl">
+      <argument ref="onmsTopologyDao"/>
+      <argument ref="edgeMapper"/>
     </bean>
   </service>
 

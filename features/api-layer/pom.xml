@@ -114,6 +114,11 @@
             <artifactId>mapstruct</artifactId>
             <version>${mapstructVersion}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.topologies</groupId>
+            <artifactId>org.opennms.features.topologies.service.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Test -->
         <dependency>
@@ -134,6 +139,13 @@
         <dependency>
             <groupId>org.opennms.features.enlinkd</groupId>
             <artifactId>org.opennms.features.enlinkd.service.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.topologies</groupId>
+            <artifactId>org.opennms.features.topologies.service.api</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

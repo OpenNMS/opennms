@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd;
+package org.opennms.netmgt.enlinkd.common;
 
 import java.util.Map;
 import java.util.Objects;
@@ -137,21 +137,19 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
     }
 
     @Override
-    public void runDiscovery() {
+    public synchronized void runDiscovery() {
         LOG.debug("run: start {}", getName());
         if (!m_runned) {
-            synchronized (m_topology) {
-                try {
-                    m_topology = buildTopology();
-                    m_runned = true;
-                    m_topologyService.parseUpdates();
-                    m_topology.getVertices().stream().forEach(v -> update(v));
-                    m_topology.getEdges().stream().forEach(g -> update(g));
-                    LOG.debug("run: {} first run topology calculated", getName());
-                } catch (Exception e) {
-                    LOG.error("run: {} first run: cannot build topology", getName(), e);
-                    return;
-                }
+            try {
+                m_topology = buildTopology();
+                m_runned = true;
+                m_topologyService.parseUpdates();
+                m_topology.getVertices().stream().forEach(v -> update(v));
+                m_topology.getEdges().stream().forEach(g -> update(g));
+                LOG.debug("run: {} first run topology calculated", getName());
+            } catch (Exception e) {
+                LOG.error("run: {} first run: cannot build topology", getName(), e);
+                return;
             }
         } else if (m_topologyService.parseUpdates() || m_forceRun) {
             m_forceRun = false;
@@ -164,14 +162,12 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
                 LOG.error("cannot build topology", e);
                 return;
             }
-            synchronized (m_topology) {
-                m_topology.getVertices().stream().filter(v -> !topo.hasVertex(v.getId())).forEach(v -> delete(v));
-                m_topology.getEdges().stream().filter(g -> !topo.hasEdge(g.getId())).forEach(g -> delete(g));
+            m_topology.getVertices().stream().filter(v -> !topo.hasVertex(v.getId())).forEach(v -> delete(v));
+            m_topology.getEdges().stream().filter(g -> !topo.hasEdge(g.getId())).forEach(g -> delete(g));
 
-                topo.getVertices().stream().filter(v -> !m_topology.hasVertex(v.getId())).forEach(v -> update(v));
-                topo.getEdges().stream().filter(g -> !m_topology.hasEdge(g.getId())).forEach(g -> update(g));                
-                m_topology = topo;
-            }
+            topo.getVertices().stream().filter(v -> !m_topology.hasVertex(v.getId())).forEach(v -> update(v));
+            topo.getEdges().stream().filter(g -> !m_topology.hasEdge(g.getId())).forEach(g -> update(g));
+            m_topology = topo;
         }
         LOG.debug("run: end {}", getName());
     }
@@ -221,10 +217,8 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
     public abstract OnmsTopology buildTopology();
 
     @Override
-    public OnmsTopology getTopology() {
-        synchronized (m_topology) {
-            return m_topology.clone();
-        }
+    public synchronized OnmsTopology getTopology() {
+        return m_topology.clone();
     }
 
     public NodeTopologyEntity getDefaultFocusPoint() { 

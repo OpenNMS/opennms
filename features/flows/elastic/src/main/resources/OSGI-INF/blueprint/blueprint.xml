@@ -150,8 +150,9 @@
 
     <!-- Health Check -->
     <service interface="org.opennms.core.health.api.HealthCheck">
-        <bean class="org.opennms.netmgt.flows.elastic.health.ElasticHealthCheck" >
+        <bean class="org.opennms.plugins.elasticsearch.rest.ElasticHealthCheck" >
             <argument ref="jestClient"/>
+            <argument value="Flows"/>
         </bean>
     </service>
 

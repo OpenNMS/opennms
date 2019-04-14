@@ -63,34 +63,29 @@ public class UserDefinedLinkDaoImpl implements UserDefinedLinkDao {
 
     @Override
     public List<UserDefinedLink> getLinks() {
-        ensureServicesAreAvailable();
         return sessionUtils.withReadOnlyTransaction(() ->
                 userDefinedLinkDao.findAll().stream().map(UserDefinedLinkDaoImpl::toApiLink).collect(Collectors.toList()));
     }
 
     @Override
     public List<UserDefinedLink> getOutLinks(int nodeIdA) {
-        ensureServicesAreAvailable();
         return sessionUtils.withReadOnlyTransaction(() ->
                 userDefinedLinkDao.getOutLinks(nodeIdA).stream().map(UserDefinedLinkDaoImpl::toApiLink).collect(Collectors.toList()));
     }
 
     @Override
     public List<UserDefinedLink> getInLinks(int nodeIdZ) {
-        ensureServicesAreAvailable();
         return sessionUtils.withReadOnlyTransaction(() ->
                 userDefinedLinkDao.getInLinks(nodeIdZ).stream().map(UserDefinedLinkDaoImpl::toApiLink).collect(Collectors.toList()));}
 
     @Override
     public List<UserDefinedLink> getLinksWithLabel(String label) {
-        ensureServicesAreAvailable();
         return sessionUtils.withReadOnlyTransaction(() ->
                 userDefinedLinkDao.getLinksWithLabel(label).stream().map(UserDefinedLinkDaoImpl::toApiLink).collect(Collectors.toList()));
     }
 
     @Override
     public UserDefinedLink saveOrUpdate(UserDefinedLink link) {
-        ensureServicesAreAvailable();
         return sessionUtils.withTransaction(() -> {
             final org.opennms.netmgt.enlinkd.model.UserDefinedLink modelLink = toModelLink(link);
             userDefinedLinkTopologyService.saveOrUpdate(modelLink);
@@ -100,7 +95,6 @@ public class UserDefinedLinkDaoImpl implements UserDefinedLinkDao {
 
     @Override
     public void delete(UserDefinedLink link) {
-        ensureServicesAreAvailable();
         sessionUtils.withTransaction(() -> {
             userDefinedLinkTopologyService.delete(link.getDbId());
             return null;
@@ -109,19 +103,12 @@ public class UserDefinedLinkDaoImpl implements UserDefinedLinkDao {
 
     @Override
     public void delete(Collection<UserDefinedLink> links) {
-        ensureServicesAreAvailable();
         sessionUtils.withTransaction(() -> {
             for (UserDefinedLink link : links) {
                 userDefinedLinkTopologyService.delete(link.getDbId());
             }
             return null;
         });
-    }
-
-    private void ensureServicesAreAvailable() {
-        if (userDefinedLinkDao == null) {
-            throw new IllegalStateException("Required DAO is not available. Ensure the Enlinkd service is enabled.");
-        }
     }
 
     protected static UserDefinedLink toApiLink(org.opennms.netmgt.enlinkd.model.UserDefinedLink modelLink) {

@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.enlinkd.common.NodeCollector;
 import org.opennms.netmgt.enlinkd.model.OspfElement.Status;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.service.api.Node;
@@ -76,7 +77,7 @@ public final class NodeDiscoveryOspf extends NodeCollector {
     	m_ospfTopologyService = ospfTopologyService;
     }
 
-    protected void collect() {
+    public void collect() {
 
     	final Date now = new Date(); 
 
