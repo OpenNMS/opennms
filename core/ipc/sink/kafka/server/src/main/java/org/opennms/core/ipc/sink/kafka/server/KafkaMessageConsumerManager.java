@@ -108,7 +108,8 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                         } catch (RuntimeException e) {
                             LOG.warn("Unexpected exception while dispatching message", e);
                         } catch (InvalidProtocolBufferException e) {
-                            LOG.warn("Error parsing protobuf", e);
+                            LOG.warn("Error parsing procotol buffer in message. The message will be dropped. \n" +
+                                    "Ensure that all components are running the same version of the software.");
                         }
                     }
                 }
