@@ -26,57 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.apilayer.model;
+package org.opennms.features.apilayer.model.mappers;
 
-import java.util.Objects;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+import org.opennms.features.apilayer.utils.ModelMappers;
+import org.opennms.integration.api.v1.model.Severity;
+import org.opennms.integration.api.v1.model.immutables.ImmutableInMemoryEvent;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.xml.event.Event;
 
-import org.opennms.integration.api.v1.model.Geolocation;
-import org.opennms.netmgt.model.OnmsGeolocation;
+@Mapper(uses = EventParameterMapper.class)
+public interface InMemoryEventMapper {
+    @Mappings({
+            @Mapping(source = "parmCollection", target = "parameters")
+    })
+    ImmutableInMemoryEvent map(Event event);
 
-public class GeolocationBean implements Geolocation {
-    private final OnmsGeolocation geolocation;
-
-    public GeolocationBean(OnmsGeolocation geolocation) {
-        this.geolocation = Objects.requireNonNull(geolocation);
-    }
-
-    @Override
-    public String getAddress1() {
-        return geolocation.getAddress1();
-    }
-
-    @Override
-    public String getAddress2() {
-        return geolocation.getAddress2();
-    }
-
-    @Override
-    public String getCity() {
-        return geolocation.getCity();
-    }
-
-    @Override
-    public String getState() {
-        return geolocation.getState();
-    }
-
-    @Override
-    public String getZip() {
-        return geolocation.getZip();
-    }
-
-    @Override
-    public String getCountry() {
-        return geolocation.getCountry();
-    }
-
-    @Override
-    public Double getLongitude() {
-        return geolocation.getLongitude();
-    }
-
-    @Override
-    public Double getLatitude() {
-        return geolocation.getLatitude();
+    default Severity map(String severity) {
+        return ModelMappers.toSeverity(OnmsSeverity.get(severity));
     }
 }

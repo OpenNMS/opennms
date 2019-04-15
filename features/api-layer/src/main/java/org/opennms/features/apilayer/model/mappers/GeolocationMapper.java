@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,34 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.apilayer.model;
+package org.opennms.features.apilayer.model.mappers;
 
-import org.opennms.integration.api.v1.model.EventParameter;
-import org.opennms.netmgt.model.OnmsEventParameter;
-import org.opennms.netmgt.xml.event.Parm;
+import org.mapstruct.Mapper;
+import org.opennms.integration.api.v1.model.immutables.ImmutableGeolocation;
+import org.opennms.netmgt.model.OnmsGeolocation;
 
-public class EventParameterBean implements EventParameter {
-
-    private final String name;
-    private final String value;
-
-    public EventParameterBean(OnmsEventParameter p) {
-        name = p.getName();
-        value = p.getValue();
-    }
-
-    public EventParameterBean(Parm p) {
-        name = p.getParmName();
-        value = p.getValue() != null ? p.getValue().getContent() : null;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getValue() {
-        return value;
-    }
+@Mapper
+public interface GeolocationMapper {
+    ImmutableGeolocation map(OnmsGeolocation onmsGeolocation);
 }
