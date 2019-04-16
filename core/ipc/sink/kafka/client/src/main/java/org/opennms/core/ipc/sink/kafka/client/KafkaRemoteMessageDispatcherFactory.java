@@ -30,12 +30,14 @@ package org.opennms.core.ipc.sink.kafka.client;
 
 import java.io.IOException;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.errors.TimeoutException;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.camel.JmsQueueNameFactory;
@@ -47,12 +49,15 @@ import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
+import org.opennms.core.ipc.sink.model.SinkMessageProtos;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.logging.Logging.MDCCloseable;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.protobuf.ByteString;
 
 public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatcherFactory<String> {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaRemoteMessageDispatcherFactory.class);
@@ -75,7 +80,9 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
     public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, String topic, T message) {
         try (MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
             LOG.trace("dispatch({}): sending message {}", topic, message);
-            final ProducerRecord<String,byte[]> record = new ProducerRecord<>(topic, module.marshal(message));
+            String messageId = UUID.randomUUID().toString();
+            byte[] messageInBytes = wrapMessageToProto(messageId, module.marshal(message));
+            final ProducerRecord<String,byte[]> record = new ProducerRecord<>(topic, messageId, messageInBytes);
             // Keep sending record till it delivers successfully.
             while(true) {
                 try {
@@ -89,10 +96,25 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
                     Thread.currentThread().interrupt();
                     break;
                 } catch (ExecutionException e) {
-                    LOG.warn("Timeout occured while sending message to topic {}, it will be attempted again.", topic);
+                    // Timeout typically happens when Kafka is Offline or it didn't initialize yet.
+                    // For this case keep sending the message until it delivers, will cause sink messages to buffer.
+                    if (e.getCause() != null && e.getCause() instanceof TimeoutException) {
+                        LOG.warn("Timeout occured while sending message to topic {}, it will be attempted again.", topic);
+                    } else {
+                        LOG.error("Exception occured while sending message to topic {} ", e);
+                        break;
+                    }
                 }
             }
         }
+    }
+
+    private byte[] wrapMessageToProto(String messageId, byte[] messageInBytes) {
+        SinkMessageProtos.SinkMessage sinkMessage = SinkMessageProtos.SinkMessage.newBuilder()
+                .setMessageId(messageId)
+                .setContent(ByteString.copyFrom(messageInBytes))
+                .build();
+        return sinkMessage.toByteArray();
     }
 
     public void init() throws IOException {
