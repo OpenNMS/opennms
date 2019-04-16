@@ -85,10 +85,13 @@ public class CamelRpcServerProcessor implements AsyncProcessor {
     @Override
     @SuppressWarnings("unchecked")
     public boolean process(Exchange exchange, AsyncCallback callback) {
-        // build span from message headers.
-        Tracer.SpanBuilder spanBuilder = buildSpanFromHeaders(exchange.getIn());
+        // build span from message headers and retrieve custom tags into tracing info.
+        Map<String, String> tracingInfo = new HashMap<>();
+        Tracer.SpanBuilder spanBuilder = buildSpanFromHeaders(exchange.getIn(), tracingInfo);
         // Start minion span.
         Span minionSpan = spanBuilder.start();
+        //Add custom tags to minion span.
+        tracingInfo.forEach(minionSpan::setTag);
         final RpcRequest request = module.unmarshalRequest(exchange.getIn().getBody(String.class));
         minionSpan.setTag(TAG_LOCATION, request.getLocation());
         if(request.getSystemId() != null) {
@@ -134,10 +137,8 @@ public class CamelRpcServerProcessor implements AsyncProcessor {
         // pass
     }
 
-    private Tracer.SpanBuilder buildSpanFromHeaders(Message message) {
-
+    private Tracer.SpanBuilder buildSpanFromHeaders(Message message, Map<String, String> tracingInfo) {
         final Tracer tracer = tracerRegistry.getTracer();
-        Map<String, String> tracingInfo = new HashMap<>();
         String tracingInfoObj = message.getHeader(JMS_TRACING_INFO, String.class);
         if(tracingInfoObj != null) {
             tracingInfo.putAll(TracingInfoCarrier.unmarshalTracinginfo(tracingInfoObj));

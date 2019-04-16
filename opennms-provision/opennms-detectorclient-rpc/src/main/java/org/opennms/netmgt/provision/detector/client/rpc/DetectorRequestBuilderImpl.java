@@ -33,9 +33,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.utils.mate.FallbackScope;
 import org.opennms.core.rpc.utils.mate.Interpolator;
-import org.opennms.core.rpc.utils.mate.Scope;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.DetectorRequestBuilder;
@@ -151,6 +151,8 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
         detectorRequestDTO.setClassName(className);
         detectorRequestDTO.setAddress(address);
         detectorRequestDTO.addDetectorAttributes(interpolatedAttributes);
+        detectorRequestDTO.addTracingInfo(RpcRequest.TAG_CLASS_NAME, className);
+        detectorRequestDTO.addTracingInfo(RpcRequest.TAG_IP_ADDRESS, InetAddressUtils.toIpAddrString(address));
 
         // Attempt to extract the port from the list of attributes
         Integer port = null;

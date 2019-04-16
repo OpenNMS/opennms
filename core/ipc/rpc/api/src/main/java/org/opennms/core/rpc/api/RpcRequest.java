@@ -28,6 +28,8 @@
 
 package org.opennms.core.rpc.api;
 
+import java.util.Map;
+
 /**
  * The request of an RPC call.
  *
@@ -35,6 +37,11 @@ package org.opennms.core.rpc.api;
  */
 public interface RpcRequest {
 
+    public static final String TAG_NODE_ID = "nodeId";
+    public static final String TAG_NODE_LABEL = "nodeLabel";
+    public static final String TAG_CLASS_NAME = "className";
+    public static final String TAG_IP_ADDRESS = "ipAddress";
+    public static final String TAG_DESCRIPTION = "description";
     /**
      * Used to route the request to the appropriate location.
      */
@@ -50,4 +57,10 @@ public interface RpcRequest {
      * many milliseconds.
      */
     Long getTimeToLiveMs();
+
+    /**
+     * RPC clients expose tracing info as tags there by giving more context to each RPC trace.
+     * Implementations should add tags defined above if they are available.
+     */
+    Map<String, String> getTracingInfo();
 }
