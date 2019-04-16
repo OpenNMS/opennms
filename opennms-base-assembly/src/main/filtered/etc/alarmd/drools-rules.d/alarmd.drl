@@ -50,10 +50,13 @@ end
     <!-- Find all alarms that can be cleared -->
     <trigger name="selectAlarmsToClear" operator="&gt;=" row-count="1" >
       <statement>
-        SELECT *, now() AS _ts FROM alarms as problems
-        WHERE alarmType=1
-          AND severity &gt; 2
-          AND reductionKey IN (SELECT clearKey FROM alarms WHERE alarmType=2 AND lastEventTime &gt; problems.lastEventTime)
+        SELECT A1.*, now() AS _ts FROM alarms A1
+            JOIN alarms A2
+                ON A1.reductionkey=A2.clearkey
+            WHERE A1.alarmType=1
+                AND A1.severity &gt; 2
+                AND A2.alarmType=2
+                AND A2.lastEventTime &gt; A1.lastEventTime
       </statement>
     </trigger>
 
