@@ -29,7 +29,6 @@
 package org.opennms.core.tracing.registry;
 
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.tracing.api.TracerWrapper;
@@ -39,42 +38,41 @@ import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 
 /**
- * Implements TracerRegistry and provide onBind, OnUnbind for {@link TracerWrapper} to get registered from osgi registry.
+ * Implements TracerRegistry and provides onBind, OnUnbind for {@link TracerWrapper} to get registered from osgi registry.
  */
 public class TracerRegistryImpl implements TracerRegistry {
-
 
     @Autowired(required = false)
     private TracerWrapper tracerWrapper;
 
     private Tracer tracer;
 
-    private AtomicBoolean registered = new AtomicBoolean(false);
+    private String serviceName;
 
     @Override
-    public Tracer getTracer(String serviceName) {
-        if (tracerWrapper != null) {
+    public Tracer getTracer() {
+        if (tracerWrapper != null && serviceName != null) {
             if(tracer == null) {
                 tracer = tracerWrapper.init(serviceName);
-                registered.set(true);
             }
             return tracer;
         }
+        // Returns a NoopTracer.
         return GlobalTracer.get();
     }
 
     public synchronized void onBind(TracerWrapper tracerWrapper, Map properties) {
         this.tracerWrapper = tracerWrapper;
-        registered.set(true);
     }
 
     public synchronized void onUnbind(TracerWrapper tracerWrapper, Map properties) {
 
     }
 
+
     @Override
-    public boolean isRegistered() {
-        return registered.get();
+    public void init(String serviceName) {
+        this.serviceName = serviceName;
     }
 
     public TracerWrapper getTracerWrapper() {

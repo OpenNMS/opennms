@@ -39,6 +39,7 @@ import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.core.rpc.camel.CamelRpcConstants;
 import org.opennms.core.rpc.camel.CamelRpcServerProcessor;
 import org.opennms.core.rpc.camel.CamelRpcServerRouteManager;
+import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,26 +47,32 @@ import org.slf4j.LoggerFactory;
 public class JmsRpcServerRouteManager extends CamelRpcServerRouteManager {
     private static final Logger LOG = LoggerFactory.getLogger(CamelRpcServerRouteManager.class);
 
-    public JmsRpcServerRouteManager(CamelContext context, MinionIdentity identity) {
+    private final TracerRegistry tracerRegistry;
+
+    public JmsRpcServerRouteManager(CamelContext context, MinionIdentity identity, TracerRegistry tracerRegistry) {
         super(context, identity);
+        this.tracerRegistry = tracerRegistry;
     }
 
     @Override
     public RouteBuilder getRouteBuilder(CamelContext context, MinionIdentity identity, RpcModule<RpcRequest,RpcResponse> module) {
-        return new DynamicRpcRouteBuilder(context, identity, module);
+        return new DynamicRpcRouteBuilder(context, identity, module, tracerRegistry);
     }
 
     private static final class DynamicRpcRouteBuilder extends RouteBuilder {
         private final MinionIdentity identity;
         private final RpcModule<RpcRequest,RpcResponse> module;
         private final JmsQueueNameFactory queueNameFactory;
+        private final TracerRegistry tracerRegistry;
 
-        private DynamicRpcRouteBuilder(CamelContext context, MinionIdentity identity, RpcModule<RpcRequest,RpcResponse> module) {
+        private DynamicRpcRouteBuilder(CamelContext context, MinionIdentity identity,
+                                       RpcModule<RpcRequest,RpcResponse> module, TracerRegistry tracerRegistry) {
             super(context);
             this.identity = identity;
             this.module = module;
             this.queueNameFactory = new JmsQueueNameFactory(CamelRpcConstants.JMS_QUEUE_PREFIX,
                     module.getId(), identity.getLocation());
+            this.tracerRegistry = tracerRegistry;
         }
 
         public String getQueueName() {
@@ -80,9 +87,10 @@ public class JmsRpcServerRouteManager extends CamelRpcServerRouteManager {
             final String selector = getJmsSelector(identity.getId());
             LOG.trace("Using JMS selector: {} for module: {} on: {}", selector, module, identity);
             endpoint.setSelector(selector);
-
+            // Initialize Tracer registry with service name.
+            tracerRegistry.init(identity.getLocation()+"@"+identity.getId());
             from(endpoint).setExchangePattern(ExchangePattern.InOut)
-                    .process(new CamelRpcServerProcessor(module))
+                    .process(new CamelRpcServerProcessor(module, tracerRegistry))
                     .routeId(getRouteId(module));
         }
     }
