@@ -104,7 +104,7 @@ public class ApplicationVertex extends SimpleVertex // implements LevelAware
         if (isRoot()) {
             return this;
         }
-        return ((ApplicationVertex)getParent()).getRoot();
+        return (getParent()).getRoot();
     }
 
     public int getLevel() {

@@ -63,7 +63,7 @@ public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleE
 
     /** copy constructor */
     public SimpleGraph(SimpleGraph graph) {
-        super(new GenericGraph(graph.asGenericGraph()));
+        this(new GenericGraph(graph.asGenericGraph()));
     }
 
     @Override

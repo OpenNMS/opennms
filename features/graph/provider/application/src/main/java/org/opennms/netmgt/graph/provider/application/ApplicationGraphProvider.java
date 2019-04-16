@@ -43,6 +43,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO: patrick use in ApplicationTopologyProvider
 public class ApplicationGraphProvider implements GraphProvider {
 
     static final String TOPOLOGY_NAMESPACE = "application";
