@@ -44,6 +44,7 @@ import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
@@ -57,7 +58,7 @@ import org.springframework.transaction.support.TransactionOperations;
 public class ProtoBufMapperTest {
 
     private ProtobufMapper protobufMapper = new ProtobufMapper(mock(EventConfDao.class), mock(HwEntityDao.class),
-            mock(TransactionOperations.class), mock(NodeDao.class), 1);
+            mock(SessionUtils.class), mock(NodeDao.class), 1);
 
     /**
      * Tests that the mapper can handle related alarms.

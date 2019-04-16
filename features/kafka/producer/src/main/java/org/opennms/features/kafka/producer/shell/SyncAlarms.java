@@ -41,8 +41,8 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.kafka.producer.datasync.AlarmDataStore;
 import org.opennms.features.kafka.producer.datasync.AlarmSyncResults;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.springframework.transaction.support.TransactionOperations;
 
 @Command(scope = "kafka-producer", name = "sync-alarms", description = "Triggers a syncrhonization of the alarms topic against the database.")
 @Service
@@ -52,7 +52,7 @@ public class SyncAlarms implements Action {
     private AlarmDataStore alarmDataStore;
 
     @Reference
-    private TransactionOperations transactionOperations;
+    private SessionUtils sessionUtils;
 
     @Reference
     private AlarmDao alarmDao;
@@ -72,7 +72,7 @@ public class SyncAlarms implements Action {
             return null;
         }
 
-        return transactionOperations.execute(status -> {
+        return sessionUtils.withReadOnlyTransaction(() -> {
             // Retrieve all of the alarms from the database
             final List<OnmsAlarm> alarmsInDb = alarmDao.findAll();
             System.out.println("Performing synchronization of alarms from the database with those in the ktable.");
