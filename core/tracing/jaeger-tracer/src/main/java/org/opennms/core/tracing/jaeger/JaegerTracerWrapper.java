@@ -30,6 +30,8 @@ package org.opennms.core.tracing.jaeger;
 
 import org.opennms.core.tracing.api.TracerWrapper;
 import org.opennms.core.sysprops.SystemProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.jaegertracing.Configuration;
 import io.jaegertracing.internal.samplers.ConstSampler;
@@ -43,13 +45,17 @@ import io.opentracing.util.GlobalTracer;
  */
 public class JaegerTracerWrapper implements TracerWrapper {
 
+    private static final Logger LOG = LoggerFactory.getLogger(JaegerTracerWrapper.class);
+
     private static final String JAEGER_SAMPLER_PARAM_PROPERTY = "JAEGER_SAMPLER_PARAM";
     private static final int JAEGER_SAMPLER_PARAM_VALUE = SystemProperties.getInteger(JAEGER_SAMPLER_PARAM_PROPERTY, 1);
+    private static final String JAEGER_SAMPLER_TYPE_PROPERTY = "JAEGER_SAMPLER_TYPE";
+    private static final String JAEGER_SAMPLER_TYPE_VALUE = System.getProperty(JAEGER_SAMPLER_TYPE_PROPERTY, ConstSampler.TYPE);
     
     @Override
     public Tracer init(String serviceName) {
         Configuration.SamplerConfiguration samplerConfig = Configuration.SamplerConfiguration.fromEnv()
-                .withType(ConstSampler.TYPE)
+                .withType(JAEGER_SAMPLER_TYPE_VALUE)
                 .withParam(JAEGER_SAMPLER_PARAM_VALUE);
 
         Configuration.ReporterConfiguration reporterConfig = Configuration.ReporterConfiguration.fromEnv()
@@ -59,7 +65,7 @@ public class JaegerTracerWrapper implements TracerWrapper {
                 .withSampler(samplerConfig)
                 .withReporter(reporterConfig);
         GlobalTracer.get();
-
+        LOG.info("Jaeger tracer initialized with serviceName = {}", serviceName);
         return config.getTracer();
     }
 }

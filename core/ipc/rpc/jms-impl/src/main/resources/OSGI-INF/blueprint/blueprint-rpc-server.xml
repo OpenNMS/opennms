@@ -26,6 +26,8 @@
     <!-- Provided by minion-core -->
     <reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=opennms.broker)" />
 
+    <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
+
     <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
     <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
         <property name="timeout" value="15"/>
@@ -43,6 +45,7 @@
     <bean id="jmsRpcServerRouteManager" class="org.opennms.core.rpc.jms.JmsRpcServerRouteManager" >
         <argument ref="rpcServer"/>
         <argument ref="minionIdentity"/>
+        <argument ref="tracerRegistry"/>
     </bean>
 
     <reference-list id="rpcModulesRef" interface="org.opennms.core.rpc.api.RpcModule" availability="optional">

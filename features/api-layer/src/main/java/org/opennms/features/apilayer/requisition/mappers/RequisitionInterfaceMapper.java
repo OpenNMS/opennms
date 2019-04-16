@@ -31,7 +31,7 @@ package org.opennms.features.apilayer.requisition.mappers;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import org.opennms.integration.api.v1.config.requisition.beans.RequisitionInterfaceBean;
+import org.opennms.integration.api.v1.config.requisition.immutables.ImmutableRequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 
 @Mapper(uses={RequisitionMonitoredServiceMapper.class, PrimaryTypeMapper.class, InetAddressMapper.class, RequisitionMetaDataMapper.class})
@@ -39,10 +39,9 @@ public interface RequisitionInterfaceMapper {
 
     @Mappings({
             @Mapping(source = "ipAddr", target = "ipAddress"),
-            @Mapping(source = "descr", target = "description"),
-            @Mapping(target = "monitoredService", ignore = true)
+            @Mapping(source = "descr", target = "description")
     })
-    RequisitionInterfaceBean map(RequisitionInterface iface);
+    ImmutableRequisitionInterface map(RequisitionInterface iface);
 
     @Mappings({
             @Mapping(source = "ipAddress", target = "ipAddr"),

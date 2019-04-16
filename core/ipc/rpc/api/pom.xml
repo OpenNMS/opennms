@@ -26,4 +26,11 @@
       </plugin>
     </plugins>
   </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.core.tracing</groupId>
+      <artifactId>org.opennms.core.tracing.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 </project>

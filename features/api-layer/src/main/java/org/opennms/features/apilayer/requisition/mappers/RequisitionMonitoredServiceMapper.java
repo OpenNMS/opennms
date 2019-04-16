@@ -31,7 +31,7 @@ package org.opennms.features.apilayer.requisition.mappers;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import org.opennms.integration.api.v1.config.requisition.beans.RequisitionMonitoredServiceBean;
+import org.opennms.integration.api.v1.config.requisition.immutables.ImmutableRequisitionMonitoredService;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 
 @Mapper(uses={RequisitionMetaDataMapper.class})
@@ -40,7 +40,7 @@ public interface RequisitionMonitoredServiceMapper {
     @Mappings({
             @Mapping(source = "serviceName", target = "name")
     })
-    RequisitionMonitoredServiceBean map(RequisitionMonitoredService service);
+    ImmutableRequisitionMonitoredService map(RequisitionMonitoredService service);
 
     @Mappings({
             @Mapping(source = "name", target = "serviceName")

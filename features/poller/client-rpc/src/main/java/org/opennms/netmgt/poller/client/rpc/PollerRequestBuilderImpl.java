@@ -34,10 +34,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcTarget;
 import org.opennms.core.rpc.utils.mate.FallbackScope;
 import org.opennms.core.rpc.utils.mate.Interpolator;
-import org.opennms.core.rpc.utils.mate.Scope;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerRequestBuilder;
@@ -141,7 +142,8 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         final PollerRequestDTO request = new PollerRequestDTO();
         request.setLocation(target.getLocation());
         request.setSystemId(target.getSystemId());
-        request.setClassName(className != null ? className : serviceMonitor.getClass().getCanonicalName());
+        final String pollerClassName = className != null ? className : serviceMonitor.getClass().getCanonicalName();
+        request.setClassName(pollerClassName);
         request.setServiceName(service.getSvcName());
         request.setAddress(service.getAddress());
         request.setNodeId(service.getNodeId());
@@ -149,6 +151,10 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         request.setNodeLocation(service.getNodeLocation());
         request.setTimeToLiveMs(ttlInMs);
         request.addAttributes(interpolatedAttributes);
+        request.addTracingInfo(RpcRequest.TAG_NODE_ID, String.valueOf(service.getNodeId()));
+        request.addTracingInfo(RpcRequest.TAG_NODE_LABEL, service.getNodeLabel());
+        request.addTracingInfo(RpcRequest.TAG_CLASS_NAME, pollerClassName);
+        request.addTracingInfo(RpcRequest.TAG_IP_ADDRESS, InetAddressUtils.toIpAddrString(service.getAddress()));
 
         // Retrieve the runtime attributes, which may include attributes
         // such as the agent details and other state related attributes

@@ -52,6 +52,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.ipc.sink.model.SinkMessageProtos;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
@@ -64,6 +65,8 @@ import org.opennms.smoketest.utils.HibernateDaoFactory;
 import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
+
+import com.google.protobuf.ByteString;
 
 public class EventSinkIT {
 
@@ -111,8 +114,9 @@ public class EventSinkIT {
         producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getCanonicalName());
         KafkaProducer<String, byte[]> producer = new KafkaProducer<>(producerConfig);
         final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory("Sink", "Events");
+        byte[] sinkMessageInBytes = wrapMessageToProto("1", xmlString.getBytes(StandardCharsets.UTF_8));
         ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<String, byte[]>(topicNameFactory.getName(),
-                xmlString.getBytes(StandardCharsets.UTF_8));
+                sinkMessageInBytes);
         producer.send(producerRecord);
 
         InetSocketAddress pgsql = m_testEnvironment.getServiceAddress(ContainerAlias.POSTGRES, 5432);
@@ -126,6 +130,14 @@ public class EventSinkIT {
         assertNotNull(onmsNode);
 
         producer.close();
+    }
+
+    private byte[] wrapMessageToProto(String messageId, byte[] messageInBytes) {
+        SinkMessageProtos.SinkMessage sinkMessage = SinkMessageProtos.SinkMessage.newBuilder()
+                .setMessageId(messageId)
+                .setContent(ByteString.copyFrom(messageInBytes))
+                .build();
+        return sinkMessage.toByteArray();
     }
 
 }

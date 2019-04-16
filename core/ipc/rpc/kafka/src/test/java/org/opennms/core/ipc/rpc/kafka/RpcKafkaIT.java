@@ -110,13 +110,12 @@ public class RpcKafkaIT {
 
     private TracerRegistry tracerRegistry = new TracerRegistry() {
         @Override
-        public Tracer getTracer(String serviceName) {
+        public Tracer getTracer() {
             return GlobalTracer.get();
         }
 
         @Override
-        public boolean isRegistered() {
-            return false;
+        public void init(String serviceName) {
         }
     };
     

@@ -29,13 +29,13 @@
 package org.opennms.features.apilayer.requisition.mappers;
 
 import org.mapstruct.Mapper;
-import org.opennms.integration.api.v1.config.requisition.beans.RequisitionMetaDataBean;
+import org.opennms.integration.api.v1.config.requisition.immutables.ImmutableRequisitionMetaData;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMetaData;
 
 @Mapper
 public interface RequisitionMetaDataMapper {
 
-    RequisitionMetaDataBean map(RequisitionMetaData metaData);
+    ImmutableRequisitionMetaData map(RequisitionMetaData metaData);
 
     RequisitionMetaData map(org.opennms.integration.api.v1.config.requisition.RequisitionMetaData metaData);
 }

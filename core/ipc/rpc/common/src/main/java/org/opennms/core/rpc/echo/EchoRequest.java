@@ -28,6 +28,8 @@
 
 package org.opennms.core.rpc.echo;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -64,6 +66,8 @@ public class EchoRequest implements RpcRequest {
     private boolean shouldThrow;
 
     private Long timeToLiveMs;
+
+    private Map<String, String> tracingInfo = new HashMap<>();
 
     public EchoRequest() { }
 
@@ -124,6 +128,15 @@ public class EchoRequest implements RpcRequest {
     @Override
     public Long getTimeToLiveMs() {
         return timeToLiveMs;
+    }
+
+    @Override
+    public Map<String, String> getTracingInfo() {
+        return tracingInfo;
+    }
+
+    public void addTracingInfo(String key, String value) {
+        tracingInfo.put(key, value);
     }
 
     public void setDelay(Long delay) {
