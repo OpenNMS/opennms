@@ -38,7 +38,6 @@
                   <exclude>io.opentracing:opentracing-noop</exclude>
                   <exclude>io.opentracing.contrib:opentracing-tracerresolver</exclude>
                   <exclude>io.jaegertracing:jaeger-tracerresolver</exclude>
-                  <exclude>com.google.code.gson:gson</exclude>
                   <exclude>org.apache.httpcomponents:httpclient</exclude>
                   <exclude>org.apache.httpcomponents:httpcore</exclude>
                   <exclude>commons-codec:commons-codec</exclude>

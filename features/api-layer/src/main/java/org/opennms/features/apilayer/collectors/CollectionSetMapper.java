@@ -32,17 +32,20 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.integration.api.v1.collectors.CollectionSet;
-import org.opennms.integration.api.v1.collectors.resource.AttributeBuilder;
-import org.opennms.integration.api.v1.collectors.resource.CollectionSetBuilder;
+import org.opennms.integration.api.v1.collectors.immutables.ImmutableNumericAttribute;
+import org.opennms.integration.api.v1.collectors.immutables.ImmutableStringAttribute;
 import org.opennms.integration.api.v1.collectors.resource.CollectionSetResource;
-import org.opennms.integration.api.v1.collectors.resource.CollectionSetResourceBuilder;
 import org.opennms.integration.api.v1.collectors.resource.GenericTypeResource;
 import org.opennms.integration.api.v1.collectors.resource.IpInterfaceResource;
 import org.opennms.integration.api.v1.collectors.resource.NodeResource;
 import org.opennms.integration.api.v1.collectors.resource.NumericAttribute;
 import org.opennms.integration.api.v1.collectors.resource.Resource;
-import org.opennms.integration.api.v1.collectors.resource.ResourceBuilder;
 import org.opennms.integration.api.v1.collectors.resource.StringAttribute;
+import org.opennms.integration.api.v1.collectors.resource.immutables.ImmutableCollectionSet;
+import org.opennms.integration.api.v1.collectors.resource.immutables.ImmutableCollectionSetResource;
+import org.opennms.integration.api.v1.collectors.resource.immutables.ImmutableGenericTypeResource;
+import org.opennms.integration.api.v1.collectors.resource.immutables.ImmutableIpInterfaceResource;
+import org.opennms.integration.api.v1.collectors.resource.immutables.ImmutableNodeResource;
 import org.opennms.integration.api.v1.dao.NodeDao;
 import org.opennms.integration.api.v1.model.Node;
 import org.opennms.netmgt.collection.api.AttributeGroup;
@@ -72,10 +75,10 @@ public class CollectionSetMapper {
      *  Maps @{@link org.opennms.netmgt.collection.api.CollectionSet} to Integration API @{@link CollectionSet} and builds it.
      */
     @SuppressWarnings("unchecked")
-    public CollectionSet buildCollectionSet(CollectionSetBuilder builder, org.opennms.netmgt.collection.api.CollectionSet collectionSet) {
+    public CollectionSet buildCollectionSet(ImmutableCollectionSet.Builder builder, org.opennms.netmgt.collection.api.CollectionSet collectionSet) {
 
         collectionSet.visit(new CollectionSetVisitor() {
-            CollectionSetResourceBuilder resourceBuilder;
+            ImmutableCollectionSetResource.Builder resourceBuilder;
             String groupName = null;
 
             @Override
@@ -85,20 +88,21 @@ public class CollectionSetMapper {
 
             @Override
             public void visitResource(CollectionResource resource) {
-                resourceBuilder = new CollectionSetResourceBuilder();
                 if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_NODE)) {
-                    resourceBuilder.withResource(buildNodeResource(resource));
+                    resourceBuilder = ImmutableCollectionSetResource.newBuilder(NodeResource.class);
+                    resourceBuilder.setResource(buildNodeResource(resource));
                 } else if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_IF)) {
-                    IpInterfaceResource ipInterfaceResource = new ResourceBuilder()
-                            .withInstance(resource.getInstance())
-                            .buildIpInterfaceResource(buildNodeResource(resource));
-                    resourceBuilder.withResource(ipInterfaceResource);
+                    resourceBuilder = ImmutableCollectionSetResource.newBuilder(IpInterfaceResource.class);
+                    IpInterfaceResource ipInterfaceResource = ImmutableIpInterfaceResource.newInstance(buildNodeResource(resource), resource.getInstance());
+                    resourceBuilder.setResource(ipInterfaceResource);
                 } else {
-                    GenericTypeResource genericTypeResource = new ResourceBuilder()
-                            .withInstance(resource.getInstance())
-                            .withType(resource.getResourceTypeName())
-                            .buildGenericTypeResource(buildNodeResource(resource));
-                    resourceBuilder.withResource(genericTypeResource);
+                    resourceBuilder = ImmutableCollectionSetResource.newBuilder(GenericTypeResource.class);
+                    GenericTypeResource genericTypeResource = ImmutableGenericTypeResource.newBuilder()
+                            .setInstance(resource.getInstance())
+                            .setType(resource.getResourceTypeName())
+                            .setNodeResource(buildNodeResource(resource))
+                            .build();
+                    resourceBuilder.setResource(genericTypeResource);
                 }
             }
 
@@ -110,19 +114,19 @@ public class CollectionSetMapper {
             @Override
             public void visitAttribute(CollectionAttribute attribute) {
                 if (attribute.getType().equals(AttributeType.STRING)) {
-                    StringAttribute stringAttribute = new AttributeBuilder()
-                            .withName(attribute.getName())
-                            .withStringValue(attribute.getStringValue())
-                            .buildString();
-                    resourceBuilder.withStringAttribute(stringAttribute);
+                    StringAttribute stringAttribute = ImmutableStringAttribute.newBuilder()
+                            .setName(attribute.getName())
+                            .setValue(attribute.getStringValue())
+                            .build();
+                    resourceBuilder.addStringAttribute(stringAttribute);
                 } else {
-                    NumericAttribute numericAttribute = new AttributeBuilder()
-                            .withName(attribute.getName())
-                            .withGroup(groupName)
-                            .withType((attribute.getType() == AttributeType.COUNTER) ? NumericAttribute.Type.COUNTER : NumericAttribute.Type.GAUGE)
-                            .withNumericValue(attribute.getNumericValue().doubleValue())
-                            .buildNumeric();
-                    resourceBuilder.withNumericAttribute(numericAttribute);
+                    NumericAttribute numericAttribute = ImmutableNumericAttribute.newBuilder()
+                            .setName(attribute.getName())
+                            .setGroup(groupName)
+                            .setType((attribute.getType() == AttributeType.COUNTER) ? NumericAttribute.Type.COUNTER : NumericAttribute.Type.GAUGE)
+                            .setValue(attribute.getNumericValue().doubleValue())
+                            .build();
+                    resourceBuilder.addNumericAttribute(numericAttribute);
                 }
             }
 
@@ -138,13 +142,13 @@ public class CollectionSetMapper {
 
             @Override
             public void completeResource(CollectionResource resource) {
-                builder.withCollectionSetResource(resourceBuilder.build());
+                builder.addCollectionSetResource(resourceBuilder.build());
             }
 
             @Override
             public void completeCollectionSet(org.opennms.netmgt.collection.api.CollectionSet set) {
-                builder.withTimeStamp(set.getCollectionTimestamp().getTime());
-                builder.withStatus(CollectionSet.Status.SUCCEEDED);
+                builder.setTimestamp(set.getCollectionTimestamp().getTime());
+                builder.setStatus(CollectionSet.Status.SUCCEEDED);
             }
         });
         return builder.build();
@@ -153,12 +157,12 @@ public class CollectionSetMapper {
     private NodeResource buildNodeResource(CollectionResource collectionResource) {
         String nodeCriteria = getNodeCriteriaFromResource(collectionResource);
         Node node = nodeDao.getNodeByCriteria(nodeCriteria);
-        NodeResource nodeResource = new ResourceBuilder()
-                .withNodeId(node.getId())
-                .withForeignId(node.getForeignId())
-                .withForeignSource(node.getForeignSource())
-                .withNodeLabel(node.getLabel())
-                .buildNodeResource();
+        NodeResource nodeResource = ImmutableNodeResource.newBuilder()
+                .setNodeId(node.getId())
+                .setForeignId(node.getForeignId())
+                .setForeignSource(node.getForeignSource())
+                .setNodeLabel(node.getLabel())
+                .build();
         return nodeResource;
     }
 

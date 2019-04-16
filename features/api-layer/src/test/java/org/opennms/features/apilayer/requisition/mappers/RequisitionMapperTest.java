@@ -39,10 +39,11 @@ import java.util.Date;
 import org.junit.Test;
 import org.mapstruct.factory.Mappers;
 import org.opennms.integration.api.v1.config.requisition.SnmpPrimaryType;
-import org.opennms.integration.api.v1.config.requisition.beans.RequisitionBean;
-import org.opennms.integration.api.v1.config.requisition.beans.RequisitionInterfaceBean;
-import org.opennms.integration.api.v1.config.requisition.beans.RequisitionMonitoredServiceBean;
-import org.opennms.integration.api.v1.config.requisition.beans.RequisitionNodeBean;
+import org.opennms.integration.api.v1.config.requisition.immutables.ImmutableRequisition;
+import org.opennms.integration.api.v1.config.requisition.immutables.ImmutableRequisitionInterface;
+import org.opennms.integration.api.v1.config.requisition.immutables.ImmutableRequisitionMetaData;
+import org.opennms.integration.api.v1.config.requisition.immutables.ImmutableRequisitionMonitoredService;
+import org.opennms.integration.api.v1.config.requisition.immutables.ImmutableRequisitionNode;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
@@ -62,9 +63,9 @@ public class RequisitionMapperTest {
         onmsRequisition.setForeignSource("fs");
         onmsRequisition.setDate(new Date(1));
 
-        org.opennms.integration.api.v1.config.requisition.Requisition apiRequisition = RequisitionBean.builder()
-                .foreignSource("fs")
-                .generatedAt(new Date(1))
+        org.opennms.integration.api.v1.config.requisition.Requisition apiRequisition = ImmutableRequisition.newBuilder()
+                .setForeignSource("fs")
+                .setGeneratedAt(new Date(1))
                 .build();
 
         mapAndVerify(onmsRequisition, apiRequisition);
@@ -88,7 +89,7 @@ public class RequisitionMapperTest {
         requisitionNode.setMetaData(Arrays.asList(
                 new RequisitionMetaData("ctx1", "k1", "nv1"),
                 new RequisitionMetaData("ctx2", "k2", "nv2")
-                ));
+        ));
 
         RequisitionInterface requisitionInterface = new RequisitionInterface();
         requisitionNode.putInterface(requisitionInterface);
@@ -107,28 +108,28 @@ public class RequisitionMapperTest {
                 new RequisitionMetaData("ctx2", "k2", "sv2")
         ));
 
-        org.opennms.integration.api.v1.config.requisition.Requisition apiRequisition = org.opennms.integration.api.v1.config.requisition.beans.RequisitionBean.builder()
-                .foreignSource("fs")
-                .generatedAt(new Date(0))
-                .node(RequisitionNodeBean.builder()
-                        .nodeLabel("n1")
-                        .foreignId("fid")
-                        .location("loc")
-                        .asset("field", "value")
-                        .category("abc")
-                        .category("123")
-                        .metaData("ctx1", "k1", "nv1")
-                        .metaData("ctx2", "k2", "nv2")
-                        .iface(RequisitionInterfaceBean.builder()
-                                .ipAddress(InetAddress.getByName("127.0.0.1"))
-                                .snmpPrimary(SnmpPrimaryType.SECONDARY)
-                                .description("iface descr")
-                                .metaData("ctx1", "k1", "iv1")
-                                .metaData("ctx2", "k2", "iv2")
-                                .monitoredService(RequisitionMonitoredServiceBean.builder()
-                                        .name("svc1")
-                                        .metaData("ctx1", "k1", "sv1")
-                                        .metaData("ctx2", "k2", "sv2")
+        org.opennms.integration.api.v1.config.requisition.Requisition apiRequisition = ImmutableRequisition.newBuilder()
+                .setForeignSource("fs")
+                .setGeneratedAt(new Date(0))
+                .addNode(ImmutableRequisitionNode.newBuilder()
+                        .setNodeLabel("n1")
+                        .setForeignId("fid")
+                        .setLocation("loc")
+                        .addAsset("field", "value")
+                        .addCategory("abc")
+                        .addCategory("123")
+                        .addMetaData(ImmutableRequisitionMetaData.newInstance("ctx1", "k1", "nv1"))
+                        .addMetaData(ImmutableRequisitionMetaData.newInstance("ctx2", "k2", "nv2"))
+                        .addInterface(ImmutableRequisitionInterface.newBuilder()
+                                .setIpAddress(InetAddress.getByName("127.0.0.1"))
+                                .setSnmpPrimary(SnmpPrimaryType.SECONDARY)
+                                .setDescription("iface descr")
+                                .addMetaData(ImmutableRequisitionMetaData.newInstance("ctx1", "k1", "iv1"))
+                                .addMetaData(ImmutableRequisitionMetaData.newInstance("ctx2", "k2", "iv2"))
+                                .addMonitoredService(ImmutableRequisitionMonitoredService.newBuilder()
+                                        .setName("svc1")
+                                        .addMetaData(ImmutableRequisitionMetaData.newInstance("ctx1", "k1", "sv1"))
+                                        .addMetaData(ImmutableRequisitionMetaData.newInstance("ctx2", "k2", "sv2"))
                                         .build())
                                 .build())
                         .build())

@@ -79,6 +79,10 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId> com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.swrve</groupId>
       <artifactId>rate-limited-logger</artifactId>
     </dependency>

@@ -18,12 +18,11 @@ apt update
 apt -y install opennms
 ----
 
-The following packages depend on the `opennms` package and will be automatically installed:
+The following packages are required by the `opennms` package and will be automatically installed:
 
 * _jicmp6_ and _jicmp_: _Java_ bridge to allow sending _ICMP messages_ from _OpenNMS_ repository.
 * _opennms-core_: _OpenNMS_ core services, e.g. _Provisiond_, _Pollerd_ and _Collectd_ from _OpenNMS_ repository.
 * _opennms-webapp-jetty_: _OpenNMS_ web application from _OpenNMS_ repository
-* _jdk1.8_: _Oracle Java 8_ environment from _OpenNMS_ respository
 * _postgresql_: _PostgreSQL_ database server from distribution repository
 * _postgresql-libs_: _PostgreSQL_ database from distribution repository
 

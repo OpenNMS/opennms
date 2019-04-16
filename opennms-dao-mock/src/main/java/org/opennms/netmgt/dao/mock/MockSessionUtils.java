@@ -26,43 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.rpc.kafka.tracing;
+package org.opennms.netmgt.dao.mock;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.function.Supplier;
 
-import org.opennms.core.ipc.rpc.kafka.model.RpcMessageProtos;
+import org.opennms.netmgt.dao.api.SessionUtils;
 
-import io.opentracing.propagation.TextMap;
-
-public class RequestCarrier implements TextMap {
-
-    private final RpcMessageProtos.RpcMessage.Builder builder;
-
-    public RequestCarrier(RpcMessageProtos.RpcMessage.Builder builder) {
-        this.builder = builder;
+public class MockSessionUtils implements SessionUtils {
+    @Override
+    public <V> V withTransaction(Supplier<V> supplier) {
+        return supplier.get();
     }
 
     @Override
-    public void put(String key, String value) {
-        RpcMessageProtos.TracingInfo tracingInfo = RpcMessageProtos.TracingInfo.newBuilder()
-                .setKey(key)
-                .setValue(value).build();
-        builder.addTracingInfo(tracingInfo);
-    }
-
-    public static Map<String,String> getTracingInfoMap(List<RpcMessageProtos.TracingInfo> tracingInfoList) {
-        Map<String, String> tracingInfoMap = new HashMap<>();
-        tracingInfoList.forEach(tracingInfo -> {
-            tracingInfoMap.put(tracingInfo.getKey(), tracingInfo.getValue());
-        });
-        return tracingInfoMap;
+    public <V> V withReadOnlyTransaction(Supplier<V> supplier) {
+        return supplier.get();
     }
 
     @Override
-    public Iterator<Map.Entry<String, String>> iterator() {
-        throw new UnsupportedOperationException();
+    public <V> V withManualFlush(Supplier<V> supplier) {
+        return supplier.get();
     }
 }

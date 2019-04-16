@@ -57,23 +57,19 @@ if [ -r "$CONTAINER_HOME/etc/$NAME.conf" ]; then
 	. "$CONTAINER_HOME/etc/$NAME.conf"
 fi
 
-# The user config can set JAVA_OPTS, but Karaf will not
-# do ANY of its own JAVA_OPTS processing if it is already
-# set, so work around this by grabbing DEFAULT_JAVA_OPTS
-# now, rather than letting Karaf init do it.
+# if $JAVA_OPTS is set at all, Karaf won't process it properly,
+# so move everything to $EXTRA_JAVA_OPTS, which is made a part
+# of $JAVA_OPTS as the final part of Karaf's initialization.
 
-# shellcheck disable=SC1090,SC1091
-. "$CONTAINER_HOME/bin/inc"
-setupDefaults
+# shellcheck disable=SC2034
+EXTRA_JAVA_OPTS="$JAVA_OPTS $EXTRA_JAVA_OPTS"
+unset JAVA_OPTS
 
 # always dump heap if we OOM
-DEFAULT_JAVA_OPTS="$DEFAULT_JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
-
-# combine user JAVA_OPTS with the defaults from Karaf
-JAVA_OPTS="$DEFAULT_JAVA_OPTS $JAVA_OPTS"
+EXTRA_JAVA_OPTS="$EXTRA_JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
 
 # export any default configurable variables from sysconf
-export RUNAS JAVA_MIN_MEM JAVA_MAX_MEM MAX_FD JAVA_HOME JAVA JAVA_DEBUG_OPTS JAVA_DEBUG_PORT JAVA_OPTS CLASSPATH KARAF_DEBUG LD_LIBRARY_PATH
+export RUNAS JAVA_MIN_MEM JAVA_MAX_MEM MAX_FD JAVA_HOME JAVA JAVA_DEBUG_OPTS JAVA_DEBUG_PORT EXTRA_JAVA_OPTS CLASSPATH KARAF_DEBUG LD_LIBRARY_PATH
 
 # export any local configurable variables
 export NAME DESC PATH CONTAINER_HOME SYSCONFDIR STOP_RETRIES STOP_WAIT

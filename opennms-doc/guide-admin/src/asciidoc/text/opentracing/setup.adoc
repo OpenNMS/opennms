@@ -20,6 +20,8 @@ Enable tracing with Jeager as follows:
 echo 'org.opennms.core.tracer=jaeger' >> "$OPENNMS_HOME/etc/opennms.properties.d/jaeger.properties"
 ----
 
+Restart _{opennms-product-name}_ to apply the changes.
+
 Additional Jaeger tracing options can be added to the `jaeger.properties` file specified above.
 Available configuration options are listed link:https://github.com/jaegertracing/jaeger-client-java/blob/master/jaeger-core/README.md[here].
 
@@ -32,7 +34,7 @@ Enable tracing with Jaeger on _Minion_ by installing the `opennms-core-tracing-j
 echo 'opennms-core-tracing-jaeger' >> "$MINION_HOME/etc/featuresBoot.d/jaeger.boot"
 ----
 
-NOTE: Uninstalling thne `opennms-core-tracing-jaeger` feature at runtime is not yet supported.
+NOTE: Uninstalling the `opennms-core-tracing-jaeger` feature at runtime is not yet supported.
 To disable tracing with Jaeger, remove the reference from the features boot file and restart _Minion_.
 
 Additional Jaeger tracing options can be added to `$MINION_HOME/etc/system.properties` on _Minion_.

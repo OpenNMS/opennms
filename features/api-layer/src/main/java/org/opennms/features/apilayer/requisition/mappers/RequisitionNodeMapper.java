@@ -31,7 +31,7 @@ package org.opennms.features.apilayer.requisition.mappers;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import org.opennms.integration.api.v1.config.requisition.beans.RequisitionNodeBean;
+import org.opennms.integration.api.v1.config.requisition.immutables.ImmutableRequisitionNode;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 
 @Mapper(uses={RequisitionMonitoredServiceMapper.class, RequisitionCategoryMapper.class,
@@ -40,11 +40,9 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 public interface RequisitionNodeMapper {
 
     @Mappings({
-            @Mapping(target = "category", ignore = true),
-            @Mapping(target = "asset", ignore = true),
             @Mapping(source = "metaData", target = "metaData")
     })
-    RequisitionNodeBean map(RequisitionNode node);
+    ImmutableRequisitionNode map(RequisitionNode node);
 
     RequisitionNode map(org.opennms.integration.api.v1.config.requisition.RequisitionNode node);
 
