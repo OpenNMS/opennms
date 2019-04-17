@@ -43,6 +43,9 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.service.GraphService;
+import org.opennms.netmgt.graph.provider.application.ApplicationGraphProvider;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
@@ -54,6 +57,7 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
     public static final String TOPOLOGY_NAMESPACE = "application";
 
     private ApplicationDao applicationDao;
+    private GraphService graphService;
 
     public ApplicationTopologyProvider(ApplicationDao applicationDao) {
         super(TOPOLOGY_NAMESPACE);
@@ -62,6 +66,12 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
 
     private void load() {
         graph.resetContainer();
+        // TODO: Patrick: discuss with mvr: why would we transfer one graph into another? I am missing something here?
+        // my assumption was that we use the graph coming from the graph service directly...
+
+        // TODO: Patrick: will be generic later
+        Graph applicationGraph = graphService.getGraph(ApplicationGraphProvider.TOPOLOGY_NAMESPACE);
+
         for (OnmsApplication application : applicationDao.findAll()) {
             final ApplicationVertex applicationVertex = new ApplicationVertex(application);
             graph.addVertices(applicationVertex);

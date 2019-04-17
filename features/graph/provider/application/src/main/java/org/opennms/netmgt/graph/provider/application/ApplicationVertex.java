@@ -31,20 +31,26 @@ package org.opennms.netmgt.graph.provider.application;
 import java.util.ArrayList;
 import java.util.List;
 import org.opennms.netmgt.graph.api.VertexRef;
+import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.simple.SimpleVertex;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsServiceType;
 
-public class ApplicationVertex extends SimpleVertex // implements LevelAware
-{
+public class ApplicationVertex extends SimpleVertex { // implements LevelAware
 
+
+    // TODO: Patrick: move these attributes to underlying GenericVertex. This class itself shouldn't hold any references.
+    // TODO: Patrick: if attributes remain we need to consider hashcode, equals
     private List<VertexRef> children = new ArrayList<>();
-
 
     private ApplicationVertex parent;
 
     private OnmsServiceType serviceType;
+
+    public ApplicationVertex(GenericVertex vertex) {
+        super(vertex);
+    }
 
     public ApplicationVertex(OnmsApplication application) {
         this(application.getId().toString(), application.getName());

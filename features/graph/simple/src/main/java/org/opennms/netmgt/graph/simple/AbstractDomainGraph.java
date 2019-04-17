@@ -78,7 +78,7 @@ public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends Simp
 
     protected abstract E convert(GenericEdge edge);
 
-    protected abstract Graph<V, E> convert(GenericGraph edge);
+    protected abstract Graph<V, E> convert(GenericGraph graph);
 
     @Override
     public void addEdges(Collection<E> edges) {

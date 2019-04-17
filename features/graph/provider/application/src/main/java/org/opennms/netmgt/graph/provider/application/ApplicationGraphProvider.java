@@ -46,7 +46,9 @@ import org.slf4j.LoggerFactory;
 // TODO: patrick use in ApplicationTopologyProvider
 public class ApplicationGraphProvider implements GraphProvider {
 
-    static final String TOPOLOGY_NAMESPACE = "application";
+    public static final String TOPOLOGY_NAMESPACE = "application";
+    static final String GRAPH_LABEL = "Application Graph";
+    static final String GRAPH_DESCRIPTION = "This Topology Provider displays all defined Applications and their calculated states.";
 
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationGraphProvider.class);
 
@@ -60,15 +62,17 @@ public class ApplicationGraphProvider implements GraphProvider {
 
     @Override
     public GraphInfo<?> getGraphInfo() {
-        final DefaultGraphInfo graphInfo = new DefaultGraphInfo(TOPOLOGY_NAMESPACE, SimpleVertex.class);
-        graphInfo.setLabel("Application Graph");
-        graphInfo.setDescription("This Topology Provider displays all defined Applications and their calculated states.");
+        final DefaultGraphInfo graphInfo = new DefaultGraphInfo(TOPOLOGY_NAMESPACE, ApplicationVertex.class);
+        graphInfo.setLabel(GRAPH_LABEL);
+        graphInfo.setDescription(GRAPH_DESCRIPTION);
         return graphInfo;
     }
 
     @Override
     public Graph<?, ?> loadGraph() {
-        final SimpleGraph graph = new SimpleGraph(getGraphInfo());
+        final ApplicationGraph graph = new ApplicationGraph(TOPOLOGY_NAMESPACE);
+        graph.setLabel(GRAPH_LABEL);
+        graph.setDescription(GRAPH_DESCRIPTION);
 
 
         for (OnmsApplication application : applicationDao.findAll()) {
