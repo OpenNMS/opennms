@@ -40,7 +40,12 @@ import static org.opennms.netmgt.xml.eventconf.Maskelement.TAG_SNMP_SPECIFIC;
 import static org.opennms.netmgt.xml.eventconf.Maskelement.TAG_SOURCE;
 import static org.opennms.netmgt.xml.eventconf.Maskelement.TAG_UEI;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.netmgt.events.api.EventConstants;
@@ -255,7 +260,6 @@ public abstract class EventMatchers  {
 				// we have to do equals check for compatibility with the old code
 				return eventValue != null && (eventValue.startsWith(prefix) || eventValue.equals(value));
 			}
-			
 			@Override
 			public String toString() {
 				return field + ".startsWith(" + prefix + ")";
@@ -264,20 +268,46 @@ public abstract class EventMatchers  {
 	}
 
 	public static EventMatcher valueMatchesRegexMatcher(final Field field,	final String value) {
-		final Pattern regex = Pattern.compile(value.startsWith("~") ? value.substring(1) : value);
+		final Pattern eventValueRegex = Pattern.compile(value.startsWith("~") ? value.substring(1) : value);
+		final Pattern namedCapturingGroupRegex = Pattern.compile("\\(\\?<([0-9A-Za-z]+)>");
 	
 		return new EventMatcher() {
 			
 			@Override
 			public boolean matches(Event matchingEvent) {
 				String eventValue = field.get(matchingEvent);
+				if (eventValue == null) {
+				    return false;
+				}
 				// we have to do equals check for compatibility with the old code
-				return eventValue != null && (regex.matcher(eventValue).matches() || eventValue.equals(value));
+				if (eventValue.equals(value)) {
+				    return true;
+				}
+				Matcher eventValueMatcher = eventValueRegex.matcher(eventValue);
+				if (!eventValueMatcher.matches()) {
+				    return false;
+				}
+				
+	                        // Note that we are using this regex to inspect the regex provided in the event
+	                        // configuration, not the value carried in the event's varbind
+				Matcher namedCapturingGroupMatcher = namedCapturingGroupRegex.matcher(value);
+				if (namedCapturingGroupMatcher.matches()) {
+				    final List<String> groupNames = new ArrayList<>();
+				    for (int groupNum = 1; groupNum <= namedCapturingGroupMatcher.groupCount(); groupNum++) {
+				        groupNames.add(namedCapturingGroupMatcher.group(groupNum));
+				    }
+				    for (String groupName : groupNames) {
+				        String groupValue = eventValueMatcher.group(groupName);
+				        matchingEvent.addParm(new Parm(groupName, groupValue != null ? groupValue : ""));
+				    }
+				}
+				
+				return true;
 			}
 			
 			@Override
 			public String toString() {
-				return field + "~" + regex;
+				return field + "~" + eventValueRegex;
 			}
 		};
 	}

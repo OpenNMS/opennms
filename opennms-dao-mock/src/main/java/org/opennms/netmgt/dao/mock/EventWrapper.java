@@ -56,7 +56,7 @@ public class EventWrapper {
         if (o == null) return false;
         if (!(o instanceof EventWrapper)) return false;
         final EventWrapper w = (EventWrapper) o;
-        return EventUtils.eventsMatch(m_event, w.m_event);
+        return EventUtils.eventsMatchWithParms(m_event, w.m_event);
     }
 
     /**

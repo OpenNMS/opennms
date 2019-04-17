@@ -554,6 +554,31 @@ public abstract class EventUtils {
         return b.toString();
     }
 
+    /**
+     * <p>eventsMatchWithParms</p>
+     * 
+     * @param e1 a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e2 a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @return a boolean.
+     */
+    public static boolean eventsMatchWithParms(final Event e1, final Event e2) {
+        if (! eventsMatch(e1, e2)) {
+            return false;
+        }
+        if (e1.getParmCollection().size() != e2.getParmCollection().size()) {
+            return false;
+        }
+        for (Parm p1 : e1.getParmCollection()) {
+            Parm p2 = e2.getParm(p1.getParmName());
+            if (p2 == null) {
+                return false;
+            }
+            if (! p2.getValue().getContent().equals(p1.getValue().getContent())) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     /**
      * <p>eventsMatch</p>

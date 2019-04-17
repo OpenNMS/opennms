@@ -221,7 +221,7 @@ public class TrapHandlerITCase implements InitializingBean {
         varbinds.put(".1.3.6.1.4.1.11.2.14.11.1.7.3.0.2404", valueFactory.getOctetString("http://a.b.c.d/cgi/fDetail?index=2404".getBytes()));
         anticipateAndSend(false, true,
                 "uei.opennms.org/vendor/HP/traps/hpicfFaultFinderTrap",
-                "v1", ".1.3.6.1.4.1.11.2.14.12.1", 6, 5, varbinds);
+                "v1", ".1.3.6.1.4.1.11.2.14.12.1", 6, 5, varbinds, null);
     }
     
     @Test
@@ -234,7 +234,7 @@ public class TrapHandlerITCase implements InitializingBean {
         varbinds.put(".1.3.6.1.4.1.32473.42.42.42", valueFactory.getInt32(42));
         anticipateAndSend(false, true,
                 "uei.opennms.org/IANA/Example/traps/exampleEnterpriseTrap",
-                "v1", ".1.3.6.1.4.1.32473.42", 6, 5, varbinds);
+                "v1", ".1.3.6.1.4.1.32473.42", 6, 5, varbinds, null);
     }
 
     @Test
@@ -250,7 +250,7 @@ public class TrapHandlerITCase implements InitializingBean {
         varbinds.put(".1.3.6.1.4.1.11.2.14.11.1.7.3.0.2404", valueFactory.getOctetString("http://a.b.c.d/cgi/fDetail?index=2404".getBytes()));
         anticipateAndSend(false, true,
                 "uei.opennms.org/vendor/HP/traps/hpicfFaultFinderTrap",
-                "v2c", ".1.3.6.1.4.1.11.2.14.12.1", 6, 5, varbinds);
+                "v2c", ".1.3.6.1.4.1.11.2.14.12.1", 6, 5, varbinds, null);
     }
 
 
@@ -266,7 +266,7 @@ public class TrapHandlerITCase implements InitializingBean {
         varbinds.put(".1.3.6.1.4.1.14179.2.6.2.20.0", valueFactory.getOctetString(new byte[]{(byte)0x00,(byte)0x14,(byte)0xf1,(byte)0xad,(byte)0xa7,(byte)0x50}));
         Collection<Event> events = anticipateAndSend(false, true,
                 "uei.opennms.org/vendor/cisco/bsnAPNoiseProfileUpdatedToPass",
-                "v1", ".1.3.6.1.4.1.14179.2.6.3", 6, 38, varbinds);
+                "v1", ".1.3.6.1.4.1.14179.2.6.3", 6, 38, varbinds, null);
 
         boolean foundMacAddress = false;
         // Assert that the MAC address varbind has been formatted into a colon-separated octet string
@@ -299,7 +299,7 @@ public class TrapHandlerITCase implements InitializingBean {
         varbinds.put(".1.3.6.1.4.1.14179.2.6.2.20.0", valueFactory.getOctetString(macAddr));
         Collection<Event> events = anticipateAndSend(false, true,
                 "uei.opennms.org/vendor/cisco/bsnAPNoiseProfileUpdatedToPass",
-                "v2c", ".1.3.6.1.4.1.14179.2.6.3", 6, 38, varbinds);
+                "v2c", ".1.3.6.1.4.1.14179.2.6.3", 6, 38, varbinds, null);
 
         boolean foundMacAddress = false;
         // Assert that the MAC address varbind has been formatted into a colon-separated octet string
@@ -499,12 +499,25 @@ public class TrapHandlerITCase implements InitializingBean {
         m_eventMgr.getEventAnticipator().anticipateEvent(bldr.getEvent());
         return bldr.getEvent();
     }
+    
+    public Event anticipateEvent(String uei, InetAddress ip, long nodeId, Map<String,String> parameters) {
+        EventBuilder bldr = new EventBuilder(uei, "TrapHandlerTestCase");
+        bldr.setNodeid(nodeId);
+        bldr.setInterface(ip);
+        if (parameters != null) {
+            for (String paramName : parameters.keySet()) {
+                bldr.addParam(paramName, parameters.get(paramName));
+            }
+        }
+        m_eventMgr.getEventAnticipator().anticipateEvent(bldr.getEvent());
+        return bldr.getEvent();
+    }
 
     public Collection<Event> anticipateAndSend(boolean newSuspectOnTrap, boolean nodeKnown,
             String event,
             String version, String enterprise,
             int generic, int specific) throws Exception {
-        return anticipateAndSend(newSuspectOnTrap, nodeKnown, event, version, enterprise, generic, specific, null);
+        return anticipateAndSend(newSuspectOnTrap, nodeKnown, event, version, enterprise, generic, specific, null, null);
     }
 
 
@@ -519,14 +532,14 @@ public class TrapHandlerITCase implements InitializingBean {
     public Collection<Event> anticipateAndSend(boolean newSuspectOnTrap, boolean nodeKnown,
             String event,
             String snmpTrapVersion, String enterprise,
-            int generic, int specific, LinkedHashMap<String, SnmpValue> varbinds) throws Exception {
+            int generic, int specific, LinkedHashMap<String, SnmpValue> varbinds, Map<String,String> parameters) throws Exception {
         TrapdConfigBean newConfig = new TrapdConfigBean(m_trapdConfig);
         newConfig.setNewSuspectOnTrap(newSuspectOnTrap);
         m_trapdConfig.update(newConfig);
 
         if (newSuspectOnTrap) {
             // Note: the nodeId will be zero because the node is not known
-            anticipateEvent(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, m_ip, 0);
+            anticipateEvent(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, m_ip, 0, parameters);
         }
 
         if (event != null) {
@@ -670,4 +683,24 @@ public class TrapHandlerITCase implements InitializingBean {
         pdu.send(getHostAddress(), m_trapdConfig.getSnmpTrapPort(), "public");
     }
 
+    @Test
+    @DirtiesContext
+    public void testV2WithVarbindsAndNamedMatchingGroups()
+    throws Exception {
+        SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
+
+        LinkedHashMap<String, SnmpValue> varbinds = new LinkedHashMap <>();
+        varbinds.put(".1.3.6.1.4.1.5813.666.1.2.3.4.5", valueFactory.getOctetString("The quick brown spoon jumps over the lazy moon".getBytes()));
+        
+        LinkedHashMap<String,String> expectedParams = new LinkedHashMap<>();
+        expectedParams.put(".1.3.6.1.4.1.5813.666.1.2.3.4.5", "The quick brown spoon jumps over the lazy moon");
+        expectedParams.put("subject", "spoon");
+        expectedParams.put("object", "moon");
+        expectedParams.put("nominative", "spoon");
+        expectedParams.put("objective", "moon");
+
+        anticipateAndSend(false, true,
+                "uei.opennms.org/trapdIT/cases/namedCapturingGroup",
+                "v2c", ".1.3.6.1.4.1.5813.1", 6, 666, varbinds, expectedParams);
+    }
 }

@@ -215,4 +215,39 @@
     </logmsg>
     <severity>Warning</severity>
   </event>
+  
+    <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.5813.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>666</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>1</vbnumber>
+        <vbvalue>~The quick brown (?&lt;subject>\w+) jumps over the lazy (?&lt;object>\w+)</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/trapdIT/cases/namedCapturingGroup</uei>
+    <event-label>
+      TrapdIT event: namedCapturingGroup
+    </event-label>
+    <descr>
+      This is an example trap with subject=%parm[subject]% and object=%parm[object]%
+    </descr>
+    <logmsg dest='logndisplay'>
+      &lt;p&gt;TrapdIT event: namedCapturingGroup&lt;/p&gt;
+    </logmsg>
+    <severity>Warning</severity>
+    <parameter name="nominative" value="%parm[subject]%" expand="true"/>
+    <parameter name="objective" value="%parm[object]%" expand="true"/>
+  </event>
+  
 </events>
