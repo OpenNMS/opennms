@@ -208,6 +208,22 @@ public abstract class CriteriaBehaviors {
         affectedNodeCount.setSkipPropertyByDefault(true);
         ALARM_BEHAVIORS.put("affectedNodeCount", affectedNodeCount);
 
+        CriteriaBehavior<String> isAcknowledged = new StringCriteriaBehavior(Aliases.alarm.prop("isAcknowledged"), (b, v, c, w) -> {
+            switch (c) {
+            case EQUALS:
+                if (Boolean.valueOf((String)v)) {
+                    b.isNotNull("alarm.alarmAckTime");
+                } else {
+                    b.isNull("alarm.alarmAckTime");
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal condition type when filtering alarm.isAcknowledged: " + c.toString());
+            }
+        });
+        isAcknowledged.setSkipPropertyByDefault(true);
+        ALARM_BEHAVIORS.put("isAcknowledged", isAcknowledged);
+
         CriteriaBehavior<String> isSituation = new StringCriteriaBehavior(Aliases.alarm.prop("isSituation"), (b, v, c, w) -> {
             switch (c) {
             case EQUALS:

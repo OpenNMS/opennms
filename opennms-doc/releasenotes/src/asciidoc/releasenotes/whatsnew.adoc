@@ -35,6 +35,7 @@ EOF
 * *Dhcpd*: The *Dhcpd* plugin (and its configuration) was removed in favor of a Minion-capable implementation.
   The new *DhcpMonitor* options can be set in the `poller-configuration.xml` file.
 * The default parser used for Syslog messages has been switched from the `CustomSyslogParser` to the `RadixTreeSyslogParser`.
+* Session timeout is now disabled by default.
 
 === New Features
 
