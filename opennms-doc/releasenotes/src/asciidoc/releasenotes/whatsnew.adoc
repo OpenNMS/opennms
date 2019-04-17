@@ -67,10 +67,57 @@ curl -v -X POST -H 'Content-Type: application/json' "http://${ES_HOST}:${ES_PORT
 EOF
 ----
 
-===== Single Port Listener
+===== Telemetryd configuration format change
 
-It is now possible to configure the flow listener to receive Netflow v5, Netflow v9, IPFIX and SFlow on a single port.
-An example for configuring it is in the link:https://github.com/OpenNMS/opennms/blob/2840d3b3ced40b5b78120c635df6d3fb50fca91e/opennms-base-assembly/src/main/filtered/etc/telemetryd-configuration.xml#L95[$OPENNMS_HOME/etc/telemetryd-configuration.xml] file.
+With introducing support for more dynamic telemetryd configurations to support more complex listeners and adapters, the configuration format has changed and must be adopted to the new format by the user.
+The new configuration defines listeners containing parsers and queues containing adapters which are linked by the queues name.
+
+As an example, the old configuration:
+
+```
+<telemetryd-config>
+  <protocol name="Netflow-5" description="Listener for Netflow 5 UDP packets" enabled="false">
+    <listener name="Netflow-5-UDP-8877" class-name="org.opennms.netmgt.telemetry.listeners.udp.UdpListener">
+      <parameter key="port" value="8877"/>
+    </listener>
+
+    <adapter name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5Adapter">
+    </adapter>
+  </protocol>
+</telemetryd-config>
+```
+
+versus the same configuration adopted to the new format:
+
+```
+<telemetryd-config>
+  <listener name="Netflow-5-UDP-8877" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="false">
+    <parameter key="port" value="8877"/>
+
+    <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser" queue="Netflow-5" />
+  </listener>
+
+  <queue name="Netflow-5">
+    <adapter name="Netflow-5-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter" enabled="false">
+    </adapter>
+  </queue>
+</telemetryd-config>
+```
+
+As you can see, the ``listener``s become independent elements which contain ``parser``s whereas the ``protocol``s are renamed to ``queue``s.
+Each parser must reference a queue by name to define which adapters are used to pick up the parsed data.
+
+In addition, the listener configuration for minions has changed, too.
+The new minion configuration looks like the following and adapts the same set of structural changes:
+
+```
+admin@minion()> config:edit --alias Netflow-5-UDP-8877 --factory org.opennms.features.telemetry.listeners
+admin@minion()> config:property-set name Netflow-5-UDP-8877
+admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener
+admin@minion()> config:property-set parameters.port 8877
+admin@minion()> config:property-set parser.0.name Netflow-5-Parser
+admin@minion()> config:property-set parser.0.queue Netflow-5
+```
 
 ==== Plugins, Parsers, and Services
 
