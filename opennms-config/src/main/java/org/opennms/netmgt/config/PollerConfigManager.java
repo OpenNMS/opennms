@@ -132,7 +132,9 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @throws java.io.IOException if any.
      */
     @Override
-    public abstract void update() throws IOException;
+    public void update() throws IOException {
+        this.setUpInternalData();
+    }
 
     /**
      * <p>saveXml</p>
