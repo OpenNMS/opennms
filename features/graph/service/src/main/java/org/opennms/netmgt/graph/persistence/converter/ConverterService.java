@@ -28,44 +28,43 @@
 
 package org.opennms.netmgt.graph.persistence.converter;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class ConverterService {
 
-    private final Map<Class<?>, Converter<?>> converterRegistry = new HashMap<>();
+    private final List<Converter<?>> converterRegistry = new ArrayList<>();
 
         // TODO MVR we probably want import the converters via osgi?!
     public ConverterService() {
-        converterRegistry.put(Boolean.class, (type, string) -> Boolean.valueOf(string));
-        converterRegistry.put(Float.class, (type, string) -> Float.valueOf(string));
-        converterRegistry.put(Integer.class, (type, string) -> Integer.valueOf(string));
-        converterRegistry.put(Double.class, (type, string) -> Double.valueOf(string));
-        converterRegistry.put(String.class, (type, string) -> string);
-        converterRegistry.put(Short.class, (type, string) -> Short.valueOf(string));
-        converterRegistry.put(Byte.class, (type, string) -> Byte.valueOf(string));
-        converterRegistry.put(Enum.class, (Converter<Enum>) (type, string) -> Enum.valueOf(type, string));
+        converterRegistry.add(new PrimitiveConverter<>(Boolean.class, Boolean::valueOf));
+        converterRegistry.add(new PrimitiveConverter<>(Float.class, Float::valueOf));
+        converterRegistry.add(new PrimitiveConverter<>(Integer.class, Integer::valueOf));
+        converterRegistry.add(new PrimitiveConverter<>(Double.class, Double::valueOf));
+        converterRegistry.add(new PrimitiveConverter<>(String.class, (string) -> string));
+        converterRegistry.add(new PrimitiveConverter<>(Short.class, Short::valueOf));
+        converterRegistry.add(new PrimitiveConverter<>(Byte.class, Byte::valueOf));
+        converterRegistry.add(new EnumConverter());
+        converterRegistry.add(new CollectionConverter(this));
     }
 
     public <T> Object toValue(Class<T> type, String stringRepresentation) {
         final Converter<T> converter = getConverter(type);
-        final T value = converter.toValue(type, stringRepresentation);
-        return value;
+        return converter.toValue(type, stringRepresentation);
     }
 
-    // TODO MVR logic to transform to string represantation should probably live in converter at some point
-    public String toStringRepresentation(Class<?> type, Object value) throws IllegalStateException {
-        return type.isEnum() ? ((Enum) value).name() : value.toString();
+    public <T> String toStringRepresentation(Class<?> type, T stringRepresentation) throws IllegalStateException {
+        final Converter<T> converter = getConverter(type);
+        return converter.toStringRepresentation(stringRepresentation);
     }
 
-    private Converter getConverter(Class type) throws IllegalStateException {
-        final Converter<?> converter = type.isEnum()
-                ? converterRegistry.get(Enum.class)
-                : converterRegistry.get(type);
-        if (converter == null) {
-            throw new IllegalStateException("Missing converter for class '" + type + "'");
+    private Converter getConverter(Class<?> clazz) throws IllegalStateException {
+        Optional<Converter<?>> converter = converterRegistry.stream().filter(con -> con.canConvert(clazz)).findFirst();
+        if (!converter.isPresent()) {
+            throw new IllegalStateException("Missing converter for class '" + clazz + "'");
         }
-        return converter;
+        return converter.get();
     }
 
 }

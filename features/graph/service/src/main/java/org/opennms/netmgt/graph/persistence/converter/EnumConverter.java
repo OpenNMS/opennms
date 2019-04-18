@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,14 +28,19 @@
 
 package org.opennms.netmgt.graph.persistence.converter;
 
-interface Converter<T> {
-
-    T toValue(Class<T> type, String string);
-
-    default String toStringRepresentation(T value){
-        return value.toString();
+public class EnumConverter implements Converter<Enum> {
+    @Override
+    public Enum toValue(Class<Enum> type, String string) {
+        return Enum.valueOf(type, string);
     }
 
-    boolean canConvert(Class<?> type);
+    @Override
+    public String toStringRepresentation(Enum value) {
+        return value.name();
+    }
 
+    @Override
+    public boolean canConvert(Class<?> type) {
+        return Enum.class.isAssignableFrom(type);
+    }
 }

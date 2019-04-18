@@ -47,6 +47,11 @@
             <artifactId>org.opennms.features.graph.updates</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gsonVersion}</version>
+        </dependency>
         <!-- TODO MVR dependency ?? -->
         <dependency>
             <groupId>org.opennms.features.graph</groupId>

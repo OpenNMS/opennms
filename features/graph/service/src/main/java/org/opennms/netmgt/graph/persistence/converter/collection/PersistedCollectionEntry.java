@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,16 +26,47 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.persistence.converter;
+package org.opennms.netmgt.graph.persistence.converter.collection;
 
-interface Converter<T> {
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 
-    T toValue(Class<T> type, String string);
+public class PersistedCollectionEntry<T> {
+    private Class<T> type;
+    private String value;
 
-    default String toStringRepresentation(T value){
-        return value.toString();
+    public PersistedCollectionEntry(Class<T> type, String value) {
+        this.type = type;
+        this.value = value;
     }
 
-    boolean canConvert(Class<?> type);
+    public Class<T> getType() {
+        return type;
+    }
 
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PersistedCollectionEntry<?> that = (PersistedCollectionEntry<?>) o;
+        return Objects.equal(type, that.type) &&
+                Objects.equal(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(type, value);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("type", type)
+                .add("value", value)
+                .toString();
+    }
 }
