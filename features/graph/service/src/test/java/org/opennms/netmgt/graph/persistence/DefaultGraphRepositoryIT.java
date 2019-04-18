@@ -33,12 +33,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
+import org.opennms.netmgt.graph.api.generic.GenericEdge;
+import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
+import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.persistence.GraphRepository;
-import org.opennms.netmgt.graph.simple.SimpleEdge;
-import org.opennms.netmgt.graph.simple.SimpleGraph;
-import org.opennms.netmgt.graph.simple.SimpleGraphContainer;
-import org.opennms.netmgt.graph.simple.SimpleVertex;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -67,26 +66,28 @@ public class DefaultGraphRepositoryIT {
         /*
          * Create/Persist
          */
-        final SimpleGraphContainer originalContainer = new SimpleGraphContainer(CONTAINER_ID);
+        final GenericGraphContainer originalContainer = new GenericGraphContainer();
+        originalContainer.setId(CONTAINER_ID);
         originalContainer.setDescription("Container for 'unique-id' graph");
         originalContainer.setLabel("I am soooo unique \\o/");
 
         // Create first graph
-        final SimpleGraph graph1 = new SimpleGraph(NAMESPACE);
+        final GenericGraph graph1 = new GenericGraph();
+        graph1.setNamespace(NAMESPACE);
         graph1.setLabel("Dummy Graph");
         graph1.setDescription("I am not so unique, I may be replaced at any time :(");
 
-        final SimpleVertex v1 = new SimpleVertex(graph1.getNamespace(), "v1");
+        final GenericVertex v1 = new GenericVertex(graph1.getNamespace(), "v1");
         v1.setLabel("Vertex 1");
-        final SimpleVertex v2 = new SimpleVertex(graph1.getNamespace(), "v2");
+        final GenericVertex v2 = new GenericVertex(graph1.getNamespace(), "v2");
         v2.setLabel("Vertex 2");
 
         graph1.addVertex(v1);
         graph1.addVertex(v2);
-        graph1.addEdge(new SimpleEdge(v1, v2));
+        graph1.addEdge(new GenericEdge(v1, v2));
 
         // Second graph is a copy of the first
-        final SimpleGraph graph2 = new SimpleGraph(graph1);
+        final GenericGraph graph2 = new GenericGraph(graph1);
         graph2.setNamespace(NAMESPACE + "2");
         graph2.setLabel(graph1.getLabel() + " 2");
 
@@ -96,13 +97,13 @@ public class DefaultGraphRepositoryIT {
         graphRepository.save(originalContainer);
 
         // Verify
-        verifyEquals(originalContainer, new SimpleGraphContainer(graphRepository.findContainerById(CONTAINER_ID)));
+        verifyEquals(originalContainer, graphRepository.findContainerById(CONTAINER_ID));
 
         /*
          * Update
          */
         // Add new graph which is a copy of an existing graph
-        final SimpleGraph graph3 = new SimpleGraph(graph1);
+        final GenericGraph graph3 = new GenericGraph(graph1);
         graph3.setNamespace(NAMESPACE + "3");
         graph3.setLabel(graph1.getLabel() + " 3");
         originalContainer.addGraph(graph3);
@@ -112,13 +113,13 @@ public class DefaultGraphRepositoryIT {
 
         // Update existing graph
         graph1.setLabel("New Dummy Graph");
-        graph1.addVertex(new SimpleVertex(NAMESPACE, "v3"));
+        graph1.addVertex(new GenericVertex(NAMESPACE, "v3"));
 
         // Persist changes
         graphRepository.save(originalContainer);
 
         // Verify
-        verifyEquals(originalContainer, new SimpleGraphContainer(graphRepository.findContainerById(CONTAINER_ID)));
+        verifyEquals(originalContainer, graphRepository.findContainerById(CONTAINER_ID));
 
         /*
          * Delete
@@ -127,7 +128,7 @@ public class DefaultGraphRepositoryIT {
         Assert.assertNull(graphRepository.findContainerById(CONTAINER_ID));
     }
 
-    private void verifyEquals(SimpleGraphContainer originalContainer, SimpleGraphContainer persistedContainer) {
+    private void verifyEquals(GenericGraphContainer originalContainer, GenericGraphContainer persistedContainer) {
         Assert.assertEquals(originalContainer.getId(), persistedContainer.getId());
         Assert.assertEquals(originalContainer.getDescription(), persistedContainer.getDescription());
         Assert.assertEquals(originalContainer.getLabel(), persistedContainer.getLabel());

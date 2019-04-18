@@ -74,7 +74,13 @@ public class DefaultGraphRepository implements GraphRepository {
 
     @Override
     public GenericGraphContainer findContainerById(String containerId) {
-        return findContainerById(containerId);
+        return sessionUtils.withTransaction(() -> {
+            final GraphContainerEntity entity = graphContainerDao.findContainerById(containerId);
+            if (entity != null) {
+                return entityToGenericMapper.fromEntity(entity);
+            }
+            return null;
+        });
     }
 
     @Override
