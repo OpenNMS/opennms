@@ -2,12 +2,11 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
-==== Alarm and Event Forwarder
+==== Event Forwarder
 
-The _Alarm and Event Forwarder_ (formerly known as the _Elasticsearch ReST plugin_) forwards events and alarms to https://github.com/elastic/elasticsearch[Elasticsearch].
-In combination with the alarm _<<ga-internal-plugins-alarm-change-notifier, Alarm Change Notifier Plugin>>_ it also forwards alarm change events.
+The _Event Forwarder_ (formerly known as the _Elasticsearch ReST plugin_) forwards events to https://github.com/elastic/elasticsearch[Elasticsearch].
 
-The events and alarms in _Elasticsearch_ can then be used for indexing, long time archival, plotting with _Grafana_ and browsing with _Kibana_.
+The events in _Elasticsearch_ can then be used for indexing, long time archival, plotting with _Grafana_ and browsing with _Kibana_.
 
 NOTE: This feature uses the _Elasticsearch_ ReST interface and can interact with cloud-hosted _Elasticsearch_ instances.
 
@@ -18,7 +17,7 @@ NOTE: If you use _Kibana_, make sure you are using the version that is compatibl
 The configuration is held in `${OPENNMS_HOME}/etc/org.opennms.plugin.elasticsearch.rest.forwarder.cfg`.
 Please refer to section <<ga-elasticsearch-integration-configuration,Configuring Elasticsearch>> in order to configure _Elasticsearch_ connection settings.
 
-Besides the general _Elasticsearch_ connection settings, the following properties are supported to configure the _Alarm and Event Forwarder_:
+Besides the general _Elasticsearch_ connection settings, the following properties are supported to configure the _Event Forwarder_:
 
 [options="header, autowidth"]
 |===
@@ -28,31 +27,6 @@ Besides the general _Elasticsearch_ connection settings, the following propertie
 | true
 | optional
 | Whether to forward the event description field to _Elasticsearch_. It can be disabled because it contains a long text field that can be redundant with the rest of the metadata included in the event.
-
-|`archiveRawEvents`
-| true
-| optional
-| Archive events.
-
-|`archiveAlarms`
-| true
-| optional
-| Archive alarms.
-
-|`archiveAlarmChangeEvents`
-| true
-| optional
-| Archive alarm change events.
-
-|`archiveOldAlarmValues`
-| true
-| optional
-| For alarm change events, we can choose to archive the detailed alarm values but this is expensive. Set false in production.
-
-|`archiveNewAlarmValues`
-| true
-| optional
-|
 
 |`archiveAssetData`
 | true
@@ -83,7 +57,7 @@ Besides the general _Elasticsearch_ connection settings, the following propertie
 
 |===
 
-Once you are sure everything is correctly configured, you can activate the _Event & Alarm Forwarder_ by logging into the _OSGi_ console and installing the feature: `opennms-es-rest`.
+Once you are sure everything is correctly configured, you can activate the _Event Forwarder_ by logging into the _OSGi_ console and installing the feature: `opennms-es-rest`.
 
 ._OSGi_ login and installation of the _Elasticsearch_ forwarder
 [source, shell]
@@ -108,26 +82,12 @@ karaf> elasticsearch:send-historic-events --username admin --password admin --ur
 
 NOTE: For more details, consolidate the `--help` option of the command.
 
-===== Index Definitions
+===== Index Definition
 
-Three indices are created; one for alarms, one for alarm change events and one for raw events.
-Alarms and alarm change events are only saved if the <<ga-internal-plugins-alarm-change-notifier, Alarm Change Notifier Plugin>> plugin is also
-installed to generate alarm change events from the _{opennms-product-name}_ alarms table.
-The index names are of the form (assuming an index strategy of monthly): `opennms-<name>-<index-strategy>/type/id`
+The index names used to store the events uses the following form: `opennms-raw-events-<index-strategy>/type/id`
 
-For example
+For example (assuming an index strategy of monthly):
 
-a) Alarms
-----
-opennms-alarms-2017-01/alarmdata/1823
-----
-
-b) Alarm Change Events
-----
-opennms-events-alarmchange-2017-01/eventdata/11549
-----
-
-c) Raw _{opennms-product-name}_ events (not including alarm change events)
 ----
 opennms-events-raw-2017-01/eventdata/11549
 ----
@@ -137,29 +97,13 @@ opennms-events-raw-2017-01/eventdata/11549
 _Kibana Sense_ is a _Kibana_ app which allows you to run queries directly against _Elasticsearch_.
 (https://www.elastic.co/guide/en/sense/current/installing.html)
 
-If you install _Kibana Sense_ you can use the following commands to view the alarms and events sent to _Elasticsearch_
+If you install _Kibana Sense_ you can use the following commands to view the events sent to _Elasticsearch_
 You should review the _Elasticsearch_ ReST API documentation to understand how searches are specified.
 (See https://www.elastic.co/guide/en/elasticsearch/reference/current/search.html)
 
 Example searches to use in _Kibana Sense_ (you can copy the whole contents of this panel into _Kibana Sense_ as a set of examples)
 
 ----
-# Search all the alarms indexes
-
-GET /opennms-alarms-*/_search
-
-# Get all of the alarms indexes
-
-GET /opennms-alarms-*/
-
-# Get a specific alarm id from the 2017.01 index
-
-GET opennms-alarms-2017-01/alarmdata/1823
-
-# Delete all alarm indexes
-
-DELETE /opennms-alarms-*/
-
 # Search all the events indexes
 
 GET /opennms-events-*/_search
@@ -175,17 +119,4 @@ DELETE /opennms-events-*/
 # Get all the raw events indexes
 
 GET /opennms-events-raw*/
-
-# Get all the alarmchange event indexes
-
-GET /opennms-events-alarmchange-*/
-
-# Search all the alarm change event indexes
-
-GET opennms-events-alarmchange-*/_search
-
-# Get a specific alarm change event
-
-GET opennms-events-alarmchange-2016-08/eventdata/11549
 ----
-

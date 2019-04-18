@@ -75,95 +75,16 @@ public class EventToIndex implements AutoCloseable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(EventToIndex.class);
 
-	public static class IndexAndType {
-		private String indexPrefix;
-		private String type;
-
-		public IndexAndType(String indexPrefix, String type) {
-			this.indexPrefix = indexPrefix;
-			this.type = type;
-		}
-
-		public String getIndexPrefix() {
-			return indexPrefix;
-		}
-
-		public String getType() {
-			return type;
-		}
-	}
-
-	public interface Indices {
-		IndexAndType ALARMS = new IndexAndType("opennms-alarms", "alarmdata");
-		IndexAndType EVENTS = new IndexAndType("opennms-events-raw", "eventdata");
-		IndexAndType ALARM_EVENTS = new IndexAndType("opennms-events-alarmchange", "eventdata");
-	}
-
-
-	// stem of all alarm change notification uei's
-	// TODO: Move these into EventConstants
-	private static final String ALARM_NOTIFICATION_UEI_STEM = "uei.opennms.org/plugin/AlarmChangeNotificationEvent";
-
-	// uei definitions of alarm change events
-	// TODO: Move these into EventConstants
-	private static final String ALARM_DELETED_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmDeleted";
-	private static final String ALARM_CREATED_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/NewAlarmCreated";
-	private static final String ALARM_SEVERITY_CHANGED_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmSeverityChanged";
-	private static final String ALARM_CLEARED_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmCleared";
-	private static final String ALARM_ACKNOWLEDGED_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmAcknowledged";
-	private static final String ALARM_UNACKNOWLEDGED_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmUnAcknowledged";
-	private static final String ALARM_SUPPRESSED_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmSuppressed";
-	private static final String ALARM_UNSUPPRESSED_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmUnSuppressed";
-	private static final String ALARM_TROUBLETICKET_STATE_CHANGE_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/TroubleTicketStateChange";
-	private static final String ALARM_CHANGED_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmChanged";
-
-	// uei definitions of memo change events
-	// TODO: Move these into EventConstants
-	private static final String STICKY_MEMO_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/StickyMemoUpdate";
-	private static final String JOURNAL_MEMO_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/JournalMemoUpdate";
-
-	// param names in memo change events
-	// TODO: Move these into EventConstants
-	private static final String MEMO_VALUES_PARAM="memovalues";
-	private static final String MEMO_ALARMID_PARAM="alarmid";
-	private static final String MEMO_BODY_PARAM="body";
-	private static final String MEMO_AUTHOR_PARAM="author";
-	private static final String MEMO_REDUCTIONKEY_PARAM="reductionkey";
-
-	private static final String OLD_ALARM_VALUES_PARAM="oldalarmvalues";
-	private static final String NEW_ALARM_VALUES_PARAM="newalarmvalues";
+	private static final String INDEX_PREFIX = "opennms-events-raw";
+	private static final String INDEX_TYPE = "eventdata";
 
 	private static final String NODE_LABEL_PARAM="nodelabel";
-	private static final String INITIAL_SEVERITY_PARAM="initialseverity";
-	private static final String INITIAL_SEVERITY_PARAM_TEXT="initialseverity_text";
-	private static final String SEVERITY_TEXT="severity_text";
-	private static final String SEVERITY="severity";
-	private static final String ALARM_SEVERITY_PARAM="alarmseverity";
-	private static final String FIRST_EVENT_TIME="firsteventtime";
-	private static final String EVENT_PARAMS="eventparms";
-	private static final String ALARM_ACK_TIME_PARAM="alarmacktime";
-	private static final String ALARM_ACK_USER_PARAM="alarmackuser";
-	private static final String ALARM_ACK_DURATION="alarmackduration"; // duration from alarm raise to acknowledge
-	private static final String ALARM_CLEAR_TIME="alarmcleartime";
-	private static final String ALARM_CLEAR_DURATION="alarmclearduration"; //duration from alarm raise to clear
-	private static final String ALARM_DELETED_TIME="alarmdeletedtime";
-
 
 	private static final int DEFAULT_NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors() * 2;
 
 	private boolean logEventDescription = false;
 
 	private boolean logAllEvents = false;
-
-	private boolean archiveRawEvents = true;
-
-	private boolean archiveAlarms = true;
-
-	private boolean archiveAlarmChangeEvents = true;
-
-	private boolean archiveOldAlarmValues = true;
-
-	private boolean archiveNewAlarmValues = true;
 
 	private boolean groupOidParameters = false;
 
@@ -178,19 +99,19 @@ public class EventToIndex implements AutoCloseable {
 	private IndexStrategy indexStrategy = IndexStrategy.MONTHLY;
 
 	private final ThreadPoolExecutor executor = new ThreadPoolExecutor(
-		threads,
-		threads,
-		0L, TimeUnit.MILLISECONDS,
-		new SynchronousQueue<>(true),
-		new ThreadFactory() {
-			final AtomicInteger index = new AtomicInteger();
-			@Override
-			public Thread newThread(Runnable r) {
-				return new Thread(r, EventToIndex.class.getSimpleName() + "-Thread-" + String.valueOf(index.incrementAndGet()));
-			}
-		},
-		// Throttle incoming tasks by running them on the caller thread
-		new ThreadPoolExecutor.CallerRunsPolicy()
+			threads,
+			threads,
+			0L, TimeUnit.MILLISECONDS,
+			new SynchronousQueue<>(true),
+			new ThreadFactory() {
+				final AtomicInteger index = new AtomicInteger();
+				@Override
+				public Thread newThread(Runnable r) {
+					return new Thread(r, EventToIndex.class.getSimpleName() + "-Thread-" + String.valueOf(index.incrementAndGet()));
+				}
+			},
+			// Throttle incoming tasks by running them on the caller thread
+			new ThreadPoolExecutor.CallerRunsPolicy()
 	);
 
 	public EventToIndex(JestClient jestClient, int bulkRetryCount) {
@@ -229,26 +150,6 @@ public class EventToIndex implements AutoCloseable {
 		this.nodeCache = cache;
 	}
 
-	public void setArchiveAlarms(boolean archiveAlarms) {
-		this.archiveAlarms = archiveAlarms;
-	}
-
-	public void setArchiveAlarmChangeEvents(boolean archiveAlarmChangeEvents) {
-		this.archiveAlarmChangeEvents = archiveAlarmChangeEvents;
-	}
-
-	public void setArchiveRawEvents(boolean archiveRawEvents) {
-		this.archiveRawEvents = archiveRawEvents;
-	}
-
-	public void setArchiveOldAlarmValues(boolean archiveOldAlarmValues) {
-		this.archiveOldAlarmValues = archiveOldAlarmValues;
-	}
-
-	public void setArchiveNewAlarmValues(boolean archiveNewAlarmValues) {
-		this.archiveNewAlarmValues = archiveNewAlarmValues;
-	}
-
 	public void setGroupOidParameters(boolean groupOidParameters) {
 		this.groupOidParameters = groupOidParameters;
 	}
@@ -261,12 +162,12 @@ public class EventToIndex implements AutoCloseable {
 
 	public void forwardEvents(final List<Event> events) {
 		CompletableFuture.completedFuture(events)
-			// Send the events to Elasticsearch
-			.thenAcceptAsync(this::sendEvents, executor)
-			.exceptionally(e -> {
-				LOG.error("Unexpected exception during task completion: " + e.getMessage(), e);
-				return null;
-			});
+				// Send the events to Elasticsearch
+				.thenAcceptAsync(this::sendEvents, executor)
+				.exceptionally(e -> {
+					LOG.error("Unexpected exception during task completion: " + e.getMessage(), e);
+					return null;
+				});
 	}
 
 	private void sendEvents(final List<Event> allEvents) {
@@ -295,13 +196,7 @@ public class EventToIndex implements AutoCloseable {
 
 	/**
 	 * <p>This method converts events into a sequence of Elasticsearch index/update commands.
-	 * Three types of actions are possible:</p>
-	 * <ul>
-	 * <li>Updating an alarm document based on an {@link #ALARM_NOTIFICATION_UEI_STEM} event</li>
-	 * <li>Indexing the {@link #ALARM_NOTIFICATION_UEI_STEM} events</li>
-	 * <li>Indexing all other events</li>
-	 * </ul>
-	 * 
+	 *
 	 * @param events
 	 */
 	private List<BulkableAction<DocumentResult>> convertEventsToEsActions(List<Event> events) {
@@ -312,45 +207,12 @@ public class EventToIndex implements AutoCloseable {
 
 			refreshCacheIfNecessary(event);
 
-			final String uei = event.getUei();
-
-			// if alarm change notification then handle change
-			// change alarm index and add event to alarm change event index
-			if(uei.startsWith(ALARM_NOTIFICATION_UEI_STEM)) {
-				if (STICKY_MEMO_EVENT.equals(uei) || JOURNAL_MEMO_EVENT.equals(uei) ){
-					// handle memo change events
-					// TODO may want to create a sticky and journal memo field in alarms index and update accordingly
-					// currently we just save the event as an event to ES with no other processing
-					LOG.debug("Sending Alarm MEMO Event to ES: {}", event);
-
-				} else {
-					// handle alarm change events
-					LOG.debug("Sending event with uei {}: {} to ES", uei, event);
-
-					if(archiveAlarms){
-						// if an alarm change event, use the alarm change fields to update the alarm index
-						final Update alarmUpdate = createAlarmIndexFromAlarmChangeEvent(event, Indices.ALARMS);
-						retval.add(alarmUpdate);
-					}
-				}
-
-				// save all Alarm Change Events including memo change events
-				if(archiveAlarmChangeEvents){
-					final Index eventIndex = createEventIndexFromEvent(event, Indices.ALARM_EVENTS);
-					retval.add(eventIndex);
-				}
-
+			// Only send events to ES if they are persisted to database or logAllEvents is set to true
+			if(logAllEvents || (event.getDbid() !=null && event.getDbid()!=0)) {
+				Index eventIndex = createEventIndexFromEvent(event);
+				retval.add(eventIndex);
 			} else {
-				// Handle all other event types
-				if(archiveRawEvents){
-					// only send events to ES if they are persisted to database or logAllEvents is set to true
-					if(logAllEvents || (event.getDbid() !=null && event.getDbid()!=0)) {
-						Index eventIndex = createEventIndexFromEvent(event, Indices.EVENTS);
-						retval.add(eventIndex);
-					} else {
-						LOG.debug("Not Sending Event to ES. Event is not persisted to database, or logAllEvents is false. Event: {}", event);
-					}
-				}
+				LOG.debug("Not Sending Event to ES. Event is not persisted to database, or logAllEvents is false. Event: {}", event);
 			}
 		}
 
@@ -360,7 +222,7 @@ public class EventToIndex implements AutoCloseable {
 	/**
 	 * Utility method to populate a Map with the most import event attributes
 	 */
-	private Index createEventIndexFromEvent(final Event event, final IndexAndType indexAndType) {
+	private Index createEventIndexFromEvent(final Event event) {
 		final JSONObject body = new JSONObject();
 
 		final Integer id = event.getDbid();
@@ -408,15 +270,6 @@ public class EventToIndex implements AutoCloseable {
 		// Parse event parameters
 		handleParameters(event, body);
 
-		// remove old and new alarm values parms if not needed
-		if(! archiveNewAlarmValues){
-			body.remove("p_"+OLD_ALARM_VALUES_PARAM);
-		}
-
-		if(! archiveOldAlarmValues){
-			body.remove("p_"+NEW_ALARM_VALUES_PARAM);
-		}
-
 		body.put("interface", event.getInterface());
 		body.put("logmsg", ( event.getLogmsg()!=null ? event.getLogmsg().getContent() : null ));
 		body.put("logmsgdest", ( event.getLogmsg()!=null ? event.getLogmsg().getDest() : null ));
@@ -440,12 +293,12 @@ public class EventToIndex implements AutoCloseable {
 			}
 		}
 
-		String completeIndexName = indexStrategy.getIndex(indexAndType.getIndexPrefix(), cal.toInstant());
+		String completeIndexName = indexStrategy.getIndex(INDEX_PREFIX, cal.toInstant());
 
 		if (LOG.isDebugEnabled()){
 			String str = "populateEventIndexBodyFromEvent - index:"
 					+ "/"+completeIndexName
-					+ "/"+indexAndType.getType()
+					+ "/"+INDEX_TYPE
 					+ "/"+id
 					+ "\n   body: \n" + body.toJSONString();
 			LOG.debug(str);
@@ -453,7 +306,7 @@ public class EventToIndex implements AutoCloseable {
 
 		Index.Builder builder = new Index.Builder(body)
 				.index(completeIndexName)
-				.type(indexAndType.getType());
+				.type(INDEX_TYPE);
 
 		// NMS-9015: If the event is a database event, set the ID of the
 		// document to the event's database ID. Otherwise, allow ES to
@@ -515,248 +368,6 @@ public class EventToIndex implements AutoCloseable {
 				body.put(parmName, parm.getValue().getContent());
 			}
 		}
-	}
-
-	/**
-	 * An alarm change event will have a payload corresponding to the json representation of the
-	 * Alarms table row for this alarm id. Both "oldalarmvalues" and "newalarmvalues" params may be populated
-	 * The alarm index body will be populated with the "newalarmvalues" but if "newalarmvalues" is null then the
-	 * "oldalarmvalues" json string will be used
-	 * If cannot parse event into alarm then null index is returned
-	 */
-	private Update createAlarmIndexFromAlarmChangeEvent(Event event, IndexAndType indexAndType) {
-
-		Update update=null;
-
-		Map<String,String> body = new HashMap<String,String>();
-
-		//get alarm change params from event
-		Map<String,String> parmsMap = new HashMap<String,String>();
-		for(Parm parm : event.getParmCollection()) {
-			parmsMap.put( parm.getParmName(), parm.getValue().getContent());
-		}
-
-		String oldValuesStr=parmsMap.get(OLD_ALARM_VALUES_PARAM);
-		String newValuesStr=parmsMap.get(NEW_ALARM_VALUES_PARAM);
-
-		LOG.debug("AlarmChangeEvent from eventid {}\n  newValuesStr={}\n  oldValuesStr={}", +event.getDbid(), newValuesStr, oldValuesStr);
-
-		JSONObject alarmValues=null ;
-		JSONObject newAlarmValues=null;
-		JSONObject oldAlarmValues=null;
-
-		JSONParser parser = new JSONParser();
-		if (newValuesStr!=null){
-			try{
-				Object obj = parser.parse(newValuesStr);
-				newAlarmValues = (JSONObject) obj;
-			} catch (ParseException e1) {
-				LOG.error("cannot parse newValuesStr from eventid "+event.getDbid()
-						+ " to json object. newValuesStr="+ newValuesStr, e1);
-			}
-		}
-
-		if(newAlarmValues!=null && ! newAlarmValues.isEmpty()) {
-			alarmValues=newAlarmValues;
-		} else {
-			if (oldValuesStr==null){
-				LOG.error("newValuesStr and oldValuesStr both empty in AlarmChangeEvent from eventid "+event.getDbid()
-						+ "\n  newValuesStr="+newValuesStr
-						+ "\n  oldValuesStr="+oldValuesStr);
-				return null;
-			} else {
-				try {
-					Object obj = parser.parse(oldValuesStr);
-					oldAlarmValues = (JSONObject) obj;
-				} catch (ParseException e1) {
-					LOG.error("cannot parse oldValuesStr from eventid "+event.getDbid()
-							+ " to json object. oldValuesStr="+ oldValuesStr, e1);
-					return null;
-				}
-				if (! oldAlarmValues.isEmpty()){
-					alarmValues=oldAlarmValues;
-				} else {
-					LOG.error("oldValuesStr and newValuesStr both empty in AlarmChangeEvent from eventid "+event.getDbid()
-							+ "\n  newValuesStr="+newValuesStr
-							+ "\n  oldValuesStr="+oldValuesStr);
-					return null;
-				}
-			}
-		}
-
-
-		for (Object x: alarmValues.keySet()){
-			String key=(String) x;
-			String value = (alarmValues.get(key)==null) ? null : alarmValues.get(key).toString();
-
-			if (EVENT_PARAMS.equals(key) && value!=null){
-				//decode event parms into alarm record
-				List<Parm> params = EventParameterUtils.decode(value);
-				for(Parm parm : params) {
-					body.put("p_" + parm.getParmName(), parm.getValue().getContent());
-				}
-			} else if((ALARM_SEVERITY_PARAM.equals(key) && value!=null)){ 
-				try{
-					int id= Integer.parseInt(value);
-					String label = OnmsSeverity.get(id).getLabel();
-					// note alarm index uses severity even though alarm severity param is p_alarmseverity
-					body.put(SEVERITY,value);
-					body.put(SEVERITY_TEXT,label);
-				}
-				catch (Exception e){
-					LOG.error("cannot parse severity for alarm change event id"+event.getDbid());
-				}
-			} else{
-				body.put(key, value);
-			}
-
-		}
-
-		// set alarm cleared / deleted time null if an alarm create event
-		if(ALARM_CREATED_EVENT.equals(event.getUei())){
-			body.put(ALARM_CLEAR_TIME, null);
-			body.put(ALARM_DELETED_TIME, null);
-		}
-
-		// set alarm cleared time if an alarm clear event
-		if(ALARM_CLEARED_EVENT.equals(event.getUei())){
-			Calendar alarmClearCal=Calendar.getInstance();
-			alarmClearCal.setTime(event.getTime());
-			body.put(ALARM_CLEAR_TIME, DatatypeConverter.printDateTime(alarmClearCal));
-			// duration time from alarm raise to clear
-			try{
-				Date alarmclearDate = event.getTime();
-				String alarmCreationTime = alarmValues.get(FIRST_EVENT_TIME).toString();
-				Calendar alarmCreationCal = DatatypeConverter.parseDateTime(alarmCreationTime);
-				Date alarmCreationDate=alarmCreationCal.getTime();
-				//duration in milliseconds
-				Long duration = alarmclearDate.getTime() - alarmCreationDate.getTime();
-				body.put(ALARM_CLEAR_DURATION, duration.toString());
-			} catch (Exception e){
-				LOG.error("problem calculating alarm clear duration for event "+event.getDbid(), e);
-			}
-		}
-
-		// set alarm deleted time if an alarm delete event
-		if(ALARM_DELETED_EVENT.equals(event.getUei())){
-			Calendar alarmDeletionCal=Calendar.getInstance();
-			alarmDeletionCal.setTime(event.getTime());
-			body.put(ALARM_DELETED_TIME, DatatypeConverter.printDateTime(alarmDeletionCal));			
-		}
-		
-		//  calculate duration from alarm raise to acknowledge
-		if(ALARM_ACKNOWLEDGED_EVENT.equals(event.getUei())){
-			try{
-				Date alarmAckDate = event.getTime();
-				String alarmCreationTime = alarmValues.get(FIRST_EVENT_TIME).toString();
-				Calendar alarmCreationCal = DatatypeConverter.parseDateTime(alarmCreationTime);
-				Date alarmCreationDate=alarmCreationCal.getTime();
-				//duration in milliseconds
-				Long duration = alarmAckDate.getTime() - alarmCreationDate.getTime();
-				body.put(ALARM_ACK_DURATION, duration.toString());
-			} catch (Exception e){
-				LOG.error("problem calculating alarm acknowledge duration for event "+event.getDbid(), e);
-			}
-		}
-
-		// remove ack if not in parameters i,e alarm not acknowleged
-		if(parmsMap.get(ALARM_ACK_TIME_PARAM)==null || "".equals(parmsMap.get(ALARM_ACK_TIME_PARAM)) ){
-			body.put(ALARM_ACK_TIME_PARAM, null);
-			body.put(ALARM_ACK_USER_PARAM, null);
-		}
-
-		// add "initialseverity"
-		if(parmsMap.get(INITIAL_SEVERITY_PARAM)!=null){
-			try{
-				String severityId = parmsMap.get(INITIAL_SEVERITY_PARAM);
-				int id= Integer.parseInt(severityId);
-				String label = OnmsSeverity.get(id).getLabel();
-				body.put(INITIAL_SEVERITY_PARAM,severityId);
-				body.put(INITIAL_SEVERITY_PARAM_TEXT,label);
-			}
-			catch (Exception e){
-				LOG.error("cannot parse initial severity for alarm change event id"+event.getDbid());
-			}
-		}
-
-		// if the event contains nodelabel parameter then do not use node cache
-		if (parmsMap.get(NODE_LABEL_PARAM)!=null){
-			body.put(NODE_LABEL_PARAM, parmsMap.get(NODE_LABEL_PARAM));
-		} else {
-			// add node details from cache
-			if (nodeCache!=null && event.getNodeid()!=null){
-				Map nodedetails = nodeCache.getEntry(event.getNodeid());
-				for (Object key: nodedetails.keySet()){
-					String keyStr = (String) key;
-					String value = (String) nodedetails.get(key);
-					body.put(keyStr, value);
-				}
-			}
-		}
-
-
-		if (alarmValues.get("alarmid")==null){
-			LOG.error("No alarmid param - cannot create alarm Elasticsearch record from event content:"+ event.toString());
-		} else{
-			String id = alarmValues.get("alarmid").toString();
-
-			// add the p_alarmid so that we can easily match alarm change events with same alarmid
-			body.put("p_alarmid", id);
-
-			String alarmCreationTime=null;
-			Calendar alarmCreationCal=null;
-
-			// try to parse firsteventtime but if not able then use current date
-			try{
-				alarmCreationTime = alarmValues.get(FIRST_EVENT_TIME).toString();
-				alarmCreationCal = DatatypeConverter.parseDateTime(alarmCreationTime);
-			} catch (Exception e){
-				LOG.error("using current Date() for @timestamp because problem creating date from alarmchange event "+event.getDbid()
-						+ " from firsteventtime="+alarmCreationTime, e);
-			}
-
-			if (alarmCreationCal==null){
-				alarmCreationCal=Calendar.getInstance();
-				alarmCreationCal.setTime(new Date());
-			}
-
-			body.put("@timestamp", DatatypeConverter.printDateTime(alarmCreationCal));
-			body.put("dow", Integer.toString(alarmCreationCal.get(Calendar.DAY_OF_WEEK)));
-			body.put("hour",Integer.toString(alarmCreationCal.get(Calendar.HOUR_OF_DAY)));
-			body.put("dom", Integer.toString(alarmCreationCal.get(Calendar.DAY_OF_MONTH))); 
-
-			String completeIndexName= indexStrategy.getIndex(indexAndType.getIndexPrefix(), alarmCreationCal.toInstant());
-
-			if (LOG.isDebugEnabled()){
-				String str = "populateAlarmIndexBodyFromAlarmChangeEvent - index:"
-						+ "/"+completeIndexName
-						+ "/"+indexAndType.getType()
-						+ "/"+id
-						+ "\n   body: ";
-				for (String key:body.keySet()){
-					str=str+"["+ key+" : "+body.get(key)+"]";
-				}
-				LOG.debug(str);
-			}
-
-			//index = new Index.Builder(body).index(completeIndexName)
-			//		.type(indexType).id(id).build();
-
-			// generates an update for specific values
-			// see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
-			JSONObject doc= new JSONObject(body);
-			JSONObject updateQuery= new JSONObject();
-			updateQuery.put("doc", doc);
-			updateQuery.put("doc_as_upsert", true);
-
-			if (LOG.isDebugEnabled())LOG.debug("update query sent:"+updateQuery.toJSONString());
-
-			update= new Update.Builder(updateQuery.toJSONString()).index(completeIndexName)
-					.type(indexAndType.getType()).id(id).build();
-
-		}
-
-		return update;
 	}
 
 	private void refreshCacheIfNecessary(Event event) {

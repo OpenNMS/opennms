@@ -166,9 +166,6 @@
     <!-- Correlation Feedback -->
     <module>situation-feedback</module>
 
-    <!-- Alarm Change Notifier -->
-    <module>alarm-change-notifier</module>
-    
     <!-- Event Integration Facility Adapter -->
     <module>eif-adapter</module>
 

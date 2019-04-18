@@ -566,7 +566,6 @@
                 <feature>org.opennms.features.bsm.shell-commands</feature>
                 <feature>vaadin-adminpage</feature>
                 <feature>opennms-jest</feature>
-                <feature>alarm-change-notifier</feature>
                 <feature>opennms-es-rest</feature>
                 <feature>ifttt-integration</feature>
                 <feature>opennms-flows</feature>
