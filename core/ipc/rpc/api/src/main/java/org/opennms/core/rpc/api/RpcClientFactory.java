@@ -35,7 +35,14 @@ package org.opennms.core.rpc.api;
  */
 public interface RpcClientFactory {
 
-    static final String LOG_PREFIX = "ipc";
+    // RPC Metrics related constants.
+    public static final String JMX_DOMAIN_RPC = "org.opennms.core.ipc.rpc";
+    public static final String LOG_PREFIX = "ipc";
+    public static final String RPC_COUNT = "requestSent";
+    public static final String RPC_FAILED = "requestFailed";
+    public static final String RPC_DURATION = "duration";
+    public static final String RPC_REQUEST_SIZE = "requestSize";
+    public static final String RPC_RESPONSE_SIZE = "responseSize";
 
     <R extends RpcRequest, S extends RpcResponse> RpcClient<R, S> getClient(RpcModule<R, S> module);
 }

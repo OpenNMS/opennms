@@ -43,7 +43,6 @@ import org.apache.camel.ExchangeTimedOutException;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.direct.DirectConsumerNotAvailableException;
 import org.apache.camel.spi.Synchronization;
-import org.opennms.core.tracing.util.TracingInfoCarrier;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.logging.Logging.MDCCloseable;
 import org.opennms.core.rpc.api.RemoteExecutionException;
@@ -55,10 +54,16 @@ import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.core.tracing.api.TracerRegistry;
+import org.opennms.core.tracing.util.TracingInfoCarrier;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 
 import io.opentracing.Span;
 import io.opentracing.Tracer;
@@ -80,6 +85,9 @@ public class CamelRpcClientFactory implements RpcClientFactory {
     private TracerRegistry tracerRegistry;
 
     private Tracer tracer;
+
+    private MetricRegistry metrics = new MetricRegistry();
+    private JmxReporter metricsRepoter = null;
 
 
     @Override
@@ -104,6 +112,8 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                 tracer.inject(span.context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
                 //Add custom tags to tracing info.
                 request.getTracingInfo().forEach(tracingInfoCarrier::put);
+                final Histogram rpcDuration = metrics.histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_DURATION));
+                long requestCreationTime = System.currentTimeMillis();
                 // Wrap the request in a CamelRpcRequest and forward it to the Camel route
                 final CompletableFuture<T> future = new CompletableFuture<>();
                 try {
@@ -111,7 +121,10 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                         @Override
                         public void onComplete(Exchange exchange) {
                             try (MDCCloseable mdc = Logging.withContextMapCloseable(clientContextMap)) {
-                                final T response = module.unmarshalResponse(exchange.getOut().getBody(String.class));
+                                String responseAsString = exchange.getOut().getBody(String.class);
+                                final Histogram responseSize = metrics.histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_RESPONSE_SIZE));
+                                responseSize.update(responseAsString.getBytes().length);
+                                final T response = module.unmarshalResponse(responseAsString);
                                 if (response.getErrorMessage() != null) {
                                     future.completeExceptionally(new RemoteExecutionException(response.getErrorMessage()));
                                     span.setTag(TAG_RPC_FAILED, "true");
@@ -126,6 +139,7 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                                 span.log(ex.getMessage());
                             }
                             span.finish();
+                            rpcDuration.update(System.currentTimeMillis() - requestCreationTime);
                             // Ensure that future log statements on this thread are routed properly
                             Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
                         }
@@ -149,6 +163,9 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                             span.setTag(TAG_RPC_FAILED, "true");
                             span.log(exchange.getException().getMessage());
                             span.finish();
+                            final Meter failedMeter = metrics.meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_FAILED));
+                            failedMeter.mark();
+                            rpcDuration.update(System.currentTimeMillis() - requestCreationTime);
                             // Ensure that future log statements on this thread are routed properly
                             Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
                         }
@@ -159,11 +176,14 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                         future.completeExceptionally(new RequestRejectedException(e));
                         span.setTag(TAG_RPC_FAILED, "true");
                         span.log(e.getMessage());
+                        rpcDuration.update(System.currentTimeMillis() - requestCreationTime);
                         span.finish();
                     }
                     // Ensure that future log statements on this thread are routed properly
                     Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
                 }
+                final Meter requestSentMeter = metrics.meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_COUNT));
+                requestSentMeter.mark();
                 return future;
             }
         };
@@ -184,9 +204,14 @@ public class CamelRpcClientFactory implements RpcClientFactory {
     public void start() {
         tracerRegistry.init(SystemInfoUtils.getInstanceId());
         tracer = tracerRegistry.getTracer();
+        // Initialize metrics reporter.
+        metricsRepoter = JmxReporter.forRegistry(metrics).
+                inDomain(JMX_DOMAIN_RPC).build();
+        metricsRepoter.start();
     }
 
     public void stop() {
         //pass
+        metricsRepoter.close();
     }
 }
