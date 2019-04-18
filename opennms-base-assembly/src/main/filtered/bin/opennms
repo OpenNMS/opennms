@@ -194,7 +194,7 @@ getTempFile(){
 		__TEMPFILE="$TMPDIR/xmllint.$RANDOM.$RANDOM.$RANDOM.$$"
 	}
 
-	rm "$__TEMPFILE"
+	rm -f "$__TEMPFILE"
 	(umask 077 && touch "$__TEMPFILE")
 	echo "$__TEMPFILE"
 }
@@ -212,7 +212,7 @@ checkXmlFiles(){
 		done >"$TEMPFILE"
 		cat "$TEMPFILE" >&2
 		FAILCOUNT="$(grep -c 'XML validation failed' < "$TEMPFILE")"
-		rm "$TEMPFILE"
+		rm -f "$TEMPFILE"
 		if [ "$FAILCOUNT" -gt 0 ]; then
 			echo "Validation failed on $FAILCOUNT XML files.  Exiting." >&2
 			case "$COMMAND" in
@@ -249,11 +249,11 @@ attributes, and restart.
 END
 		cat "$TEMPFILE"
 		echo ""
-		rm "$TEMPFILE"
+		rm -f "$TEMPFILE"
 
 		return 6 # From LSB: 6 - program is not configured
 	fi
-	rm "$TEMPFILE"
+	rm -f "$TEMPFILE"
 
 	return 0
 }
