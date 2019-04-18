@@ -186,7 +186,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     private void verifyReductionKey(String uei, String expectedReductionKey) {
         List<org.opennms.netmgt.xml.eventconf.Event> eventsForUei = m_eventConfDao.getEvents(uei);
         if (eventsForUei == null) {
-            LOG.warn("Could not find an event with uei '{}'.");
+            LOG.warn("Could not find an event with uei '{}'.", uei);
             return;
         }
         if (eventsForUei.size() != 1) {
