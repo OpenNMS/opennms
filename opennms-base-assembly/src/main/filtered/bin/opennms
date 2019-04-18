@@ -217,9 +217,11 @@ attributes, and restart.
 END
 		cat "$TEMPFILE"
 		echo ""
+		rm "$TEMPFILE"
 
 		return 6 # From LSB: 6 - program is not configured
 	fi
+	rm "$TEMPFILE"
 
 	return 0
 }
