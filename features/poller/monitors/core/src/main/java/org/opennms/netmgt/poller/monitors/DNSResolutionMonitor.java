@@ -130,7 +130,7 @@ public class DNSResolutionMonitor extends ParameterSubstitutingMonitor {
             } else {
                 if ("::1".equals(nameserver)) {
                     resolver = new SimpleResolver(nameserver);
-                } else if (nameserver.matches("^\\[[\\d:]+\\]:\\d+$")) {
+                } else if (nameserver.matches("^\\[[\\da-fA-F:]+\\]:\\d+$")) {
                     // IPv6 address with port number
                     final Integer pos = nameserver.lastIndexOf(":");
                     String hostname = nameserver.substring(0, pos);
