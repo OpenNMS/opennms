@@ -64,7 +64,7 @@ testSearchWithJavaHome() {
   javaconf_dir="$TESTDIR/${_shunit_test_}"
   mkdir -p "$javaconf_dir"
   output="$(runRunjava -j "$javaconf_dir" -s)"
-  assertContains "$output" "runjava: found: \"$FAKE_JAVA_HOME/bin/java\" is an appropriate JRE"
+  assertContains "$output" "runjava: Found: \"$FAKE_JAVA_HOME/bin/java\" is an appropriate JVM"
   assertTrue "[ -f '$TESTDIR/${_shunit_test_}/java.conf' ]"
   found_java="$(cat "$TESTDIR/${_shunit_test_}/java.conf")"
   assertEquals "$FAKE_JAVA_HOME/bin/java" "$found_java"
@@ -79,7 +79,7 @@ testSearchWithJavaHomeUnset() {
   ln -s "$FAKE_JAVA_HOME/bin/java" "$javaconf_dir/bin/java"
 
   output="$(runRunjava -j "$javaconf_dir" -s)"
-  assertContains "$output" "found an appropriate JRE in user's path"
+  assertContains "$output" "Found an appropriate JVM in the PATH"
   assertTrue "[ -f '$TESTDIR/${_shunit_test_}/java.conf' ]"
   found_java="$(cat "$TESTDIR/${_shunit_test_}/java.conf")"
   assertEquals "it should follow the symlink to the 'real' file" "$FAKE_JAVA_HOME/bin/java" "$found_java"
