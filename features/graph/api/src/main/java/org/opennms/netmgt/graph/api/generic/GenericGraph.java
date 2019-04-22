@@ -61,8 +61,10 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
     private Focus focusStrategy;
     protected GraphInfo<GenericVertex> graphInfo;
 
-    public GenericGraph() {
-        this(new HashMap<>());
+    public GenericGraph(String namespace) {
+        this(new MapBuilder<String, Object>()
+                .withProperty(GenericProperties.NAMESPACE, namespace)
+                .build());
     }
 
     /** Copy constructor. */
@@ -85,8 +87,7 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
     public static GenericGraph fromGraphInfo(GraphInfo graphInfo) {
         // we can't have a constructor GenericGraph(GraphInfo graphInfo) since it conflicts with GenericGraph(GenericGraph graph)
         // that's why we have a factory method instead
-        GenericGraph graph = new GenericGraph();
-        graph.setNamespace(graphInfo.getNamespace());
+        GenericGraph graph = new GenericGraph(graphInfo.getNamespace());
         graph.setDescription(graphInfo.getDescription());
         graph.setLabel(graphInfo.getLabel());
         return graph;

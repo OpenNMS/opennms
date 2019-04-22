@@ -137,9 +137,8 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
                 .stream().map(n -> {
                     // In case of GraphML each vertex does not have a namespace, but it is inherited from the graph
                     // Therefore here we have to manually set it
-                    final GenericVertex v = new GenericVertex();
-                    v.setNamespace(graph.getNamespace());
-                    v.setProperties(n.getProperties());
+                    final GenericVertex v = new GenericVertex(graph.getNamespace(), n.getId());
+                    v.setProperties(new HashMap<>(n.getProperties()));
                     return v;
                 })
                 .collect(Collectors.toList());
@@ -150,12 +149,10 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
             final String targetNamespace = vertexIdToGraphMapping.get(e.getTarget().getId()).getProperty(GenericProperties.NAMESPACE);
             final GenericVertex source = new GenericVertex(sourceNamespace, e.getSource().getId());
             final GenericVertex target = new GenericVertex(targetNamespace, e.getTarget().getId());
-            final GenericEdge edge = new GenericEdge(source, target);
-            edge.setProperties(e.getProperties());
-
             // In case of GraphML each edge does not have a namespace, but it is inherited from the graph
             // Therefore here we have to manually set it
-            edge.setNamespace(graph.getNamespace());
+            final GenericEdge edge = new GenericEdge(graph.getNamespace(), source.getVertexRef(), target.getVertexRef());
+            edge.setProperties(new HashMap<>(e.getProperties()));
             return edge;
         }).collect(Collectors.toList());
         graph.addEdges(edges);

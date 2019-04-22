@@ -31,14 +31,12 @@ package org.opennms.netmgt.graph.api.generic;
 import java.util.HashMap;
 
 import org.opennms.netmgt.graph.api.Vertex;
+import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.aware.LocationAware;
 import org.opennms.netmgt.graph.api.aware.NodeAware;
 import org.opennms.netmgt.graph.api.info.NodeInfo;
 
 public class GenericVertex extends GenericElement implements Vertex, NodeAware, LocationAware {
-
-    public GenericVertex() {
-    }
 
     public GenericVertex(String namespace, String id) {
         super(namespace, id);
@@ -47,6 +45,10 @@ public class GenericVertex extends GenericElement implements Vertex, NodeAware, 
     /** Copy constructor */
     public GenericVertex(GenericVertex copyMe){
         super(new HashMap<>(copyMe.properties));
+    }
+
+    public GenericVertexRef getVertexRef() {
+        return new GenericVertexRef(this.getNamespace(), this.getId());
     }
 
 

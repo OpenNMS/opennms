@@ -197,8 +197,7 @@ public class DefaultGraphRepository implements GraphRepository {
         genericGraphContainer.setLabel(containerInfo.getLabel());
         genericGraphContainer.setId(containerInfo.getId());
         containerInfo.getGraphInfos().forEach(graphInfo -> {
-            final GenericGraph genericGraph = new GenericGraph();
-            genericGraph.setProperty(GenericProperties.NAMESPACE, graphInfo.getNamespace());
+            final GenericGraph genericGraph = new GenericGraph(graphInfo.getNamespace());
             genericGraph.setProperty(GenericProperties.LABEL, graphInfo.getLabel());
             genericGraph.setProperty(GenericProperties.DESCRIPTION, graphInfo.getDescription());
             genericGraphContainer.addGraph(genericGraph);

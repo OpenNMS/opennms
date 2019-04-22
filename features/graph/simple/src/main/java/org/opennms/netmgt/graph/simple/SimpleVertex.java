@@ -51,9 +51,7 @@ public class SimpleVertex implements Vertex, NodeAware, LocationAware {
     }
 
     public SimpleVertex(String namespace, String id) {
-        this.delegate = new GenericVertex();
-        this.delegate.setId(id);
-        this.delegate.setNamespace(namespace);
+        this.delegate = new GenericVertex(namespace, id);
     }
 
     public SimpleVertex(SimpleVertex copyMe) {

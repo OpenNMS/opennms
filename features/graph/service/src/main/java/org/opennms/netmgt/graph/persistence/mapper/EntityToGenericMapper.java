@@ -56,14 +56,14 @@ public class EntityToGenericMapper {
     }
 
     public GenericGraph fromEntity(final GraphEntity graphEntity) {
-        final GenericGraph genericGraph = new GenericGraph();
+        final GenericGraph genericGraph = new GenericGraph(graphEntity.getNamespace());
         graphEntity.getProperties().forEach(property -> { // will set id and namespace
             final Object value = convert(property);
             genericGraph.setProperty(property.getName(), value);
         });
 
         graphEntity.getVertices().stream().forEach(vertexEntity -> {
-            final GenericVertex genericVertex = new GenericVertex();
+            final GenericVertex genericVertex = new GenericVertex(graphEntity.getNamespace(), graphEntity.getProperty(GenericProperties.ID).getValue());
             vertexEntity.getProperties().forEach(property -> {  // will set id and namespace
                 final Object value = convert(property);
                 genericVertex.setProperty(property.getName(), value);
@@ -73,8 +73,9 @@ public class EntityToGenericMapper {
 
         graphEntity.getEdges().stream().forEach(edgeEntity -> {
             final GenericEdge genericEdge = new GenericEdge(
-                    genericGraph.getVertex(edgeEntity.getSource().getProperty(GenericProperties.ID).getValue()),
-                    genericGraph.getVertex(edgeEntity.getTarget().getProperty(GenericProperties.ID).getValue()));
+                    edgeEntity.getNamespace(),
+                    genericGraph.getVertex(edgeEntity.getSource().getProperty(GenericProperties.ID).getValue()).getVertexRef(),
+                    genericGraph.getVertex(edgeEntity.getTarget().getProperty(GenericProperties.ID).getValue()).getVertexRef());
             edgeEntity.getProperties().forEach(property -> {
                 final Object value = convert(property);
                 genericEdge.setProperty(property.getName(), value);

@@ -48,13 +48,12 @@ public class SimpleGraphTest {
     public void simpleGraphShouldBeAbleToBeConvertedIntoAGenericGraphAndBack() {
 
         // set up:
-        String namespace = SimpleGraphTest.class.getSimpleName();
-        SimpleGraph originalGraph = new SimpleGraph(namespace);
+        SimpleGraph originalGraph = new SimpleGraph(TestObjectCreator.NAMESPACE);
         originalGraph.setLabel("labelGraph");
         originalGraph.setNamespace(TestObjectCreator.NAMESPACE);
-        SimpleVertex vertex1 = createVertex(namespace, UUID.randomUUID().toString());
-        SimpleVertex vertex2 = createVertex(namespace, UUID.randomUUID().toString());
-        SimpleVertex vertex3 = createVertex(namespace, UUID.randomUUID().toString());
+        SimpleVertex vertex1 = createVertex(TestObjectCreator.NAMESPACE, UUID.randomUUID().toString());
+        SimpleVertex vertex2 = createVertex(TestObjectCreator.NAMESPACE, UUID.randomUUID().toString());
+        SimpleVertex vertex3 = createVertex(TestObjectCreator.NAMESPACE, UUID.randomUUID().toString());
         SimpleEdge edge1 = createEdge(vertex1, vertex2);
         SimpleEdge edge2 = createEdge(vertex1, vertex3);
         originalGraph.addVertex(vertex1);

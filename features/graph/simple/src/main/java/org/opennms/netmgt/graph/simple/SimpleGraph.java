@@ -50,8 +50,7 @@ public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleE
     public static SimpleGraph fromGraphInfo(GraphInfo graphInfo) {
         // we can't have a constructor SimpleGraph(GraphInfo graphInfo) since it conflicts with SimpleGraph(GenericGraph graph)
         // that's why we have a factory method instead
-        GenericGraph graph = new GenericGraph();
-        graph.setNamespace(graphInfo.getNamespace());
+        GenericGraph graph = new GenericGraph(graphInfo.getNamespace());
         graph.setLabel(graphInfo.getLabel());
         graph.setDescription(graphInfo.getDescription());
         return new SimpleGraph(graph);

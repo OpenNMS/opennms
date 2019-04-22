@@ -39,24 +39,39 @@ import com.google.common.base.MoreObjects;
 
 public class GenericEdge extends GenericElement implements Edge {
 
-    private final GenericVertex source;
-    private final GenericVertex target;
+    private final GenericVertexRef source;
+    private final GenericVertexRef target;
 
-    public GenericEdge(GenericVertex source, GenericVertex target) {
-        this(source, target, new HashMap<>());
+    public GenericEdge(String namespace, GenericVertexRef source, GenericVertexRef target) {
+        this(source, target, createMapWithNamespace(namespace));
     }
 
-    public GenericEdge(GenericVertex source, GenericVertex target, Map<String, Object> properties) {
+    private static Map<String, Object> createMapWithNamespace(String namespace) {
+        Objects.requireNonNull(namespace);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(GenericProperties.NAMESPACE, namespace);
+        return properties;
+    }
+
+    public GenericEdge(GenericVertexRef source, GenericVertexRef target, Map<String, Object> properties) {
         super(properties);
         this.source = Objects.requireNonNull(source);
         this.target = Objects.requireNonNull(target);
+        // TODO patrick: discuss with mvr: can an edge connect the same vertexref? If not we want to add a check?
+        if(!source.getNamespace().equals(getNamespace()) && !target.getNamespace().equals(getNamespace())) {
+            throw new IllegalArgumentException(
+                    String.format("Neither the namespace of the source VertexRef(namespace=%s) nor the target VertexRef(%s) matches our namespace=%s",
+                            source.getNamespace(), target.getNamespace(), getNamespace()));
+        }
+
         this.setNamespace(source.getNamespace());
-        this.setId(source.getId() + "->" + target.getId());
+        this.setId(source.getNamespace() + ":" + source.getId() + "->" + target.getNamespace() + ":" + target.getId());
     }
 
     /** Copy constructor */
     public GenericEdge(GenericEdge copyMe) {
-        this(new GenericVertex(copyMe.source), new GenericVertex(copyMe.target), new HashMap<>(copyMe.properties));
+        // GenericVertexRef are immutable -> it is ok to reuse them here.
+        this(copyMe.source, copyMe.target, new HashMap<>(copyMe.properties));
     }
 
     public Map<String, Object> getProperties() {
@@ -75,11 +90,7 @@ public class GenericEdge extends GenericElement implements Edge {
 
     @Override
     public GenericEdge asGenericEdge() {
-        final GenericEdge genericEdge = new GenericEdge(source, target);
-        genericEdge.setLabel(getLabel());
-        genericEdge.setId(getId());
-        genericEdge.setNamespace(getNamespace());
-        return genericEdge;
+        return this;
     }
 
     @Override

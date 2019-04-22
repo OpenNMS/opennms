@@ -37,18 +37,15 @@ import com.google.common.base.MoreObjects;
 public class GenericElement {
     protected final Map<String, Object> properties;
 
-    public GenericElement() {
-        this(new HashMap<>());
-    }
-
     public GenericElement(String namespace, String id) {
-        this(new HashMap<>());
-        setNamespace(namespace);
-        setId(id);
+        this(new MapBuilder<String, Object>()
+                .withProperty(GenericProperties.NAMESPACE, namespace)
+                .withProperty(GenericProperties.ID, id).build());
     }
 
     protected GenericElement (Map<String, Object> properties) {
         this.properties = Objects.requireNonNull(properties);
+        Objects.requireNonNull(this.properties.get(GenericProperties.NAMESPACE));
     }
 
     public void setProperty(String key, Object value) {

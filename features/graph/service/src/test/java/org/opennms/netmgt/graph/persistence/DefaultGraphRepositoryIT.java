@@ -88,7 +88,7 @@ public class DefaultGraphRepositoryIT {
 
         graph1.addVertex(v1);
         graph1.addVertex(v2);
-        graph1.addEdge(new GenericEdge(v1, v2));
+        graph1.addEdge(new GenericEdge(NAMESPACE, v1, v2));
 
         // Second graph is a copy of the first
         final GenericGraph graph2 = new GenericGraph(graph1);
