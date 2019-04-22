@@ -1015,7 +1015,7 @@ done
 
 printf -- "- cleaning up \$OPENNMS_HOME/data... "
 if [ -d "$ROOT_INST/data" ]; then
-	find "$ROOT_INST/data/"* -maxdepth 0 -name tmp -prune -o -print | xargs rm -rf
+	find "$ROOT_INST/data/"* -maxdepth 0 -name tmp -o -name history.txt -prune -o -print | xargs rm -rf
 	find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print | xargs rm -rf
 fi
 echo "done"
