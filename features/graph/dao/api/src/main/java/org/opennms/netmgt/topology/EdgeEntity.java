@@ -28,39 +28,39 @@
 
 package org.opennms.netmgt.topology;
 
-import javax.persistence.CascadeType;
+import java.util.Optional;
+
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 @Entity
 @DiscriminatorValue("edge")
 public class EdgeEntity extends AbstractGraphEntity {
 
-    // TODO MVR we don't need this. This could be a property instead (due to vertex-ref), so source or target may not exist in the table
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name="source_vertex_id", referencedColumnName = "id", nullable = false, updatable = true)
-    private VertexEntity source;
+    private final static String PROPERTY_SOURCE = "sourceVertexRef";
+    private final static String PROPERTY_TARGET = "targetVertexRef";
 
-    // TODO MVR we don't need this. This could be a property instead (due to vertex-ref)
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name="target_vertex_id", referencedColumnName = "id", nullable = false, updatable = true)
-    private VertexEntity target;
-
-    public VertexEntity getSource() {
-        return source;
+    public VertexRef getSource() {
+        return Optional.ofNullable(getPropertyValue(PROPERTY_SOURCE)).map(VertexRef::new).orElse(null);
     }
 
-    public void setSource(VertexEntity source) {
-        this.source = source;
+    public void setSource(String namespace, String id) {
+        setSource(new VertexRef(namespace, id));
     }
 
-    public VertexEntity getTarget() {
-        return target;
+    public void setSource(VertexRef source) {
+        this.setProperty(PROPERTY_SOURCE, String.class, source.toString());
     }
 
-    public void setTarget(VertexEntity target) {
-        this.target = target;
+    public VertexRef getTarget() {
+        return Optional.ofNullable(getPropertyValue(PROPERTY_TARGET)).map(VertexRef::new).orElse(null);
+    }
+
+    public void setTarget(String namespace, String id) {
+        setTarget(new VertexRef(namespace, id));
+    }
+
+    public void setTarget(VertexRef target) {
+        this.setProperty(PROPERTY_SOURCE, String.class, target.toString());
     }
 }

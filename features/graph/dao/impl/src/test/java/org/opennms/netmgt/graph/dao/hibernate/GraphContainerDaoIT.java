@@ -151,8 +151,8 @@ public class GraphContainerDaoIT {
             // The same is for adding an edge. It is simply removed
             final EdgeEntity edge = new EdgeEntity();
             edge.setNamespace(GRAPH_NAMESPACE);
-            edge.setSource(graph.getVertices().get(1));
-            edge.setTarget(graph.getVertices().get(2));
+            edge.setSource(GRAPH_NAMESPACE, graph.getVertices().get(1).getIdentifier());
+            edge.setTarget(GRAPH_NAMESPACE, graph.getVertices().get(2).getIdentifier());
             graph.addEdge(edge);
 
             graphContainerDao.update(persistedGraphContainerEntity);
@@ -241,8 +241,8 @@ public class GraphContainerDaoIT {
 
         final EdgeEntity edge = new EdgeEntity();
         edge.setNamespace(namespace);
-        edge.setSource(v1);
-        edge.setTarget(v2);
+        edge.setSource(namespace, v1.getIdentifier());
+        edge.setTarget(namespace, v2.getIdentifier());
         graph.addEdge(edge);
 
         return graph;

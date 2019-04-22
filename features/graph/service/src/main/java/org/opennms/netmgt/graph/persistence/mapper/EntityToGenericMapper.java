@@ -33,6 +33,7 @@ import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.generic.GenericVertexRef;
 import org.opennms.netmgt.graph.persistence.converter.ConverterService;
 import org.opennms.netmgt.topology.GraphContainerEntity;
 import org.opennms.netmgt.topology.GraphEntity;
@@ -74,8 +75,8 @@ public class EntityToGenericMapper {
         graphEntity.getEdges().stream().forEach(edgeEntity -> {
             final GenericEdge genericEdge = new GenericEdge(
                     edgeEntity.getNamespace(),
-                    genericGraph.getVertex(edgeEntity.getSource().getProperty(GenericProperties.ID).getValue()).getVertexRef(),
-                    genericGraph.getVertex(edgeEntity.getTarget().getProperty(GenericProperties.ID).getValue()).getVertexRef());
+                    new GenericVertexRef(edgeEntity.getSource().getNamespace(), edgeEntity.getSource().getId()),
+                    new GenericVertexRef(edgeEntity.getTarget().getNamespace(), edgeEntity.getTarget().getId()));
             edgeEntity.getProperties().forEach(property -> {
                 final Object value = convert(property);
                 genericEdge.setProperty(property.getName(), value);

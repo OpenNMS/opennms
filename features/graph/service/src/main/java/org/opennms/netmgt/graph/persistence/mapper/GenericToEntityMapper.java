@@ -104,9 +104,8 @@ public class GenericToEntityMapper {
 
     public EdgeEntity toEntity(GenericEdge genericEdge, GraphEntity graphEntity) {
         final EdgeEntity edgeEntity = new EdgeEntity();
-        // TODO MVR here we should just add the vertexRefs
-        edgeEntity.setSource(graphEntity.getVertexByVertexId(genericEdge.getSource().getId()));
-        edgeEntity.setTarget(graphEntity.getVertexByVertexId(genericEdge.getTarget().getId()));
+        edgeEntity.setSource(genericEdge.getSource().getNamespace(), genericEdge.getSource().getId());
+        edgeEntity.setTarget(genericEdge.getTarget().getNamespace(), genericEdge.getTarget().getId());
         edgeEntity.setNamespace(genericEdge.getNamespace());
         final List<PropertyEntity> edgeProperties = convertToPropertyEntities(genericEdge.getProperties());
         edgeEntity.setProperties(edgeProperties);
