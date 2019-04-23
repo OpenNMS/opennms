@@ -134,6 +134,12 @@ printVersion() {
     parseVersionLine "$ver"
 }
 
+printInstallJava() {
+    warn ""
+    warn "You can install a JVM by downloading one from Oracle, or by running something like"
+    warn "'apt-get install openjdk-11-jdk' or 'yum install java-11-openjdk-devel'."
+}
+
 #
 # Function: javaCheck()
 # Requires: varible $JP (java path)
@@ -151,22 +157,21 @@ javaCheck() {
         if [ -n "$found" ] && [ -d "$found" ] && [ -x "$found/bin/java" ]; then
             return 0
         else
-            if [ "$run" -eq 0 ] && [ "$force" -eq 0 ]; then
-                tell "$JP is not a supported JVM."
-                tell "You can use the '-f' option to ignore this check, but you will be on your own for support."
-                return 1
-            else
-                warn "$JP is not a supported JVM.  Using it anyways."
-                return 0
+            if [ -n "$JP" ]; then
+                if [ "$run" -eq 0 ] && [ "$force" -eq 0 ]; then
+                    return 1
+                else
+                    return 0
+                fi
             fi
         fi
     else
-        warn "find-java.sh was not found in \$OPENNMS_HOME/bin.  Falling back to the old check algorithm."
+        warn "'find-java.sh' was not found in \$OPENNMS_HOME/bin.  Falling back to the old check algorithm."
     fi
 
     ret="$(printVersion)"
     if echo "$ret" | grep -E '^([8-9]|1[0-9])\b' > /dev/null; then
-        # Check for Sun Java
+        # Check for acceptable JVM
         if "$JP" -version 2>&1 | grep -E '^(Diablo )?Java\(TM\)' > /dev/null; then
             return 0
         fi
@@ -175,21 +180,21 @@ javaCheck() {
                 if [ "$build" -ge "$OPENJDK_MINIMUM_BUILD" ]; then
                         return 0
                 else
-                        tell "OpenNMS is only known to work with OpenJDK build $OPENJDK_MINIMUM_BUILD and later."
+                        warn "OpenNMS is only known to work with OpenJDK build $OPENJDK_MINIMUM_BUILD and later."
                         return 1
                 fi
         fi
 
         if [ "$run" -eq 0 ] && [ "$force" -eq 0 ]; then
-            tell "$JP is not a Sun JVM and only Sun JVMs are supported."
-            tell "You can use the '-f' option to ignore this check, but you will be on your own for support."
+            warn "$JP is not an Oracle (or compatible) JVM."
+            warn "You can use the '-f' option to ignore this check, but you will be on your own for support."
             return 1
         else
             warn "$JP is not a supported JVM.  Using it anyways."
             return 0
         fi
     else
-        tell "$JP is not Java ${minimum_version} or newer."
+        warn "$JP is not Java ${minimum_version} or newer."
         return 1
     fi
 }
@@ -235,43 +240,44 @@ javaPaths() {
 
 #
 # Function: checkJavaHome()
-# See if $JAVA_HOME/bin/java is a good JRE.
+# See if $JAVA_HOME/bin/java is a good JVM.
 #
 checkJavaHome() {
-    tell "Checking for an appropriate JRE in JAVA_HOME..."
+    tell "Checking for an appropriate JVM in JAVA_HOME..."
     if [ x"$JAVA_HOME" = x"" ]; then
-        tell "skipping... JAVA_HOME not set"
+        tell "Skipping... JAVA_HOME not set."
         return 1
     fi
 
     if [ ! -d "$JAVA_HOME" ]; then
-        tell "skipping... JAVA_HOME (\"$JAVA_HOME\") is not a directory"
+        tell "Skipping... JAVA_HOME (\"$JAVA_HOME\") is not a directory."
         return 1
     fi
 
     if [ ! -x "$JAVA_HOME/bin/java" ]; then
-        tell "skipping... \"$JAVA_HOME/bin/java\" does not exist or is not executable"
+        warn "Skipping... JAVA_HOME is set, but \"$JAVA_HOME/bin/java\" does not exist or is not executable."
         return 1
     fi
 
     JP=$JAVA_HOME/bin/java
     if javaCheck; then
-        tell "found: \"$JAVA_HOME/bin/java\" is an appropriate JRE"
+        tell "Found: \"$JAVA_HOME/bin/java\" is an appropriate JVM."
         return 0
     else
-        tell "\"$JAVA_HOME/bin/java\" is not an appropriate JRE"
+        warn "\"$JAVA_HOME/bin/java\" is not an appropriate JVM."
+        printInstallJava
         return 1
     fi
 }
 
 get_real_path_if_possible() {
-	unresolved="$1"
-	readlink="$(command -v readlink 2>/dev/null)"
-	if [ -n "$readlink" ] && [ -n "$unresolved" ] && [ -x "$unresolved" ]; then
-		"$readlink" "$unresolved" || echo "$unresolved"
-	else
-		echo "$unresolved"
-	fi
+    unresolved="$1"
+    readlink="$(command -v readlink 2>/dev/null)"
+    if [ -n "$readlink" ] && [ -n "$unresolved" ] && [ -x "$unresolved" ]; then
+        "$readlink" "$unresolved" || echo "$unresolved"
+    else
+        echo "$unresolved"
+    fi
 }
 
 
@@ -281,24 +287,28 @@ get_real_path_if_possible() {
 #
 checkPath() {
     JP="$(command -v java || :)"
-    if [ "$?" -eq 1 ]; then
-        tell "did not find a JRE in user's path"
+    if [ "$?" -eq 1 ] || [ -z "$JP" ]; then
+        warn "Did not find a JVM in the PATH."
         return 1
     fi
 
-	readlink="$(command -v readlink 2>/dev/null)"
+    readlink="$(command -v readlink 2>/dev/null)"
     if [ -n "$readlink" ] && [ -n "$JP" ]; then
         JP="$(readlink "$JP")"
     fi
 
-    tell "Checking JRE in user's path: \"$JP\"..."
-    if javaCheck; then
-        tell "found an appropriate JRE in user's path: \"$JP\""
-        return 0
+    if [ -n "$JP" ]; then
+        tell "Checking JVM in the PATH: \"$JP\"..."
+        if javaCheck; then
+            tell "Found an appropriate JVM in the PATH: \"$JP\""
+            return 0
+        else
+            warn "Did not find an appropriate JVM in the PATH: \"$JP\""
+        fi
     else
-        tell "did not find an appropriate JRE in user's path: \"$JP\""
-        return 1
+        warn "Did not find any appropriate JVM in the PATH."
     fi
+    return 1
 }
 
 #
@@ -306,12 +316,12 @@ checkPath() {
 # A wrapper around javaPaths to give the user a clue about what is going on.
 #
 findJava() {
-    tell "searching for a good JRE..."
+    tell "Searching for a good JVM..."
     if javaPaths; then
-        tell "found a good JRE in \"$JP\""
+        tell "Found a good JVM in \"$JP\"."
         return 0
     else
-        tell "did not find an appropriate JRE while searching for one"
+        warn "Did not find an appropriate JVM in common JVM locations."
         return 1
     fi
 }
@@ -324,15 +334,16 @@ findJava() {
 # searches for one by calling javaPaths().
 #
 javaFind() {
-    tell "Looking for an appropriate JRE..."
+    tell "Looking for an appropriate JVM..."
 
     checkJavaHome && return 0
     checkPath && return 0
     findJava && return 0
 
-    warn "Could not find an appropriate JRE."
-    warn "You can set a particular JRE by using"
-    warn "\"$basename -S <JRE>\"."
+    warn "Gave up searching for an appropriate JVM."
+    warn "You can set a particular JVM by using \"$basename -S <java-executable>\"."
+    warn ""
+    printInstallJava
 
     return 1
 }
@@ -345,11 +356,12 @@ javaFind() {
 #
 checkConfiguredJava() {
     _verbose="$1"
-    mantra="run \"$opennms_home/bin/runjava -s\" to setup java.conf"
+    mantra="Run \"$opennms_home/bin/runjava -s\" to set up the java.conf file."
 
     if [ ! -f "$java_conf" ]; then
-        warn "error: $java_conf file not found"
+        warn "Error: $java_conf file not found."
         warn "$mantra"
+        printInstallJava
 
         return 1
     fi
@@ -357,17 +369,19 @@ checkConfiguredJava() {
     JP="$(cat "$java_conf")"
 
     if [ -z "$JP" ] || [ ! -x "$JP" ]; then
-        warn "error: configured Java runtime environment not found"
-        warn "\"$JP\" does not exist or is not executable"
+        warn "Error: configured JVM not found."
+        warn "\"$JP\" does not exist or is not executable."
         warn "$mantra"
+        printInstallJava
 
         return 1
     fi
 
     if ! javaCheck; then
-        warn "error: bad version or vendor for configured Java runtime environment"
+        warn "Error: bad version or vendor for configured JVM."
         warn "\"$JP -version\" does not report that is version 1.8+ and a compatible JDK."
         warn "$mantra"
+        printInstallJava
 
         return 1
     fi
@@ -381,13 +395,13 @@ checkConfiguredJava() {
 
 #
 # Function: runJava()
-# Verifies that we have an appropriate JRE configured in $java_conf and
+# Verifies that we have an appropriate Java configured in $java_conf and
 # execs it with the command-line arguments passed to us.
 #
 runJava() {
     if ! checkConfiguredJava; then
         if [ "$force" -gt 0 ]; then
-            warn "Ignoring Java warning due to '-f' option being used"
+            warn "Ignoring JVM warning due to '-f' option being used."
         else
             return 1
         fi
@@ -460,7 +474,7 @@ add_ld_path () {
 
 #
 # Function: setupJava()
-# Calls javaFind and if successful, stores the location of the JRE in
+# Calls javaFind and if successful, stores the location of the Java in
 # $java_conf.
 #
 setupJava() {
@@ -474,23 +488,23 @@ setupJava() {
 
 #
 # Function: setJava()
-# Calls javaFind and if successful, stores the location of the JRE in
+# Calls javaFind and if successful, stores the location of the Java in
 # $java_conf.
 #
 setJava() {
-    tell "checking specified JRE: \"$JP\"..."
+    tell "Checking specified JVM: \"$JP\"..."
     if [ ! -x "$JP" ]; then
-        die "specified JRE \"$JP\" does not exist or is not executable"
+        die "Specified JVM \"$JP\" does not exist or is not executable."
     fi
     if ! javaCheck; then
         if [ "$force" -gt 0 ]; then
-            warn "JRE is not an appropriate version and/or vendor"
-            warn "Ignoring Java warning due to '-f' option being used"
+            warn "JVM is not an appropriate version and/or vendor."
+            warn "Ignoring warning due to '-f' option being used."
         else
-            die "specified JRE \"$JP\" is not an appropriate JRE"
+            die "Specified executable \"$JP\" is not an appropriate JVM."
         fi
     else
-        tell "specified JRE is good."
+        tell "Specified JVM is good."
     fi
 
     saveJava
@@ -500,13 +514,13 @@ setJava() {
 saveJava() {
     if [ $dryrun -eq 0 ]; then
         if ! echo "$JP" > "$java_conf"; then
-            warn "error saving JRE to configuration file"
-            warn "configuration file: $java_conf"
-            die "exiting..."
+            warn "Error saving JVM to configuration file."
+            warn "Configuration file: $java_conf"
+            die "Exiting..."
         fi
-        tell "value of \"$JP\" stored in configuration file"
+        tell "Value of \"$JP\" stored in configuration file."
     else
-        tell "value of \"$JP\" would have been stored if not in dryrun mode"
+        tell "Value of \"$JP\" would have been stored if not in dryrun mode."
     fi
 
     return 0
@@ -631,7 +645,7 @@ parseArgsAndDoStuff() {
         exit $?
     fi
 
-    die "internal error... got to end of script and shouldn't have"
+    die "Internal error... got to end of script and shouldn't have."
 }
 
 parseArgsAndDoStuff "$@"
