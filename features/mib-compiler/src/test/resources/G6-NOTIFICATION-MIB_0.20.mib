@@ -1,0 +1,1367 @@
+-- Title:       Microsens private MIB for Generation 6 Ethernet Switches
+--              NOTIFICATION MIB
+-- Version:     0.20
+-- Date:        18 Jan 2019
+
+-- REVISION HISTORY:
+-- REVISION "201206260000Z" 25 june 2012
+-- DESCRIPTION "File creation"
+
+-- ***********************************************************************
+
+MICROSENS-G6-NOTIFICATION-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+        MODULE-IDENTITY, NOTIFICATION-TYPE, OBJECT-TYPE, Integer32, enterprises
+                                        FROM SNMPv2-SMI
+        DisplayString, MacAddress       FROM SNMPv2-TC
+        TRAP-TYPE                       FROM RFC-1215;
+--      NOTIFICATION-GROUP              FROM SNMPv2-CONF;
+--      g6              FROM    MICROSENS-G6-MIB
+
+microsens MODULE-IDENTITY
+        LAST-UPDATED "201901180000Z"
+        ORGANIZATION "MICROSENS GmbH & Co. KG"
+        CONTACT-INFO
+                "Kueferstrasse 16
+                D-59067 Hamm
+                Germany
+                support@microsens.de
+                http://www.microsens.de"
+        DESCRIPTION
+                "Microsens private NOTIFICATION for Generation 6 Software Platform"
+
+
+        REVISION       "201901180000Z"
+        DESCRIPTION    "Added new objects to POWER, MODULE_INSERTED and MSP1000 traps. Added NTP_SYNC"
+
+        REVISION       "201705030000Z"
+        DESCRIPTION    "Added event 125 and renamed SmartOfficeTraps"
+
+        REVISION       "201702230000Z"
+        DESCRIPTION    "Added event 106 to 124"
+
+        REVISION       "201510050000Z"
+        DESCRIPTION    "Added event 101 to 105"
+
+        REVISION       "201504240000Z"
+        DESCRIPTION    "Added event 97 to 100"
+
+        REVISION       "201502020000Z"
+        DESCRIPTION    "Added event 88 to 96"
+
+        REVISION       "201408080000Z"
+        DESCRIPTION    "Added event 87"
+
+        REVISION       "201403170000Z"
+        DESCRIPTION    "Added event 86 and MAC Binding to MAC related events"
+
+        REVISION       "201311130000Z"
+        DESCRIPTION    "Added event 49 to 85"
+
+        REVISION       "201208260000Z"
+        DESCRIPTION    "File creation"
+        
+                ::= { enterprises 3181 }
+
+-- microsens    OBJECT IDENTIFIER ::= { enterprises 3181 }
+   managedSwitches OBJECT IDENTIFIER ::= { microsens 10 }
+   g6              OBJECT IDENTIFIER ::= { managedSwitches 6 }
+
+g6TrapGroup          OBJECT IDENTIFIER ::= { g6 1 }
+g6Trap               OBJECT IDENTIFIER ::= { g6TrapGroup 1 }
+g6TrapObjects        OBJECT IDENTIFIER ::= { g6TrapGroup 2 }
+
+
+-- ***********************************************************************
+-- ***********************************************************************
+-- ***********************************************************************
+-- Define Objects to be appended with the traps / notifications
+
+g6TrapObjEventName OBJECT-TYPE
+    SYNTAX     DisplayString
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "Event name as text string."
+        ::= { g6TrapObjects 1 }
+
+
+g6TrapObjGroupName OBJECT-TYPE
+    SYNTAX  INTEGER {
+      internal  (0),  -- Not for customer use. Will not occure
+        debug   (2),
+        test    (3),
+        reset   (4),
+       firmware (5),
+        system  (6),
+        config  (7),
+        login   (8),
+        auth    (9),
+        power   (10),
+    temperature (11),
+        link    (12),
+        sfp     (13),
+        poe     (14),
+        ring    (15),
+        ntp     (16),
+        signals (17),
+        script  (18),
+        filter  (19),
+        lacp    (20),
+        app     (21),
+        cable   (22),
+       security (23),
+        msp1000 (24),
+        backup  (25),
+        fan     (26),
+      messaging (27),
+ terminalserver (28),
+    smartoffice (29)
+        }
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "Event group as text string."
+        ::= { g6TrapObjects 2 }
+
+
+g6TrapObjRelevance OBJECT-TYPE
+    SYNTAX  INTEGER {
+            positive(0),
+            negative(1),
+            information(2)
+            }
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "pos neg info"
+        ::= { g6TrapObjects 3 }
+
+
+g6TrapObjSeverity OBJECT-TYPE
+    SYNTAX  INTEGER {
+        disabled  (0),  -- No Output
+        debug     (1),  -- Internal system debugging information
+        info      (2),  -- Information with no important consequnces
+        notice    (3),  -- Notification about normal occurance
+        warning   (4),  -- Warning about a normal problem
+        error     (5),  -- Unexpected error has occured
+        critical  (6),  -- Critical error which compromises traffic or stability
+        alert     (7),  -- Very important error condition
+        emergency (8)   -- Highest possible error condition (unused)
+        }
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "Severity level of this event."
+        ::= { g6TrapObjects 4 }
+
+
+g6TrapObjSource OBJECT-TYPE
+    SYNTAX  INTEGER {
+            unit(0),
+            port(1)
+            }
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "Unit or port related event."
+        ::= { g6TrapObjects 5 }
+
+
+g6TrapObjSysName OBJECT-TYPE
+    SYNTAX     DisplayString
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "User defined system name of the device originating this event."
+        ::= { g6TrapObjects 6 }
+
+
+g6TrapObjPortId OBJECT-TYPE
+    SYNTAX     Integer32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "Port identification in snmp compliant integer format. Value is calculated as (slot * 100) + port."
+        ::= { g6TrapObjects 7 }
+
+
+g6TrapObjPortString OBJECT-TYPE
+    SYNTAX     DisplayString
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "Port identification in slot/port notation."
+        ::= { g6TrapObjects 8 }
+
+
+g6TrapObjPortAlias OBJECT-TYPE
+    SYNTAX     DisplayString
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "Port identification using a possible user assigned alias or nickname."
+        ::= { g6TrapObjects 9 }
+
+
+g6TrapObjDescription OBJECT-TYPE
+    SYNTAX     DisplayString
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "Detailed human readable full description of the event."
+        ::= { g6TrapObjects 10 }
+
+
+g6TrapObjMac OBJECT-TYPE
+    SYNTAX     MacAddress
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "MAC address related with authentication trap."
+        ::= { g6TrapObjects 11 }
+
+
+g6TrapObjVlanId OBJECT-TYPE
+    SYNTAX     Integer32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "Associated VLAN id."
+        ::= { g6TrapObjects 12 }
+
+
+g6TrapObjOfficeGroupName OBJECT-TYPE
+    SYNTAX     DisplayString
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "SmartOffice actor or sensor group name."
+        ::= { g6TrapObjects 13 }
+
+
+g6TrapObjAvgValue OBJECT-TYPE
+    SYNTAX     DisplayString
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "SmartOffice group data value. Contains the average value of all elements in the same group"
+        ::= { g6TrapObjects 14 }
+
+
+g6TrapObjTotalValue OBJECT-TYPE
+    SYNTAX     DisplayString
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "SmartOffice group data value. Contains the total value of all elements in the same group"
+        ::= { g6TrapObjects 15 }
+
+
+-- New objects added Jan 17, 2019
+
+g6TrapObjObjectId OBJECT-TYPE
+    SYNTAX     Integer32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "Further identifies the object originating the trap."
+        ::= { g6TrapObjects 16 }
+
+
+g6TrapObjModuleType OBJECT-TYPE
+    SYNTAX     DisplayString
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "Displays the module type originating the trap."
+        ::= { g6TrapObjects 17 }
+
+
+g6TrapObjModuleError OBJECT-TYPE
+    SYNTAX  INTEGER {
+            ok(0),
+            error(1)
+            }
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "Set to 1 is any error exists on the module"
+        ::= { g6TrapObjects 18 }
+
+g6TrapObjModuleTest OBJECT-TYPE
+    SYNTAX  INTEGER {
+            ok(0),
+            test(1)
+            }
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "Set to 1 is any test or warning condition exits on the module"
+        ::= { g6TrapObjects 19 }
+
+g6TrapObjPortStatus OBJECT-TYPE
+    SYNTAX  BITS {
+        ok	      (0),  -- No error detected
+        loopEnaged    (1),  -- Port is in loopback mode
+        signalLow     (2),  -- No or too weak input signal
+        laserOff      (3),  -- Laser transmitter is turned off
+        signalHigh    (4),  -- Too high input signal
+        pllNotLocked  (5),  -- Optical signal available but data rate does not match configuration
+        reserved      (6),  -- Reserved for future use
+        sfpMissing    (7),  -- SFP or XFP optical transceiver is missing
+        disabled      (8),  -- Port is disabled by configuration
+        unknown       (9),  -- No information available
+        none          (10)   -- This port does not apply to this module
+        }
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "Detailed port status bits. When none of the bits is set, the port is ok"
+        ::= { g6TrapObjects 20 }
+
+-- ***************************************************************************************************************
+-- ***************************************************************************************************************
+-- ***************************************************************************************************************
+-- Define the Traps themselves
+
+-- DEBUG
+g6TrapDebug     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Internal Debug Messages."
+        ::= { g6Trap 3 }
+
+-- ALIVE_TEST
+g6TrapAliveTest NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Can be used to check out event and notification system with no effect to the system operation."
+        ::= { g6Trap 4 }
+
+-- ===============================================================================================================
+
+-- FIRMWARE_UPDATE_OK
+g6TrapFirmwareUpdateOk  NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Firmware installation has successfully taken place."
+        ::= { g6Trap 5 }
+
+-- FIRMWARE_UPDATE_FAIL
+g6TrapFirmwareUpdateFail        NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Firmware installation has FAILED."
+        ::= { g6Trap 6 }
+
+-- LICENSE_VIOLATION
+g6TrapLicenseViolation  NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Firmware is used for which no license has been granted. Please contact sales representant."
+        ::= { g6Trap 7 }
+
+-- ===============================================================================================================
+
+-- COLDSTART
+g6TrapColdStart NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "The device has booted. Data transmission was interrupted."
+        ::= { g6Trap 8 }
+
+-- WARMSTART
+g6TrapWarmStart NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "The device has (partially) booted without interupting data transmission services."
+        ::= { g6Trap 9 }
+
+-- FACTORY_RESET
+g6TrapFactoryReset      NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Configuration factory reset is executed via local push button on the device."
+        ::= { g6Trap 10 }
+
+-- ===============================================================================================================
+
+-- CONFIGURATION_LOADED
+g6TrapConfigurationLoaded       NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "All or a specific configuration file(s) has been restored and activated."
+        ::= { g6Trap 11 }
+
+-- CHANGE_CONFIG
+g6TrapChangeConfig      NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A configuration parameter has been modified and activated."
+        ::= { g6Trap 12 }
+
+-- CHANGE_OFFLINE_CONFIG
+g6TrapChangeOfflineConfig       NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "An offline configuration parameter has been modified. The running system is not affected."
+        ::= { g6Trap 13 }
+
+-- ACTION_RESPONSE
+g6TrapActionResponse    NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Not a customer event. Contains the reponse string to an action command."
+        ::= { g6Trap 14 }
+
+-- COMMIT_CONFIG
+g6TrapCommitConfig      NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Not a customer event. Recent configuration changes should now be stored and activated."
+        ::= { g6Trap 15 }
+
+-- ===============================================================================================================
+
+-- POWER_SUPPLY_OK
+g6TrapPowerSupplyOk     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjObjectId, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Power supply has been restored. Applies to units with redundant supplies only."
+        ::= { g6Trap 16 }
+
+-- POWER_SUPPLY_FAIL
+g6TrapPowerSupplyFail   NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjObjectId, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Power supply has FAILED. Applies to units with redundant supplies only."
+        ::= { g6Trap 17 }
+
+-- ===============================================================================================================
+
+-- LOGIN
+g6TrapLogin     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "An operator has logged onto the system."
+        ::= { g6Trap 18 }
+
+-- LOGOUT
+g6TrapLogout    NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "An operator has logged off from the system."
+        ::= { g6Trap 19 }
+
+-- LOGIN_ATTEMPT
+g6TrapLoginAttempt      NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "An operator login has failed due to invalid login or password."
+        ::= { g6Trap 20 }
+
+-- ===============================================================================================================
+
+-- LINK_UP
+g6TrapLinkUp    NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A port has gone online and is ready to transport data."
+        ::= { g6Trap 21 }
+
+-- LINK_DOWN
+g6TrapLinkDown  NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A port has gone down. Data transport on this port is no longer possible."
+        ::= { g6Trap 22 }
+
+-- ===============================================================================================================
+
+-- RING_NORMAL
+g6TrapRingNormal        NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A ring is back to normal operation. Protection is available."
+        ::= { g6Trap 23 }
+
+-- RING_BACKUP
+g6TrapRingBackup        NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A ring has switched to the redundant backup path."
+        ::= { g6Trap 24 }
+
+-- RING_FAILURE
+g6TrapRingFailure       NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A ring has FAILED. Normal and backup path are unavailable."
+        ::= { g6Trap 25 }
+
+-- COUPLING_STATE
+g6TrapCouplingState     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Coupling controller state change."
+        ::= { g6Trap 26 }
+
+-- ===============================================================================================================
+
+-- TEMPERATURE_OK
+g6TrapTemperatureOk     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Operating temperature is within acceptable limits."
+        ::= { g6Trap 27 }
+
+-- TEMPERATURE_WARNING
+g6TrapTemperatureWarning        NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Operating temperature is low or high. Performance my be degraded. Do not run under this condition for prolonged time."
+        ::= { g6Trap 28 }
+
+-- TEMPERATURE_FAILURE
+g6TrapTemperatureFailure        NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Operating temperature is too low or too high. The unit may switch itself off to protect itself anytime soon."
+        ::= { g6Trap 29 }
+
+-- ===============================================================================================================
+
+-- MAC_ACCEPTED
+g6TrapMacAccepted       NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjMac, g6TrapObjVlanId, g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A MAC address has been authorized."
+        ::= { g6Trap 30 }
+
+-- MAC_AUTH_ERROR
+g6TrapMacAuthError      NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjMac, g6TrapObjVlanId, g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "MAC authorization error."
+        ::= { g6Trap 31 }
+
+-- MAC_BLOCKED
+g6TrapMacBlocked        NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjMac, g6TrapObjVlanId, g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A MAC address has been blocked."
+        ::= { g6Trap 32 }
+
+-- MACS_BLOCKED_VLAN
+g6TrapMacBlockedVlan    NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjMac, g6TrapObjVlanId, g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A MAC address has been blocked. Assigned to unauthorized VLAN."
+        ::= { g6Trap 33 }
+
+-- MAC_DISCONNECTED
+g6TrapMacDisconnected   NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjMac, g6TrapObjVlanId, g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A MAC address has been disconnected."
+        ::= { g6Trap 34 }
+
+-- ===============================================================================================================
+
+-- SFP_INSERTED
+g6TrapSfpInserted       NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "An SFP (pluggable optical or electrical port module) has been inserted."
+        ::= { g6Trap 35 }
+
+-- SFP_REMOVED
+g6TrapSfpRemoved        NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "An SFP (pluggable optical or electrical port module) has been removed from the device."
+        ::= { g6Trap 36 }
+
+-- SFP_SIGNAL_PRESENT
+g6TrapSfpSignalPresent  NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "An SFP (pluggable optical or electrical port module) has detected an optical receive signal."
+        ::= { g6Trap 37 }
+
+-- SFP_SIGNAL_LOSS
+g6TrapSfpSignalLoss     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "An SFP (pluggable optical or electrical port module) has lost its receive signal."
+        ::= { g6Trap 38 }
+
+-- SFP_SIGNAL_CHANGE
+g6TrapSfpSignalChange   NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "An SFP (pluggable optical or electrical port module) has detected a change in the optical input power level."
+        ::= { g6Trap 39 }
+
+-- SFP_MISMATCH
+g6TrapSfpMismatch       NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "An SFP (pluggable optical or electrical port module) has been inserted which does not match the required feature(s)."
+        ::= { g6Trap 40 }
+
+-- ===============================================================================================================
+
+-- POE_CONNECT
+g6TrapPoeConnect        NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A POE (Power over Ethernet) device is connected an powered."
+        ::= { g6Trap 41 }
+
+-- POE_VOLTAGE
+g6TrapPoeVoltage        NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "The POE (Power over Ethernet) operating voltage is too low."
+        ::= { g6Trap 42 }
+
+-- POE_ERROR
+g6TrapPoeError  NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A POE (Power over Ethernet) error has occurred."
+        ::= { g6Trap 43 }
+
+-- POE_CLASSMISMATCH
+g6TrapPoeClassmismatch  NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A POE (Power over Ethernet) powered device requires a power level not enabled or available at this port."
+        ::= { g6Trap 44 }
+
+-- POE_DISCONNECT
+g6TrapPoeDisconnect     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A POE (Power over Ethernet) device has been disconnected."
+        ::= { g6Trap 45 }
+
+-- ===============================================================================================================
+
+-- NTP_FAIL
+g6TrapNtpFail   NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "The NTP client (Network Time Protocol) has a failure condition."
+        ::= { g6Trap 46 }
+
+-- ===============================================================================================================
+
+-- HARDWARE_ERROR
+g6TrapHardwareError     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A hardware error has been detected."
+        ::= { g6Trap 47 }
+
+
+-- SOFTWARE_ERROR
+g6TrapSoftwareError     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A software error has occured."
+        ::= { g6Trap 48 }
+
+-- ===============================================================================================================
+
+-- BUTTON_PRESSED
+g6TrapButtonPressed     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "System button pressed."
+        ::= { g6Trap 49 }
+
+-- ===============================================================================================================
+
+-- SIGNALS
+g6TrapInputSignalNormal     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "An external input signal has been deactivated and returned to normal state."
+        ::= { g6Trap 67 }
+
+g6TrapInputSignalActivated     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "An external input signal has been activated."
+        ::= { g6Trap 68 }
+
+g6TrapOutputRelayNormal     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A relay output signal has been deactivated and returned to normal state."
+        ::= { g6Trap 69 }
+
+g6TrapOutputRelayActivated     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "An external input signal has been deactivated and returned to normal state."
+        ::= { g6Trap 70 }
+
+-- ===============================================================================================================
+
+-- FILTER
+g6TrapPacketIntercepted     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Special filter has intercepted a data packet."
+        ::= { g6Trap 71 }
+
+-- ===============================================================================================================
+
+-- SCRIPT
+g6TrapScriptUnitPositive     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A positive unit related user defined event created by script or app."
+        ::= { g6Trap 72 }
+
+g6TrapScriptUnitNegative     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A negative unit related user defined event created by script or app."
+        ::= { g6Trap 73 }
+
+g6TrapScriptPortPositive     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A positive port related user defined event created by script or app."
+        ::= { g6Trap 74 }
+
+g6TrapScriptPortNegative     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A negative port related user defined event created by script or app."
+        ::= { g6Trap 75 }
+
+g6TrapScriptExecuted     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A user defined script execution started."
+        ::= { g6Trap 76 }
+
+g6TrapScriptError     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Script execution error of a user defined script."
+        ::= { g6Trap 77 }
+
+-- ===============================================================================================================
+
+-- LINK
+g6TrapLoopRemoved     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Cable loop removed. Port unblocked."
+        ::= { g6Trap 78 }
+
+g6TrapLoopDetected     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Cable loop detected. Port blocked."
+        ::= { g6Trap 79 }
+
+-- ===============================================================================================================
+
+-- LACP
+g6TrapLacpConnect     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Aggregated link established."
+        ::= { g6Trap 80 }
+
+g6TrapLacpDisconnect     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Aggregated link down."
+        ::= { g6Trap 81 }
+
+-- ===============================================================================================================
+
+-- APP
+g6TrapAppInstalled     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "App installed ok."
+        ::= { g6Trap 82 }
+
+g6TrapAppInstallationFail     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "App installation has failed."
+        ::= { g6Trap 83 }
+
+g6TrapAppDeinstalled     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "App deinstalled."
+        ::= { g6Trap 84 }
+
+-- ===============================================================================================================
+
+-- CABLE
+g6TrapCableChangeDetected     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Change in cable termination detected."
+        ::= { g6Trap 85 }
+
+-- ===============================================================================================================
+
+-- IMPLAUSIBLE CONFIG
+g6TrapImplausibleConfig     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Implausible configuration detected"
+        ::= { g6Trap 86 }
+
+-- ===============================================================================================================
+
+-- NETWORK ATTACK
+g6TrapNetworkAttack     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Potential network attack detected"
+        ::= { g6Trap 87 }
+
+-- ===============================================================================================================
+
+-- SYSTEM
+g6TrapModuleInserted     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjObjectId, g6TrapObjModuleType,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A hardware module has been inserted into the system."
+        ::= { g6Trap 88 }
+
+g6TrapModuleRemoved     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjObjectId, g6TrapObjModuleType,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A hardware module has been removed from the system."
+        ::= { g6Trap 89 }
+
+-- ===============================================================================================================
+
+-- MSP1000
+g6TrapMsp1000UnitPositive     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjObjectId, g6TrapObjModuleType,
+                        g6TrapObjModuleError, g6TrapObjModuleTest,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A positive MSP1000 unit related event has occured."
+        ::= { g6Trap 90 }
+
+g6TrapMsp1000UnitNegative     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjObjectId, g6TrapObjModuleType,
+                        g6TrapObjModuleError, g6TrapObjModuleTest,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A negative MSP1000 unit related event has occured."
+        ::= { g6Trap 91 }
+
+g6TrapMsp1000PortPositive     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjObjectId, g6TrapObjModuleType,
+                        g6TrapObjModuleError, g6TrapObjModuleTest,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A positive MSP1000 port related event has occured."
+        ::= { g6Trap 92 }
+
+g6TrapMsp1000PortNegative     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjObjectId, g6TrapObjModuleType,
+                        g6TrapObjModuleError, g6TrapObjModuleTest,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A negative MSP1000 port related event has occured."
+        ::= { g6Trap 93 }
+
+-- ===============================================================================================================
+
+-- BACKUP
+g6TrapBackupTerminated     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Backup path not required."
+        ::= { g6Trap 94 }
+
+g6TrapBackupEngaged     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Backup path has been engaged."
+        ::= { g6Trap 95 }
+
+g6TrapBackupFailure     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Backup path could not be completed."
+        ::= { g6Trap 96 }
+
+-- ===============================================================================================================
+
+-- FAN
+g6TrapFanOk     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Cooling fan operating normally."
+        ::= { g6Trap 97 }
+
+g6TrapFanDegraded     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Cooling fan degraded. Replace fan soon."
+        ::= { g6Trap 98 }
+
+g6TrapFanFailure     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Cooling fan failed. Replace fan immediately"
+        ::= { g6Trap 99 }
+
+-- ===============================================================================================================
+
+-- MESSAGING
+g6TrapIncomingAlert     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Externally received HTTP_GET_REQUEST or received SNMP TRAP."
+        ::= { g6Trap 100 }
+
+-- ===============================================================================================================
+
+-- CABLE
+g6TrapCableTerminationEstablished     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Cable termination established. Possible reason: A terminated remote device was connected to the cable."
+        ::= { g6Trap 101 }
+
+g6TrapCableTerminationLost     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Cable termination lost. Possible reason: A terminated remote device was disconnected from the cable or the cable was locally unplugged."
+        ::= { g6Trap 102 }
+
+-- ===============================================================================================================
+
+-- TERMINAL_SERVER
+g6TrapTerminalServerConnected     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Terminal server connected foreign host to local serial port."
+        ::= { g6Trap 103 }
+
+g6TrapTerminalServerDisconnected     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Terminal server disconnected foreign host from local serial port."
+        ::= { g6Trap 104 }
+
+g6TrapTerminalServerFail     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Terminal server failed in connecting foreign host to local serial port."
+        ::= { g6Trap 105 }
+
+-- ===============================================================================================================
+
+-- SMART_OFFICE
+g6TrapSensorGroupChange     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjOfficeGroupName, g6TrapObjAvgValue, g6TrapObjTotalValue, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Sensor group values have changed."
+        ::= { g6Trap 108 }
+
+g6TrapActorGroupChangeRequest     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Actor group is requested to change to a new value."
+        ::= { g6Trap 110 }
+
+g6TrapRegisterSmartDevice     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A new smart device is registered."
+        ::= { g6Trap 111 }
+
+g6TrapUpdateSmartDevice     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A smart device has changed its status."
+        ::= { g6Trap 112 }
+
+g6TrapRegisterSmartAttribute     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A new smart attribute is registered."
+        ::= { g6Trap 115 }
+
+g6TrapUnregisterSmartDevice     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A smart device is unregistered."
+        ::= { g6Trap 117 }
+
+g6TrapUnregisterSmartAttribute     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A smart attribute is unregistered."
+        ::= { g6Trap 118 }
+
+g6TrapSingleActorChange     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "An individual actor is set to a new value."
+        ::= { g6Trap 119 }
+
+g6TrapActorGroupChanged     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjOfficeGroupName, g6TrapObjAvgValue, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "An actor group has changed to a new value."
+        ::= { g6Trap 120 }
+
+g6TrapSmartOfficeInitializing     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Smart Office is being initialized."
+        ::= { g6Trap 121 }
+
+g6TrapSmartOfficeStarted     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Smart Office is started and ready."
+        ::= { g6Trap 122 }
+
+g6TrapSmartOfficeStopped     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "Smart Office is being stopped."
+        ::= { g6Trap 123 }
+
+g6TrapSmartOfficeError     NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjSysName,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "A Smart Office error has occured."
+        ::= { g6Trap 124 }
+
+
+-- ===============================================================================================================
+
+-- OTDR_MEASUREMENTS
+g6TrapOtdrMeasurements   NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjPortId, g6TrapObjPortString, g6TrapObjPortAlias,
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "An OTDR measurement has taken place and detected a change in the optical characteristics of the cable."
+        ::= { g6Trap 125 }
+
+===============================================================================================================
+
+-- NTP
+g6TrapNtpSync   NOTIFICATION-TYPE
+    OBJECTS {   g6TrapObjEventName, g6TrapObjGroupName, g6TrapObjRelevance, 
+                        g6TrapObjSeverity, g6TrapObjSource, 
+                        g6TrapObjDescription }
+    STATUS              current
+    DESCRIPTION "The real time clock has been synchronized via NTP Server."
+        ::= { g6Trap 126 }
+
+-- ===============================================================================================================
+		END              
