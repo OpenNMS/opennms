@@ -155,7 +155,7 @@ For details on using the metadata APIs, see link:http://docs.opennms.org/opennms
 
 ==== Provisioning
 
-* A new adapter (`WsManAssetProvisioningAdapter`) has been added which can update asset information during provisioning based on WS-Man data.
+A new adapter (`WsManAssetProvisioningAdapter`) has been added which can update asset information during provisioning based on WS-Man data.  (Note: It does not currently support running on Minions.)
 
 ==== ReST
 
@@ -183,7 +183,7 @@ The HTML has been simplified, the UI wastes less space, and the login page featu
 
 ==== Other Core Changes
 
-* Support was added for OpenTracing distributed tracing for RPC/Sink requests.
+Support was added for OpenTracing distributed tracing for RPC/Sink requests.
 
 ==== Developer APIs
 
