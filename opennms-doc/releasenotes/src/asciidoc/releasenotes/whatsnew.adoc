@@ -74,9 +74,9 @@ An example for configuring it is in the link:https://github.com/OpenNMS/opennms/
 
 ==== Plugins, Parsers, and Services
 
-// * *Cassandra JMX*: The `cassandra30x.xml` datacollection config for thread pool metrics has been modified to be of type `counter` rather than type `gauge`.  This could affect existing RRDs.
+* *Cassandra JMX*: The `cassandra30x.xml` datacollection config for thread pool metrics has been modified to be of type `counter` rather than type `gauge`.  If you are using RRD or JRobin storage, you will need to delete any `.jrb` or `.rrd` files with both `path_request` and `CurrentlyBlockedTasks` in their filename (eg, `org_apache_cassandra_metrics_type_ThreadPools_path_request_scope_MutationStage_name_CurrentlyBlockedTasks.jrb`).
 * *Pollerd and Collectd*: Additional attributes for thread pool graphs have been added to the Pollerd and Collectd mbeans.
-  If you are using `storeByGroup=true` with RRD or JRobin, you will need to delete their RRDs and let them be reinitialized.
+  If you are using `storeByGroup=true` with RRD or JRobin, you will need to delete the `OpenNMS_Name_Pollerd` and `OpenNMS_Name_Collectd` `.jrb` or `.rrd` files and let them be reinitialized.
   Newts and `storeByGroup=false` should be unaffected.
 * *Dhcpd*: The _Dhcpd_ plugin (and its configuration) was removed in favor of a Minion-capable implementation.
   The new _DhcpMonitor_ options can be set in the `poller-configuration.xml` file.
@@ -95,9 +95,9 @@ An example for configuring it is in the link:https://github.com/OpenNMS/opennms/
 * The `HttpService` can no longer be consumed.
   This will only affect custom implementations of HTTP Servlets and Resources, but only if they are exposed via `httpServices.register(...)`.
   If you need those, please expose the according services via the OSGi Service Registration.
-  Refer to the  link:https://osgi.org/specification/osgi.cmpn/7.0.0/service.http.whiteboard.html[OSGi Http Whiteboard Specification] for more details.
+  Refer to the link:https://osgi.org/specification/osgi.cmpn/7.0.0/service.http.whiteboard.html[OSGi Http Whiteboard Specification] for more details.
 
-* Exposing Servlets follow now the OSGi Specification.
+* Exposing Servlets now follow the OSGi Specification.
   Refer to the  link:https://osgi.org/specification/osgi.cmpn/7.0.0/service.http.whiteboard.html[OSGi Http Whiteboard Specification] for more details.
 
 * Properties to expose Vaadin Applications have changed:
@@ -109,15 +109,15 @@ An example for configuring it is in the link:https://github.com/OpenNMS/opennms/
 
 ==== Correlation (ALEC, formerly OCE/Sextant)
 
-The correlation feature introduced in Horizon 23 has been vastly improved and given a new name: ALEC (Architecture for Learning Enabled Correlation).
+The correlation feature introduced in Horizon 23 has been vastly improved and given a new name: ALEC (Architecture for Learning Enabled Correlation).  Detailed documentation is available at link:https://alec.opennms.com/[the ALEC site].
 
 It has a ton of bugfixes, as well as a host of new features, including:
 
-* smart propagation of acknowledgements
-* support for embedding directly in OpenNMS's Karaf
-* ML-guided alarm correlation using Tensorflow
+* Smart propagation of acknowledgements.
+* Support for embedding directly in OpenNMS's Karaf.
+* ML-guided alarm correlation using Tensorflow.
 * APIs for user feedback training, including root cause (support for feedback will be a part of a future Helm release)
-* the web UI has been updated to show and filter situations in the alarm browser, and outstanding situations show on the front page
+* The web UI has been updated to show and filter situations in the alarm browser, and outstanding situations show on the front page.
 
 ==== Events and Alarms
 
@@ -143,6 +143,15 @@ A number of Karaf commands have been added or updated:
 * `enlinkd:delete-topology`: delete generated topology
 * `events:show-event-config`: dumps events to XML (including those read from `eventconf.xml` as well as OSGi plugins that provide event configuration)
 * `kafka-producer:push-topology-edges`: push topology edges to a Kafka topic
+* `meta:test`: test a node/interface metadata query
+
+==== Node and Interface Metadata
+
+There is now experimental support for associating arbitrary metadata with nodes and interfaces.  A full user-facing interface to configuring metadata in the provisioning UI should be available by Horizon 25.
+
+In this release, there is no default metadata being collected, but there is a ReST interface to manipulate metadata, and metadata can be assigned to nodes and interfaces in requisitions.
+
+For details on using the metadata APIs, see link:http://docs.opennms.org/opennms/releases/24.0.0/guide-admin/guide-admin.html#ga-meta-data[the Admin Guide] and link:http://docs.opennms.org/opennms/releases/24.0.0/guide-development/guide-development.html#_meta_data[the Developer Guide].
 
 ==== Provisioning
 
