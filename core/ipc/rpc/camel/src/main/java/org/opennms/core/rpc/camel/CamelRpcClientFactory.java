@@ -112,7 +112,10 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                 tracer.inject(span.context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
                 //Add custom tags to tracing info.
                 request.getTracingInfo().forEach(tracingInfoCarrier::put);
+                // Build or retrieve rpc metrics.
                 final Histogram rpcDuration = metrics.histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_DURATION));
+                final Histogram responseSize = metrics.histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_RESPONSE_SIZE));
+                final Meter failedMeter = metrics.meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_FAILED));
                 long requestCreationTime = System.currentTimeMillis();
                 // Wrap the request in a CamelRpcRequest and forward it to the Camel route
                 final CompletableFuture<T> future = new CompletableFuture<>();
@@ -122,7 +125,6 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                         public void onComplete(Exchange exchange) {
                             try (MDCCloseable mdc = Logging.withContextMapCloseable(clientContextMap)) {
                                 String responseAsString = exchange.getOut().getBody(String.class);
-                                final Histogram responseSize = metrics.histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_RESPONSE_SIZE));
                                 responseSize.update(responseAsString.getBytes().length);
                                 final T response = module.unmarshalResponse(responseAsString);
                                 if (response.getErrorMessage() != null) {
@@ -163,7 +165,6 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                             span.setTag(TAG_RPC_FAILED, "true");
                             span.log(exchange.getException().getMessage());
                             span.finish();
-                            final Meter failedMeter = metrics.meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_FAILED));
                             failedMeter.mark();
                             rpcDuration.update(System.currentTimeMillis() - requestCreationTime);
                             // Ensure that future log statements on this thread are routed properly
