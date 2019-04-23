@@ -27,4 +27,23 @@
             <parameter key="replace-all" value="s/.*\.//"/>
         </storageStrategy>
     </resourceType>
+
+  <resourceType name="sinkProducerMetrics" label="Sink Producer Metrics"
+                resourceLabel="${index}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+      <parameter key="sibling-column-name" value="name" />
+      <parameter key="replace-all" value="s/.([^.]+)$//"/>
+    </storageStrategy>
+  </resourceType>
+
+  <resourceType name="sinkConsumerMetrics" label="Sink Consumer Metrics"
+                resourceLabel="${index}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+      <parameter key="sibling-column-name" value="name" />
+      <parameter key="replace-all" value="s/.([^.]+)$//"/>
+    </storageStrategy>
+  </resourceType>
+
 </resource-types>

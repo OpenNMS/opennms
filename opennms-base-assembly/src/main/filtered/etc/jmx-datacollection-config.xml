@@ -386,6 +386,53 @@
             <attrib name="OneMinuteRate" alias="FlowLogParse1m" type="gauge"/>
             <attrib name="FiveMinuteRate" alias="FlowLogParse5m" type="gauge"/>
          </mbean>
+
+         <!-- Sink Producer Metrics -->
+
+         <mbean name="org.opennms.core.ipc.sink.producer.dispatch" resource-type="sinkProducerMetrics" objectname="org.opennms.core.ipc.sink.producer:name=*.dispatch">
+            <attrib name="50thPercentile" alias="Dispatch50" type="gauge"/>
+            <attrib name="75thPercentile" alias="Dispatch75" type="gauge"/>
+            <attrib name="95thPercentile" alias="Dispatch95" type="gauge"/>
+            <attrib name="98thPercentile" alias="Dispatch98" type="gauge"/>
+            <attrib name="99thPercentile" alias="Dispatch99" type="gauge"/>
+            <attrib name="999thPercentile" alias="Dispatch999" type="gauge"/>
+            <attrib name="OneMinuteRate" alias="DispatchRate1m" type="gauge"/>
+            <attrib name="FiveMinuteRate" alias="DispatchRate5m" type="gauge"/>
+            <attrib name="Count" alias="DispatchCounter" type="counter"/>
+         </mbean>
+
+         <mbean name="org.opennms.core.ipc.sink.producer.queue-size" resource-type="sinkProducerMetrics" objectname="org.opennms.core.ipc.sink.producer:name=*.queue-size">
+            <attrib name="Value" alias="QueueSize" type="gauge"/>
+         </mbean>
+
+         <mbean name="org.opennms.core.ipc.sink.producer.dropped" resource-type="sinkProducerMetrics" objectname="org.opennms.core.ipc.sink.producer:name=*.dropped">
+            <attrib name="Count" alias="DroppedCounter" type="counter"/>
+         </mbean>
+
+         <!-- Sink Consumer Metrics -->
+
+         <mbean name="org.opennms.core.ipc.sink.consumer.dispatchTime" resource-type="sinkConsumerMetrics" objectname="org.opennms.core.ipc.sink.consumer:name=*.dispatchTime">
+            <attrib name="50thPercentile" alias="DispatchTime50" type="gauge"/>
+            <attrib name="75thPercentile" alias="DispatchTime75" type="gauge"/>
+            <attrib name="95thPercentile" alias="DispatchTime95" type="gauge"/>
+            <attrib name="98thPercentile" alias="DispatchTime98" type="gauge"/>
+            <attrib name="99thPercentile" alias="DispatchTime99" type="gauge"/>
+            <attrib name="999thPercentile" alias="DispatchTime999" type="gauge"/>
+            <attrib name="OneMinuteRate" alias="DispatchTimeRate1m" type="gauge"/>
+            <attrib name="FiveMinuteRate" alias="DispatchTimeRate5m" type="gauge"/>
+            <attrib name="Count" alias="DispatchTimeCount" type="counter"/>
+         </mbean>
+
+         <mbean name="org.opennms.core.ipc.sink.consumer.messageSize" resource-type="sinkConsumerMetrics" objectname="org.opennms.core.ipc.sink.consumer:name=*.messageSize">
+            <attrib name="50thPercentile" alias="MessageSize50" type="gauge"/>
+            <attrib name="75thPercentile" alias="MessageSize75" type="gauge"/>
+            <attrib name="95thPercentile" alias="MessageSize95" type="gauge"/>
+            <attrib name="98thPercentile" alias="MessageSize98" type="gauge"/>
+            <attrib name="99thPercentile" alias="MessageSize99" type="gauge"/>
+            <attrib name="999thPercentile" alias="MessageSize999" type="gauge"/>
+         </mbean>
+
+
       </mbeans>
    </jmx-collection>
 </jmx-datacollection-config>

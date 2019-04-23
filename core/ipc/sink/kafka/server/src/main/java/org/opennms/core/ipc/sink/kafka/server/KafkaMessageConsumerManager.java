@@ -65,7 +65,6 @@ import org.springframework.beans.factory.InitializingBean;
 
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.JmxReporter;
-import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -93,7 +92,6 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         private final String topic;
         private final MetricRegistry metricRegistry = new MetricRegistry();
         private JmxReporter jmxReporter = null;
-        private Meter messagesReceived;
         private Histogram messageSize;
         private Timer dispatchTime;
         public KafkaConsumerRunner(SinkModule<?, Message> module) {
@@ -106,7 +104,6 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             jmxReporter = JmxReporter.forRegistry(metricRegistry).
                     inDomain(SINK_METRIC_CONSUMER_DOMAIN).build();
             jmxReporter.start();
-            messagesReceived = metricRegistry.meter(MetricRegistry.name(module.getId(), METRIC_MESSAGES_RECEIVED));
             messageSize = metricRegistry.histogram(MetricRegistry.name(module.getId(), METRIC_MESSAGE_SIZE));
             dispatchTime = metricRegistry.timer(MetricRegistry.name(module.getId(), METRIC_DISPATCH_TIME));
 
@@ -123,8 +120,8 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                         try {
                             byte[] messageInBytes = getSinkMessageFromProto(record.value());
                             // Update metrics.
-                            messagesReceived.mark();
                             messageSize.update(messageInBytes.length);
+                            // dispatchTime is a metric which measures time taken to dispatch
                             try (Timer.Context context = dispatchTime.time()) {
                                 dispatch(module, module.unmarshal(messageInBytes));
                             }
