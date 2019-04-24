@@ -7,55 +7,11 @@
 ==== Release 24.0.0
 
 Release 24.0.0 is the latest stable release of OpenNMS.
-It contains a large number of bug fixes and enhancements, most notably adding support for real-time telemetry flow processing.
+It contains a large number of bug fixes and enhancements, most notably adding machine-learning-guided correlation of alarms, and many improvements to Netflow/IPFIX/sFlow support.
+
 For a high-level overview of what's changed in OpenNMS 24, see link:http://docs.opennms.org/opennms/releases/24.0.0/releasenotes/releasenotes.html#releasenotes-24[What's New in OpenNMS 24].
 
-The codename for 24.0.0 is _TODO NOT DEFINED YET_.
+The codename for 24.0.0 is _link:https://en.wikipedia.org/wiki/HAL_9000[Hal 9000]_.
 
-===== Breaking Changes
-
-* The NCS-Alarm page and the NCS-Topology-Plugin have been removed. See issue HZN-1422.
-* The usage of `config:edit` may be changed. This affects all configuration edits, where the configuration consists a `-`,
-  e.g. `org.opennms.features.telemetry.listeners-udp-50003`. See "Karaf configuration Command changed" for more details.
-* The _Plugin Manager_ is no longer available.
-  Features or bundles should be installed via the Karaf Shell.
-* The `HttpService` can no longer be consumed.
-  This will only affect custom implementations of HTTP Servlets and Resources, but only if they are exposed via `httpServices.register(...)`.
-  If you need those, please expose the according services via the OSGi Service Registration.
-  Refer to the  link:https://osgi.org/specification/osgi.cmpn/7.0.0/service.http.whiteboard.html[OSGi Http Whiteboard Specification] for more details.
-* Exposing Servlets follow now the OSGi Specification.
-  Refer to the  link:https://osgi.org/specification/osgi.cmpn/7.0.0/service.http.whiteboard.html[OSGi Http Whiteboard Specification] for more details.
-* Properties to expose Vaadin Applications have changed:
-   ** `init.widgetset` becomes `servlet.init.widgetset`
-   ** `alias` becomes `osgi.http.whiteboard.servlet.pattern`
-* We upgrade the Karaf Container to 4.2.3 and with that, the `users.properties` have changed. Ensure that the `admingroup` in `${OPENNMS_HOME}/etc/users.properties` contains the role `ssh`. If unsure link:https://github.com/OpenNMS/opennms/blob/release-24.0.0/container/karaf/src/main/filtered-resources/etc/users.properties[here] is the default one.
-
-====== Karaf Configuration Command changed
-
-In 24.0.0 we updates to a newer version of Apache Karaf.
-With that the `config:edit` command syntax changed in some cases.
-This affects all configuration edits, where the configuration consists a `-`,  e.g. `org.opennms.features.telemetry.listeners-udp-50003`.
-If you are using Minion or Sentinel, you will most likely be affected (e.g. for Telemetry Listeners/Adapters).
-
-The old format:
-
-----
-config:edit org.opennms.features.telemetry.listeners-udp-50003
-config:property-set key value
-config:update
-----
-
-The new format
-
-----
-config:edit --alias udp-50003 --factory org.opennms.features.telemetry.listeners
-config:property-set key value
-config:update
-----
-
-===== Bug
-
-
-===== Enhancement
 
 
