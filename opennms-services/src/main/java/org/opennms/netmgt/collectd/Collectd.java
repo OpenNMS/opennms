@@ -30,6 +30,7 @@ package org.opennms.netmgt.collectd;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -980,22 +981,28 @@ public class Collectd extends AbstractServiceDaemon implements
     }
 
     /**
-     * This method is responsible for handling nodeDeleted events.
+     * This method is responsible for handling NodeCategoryMembershipChanged events.
      * 
      * @param event
      *            The event to process.
-     * @throws InsufficientInformationException
+     * @throws InsufficientInformationException if the event does not have a nodeId
      */
     private void handleNodeCategoryMembershipChanged(Event event) throws InsufficientInformationException {
         EventUtils.checkNodeId(event);
-        
+
         Long nodeId = event.getNodeid();
 
         unscheduleNodeAndMarkForDeletion(nodeId);
 
         LOG.debug("nodeCategoryMembershipChanged: unscheduling nodeid {} completed.", nodeId);
         
-        m_filterDao.flushActiveIpAddressListCache();
+        // Trigger re-evaluation of Threshold Packages, re-evaluating Filters.
+        try {
+            ThreshdConfigFactory.reload();
+        } catch (IOException e) {
+            LOG.warn("nodeCategoryMembershipChanged: failed to reload threshdConfig: {}.", e.getMessage());
+        }
+
         scheduleNode(nodeId.intValue(), true);
     }
 
