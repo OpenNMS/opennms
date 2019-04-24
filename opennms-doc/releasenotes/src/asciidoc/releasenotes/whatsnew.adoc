@@ -1,7 +1,6 @@
 [[releasenotes-24]]
 == What's New in OpenNMS Horizon 24
 
-
 === System Requirements
 
 * *Java 8 through 11*: OpenNMS Horizon 24 requires at least Java 8 as the runtime environment and now supports running on JDK 11 as well.
@@ -10,6 +9,12 @@
   As of this writing, PostgreSQL 9.3 is the earliest version under active support, but OpenNMS is known to work with at least PostgreSQL 9.1 and up.
 
 === Breaking Changes
+
+==== Package Dependencies
+
+The dependencies for the OpenNMS packages have changed such that the JDK is no longer a hard dependency of the `opennms-core` (RPM) or `libopennms-java` and `libopennmsdeps-java` (Debian/Ubuntu).  This allows you to install OpenNMS without package management forcing an install of a particular JDK, if you wish to run an alternate JDK or a JDK installed from tarball rather than packaging.
+
+The `opennms` packages are a convenience wrapper that depend on a JDK for runtime to give you a simple starting point if you don't care which JDK you use.
 
 ==== Karaf Container
 
