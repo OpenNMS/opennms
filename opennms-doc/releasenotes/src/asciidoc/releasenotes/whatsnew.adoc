@@ -34,7 +34,7 @@ config:property-set key value
 config:update
 ----
 +
-Should now be written as:
+...should now be written as:
 +
 ----
 config:edit --alias udp-50003 --factory org.opennms.features.telemetry.listeners
@@ -67,12 +67,13 @@ curl -v -X POST -H 'Content-Type: application/json' "http://${ES_HOST}:${ES_PORT
 EOF
 ----
 
-===== Telemetryd configuration format change
+===== Telemetryd Configuration Format Change
 
-With introducing support for more dynamic telemetryd configurations to support more complex listeners and adapters, the configuration format has changed and must be adopted to the new format by the user.
+Since we have added support for more dynamic telemetryd configurations to support more complex listeners and adapters, the configuration format for telemetryd has changed.
+
 The new configuration defines listeners containing parsers and queues containing adapters which are linked by the queues name.
 
-As an example, the old configuration:
+For example, this old configuration:
 
 ```
 <telemetryd-config>
@@ -87,7 +88,7 @@ As an example, the old configuration:
 </telemetryd-config>
 ```
 
-versus the same configuration adopted to the new format:
+...should now be written as:
 
 ```
 <telemetryd-config>
@@ -107,7 +108,7 @@ versus the same configuration adopted to the new format:
 As you can see, the ``listener``s become independent elements which contain ``parser``s whereas the ``protocol``s are renamed to ``queue``s.
 Each parser must reference a queue by name to define which adapters are used to pick up the parsed data.
 
-In addition, the listener configuration for minions has changed, too.
+In addition, the listener configuration for minions has changed.
 The new minion configuration looks like the following and adapts the same set of structural changes:
 
 ```
