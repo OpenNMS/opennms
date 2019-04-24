@@ -7,7 +7,7 @@ Standards-Version: 3.7.3
 
 Package: opennms
 Architecture: all
-Depends: opennms-db (=${binary:Version}), opennms-server (=${binary:Version}), opennms-webapp-jetty (=${binary:Version}), oracle-java8-installer | openjdk-8-jdk | java8-jdk
+Depends: opennms-db (=${binary:Version}), opennms-server (=${binary:Version}), opennms-webapp-jetty (=${binary:Version}), oracle-java8-installer | openjdk-8-jdk | java8-jdk | openjdk-11-jdk | openjdk-11-jdk-headless
 Recommends: opennms-source (=${binary:Version})
 Suggests: opennms-doc
 Description: Enterprise-grade Open-source Network Management Platform (Full Install)
