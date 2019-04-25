@@ -84,6 +84,32 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.7]
+
+==== Release Meridian-2018.1.7
+
+Release 2018.1.7 is an update to Meridian 2018.1.6.
+It contains a few changes including UI updates and an SNMP loop bug that could cause out-of-memory crashes.
+
+The codename for 2018.1.7 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_7[High wind]_.
+
+===== Bug
+
+* Cannot run Minion as non-root (Issue http://issues.opennms.org/browse/LTS-231[LTS-231])
+* ROLE_PROVISION doesn't work on the UI when the ACL feature is enabled. (Issue http://issues.opennms.org/browse/NMS-9786[NMS-9786])
+* Search on KSC Reports page in WebUI does not work (Issue http://issues.opennms.org/browse/NMS-10416[NMS-10416])
+* Incorrect date formatting in send-event.py (Issue http://issues.opennms.org/browse/NMS-10602[NMS-10602])
+* The MIB Compiler is unable to parse certain MIBs (Issue http://issues.opennms.org/browse/NMS-10609[NMS-10609])
+* ArrayIndexOutOfBoundsException during error handling in SNMP MIB Compiler (Issue http://issues.opennms.org/browse/NMS-10647[NMS-10647])
+* When editing a surveillance category from Admin flow, lists of nodes are not sorted by node label (Issue http://issues.opennms.org/browse/NMS-10654[NMS-10654])
+* Karaf shell history thrown out with bathwater on upgrade (Issue http://issues.opennms.org/browse/NMS-10664[NMS-10664])
+
+===== Enhancement
+
+* Improve test coverage of SNMPv3 traps and informs (Issue http://issues.opennms.org/browse/NMS-10630[NMS-10630])
+* Allow the "step" (or interval) to be referenced from a Measurement API expression (Issue http://issues.opennms.org/browse/NMS-10633[NMS-10633])
+* "Event text contains" should search beyond eventlogmsg (Issue http://issues.opennms.org/browse/NMS-8444[NMS-8444])
+
 [releasenotes-changelog-Meridian-2018.1.6]
 
 ==== Release Meridian-2018.1.6
