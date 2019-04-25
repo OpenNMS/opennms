@@ -145,7 +145,7 @@
               <span class="input-group-addon">
                 <span class="glyphicon glyphicon-search"></span>
               </span>
-              <input class="form-control" type="text" placeholder="Search/Filter Resources" ng-model="domainFilter"></input>
+              <input class="form-control" type="text" placeholder="Search/Filter Resources" ng-model="resourceFilter"></input>
             </div>
             <table class="table table-condensed" name="resources">
               <thead>

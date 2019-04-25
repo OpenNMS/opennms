@@ -490,6 +490,8 @@ public class DefaultAdminCategoryService implements
                 m_nodes.remove(node);
             }
             
+            Collections.sort(m_nodes);
+                
             m_sortedMemberNodes =
                 new ArrayList<OnmsNode>(memberNodes);
             Collections.sort(m_sortedMemberNodes);
