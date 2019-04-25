@@ -141,6 +141,25 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
+[releasenotes-changelog-Meridian-2016.1.20]
+
+==== Release Meridian-2016.1.20
+
+Release 2016.1.20 is a small update to 2016.1.19 that has a few changes including UI updates and an SNMP loop bug that could cause out-of-memory crashes.
+
+The codename for 2016.1.20 is _Craster Parabolic_.
+
+===== Bug
+
+* `find-java.sh` doesn't understand newer JDK output (Issue http://issues.opennms.org/browse/NMS-10401[NMS-10401])
+* Backport SNMP successor validation (Issue http://issues.opennms.org/browse/NMS-10622[NMS-10622])
+* When editing a surveillance category from Admin flow, lists of nodes are not sorted by node label (Issue http://issues.opennms.org/browse/NMS-10654[NMS-10654])
+* Karaf shell history thrown out with bathwater on upgrade (Issue http://issues.opennms.org/browse/NMS-10664[NMS-10664])
+
+===== Enhancement
+
+* "Event text contains" should search beyond eventlogmsg (Issue http://issues.opennms.org/browse/NMS-8444[NMS-8444])
+
 [releasenotes-changelog-Meridian-2016.1.19]
 
 ==== Release Meridian-2016.1.19
