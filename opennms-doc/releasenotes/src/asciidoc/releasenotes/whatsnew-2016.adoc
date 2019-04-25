@@ -141,11 +141,58 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
+[releasenotes-changelog-Meridian-2016.1.20]
+
+==== Release Meridian-2016.1.20
+
+Release 2016.1.20 is a small update to 2016.1.19 that has a few changes including UI updates and an SNMP loop bug that could cause out-of-memory crashes.
+
+The codename for 2016.1.20 is _Craster Parabolic_.
+
+===== Bug
+
+* `find-java.sh` doesn't understand newer JDK output (Issue http://issues.opennms.org/browse/NMS-10401[NMS-10401])
+* Backport SNMP successor validation (Issue http://issues.opennms.org/browse/NMS-10622[NMS-10622])
+* When editing a surveillance category from Admin flow, lists of nodes are not sorted by node label (Issue http://issues.opennms.org/browse/NMS-10654[NMS-10654])
+* Karaf shell history thrown out with bathwater on upgrade (Issue http://issues.opennms.org/browse/NMS-10664[NMS-10664])
+
+===== Enhancement
+
+* "Event text contains" should search beyond eventlogmsg (Issue http://issues.opennms.org/browse/NMS-8444[NMS-8444])
+
+[releasenotes-changelog-Meridian-2016.1.19]
+
+==== Release Meridian-2016.1.19
+
+Release 2016.1.19 is a small update to 2016.1.18 that fixes a performance issue in the measurements API.
+
+The codename for 2016.1.19 is _Mollweide_.
+
+===== Bug
+
+* Poor performance when using filters in the Measurements API (Issue http://issues.opennms.org/browse/NMS-10589[NMS-10589])
+* Update webapp copyright dates to 2019 (Issue http://issues.opennms.org/browse/NMS-10591[NMS-10591])
+
+[releasenotes-changelog-Meridian-2016.1.18]
+
+==== Release Meridian-2016.1.18
+
+Release 2016.1.18 is a small update to 2016.1.17 that provides a few documentation updates, a query bug fix,
+and a fix for an issue with notifications being sent when there is no associated node.
+
+The codename for 2016.1.18 is _Strebe 1995_.
+
+===== Bug
+
+* Typo in BSFMonitor Documentation (Issue http://issues.opennms.org/browse/NMS-10428[NMS-10428])
+* Alarm Dashlet CriteriaBuilder In-Restriction not working (Issue http://issues.opennms.org/browse/NMS-10479[NMS-10479])
+* syslog events are creating notifications and disregarding rules in place (Issue http://issues.opennms.org/browse/NMS-10486[NMS-10486])
+
 [releasenotes-changelog-Meridian-2016.1.17]
 
 ==== Release Meridian-2016.1.17
 
-Release 2016.1.17 is an update to 2016.1.15 that fixes a bug with long-running PostgreSQL instances, and
+Release 2016.1.17 is an update to 2016.1.16 that fixes a bug with long-running PostgreSQL instances, and
 makes improvements to VMware connection pooling.
 
 The codename for 2016.1.17 is _Van der Grinten_.
