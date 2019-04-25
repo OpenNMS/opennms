@@ -997,11 +997,7 @@ public class Collectd extends AbstractServiceDaemon implements
         LOG.debug("nodeCategoryMembershipChanged: unscheduling nodeid {} completed.", nodeId);
         
         // Trigger re-evaluation of Threshold Packages, re-evaluating Filters.
-        try {
-            ThreshdConfigFactory.reload();
-        } catch (IOException e) {
-            LOG.warn("nodeCategoryMembershipChanged: failed to reload threshdConfig: {}.", e.getMessage());
-        }
+        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
 
         scheduleNode(nodeId.intValue(), true);
     }
