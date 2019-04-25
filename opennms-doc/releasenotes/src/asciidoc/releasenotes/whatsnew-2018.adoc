@@ -84,6 +84,54 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.7]
+
+==== Release Meridian-2018.1.7
+
+Release 2018.1.7 is an update to Meridian 2018.1.6.
+It contains a few changes including UI updates and an SNMP loop bug that could cause out-of-memory crashes.
+
+The codename for 2018.1.7 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_7[High wind]_.
+
+===== Bug
+
+* Cannot run Minion as non-root (Issue http://issues.opennms.org/browse/LTS-231[LTS-231])
+* ROLE_PROVISION doesn't work on the UI when the ACL feature is enabled. (Issue http://issues.opennms.org/browse/NMS-9786[NMS-9786])
+* Search on KSC Reports page in WebUI does not work (Issue http://issues.opennms.org/browse/NMS-10416[NMS-10416])
+* Incorrect date formatting in send-event.py (Issue http://issues.opennms.org/browse/NMS-10602[NMS-10602])
+* The MIB Compiler is unable to parse certain MIBs (Issue http://issues.opennms.org/browse/NMS-10609[NMS-10609])
+* ArrayIndexOutOfBoundsException during error handling in SNMP MIB Compiler (Issue http://issues.opennms.org/browse/NMS-10647[NMS-10647])
+* When editing a surveillance category from Admin flow, lists of nodes are not sorted by node label (Issue http://issues.opennms.org/browse/NMS-10654[NMS-10654])
+* Karaf shell history thrown out with bathwater on upgrade (Issue http://issues.opennms.org/browse/NMS-10664[NMS-10664])
+
+===== Enhancement
+
+* Improve test coverage of SNMPv3 traps and informs (Issue http://issues.opennms.org/browse/NMS-10630[NMS-10630])
+* Allow the "step" (or interval) to be referenced from a Measurement API expression (Issue http://issues.opennms.org/browse/NMS-10633[NMS-10633])
+* "Event text contains" should search beyond eventlogmsg (Issue http://issues.opennms.org/browse/NMS-8444[NMS-8444])
+
+[releasenotes-changelog-Meridian-2018.1.6]
+
+==== Release Meridian-2018.1.6
+
+Release 2018.1.6 is an update to Meridian 2018.1.5.
+It contains a number of changes including a ReST issue with truncated numbers, 3rd-party JDBC support in the Minion,
+a performance fix for the Measurements API, and a fix for bad (looping) SNMP agents.
+
+The codename for 2018.1.6 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_6[Strong breeze]_.
+
+===== Bug
+
+* Collection results via Minion is limited to MAX_INT (Issue http://issues.opennms.org/browse/NMS-10516[NMS-10516])
+* JDBC via Minion fails to find 3rd party classes (Issue http://issues.opennms.org/browse/NMS-10559[NMS-10559])
+* Poor performance when using filters in the Measurements API (Issue http://issues.opennms.org/browse/NMS-10589[NMS-10589])
+* Update webapp copyright dates to 2019 (Issue http://issues.opennms.org/browse/NMS-10591[NMS-10591])
+* Bad response from SNMP agent leads to infinite loop in SNMP tracker (Issue http://issues.opennms.org/browse/NMS-10621[NMS-10621])
+
+===== Enhancement
+
+* Upgrade to Jetty 9.4.12 (Issue http://issues.opennms.org/browse/NMS-10558[NMS-10558])
+
 [releasenotes-changelog-Meridian-2018.1.5]
 
 ==== Release Meridian-2018.1.5
@@ -91,8 +139,7 @@ New or updated trap definitions have been added for the following classes of dev
 Release 2018.1.5 is an update to Meridian 2018.1.4.
 It contains a number of bug fixes including fixes for sending notifications for events without
 associated nodes, XSS issues, and more.
-It also includes a number of performance improvements and and update to the latest Jetty web
-server framework.
+It also includes a number of performance improvements.
 
 The codename for 2018.1.5 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#Beaufort_Number_5[Fresh breeze]_.
 
@@ -107,10 +154,6 @@ The codename for 2018.1.5 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#
 * Cross-Site Scripting: Reflected (Issue http://issues.opennms.org/browse/NMS-10546[NMS-10546])
 * Cross-Frame Scripting (Issue http://issues.opennms.org/browse/NMS-10547[NMS-10547])
 * syslog parsing of messages without a year will sometimes infer the wrong year (Issue http://issues.opennms.org/browse/NMS-10548[NMS-10548])
-
-===== Enhancement
-
-* Upgrade to Jetty 9.4.12 (Issue http://issues.opennms.org/browse/NMS-10558[NMS-10558])
 
 [releasenotes-changelog-Meridian-2018.1.4]
 
