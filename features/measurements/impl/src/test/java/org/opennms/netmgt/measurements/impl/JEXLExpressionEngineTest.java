@@ -384,6 +384,12 @@ public class JEXLExpressionEngineTest {
         assertEquals(99000.0, results[0], 0.0001);
     }
 
+    @Test
+    public void canReferenceStep() throws ExpressionException {
+        double results[] = performExpression("1 * __step");
+        assertEquals(1.0, results[0], 0.0001);
+    }
+
     private double[] performExpression(String expression) throws ExpressionException {
         Map<String, Object> constants = Maps.newHashMap();
         return performExpression(expression, constants);
