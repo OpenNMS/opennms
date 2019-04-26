@@ -64,6 +64,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+
 /**
  * <p>JdbcFilterDao class.</p>
  *
@@ -82,6 +86,16 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
 	private DataSource m_dataSource;
     private DatabaseSchemaConfig m_databaseSchemaConfigFactory;
+
+    private final static MetricRegistry metricRegistry = new MetricRegistry();
+    private final JmxReporter jmxReporter;
+    private final Timer getIpListTimer;
+
+    public JdbcFilterDao() {
+        getIpListTimer = metricRegistry.timer("getIPAddressList");
+        jmxReporter = JmxReporter.forRegistry(metricRegistry).inDomain("org.opennms.netmgt.config").build();
+        jmxReporter.start();
+    }
 
     /**
      * <p>setDataSource</p>
@@ -287,7 +301,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         // get the database connection
         Connection conn = null;
         final DBUtils d = new DBUtils(getClass());
-        try {
+        try (final Timer.Context ctx = getIpListTimer.time()) {
             // parse the rule and get the sql select statement
             sqlString = getSQLStatement(rule);
 
