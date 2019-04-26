@@ -30,7 +30,6 @@ package org.opennms.netmgt.collectd;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1088,8 +1087,11 @@ public class Collectd extends AbstractServiceDaemon implements
         EventUtils.checkNodeId(event);
         EventUtils.checkInterface(event);
         EventUtils.checkService(event);
+
+        // Before scheduling, update Thrshd packages
+        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
+
         // Schedule the interface
-        //
         scheduleForCollection(event);
     }
     
