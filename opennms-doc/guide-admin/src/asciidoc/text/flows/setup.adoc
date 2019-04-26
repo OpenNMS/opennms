@@ -101,7 +101,7 @@ TIP: If a configuration management tool is used, the properties file can be crea
 [source]
 ----
 name = Netflow-5
-class-name = org.opennms.netmgt.telemetry.listeners.udp.UdpListener
+class-name = org.opennms.netmgt.telemetry.listeners.UdpListener
 parameters.port = 8877
 parser.0.name Netflow-5-Parser
 parser.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser

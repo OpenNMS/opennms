@@ -264,7 +264,7 @@ $ ssh -p 8201 admin@localhost
 ----
 admin@minion()> config:edit --alias udp-8877 --factory org.opennms.features.telemetry.listeners
 admin@minion()> config:property-set name Netflow-5
-admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.udp.UdpListener
+admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener
 admin@minion()> config:property-set parameters.port 8877
 admin@minion()> config:property-set parsers.0.name Netflow-5-Parser
 admin@minion()> config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser
