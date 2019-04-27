@@ -63,8 +63,6 @@ public class GenericEdge extends GenericElement implements Edge {
                     String.format("Neither the namespace of the source VertexRef(namespace=%s) nor the target VertexRef(%s) matches our namespace=%s",
                             source.getNamespace(), target.getNamespace(), getNamespace()));
         }
-
-        this.setNamespace(source.getNamespace());
         this.setId(source.getNamespace() + ":" + source.getId() + "->" + target.getNamespace() + ":" + target.getId());
     }
 

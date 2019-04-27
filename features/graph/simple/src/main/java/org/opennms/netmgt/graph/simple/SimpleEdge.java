@@ -38,14 +38,14 @@ import org.opennms.netmgt.graph.api.generic.GenericVertexRef;
 
 /**
  * Acts as a domain specific view on a Edge.
- * Can be extended by domain specific edge classes.
+ * Can be extended by domain specific Edge classes.
  * It contains no data of it's own but operates on the data of it's wrapped GenericEdge.
  */
 public class SimpleEdge implements Edge {
 
     protected GenericEdge delegate;
 
-    public SimpleEdge(String namespace, SimpleVertexRef source, SimpleVertexRef target) {
+    public SimpleEdge(String namespace, VertexRef source, VertexRef target) {
         delegate = new GenericEdge(namespace, new GenericVertexRef(source.getNamespace(), source.getId()),
                 new GenericVertexRef(target.getNamespace(), target.getId()));
     }
@@ -61,10 +61,6 @@ public class SimpleEdge implements Edge {
     public SimpleEdge(SimpleEdge copyMe) {
         // copy the delegate to have a clone down to the properties maps
         this(new GenericEdge(copyMe.asGenericEdge()));
-
-        // TODO: patrick, mvr rework when we support edges that connect to other namespaces
-        // We must copy the source and target as well, otherwise changing it's properties will change
-        // the "copyMe" properties as well
     }
 
     @Override
@@ -102,13 +98,6 @@ public class SimpleEdge implements Edge {
 
     public String getLabel(){
         return delegate.getLabel();
-    }
-
-    private static VertexRef copyVertex(VertexRef ref) {
-        if (ref instanceof SimpleVertex) {
-            return new SimpleVertex((SimpleVertex) ref);
-        }
-        return new SimpleVertexRef(ref);
     }
 
     @Override

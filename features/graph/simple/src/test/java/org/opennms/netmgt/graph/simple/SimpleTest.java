@@ -55,9 +55,9 @@ public class SimpleTest {
         Assert.assertEquals(original.getSource(), copy.getSource());
         Assert.assertEquals(original.getTarget(), copy.getTarget());
         Assert.assertEquals(original, copy);
-        Assert.assertNotSame(original.getSource(), copy.getSource());
-        Assert.assertNotSame(original.getTarget(), copy.getTarget());
+        // VertexRef is immutable => the same object can be reused:
+        Assert.assertSame(original.getSource(), copy.getSource());
+        Assert.assertSame(original.getTarget(), copy.getTarget());
     }
-
 
 }
