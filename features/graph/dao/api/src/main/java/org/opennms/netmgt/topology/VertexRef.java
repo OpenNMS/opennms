@@ -31,7 +31,8 @@ package org.opennms.netmgt.topology;
 
 import com.google.common.base.Objects;
 
-// TODO: Patrick discuss with mvr if the mapping from and to a property shouldn't happen through the converter service?
+// TODO: Patrick discuss with mvr if the mapping from and to a property shouldn't happen through the converter service
+// leaving it like it is for now since we also might move it to a dedicated column
 public class VertexRef {
     private final String namespace;
     private final String id;
