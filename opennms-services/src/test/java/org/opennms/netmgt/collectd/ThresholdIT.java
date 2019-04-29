@@ -75,6 +75,7 @@ import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -175,25 +176,47 @@ public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
         transTemplate.execute(status -> {
             OnmsNode node = nodeDao.get(1);
             node.setSysObjectId(".1.3.6.1.4.1.8072.3.2.10");
-            node.addCategory(categoryDao.findByName("Development"));
             nodeDao.update(node);
-            return node;
         });
 
-        // Anticipate the high threshold event
-        EventBuilder threshBldr = new EventBuilder(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "Test");
-        threshBldr.setNodeid(1);
-        threshBldr.setInterface(addr("192.168.1.1"));
-        threshBldr.setService("Mock");
         EventAnticipator eventAnticipator = mockEventIpcManager.getEventAnticipator();
-        eventAnticipator.anticipateEvent(threshBldr.getEvent());
 
         // Let's send a nodeGainedService event
         EventBuilder bldr = new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Test");
         bldr.setNodeid(1);
         bldr.setInterface(addr("192.168.1.1"));
         bldr.setService("Mock");
-        mockEventIpcManager.sendNow(bldr.getEvent());
+        Event nodeGainedServiceEvent = bldr.getEvent();
+        eventAnticipator.anticipateEvent(nodeGainedServiceEvent);
+        mockEventIpcManager.sendNow(nodeGainedServiceEvent);
+
+        // Assert Threshold is not triggered
+        Thread.sleep(15000);
+        assertEquals(0, eventAnticipator.getUnanticipatedEvents().size());
+
+        // Anticipate the high threshold event
+        eventAnticipator.reset();
+        EventBuilder threshBldr = new EventBuilder(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "Test");
+        threshBldr.setNodeid(1);
+        threshBldr.setInterface(addr("192.168.1.1"));
+        threshBldr.setService("Mock");
+        eventAnticipator.anticipateEvent(threshBldr.getEvent());
+
+        // Add the 'Development' category
+        transTemplate.execute(status -> {
+            OnmsNode node = nodeDao.get(1);
+            node.addCategory(categoryDao.findByName("Development"));
+            nodeDao.update(node);
+            return node;
+        });
+
+        // Let's send a nodeCategoryChange event
+        bldr = new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "Test");
+        bldr.setNodeid(1);
+        bldr.setInterface(addr("192.168.1.1"));
+        Event nodeCategoryChangeEvent = bldr.getEvent();
+        eventAnticipator.anticipateEvent(nodeCategoryChangeEvent);
+        mockEventIpcManager.sendNow(nodeCategoryChangeEvent);
 
         // Now wait until our collector was called
         if (!collector.getLatch().await(30, TimeUnit.SECONDS)) {
@@ -213,8 +236,16 @@ public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
             return node;
         });
 
+        // Let's send a nodeCategoryChange event
+        bldr = new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "Test");
+        bldr.setNodeid(1);
+        bldr.setInterface(addr("192.168.1.1"));
+        nodeCategoryChangeEvent = bldr.getEvent();
+        eventAnticipator.anticipateEvent(nodeCategoryChangeEvent);
+        mockEventIpcManager.sendNow(nodeCategoryChangeEvent);
+
         // Assert Threshold is no longer triggered
-        Thread.sleep(30000);
+        Thread.sleep(15000);
         assertEquals(0, eventAnticipator.getUnanticipatedEvents().size());
 
         // Stop collectd gracefully so we don't keep trying to collect during the tear down
