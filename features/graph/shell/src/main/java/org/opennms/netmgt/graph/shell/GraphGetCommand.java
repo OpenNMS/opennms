@@ -33,9 +33,6 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.netmgt.graph.api.Edge;
-import org.opennms.netmgt.graph.api.Graph;
-import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.service.GraphService;
 
@@ -61,11 +58,10 @@ public class GraphGetCommand implements Action {
 
     @Override
     public Object execute() throws Exception {
-        final Graph<Vertex, Edge> graph = graphService.getGraph(containerId, namespace);
-        if (graph == null) {
+        final GenericGraph genericGraph = graphService.getGraph(containerId, namespace);
+        if (genericGraph == null) {
             System.out.println("No graph with namespace " + namespace + " found");
         } else {
-            final GenericGraph genericGraph = graph.asGenericGraph();
             System.out.println("Graph Details:");
             genericGraph.getProperties().forEach((key, value) -> System.out.println("  " + key + " => " + value));
             System.out.println();
@@ -74,7 +70,7 @@ public class GraphGetCommand implements Action {
             } else {
                 System.out.println("Vertex Details (" + genericGraph.getVertices().size() + ")");
                 genericGraph.getVertices().forEach(v -> {
-                    v.asGenericVertex().getProperties().forEach((key, value) -> System.out.println("  " + key + " => " + value));
+                    v.getProperties().forEach((key, value) -> System.out.println("  " + key + " => " + value));
                 });
             }
             System.out.println();
@@ -84,7 +80,7 @@ public class GraphGetCommand implements Action {
                 System.out.println("Edge Details (" + genericGraph.getEdges().size() + ")");
                 genericGraph.getEdges().forEach(e -> {
                     System.out.println(e.getSource().getId() + ":" + e.getSource().getNamespace() + " -> " + e.getTarget().getId() + ":" + e.getTarget().getNamespace());
-                    e.asGenericEdge().getProperties().forEach((key, value) -> System.out.println("  " + key + " => " + value));
+                    e.getProperties().forEach((key, value) -> System.out.println("  " + key + " => " + value));
                 });
             }
             System.out.println();
