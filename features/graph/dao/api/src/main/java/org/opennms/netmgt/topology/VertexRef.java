@@ -78,6 +78,10 @@ public class VertexRef {
 
     @Override
     public String toString() {
+        return asStringRepresentation();
+    }
+
+    public String asStringRepresentation(){
         return namespace + ":" + id;
     }
 }

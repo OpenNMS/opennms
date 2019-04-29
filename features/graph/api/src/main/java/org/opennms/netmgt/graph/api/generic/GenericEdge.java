@@ -43,21 +43,15 @@ public class GenericEdge extends GenericElement implements Edge {
     private final GenericVertexRef target;
 
     public GenericEdge(String namespace, GenericVertexRef source, GenericVertexRef target) {
-        this(source, target, createMapWithNamespace(namespace));
-    }
-
-    private static Map<String, Object> createMapWithNamespace(String namespace) {
-        Objects.requireNonNull(namespace);
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(GenericProperties.NAMESPACE, namespace);
-        return properties;
+        this(source, target, new MapBuilder<String, Object>()
+                .withProperty(GenericProperties.NAMESPACE, namespace)
+                .build());
     }
 
     public GenericEdge(GenericVertexRef source, GenericVertexRef target, Map<String, Object> properties) {
         super(properties);
         this.source = Objects.requireNonNull(source);
         this.target = Objects.requireNonNull(target);
-        // TODO patrick: discuss with mvr: can an edge connect the same vertexref? If not we want to add a check?
         if(!source.getNamespace().equals(getNamespace()) && !target.getNamespace().equals(getNamespace())) {
             throw new IllegalArgumentException(
                     String.format("Neither the namespace of the source VertexRef(namespace=%s) nor the target VertexRef(%s) matches our namespace=%s",
@@ -66,10 +60,19 @@ public class GenericEdge extends GenericElement implements Edge {
         this.setId(source.getNamespace() + ":" + source.getId() + "->" + target.getNamespace() + ":" + target.getId());
     }
 
-    /** Copy constructor */
+    /** Copy constructor with same namespace */
     public GenericEdge(GenericEdge copyMe) {
-        // GenericVertexRef are immutable -> it is ok to reuse them here.
-        this(copyMe.source, copyMe.target, new HashMap<>(copyMe.properties));
+        this(copyMe, copyMe.getNamespace());
+    }
+
+    /** Copy constructor with new namespace */
+    public GenericEdge(GenericEdge copyMe, String newNamespace) {
+        this(new GenericVertexRef(newNamespace, copyMe.source.getId()),
+                new GenericVertexRef(newNamespace, copyMe.target.getId()),
+                new MapBuilder<String, Object>()
+                .withProperties(copyMe.getProperties())
+                .withProperty(GenericProperties.NAMESPACE, newNamespace)
+                .build());
     }
 
     public Map<String, Object> getProperties() {

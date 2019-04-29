@@ -76,8 +76,7 @@ public class DefaultGraphRepositoryIT {
         originalContainer.setLabel("I am soooo unique \\o/");
 
         // Create first graph
-        final GenericGraph graph1 = new GenericGraph();
-        graph1.setNamespace(NAMESPACE);
+        final GenericGraph graph1 = new GenericGraph(NAMESPACE);
         graph1.setLabel("Dummy Graph");
         graph1.setDescription("I am not so unique, I may be replaced at any time :(");
 
@@ -88,11 +87,10 @@ public class DefaultGraphRepositoryIT {
 
         graph1.addVertex(v1);
         graph1.addVertex(v2);
-        graph1.addEdge(new GenericEdge(NAMESPACE, v1, v2));
+        graph1.addEdge(new GenericEdge(NAMESPACE, v1.getVertexRef(), v2.getVertexRef()));
 
         // Second graph is a copy of the first
-        final GenericGraph graph2 = new GenericGraph(graph1);
-        graph2.setNamespace(NAMESPACE + "2");
+        final GenericGraph graph2 = new GenericGraph(graph1, NAMESPACE + "2");
         graph2.setLabel(graph1.getLabel() + " 2");
 
         // Persist
@@ -107,8 +105,7 @@ public class DefaultGraphRepositoryIT {
          * Update
          */
         // Add new graph which is a copy of an existing graph
-        final GenericGraph graph3 = new GenericGraph(graph1);
-        graph3.setNamespace(NAMESPACE + "3");
+        final GenericGraph graph3 = new GenericGraph(graph1, NAMESPACE + "3");
         graph3.setLabel(graph1.getLabel() + " 3");
         originalContainer.addGraph(graph3);
 

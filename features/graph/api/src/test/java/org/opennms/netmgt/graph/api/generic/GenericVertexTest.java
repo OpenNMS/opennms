@@ -28,28 +28,19 @@
 
 package org.opennms.netmgt.graph.api.generic;
 
-import java.util.HashMap;
-import java.util.Map;
+import static org.opennms.netmgt.graph.api.generic.Assertions.assertThrowsException;
 
-class MapBuilder<K,V> {
+import org.junit.Test;
 
-    private final Map<K,V> map;
+public class GenericVertexTest {
 
-    MapBuilder() {
-        map = new HashMap<>();
+    @Test
+    public void genericVertexMustHaveANamespaceAndId() {
+        new GenericVertex("not null", "not null"); // should throw no exception
+        assertThrowsException(NullPointerException.class, ()-> new GenericVertex((String)null, (String)null));
+        assertThrowsException(NullPointerException.class, ()-> new GenericVertex("not null", null));
+        assertThrowsException(NullPointerException.class, ()-> new GenericVertex((String)null, "not null"));
+
     }
 
-    public MapBuilder<K,V> withProperties(Map<K, V> properties){
-        this.map.putAll(properties);
-        return this;
-    }
-
-    public MapBuilder<K,V> withProperty(K key, V value){
-        this.map.put(key, value);
-        return this;
-    }
-
-    public Map<K,V> build(){
-        return map;
-    }
 }

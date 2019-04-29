@@ -29,6 +29,7 @@
 package org.opennms.netmgt.graph.api.generic;
 
 import static org.junit.Assert.*;
+import static org.opennms.netmgt.graph.api.generic.Assertions.assertThrowsException;
 
 import org.junit.Test;
 
@@ -42,4 +43,15 @@ public class GenericGraphTest {
         assertNotSame(original, clone);
     }
 
+    @Test
+    public void shouldRejectEdgesWithWrongNamespace(){
+        GenericGraph graph = TestObjectCreator.createGraph();
+        graph.addEdge(generateEdge(graph.getNamespace())); // should throw no exception
+        assertThrowsException(IllegalArgumentException.class, () -> graph.addEdge(generateEdge("unknownNamespace")));
+    }
+
+    private GenericEdge generateEdge(String namespace) {
+        GenericVertexRef vertexRef = new GenericVertexRef(namespace, "id1");
+        return new GenericEdge(namespace, vertexRef, vertexRef);
+    }
 }

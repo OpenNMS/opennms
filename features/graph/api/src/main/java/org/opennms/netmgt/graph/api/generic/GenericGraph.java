@@ -69,13 +69,22 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
 
     /** Copy constructor. */
     public GenericGraph(GenericGraph copyMe) {
-        this(new HashMap<>(copyMe.properties));
+        this(copyMe, copyMe.getNamespace());
+    }
+
+    /** Copy constructor with new namespace. */
+    public GenericGraph(GenericGraph copyMe, String newNamespace) {
+        super(new MapBuilder<String, Object>()
+                .withProperties(copyMe.properties)
+                .withProperty(GenericProperties.NAMESPACE, newNamespace)
+                .build());
+
         this.setFocusStrategy(copyMe.focusStrategy);
         for(GenericVertex originalVertex : copyMe.vertexToIdMap.values()){
-            this.addVertex(new GenericVertex(originalVertex));
+            this.addVertex(new GenericVertex(originalVertex, newNamespace));
         }
         for(GenericEdge originalEdge : copyMe.edgeToIdMap.values()){
-            this.addEdge(new GenericEdge(originalEdge));
+            this.addEdge(new GenericEdge(originalEdge, newNamespace));
         }
     }
 
@@ -123,11 +132,6 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
 
     public GraphInfo getGraphInfo(){
         return graphInfo;
-    }
-
-    @Override
-    public String getNamespace() {
-        return graphInfo.getNamespace();
     }
 
     @Override
@@ -195,12 +199,20 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
         Objects.requireNonNull(edge);
         Objects.requireNonNull(edge.getId());
         if (jungGraph.containsEdge(edge)) return; // already added
-        if (edge.getSource().getNamespace().equalsIgnoreCase(getNamespace()) && getVertex(edge.getSource().getId()) == null) {
-            addVertex((GenericVertex) edge.getSource());
+        if(!this.getNamespace().equals(edge.getNamespace())){
+            throw new IllegalArgumentException(
+                    String.format("The namespace of the edge (%s) doesn't match the namespace of this graph (%s). Edge: %s ",
+                    edge.getNamespace(), this.getNamespace(), edge.toString()));
         }
-        if (edge.getTarget().getNamespace().equalsIgnoreCase(getNamespace()) && getVertex(edge.getTarget().getId()) == null) {
-            addVertex((GenericVertex) edge.getTarget());
-        }
+        // TODO patrick: discuss with mvr: the following casting won't work anymore since we are operating on actual Vertexrefs.
+        // do we need a replacement? E.g. we could make a check if the graph contains the vertices (with the same namespace)
+        // and throw an exception if not.
+//        if (edge.getSource().getNamespace().equalsIgnoreCase(getNamespace()) && getVertex(edge.getSource().getId()) == null) {
+//            addVertex((GenericVertex) edge.getSource());
+//        }
+//        if (edge.getTarget().getNamespace().equalsIgnoreCase(getNamespace()) && getVertex(edge.getTarget().getId()) == null) {
+//            addVertex((GenericVertex) edge.getTarget());
+//        }
         jungGraph.addEdge(edge, edge.getSource(), edge.getTarget());
         edgeToIdMap.put(edge.getId(), edge);
     }

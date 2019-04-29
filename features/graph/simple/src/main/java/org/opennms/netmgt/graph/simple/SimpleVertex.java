@@ -64,10 +64,6 @@ public class SimpleVertex implements Vertex, NodeAware, LocationAware {
         return delegate.getNamespace();
     }
 
-    public void setNamespace(String namespace) {
-        delegate.setNamespace(namespace);
-    }
-
     @Override
     public String getId() {
         return delegate.getId();

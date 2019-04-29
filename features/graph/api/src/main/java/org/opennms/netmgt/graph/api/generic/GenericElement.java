@@ -45,7 +45,8 @@ public class GenericElement {
 
     protected GenericElement (Map<String, Object> properties) {
         this.properties = Objects.requireNonNull(properties);
-        Objects.requireNonNull(this.properties.get(GenericProperties.NAMESPACE));
+        Objects.requireNonNull(this.properties.get(GenericProperties.NAMESPACE),
+                "namespace cannot be null");
     }
 
     public void setProperty(String key, Object value) {
@@ -69,12 +70,9 @@ public class GenericElement {
         return properties;
     }
 
+    // TODO: patrick: discuss with mvr if we don't want to have the namespace as a dedicated attribute in graph, vertex, edge
     public String getNamespace() {
         return getProperty(GenericProperties.NAMESPACE);
-    }
-
-    public void setNamespace(String namespace) {
-        setProperty(GenericProperties.NAMESPACE, namespace);
     }
 
     public void setLabel(String label){

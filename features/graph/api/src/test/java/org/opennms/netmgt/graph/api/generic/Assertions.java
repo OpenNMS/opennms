@@ -28,28 +28,18 @@
 
 package org.opennms.netmgt.graph.api.generic;
 
-import java.util.HashMap;
-import java.util.Map;
+import static org.junit.Assert.fail;
 
-class MapBuilder<K,V> {
-
-    private final Map<K,V> map;
-
-    MapBuilder() {
-        map = new HashMap<>();
-    }
-
-    public MapBuilder<K,V> withProperties(Map<K, V> properties){
-        this.map.putAll(properties);
-        return this;
-    }
-
-    public MapBuilder<K,V> withProperty(K key, V value){
-        this.map.put(key, value);
-        return this;
-    }
-
-    public Map<K,V> build(){
-        return map;
+public class Assertions {
+    public static void assertThrowsException(Class<? extends Throwable> expectedException, Runnable function) {
+        try {
+            function.run();
+        } catch(Exception e) {
+            if(!expectedException.isAssignableFrom(e.getClass())) {
+                fail(String.format("Expected exception: %s but was %s", expectedException.getName(), e.getClass().getName()));
+            }
+            return;
+        }
+        fail(String.format("Expected exception: %s but none was thrown.", expectedException.getName()));
     }
 }

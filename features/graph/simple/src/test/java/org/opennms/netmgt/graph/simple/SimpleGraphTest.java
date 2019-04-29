@@ -50,7 +50,6 @@ public class SimpleGraphTest {
         // set up:
         SimpleGraph originalGraph = new SimpleGraph(TestObjectCreator.NAMESPACE);
         originalGraph.setLabel("labelGraph");
-        originalGraph.setNamespace(TestObjectCreator.NAMESPACE);
         SimpleVertex vertex1 = createVertex(TestObjectCreator.NAMESPACE, UUID.randomUUID().toString());
         SimpleVertex vertex2 = createVertex(TestObjectCreator.NAMESPACE, UUID.randomUUID().toString());
         SimpleVertex vertex3 = createVertex(TestObjectCreator.NAMESPACE, UUID.randomUUID().toString());

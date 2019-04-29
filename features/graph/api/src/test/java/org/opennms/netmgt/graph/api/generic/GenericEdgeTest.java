@@ -28,10 +28,9 @@
 
 package org.opennms.netmgt.graph.api.generic;
 
-import static org.junit.Assert.*;
+import static org.opennms.netmgt.graph.api.generic.Assertions.assertThrowsException;
 
 import java.util.HashMap;
-import java.util.function.Supplier;
 
 import org.junit.Test;
 
@@ -53,17 +52,5 @@ public class GenericEdgeTest {
         new GenericEdge(NAMESPACE, refWithForeignNamespace1, refWithOurNamespace1); // should throw no Excpetion
         assertThrowsException(IllegalArgumentException.class, () -> new GenericEdge(NAMESPACE, refWithForeignNamespace1, refWithForeignNamespace2));
         assertThrowsException(NullPointerException.class, () -> new GenericEdge(refWithForeignNamespace1, refWithForeignNamespace2, new HashMap<>()));
-    }
-
-    private static void assertThrowsException(Class<? extends Throwable> expectedException, Supplier<?> function) {
-        try {
-            function.get();
-        } catch(Exception e) {
-            if(!expectedException.isAssignableFrom(e.getClass())) {
-                fail(String.format("Expected exception: %s but was %s", expectedException.getName(), e.getClass().getName()));
-            }
-            return;
-        }
-        fail(String.format("Expected exception: %s but none was thrown.", expectedException.getName()));
     }
 }

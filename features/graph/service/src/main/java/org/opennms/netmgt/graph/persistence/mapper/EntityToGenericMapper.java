@@ -35,6 +35,7 @@ import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.generic.GenericVertexRef;
 import org.opennms.netmgt.graph.persistence.converter.ConverterService;
+import org.opennms.netmgt.topology.EdgeEntity;
 import org.opennms.netmgt.topology.GraphContainerEntity;
 import org.opennms.netmgt.topology.GraphEntity;
 import org.opennms.netmgt.topology.PropertyEntity;
@@ -64,7 +65,7 @@ public class EntityToGenericMapper {
         });
 
         graphEntity.getVertices().stream().forEach(vertexEntity -> {
-            final GenericVertex genericVertex = new GenericVertex(graphEntity.getNamespace(), graphEntity.getProperty(GenericProperties.ID).getValue());
+            final GenericVertex genericVertex = new GenericVertex(graphEntity.getNamespace(), vertexEntity.getProperty(GenericProperties.ID).getValue());
             vertexEntity.getProperties().forEach(property -> {  // will set id and namespace
                 final Object value = convert(property);
                 genericVertex.setProperty(property.getName(), value);
@@ -77,7 +78,11 @@ public class EntityToGenericMapper {
                     edgeEntity.getNamespace(),
                     new GenericVertexRef(edgeEntity.getSource().getNamespace(), edgeEntity.getSource().getId()),
                     new GenericVertexRef(edgeEntity.getTarget().getNamespace(), edgeEntity.getTarget().getId()));
-            edgeEntity.getProperties().forEach(property -> {
+            edgeEntity.getProperties().stream()
+                    // filter source & target properties since they are object attributes in GenericEdge
+                    .filter(prop -> !prop.getName().equals(EdgeEntity.PROPERTY_SOURCE))
+                    .filter(prop -> !prop.getName().equals(EdgeEntity.PROPERTY_TARGET))
+                    .forEach(property -> {
                 final Object value = convert(property);
                 genericEdge.setProperty(property.getName(), value);
             });

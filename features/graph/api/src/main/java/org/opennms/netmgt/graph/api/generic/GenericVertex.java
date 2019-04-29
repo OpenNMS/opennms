@@ -29,9 +29,9 @@
 package org.opennms.netmgt.graph.api.generic;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 import org.opennms.netmgt.graph.api.Vertex;
-import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.aware.LocationAware;
 import org.opennms.netmgt.graph.api.aware.NodeAware;
 import org.opennms.netmgt.graph.api.info.NodeInfo;
@@ -40,11 +40,19 @@ public class GenericVertex extends GenericElement implements Vertex, NodeAware, 
 
     public GenericVertex(String namespace, String id) {
         super(namespace, id);
+        Objects.requireNonNull(id, "id cannot be null");
     }
 
     /** Copy constructor */
     public GenericVertex(GenericVertex copyMe){
         super(new HashMap<>(copyMe.properties));
+    }
+
+    /** Copy constructor with new namespace */
+    public GenericVertex(GenericVertex copyMe, String namespace){
+        super(new MapBuilder<String, Object>()
+                .withProperties(copyMe.properties)
+                .withProperty(GenericProperties.NAMESPACE, namespace).build());
     }
 
     public GenericVertexRef getVertexRef() {

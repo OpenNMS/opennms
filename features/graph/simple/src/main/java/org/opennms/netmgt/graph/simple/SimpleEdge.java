@@ -68,10 +68,6 @@ public class SimpleEdge implements Edge {
         return delegate.getNamespace();
     }
 
-    public void setNamespace(String namespace) {
-        delegate.setNamespace(namespace);
-    }
-
     @Override
     public String getId() {
         return delegate.getId();
@@ -110,7 +106,6 @@ public class SimpleEdge implements Edge {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(delegate);
     }
 }

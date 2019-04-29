@@ -33,7 +33,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.graph.api.info.NodeInfo;
 
-/** */
 public class TestObjectCreator {
 
     public final static String NAMESPACE = TestObjectCreator.class.getSimpleName();

@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.topology;
 
-import java.util.Optional;
+import java.util.Objects;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -37,11 +37,16 @@ import javax.persistence.Entity;
 @DiscriminatorValue("edge")
 public class EdgeEntity extends AbstractGraphEntity {
 
-    private final static String PROPERTY_SOURCE = "sourceVertexRef";
-    private final static String PROPERTY_TARGET = "targetVertexRef";
+    // TODO: Patrick: discuss with Markus if we want to have source and target as properties?
+    // Advantage: we can use the current implementation for storage.
+    // Disadvantage: we need to filter out the source/target properties when converting to GenericEdge since these are
+    // there object attributes not properties (and should be since an edge is defined by them)
+
+    public final static String PROPERTY_SOURCE = "sourceVertexRef";
+    public final static String PROPERTY_TARGET = "targetVertexRef";
 
     public VertexRef getSource() {
-        return Optional.ofNullable(getPropertyValue(PROPERTY_SOURCE)).map(VertexRef::new).orElse(null);
+        return new VertexRef(getPropertyValue(PROPERTY_SOURCE));
     }
 
     public void setSource(String namespace, String id) {
@@ -49,11 +54,12 @@ public class EdgeEntity extends AbstractGraphEntity {
     }
 
     public void setSource(VertexRef source) {
+        Objects.requireNonNull(source, "source can not be null");
         this.setProperty(PROPERTY_SOURCE, String.class, source.toString());
     }
 
     public VertexRef getTarget() {
-        return Optional.ofNullable(getPropertyValue(PROPERTY_TARGET)).map(VertexRef::new).orElse(null);
+        return new VertexRef(getPropertyValue(PROPERTY_TARGET));
     }
 
     public void setTarget(String namespace, String id) {
@@ -61,6 +67,7 @@ public class EdgeEntity extends AbstractGraphEntity {
     }
 
     public void setTarget(VertexRef target) {
-        this.setProperty(PROPERTY_SOURCE, String.class, target.toString());
+        Objects.requireNonNull(target, "target can not be null");
+        this.setProperty(PROPERTY_TARGET, String.class, target.toString());
     }
 }
