@@ -36,7 +36,7 @@ public class PrimitiveConverter<T> implements Converter<T> {
     private Function<String, T> toValue;
 
     PrimitiveConverter(Class <T> clazz, Function<String, T> toValue) {
-        this.clazz = clazz;
+        this.clazz = Objects.requireNonNull(clazz);
         this.toValue = toValue;
     }
 
