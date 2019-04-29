@@ -55,7 +55,7 @@ public class EdgeEntity extends AbstractGraphEntity {
 
     public void setSource(VertexRef source) {
         Objects.requireNonNull(source, "source can not be null");
-        this.setProperty(PROPERTY_SOURCE, String.class, source.toString());
+        this.setProperty(PROPERTY_SOURCE, String.class, source.asStringRepresentation());
     }
 
     public VertexRef getTarget() {
