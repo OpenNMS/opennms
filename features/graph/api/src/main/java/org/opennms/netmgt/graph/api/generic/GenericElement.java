@@ -44,6 +44,7 @@ public class GenericElement {
     }
 
     protected GenericElement (Map<String, Object> properties) {
+        // assumption is that this constructor is only called by children who cloned already the Map
         this.properties = Objects.requireNonNull(properties);
         Objects.requireNonNull(this.properties.get(GenericProperties.NAMESPACE),
                 "namespace cannot be null");
@@ -59,11 +60,6 @@ public class GenericElement {
 
     public <T> T getProperty(String key, T defaultValue) {
         return (T) properties.getOrDefault(key, defaultValue);
-    }
-
-    public void setProperties(Map<String, Object> properties) {
-        this.properties.clear();
-        this.properties.putAll(properties);
     }
 
     public Map<String, Object> getProperties() {

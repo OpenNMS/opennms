@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -137,8 +138,7 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
                 .stream().map(n -> {
                     // In case of GraphML each vertex does not have a namespace, but it is inherited from the graph
                     // Therefore here we have to manually set it
-                    final GenericVertex v = new GenericVertex(graph.getNamespace(), n.getId());
-                    v.setProperties(new HashMap<>(n.getProperties()));
+                    final GenericVertex v = new GenericVertex(graph.getNamespace(), n.getId(), n.getProperties());
                     return v;
                 })
                 .collect(Collectors.toList());
@@ -151,8 +151,8 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
             final GenericVertex target = new GenericVertex(targetNamespace, e.getTarget().getId());
             // In case of GraphML each edge does not have a namespace, but it is inherited from the graph
             // Therefore here we have to manually set it
-            final GenericEdge edge = new GenericEdge(graph.getNamespace(), source.getVertexRef(), target.getVertexRef());
-            edge.setProperties(new HashMap<>(e.getProperties()));
+            final GenericEdge edge = new GenericEdge(graph.getNamespace(), source.getVertexRef(), target.getVertexRef(),
+                    e.getProperties());
             return edge;
         }).collect(Collectors.toList());
         graph.addEdges(edges);

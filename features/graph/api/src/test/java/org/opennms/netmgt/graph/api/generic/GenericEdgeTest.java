@@ -51,6 +51,5 @@ public class GenericEdgeTest {
         new GenericEdge(NAMESPACE, refWithOurNamespace1, refWithForeignNamespace1); // should throw no Excpetion
         new GenericEdge(NAMESPACE, refWithForeignNamespace1, refWithOurNamespace1); // should throw no Excpetion
         assertThrowsException(IllegalArgumentException.class, () -> new GenericEdge(NAMESPACE, refWithForeignNamespace1, refWithForeignNamespace2));
-        assertThrowsException(NullPointerException.class, () -> new GenericEdge(refWithForeignNamespace1, refWithForeignNamespace2, new HashMap<>()));
     }
 }

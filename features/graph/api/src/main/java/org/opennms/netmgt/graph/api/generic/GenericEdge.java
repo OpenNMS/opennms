@@ -48,7 +48,14 @@ public class GenericEdge extends GenericElement implements Edge {
                 .build());
     }
 
-    public GenericEdge(GenericVertexRef source, GenericVertexRef target, Map<String, Object> properties) {
+    public GenericEdge(String namespace, GenericVertexRef source, GenericVertexRef target, Map<String, Object> properties) {
+        this(source, target, new MapBuilder<String, Object>()
+                .withProperties(properties)
+                .withProperty(GenericProperties.NAMESPACE, namespace)
+                .build());
+    }
+
+    private GenericEdge(GenericVertexRef source, GenericVertexRef target, Map<String, Object> properties) {
         super(properties);
         this.source = Objects.requireNonNull(source);
         this.target = Objects.requireNonNull(target);
