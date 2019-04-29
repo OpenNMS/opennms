@@ -50,6 +50,10 @@ public class GenericVertex extends GenericElement implements Vertex, NodeAware, 
     }
 
 
+    public GenericVertexRef getVertexRef() {
+        return new GenericVertexRef(this.getNamespace(), this.getId());
+    }
+
 //    // TODO MVR implement me
 //    @Override
 //    public NodeRef getNodeRef() {

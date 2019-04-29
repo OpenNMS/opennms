@@ -30,6 +30,7 @@ package org.opennms.netmgt.graph.provider.application;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -48,8 +49,12 @@ import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.simple.SimpleEdge;
 import org.opennms.netmgt.model.OnmsApplication;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+
+import com.google.common.net.InetAddresses;
 
 public class ApplicationGraphProviderTest {
 
@@ -105,6 +110,15 @@ public class ApplicationGraphProviderTest {
         service.setId(idGenerator.next());
         service.setQualifier(UUID.randomUUID().toString());
         service.setServiceType(new OnmsServiceType(UUID.randomUUID().toString()));
+        OnmsServiceType serviceType = mock(OnmsServiceType.class);
+        when(serviceType.getId()).thenReturn(42);
+        service.setServiceType(serviceType);
+        OnmsIpInterface ipInterface = mock(OnmsIpInterface.class);
+        when(ipInterface.getIpAddress()).thenReturn(InetAddresses.forString("12.0.0.1"));
+        OnmsNode node = mock(OnmsNode.class);
+        when(node.getId()).thenReturn(123);
+        when(ipInterface.getNode()).thenReturn(node);
+        service.setIpInterface(ipInterface);
         return service;
     }
 

@@ -93,7 +93,7 @@ public class ApplicationSearchProvider extends AbstractSearchProvider implements
         Criteria dbQueryCriteria = bldr.toCriteria();
 
         for (OnmsApplication application : applicationDao.findMatching(dbQueryCriteria)) {
-            final ApplicationVertex applicationVertex = new ApplicationVertex(application);
+            final GuiApplicationVertex applicationVertex = new GuiApplicationVertex(application);
             SearchResult searchResult = new SearchResult(applicationVertex, true, false);
             results.add(searchResult);
         }

@@ -36,7 +36,7 @@ public class ApplicationVertexTest {
 
     @Test
     public void testHierarchy() {
-        ApplicationVertex vertex = createVertex("100");
+        GuiApplicationVertex vertex = createVertex("100");
         vertex.addChildren(createVertex("service:1"));
         vertex.addChildren(createVertex("service:2"));
 
@@ -48,7 +48,7 @@ public class ApplicationVertexTest {
         // Verify first level
         for (VertexRef eachRef : vertex.getChildren()) {
             Assert.assertEquals(ApplicationTopologyProvider.TOPOLOGY_NAMESPACE, eachRef.getNamespace());
-            ApplicationVertex child = (ApplicationVertex) eachRef;
+            GuiApplicationVertex child = (GuiApplicationVertex) eachRef;
 
             Assert.assertEquals(false, child.isRoot());
             Assert.assertEquals(true, child.isLeaf());
@@ -59,7 +59,7 @@ public class ApplicationVertexTest {
         }
     }
 
-    private static ApplicationVertex createVertex(String id) {
-        return new ApplicationVertex(id, id);
+    private static GuiApplicationVertex createVertex(String id) {
+        return new GuiApplicationVertex(id, id);
     }
 }

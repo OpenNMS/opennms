@@ -28,25 +28,23 @@
 
 package org.opennms.netmgt.graph.provider.application;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
+
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.simple.SimpleVertex;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsServiceType;
 
-public class ApplicationVertex extends SimpleVertex { // implements LevelAware
+public class ApplicationVertex extends SimpleVertex {
 
+    private enum Property {
+        vertexType, name, ipAdress, serviceTypeId
+    }
 
-    // TODO: Patrick: move these attributes to underlying GenericVertex. This class itself shouldn't hold any references.
-    // TODO: Patrick: if attributes remain we need to consider hashcode, equals
-    private List<VertexRef> children = new ArrayList<>();
-
-    private ApplicationVertex parent;
-
-    private OnmsServiceType serviceType;
+    public enum VertexType {
+        application, service
+    }
 
     public ApplicationVertex(GenericVertex vertex) {
         super(vertex);
@@ -54,74 +52,66 @@ public class ApplicationVertex extends SimpleVertex { // implements LevelAware
 
     public ApplicationVertex(OnmsApplication application) {
         this(application.getId().toString(), application.getName());
-        // setTooltipText(String.format("Application '%s'", application.getName()));
-        // setIconKey("application.application");
+        setVertexType(VertexType.application);
     }
 
     public ApplicationVertex(OnmsMonitoredService monitoredService) {
         this(monitoredService.getId().toString(), monitoredService.getServiceName());
-        // setIpAddress(monitoredService.getIpAddress().toString());
-        // setTooltipText(String.format("Service '%s', IP: %s", monitoredService.getServiceName(), monitoredService.getIpAddress().toString()));
-        // setNodeID(monitoredService.getNodeId());
-        setServiceType(monitoredService.getServiceType());
-        // setIconKey("application.monitored-service");
+        setVertexType(VertexType.service);
+        setServiceTypeId(monitoredService.getServiceType().getId());
     }
 
     /**
      * Creates a new {@link ApplicationVertex}.
      * @param id the unique id of this vertex. Must be unique overall the namespace.
      */
-    public ApplicationVertex(String id, String label) {
+    public ApplicationVertex(String id, String name) {
         super(ApplicationGraphProvider.TOPOLOGY_NAMESPACE, id);
+        this.setName(name);
     }
 
-    public void addChildren(ApplicationVertex vertex) {
-        if (!children.contains(vertex)) {
-            children.add(vertex);
-            vertex.setParent(this);
-        }
+    public String getName() {
+        return delegate.getProperty(Property.name.name());
+    }
+
+    public void setName(String name) {
+        setProperty(Property.name, name);
+    }
+
+    public VertexType getVertexType() {
+        return delegate.getProperty(Property.vertexType.name());
+    }
+
+    public void setVertexType(VertexType vertexType) {
+        setProperty(Property.vertexType, vertexType);
+    }
+
+    public String getIpAddress() {
+        return delegate.getProperty(Property.ipAdress.name());
+    }
+
+    public void setIpAddress(String ipAddress) {
+        setProperty(Property.ipAdress, ipAddress);
+    }
+
+    public VertexRef getVertexRef(){
+        return delegate.getVertexRef();
     }
     
-    public void setServiceType(OnmsServiceType serviceType) {
-        this.serviceType = serviceType;
+    public void setServiceTypeId(Integer serviceTypeId) {
+        setProperty(Property.serviceTypeId,  Objects.requireNonNull(serviceTypeId));
     }
 
-    public boolean isRoot() {
-        return getParent() == null;
+    public Integer getServiceTypeId() {
+        return getProperty(Property.serviceTypeId);
     }
 
-    public boolean isLeaf() {
-        return children.isEmpty();
+    private <T> void setProperty(Property propertyName, T property) {
+        delegate.setProperty(propertyName.name(), property);
     }
 
-    public List<VertexRef> getChildren() {
-        return children;
+    private <T> T getProperty(Property propertyName) {
+        return delegate.getProperty(propertyName.name());
     }
 
-    public OnmsServiceType getServiceType() {
-        return serviceType;
-    }
-
-    public boolean isPartOf(String applicationId) {
-        return applicationId != null && applicationId.equals(getRoot().getId());
-    }
-
-    public ApplicationVertex getRoot() {
-        if (isRoot()) {
-            return this;
-        }
-        return (getParent()).getRoot();
-    }
-
-    public int getLevel() {
-        return isRoot() ? 0 : 1;
-    }
-
-    public ApplicationVertex getParent() {
-        return parent;
-    }
-
-    public void setParent(ApplicationVertex parent) {
-        this.parent = parent;
-    }
 }

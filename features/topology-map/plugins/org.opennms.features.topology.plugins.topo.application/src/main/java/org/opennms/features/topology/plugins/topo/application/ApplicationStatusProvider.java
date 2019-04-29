@@ -74,7 +74,7 @@ public class ApplicationStatusProvider implements StatusProvider {
 
         // calculate status for children
         for (VertexRef eachVertex : vertexRefs) {
-            ApplicationVertex applicationVertex = (ApplicationVertex) eachVertex;
+            GuiApplicationVertex applicationVertex = (GuiApplicationVertex) eachVertex;
             Status alarmStatus = statusMap.get(createKey(applicationVertex));
             if (alarmStatus == null) {
                 alarmStatus = createStatus(OnmsSeverity.NORMAL, 0);
@@ -84,11 +84,11 @@ public class ApplicationStatusProvider implements StatusProvider {
 
         // calculate status for root
         for (VertexRef eachRoot : vertexRefsRoot) {
-            ApplicationVertex eachRootApplication = (ApplicationVertex) eachRoot;
+            GuiApplicationVertex eachRootApplication = (GuiApplicationVertex) eachRoot;
             OnmsSeverity maxSeverity = OnmsSeverity.NORMAL;
             int count = 0;
             for (VertexRef eachChild : eachRootApplication.getChildren()) {
-                ApplicationVertex eachChildApplication = (ApplicationVertex) eachChild;
+                GuiApplicationVertex eachChildApplication = (GuiApplicationVertex) eachChild;
                 ApplicationStatusEntity.Key childKey = createKey(eachChildApplication);
                 Status childStatus = statusMap.get(childKey);
                 if (childStatus != null && maxSeverity.isLessThan(createSeverity(childStatus.computeStatus()))) {
@@ -111,8 +111,8 @@ public class ApplicationStatusProvider implements StatusProvider {
         return null;
     }
 
-    private ApplicationStatusEntity.Key createKey(ApplicationVertex vertex) {
-        return new ApplicationStatusEntity.Key(String.valueOf(vertex.getNodeID()), String.valueOf(vertex.getServiceType().getId()), vertex.getIpAddress());
+    private ApplicationStatusEntity.Key createKey(GuiApplicationVertex vertex) {
+        return new ApplicationStatusEntity.Key(String.valueOf(vertex.getNodeID()), String.valueOf(vertex.getServiceTypeId()), vertex.getIpAddress());
     }
 
     @Override
@@ -129,7 +129,7 @@ public class ApplicationStatusProvider implements StatusProvider {
         return Collections2.filter(vertices, new Predicate<VertexRef>() {
             @Override
             public boolean apply(VertexRef input) {
-                return ((ApplicationVertex) input).isRoot();
+                return ((GuiApplicationVertex) input).isRoot();
             }
         });
     }

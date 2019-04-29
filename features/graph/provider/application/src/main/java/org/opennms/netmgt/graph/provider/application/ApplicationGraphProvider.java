@@ -77,11 +77,15 @@ public class ApplicationGraphProvider implements GraphProvider {
 
         for (OnmsApplication application : applicationDao.findAll()) {
             ApplicationVertex applicationVertex = new ApplicationVertex(application);
+            applicationVertex.setName(application.getName());
             graph.addVertex(applicationVertex);
 
             for (OnmsMonitoredService eachMonitoredService : application.getMonitoredServices()) {
                 final ApplicationVertex serviceVertex = new ApplicationVertex(eachMonitoredService);
-                applicationVertex.addChildren(serviceVertex);
+                serviceVertex.setIpAddress(eachMonitoredService.getIpAddress().toString());
+                serviceVertex.setName(eachMonitoredService.getServiceName());
+                serviceVertex.setServiceTypeId(eachMonitoredService.getServiceType().getId());
+                serviceVertex.setNodeRefString(Integer.toString(eachMonitoredService.getNodeId()));
                 graph.addVertex(applicationVertex);
 
                 // connect with application
