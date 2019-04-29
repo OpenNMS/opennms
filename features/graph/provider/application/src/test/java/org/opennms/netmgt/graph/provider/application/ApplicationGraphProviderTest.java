@@ -58,12 +58,11 @@ import com.google.common.net.InetAddresses;
 
 public class ApplicationGraphProviderTest {
 
-    private IdGenerator idGenerator;
     private Graph graph;
-
+    private int id;
     @Before
     public void setUp(){
-        idGenerator = new IdGenerator();
+        id = 0;
     }
 
     @Test
@@ -75,7 +74,7 @@ public class ApplicationGraphProviderTest {
         graph = provider.loadGraph();
         assertEquals(30, graph.getVertices().size());
         for(OnmsApplication app: applications) {
-            for(OnmsMonitoredService service : app.getMonitoredServices()){
+            for(OnmsMonitoredService service : app.getMonitoredServices()) {
                 verifyLinkingBetweenNodes(graph.getVertex(app.getId().toString()), graph.getVertex(service.getId().toString()));
             }
         }
@@ -89,9 +88,9 @@ public class ApplicationGraphProviderTest {
         return applications;
     }
 
-    private OnmsApplication generateApplication(){
+    private OnmsApplication generateApplication() {
         OnmsApplication app = new OnmsApplication();
-        app.setId(idGenerator.next());
+        app.setId(id++);
         app.setName(UUID.randomUUID().toString());
         app.setMonitoredServices(generateMonitoredServices());
         return app;
@@ -107,7 +106,7 @@ public class ApplicationGraphProviderTest {
 
     private OnmsMonitoredService generateMonitoredService() {
         OnmsMonitoredService service = new OnmsMonitoredService();
-        service.setId(idGenerator.next());
+        service.setId(id++);
         service.setQualifier(UUID.randomUUID().toString());
         service.setServiceType(new OnmsServiceType(UUID.randomUUID().toString()));
         OnmsServiceType serviceType = mock(OnmsServiceType.class);
