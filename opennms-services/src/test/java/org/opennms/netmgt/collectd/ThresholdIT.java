@@ -177,6 +177,7 @@ public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
             OnmsNode node = nodeDao.get(1);
             node.setSysObjectId(".1.3.6.1.4.1.8072.3.2.10");
             nodeDao.update(node);
+            return node;
         });
 
         EventAnticipator eventAnticipator = mockEventIpcManager.getEventAnticipator();
