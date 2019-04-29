@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.graph.persistence.converter;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 public class PrimitiveConverter<T> implements Converter<T> {
