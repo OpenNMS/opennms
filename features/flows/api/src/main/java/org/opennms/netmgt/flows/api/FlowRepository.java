@@ -30,7 +30,6 @@ package org.opennms.netmgt.flows.api;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.flows.filter.api.Filter;
@@ -43,8 +42,12 @@ public interface FlowRepository {
 
     CompletableFuture<Long> getFlowCount(List<Filter> filters);
 
+    CompletableFuture<List<String>> getApplications(String matchingPrefix, long limit, List<Filter> filters);
+    
     CompletableFuture<List<TrafficSummary<String>>> getTopNApplications(int N, boolean includeOther, List<Filter> filters);
 
+    CompletableFuture<Table<Directional<String>, Long, Double>> getApplicationSeries(List<String> applications, long step, boolean includeOther, List<Filter> filters);
+    
     CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationsSeries(int N, long step, boolean includeOther, List<Filter> filters);
 
     CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversations(int N, List<Filter> filters);

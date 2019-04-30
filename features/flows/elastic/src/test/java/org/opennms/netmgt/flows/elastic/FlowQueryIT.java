@@ -37,6 +37,7 @@ import static org.hamcrest.Matchers.hasSize;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -46,6 +47,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.hamcrest.number.IsCloseTo;
 import org.junit.Before;
@@ -125,6 +127,27 @@ public class FlowQueryIT {
         loadDefaultFlows();
     }
 
+    @Test
+    public void canGetApplications() throws ExecutionException, InterruptedException {
+        // Get only the first application
+        List<String> applications = flowRepository.getApplications("", 1, getFilters()).get();
+        assertThat(applications, equalTo(Collections.singletonList("http")));
+
+        // Get both applications
+        applications = flowRepository.getApplications("", 10, getFilters()).get();
+        assertThat(applications, equalTo(Arrays.asList("http", "https")));
+
+        // Get the first N applications with a prefix
+        applications = flowRepository.getApplications("h", 10, getFilters()).get();
+        assertThat(applications, equalTo(Arrays.asList("http", "https")));
+
+        // Test the fuzzy matching
+        applications = flowRepository.getApplications("httz", 10, getFilters()).get();
+        assertThat(applications, equalTo(Collections.singletonList("http")));
+        applications = flowRepository.getApplications("hyyps", 10, getFilters()).get();
+        assertThat(applications, Matchers.empty());
+    }
+    
     @Test
     public void canGetTopNApplications() throws ExecutionException, InterruptedException {
         // Retrieve the Top N applications over the entire time range
@@ -219,9 +242,35 @@ public class FlowQueryIT {
     }
 
     @Test
+    public void canGetAppSeries() throws ExecutionException, InterruptedException {
+        // Get just https
+        Table<Directional<String>, Long, Double> appTraffic =
+                flowRepository.getApplicationSeries(Collections.singletonList("https"), 10,
+                false, getFilters()).get();
+        assertThat(appTraffic.rowKeySet(), hasSize(2));
+        verifyHttpsSeries(appTraffic);
+
+        // Get just https and include others
+        appTraffic = flowRepository.getApplicationSeries(Collections.singletonList("https"), 10,
+                true, getFilters()).get();
+        assertThat(appTraffic.rowKeySet(), hasSize(4));
+
+        // Get https and http
+        appTraffic = flowRepository.getApplicationSeries(Arrays.asList("http", "https"), 10,
+                false, getFilters()).get();
+        assertThat(appTraffic.rowKeySet(), hasSize(4));
+
+        // Get https and http and include others
+        appTraffic = flowRepository.getApplicationSeries(Arrays.asList("http", "https"), 10,
+                true, getFilters()).get();
+        assertThat(appTraffic.rowKeySet(), hasSize(6));
+    }
+
+    @Test
     public void canGetTopNAppsSeries() throws ExecutionException, InterruptedException {
         // Top 10
-        Table<Directional<String>, Long, Double> appTraffic = flowRepository.getTopNApplicationsSeries(10, 10, false, getFilters()).get();
+        Table<Directional<String>, Long, Double> appTraffic = flowRepository.getTopNApplicationsSeries(10, 10, false,
+                getFilters()).get();
         assertThat(appTraffic.rowKeySet(), hasSize(6));
 
         // Top 2 with others
@@ -234,6 +283,10 @@ public class FlowQueryIT {
         assertThat(appTraffic.rowKeySet(), containsInAnyOrder(new Directional<>("https", true),
                 new Directional<>("https", false)));
 
+        verifyHttpsSeries(appTraffic);
+    }
+
+    private void verifyHttpsSeries(Table<Directional<String>, Long, Double> appTraffic) {
         // Pull the values from the table into arrays for easy comparision and validate
         List<Long> timestamps = getTimestampsFrom(appTraffic);
         List<Double> httpsIngressValues = getValuesFor(new Directional<>("https", true), appTraffic);
@@ -253,8 +306,10 @@ public class FlowQueryIT {
         //   53.8461 + 21.2904 = 75.1365
         final double error = 1E-8;
         assertThat(timestamps, contains(10L, 20L, 30L, 40L));
-        assertThat(httpsIngressValues, containsDoubles(error, 75.136476426799, 81.63771712158808, 35.483870967741936, 17.741935483870968));
-        assertThat(httpsEgressValues, containsDoubles(error, 751.36476426799, 816.3771712158809, 354.83870967741933, 177.41935483870967));
+        assertThat(httpsIngressValues, containsDoubles(error, 75.136476426799, 81.63771712158808, 35.483870967741936,
+                17.741935483870968));
+        assertThat(httpsEgressValues, containsDoubles(error, 751.36476426799, 816.3771712158809, 354.83870967741933,
+                177.41935483870967));
     }
 
     private static Matcher<Iterable<Double>> containsDoubles(double error, Double... items) {

@@ -82,6 +82,19 @@ public class InitializingFlowRepository implements FlowRepository {
     }
 
     @Override
+    public CompletableFuture<List<String>> getApplications(String matchingPrefix, long limit, List<Filter> filters) {
+        return delegate.getApplications(matchingPrefix, limit, filters);
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getApplicationSeries(List<String> applications,
+                                                                                            long step,
+                                                                                            boolean includeOther,
+                                                                                            List<Filter> filters) {
+        return delegate.getApplicationSeries(applications, step, includeOther, filters);
+    }
+
+    @Override
     public CompletableFuture<List<TrafficSummary<String>>> getTopNApplications(int N, boolean includeOther, List<Filter> filters) {
         return delegate.getTopNApplications(N, includeOther, filters);
     }
