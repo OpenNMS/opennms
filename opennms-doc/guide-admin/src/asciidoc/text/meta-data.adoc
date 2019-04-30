@@ -55,8 +55,8 @@ The following keys are available under this context:
 
 [options="header, autowidth"]
 |===
-| Context:Key        | Description |
-| `service:name      | The full name of the service |
+| Context:Key         | Description |
+| `service:name`      | The full name of the service |
 |===
 
 [[ga-meta-data-dsl]]
