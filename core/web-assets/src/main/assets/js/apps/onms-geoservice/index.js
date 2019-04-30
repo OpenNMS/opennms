@@ -96,7 +96,7 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
                 $scope.geocoders = [];
                 $scope.globalError = undefined;
 
-                GeocodingConfigService.get(function (configResponse) {
+                return GeocodingConfigService.get(function (configResponse) {
                     $scope.config = configResponse;
                 }, function (errorResponse) {
                     $scope.handleGlobalError(errorResponse);
@@ -116,8 +116,6 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
                         }).$promise;
                     });
             };
-
-            $scope.refreshTabs();
         }])
 
         .controller('GeocoderConfigController', ['$scope', 'growl', function($scope, growl) {
@@ -132,9 +130,12 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
                     $scope.handleGlobalError(response);
                 });
             };
+
+            $scope.refreshTabs();
         }])
 
         .controller('GeocoderDetailsController', ['$scope', '$stateParams', 'growl', function($scope, $stateParams, growl) {
+            $scope.geocoders = [];
             $scope.geocoder = undefined;
             $scope.configError = {};
             $scope.manualValidation = {
@@ -157,6 +158,17 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
                     return true;
                 }
             };
+
+            $scope.handleGeocoderConfigErrors = function(errorObject) {
+                if (errorObject.context && errorObject.message) {
+                    $scope.configError[errorObject.context] = errorObject.message;
+                } else if (errorObject.context) {
+                    $scope.configError[errorObject.context] = 'Invalid value';
+                } else {
+                    growl.error('The configuration is not valid. Details were not provided');
+                }
+            };
+
             $scope.save = function() {
                 if ($scope.geocoder) {
                     if (!$scope.validateFieldsManually()) {
@@ -165,19 +177,16 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
                     // Now update
                     $scope.configError = {};
                     $scope.geocoder.$update(function () {
-                        // TODO MVR $scope.geocoder.error is not reset, but should to reflect the changes
                         growl.success('Changes saved successfully.');
                         $scope.form.$setPristine();
+
+                        // The data cannot be reloaded from the backend as the bundles will be refreshed and the
+                        // ReST service will most like not be available. To avoid 404s, we assume on success everything is fine
+                        // as otherwise the response would be a 400 with information what exactly is not okay
+                        $scope.geocoder.error = undefined;
                     }, function (response) {
                         if (response.status === 400 && response.data) {
-                            // TODO MVR duplicated code
-                            if (response.data.context && response.data.message) {
-                                $scope.configError[response.data.context] = response.data.message;
-                            } else if (response.data.context) {
-                                $scope.configError[response.data.context] = 'Invalid value';
-                            } else {
-                                growl.error('The configuration is not valid. Details were not provided');
-                            }
+                            $scope.handleGeocoderConfigErrors(response.data);
                         } else {
                             $scope.handleGlobalError(response);
                         }
@@ -194,24 +203,17 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
                return true;
             };
 
-            // TODO MVR block as long as geocoder is not initialized
-            $scope.$watch('geocoders', function(newValue, oldValue) {
-                var matchingGeocoders = newValue.filter(function(item) {
-                    return item.id === $stateParams.id
-                });
-                if (matchingGeocoders.length > 0) {
-                    $scope.geocoder = matchingGeocoders[0];
-                    // TODO MVR duplicated code
-                    if ($scope.geocoder.error) {
-                        if ($scope.geocoder.error && $scope.geocoder.error) {
-                            $scope.configError[$scope.geocoder.error.context] = $scope.geocoder.error.message;
-                        } else if (response.data.context) {
-                            $scope.configError[$scope.geocoder.error.context] = 'Invalid value';
-                        } else {
-                            growl.error('The configuration is not valid. Details were not provided');
+            // Refresh data
+            $scope.refreshTabs().then(function(geocoders) {
+                    var matchingGeocoders = geocoders.filter(function(item) {
+                        return item.id === $stateParams.id;
+                    });
+                    if (matchingGeocoders.length > 0) {
+                        $scope.geocoder = matchingGeocoders[0];
+                        if ($scope.geocoder.error) {
+                            $scope.handleGeocoderConfigErrors($scope.geocoder.error);
                         }
                     }
-                }
             });
         }])
     ;

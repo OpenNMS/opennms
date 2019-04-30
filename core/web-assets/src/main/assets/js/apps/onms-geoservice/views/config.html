@@ -3,7 +3,8 @@
         <div ng-repeat="geocoder in geocoders">
             <div class="mt-3 ml-2">
                 <label style="width: 100px">{{geocoder.id | capitalize}}</label>
-                <toggle class="mr-2"
+                <toggle id="{{geocoder.id}}-toggle"
+                        class="mr-2"
                         ng-change="onGeocoderChange(geocoder)"
                         ng-model="geocoder.active"
                         size="btn-sm"
