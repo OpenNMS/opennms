@@ -200,6 +200,21 @@
                   </div>
               </div>
           </form>
+
+          <%-- Search by flow data --%>
+          <form role="form" class="form-group" action="element/nodeList.htm" method="get">
+              <input type="hidden" name="listInterfaces" value="false"/>
+              <label for="byflows_flows">Flows:</label>
+              <div class="input-group">
+                  <select class="custom-select" id="byflows_flows" name="flows">
+                      <option value="true">Nodes with flow data</option>
+                      <option value="false">Nodes without flow data</option>
+                  </select>
+                  <div class="input-group-append">
+                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                  </div>
+              </div>
+          </form>
       </div>
     </div>
 
