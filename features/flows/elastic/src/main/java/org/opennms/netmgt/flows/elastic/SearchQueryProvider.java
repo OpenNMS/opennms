@@ -33,6 +33,7 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
@@ -109,6 +110,17 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .build());
     }
 
+    public String getSeriesForApplicationQuery(List<String> applications, long step, long start, long end,
+                                               List<Filter> filters) {
+        return render("series_for_applications.ftl", ImmutableMap.builder()
+                .put("filters", getFilterQueries(filters))
+                .put("applications", applications)
+                .put("step", step)
+                .put("start", start)
+                .put("end", end)
+                .build());
+    }
+
     public String getSeriesFromMissingQuery(long step, long start, long end, String groupByTerm,
                                             String keyForMissingTerm, List<Filter> filters) {
         return render("series_for_missing.ftl", ImmutableMap.builder()
@@ -132,6 +144,28 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .put("step", step)
                 .put("start", start)
                 .put("end", end)
+                .build());
+    }
+
+    public String getSeriesFromOthersQuery(List<String> applications, long step, long start, long end,
+                                           List<Filter> filters) {
+        return render("series_for_others_applications.ftl", ImmutableMap.builder()
+                .put("filters", getFilterQueries(filters))
+                .put("applications", applications)
+                .put("step", step)
+                .put("start", start)
+                .put("end", end)
+                .build());
+    }
+
+    public String getApplicationsQuery(String prefix, long limit, List<Filter> filters) {
+        Objects.requireNonNull(prefix);
+        Objects.requireNonNull(filters);
+        return render("aggregate_by_fuzzed_field.ftl", ImmutableMap.builder()
+                .put("filters", getFilterQueries(filters))
+                .put("N", limit)
+                .put("field", "netflow.application")
+                .put("prefix", prefix)
                 .build());
     }
 

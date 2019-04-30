@@ -13,7 +13,8 @@ NOTE: Unless specific otherwise, all unit of time are expressed in milliseconds.
 | `/flows/exporters`                | Retrieve basic information for the exporter nodes that have flows available
 | `/flows/exporters/{nodeCriteria}` | Retrieve detailed information about a specific exporter node
 | `/flows/applications`             | Retrieve traffic summary statistics for the top N applications
-| `/flows/applications/series`      | Retrieve time series metrics for the top N applications
+| `/flows/applications/enumerate`   | Retrieve a list of the applications with flows
+| `/flows/applications/series`      | Retrieve time series metrics for the top N applications or specific applications
 | `/flows/conversations`            | Retrieve traffic summary statistics for the top N conversations
 | `/flows/conversations/series`     | Retrieve time series metrics for the top N conversations
 |===
@@ -41,7 +42,17 @@ There is no support for using `OR` logic, or combinations thereof.
 
 The `exporters` endpoints do not support any parameters.
 
-The `applications` endpoints also support:
+The `applications/enumerate` endpoint also supports:
+
+[options="header"]
+|===
+| name               | default   | comment
+| limit              | 10        | Number of applications with flows to return
+| prefix             | ""        | If provided, filters the results to only include applications with names that start
+                                   with the given prefix (using fuzzy matching)
+|===
+
+The `applications` and `applications/series` endpoints also support:
 
 [options="header"]
 |===
@@ -50,6 +61,18 @@ The `applications` endpoints also support:
 | includeOther       | false     | When set to `true` the results will also include an additional row or column that contains
                                    the bytes transferred for the flows that fall outside of the Top N.
 |===
+
+The `applications/series` endpoint also supports:
+
+[options="header"]
+|===
+| name               | default   | comment
+| application        | none      | If provided, returns only flow series that match the given application(s). This field
+                                   can be repeated for any number of applications to be included in the query.
+|===
+
+The `application/series` endpoint requires one of `N` or `application` query parameters to be set and will return an
+error if neither or both are set.
 
 The `applications` and `conversations` endpoints also support:
 

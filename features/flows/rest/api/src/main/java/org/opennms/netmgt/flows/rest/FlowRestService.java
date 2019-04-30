@@ -90,6 +90,22 @@ public interface FlowRestService {
     @Produces(MediaType.APPLICATION_JSON)
     FlowNodeDetails getFlowExporter(@PathParam("nodeId") final Integer nodeId);
 
+    /**
+     * Retrieve the list of applications.
+     *
+     * Supports filtering.
+     *
+     * @param matchingPrefix a string prefix that can be used to further filter the results
+     * @param limit the maximum number of applications to return
+     * @return the list of applications
+     */
+    @GET
+    @Path("applications/enumerate")
+    @Produces(MediaType.APPLICATION_JSON)
+    List<String> getApplications(@DefaultValue("") @QueryParam("prefix") final String matchingPrefix,
+                                 @DefaultValue(DEFAULT_LIMIT) @QueryParam("limit") final long limit,
+                                 @Context UriInfo uriInfo);
+
     @GET
     @Path("applications")
     @Produces(MediaType.APPLICATION_JSON)
@@ -102,9 +118,10 @@ public interface FlowRestService {
     @GET
     @Path("applications/series")
     @Produces(MediaType.APPLICATION_JSON)
-    FlowSeriesResponse getTopNApplicationSeries(
+    FlowSeriesResponse getApplicationSeries(
             @DefaultValue(DEFAULT_STEP_MS) @QueryParam("step") final long step,
-            @DefaultValue(DEFAULT_TOP_N) @QueryParam("N") final int N,
+            @QueryParam("N") final Integer N,
+            @QueryParam("application") final List<String> applications,
             @DefaultValue("false") @QueryParam("includeOther") boolean includeOther,
             @Context final UriInfo uriInfo
     );

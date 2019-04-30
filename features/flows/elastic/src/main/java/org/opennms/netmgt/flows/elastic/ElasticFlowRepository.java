@@ -307,8 +307,19 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
+    public CompletableFuture<List<String>> getApplications(String matchingPrefix, long limit, List<Filter> filters) {
+        final String query = searchQueryProvider.getApplicationsQuery(matchingPrefix, limit, filters);
+        return searchAsync(query, extractTimeRangeFilter(filters)).thenApply(res -> processGroupedByResult(res, limit));
+    }
+
+    @Override
     public CompletableFuture<List<TrafficSummary<String>>> getTopNApplications(int N, boolean includeOther, List<Filter> filters) {
         return getTotalBytesFromTopN(N, "netflow.application", UNKNOWN_APPLICATION_NAME, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getApplicationSeries(List<String> applications, long step, boolean includeOther, List<Filter> filters) {
+        return getSeriesForApplications(applications, step, includeOther, filters).thenApply((res) -> mapTable(res, s -> s));
     }
 
     @Override
@@ -347,22 +358,39 @@ public class ElasticFlowRepository implements FlowRepository {
         final int multiplier = 2;
         final String query = searchQueryProvider.getTopNQuery(multiplier*N, groupByTerm, keyForMissingTerm, filters);
         return searchAsync(query, extractTimeRangeFilter(filters))
+                .thenApply(res -> processGroupedByResult(res, N));
+    }
+
+    private CompletableFuture<Table<Directional<String>, Long, Double>> getSeriesForApplications(List<String> applications,
+                                                                                                 long step,
+                                                                                                 boolean includeOther,
+                                                                                                 List<Filter> filters) {
+        if (applications == null || applications.isEmpty()) {
+            return CompletableFuture.completedFuture(null);
+        }
+        
+        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
+        final ImmutableTable.Builder<Directional<String>, Long, Double> builder = ImmutableTable.builder();
+        final String seriesFromApplicationQuery = searchQueryProvider.getSeriesForApplicationQuery(applications, step,
+                timeRangeFilter.getStart(),
+                timeRangeFilter.getEnd(), filters);
+        CompletableFuture<Void> seriesFuture;
+
+        seriesFuture = searchAsync(seriesFromApplicationQuery, timeRangeFilter)
                 .thenApply(res -> {
-                    final MetricAggregation aggs = res.getAggregations();
-                    if (aggs == null) {
-                        // No results
-                        return Collections.emptyList();
-                    }
-                    final TermsAggregation groupedBy = aggs.getTermsAggregation("grouped_by");
-                    if (groupedBy == null) {
-                        // No results
-                        return Collections.emptyList();
-                    }
-                    return groupedBy.getBuckets().stream()
-                            .map(TermsAggregation.Entry::getKey)
-                            .limit(N)
-                            .collect(Collectors.toList());
+                    toTable(builder, res);
+                    return null;
                 });
+        
+        if (includeOther) {
+            // We also want to gather series for all other terms
+            final String seriesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(applications, step,
+                    timeRangeFilter.getStart(), timeRangeFilter.getEnd(), filters);
+            seriesFuture = seriesFuture.thenCombine(searchAsync(seriesFromOthersQuery, timeRangeFilter),
+                    (ignored,res) -> processOthersResult(res, builder));
+        }
+        
+        return seriesFuture.thenApply(ignored -> builder.build());
     }
 
     private CompletableFuture<Table<Directional<String>, Long, Double>> getSeriesFromTopN(List<String> topN, long step, String groupByTerm,
@@ -400,30 +428,36 @@ public class ElasticFlowRepository implements FlowRepository {
             // We also want to gather series for terms not part of the Top N
             final String seriesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(topN, step,
                     timeRangeFilter.getStart(), timeRangeFilter.getEnd(), groupByTerm, missingTermIncludedInTopN, filters);
-            seriesFuture = seriesFuture.thenCombine(searchAsync(seriesFromOthersQuery, timeRangeFilter), (ignored,res) -> {
-                final MetricAggregation aggs = res.getAggregations();
-                if (aggs == null) {
-                    // No results
-                    return null;
-                }
-                final TermsAggregation directionAgg = aggs.getTermsAggregation("direction");
-                if (directionAgg == null) {
-                    // No results
-                    return null;
-                }
-                for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
-                    final boolean isIngress = isIngress(directionBucket);
-                    final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
-                    for (ProportionalSumAggregation.DateHistogram dateHistogram : sumAgg.getBuckets()) {
-                        builder.put(new Directional<>(OTHER_APPLICATION_NAME, isIngress), dateHistogram.getTime(), dateHistogram.getValue());
-                    }
-                }
-                return null;
-            });
+            seriesFuture = seriesFuture.thenCombine(searchAsync(seriesFromOthersQuery, timeRangeFilter),
+                    (ignored,res) -> processOthersResult(res, builder));
         }
 
         // Sort the table to ensure that the rows as in the same order as the Top N
         return seriesFuture.thenApply(ignored -> TableUtils.sortTableByRowKeys(builder.build(), topN));
+    }
+
+    private Void processOthersResult(SearchResult res,
+                                     ImmutableTable.Builder<Directional<String>, Long, Double> builder) {
+        final MetricAggregation aggs = res.getAggregations();
+        if (aggs == null) {
+            // No results
+            return null;
+        }
+        final TermsAggregation directionAgg = aggs.getTermsAggregation("direction");
+        if (directionAgg == null) {
+            // No results
+            return null;
+        }
+        for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
+            final boolean isIngress = isIngress(directionBucket);
+            final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes",
+                    ProportionalSumAggregation.class);
+            for (ProportionalSumAggregation.DateHistogram dateHistogram : sumAgg.getBuckets()) {
+                builder.put(new Directional<>(OTHER_APPLICATION_NAME, isIngress), dateHistogram.getTime(),
+                        dateHistogram.getValue());
+            }
+        }
+        return null;
     }
 
     private static void toTable(ImmutableTable.Builder<Directional<String>, Long, Double> builder, SearchResult res) {
@@ -610,6 +644,23 @@ public class ElasticFlowRepository implements FlowRepository {
             }
         });
         return future;
+    }
+
+    private List<String> processGroupedByResult(SearchResult searchResult, long limit) {
+        final MetricAggregation aggs = searchResult.getAggregations();
+        if (aggs == null) {
+            // No results
+            return Collections.emptyList();
+        }
+        final TermsAggregation groupedBy = aggs.getTermsAggregation("grouped_by");
+        if (groupedBy == null) {
+            // No results
+            return Collections.emptyList();
+        }
+        return groupedBy.getBuckets().stream()
+                .map(TermsAggregation.Entry::getKey)
+                .limit(limit)
+                .collect(Collectors.toList());
     }
 
     /**

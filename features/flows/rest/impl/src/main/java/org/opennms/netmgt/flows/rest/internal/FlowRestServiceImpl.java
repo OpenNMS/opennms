@@ -44,7 +44,9 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -133,12 +135,33 @@ public class FlowRestServiceImpl implements FlowRestService {
         return response;
     }
 
+    private boolean isNullOrEmptyOrContainsNullOrEmpty(List<String> list) {
+        return list == null || list.isEmpty() || list.contains(null) || list.contains("");
+    }
+    
     @Override
-    public FlowSeriesResponse getTopNApplicationSeries(long step, int N, boolean includeOther, UriInfo uriInfo) {
+    public FlowSeriesResponse getApplicationSeries(long step, Integer N, List<String> applications,
+                                                   boolean includeOther, UriInfo uriInfo) {
+        if (N == null && isNullOrEmptyOrContainsNullOrEmpty(applications)) {
+            // If neither the top N or the application are set that is an error
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_PLAIN)
+                    .entity("One of 'N' or 'application' query parameters must be present").build());
+        } else if (N != null && !isNullOrEmptyOrContainsNullOrEmpty(applications)) {
+            // If both are set that is also an error
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_PLAIN)
+                    .entity("Only one of 'N' or 'application' query parameters should be set").build());
+        }
+        
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
         final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
-        final Table<Directional<String>, Long, Double> series =
-                waitForFuture(flowRepository.getTopNApplicationsSeries(N, step, includeOther, filters));
+
+        final Table<Directional<String>, Long, Double> series;
+
+        if (N != null) {
+            series = waitForFuture(flowRepository.getTopNApplicationsSeries(N, step, includeOther, filters));
+        } else {
+            series = waitForFuture(flowRepository.getApplicationSeries(applications, step, includeOther, filters));
+        }
 
         final FlowSeriesResponse response = new FlowSeriesResponse();
         response.setStart(timeRangeFilter.getStart());
@@ -328,4 +351,9 @@ public class FlowRestServiceImpl implements FlowRestService {
         this.flowGraphUrl = flowGraphUrl;
     }
 
+    @Override
+    public List<String> getApplications(String matchingPrefix, long limit, UriInfo uriInfo) {
+        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
+        return waitForFuture(flowRepository.getApplications(matchingPrefix, limit, filters));
+    }
 }
