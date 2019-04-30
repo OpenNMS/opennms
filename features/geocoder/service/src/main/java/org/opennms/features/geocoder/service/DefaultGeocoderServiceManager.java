@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.geolocation.services;
+package org.opennms.features.geocoder.service;
 
 import java.io.IOException;
 import java.util.List;
@@ -45,7 +45,6 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 
-// TODO MVR move to geocoder module
 public class DefaultGeocoderServiceManager implements GeocoderServiceManager {
 
     private static final String PID = "org.opennms.features.geocoder";

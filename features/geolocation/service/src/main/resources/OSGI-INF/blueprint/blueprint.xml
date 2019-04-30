@@ -5,33 +5,11 @@ http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0
 http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
 http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd">
 
-    <!-- TODO MVR the bundle should be started BEFORE the geocoder services -->
-
-    <cm:property-placeholder id="geocoderConfig" persistent-id="org.opennms.features.geocoder" update-strategy="reload">
-        <cm:default-properties>
-            <cm:property name="activeGeocoderId" value="" /> <!-- by default no geocoder is used -->
-        </cm:default-properties>
-    </cm:property-placeholder>
 
     <reference id="genericPersistenceAccessor" interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor" availability="mandatory" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
     <reference id="nodeStatusCalculator" interface="org.opennms.features.status.api.node.NodeStatusCalculator" availability="mandatory"/>
-    <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
-
-    <bean id="geocoderServiceManagerConfig" class="org.opennms.features.geocoder.GeocoderServiceManagerConfiguration">
-        <property name="activeGeocoderId" value="${activeGeocoderId}" />
-    </bean>
-
-    <bean id="geocoderServiceManager" class="org.opennms.features.geolocation.services.DefaultGeocoderServiceManager">
-        <argument ref="blueprintBundleContext" />
-        <argument ref="configAdmin" />
-        <argument ref="geocoderServiceManagerConfig"/>
-    </bean>
-    <service ref="geocoderServiceManager" interface="org.opennms.features.geocoder.GeocoderServiceManager">
-        <service-properties>
-            <entry key="registration.export" value="true"/>
-        </service-properties>
-    </service>
+    <reference id="geocoderServiceManager" interface="org.opennms.features.geocoder.GeocoderServiceManager" availability="mandatory" />
 
     <bean id="geolocationResolver" class="org.opennms.features.geolocation.services.DefaultGeolocationResolver" >
         <argument ref="geocoderServiceManager" />

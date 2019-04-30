@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.geolocation.services;
+package org.opennms.features.geocoder.service;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

@@ -1098,11 +1098,12 @@
     <feature name="geolocation" version="${project.version}" description="OpenNMS :: Features :: Geolocation :: Feature">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
         <feature>opennms-core-web</feature>
-        <bundle>mvn:org.opennms.features.geolocation/org.opennms.features.geolocation.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.geolocation/org.opennms.features.geolocation.services/${project.version}</bundle>
         <bundle>mvn:com.google.guava/guava/${guavaVersion}</bundle>
         <bundle start-level="80">mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.api/${project.version}</bundle>
         <bundle start-level="80">mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.rest/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.service/${project.version}</bundle>
+        <bundle start-level="90">mvn:org.opennms.features.geolocation/org.opennms.features.geolocation.api/${project.version}</bundle>
+        <bundle start-level="90">mvn:org.opennms.features.geolocation/org.opennms.features.geolocation.services/${project.version}</bundle>
         <bundle start-level="100">mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.google/${project.version}</bundle>
         <bundle start-level="100">mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.mapquest/${project.version}</bundle>
         <bundle start-level="100">mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.nominatim/${project.version}</bundle>

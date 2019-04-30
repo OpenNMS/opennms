@@ -16,6 +16,7 @@
     <module>mapquest</module>
     <module>nominatim</module>
     <module>rest</module>
+    <module>service</module>
   </modules>
   <dependencies>
     <dependency>
