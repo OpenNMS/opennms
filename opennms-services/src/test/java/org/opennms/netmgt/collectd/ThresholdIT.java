@@ -191,8 +191,11 @@ public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
         eventAnticipator.anticipateEvent(nodeGainedServiceEvent);
         mockEventIpcManager.sendNow(nodeGainedServiceEvent);
 
-        // Assert Threshold is not triggered
-        Thread.sleep(15000);
+        // Assert 2 collections are performed and Threshold is not triggered
+        collector.resetLatch(2);
+        if (!collector.getLatch().await(30, TimeUnit.SECONDS)) {
+            throw new IllegalStateException("Collector was not called!");
+        }
         assertEquals(0, eventAnticipator.getUnanticipatedEvents().size());
 
         // Anticipate the high threshold event
@@ -220,6 +223,7 @@ public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
         mockEventIpcManager.sendNow(nodeCategoryChangeEvent);
 
         // Now wait until our collector was called
+        collector.resetLatch(1);
         if (!collector.getLatch().await(30, TimeUnit.SECONDS)) {
             throw new IllegalStateException("Collector was not called!");
         }
@@ -245,8 +249,11 @@ public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
         eventAnticipator.anticipateEvent(nodeCategoryChangeEvent);
         mockEventIpcManager.sendNow(nodeCategoryChangeEvent);
 
-        // Assert Threshold is no longer triggered
-        Thread.sleep(15000);
+        // Again, Assert 2 collections are performed and that Threshold is no longer triggered
+        collector.resetLatch(2);
+        if (!collector.getLatch().await(30, TimeUnit.SECONDS)) {
+            throw new IllegalStateException("Collector was not called!");
+        }
         assertEquals(0, eventAnticipator.getUnanticipatedEvents().size());
 
         // Stop collectd gracefully so we don't keep trying to collect during the tear down
@@ -266,7 +273,8 @@ public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
     private static class MyServiceCollector extends AbstractServiceCollector {
 
         private final SessionUtils sessionUtils;
-        private final CountDownLatch latch = new CountDownLatch(1);
+
+        private CountDownLatch latch = new CountDownLatch(1);
 
 
         public MyServiceCollector(SessionUtils sessionUtils) {
@@ -298,6 +306,10 @@ public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
 
         public CountDownLatch getLatch() {
             return latch;
+        }
+
+        public void resetLatch(int count) {
+            latch = new CountDownLatch(count);
         }
     }
 }
