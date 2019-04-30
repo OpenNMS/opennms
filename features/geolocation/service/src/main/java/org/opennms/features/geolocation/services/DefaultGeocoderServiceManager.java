@@ -28,17 +28,11 @@
 
 package org.opennms.features.geolocation.services;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.opennms.features.geocoder.GeocoderConfiguration;
@@ -69,13 +63,7 @@ public class DefaultGeocoderServiceManager implements GeocoderServiceManager {
     @Override
     public void updateConfiguration(GeocoderServiceManagerConfiguration newConfiguration) throws IOException {
         final Configuration configuration = configurationAdmin.getConfiguration(PID);
-        final Dictionary<String, Object> currentProperties = configuration.getProperties() == null ? new Hashtable<>() : configuration.getProperties();
-
-        // Only update if changed
-        if (!Objects.equals(newConfiguration, configuration)) {
-            applyProperties(currentProperties, newConfiguration.asMap());
-            configuration.update(currentProperties);
-        }
+        new ConfigurationWrapper(configuration).update(newConfiguration.asMap());
     }
 
     @Override
@@ -117,17 +105,7 @@ public class DefaultGeocoderServiceManager implements GeocoderServiceManager {
             // Please keep in mind, that the config pid of the geocoder must be PID + geocoderId
             final String configPID = PID + "." + geocoderId;
             final Configuration configuration = configurationAdmin.getConfiguration(configPID, null);
-            final Dictionary<String, Object> currentProperties = configuration.getProperties() != null ? configuration.getProperties() : new Hashtable<>();
-            applyProperties(currentProperties, newProperties);
-
-            // Ensure file will be created if it does not yet exist
-            if (currentProperties.get("felix.fileinstall.filename") == null) {
-                final Path configFile = Paths.get(System.getProperty("karaf.etc"), configPID + ".cfg");
-                final Properties persistentProperties = new Properties();
-                newProperties.entrySet().forEach(e -> persistentProperties.put(e.getKey(), e.getValue().toString()));
-                persistentProperties.store(new FileOutputStream(configFile.toFile()), null);
-            }
-            configuration.update(currentProperties);
+            new ConfigurationWrapper(configuration).update(newProperties);
         }
     }
 
@@ -138,16 +116,5 @@ public class DefaultGeocoderServiceManager implements GeocoderServiceManager {
                 .filter(service -> geocoderId.equalsIgnoreCase(service.getId())).findFirst()
                 .orElseThrow(() -> new NoSuchElementException("Could not find GeocoderService with id '" + geocoderId + "'"));
         return geocoderService;
-    }
-
-    // Updates the currentProperties with values from newProperties. Deletes null values. Does not remove keys.
-    private static void applyProperties(Dictionary<String, Object> currentProperties, Map<String, Object> newProperties) {
-        newProperties.entrySet().forEach(e -> {
-            if (e.getValue() == null) {
-                currentProperties.remove(e.getKey());
-            } else {
-                currentProperties.put(e.getKey(), e.getValue().toString());
-            }
-        });
     }
 }
