@@ -58,7 +58,7 @@ import com.google.common.net.InetAddresses;
 
 public class ApplicationGraphProviderTest {
 
-    private Graph graph;
+    private Graph<ApplicationVertex, SimpleEdge> graph;
     private int id;
     @Before
     public void setUp(){
@@ -121,9 +121,9 @@ public class ApplicationGraphProviderTest {
         return service;
     }
 
-    private void verifyLinkingBetweenNodes(Vertex left, Vertex right) {
+    private void verifyLinkingBetweenNodes(ApplicationVertex left, ApplicationVertex right) {
 
-        Collection<SimpleEdge> edgesLeft = this.graph.getConnectingEdges(left); // TODO: patrick get the generics right
+        Collection<SimpleEdge> edgesLeft = this.graph.getConnectingEdges(left);
         Collection<SimpleEdge> edgesRight = this.graph.getConnectingEdges(right);
 
         // 1.) get the EdgeRef that connects the 2 vertices

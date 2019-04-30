@@ -92,6 +92,7 @@ public class ApplicationSearchProvider extends AbstractSearchProvider implements
         bldr.limit(10);
         Criteria dbQueryCriteria = bldr.toCriteria();
 
+        // TODO: patrick do we want to replace the dao call also with a call to GraphService?
         for (OnmsApplication application : applicationDao.findMatching(dbQueryCriteria)) {
             final GuiApplicationVertex applicationVertex = new GuiApplicationVertex(application);
             SearchResult searchResult = new SearchResult(applicationVertex, true, false);

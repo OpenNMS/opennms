@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -42,18 +43,15 @@ import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Defaults;
-import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.graph.api.Graph;
 import org.opennms.netmgt.graph.api.service.GraphService;
 import org.opennms.netmgt.graph.provider.application.ApplicationGraph;
 import org.opennms.netmgt.graph.provider.application.ApplicationGraphProvider;
 import org.opennms.netmgt.graph.provider.application.ApplicationVertex;
 import org.opennms.netmgt.graph.simple.SimpleEdge;
-import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsMonitoredService;
+
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -62,12 +60,11 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
 
     public static final String TOPOLOGY_NAMESPACE = "application";
 
-    private ApplicationDao applicationDao;
     private GraphService graphService;
 
-    public ApplicationTopologyProvider(ApplicationDao applicationDao) {
+    public ApplicationTopologyProvider(GraphService graphService) {
         super(TOPOLOGY_NAMESPACE);
-        this.applicationDao = Objects.requireNonNull(applicationDao);
+        this.graphService = Objects.requireNonNull(graphService);
     }
 
     private void load() {
@@ -112,24 +109,24 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
     }
 
     // TODO: patrick delete when done
-    private void loadOld() {
-        graph.resetContainer();
-        for (OnmsApplication application : applicationDao.findAll()) {
-            final GuiApplicationVertex applicationVertex = new GuiApplicationVertex(application);
-            graph.addVertices(applicationVertex);
-
-            for (OnmsMonitoredService eachMonitoredService : application.getMonitoredServices()) {
-                final GuiApplicationVertex serviceVertex = new GuiApplicationVertex(eachMonitoredService);
-                applicationVertex.addChildren(serviceVertex);
-                graph.addVertices(serviceVertex);
-
-                // connect with application
-                final String id = String.format("connection:%s:%s", applicationVertex.getId(), serviceVertex.getId());
-                final Edge edge = new AbstractEdge(getNamespace(), id, applicationVertex, serviceVertex);
-                graph.addEdges(edge);
-            }
-        }
-    }
+//    private void loadOld() {
+//        graph.resetContainer();
+//        for (OnmsApplication application : applicationDao.findAll()) {
+//            final GuiApplicationVertex applicationVertex = new GuiApplicationVertex(application);
+//            graph.addVertices(applicationVertex);
+//
+//            for (OnmsMonitoredService eachMonitoredService : application.getMonitoredServices()) {
+//                final GuiApplicationVertex serviceVertex = new GuiApplicationVertex(eachMonitoredService);
+//                applicationVertex.addChildren(serviceVertex);
+//                graph.addVertices(serviceVertex);
+//
+//                // connect with application
+//                final String id = String.format("connection:%s:%s", applicationVertex.getId(), serviceVertex.getId());
+//                final Edge edge = new AbstractEdge(getNamespace(), id, applicationVertex, serviceVertex);
+//                graph.addEdges(edge);
+//            }
+//        }
+//    }
 
     @Override
     public void refresh() {
@@ -142,9 +139,13 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
                 .withPreferredLayout("Hierarchy Layout")
                 .withCriteria(() -> {
                     // Only show the first application by default
-                    List<OnmsApplication> applications = applicationDao.findAll();
-                    if (!applications.isEmpty()) {
-                        return Lists.newArrayList(new DefaultVertexHopCriteria(new GuiApplicationVertex(applications.get(0))));
+                    Graph genericGraph = graphService.getGraph(ApplicationGraphProvider.TOPOLOGY_NAMESPACE);
+                    ApplicationGraph applicationGraph = new ApplicationGraph(genericGraph.asGenericGraph());
+                    Optional<ApplicationVertex> firstVertex = applicationGraph.getVertices().stream()
+                            .filter( v -> v.getVertexType() == ApplicationVertex.VertexType.application)
+                            .findFirst();
+                    if (firstVertex.isPresent()) {
+                        return Lists.newArrayList(new DefaultVertexHopCriteria(new GuiApplicationVertex(firstVertex.get())));
                     }
                     return null;
                 });

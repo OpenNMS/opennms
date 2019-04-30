@@ -43,7 +43,6 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO: patrick use in ApplicationTopologyProvider
 public class ApplicationGraphProvider implements GraphProvider {
 
     public static final String TOPOLOGY_NAMESPACE = "application";
@@ -69,7 +68,7 @@ public class ApplicationGraphProvider implements GraphProvider {
     }
 
     @Override
-    public Graph<?, ?> loadGraph() {
+    public Graph<ApplicationVertex, SimpleEdge> loadGraph() {
         final ApplicationGraph graph = new ApplicationGraph(TOPOLOGY_NAMESPACE);
         graph.setLabel(GRAPH_LABEL);
         graph.setDescription(GRAPH_DESCRIPTION);

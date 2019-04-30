@@ -1462,6 +1462,14 @@
     </feature>
 
     <!-- TODO MVR redefine me -->
+    <feature name="opennms-graph-rest" description="OpenNMS :: Features :: Graph :: ReST API" version="${project.version}">
+        <feature>opennms-graph-api</feature>
+        <feature>opennms-graph-service</feature>
+        <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.rest/${project.version}</bundle>
+    </feature>
+
+    <!-- TODO MVR redefine me -->
     <feature name="opennms-graph-simple" description="OpenNMS :: Features :: Graph :: Simple" version="${project.version}">
         <feature>opennms-graph-api</feature>
         <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.simple/${project.version}</bundle>
@@ -1496,10 +1504,9 @@
     </feature>
 
     <!-- TODO MVR redefine me -->
-    <feature name="opennms-graph-rest" description="OpenNMS :: Features :: Graph :: ReST API" version="${project.version}">
-        <feature>opennms-graph-api</feature>
+    <feature name="opennms-graph-provider-application" description="OpenNMS :: Features :: Graph :: Provider :: Application" version="${project.version}">
         <feature>opennms-graph-service</feature>
-        <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.rest/${project.version}</bundle>
+        <feature>opennms-model</feature>
+        <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.application/${project.version}</bundle>
     </feature>
 </features>
