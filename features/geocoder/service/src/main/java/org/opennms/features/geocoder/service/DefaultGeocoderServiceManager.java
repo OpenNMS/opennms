@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.features.geocoder.GeocoderConfiguration;
@@ -49,6 +50,8 @@ public class DefaultGeocoderServiceManager implements GeocoderServiceManager {
 
     private static final String PID = "org.opennms.features.geocoder";
 
+    private static final Function<String, String> configPidFactory = (geocoderId) -> PID + "." + geocoderId;
+
     private BundleContext bundleContext;
     private ConfigurationAdmin configurationAdmin;
     private GeocoderServiceManagerConfiguration configuration;
@@ -62,10 +65,11 @@ public class DefaultGeocoderServiceManager implements GeocoderServiceManager {
     @Override
     public void resetConfiguration() throws IOException {
         for (GeocoderService service : getGeocoderServices()) {
-            final Configuration configuration = configurationAdmin.getConfiguration(PID + "." + service.getId(), null);
-            configuration.delete(); // TODO MVR is the file deleted as well?
+            final String configPid = configPidFactory.apply(service.getId());
+            final Configuration configuration = configurationAdmin.getConfiguration(configPid, null);
+            new ConfigurationWrapper(configuration).delete();
         }
-        configurationAdmin.getConfiguration(PID).delete(); // TODO MVR is the file deleted as well?
+        new ConfigurationWrapper(configurationAdmin.getConfiguration(PID)).delete();
     }
 
     @Override
@@ -111,7 +115,7 @@ public class DefaultGeocoderServiceManager implements GeocoderServiceManager {
 
             // Updating the configuration will result in a bundle reload to which the configuration belongs
             // Please keep in mind, that the config pid of the geocoder must be PID + geocoderId
-            final String configPID = PID + "." + geocoderId;
+            final String configPID = configPidFactory.apply(geocoderId);
             final Configuration configuration = configurationAdmin.getConfiguration(configPID, null);
             new ConfigurationWrapper(configuration).update(newProperties);
         }

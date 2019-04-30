@@ -128,8 +128,9 @@ public class GeocodingRestServiceImpl implements GeocodingRestService {
     }
 
     private static Response createInternalServerErrorResponse(IOException ex) {
+        final JSONObject errorObject = createErrorObject(ex);
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity(createErrorObject(ex))
+                .entity(errorObject.toString())
                 .build();
     }
 

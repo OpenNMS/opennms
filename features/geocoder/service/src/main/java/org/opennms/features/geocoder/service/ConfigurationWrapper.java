@@ -30,6 +30,7 @@ package org.opennms.features.geocoder.service;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Dictionary;
@@ -58,10 +59,23 @@ public class ConfigurationWrapper {
         }
     }
 
+
+    public void delete() throws IOException {
+        final String configPid = configuration.getPid();
+        configuration.delete();
+        final Path configFile = getConfigFile(configPid);
+        Files.deleteIfExists(configFile);
+    }
+
+    private static Path getConfigFile(final String configPID) {
+        final Path configFile = Paths.get(System.getProperty("karaf.etc"), configPID + ".cfg");
+        return configFile;
+    }
+
     private static void saveToDisk(String configPID, Dictionary<String, Object> currentProperties) throws IOException {
         // Ensure file will be created if it does not yet exist
         if (currentProperties.get("felix.fileinstall.filename") == null) {
-            final Path configFile = Paths.get(System.getProperty("karaf.etc"), configPID + ".cfg");
+            final Path configFile = getConfigFile(configPID);
             final Properties persistentProperties = new Properties();
             final Enumeration<String> keyEnumerator = currentProperties.keys();
             while(keyEnumerator.hasMoreElements()) {
