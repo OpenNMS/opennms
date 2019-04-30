@@ -34,15 +34,25 @@ import java.util.Map;
 
 public interface GeocoderServiceManager {
 
+    // Deletes all configuration files related to the geocoder service.
+    // This results in falling back to the defaults
+    void resetConfiguration() throws IOException;
+
+    // Updates the configuration for the service manager
     void updateConfiguration(GeocoderServiceManagerConfiguration configuration) throws IOException;
 
-    GeocoderServiceManagerConfiguration getConfiguration() throws IOException;
+    // Returns the configuration for the service manager
+    GeocoderServiceManagerConfiguration getConfiguration();
 
+    // Returns the current active geocoder service, or null
     GeocoderService getActiveGeocoderService();
 
+    // Updates the configuration for the geocoder with the provided id. Throws NoSuchElementException if geocoder does not exist
     void updateGeocoderConfiguration(String geocoderId, Map<String, Object> newProperties) throws IOException;
 
+    // Returns ALL geocoders. None of those may be active
     List<GeocoderService> getGeocoderServices();
 
+    // Returns the geocoder identified by the provided id. Throws NoSuchElementException if geocoder does not exist
     GeocoderService getGeocoderService(String geocoderId);
 }

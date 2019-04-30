@@ -28,10 +28,10 @@
 
 package org.opennms.features.geocoder.rest;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -45,13 +45,17 @@ import javax.ws.rs.core.Response;
 @Consumes("application/json")
 public interface GeocodingRestService {
 
+    @DELETE
+    @Path("/config")
+    Response resetConfiguration();
+
     @GET
     @Path("/config")
-    Response getConfiguration() throws IOException;
+    Response getConfiguration();
 
     @POST
     @Path("/config")
-    Response updateConfiguration(InputStream inputStream) throws IOException;
+    Response updateConfiguration(InputStream inputStream);
 
     @GET
     @Path("/geocoders")

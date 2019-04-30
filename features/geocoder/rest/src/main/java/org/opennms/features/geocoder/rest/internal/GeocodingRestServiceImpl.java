@@ -54,7 +54,7 @@ public class GeocodingRestServiceImpl implements GeocodingRestService {
     }
 
     @Override
-    public Response getConfiguration() throws IOException {
+    public Response getConfiguration() {
         final GeocoderServiceManagerConfiguration configuration = geocoderServiceManager.getConfiguration();
         final Map<String, Object> configurationMap = configuration.asMap();
         final JSONObject result = new JSONObject(configurationMap);
@@ -62,13 +62,27 @@ public class GeocodingRestServiceImpl implements GeocodingRestService {
     }
 
     @Override
-    public Response updateConfiguration(InputStream inputStream) throws IOException {
+    public Response resetConfiguration() {
+        try {
+            geocoderServiceManager.resetConfiguration();
+            return Response.accepted().build();
+        } catch (IOException ex) {
+            return createInternalServerErrorResponse(ex);
+        }
+    }
+
+    @Override
+    public Response updateConfiguration(InputStream inputStream) {
         final JSONTokener jsonTokener = new JSONTokener(inputStream);
         final JSONObject configuration = new JSONObject(jsonTokener);
         final Map<String, Object> configurationProperties = configuration.toMap();
         final GeocoderServiceManagerConfiguration geocoderServiceManagerConfiguration = new GeocoderServiceManagerConfiguration(configurationProperties);
-        geocoderServiceManager.updateConfiguration(geocoderServiceManagerConfiguration);
-        return Response.accepted().build();
+        try {
+            geocoderServiceManager.updateConfiguration(geocoderServiceManagerConfiguration);
+            return Response.accepted().build();
+        } catch (IOException ex) {
+            return createInternalServerErrorResponse(ex);
+        }
     }
 
     @Override
@@ -109,10 +123,14 @@ public class GeocodingRestServiceImpl implements GeocodingRestService {
             }
             return Response.noContent().build();
         } catch (IOException ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(createErrorObject(ex))
-                    .build();
+            return createInternalServerErrorResponse(ex);
         }
+    }
+
+    private static Response createInternalServerErrorResponse(IOException ex) {
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(createErrorObject(ex))
+                .build();
     }
 
     private static JSONObject createErrorObject(Exception ex) {

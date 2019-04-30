@@ -61,6 +61,15 @@ public class DefaultGeocoderServiceManager implements GeocoderServiceManager {
     }
 
     @Override
+    public void resetConfiguration() throws IOException {
+        for (GeocoderService service : getGeocoderServices()) {
+            final Configuration configuration = configurationAdmin.getConfiguration(PID + "." + service.getId(), null);
+            configuration.delete(); // TODO MVR is the file deleted as well?
+        }
+        configurationAdmin.getConfiguration(PID).delete(); // TODO MVR is the file deleted as well?
+    }
+
+    @Override
     public void updateConfiguration(GeocoderServiceManagerConfiguration newConfiguration) throws IOException {
         final Configuration configuration = configurationAdmin.getConfiguration(PID);
         new ConfigurationWrapper(configuration).update(newConfiguration.asMap());
