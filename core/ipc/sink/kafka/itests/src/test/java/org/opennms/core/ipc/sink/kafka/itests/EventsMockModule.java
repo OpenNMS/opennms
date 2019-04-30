@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,19 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.common.kafka;
+package org.opennms.core.ipc.sink.kafka.itests;
 
-public interface KafkaSinkConstants {
+import org.opennms.core.ipc.sink.api.AggregationPolicy;
+import org.opennms.core.ipc.sink.api.AsyncPolicy;
+import org.opennms.core.ipc.sink.xml.AbstractXmlSinkModule;
+import org.opennms.netmgt.xml.event.Event;
 
-    String KAFKA_TOPIC_PREFIX = "Sink";
+public class EventsMockModule extends AbstractXmlSinkModule<Event, Event> {
 
-    String KAFKA_CONFIG_PID = "org.opennms.core.ipc.sink.kafka";
+    public static final EventsMockModule INSTANCE = new EventsMockModule();
 
-    String KAFKA_CONFIG_CONSUMER_PID = KAFKA_CONFIG_PID + ".consumer";
+    public EventsMockModule() {
+        super(Event.class);
+    }
 
-    String KAFKA_CONFIG_SYS_PROP_PREFIX = KAFKA_CONFIG_PID + ".";
+    @Override
+    public String getId() {
+        return "Events-Mock";
+    }
 
-    public static final String MAX_BUFFER_SIZE_PROPERTY = "max.buffer.size";
-    //By default, kafka allows 1MB buffer sizes, here message (content in sink-message.proto) is limited to 900KB.
-    public static final int DEFAULT_MAX_BUFFER_SIZE = 921600;
+    @Override
+    public int getNumConsumerThreads() {
+        return 1;
+    }
+
+    @Override
+    public AggregationPolicy<Event, Event, Event> getAggregationPolicy() {
+        return null;
+    }
+
+    @Override
+    public AsyncPolicy getAsyncPolicy() {
+        return null;
+    }
 }

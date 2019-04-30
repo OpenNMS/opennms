@@ -62,6 +62,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager implements InitializingBean {
@@ -84,6 +85,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         private final AtomicBoolean closed = new AtomicBoolean(false);
         private final KafkaConsumer<String, byte[]> consumer;
         private final String topic;
+        private Map<String, ByteString> largeMessageCache = new ConcurrentHashMap<>();
 
         public KafkaConsumerRunner(SinkModule<?, Message> module) {
             this.module = module;
@@ -103,7 +105,25 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                     ConsumerRecords<String, byte[]> records = consumer.poll(100);
                     for (ConsumerRecord<String, byte[]> record : records) {
                         try {
-                            byte[] messageInBytes = getSinkMessageFromProto(record.value());
+                            // Parse sink message content from protobuf.
+                            SinkMessageProtos.SinkMessage sinkMessage = SinkMessageProtos.SinkMessage.parseFrom(record.value());
+                            byte[] messageInBytes = sinkMessage.getContent().toByteArray();
+                            // Handle large message where there are multiple chunks of message.
+                            if (sinkMessage.getTotalChunks() > 1) {
+                                String messageId = sinkMessage.getMessageId();
+                                ByteString byteString = largeMessageCache.get(messageId);
+                                if(byteString != null) {
+                                    largeMessageCache.put(messageId, byteString.concat(sinkMessage.getContent()));
+                                } else {
+                                    largeMessageCache.put(messageId, sinkMessage.getContent());
+                                }
+                                // continue till all chunks arrive.
+                                if (sinkMessage.getTotalChunks() > sinkMessage.getCurrentChunkNumber() + 1) {
+                                    continue;
+                                }
+                                messageInBytes = largeMessageCache.get(messageId).toByteArray();
+                                largeMessageCache.remove(messageId);
+                            }
                             dispatch(module, module.unmarshal(messageInBytes));
                         } catch (RuntimeException e) {
                             LOG.warn("Unexpected exception while dispatching message", e);
@@ -121,11 +141,6 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             } finally {
                 consumer.close();
             }
-        }
-
-        private byte[] getSinkMessageFromProto(byte[] value) throws InvalidProtocolBufferException {
-            SinkMessageProtos.SinkMessage sinkMessage = SinkMessageProtos.SinkMessage.parseFrom(value);
-            return sinkMessage.getContent().toByteArray();
         }
 
         // Shutdown hook which can be called from a separate thread
