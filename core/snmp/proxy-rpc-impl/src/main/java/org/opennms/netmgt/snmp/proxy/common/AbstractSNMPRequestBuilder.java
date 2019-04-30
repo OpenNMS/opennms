@@ -33,6 +33,8 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.rpc.api.RpcRequest;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.SNMPRequestBuilder;
 
@@ -95,6 +97,8 @@ public abstract class AbstractSNMPRequestBuilder<T> implements SNMPRequestBuilde
         snmpRequestDTO.setGetRequests(gets);
         snmpRequestDTO.setWalkRequests(walks);
         snmpRequestDTO.setTimeToLive(timeToLiveInMilliseconds);
+        snmpRequestDTO.addTracingInfo(RpcRequest.TAG_IP_ADDRESS, InetAddressUtils.toIpAddrString(agent.getAddress()));
+        snmpRequestDTO.addTracingInfo(RpcRequest.TAG_DESCRIPTION, description);
         return client.execute(snmpRequestDTO)
             // Different types of requests can process the responses differently
             .thenApply(this::processResponse);

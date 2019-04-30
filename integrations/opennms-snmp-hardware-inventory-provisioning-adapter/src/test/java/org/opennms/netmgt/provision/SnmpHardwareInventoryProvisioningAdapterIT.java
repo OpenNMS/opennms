@@ -81,10 +81,11 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host="192.168.0.1", resource="entPhysicalTable-cisco-r1.properties"),
-        @JUnitSnmpAgent(host="192.168.0.2", resource="entPhysicalTable-cisco-r2.properties"),
-        @JUnitSnmpAgent(host="192.168.0.3", resource="entPhysicalTable-cisco-r3.properties"),
-        @JUnitSnmpAgent(host="192.168.0.4", resource="entPhysicalTable-cisco-r4.properties")
+        @JUnitSnmpAgent(host = "192.168.0.1", resource = "entPhysicalTable-cisco-r1.properties"),
+        @JUnitSnmpAgent(host = "192.168.0.2", resource = "entPhysicalTable-cisco-r2.properties"),
+        @JUnitSnmpAgent(host = "192.168.0.3", resource = "entPhysicalTable-cisco-r3.properties"),
+        @JUnitSnmpAgent(host = "192.168.0.4", resource = "entPhysicalTable-cisco-r4.properties"),
+        @JUnitSnmpAgent(host = "192.168.0.5", resource = "NMS-8506-cisco.properties")
 })
 public class SnmpHardwareInventoryProvisioningAdapterIT implements InitializingBean {
 
@@ -162,11 +163,15 @@ public class SnmpHardwareInventoryProvisioningAdapterIT implements InitializingB
         nb.addInterface("192.168.0.4").setIsSnmpPrimary("P").setIsManaged("P");
         m_nodeDao.save(nb.getCurrentNode());
 
+        nb.addNode("R5").setForeignSource("Cisco").setForeignId("5").setSysObjectId(".1.3.6.1.4.1.9.1.222");
+        nb.addInterface("192.168.0.5").setIsSnmpPrimary("P").setIsManaged("P");
+        m_nodeDao.save(nb.getCurrentNode());
+
         m_nodeDao.flush();
 
         m_adapter.afterPropertiesSet();
 
-        for (int i=1; i<=4; i++) {
+        for (int i=1; i<=5; i++) {
             Integer nodeId = m_nodeDao.findByForeignId("Cisco", Integer.toString(i)).getId();
             AdapterOperationSchedule ops = new AdapterOperationSchedule(0, 1, 1, TimeUnit.SECONDS);        
             AdapterOperation op = m_adapter.new AdapterOperation(nodeId, AdapterOperationType.ADD, ops);
@@ -222,7 +227,7 @@ public class SnmpHardwareInventoryProvisioningAdapterIT implements InitializingB
             m_entityDao.flush();
         }
 
-        Assert.assertEquals(112, m_entityDao.countAll());
+        Assert.assertEquals(130, m_entityDao.countAll());
     }
 
 }

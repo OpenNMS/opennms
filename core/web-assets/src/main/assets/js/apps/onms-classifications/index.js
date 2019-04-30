@@ -15,6 +15,8 @@ const newRuleModalTemplate = require('./views/modals/new-rule-modal.html');
 const importModalTemplate  = require('./views/modals/import-modal.html');
 const exportModalTemplate  = require('./views/modals/export-modal.html');
 
+const confirmTopoverTemplate = require('./views/modals/popover.html');
+
 (function() {
     'use strict';
 
@@ -32,6 +34,9 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
             'mwl.confirm',
             'onms.pagination'
         ])
+        .run(function(confirmationPopoverDefaults) {
+            confirmationPopoverDefaults.templateUrl = confirmTopoverTemplate;
+        })
 
         .config( ['$locationProvider', function ($locationProvider) {
             $locationProvider.hashPrefix('!');
@@ -281,7 +286,7 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
                     backdrop: false,
                     controller: 'ClassificationModalController',
                     templateUrl: newRuleModalTemplate,
-                    size: 'md',
+                    size: 'lg',
                     resolve: {
                         classification: function() {
                             return classification;
@@ -309,6 +314,7 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
 
             $scope.importRules = function() {
                 var modalInstance = $uibModal.open({
+                    size: 'lg',
                     backdrop: false,
                     controller: 'ClassificationImportController',
                     templateUrl: importModalTemplate,

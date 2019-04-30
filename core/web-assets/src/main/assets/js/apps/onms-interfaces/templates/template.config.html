@@ -5,12 +5,12 @@
     </div>
     <div class="table-responsive" ng-show="snmpInterfaces.length > 0">
       <div class="input-group">
-        <span class="input-group-addon">
-          <span class="glyphicon glyphicon-search"></span>
-        </span>
-        <input class="form-control" type="text" placeholder="Search/Filter SNMP Interfaces" ng-model="filters.snmpInterface"></input>
+        <input class="form-control" type="text" placeholder="Search/Filter SNMP Interfaces" ng-model="filters.snmpInterface">
+        <div class="input-group-append">
+          <span class="input-group-text"><i class="fa fa-search"></i></span>
+        </div>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <thead>
           <tr>
             <th sort order="'ifIndex'" by="snmpOrder" reverse="snmpReverse">SNMP ifIndex</th>

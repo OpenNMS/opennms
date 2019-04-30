@@ -28,11 +28,18 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.util.List;
+
 import org.opennms.netmgt.dao.api.AlarmAssociationDao;
 import org.opennms.netmgt.model.AlarmAssociation;
 
 public class AlarmAssociationDaoHibernate extends AbstractDaoHibernate<AlarmAssociation, Integer> implements AlarmAssociationDao{
     public AlarmAssociationDaoHibernate() {
         super(AlarmAssociation.class);
+    }
+
+    @Override
+    public List<AlarmAssociation> getAssociationsForSituation(int situationId) {
+        return find("from AlarmAssociation as a where a.situationAlarm.id = ?", situationId);
     }
 }

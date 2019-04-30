@@ -115,7 +115,8 @@ public class MonitorsListCommandIT {
             "org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor",
             "org.opennms.netmgt.poller.monitors.VmwareMonitor",
             "org.opennms.netmgt.poller.monitors.VmwareCimMonitor",
-            "org.opennms.netmgt.poller.monitors.WsManMonitor")
+            "org.opennms.netmgt.poller.monitors.WsManMonitor",
+            "org.opennms.netmgt.poller.monitors.DhcpMonitor")
             .build();
 
     @ClassRule

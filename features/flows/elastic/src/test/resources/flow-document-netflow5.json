@@ -4,7 +4,7 @@
   "host": "192.168.1.1",
   "location": "SomeLocation",
   "netflow.bytes": 0,
-  "netflow.convo_key": "[\"SomeLocation\",0,\"192.168.1.2\",0,\"192.168.2.2\",0]",
+  "netflow.convo_key": "[\"SomeLocation\",0,\"192.168.1.2\",\"192.168.2.2\",null]",
   "netflow.direction": "ingress",
   "netflow.dst_addr": "192.168.2.2",
   "netflow.dst_as": 0,

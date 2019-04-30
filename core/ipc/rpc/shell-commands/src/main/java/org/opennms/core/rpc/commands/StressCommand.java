@@ -52,7 +52,6 @@ import com.google.common.base.Strings;
 @Service
 public class StressCommand implements Action {
 
-
     @Reference
     public RpcClientFactory rpcClientFactory;
 

@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>24.0.0-SNAPSHOT</version>
+  <version>25.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -224,18 +224,6 @@
             <goals>
               <goal>one-jar</goal>
             </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>features-maven-plugin</artifactId>
-        <version>1.2.0</version>
-        <executions>
-          <execution>
-            <id>features.xml</id>
-            <phase>process-resources</phase>
-            <goals><goal>generate-features-xml</goal></goals>
           </execution>
         </executions>
       </plugin>
@@ -469,7 +457,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.6</version>
+        <version>3.2.2</version>
         <configuration>
           <archiveClasses>true</archiveClasses>
           <outputFileNameMapping>@{artifactId}@-@{baseVersion}@.@{extension}@</outputFileNameMapping>
@@ -682,19 +670,6 @@
                   <versionRange>[2.5.1,)</versionRange>
                   <goals>
                     <goal>resources</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <ignore/>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>org.opennms.maven.plugins</groupId>
-                  <artifactId>features-maven-plugin</artifactId>
-                  <versionRange>[1.0-SNAPSHOT,)</versionRange>
-                  <goals>
-                    <goal>generate-features-xml</goal>
                   </goals>
                 </pluginExecutionFilter>
                 <action>
@@ -1175,6 +1150,7 @@
 
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.pax.plugin.version>1.5</maven.pax.plugin.version>
+    <maven.shade.plugin.version>2.4.3</maven.shade.plugin.version>
     <antlr.version>2.7.7</antlr.version>
     <sass.maven.plugin.version>1.1.2-ONMS-20131018-1</sass.maven.plugin.version>
 
@@ -1191,7 +1167,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>24.0.0.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>25.0.0.SNAPSHOT</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -1289,13 +1265,15 @@
     <commonsValidatorVersion>1.6</commonsValidatorVersion>
     <c3p0Version>0.9.5.2</c3p0Version>
     <curatorVersion>3.2.1</curatorVersion>
-    <cxfVersion>3.1.11</cxfVersion>
-    <cxfXjcVersion>3.1.0</cxfXjcVersion>
+    <cxfVersion>3.2.8</cxfVersion>
+    <cxfXjcVersion>3.3.0</cxfXjcVersion>
+    <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <dnsjavaVersion>2.1.3</dnsjavaVersion>
     <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
     <eclipseGeminiVersion>2.0.0.RELEASE</eclipseGeminiVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
+    <elasticsearchNettyVersion>4.1.30.Final</elasticsearchNettyVersion>
     <fopVersion>1.0</fopVersion>
     <freemarkerVersion>2.3.23</freemarkerVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
@@ -1318,7 +1296,7 @@
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
     <jcifsVersion>1.3.14</jcifsVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
-    <jettyVersion>9.4.2.v20170220</jettyVersion>
+    <jettyVersion>9.4.14.v20181114</jettyVersion>
     <jestVersion>5.3.3</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
@@ -1332,36 +1310,37 @@
     <jsoupVersion>1.7.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
-    <karafVersion>4.1.5</karafVersion>
+    <karafVersion>4.2.3</karafVersion>
     <kafkaStreamsVersion>1.0.1</kafkaStreamsVersion>
     <kafkaStreamsBundleVersion>1.0.1_1</kafkaStreamsBundleVersion>
-    <felixVersion>3.0.0</felixVersion>
-    <liquibaseVersion>2.0.5-ONMS20160524b</liquibaseVersion>
+    <felixBridgeVersion>4.0.4</felixBridgeVersion>
+    <felixProxyVersion>3.0.4</felixProxyVersion>
+    <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.8.2</log4j2Version>
-    <mapstructVersion>1.2.0.CR1</mapstructVersion>
+    <mapstructVersion>1.3.0.Final</mapstructVersion>
     <minaVersion>2.0.16</minaVersion>
-    <minionKarafVersion>4.0.5</minionKarafVersion>
     <mockitoVersion>1.10.19</mockitoVersion>
     <netty4Version>4.1.9.Final</netty4Version>
-    <newtsVersion>1.5.0</newtsVersion>
-    <paxExamVersion>4.11.0</paxExamVersion>
+    <newtsVersion>1.5.1</newtsVersion>
+    <paxExamVersion>4.13.1</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
-    <paxWebVersion>4.3.0</paxWebVersion>
+    <paxWebVersion>7.2.8</paxWebVersion>
     <protobufVersion>2.6.1</protobufVersion>
     <protobuf3Version>3.5.1</protobuf3Version>
-    <postgresqlVersion>9.4.1211</postgresqlVersion>
+    <postgresqlVersion>42.2.5</postgresqlVersion>
     <powermockVersion>1.6.4</powermockVersion>
-    <!-- TODO: Update to release artifact before tagging 24.0.0 -->
-    <opennmsApiVersion>1.0.0-alpha4-SNAPSHOT</opennmsApiVersion>
+    <opennmsApiVersion>0.1.1</opennmsApiVersion>
     <osgiVersion>6.0.0</osgiVersion>
     <osgiCompendiumVersion>5.0.0</osgiCompendiumVersion>
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
     <owaspEncoderVersion>1.2.1</owaspEncoderVersion>
     <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
-    <osgiJaxRsVersion>1.0.0-ONMS</osgiJaxRsVersion>
+    <osgiJaxRsVersion>1.0.2.ONMS</osgiJaxRsVersion>
     <opencsvVersion>2.3</opencsvVersion>
+    <opentracingVersion>0.31.0</opentracingVersion>
+    <jeagertracingVersion>0.34.0</jeagertracingVersion>
     <quartzVersion>2.2.3</quartzVersion>
     <rateLimitedLoggerVersion>1.1.0</rateLimitedLoggerVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
@@ -1369,6 +1348,7 @@
     <snmp4jVersion>2.5.5</snmp4jVersion>
     <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
     <smackVersion>4.0.6</smackVersion>
+    <spockVersion>1.1-groovy-2.4</spockVersion>
     <trackerVersion>0.7</trackerVersion>
     <twitter4jVersion>3.0.6</twitter4jVersion>
     <xalanVersion>2.7.2</xalanVersion>
@@ -1394,11 +1374,6 @@
     <vaadinAddonConfirmDialogVersion>3.2.0</vaadinAddonConfirmDialogVersion>
     <skipPdfGeneration>true</skipPdfGeneration>
     <skipSignJar>true</skipSignJar>
-
-    <!-- change to match which version of opennms-pluginmanger you want to run -->
-    <pluginmanagerVersion>1.2.0</pluginmanagerVersion>
-    <licencemanagerVersion>1.2.0</licencemanagerVersion>
-    <featuremanagerVersion>1.2.0</featuremanagerVersion>
 
     <!-- nodejs development -->
     <frontendPluginVersion>1.6</frontendPluginVersion>
@@ -1892,6 +1867,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.dhcpd</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.discovery</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -2112,10 +2092,9 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.osgi.features.topology</groupId>
-        <artifactId>opennms-topology-api</artifactId>
+        <groupId>org.opennms.features.topology</groupId>
+        <artifactId>org.opennms.features.topology.api</artifactId>
         <version>${project.version}</version>
-        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
@@ -2461,6 +2440,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-detector-datagram</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-detector-dhcp</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -3053,6 +3037,11 @@
         <version>2.2.2</version>
       </dependency>
       <dependency>
+        <groupId>com.helger</groupId>
+        <artifactId>dhcp4java</artifactId>
+        <version>${dhcp4javaVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>com.mchange</groupId>
         <artifactId>c3p0</artifactId>
         <version>${c3p0Version}</version>
@@ -3627,7 +3616,12 @@
       <dependency>
         <groupId>javax.ws.rs</groupId>
         <artifactId>javax.ws.rs-api</artifactId>
-        <version>2.0.1</version>
+        <version>2.1.1</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.websocket</groupId>
+        <artifactId>javax.websocket-api</artifactId>
+        <version>1.1</version>
       </dependency>
       <dependency>
         <groupId>javax.xml.bind</groupId>
@@ -3810,12 +3804,6 @@
         <groupId>com.jayway.awaitility</groupId>
         <artifactId>awaitility</artifactId>
         <version>1.7.0</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.hamcrest</groupId>
-        <artifactId>hamcrest-library</artifactId>
-        <version>1.3</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -4110,6 +4098,12 @@
         <groupId>com.swrve</groupId>
         <artifactId>rate-limited-logger</artifactId>
         <version>${rateLimitedLoggerVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.spockframework</groupId>
+        <artifactId>spock-core</artifactId>
+        <version>${spockVersion}</version>
+        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

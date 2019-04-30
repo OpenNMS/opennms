@@ -125,9 +125,6 @@ public class DocumentEnricher {
                     document.setFlowLocality(Locality.PRIVATE);
                 }
 
-                // Conversation tagging
-                document.setConvoKey(ConversationKeyUtils.getConvoKeyAsJsonString(document));
-
                 final ClassificationRequest classificationRequest = createClassificationRequest(document);
 
                 // Check whether classification is possible
@@ -135,6 +132,9 @@ public class DocumentEnricher {
                     // Apply Application mapping
                     document.setApplication(classificationEngine.classify(classificationRequest));
                 }
+
+                // Conversation tagging
+                document.setConvoKey(ConversationKeyUtils.getConvoKeyAsJsonString(document));
             });
             return null;
         });
@@ -173,7 +173,7 @@ public class DocumentEnricher {
 
                     return Optional.of(nodeInfo);
                 } else {
-                    LOG.warn("Node with id: {} at location: {} with IP address: {} is in the interface to node cache, but wasn't found in the database.");
+                    LOG.warn("Node with id: {} at location: {} with IP address: {} is in the interface to node cache, but wasn't found in the database.", nodeId, location, ipAddress);
                 }
             }
         }

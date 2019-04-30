@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,30 +28,32 @@
 
 package liquibase.ext.opennms.dropconstraint;
 
+import liquibase.change.ChangeMetaData;
+import liquibase.change.DatabaseChange;
 import liquibase.change.core.DropForeignKeyConstraintChange;
 import liquibase.database.Database;
 import liquibase.statement.SqlStatement;
 
+@DatabaseChange(name="dropForeignKeyConstraint", description = "Drops an existing foreign key", priority = ChangeMetaData.PRIORITY_DEFAULT + 1, appliesTo = "foreignKey")
 public class DropForeignKeyConstraintCascadeChange extends DropForeignKeyConstraintChange {
 
-	private String m_cascade = "false";
+    private String m_cascade = "false";
 
-	public DropForeignKeyConstraintCascadeChange() {
-		super();
-		setPriority(getChangeMetaData().getPriority() + 1);
-	}
+    public DropForeignKeyConstraintCascadeChange() {
+        super();
+    }
 
-	public String getCascade() {
-		return m_cascade;
-	}
-	
-	public void setCascade(final String cascade) {
-		m_cascade = cascade;
-	}
-	
-        @Override
+    public String getCascade() {
+        return m_cascade;
+    }
+
+    public void setCascade(final String cascade) {
+        m_cascade = cascade;
+    }
+
+    @Override
     public SqlStatement[] generateStatements(final Database database) {
-    	return DropForeignKeyConstraintCascadeStatement.createFromSqlStatements(super.generateStatements(database), Boolean.valueOf(m_cascade));
+        return DropForeignKeyConstraintCascadeStatement.createFromSqlStatements(super.generateStatements(database), Boolean.valueOf(m_cascade));
     }
 
 }

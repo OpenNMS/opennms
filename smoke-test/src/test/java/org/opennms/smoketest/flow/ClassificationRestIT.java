@@ -282,7 +282,7 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
     @Test
     public void verifyImport() {
         // IMPORT
-        final String importCsv = "name;protocol;srcAddress;srcPort;dstAddress;dstPort;exporterFilter\nmagic-ulf;tcp;;;;1337;";
+        final String importCsv = "name;protocol;srcAddress;srcPort;dstAddress;dstPort;exporterFilter;omnidirectional\nmagic-ulf;tcp;;;;1337;;";
         given().contentType("text/comma-separated-values")
                 .body(importCsv)
                 .post()

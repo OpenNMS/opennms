@@ -43,6 +43,7 @@ import javax.script.ScriptException;
 
 import org.opennms.core.fileutils.FileUpdateCallback;
 import org.opennms.core.fileutils.FileUpdateWatcher;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.Persister;
@@ -123,9 +124,9 @@ public abstract class AbstractPersistingAdapter implements Adapter {
     private Map<ScriptedCollectionSetBuilder, Boolean> scriptUpdateMap = new ConcurrentHashMap<>();
 
     private final LoadingCache<CacheKey, Optional<PackageDefinition>> cache = CacheBuilder.newBuilder()
-            .maximumSize(Long.getLong("org.opennms.features.telemetry.cache.ipAddressFilter.maximumSize", 1000))
+            .maximumSize(SystemProperties.getLong("org.opennms.features.telemetry.cache.ipAddressFilter.maximumSize", 1000))
             .expireAfterWrite(
-                    Long.getLong("org.opennms.features.telemetry.cache.ipAddressFilter.expireAfterWrite", 120),
+                    SystemProperties.getLong("org.opennms.features.telemetry.cache.ipAddressFilter.expireAfterWrite", 120),
                     TimeUnit.SECONDS)
             .build(new CacheLoader<CacheKey, Optional<PackageDefinition>>() {
                 @Override

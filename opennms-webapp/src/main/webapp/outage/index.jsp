@@ -55,11 +55,11 @@ function validateId() {
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Outage Menu</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Outage Menu</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <div class="row">
           <div class="col-md-6 col-xs-6">
             <ul class="list-unstyled">
@@ -68,25 +68,29 @@ function validateId() {
             </ul>
           </div> <!-- column -->
           <div class="col-md-6 col-xs-6">
-            <form role="form" class="form-inline text-right" name="outageIdForm" method="get" action="outage/detail.htm" onsubmit="return validateId();">
+            <form role="form" class="form pull-right" name="outageIdForm" method="get" action="outage/detail.htm" onsubmit="return validateId();">
               <div class="form-group">
-                <label for="input_id">Outage ID:</label>
-                <input type="text" class="form-control" id="input_id" name="id" />
+                <label for="input_id">Outage ID</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="input_id" name="id" />
+                  <div class="input-group-append">
+                    <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                  </div>
+                </div>
               </div>
-              <button type="submit" class="btn btn-default">Get details</button>
             </form>
           </div> <!-- column -->
         </div> <!-- row -->
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Outages and Service Level Availability</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Outages and Service Level Availability</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>Outages are tracked by OpenNMS by polling services that have been provisioned. If the service does not respond to the poll, a service outage is created and service availability levels are impacted. Service outages create notifications.</p>
       </div>
     </div>

@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
 import com.vaadin.v7.data.util.BeanItemContainer;
@@ -274,7 +275,7 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
             public Object generateCell(final Table table, final Object itemId, final Object propertyId) {
                 final Alarm alarm = (Alarm) itemId;
 
-                Button icon = getClickableIcon("glyphicon glyphicon-warning-sign", new Button.ClickListener() {
+                Button icon = getClickableIcon(FontAwesome.EXCLAMATION_TRIANGLE, new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent clickEvent) {
                         final URI currentLocation = getUI().getPage().getLocation();

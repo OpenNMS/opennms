@@ -28,8 +28,12 @@
 
 package org.opennms.features.kafka.producer;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.opennms.topologies.service.api.EdgeMockUtil.PROTOCOL;
+import static org.opennms.topologies.service.api.EdgeMockUtil.createEdge;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -40,14 +44,22 @@ import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
+import org.opennms.topologies.service.api.EdgeMockUtil;
 import org.springframework.transaction.support.TransactionOperations;
 
 /**
  * Tests for {@link ProtobufMapper}.
  */
 public class ProtoBufMapperTest {
+
+    private ProtobufMapper protobufMapper = new ProtobufMapper(mock(EventConfDao.class), mock(HwEntityDao.class),
+            mock(SessionUtils.class), mock(NodeDao.class), 1);
+
     /**
      * Tests that the mapper can handle related alarms.
      */
@@ -68,8 +80,7 @@ public class ProtoBufMapperTest {
         childAlarm.setLogMsg(childLogMsg);
 
         parentAlarm.setRelatedAlarms(new HashSet<>(Collections.singletonList(childAlarm)));
-        ProtobufMapper protobufMapper = new ProtobufMapper(mock(EventConfDao.class), mock(HwEntityDao.class),
-                mock(TransactionOperations.class), mock(NodeDao.class), 1);
+
         OpennmsModelProtos.Alarm.Builder mappedAlarm = protobufMapper.toAlarm(parentAlarm);
         List<OpennmsModelProtos.Alarm> relatedAlarms = mappedAlarm.getRelatedAlarmList();
         
@@ -88,5 +99,89 @@ public class ProtoBufMapperTest {
         testAlarm.setAlarmType(1);
 
         return testAlarm;
+    }
+
+    @Test
+    public void canMapNodeToNodeEdge() {
+        OnmsTopologyEdge mockEdge = createEdge();
+        EdgeMockUtil.addNode(true, mockEdge);
+        EdgeMockUtil.addNode(false, mockEdge);
+        OpennmsModelProtos.TopologyEdge mappedEdge =
+                protobufMapper.toEdgeTopologyMessage(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
+
+        assertThat(mappedEdge.getRef().getId(), equalTo(EdgeMockUtil.EDGE_ID));
+        assertThat(mappedEdge.getRef().getProtocol().name(), equalTo(PROTOCOL));
+
+        assertThat(mappedEdge.getSourceCase(), equalTo(OpennmsModelProtos.TopologyEdge.SourceCase.SOURCENODE));
+        assertThat(mappedEdge.getTargetCase(), equalTo(OpennmsModelProtos.TopologyEdge.TargetCase.TARGETNODE));
+
+        assertThat(mappedEdge.getSourceNode().getId(), equalTo((long) EdgeMockUtil.SOURCE_NODE_ID));
+        assertThat(mappedEdge.getTargetNode().getId(), equalTo((long) EdgeMockUtil.TARGET_NODE_ID));
+    }
+
+    @Test
+    public void canMapPortToPortEdge() {
+        OnmsTopologyEdge mockEdge = createEdge();
+        EdgeMockUtil.addPort(true, mockEdge);
+        EdgeMockUtil.addPort(false, mockEdge);
+        OpennmsModelProtos.TopologyEdge mappedEdge =
+                protobufMapper.toEdgeTopologyMessage(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
+
+        assertThat(mappedEdge.getRef().getId(), equalTo(EdgeMockUtil.EDGE_ID));
+        assertThat(mappedEdge.getRef().getProtocol().name(), equalTo(PROTOCOL));
+
+        assertThat(mappedEdge.getSourceCase(), equalTo(OpennmsModelProtos.TopologyEdge.SourceCase.SOURCEPORT));
+        assertThat(mappedEdge.getTargetCase(), equalTo(OpennmsModelProtos.TopologyEdge.TargetCase.TARGETPORT));
+
+        assertThat(mappedEdge.getSourcePort().getIfIndex(), equalTo((long) EdgeMockUtil.SOURCE_IFINDEX));
+        assertThat(mappedEdge.getSourcePort().getVertexId(), equalTo(EdgeMockUtil.SOURCE_VERTEX_ID));
+        assertThat(mappedEdge.getSourcePort().getNodeCriteria().getId(), equalTo((long) EdgeMockUtil.SOURCE_NODE_ID));
+
+        assertThat(mappedEdge.getTargetPort().getIfIndex(), equalTo((long) EdgeMockUtil.TARGET_IFINDEX));
+        assertThat(mappedEdge.getTargetPort().getVertexId(), equalTo(EdgeMockUtil.TARGET_VERTEX_ID));
+        assertThat(mappedEdge.getTargetPort().getNodeCriteria().getId(), equalTo((long) EdgeMockUtil.TARGET_NODE_ID));
+    }
+
+    @Test
+    public void canMapSegmentToSegmentEdge() {
+        OnmsTopologyEdge mockEdge = createEdge();
+        EdgeMockUtil.addSegment(true, mockEdge);
+        EdgeMockUtil.addSegment(false, mockEdge);
+        OpennmsModelProtos.TopologyEdge mappedEdge =
+                protobufMapper.toEdgeTopologyMessage(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
+
+        assertThat(mappedEdge.getRef().getId(), equalTo(EdgeMockUtil.EDGE_ID));
+        assertThat(mappedEdge.getRef().getProtocol().name(), equalTo(PROTOCOL));
+
+        assertThat(mappedEdge.getSourceCase(), equalTo(OpennmsModelProtos.TopologyEdge.SourceCase.SOURCESEGMENT));
+        assertThat(mappedEdge.getTargetCase(), equalTo(OpennmsModelProtos.TopologyEdge.TargetCase.TARGETSEGMENT));
+
+        assertThat(mappedEdge.getSourceSegment().getRef().getId(), equalTo(EdgeMockUtil.SOURCE_ID));
+        assertThat(mappedEdge.getSourceSegment().getRef().getProtocol().name(), equalTo(EdgeMockUtil.PROTOCOL));
+
+        assertThat(mappedEdge.getTargetSegment().getRef().getId(), equalTo(EdgeMockUtil.TARGET_ID));
+        assertThat(mappedEdge.getTargetSegment().getRef().getProtocol().name(), equalTo(EdgeMockUtil.PROTOCOL));
+    }
+
+    @Test
+    public void canMapPortToSegmentEdge() {
+        OnmsTopologyEdge mockEdge = createEdge();
+        EdgeMockUtil.addPort(true, mockEdge);
+        EdgeMockUtil.addSegment(false, mockEdge);
+        OpennmsModelProtos.TopologyEdge mappedEdge =
+                protobufMapper.toEdgeTopologyMessage(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
+
+        assertThat(mappedEdge.getRef().getId(), equalTo(EdgeMockUtil.EDGE_ID));
+        assertThat(mappedEdge.getRef().getProtocol().name(), equalTo(PROTOCOL));
+
+        assertThat(mappedEdge.getSourceCase(), equalTo(OpennmsModelProtos.TopologyEdge.SourceCase.SOURCEPORT));
+        assertThat(mappedEdge.getTargetCase(), equalTo(OpennmsModelProtos.TopologyEdge.TargetCase.TARGETSEGMENT));
+
+        assertThat(mappedEdge.getSourcePort().getIfIndex(), equalTo((long) EdgeMockUtil.SOURCE_IFINDEX));
+        assertThat(mappedEdge.getSourcePort().getVertexId(), equalTo(EdgeMockUtil.SOURCE_VERTEX_ID));
+        assertThat(mappedEdge.getSourcePort().getNodeCriteria().getId(), equalTo((long) EdgeMockUtil.SOURCE_NODE_ID));
+
+        assertThat(mappedEdge.getTargetSegment().getRef().getId(), equalTo(EdgeMockUtil.TARGET_ID));
+        assertThat(mappedEdge.getTargetSegment().getRef().getProtocol().name(), equalTo(EdgeMockUtil.PROTOCOL));
     }
 }

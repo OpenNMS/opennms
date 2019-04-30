@@ -30,16 +30,22 @@ package org.opennms.netmgt.enlinkd.service.api;
 
 
 import java.util.Date;
+import java.util.List;
 
 import org.opennms.netmgt.enlinkd.model.LldpElement;
+import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 
-public interface LldpTopologyService {
+public interface LldpTopologyService extends TopologyService {
         
     void delete(int nodeid);
     void reconcile(int nodeId, Date now);
     void store(int nodeId, LldpLink link);
     void store(int nodeId, LldpElement element);
+    
+    List<LldpElementTopologyEntity> findAllLldpElements();
+    List<TopologyConnection<LldpLinkTopologyEntity, LldpLinkTopologyEntity>> match();
 
     
 }

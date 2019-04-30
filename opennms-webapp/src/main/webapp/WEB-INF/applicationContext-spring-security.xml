@@ -140,11 +140,6 @@
     <intercept-url pattern="/dashboard/**" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/coreweb/**" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
     
-    <!-- ReST URL's for OSGi plugin manger restricted to admin and ReST users-->
-    <intercept-url pattern="/licencemgr/**" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
-    <intercept-url pattern="/featuremgr/**" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
-    <intercept-url pattern="/pluginmgr/**" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
-
     <!-- DO NOT ALLOW ACCESS TO /osgi -->
     <intercept-url pattern="/osgi/**" access="denyAll" />
     

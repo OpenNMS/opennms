@@ -64,12 +64,12 @@
     }
 %>
 
-<div class="panel panel-default">
-	<div class="panel-heading">
-		<h3 class="panel-title"><a href="notification/index.jsp">Notifications</a></h3>
+<div class="card">
+	<div class="card-header">
+		<span><a href="notification/index.jsp">Notifications</a></span>
 	</div>
-	<div class="panel-body">
-	<ul class="list-unstyled">
+	<div class="card-body">
+	<ul class="list-unstyled mb-0">
 		<% if( nodeIdString == null ) { %>
 			<li>
 			<i class="fa fa-fw fa-user"></i>

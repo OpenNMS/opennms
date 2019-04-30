@@ -13,17 +13,19 @@
 
     <context:annotation-config/>
 
+    <bean id="onmsTopologyDao" class="org.opennms.netmgt.topologies.service.impl.OnmsTopologyDaoInMemoryImpl"/>
+
     <bean id="protobufMapper" class="org.opennms.features.kafka.producer.ProtobufMapper">
         <constructor-arg ref="eventConfDao"/>
         <constructor-arg ref="hwEntityDao"/>
-        <constructor-arg ref="transactionTemplate"/>
+        <constructor-arg ref="sessionUtils"/>
         <constructor-arg ref="nodeDao"/>
         <constructor-arg value="10000"/>
     </bean>
 
     <bean id="nodeCache" class="org.opennms.features.kafka.producer.NodeCache">
         <constructor-arg ref="nodeDao"/>
-        <constructor-arg ref="transactionTemplate"/>
+        <constructor-arg ref="sessionUtils"/>
         <property name="timeoutInMs" value="300000"/>
     </bean>
 

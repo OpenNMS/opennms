@@ -17,11 +17,9 @@
 
   <display-name>opennms</display-name>
 
-  <!-- Uncomment this to set the webapp timeout to infinite.
   <session-config>
     <session-timeout>-1</session-timeout>
   </session-config>
-  -->
 
   <!--  This is used by the Spring ContextLoaderListener <listener> below -->
   <context-param>
@@ -821,6 +819,11 @@
         <load-on-startup>1</load-on-startup>
   </servlet>
 
+  <servlet>
+    <servlet-name>notificationStream</servlet-name>
+    <servlet-class>org.opennms.web.notification.NotificationStreamServlet</servlet-class>
+  </servlet>
+
   <!-- desktop graph servlet mapping -->
   <!-- desktop survey report servlet mapping -->
 
@@ -1092,6 +1095,10 @@
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/notification/acknowledge</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>notificationStream</servlet-name>
+    <url-pattern>/notification/stream</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>

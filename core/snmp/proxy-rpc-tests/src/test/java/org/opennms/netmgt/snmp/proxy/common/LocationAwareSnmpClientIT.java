@@ -75,7 +75,8 @@ import org.springframework.test.context.TestExecutionListeners;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-jms.xml",
-        "classpath:/META-INF/opennms/applicationContext-rpc-snmp.xml"
+        "classpath:/META-INF/opennms/applicationContext-rpc-snmp.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml"
 })
 @JUnitConfigurationEnvironment
 @TestExecutionListeners(JUnitSnmpAgentExecutionListener.class)

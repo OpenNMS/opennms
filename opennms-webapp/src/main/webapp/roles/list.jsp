@@ -88,18 +88,18 @@
 	<input type="hidden" name="role" />
 </form>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Roles</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Roles</span>
   </div>
 
-  <table class="table table-condensed severity">
+  <table class="table table-sm severity">
          <tr>
-          <th class="col-md-2">Name</th>
-          <th class="col-md-2">Supervisor</th>
-          <th class="col-md-2">Currently On Call</th>
-          <th class="col-md-2">Membership Group</th>
-          <th class="col-md-4">Description</th>
+          <th>Name</th>
+          <th>Supervisor</th>
+          <th>Currently On Call</th>
+          <th>Membership Group</th>
+          <th>Description</th>
 
 			<c:forEach var="role" items="${roleManager.roles}">
 				<c:set var="viewUrl" value="javascript:doView('${role.name}')" />

@@ -249,7 +249,8 @@ public class AcknowledgmentDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testFindLatestAcks() {
-        assertThat(m_acknowledgmentDao.findLatestAcks(), hasSize(0));
+        Date beginningOfTime = new Date(0);
+        assertThat(m_acknowledgmentDao.findLatestAcks(beginningOfTime), hasSize(0));
 
         int numAcks = 100;
         Map<Integer, Integer> dbIdsByRefId = new HashMap<>();
@@ -258,7 +259,7 @@ public class AcknowledgmentDaoIT implements InitializingBean {
         dbIdsByRefId.put(3, generateAcks(3, numAcks));
         assertThat(m_acknowledgmentDao.findAll(), hasSize(greaterThan(3)));
 
-        List<OnmsAcknowledgment> acks = m_acknowledgmentDao.findLatestAcks();        
+        List<OnmsAcknowledgment> acks = m_acknowledgmentDao.findLatestAcks(beginningOfTime);
         assertThat(acks, hasSize(3));
         // Check that we got an ack back for each of the refIds we expect
         assertThat(acks.stream()

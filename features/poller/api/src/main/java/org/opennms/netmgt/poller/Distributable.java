@@ -44,7 +44,7 @@ import java.lang.annotation.Target;
  * If the annotation exists but no contexts are specified then it is assumed that it works in all contexts.
  *
  * Reasons that a monitor may not work in all contexts would be for example because it accesses location config
- * files or uses local daemon services such as dhcpd.
+ * files or uses local daemon services.
  *
  * Note that this annotation does not inherit.
  *

@@ -157,7 +157,7 @@ const RequisitionNode = require('../model/RequisitionNode');
             },
             main: {
               label: 'No',
-              className: 'btn-default'
+              className: 'btn-secondary'
             }
           }
         });

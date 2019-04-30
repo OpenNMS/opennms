@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision.dns.client.rpc;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -52,6 +54,8 @@ public class DnsLookupRequestDTO implements RpcRequest {
 
     @XmlAttribute(name = "query-type")
     private QueryType queryType;
+
+    private Map<String, String> tracingInfo = new HashMap<>();
 
     @Override
     public String getLocation() {
@@ -90,6 +94,15 @@ public class DnsLookupRequestDTO implements RpcRequest {
 
     public void setQueryType(QueryType queryType) {
         this.queryType = queryType;
+    }
+
+    @Override
+    public Map<String, String> getTracingInfo() {
+        return tracingInfo;
+    }
+
+    public void addTracingInfo(String key, String value) {
+        tracingInfo.put(key, value);
     }
 
     @Override

@@ -28,9 +28,12 @@
 
 package org.opennms.core.ipc.rpc.kafka;
 
+import static org.opennms.core.tracing.api.TracerConstants.*;
+
 import java.io.IOException;
 import java.math.RoundingMode;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -64,6 +67,7 @@ import org.opennms.core.ipc.rpc.kafka.model.RpcMessageProtos;
 import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
+import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +78,12 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
+
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
+import io.opentracing.propagation.TextMapExtractAdapter;
 
 /**
  * This Manager runs on Minion, A consumer thread will be started on each RPC module which handles the request and
@@ -103,10 +113,12 @@ public class KafkaRpcServerManager {
     // Delay queue which caches rpcId and removes when rpcId reaches expiration time.
     private DelayQueue<RpcId> rpcIdQueue = new DelayQueue<>();
     private ExecutorService delayQueueExecutor = Executors.newSingleThreadExecutor();
+    private final TracerRegistry tracerRegistry;
 
-    public KafkaRpcServerManager(KafkaConfigProvider configProvider, MinionIdentity minionIdentity) {
+    public KafkaRpcServerManager(KafkaConfigProvider configProvider, MinionIdentity minionIdentity, TracerRegistry tracerRegistry) {
         this.kafkaConfigProvider = configProvider;
         this.minionIdentity = minionIdentity;
+        this.tracerRegistry = tracerRegistry;
     }
 
     public void init() throws IOException {
@@ -137,6 +149,7 @@ public class KafkaRpcServerManager {
                 }
             }
         });
+        tracerRegistry.init(minionIdentity.getLocation() + "@" + minionIdentity.getId());
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -259,7 +272,20 @@ public class KafkaRpcServerManager {
                                 rpcContent = messageCache.get(rpcId);
                                 messageCache.remove(rpcId);
                             }
+                            //Build child span from rpcMessage.
+                            Tracer.SpanBuilder spanBuilder = buildSpanFromRpcMessage(rpcMessage);
+                            // Start minion span.
+                            Span minionSpan = spanBuilder.start();
+                            // Retrieve custom tags from rpcMessage and add them as tags.
+                            rpcMessage.getTracingInfoList().forEach(tracingInfo -> {
+                                minionSpan.setTag(tracingInfo.getKey(), tracingInfo.getValue());
+                            });
                             RpcRequest request = module.unmarshalRequest(rpcContent.toStringUtf8());
+                            // Set tags for minion span
+                            minionSpan.setTag(TAG_LOCATION, request.getLocation());
+                            if(request.getSystemId() != null) {
+                                minionSpan.setTag(TAG_SYSTEM_ID, request.getSystemId());
+                            }
                             CompletableFuture<RpcResponse> future = module.execute(request);
                             future.whenComplete((res, ex) -> {
                                 final RpcResponse response;
@@ -267,11 +293,14 @@ public class KafkaRpcServerManager {
                                     // An exception occurred, store the exception in a new response
                                     LOG.warn("An error occured while executing a call in {}.", module.getId(), ex);
                                     response = module.createResponseWithException(ex);
+                                    minionSpan.log(ex.getMessage());
+                                    minionSpan.setTag(TAG_RPC_FAILED, "true");
                                 } else {
                                     // No exception occurred, use the given response
                                     response = res;
                                 }
-
+                                // Finish minion Span
+                                minionSpan.finish();
                                 try {
                                     final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory(KafkaRpcConstants.RPC_RESPONSE_TOPIC_NAME,
                                             module.getId());
@@ -321,7 +350,26 @@ public class KafkaRpcServerManager {
             }
         }
 
+        private Tracer.SpanBuilder buildSpanFromRpcMessage( RpcMessageProtos.RpcMessage rpcMessage) {
+            // Initializer tracer and extract parent tracer context from TracingInfo
+            final Tracer tracer = tracerRegistry.getTracer();
+            Tracer.SpanBuilder spanBuilder;
+            Map<String, String> tracingInfoMap = new HashMap<>();
+            rpcMessage.getTracingInfoList().forEach(tracingInfo -> {
+                tracingInfoMap.put(tracingInfo.getKey(), tracingInfo.getValue());
+            });
+            SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(tracingInfoMap));
+            if (context != null) {
+                spanBuilder = tracer.buildSpan(module.getId()).asChildOf(context);
+            } else {
+                spanBuilder = tracer.buildSpan(module.getId());
+            }
+            return spanBuilder;
+        }
+
     }
+
+
 
     /**
      * RpcId is used to remove rpcId from DelayQueue after it reaches expirationTime.

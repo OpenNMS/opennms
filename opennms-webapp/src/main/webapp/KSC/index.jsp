@@ -67,27 +67,29 @@
   <div class="row">
 
     <div class="col-md-6">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Customized Reports</h3>
+      <div class="card">
+        <div class="card-header">
+          <span>Customized Reports</span>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <p>Choose the custom report title to view or modify from the list below. There are {{ reports.length }} custom reports to select from.</p>
           <div class="table-responsive">
             <div class="input-group">
-              <span class="input-group-addon">
-                <span class="glyphicon glyphicon-search"></span>
-              </span>
+              <div class="input-group-prepend">
+                <div class="input-group-text">
+                  <span class="fa fa-search"></span>
+                </div>
+              </div>
               <input class="form-control" type="text" placeholder="Search/Filter Reports" ng-model="reportFilter"></input>
             </div>
-            <table class="table table-condensed table-hover" name="reports">
+            <table class="table table-sm table-hover" name="reports">
               <thead>
                 <tr>
                   <th>Reports</th>
                 </tr>
               </thead>
               <tbody>
-                <tr name="report:{{ report.label }}" ng-class="{success: report.id == reportSelected.id}" ng-click="selectReport(report)" ng-repeat="report in filteredReports | startFrom:(kscCurrentPage-1)*kscPageSize | limitTo:kscPageSize">
+                <tr name="report:{{ report.label }}" ng-class="{'table-active': report.id == reportSelected.id}" ng-click="selectReport(report)" ng-repeat="report in filteredReports | startFrom:(kscCurrentPage-1)*kscPageSize | limitTo:kscPageSize">
                   <td>{{ report.label }}</td>
                 </tr>
              </tbody>
@@ -101,25 +103,25 @@
             boundary-links="true"
             ng-show="filteredReports.length > kscPageSize"></ul>
         </div>
-        <div class="panel-footer">
+        <div class="card-footer">
           <form name="kscForm">
-          <div class="btn-group btn-group-justified" role="group">
+          <div class="btn-group btn-group d-flex" role="group">
             <div class="btn-group" role="group">
-              <button type="button" class="btn btn-default" ng-click="viewReport()">View</button>
+              <button type="button" class="btn btn-secondary" ng-click="viewReport()">View</button>
             </div> 
             <c:choose>
               <c:when test="${isReadOnly == false}">
               <div class="btn-group" role="group">
-                <button type="button" class="btn btn-default" ng-click="customizeReport()">Customize</button>
+                <button type="button" class="btn btn-secondary" ng-click="customizeReport()">Customize</button>
               </div> 
               <div class="btn-group" role="group">
-                <button type="button" class="btn btn-default" ng-click="createReport()">Create New</button>
+                <button type="button" class="btn btn-secondary" ng-click="createReport()">Create New</button>
               </div> 
               <div class="btn-group" role="group">
-                <button type="button" class="btn btn-default" ng-click="createReportFromExisting()">Create from Existing</button>
+                <button type="button" class="btn btn-secondary" ng-click="createReportFromExisting()">Create from Existing</button>
               </div> 
               <div class="btn-group" role="group">
-                <button type="button" class="btn btn-default" ng-click="deleteReport()">Delete</button>
+                <button type="button" class="btn btn-secondary" ng-click="deleteReport()">Delete</button>
               </div> 
               </c:when>
             </c:choose>
@@ -127,28 +129,32 @@
           </form>
         </div>
       </div> 
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Node &amp; Domain Interface Reports</h3>
+      <div class="card">
+        <div class="card-header">
+          <span>Node &amp; Domain Interface Reports</span>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <p>Select resource for desired performance report</p>
           <div class="table-responsive">
             <div class="input-group">
-              <span class="input-group-addon">
-                <span class="glyphicon glyphicon-search"></span>
-              </span>
-              <input class="form-control" type="text" placeholder="Search/Filter Resources" ng-model="domainFilter"></input>
+              <div class="input-group-prepend">
+                <div class="input-group-text">
+                  <span class="fa fa-search"></span>
+                </div>
+              </div>
+              <input class="form-control" type="text" placeholder="Search/Filter Resources" ng-model="resourceFilter"></input>
             </div>
-            <table class="table table-condensed" name="resources">
+            <table class="table table-sm" name="resources">
               <thead>
                 <tr>
                   <th>Resources</th>
                 </tr>
               </thead>
               <tbody>
-                <tr name="resource:{{ resource.label }}" ng-click="selectResource(resource)" ng-repeat="resource in filteredResources | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
-                  <td>{{ resource.label }}</td>
+                <tr name="resource:{{ resource.label }}" ng-repeat="resource in filteredResources | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
+                  <td>
+                    <a href ng-click="selectResource(resource)">{{ resource.label }}</a>
+                  </td>
                 </tr>
              </tbody>
             </table>
@@ -165,11 +171,11 @@
     </div> 
 
     <div class="col-md-6">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Descriptions</h3>
+      <div class="card">
+        <div class="card-header">
+          <span>Descriptions</span>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <p>
             <b>Customized Reports</b>
             <c:choose>
@@ -205,7 +211,7 @@
       </div>
       <c:choose>
         <c:when test="${isReadOnly == false}">
-        <button class="btn btn-default" type="button" ng-click="reloadConfig()">Request a Reload of KSC Reports Configuration</button>
+        <button class="btn btn-secondary" type="button" ng-click="reloadConfig()">Request a Reload of KSC Reports Configuration</button>
         </c:when>
       </c:choose>
     </div>

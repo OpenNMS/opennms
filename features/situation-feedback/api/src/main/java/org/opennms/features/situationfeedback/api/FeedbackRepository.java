@@ -57,4 +57,9 @@ public interface FeedbackRepository {
      */
     List<AlarmFeedback> getAllFeedback() throws FeedbackException;
 
+    /**
+     * @return a list of unique SituationFeedback Tags filtered to include only those beginning with @prefix
+     */
+    List<String> getTags(String prefix) throws FeedbackException;
+
 }

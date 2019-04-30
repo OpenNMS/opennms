@@ -40,7 +40,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 public final class IfNumberTracker extends ObjIdMonitor {
 
     IfNumberTracker() {
-        super(SnmpObjId.get(SnmpCollector.INTERFACES_IFNUMBER), SnmpInstId.INST_ZERO);
+        super(SnmpObjId.get(AbstractSnmpCollector.INTERFACES_IFNUMBER), SnmpInstId.INST_ZERO);
     }
 
     boolean isChanged(int savedIfCount) {

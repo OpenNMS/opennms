@@ -29,6 +29,8 @@
 package org.opennms.netmgt.enlinkd;
 
 import java.util.Properties;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.Before;
@@ -37,6 +39,11 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.config.EnhancedLinkdConfig;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.persistence.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.BridgeElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.BridgeMacLinkDao;
@@ -51,12 +58,13 @@ import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
-import org.opennms.netmgt.config.EnhancedLinkdConfig;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
-import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
+import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
+import org.opennms.netmgt.topologies.service.impl.OnmsTopologyLogger;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,6 +136,18 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
     @Autowired
     protected BridgeTopologyService m_bridgeTopologyService;
 
+    @Autowired
+    protected CdpTopologyService m_cdpTopologyService;
+
+    @Autowired
+    protected LldpTopologyService m_lldpTopologyService;
+
+    @Autowired
+    protected NodeTopologyService m_nodeTopologyService;
+
+    @Autowired
+    protected OnmsTopologyDao m_topologyDao;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -146,7 +166,8 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
         p.setProperty("log4j.logger.org.hibernate", "WARN");
         p.setProperty("log4j.logger.org.springframework","WARN");
         p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
-        MockLogAppender.setupLogging(p);
+        p.setProperty("log4j.logger.org.opennms.netmgt.enlinkd", "DEBUG");
+               MockLogAppender.setupLogging(p);
     }
 
     @After
@@ -160,6 +181,19 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
         for (final OnmsNode node : m_nodeDao.findAll())
             m_nodeDao.delete(node);
         m_nodeDao.flush();
+    }
+
+    public OnmsTopologyLogger createAndSubscribe(String protocol) {
+        OnmsTopologyLogger tl = new OnmsTopologyLogger(protocol);
+        m_topologyDao.subscribe(tl);
+        return tl;
+    }
+
+    Set<ProtocolSupported> getSupportedProtocolsAsProtocolSupported() {
+        return m_topologyDao.getSupportedProtocols()
+                .stream()
+                .map(p -> ProtocolSupported.valueOf(p.getId()))
+                .collect(Collectors.toSet());
     }
     
 }

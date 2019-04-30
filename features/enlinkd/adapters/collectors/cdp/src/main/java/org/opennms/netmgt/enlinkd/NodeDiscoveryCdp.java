@@ -30,15 +30,10 @@ package org.opennms.netmgt.enlinkd;
 
 import java.util.ArrayList;
 import java.util.Date;
-
-
-
-
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.enlinkd.common.NodeCollector;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
@@ -47,9 +42,10 @@ import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.CdpCacheTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.CdpGlobalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.CdpInterfacePortNameGetter;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is designed to collect the necessary SNMP information from the
@@ -58,7 +54,7 @@ import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public final class NodeDiscoveryCdp extends NodeDiscovery {
+public final class NodeDiscoveryCdp extends NodeCollector {
 	private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryCdp.class);
 
 	private final CdpTopologyService m_cdpTopologyService;
@@ -68,16 +64,16 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
      * <code>run</code> method is invoked.
      * 
 	 */
-    public NodeDiscoveryCdp(final EventForwarder eventForwarder,
+    public NodeDiscoveryCdp(
             final CdpTopologyService cdpTopologyService,
             final LocationAwareSnmpClient locationAwareSnmpClient,
             final long interval,final long initial,
             final Node node) {
-        super(eventForwarder, locationAwareSnmpClient, interval, initial,node);
+        super(locationAwareSnmpClient, interval, initial,node);
     	m_cdpTopologyService = cdpTopologyService;
     }
 
-    protected void runNodeDiscovery() {
+    public void collect() {
 
     	final Date now = new Date(); 
         final CdpGlobalGroupTracker cdpGlobalGroup = new CdpGlobalGroupTracker();

@@ -14,8 +14,8 @@
     <context:annotation-config/>
 
     <bean id="collectionSetMapper" class="org.opennms.features.kafka.producer.collection.CollectionSetMapper">
-     <constructor-arg ref="nodeDao"/>
-     <constructor-arg ref="transactionTemplate"/>
-   </bean>
+       <constructor-arg ref="nodeDao"/>
+       <constructor-arg ref="sessionUtils"/>
+    </bean>
 
 </beans>

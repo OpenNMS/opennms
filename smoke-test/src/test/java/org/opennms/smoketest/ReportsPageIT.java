@@ -42,8 +42,8 @@ public class ReportsPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllTextIsPresent() throws Exception {
-        findElementByXpath("//h3[@class='panel-title' and text()='Reports']");
-        findElementByXpath("//h3[@class='panel-title' and text()='Descriptions']");
+        findElementByXpath("//div[@class='card-header']/span[text()='Reports']");
+        findElementByXpath("//div[@class='card-header']/span[text()='Descriptions']");
     }
 
     @Test
@@ -56,24 +56,24 @@ public class ReportsPageIT extends OpenNMSSeleniumTestCase {
     public void testAllLinks() throws Exception {
         findElementByLink("Resource Graphs").click();
         findElementByXpath("//label[contains(text()[normalize-space()], 'Standard Resource')]");
-        findElementByXpath("//h3[text()='Network Performance Data']");
+        findElementByXpath("//div[@class='card-header']/span[text()='Network Performance Data']");
 
         reportsPage();
         findElementByLink("KSC Performance, Nodes, Domains").click();
-        findElementByXpath("//h3[text()='Customized Reports']");
-        findElementByXpath("//h3[text()='Descriptions']");
+        findElementByXpath("//div[@class='card-header']/span[text()='Customized Reports']");
+        findElementByXpath("//div[@class='card-header']/span[text()='Descriptions']");
 
         reportsPage();
         findElementByLink("Database Reports").click();
-        findElementByXpath("//h3[text()='Database Reports']");
-        findElementByXpath("//h3[text()='Descriptions']");
+        findElementByXpath("//div[@class='card-header']/span[text()='Database Reports']");
+        findElementByXpath("//div[@class='card-header']/span[text()='Descriptions']");
         findElementByLink("List reports");
         findElementByLink("View and manage pre-run reports");
         findElementByLink("Manage the batch report schedule");
 
         reportsPage();
         findElementByLink("Statistics Reports").click();
-        findElementByXpath("//h3[text()='Statistics Report List']");
+        findElementByXpath("//div[@class='card-header']/span[text()='Statistics Report List']");
     }
 
 }

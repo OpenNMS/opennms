@@ -31,22 +31,18 @@ package org.opennms.netmgt.enlinkd;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-
-
-
 import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.common.NodeCollector;
 import org.opennms.netmgt.enlinkd.model.OspfElement.Status;
+import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
 import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
@@ -59,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public final class NodeDiscoveryOspf extends NodeDiscovery {
+public final class NodeDiscoveryOspf extends NodeCollector {
     
 	private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryOspf.class);
 	
@@ -72,16 +68,16 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
 	 * @param EnhancedLinkd linkd
 	 * @param LinkableNode node
 	 */
-    public NodeDiscoveryOspf(final EventForwarder eventForwarder,
+    public NodeDiscoveryOspf(
             final OspfTopologyService ospfTopologyService,
             final LocationAwareSnmpClient locationAwareSnmpClient,
             final long interval,final long initial,
             final Node node) {
-        super(eventForwarder, locationAwareSnmpClient, interval, initial,node);
+        super(locationAwareSnmpClient, interval, initial,node);
     	m_ospfTopologyService = ospfTopologyService;
     }
 
-    protected void runNodeDiscovery() {
+    public void collect() {
 
     	final Date now = new Date(); 
 

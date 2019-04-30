@@ -37,7 +37,7 @@ import java.util.Set;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
 
-public interface BridgeTopologyService {
+public interface BridgeTopologyService extends TopologyService {
 
     // this indicates the total size of in memory bft
     boolean collectBft(int nodeid, int maxsize);
@@ -75,5 +75,11 @@ public interface BridgeTopologyService {
     Map<Integer, Set<BridgeForwardingTableEntry>> getUpdateBftMap();
     
     Set<BridgeForwardingTableEntry> useBridgeTopologyUpdateBFT(int nodeid);
+    
+    List<TopologyShared> match();
+    
+    List<MacPort> getMacPorts(); 
+    
+
     
 }

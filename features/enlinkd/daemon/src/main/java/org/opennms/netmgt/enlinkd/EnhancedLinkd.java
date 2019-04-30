@@ -29,31 +29,36 @@
 package org.opennms.netmgt.enlinkd;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
+import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.enlinkd.api.ReloadableTopologyDaemon;
+import org.opennms.netmgt.enlinkd.common.NodeCollector;
+import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.IsisTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
-import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
+import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
-import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
-//import org.opennms.netmgt.topologies.service.api.TopologyDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 
 /**
  * <p>
@@ -63,8 +68,8 @@ import org.springframework.util.Assert;
  * @author ranger
  * @version $Id: $
  */
-public class EnhancedLinkd extends AbstractServiceDaemon {
-    
+public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTopologyDaemon {
+
     private final static Logger LOG = LoggerFactory.getLogger(EnhancedLinkd.class);
     /**
      * The log4j category used to log messages.
@@ -95,19 +100,29 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     private EnhancedLinkdConfig m_linkdConfig;
 
     /**
-     * List that contains Linkable Nodes.
+     * Map that contains Nodeid and List of NodeCollector.
      */
-    private Map<Integer, List<NodeDiscovery>> m_nodes = new HashMap<Integer, List<NodeDiscovery>>();
-
-    /**
-     * Event handler
-     */
-    private volatile EventForwarder m_eventForwarder;
+    private Map<Integer, List<NodeCollector>> m_nodes = new HashMap<Integer, List<NodeCollector>>();
 
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
 
+    @Autowired
+    private NodesOnmsTopologyUpdater m_nodesTopologyUpdater;
+    @Autowired
+    private BridgeOnmsTopologyUpdater m_bridgeTopologyUpdater;
+    @Autowired
+    private CdpOnmsTopologyUpdater m_cdpTopologyUpdater;
+    @Autowired
+    private LldpOnmsTopologyUpdater m_lldpTopologyUpdater;
+    @Autowired
+    private IsisOnmsTopologyUpdater m_isisTopologyUpdater;
+    @Autowired
+    private OspfOnmsTopologyUpdater m_ospfTopologyUpdater;
+    @Autowired    
     private DiscoveryBridgeDomains m_discoveryBridgeDomains;
+    @Autowired
+    private UserDefinedLinkTopologyUpdater m_userDefinedLinkTopologyUpdater;
 
     /**
      * <p>
@@ -126,59 +141,83 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     protected void onInit() {
         BeanUtils.assertAutowiring(this);
 
-        Assert.state(m_eventForwarder != null,
-                     "must set the eventForwarder property");
-
-        createScheduler();
+        // Create a scheduler
+        //
+        try {
+            LOG.info("init: Creating EnhancedLinkd scheduler");
+            m_scheduler = new LegacyScheduler("EnhancedLinkd", m_linkdConfig.getThreads());
+        } catch (RuntimeException e) {
+            LOG.error("init: Failed to create EnhancedLinkd scheduler", e);
+            throw e;
+        }
 
         LOG.debug("init: Loading nodes.....");
-        List<Node> nodes = m_queryMgr.findAllSnmpNode();
-        Assert.notNull(m_nodes);
+        for (final Node node : m_queryMgr.findAllSnmpNode()) {
+            m_nodes.put(node.getNodeId(), scheduleCollectionForNode(node));
+        }
         LOG.debug("init: Nodes loaded.");
         LOG.debug("init: Loading Bridge Topology.....");
         m_bridgeTopologyService.load();
         LOG.debug("init: Bridge Topology loaded.");
 
-        scheduleCollection(nodes);
+        scheduleAndRegisterOnmsTopologyUpdater(m_nodesTopologyUpdater);
+        scheduleAndRegisterOnmsTopologyUpdater(m_userDefinedLinkTopologyUpdater);
 
         if (m_linkdConfig.useBridgeDiscovery()) {
             scheduleDiscoveryBridgeDomain();
+            scheduleAndRegisterOnmsTopologyUpdater(m_bridgeTopologyUpdater);
+        }
+
+        if (m_linkdConfig.useCdpDiscovery()) {
+            scheduleAndRegisterOnmsTopologyUpdater(m_cdpTopologyUpdater);
+            
+        }
+
+        if (m_linkdConfig.useLldpDiscovery()) {
+            scheduleAndRegisterOnmsTopologyUpdater(m_lldpTopologyUpdater);
+       }
+
+        if (m_linkdConfig.useIsisDiscovery()) {
+            scheduleAndRegisterOnmsTopologyUpdater(m_isisTopologyUpdater);
+        }
+        
+        if (m_linkdConfig.useOspfDiscovery()) {
+            scheduleAndRegisterOnmsTopologyUpdater(m_ospfTopologyUpdater);
         }
 
     }
 
-    private void createScheduler() {
-
-        // Create a scheduler
-        //
-        try {
-            LOG.debug("init: Creating EnhancedLinkd scheduler");
-            setScheduler(new LegacyScheduler("EnhancedLinkd", getLinkdConfig().getThreads()));
-        } catch (RuntimeException e) {
-            LOG.error("init: Failed to create EnhancedLinkd scheduler", e);
-            throw e;
-        }
+    public void unscheduleAndUnregisterOnmsTopologyUpdater(TopologyUpdater onmsTopologyUpdater) {
+        LOG.info("unscheduleOnmsTopologyUpdater: UnScheduling {}",
+                   onmsTopologyUpdater.getInfo());
+        onmsTopologyUpdater.unschedule();
+        onmsTopologyUpdater.unregister();
     }
 
+    public void scheduleAndRegisterOnmsTopologyUpdater(TopologyUpdater onmsTopologyUpdater) {
+        onmsTopologyUpdater.setScheduler(m_scheduler);
+        onmsTopologyUpdater.setPollInterval(m_linkdConfig.getTopologyInterval());
+        onmsTopologyUpdater.setInitialSleepTime(0L);
+        LOG.info("scheduleOnmsTopologyUpdater: Scheduling {}",
+                 onmsTopologyUpdater.getInfo());
+        onmsTopologyUpdater.schedule();
+        onmsTopologyUpdater.register();
+    }
+
+    public void unscheduleDiscoveryBridgeDomain() {
+    LOG.info("unscheduleDiscoveryBridgeDomain: Scheduling {}",
+             m_discoveryBridgeDomains.getInfo());
+             m_discoveryBridgeDomains.unschedule();
+    }
+    
     public void scheduleDiscoveryBridgeDomain() {
-            m_discoveryBridgeDomains=
-                    new DiscoveryBridgeDomains(getEventForwarder(),
-                                               getBridgeTopologyService(),
-                                               getBridgeTopologyInterval(),
-                                               getBridgeTopologyInterval()+getInitialSleepTime(),
-                                               getDiscoveryBridgeThreads());
-            LOG.debug("scheduleDiscoveryBridgeDomain: Scheduling {}",
-                     m_discoveryBridgeDomains.getInfo());
             m_discoveryBridgeDomains.setScheduler(m_scheduler);
+            m_discoveryBridgeDomains.setPollInterval(m_linkdConfig.getBridgeTopologyInterval());
+            m_discoveryBridgeDomains.setInitialSleepTime(m_linkdConfig.getBridgeTopologyInterval()+m_linkdConfig.getInitialSleepTime());
+            m_discoveryBridgeDomains.setMaxthreads(m_linkdConfig.getDiscoveryBridgeThreads());
+            LOG.info("scheduleDiscoveryBridgeDomain: Scheduling {}",
+                     m_discoveryBridgeDomains.getInfo());
             m_discoveryBridgeDomains.schedule();
-    }
-
-    private void scheduleCollection(List<Node> nodes) {
-        synchronized (nodes) {
-            for (final Node node : nodes) {
-                scheduleCollectionForNode(node);
-            }
-        }
     }
 
     /**
@@ -188,86 +227,77 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      * 
      * @param node
      */
-    private void scheduleCollectionForNode(final Node node) {
+    private List<NodeCollector> scheduleCollectionForNode(final Node node) {
 
-        List<NodeDiscovery> colls = new ArrayList<>();
+        List<NodeCollector> colls = new ArrayList<>();
         
         if (m_linkdConfig.useLldpDiscovery()) {
-            LOG.debug("getSnmpCollections: adding Lldp Discovery: {}",
+            LOG.debug("getSnmpCollections: adding Lldp: {}",
                     node);
-            colls.add(new NodeDiscoveryLldp(getEventForwarder(), 
-                                            getLldpTopologyService(),
-                                            getLocationAwareSnmpClient(), 
-                                            getRescanInterval(),
-                                            getInitialSleepTime(),
+            colls.add(new NodeDiscoveryLldp(m_lldpTopologyService,
+                                            m_locationAwareSnmpClient, 
+                                            m_linkdConfig.getRescanInterval(),
+                                            m_linkdConfig.getInitialSleepTime(),
                                              node));
         }
         
         if (m_linkdConfig.useCdpDiscovery()) {
-            LOG.debug("getSnmpCollections: adding Cdp Discovery: {}",
+            LOG.debug("getSnmpCollections: adding Cdp: {}",
                     node);
-             colls.add(new NodeDiscoveryCdp(getEventForwarder(), 
-                                            getCdpTopologyService(),
-                                            getLocationAwareSnmpClient(), 
-                                            getRescanInterval(),
-                                            getInitialSleepTime(),
+             colls.add(new NodeDiscoveryCdp(m_cdpTopologyService,
+                                            m_locationAwareSnmpClient, 
+                                            m_linkdConfig.getRescanInterval(),
+                                            m_linkdConfig.getInitialSleepTime(),
                                             node));       
         }
         
         if (m_linkdConfig.useBridgeDiscovery()) {
-                LOG.debug("getSnmpCollections: adding IpNetToMedia Discovery: {}",
+                LOG.debug("getSnmpCollections: adding IpNetToMedia: {}",
                     node);
-                colls.add(new NodeDiscoveryIpNetToMedia(getEventForwarder(), 
-                                                        getIpNetToMediaTopologyService(),
-                                                        getLocationAwareSnmpClient(), 
-                                                        getRescanInterval(),
-                                                        getInitialSleepTime(),
+                colls.add(new NodeDiscoveryIpNetToMedia(m_ipNetToMediaTopologyService,
+                                                        m_locationAwareSnmpClient, 
+                                                        m_linkdConfig.getRescanInterval(),
+                                                        m_linkdConfig.getInitialSleepTime(),
                                                         node));
                 
-                LOG.debug("getSnmpCollections: adding Bridge Discovery: {}",
+                LOG.debug("getSnmpCollections: adding Bridge: {}",
                     node);
-                colls.add(new NodeDiscoveryBridge(getEventForwarder(), 
-                                                  getBridgeTopologyService(),
-                                                  getMaxbft(),
-                                                  getLocationAwareSnmpClient(), 
-                                                  getRescanInterval(),
-                                                  getInitialSleepTime(),
+                colls.add(new NodeDiscoveryBridge(m_bridgeTopologyService,
+                                                  m_linkdConfig.getMaxBft(),
+                                                  m_locationAwareSnmpClient, 
+                                                  m_linkdConfig.getRescanInterval(),
+                                                  m_linkdConfig.getInitialSleepTime(),
                                                   node));
         }
 
         if (m_linkdConfig.useOspfDiscovery()) {
-            LOG.debug("getSnmpCollections: adding Ospf Discovery: {}",
+            LOG.debug("getSnmpCollections: adding Ospf: {}",
                     node);
-                colls.add(new NodeDiscoveryOspf(getEventForwarder(), 
-                                                getOspfTopologyService(),
-                                                getLocationAwareSnmpClient(), 
-                                                getRescanInterval(),
-                                                getInitialSleepTime(),
+                colls.add(new NodeDiscoveryOspf(m_ospfTopologyService,
+                                                m_locationAwareSnmpClient, 
+                                                m_linkdConfig.getRescanInterval(),
+                                                m_linkdConfig.getInitialSleepTime(),
                                                 node));
         }
 
         if (m_linkdConfig.useIsisDiscovery()) {
-            LOG.debug("getSnmpCollections: adding Is-Is Discovery: {}",
+            LOG.debug("getSnmpCollections: adding Is-Is: {}",
                     node);
-                colls.add(new NodeDiscoveryIsis(getEventForwarder(), 
-                        getIsisTopologyService(),
-                        getLocationAwareSnmpClient(), 
-                        getRescanInterval(),
-                        getInitialSleepTime(), 
-                        node));
+                colls.add(new NodeDiscoveryIsis(m_isisTopologyService,
+                                                m_locationAwareSnmpClient, 
+                                                m_linkdConfig.getRescanInterval(),
+                                                m_linkdConfig.getInitialSleepTime(), 
+                                                node));
         }
        
-        for (final NodeDiscovery coll : colls ){
+        for (final NodeCollector coll : colls ){
             LOG.debug("ScheduleCollectionForNode: Scheduling {}",
                 coll.getInfo());
             coll.setScheduler(m_scheduler);
             coll.schedule();
         }
         
-        synchronized (m_nodes) {
-            LOG.debug("scheduleNodeCollection: adding node {} to the collection", node);
-            m_nodes.put(node.getNodeId(),colls);
-        }
+        return colls;
     }
 
     /**
@@ -330,7 +360,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                            nodeid);
             return false;
         }
-        scheduleCollectionForNode(node);
+        synchronized (m_nodes) {
+            m_nodes.put(node.getNodeId(), scheduleCollectionForNode(node));
+        }
         return true;
     }
 
@@ -339,22 +371,113 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         if (!m_nodes.containsKey(nodeId)) {
             return false;
         }
-        for (final NodeDiscovery snmpColl : m_nodes.get(nodeId)) {
+        for (final NodeCollector snmpColl : m_nodes.get(nodeId)) {
             if (!snmpColl.isReady()) {
                 allready = false;
                 continue;
             }
-            snmpColl.runDiscovery();
+            snmpColl.collect();
         }
         return allready;
     }
 
     public void runDiscoveryBridgeDomains() {
-        if (m_discoveryBridgeDomains != null) {
             m_discoveryBridgeDomains.runDiscovery();
+    }
+
+    public void forceTopologyUpdaterRun(ProtocolSupported proto) {
+        switch (proto) {
+        case CDP:
+            if (m_linkdConfig.useCdpDiscovery()) {
+                m_cdpTopologyUpdater.forceRun();
+            }
+            break;
+  
+        case LLDP:
+            if (m_linkdConfig.useLldpDiscovery()) {
+                m_lldpTopologyUpdater.forceRun();
+            }
+            break;
+        
+        case ISIS:
+            if (m_linkdConfig.useIsisDiscovery()) {
+                m_isisTopologyUpdater.forceRun();
+            }
+            break;
+        
+        case OSPF:
+            if (m_linkdConfig.useOspfDiscovery()) {
+                m_ospfTopologyUpdater.forceRun();
+            }
+            break;
+        
+        case BRIDGE:
+            if (m_linkdConfig.useBridgeDiscovery()) {
+                m_bridgeTopologyUpdater.forceRun();
+            }
+            break;
+
+        case NODES:
+            m_nodesTopologyUpdater.forceRun();
+            break;
+
+        case USERDEFINED:
+            m_userDefinedLinkTopologyUpdater.forceRun();
+            break;
+
+        default:
+            break;
+        
+    }
+
+    }
+
+    public void runTopologyUpdater(ProtocolSupported proto) {
+        switch (proto) {
+            case CDP:
+                if (m_linkdConfig.useCdpDiscovery()) {
+                    m_cdpTopologyUpdater.runDiscovery();
+                }
+                break;
+      
+            case LLDP:
+                if (m_linkdConfig.useLldpDiscovery()) {
+                    m_lldpTopologyUpdater.runDiscovery();
+                }
+                break;
+            
+            case ISIS:
+                if (m_linkdConfig.useIsisDiscovery()) {
+                    m_isisTopologyUpdater.runDiscovery();
+                }
+                break;
+            
+            case OSPF:
+                if (m_linkdConfig.useOspfDiscovery()) {
+                    m_ospfTopologyUpdater.runDiscovery();
+                }
+                break;
+            
+            case BRIDGE:
+                if (m_linkdConfig.useBridgeDiscovery()) {
+                    m_bridgeTopologyUpdater.runDiscovery();
+                }
+                break;
+
+            case NODES:
+                m_nodesTopologyUpdater.runDiscovery();
+                break;
+
+            case USERDEFINED:
+                m_userDefinedLinkTopologyUpdater.runDiscovery();
+                break;
+
+            default:
+                break;
+            
         }
     }
-    
+
     public DiscoveryBridgeDomains getDiscoveryBridgeDomains() {
         return m_discoveryBridgeDomains;
     }
@@ -370,13 +493,15 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         m_nodes.get(nodeid).stream().forEach(collection -> collection.wakeUp());
     }
 
+    public void addNode(int intValue) {
+        m_queryMgr.updatesAvailable();
+    }
+
     void deleteNode(int nodeid) {
         LOG.info("deleteNode: deleting LinkableNode for node {}",
                         nodeid);
+        unscheduleNodeCollection(nodeid);
 
-        if (m_nodes.containsKey(nodeid)) {
-            m_nodes.remove(nodeid).stream().forEach(coll -> coll.suspend());
-        }
         try {
             m_bridgeTopologyService.delete(nodeid);
         } catch (BridgeTopologyException e) {
@@ -387,27 +512,37 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         m_lldpTopologyService.delete(nodeid);
         m_ospfTopologyService.delete(nodeid);
         m_ipNetToMediaTopologyService.delete(nodeid);
+        
+        m_queryMgr.updatesAvailable();
 
     }
 
+    void unscheduleNodeCollection(int nodeid) {
+        synchronized (m_nodes) {
+            if (m_nodes.containsKey(nodeid)) {
+                m_nodes.remove(nodeid).stream().
+                forEach(coll -> 
+                    coll.unschedule());
+            }        
+        }
+    }
+    
     void rescheduleNodeCollection(int nodeid) {
         LOG.info("rescheduleNodeCollection: suspend collection LinkableNode for node {}",
                 nodeid);        
-        if (m_nodes.containsKey(nodeid)) {
-            m_nodes.remove(nodeid).stream().forEach(coll -> coll.suspend());
-        } 
+        unscheduleNodeCollection(nodeid);
         
-        scheduleNodeCollection(nodeid);
-        
-    	
+        scheduleNodeCollection(nodeid);            	
     }
     
     void suspendNodeCollection(int nodeid) {
         LOG.info("suspendNodeCollection: suspend collection LinkableNode for node {}",
                         nodeid);   
-        if (m_nodes.containsKey(nodeid)) {
-            m_nodes.get(nodeid).stream().forEach(coll -> coll.suspend());
-        } 
+        synchronized (m_nodes) {
+               if (m_nodes.containsKey(nodeid)) {
+                   m_nodes.get(nodeid).stream().forEach(coll -> coll.suspend());
+               } 
+        }
     }
 
     public NodeTopologyService getQueryManager() {
@@ -472,98 +607,190 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     public void setLinkdConfig(final EnhancedLinkdConfig config) {
         m_linkdConfig = config;
     }
-
-    /**
-     * @return the eventForwarder
-     */
-    public EventForwarder getEventForwarder() {
-        return m_eventForwarder;
+    public String getSource() {
+        return "enlinkd";
     }
-
-    /**
-     * @param eventForwarder
-     *            the eventForwarder to set
-     */
-    public void setEventForwarder(EventForwarder eventForwarder) {
-        this.m_eventForwarder = eventForwarder;
-    }
-
-	public String getSource() {
-		return "enlinkd";
-	}
-
-    public long getInitialSleepTime() {
-    	return m_linkdConfig.getInitialSleepTime();
-    }
-
-    public long getRescanInterval() {
-            return m_linkdConfig.getRescanInterval(); 
-    }
-    public long getBridgeTopologyInterval() {
-        return m_linkdConfig.getBridgeTopologyInterval();
-    }
-    
-    public int getDiscoveryBridgeThreads() {
-        return m_linkdConfig.getDiscoveryBridgeThreads();
-    }
-
     public LocationAwareSnmpClient getLocationAwareSnmpClient() {
         return m_locationAwareSnmpClient;
-    }
-    
-    public int getMaxbft() {
-    	return m_linkdConfig.getMaxBft();
-    }
-    
+    }        
     public BridgeTopologyService getBridgeTopologyService() {
         return m_bridgeTopologyService;
     }
-
     public void setBridgeTopologyService(
             BridgeTopologyService bridgeTopologyService) {
         m_bridgeTopologyService = bridgeTopologyService;
     }
-
     public CdpTopologyService getCdpTopologyService() {
         return m_cdpTopologyService;
     }
-
     public void setCdpTopologyService(CdpTopologyService cdpTopologyService) {
         m_cdpTopologyService = cdpTopologyService;
     }
-
     public IsisTopologyService getIsisTopologyService() {
         return m_isisTopologyService;
     }
-
     public void setIsisTopologyService(IsisTopologyService isisTopologyService) {
         m_isisTopologyService = isisTopologyService;
     }
-
     public LldpTopologyService getLldpTopologyService() {
         return m_lldpTopologyService;
     }
-
     public void setLldpTopologyService(LldpTopologyService lldpTopologyService) {
         m_lldpTopologyService = lldpTopologyService;
     }
-
     public OspfTopologyService getOspfTopologyService() {
         return m_ospfTopologyService;
     }
-
     public void setOspfTopologyService(OspfTopologyService ospfTopologyService) {
         m_ospfTopologyService = ospfTopologyService;
     }
-    
     public IpNetToMediaTopologyService getIpNetToMediaTopologyService() {
         return m_ipNetToMediaTopologyService;
     }
-
     public void setIpNetToMediaTopologyService(
             IpNetToMediaTopologyService ipNetToMediaTopologyService) {
         m_ipNetToMediaTopologyService = ipNetToMediaTopologyService;
     }
+    public NodesOnmsTopologyUpdater getNodesTopologyUpdater() {
+        return m_nodesTopologyUpdater;
+    }
+    public CdpOnmsTopologyUpdater getCdpTopologyUpdater() {
+        return m_cdpTopologyUpdater;
+    }
+    public LldpOnmsTopologyUpdater getLldpTopologyUpdater() {
+        return m_lldpTopologyUpdater;
+    }
+    public IsisOnmsTopologyUpdater getIsisTopologyUpdater() {
+        return m_isisTopologyUpdater;
+    }
+    public BridgeOnmsTopologyUpdater getBridgeTopologyUpdater() {
+        return m_bridgeTopologyUpdater;
+    }
+    public OspfOnmsTopologyUpdater getOspfTopologyUpdater() {
+        return m_ospfTopologyUpdater;
+    }
 
+    public void reload() {
+        LOG.info("reload: reload enlinkd daemon service");
 
+        m_nodesTopologyUpdater.unschedule();
+        m_nodesTopologyUpdater.unregister();
+        NodesOnmsTopologyUpdater nodeupdater = NodesOnmsTopologyUpdater.clone(m_nodesTopologyUpdater);
+        scheduleAndRegisterOnmsTopologyUpdater(nodeupdater);
+        m_nodesTopologyUpdater = nodeupdater;
+
+        if (m_linkdConfig.useOspfDiscovery()) {
+            if (m_ospfTopologyUpdater.isRegistered()) {
+                m_ospfTopologyUpdater.unschedule();
+                m_ospfTopologyUpdater.unregister();
+                OspfOnmsTopologyUpdater updater = OspfOnmsTopologyUpdater.clone(m_ospfTopologyUpdater);
+                scheduleAndRegisterOnmsTopologyUpdater(updater);
+                m_ospfTopologyUpdater = updater;
+            } else {
+                scheduleAndRegisterOnmsTopologyUpdater(m_ospfTopologyUpdater);
+            }
+        } else {
+            unscheduleAndUnregisterOnmsTopologyUpdater(m_ospfTopologyUpdater);
+        }
+
+        if (m_linkdConfig.useLldpDiscovery()) {
+            if (m_lldpTopologyUpdater.isRegistered()) {
+                m_lldpTopologyUpdater.unschedule();
+                m_lldpTopologyUpdater.unregister();
+                LldpOnmsTopologyUpdater updater = LldpOnmsTopologyUpdater.clone(m_lldpTopologyUpdater);
+                scheduleAndRegisterOnmsTopologyUpdater(updater);
+                m_lldpTopologyUpdater = updater;
+            } else {
+                scheduleAndRegisterOnmsTopologyUpdater(m_lldpTopologyUpdater);
+            }
+        } else {
+            unscheduleAndUnregisterOnmsTopologyUpdater(m_lldpTopologyUpdater);
+        }
+        
+        if (m_linkdConfig.useIsisDiscovery()) {
+            if (m_isisTopologyUpdater.isRegistered()) {
+                m_isisTopologyUpdater.unschedule();
+                m_isisTopologyUpdater.unregister();
+                IsisOnmsTopologyUpdater updater = IsisOnmsTopologyUpdater.clone(m_isisTopologyUpdater);
+                scheduleAndRegisterOnmsTopologyUpdater(updater);
+                m_isisTopologyUpdater = updater;
+            } else {
+                scheduleAndRegisterOnmsTopologyUpdater(m_isisTopologyUpdater);
+            }
+        } else {
+            unscheduleAndUnregisterOnmsTopologyUpdater(m_isisTopologyUpdater);
+        }
+
+        if (m_linkdConfig.useCdpDiscovery()) {
+            if (m_cdpTopologyUpdater.isRegistered()) {
+                m_cdpTopologyUpdater.unschedule();
+                m_cdpTopologyUpdater.unregister();
+                CdpOnmsTopologyUpdater updater = CdpOnmsTopologyUpdater.clone(m_cdpTopologyUpdater);
+                scheduleAndRegisterOnmsTopologyUpdater(updater);
+                m_cdpTopologyUpdater = updater;
+            } else {
+                scheduleAndRegisterOnmsTopologyUpdater(m_cdpTopologyUpdater);
+            }
+        } else {
+            unscheduleAndUnregisterOnmsTopologyUpdater(m_cdpTopologyUpdater);
+        }
+        
+        if (m_linkdConfig.useBridgeDiscovery()) {
+            if (m_bridgeTopologyUpdater.isRegistered()) {
+                m_bridgeTopologyUpdater.unschedule();
+                m_bridgeTopologyUpdater.unregister();
+                BridgeOnmsTopologyUpdater updater = BridgeOnmsTopologyUpdater.clone(m_bridgeTopologyUpdater);
+                scheduleAndRegisterOnmsTopologyUpdater(updater);
+                m_bridgeTopologyUpdater = updater;
+            } else {
+                scheduleAndRegisterOnmsTopologyUpdater(m_bridgeTopologyUpdater);
+            }
+        } else {
+            unscheduleAndUnregisterOnmsTopologyUpdater(m_bridgeTopologyUpdater);
+        }
+        
+        if (m_linkdConfig.useBridgeDiscovery()) {
+            m_discoveryBridgeDomains.unschedule();
+            m_discoveryBridgeDomains = DiscoveryBridgeDomains.clone(m_discoveryBridgeDomains);
+            scheduleDiscoveryBridgeDomain();
+        } else {
+            unscheduleDiscoveryBridgeDomain();
+        }
+
+        synchronized (m_nodes) {
+            final Set<Node> nodes = new HashSet<Node>();
+            for (List<NodeCollector> list: m_nodes.values()) {
+                list.stream().forEach(coll -> {
+                    coll.unschedule(); 
+                    nodes.add(coll.getNode());
+                });
+            }
+            m_nodes.clear();
+            nodes.stream().
+                forEach(node -> m_nodes.put(node.getNodeId(), scheduleCollectionForNode(node)));
+        }
+    }
+    
+    public void reloadConfig() {
+        LOG.info("reloadConfig: reload enlinkd configuration file");
+        try {
+            m_linkdConfig.reload();
+        } catch (IOException e) {
+            LOG.error("reloadConfig: cannot reload config: {}", e.getMessage());
+            return;
+        }
+        reload();
+    }
+
+    @Override
+    public void reloadTopology() {
+        LOG.info("reloadTopology: reload enlinkd topology updaters");
+        LOG.debug("reloadTopology: Loading Bridge Topology.....");
+        m_bridgeTopologyService.load();
+        LOG.debug("reloadTopology: Bridge Topology Loaded");
+        for (ProtocolSupported protocol :ProtocolSupported.values()) {
+            forceTopologyUpdaterRun(protocol);
+            runTopologyUpdater(protocol);
+        }
+    }
 }

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.enlinkd</groupId>
     <artifactId>org.opennms.features.enlinkd.adapters</artifactId>
-    <version>24.0.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features.enlinkd.adapters.common</artifactId>
@@ -33,6 +33,11 @@
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.service.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topologies</groupId>
+      <artifactId>org.opennms.features.topologies.service.api</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
     <!-- Test Dependencies -->

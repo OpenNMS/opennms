@@ -263,6 +263,7 @@
     }
 
 	pageContext.setAttribute("schedOutages", schedOutages.isEmpty() ? null : StringUtils.collectionToDelimitedString(schedOutages, ", "));
+    pageContext.setAttribute("maxInterfaceCount", System.getProperty("org.opennms.interfaceAvailabilityBox.maxInterfaceCount", "10"));
 %>
 
 <%@page import="org.opennms.core.resource.Vault"%>
@@ -303,55 +304,62 @@ function confirmAssetEdit() {
 }
 </script>
 
-<h4>
+<h5>
   <c:if test="${model.foreignSource != null}">
-    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid label label-default" title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span>&nbsp;<span class="NPfs label label-default" title="Requisition: ${model.foreignSource}"><i class="fa fa-list-alt"></i>&nbsp;${model.foreignSource}</span>&nbsp;<span class="NPfid label label-default" title="Foreign ID: ${model.foreignId}"><i class="fa fa-qrcode"></i>&nbsp;${model.foreignId}</span>&nbsp;<span class="NPloc label label-default" title="Location: ${model.location}"><i class="fa fa-map-marker"></i>&nbsp;${model.location}</span></div>
+    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid badge badge-secondary " title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span>&nbsp;<span class="NPfs badge badge-secondary " title="Requisition: ${model.foreignSource}"><i class="fa fa-list-alt"></i>&nbsp;${model.foreignSource}</span>&nbsp;<span class="NPfid badge badge-secondary " title="Foreign ID: ${model.foreignId}"><i class="fa fa-qrcode"></i>&nbsp;${model.foreignId}</span>&nbsp;<span class="NPloc badge badge-secondary " title="Location: ${model.location}"><i class="fa fa-map-marker"></i>&nbsp;${model.location}</span></div>
   </c:if>
   <c:if test="${model.foreignSource == null}">
-    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid label label-default" title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span>&nbsp;<span class="NPloc label label-default" title="Location: ${model.location}"><i class="fa fa-map-marker"></i>&nbsp;${model.location}</span></div>
+    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid badge badge-secondary " title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span>&nbsp;<span class="NPloc badge badge-secondary " title="Location: ${model.location}"><i class="fa fa-map-marker"></i>&nbsp;${model.location}</span></div>
   </c:if>
-</h4>
+</h5>
 
   <ul class="list-inline">
     <c:url var="eventLink" value="event/list">
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
-    <li>
+    <li class="list-inline-item">
       <a href="<c:out value="${eventLink}"/>">View Events</a>
     </li>
 
     <c:url var="alarmLink" value="alarm/list.htm">
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
-    <li>
+    <li class="list-inline-item">
       <a href="<c:out value="${alarmLink}"/>">View Alarms</a>
     </li>
     
     <c:url var="outageLink" value="outage/list.htm">
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
-    <li>
+    <li class="list-inline-item">
       <a href="<c:out value="${outageLink}"/>">View Outages</a>
     </li>
     
     <c:url var="assetLink" value="asset/modify.jsp">
       <c:param name="node" value="${model.id}"/>
     </c:url>
-    <li>
+    <li class="list-inline-item">
       <a href="<c:out value="${assetLink}"/>" onclick="return confirmAssetEdit()">Asset Info</a>
+    </li>
+
+    <c:url var="metaDataLink" value="element/node-metadata.jsp">
+        <c:param name="node" value="${model.id}"/>
+    </c:url>
+    <li class="list-inline-item">
+      <a href="<c:out value="${metaDataLink}"/>">Meta-Data</a>
     </li>
 
     <c:url var="hardwareLink" value="hardware/list.jsp">
       <c:param name="node" value="${model.id}"/>
     </c:url>
-    <li>
+    <li class="list-inline-item">
       <a href="<c:out value="${hardwareLink}"/>">Hardware Info</a>
     </li>
 
     <c:url var="intfAvailabilityLink" value="element/availability.jsp">
       <c:param name="node" value="${model.id}"/>
     </c:url>
-    <li>
+    <li class="list-inline-item">
       <a href="<c:out value="${intfAvailabilityLink}"/>">Availability</a>
     </li>
 
@@ -359,13 +367,13 @@ function confirmAssetEdit() {
       <c:url var="siteLink" value="siteStatusView.htm">
         <c:param name="statusSite" value="${model.statusSite}"/>
       </c:url>
-      <li>
+      <li class="list-inline-item">
         <a href="<c:out value="${siteLink}"/>">Site Status</a>
       </li>
     </c:if>
 
     <c:forEach items="${model.links}" var="link">
-      <li>
+      <li class="list-inline-item">
         <a href="<c:out value="${link.url}"/>">${link.text}</a>
       </li>
     </c:forEach>
@@ -377,7 +385,7 @@ function confirmAssetEdit() {
       <c:param name="node" value="${model.id}"/>
       <c:param name="reports" value="all"/>
     </c:url>
-    <li>
+    <li class="list-inline-item">
       <a href="<c:out value="${resourceGraphsUrl}"/>">Resource Graphs</a>
     </li>
     
@@ -385,14 +393,14 @@ function confirmAssetEdit() {
       <c:url var="rescanLink" value="element/rescan.jsp">
         <c:param name="node" value="${model.id}"/>
       </c:url>
-      <li>
+      <li class="list-inline-item">
         <a href="<c:out value="${rescanLink}"/>">Rescan</a>
       </li>
       
       <c:url var="adminLink" value="admin/nodemanagement/index.jsp">
         <c:param name="node" value="${model.id}"/>
       </c:url>
-      <li>
+      <li class="list-inline-item">
         <a href="<c:out value="${adminLink}"/>">Admin</a>
       </li>
 
@@ -401,7 +409,7 @@ function confirmAssetEdit() {
           <c:param name="node" value="${model.id}"/>
           <c:param name="ipaddr" value="${model.snmpPrimaryIntf.ipAddress}"/>
         </c:url>
-        <li>
+        <li class="list-inline-item">
           <a href="<c:out value="${updateSnmpLink}"/>">Update SNMP</a>
         </li>
       </c:if>
@@ -411,19 +419,19 @@ function confirmAssetEdit() {
 	<c:param name="addNew" value="true"/>
 	<c:param name="nodeID" value="${model.id}"/>
       </c:url>
-      <li>
+      <li class="list-inline-item">
         <a href="<c:out value="${createOutage}"/>">Schedule Outage</a>
       </li>
     </c:if>
 
     <c:if test="${model.existsInRequisition && (model.admin || model.provision)}">
-        <li>
+        <li class="list-inline-item">
             <a href="<c:out value="admin/ng-requisitions/index.jsp#/requisitions/${model.foreignSource}/nodes/${model.foreignId}"/>">Edit in Requisition</a>
         </li>
     </c:if>
 
     <c:forEach items="${navEntries}" var="entry">
-      <li>
+      <li class="list-inline-item">
       	<c:out value="${entry}" escapeXml="false" />
       </li>
     </c:forEach>
@@ -431,7 +439,7 @@ function confirmAssetEdit() {
 
 
 <c:if test="${! empty schedOutages}">
-  <table class="table table-condensed severity">
+  <table class="table table-sm severity">
     <tr class="severity-Critical">
       <td align="left" class="bright">
         <b>This node is currently affected by the following scheduled outages: </b> ${schedOutages}
@@ -450,11 +458,11 @@ function confirmAssetEdit() {
   
   <!-- Asset box, if info available --> 
   <c:if test="${! empty model.asset && (! empty model.asset.description || ! empty model.asset.comments)}">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Asset Information</h3>
+    <div class="card">
+    <div class="card-header">
+      <span>Asset Information</span>
     </div>
-    <table class="table table-condensed">
+    <table class="table table-sm">
       <tr>
         <th>Description</th>
         <td>${model.asset.description}</td>
@@ -470,12 +478,12 @@ function confirmAssetEdit() {
 
   <!-- SNMP box, if info available -->
   <c:if test="${! empty model.node.sysObjectId}">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">SNMP Attributes</h3>
+    <div class="card">
+    <div class="card-header">
+      <span>SNMP Attributes</span>
     </div>
     
-    <table class="table table-condensed">
+    <table class="table table-sm">
       <tr>
         <th>Name</th>
         <td>${model.sysName}</td>
@@ -502,13 +510,13 @@ function confirmAssetEdit() {
 
   <!-- Critical Path info, if info available -->
   <c:if test="${model.criticalPath != model.noCriticalPath}">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Path Outage - Critical Path</h3>
+    <div class="card">
+    <div class="card-header">
+      <span>Path Outage - Critical Path</span>
     </div>
-    <div class="panel-body">
-      <ul class="list-unstyled">
-        <li>
+    <div class="card-body">
+      <ul class="list-unstyled mb-0">
+        <li class="list-inline-item">
           ${model.criticalPath}
         </li>
       </ul> 
@@ -517,26 +525,26 @@ function confirmAssetEdit() {
   </c:if>
 	
   <!-- Availability box -->
-  <c:if test="${fn:length( model.intfs ) < 10}">
+  <c:if test="${fn:length( model.intfs ) <= maxInterfaceCount}">
     <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" >
       <jsp:param name="node" value="${model.id}" />
     </jsp:include>
   </c:if>
 
-  <div id="onms-interfaces" class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Node Interfaces</h3>
+  <div id="onms-interfaces" class="card">
+    <div class="card-header">
+        <span>Node Interfaces</span>
     </div>
     <onms-interfaces node="${model.id}"/>
   </div>
 
   <!-- LLDP box, if info available --> 
   <c:if test="${! empty model.lldp }">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">LLDP Information</h3>
+    <div class="card">
+    <div class="card-header">
+      <span>LLDP Information</span>
     </div>
-    <table class="table table-condensed">
+    <table class="table table-sm">
       <tr><th width="50%">chassis id</th><td width="50%">${model.lldp.lldpChassisId}</td></tr>
       <tr><th width="50%">sysname</th><td width="50%">${model.lldp.lldpSysName}</td></tr>
       <tr><th width="50%">last poll time</th><td width="50%">${model.lldp.lldpLastPollTime}</td></tr>
@@ -546,11 +554,11 @@ function confirmAssetEdit() {
 
   <!-- CDP box, if info available --> 
   <c:if test="${! empty model.cdp }">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">CDP Information</h3>
+    <div class="card">
+    <div class="card-header">
+      <span>CDP Information</span>
     </div>
-    <table class="table table-condensed">
+    <table class="table table-sm">
       <tr><th width="50%">global device id</th><td width="50%">${model.cdp.cdpGlobalDeviceId}</td></tr>
       <tr><th width="50%">global run</th><td width="50%">${model.cdp.cdpGlobalRun}</td></tr>
       <tr><th width="50%">last poll time</th><td width="50%">${model.cdp.cdpLastPollTime}</td></tr>
@@ -561,11 +569,11 @@ function confirmAssetEdit() {
 
   <!-- OSPF box, if info available -->
   <c:if test="${! empty model.ospf }">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">OSPF Information</h3>
+    <div class="card">
+    <div class="card-header">
+      <span>OSPF Information</span>
     </div>
-    <table class="table table-condensed">
+    <table class="table table-sm">
       <tr><th width="50%">Router Id</th><td width="50%">${model.ospf.ospfRouterId}</td></tr>
       <tr><th width="50%">Status</th><td width="50%">${model.ospf.ospfAdminStat} version:${model.ospf.ospfVersionNumber}</td></tr>
       <tr><th>last poll time</th><td>${model.ospf.ospfLastPollTime}</td></tr>
@@ -575,11 +583,11 @@ function confirmAssetEdit() {
 
   <!-- IS-IS box, if info available -->
   <c:if test="${! empty model.isis }">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">IS-IS Information</h3>
+    <div class="card">
+    <div class="card-header">
+      <span>IS-IS Information</span>
     </div>
-    <table class="table table-condensed">
+    <table class="table table-sm">
       <tr><th width="50%">Sys ID</th><td width="50%">${model.isis.isisSysID}</td></tr>
       <tr><th width="50%">Admin State</th><td width="50%">${model.isis.isisSysAdminState}</td></tr>
       <tr><th width="50%">last poll time</th><td width="50%">${model.isis.isisLastPollTime}</td></tr>
@@ -589,11 +597,11 @@ function confirmAssetEdit() {
 
   <!-- Bridge box if available -->
   <c:if test="${! empty model.bridges}">
-    <div class="panel panel-default">
-   	<div class="panel-heading">
-   	  <h3 class="panel-title">Bridge Information</h3>
+    <div class="card">
+   	<div class="card-header">
+   	  <span>Bridge Information</span>
    	</div>
-	<table class="table table-condensed">
+	<table class="table table-sm">
 	<c:forEach items="${model.bridges}" var="bridge">
    	<tr>
    	<th width="50%"><c:if test="${! empty bridge.vlanname}">Vlan ${bridge.vlanname}</c:if>
@@ -618,24 +626,24 @@ function confirmAssetEdit() {
 <div class="col-md-6">
   
   <!-- general info box -->
-  <div class="panel panel-default">
-    <div class="panel-heading">
-  	<h3 class="panel-title">General (Status: ${model.status})</h3>
+  <div class="card">
+    <div class="card-header">
+  	<span>General (Status: ${model.status})</span>
     </div>
-  <div class="panel-body">
-    <ul class="list-unstyled">
+  <div class="card-body">
+    <ul class="list-unstyled mb-0">
       <c:if test="${model.showRancid}">
         <c:url var="rancidLink" value="inventory/rancid.htm">
           <c:param name="node" value="${model.id}"/>
         </c:url>
-        <li>
+        <li class="list-inline-item">
           <a href="<c:out value="${rancidLink}"/>">View Node Rancid Inventory Info </a>
         </li>
       </c:if>
       <c:url var="detailLink" value="element/linkednode.jsp">
         <c:param name="node" value="${model.id}"/>
       </c:url>
-      <li>
+      <li class="list-inline-item">
         <a href="<c:out value="${detailLink}"/>">View Node Link Detailed Info</a>
       </li>
     </ul>

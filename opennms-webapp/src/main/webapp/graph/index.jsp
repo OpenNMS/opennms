@@ -59,11 +59,11 @@
 
   <div class="row" ng-show="hasResources">
     <div class="col-md-6">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Resources</h3>
+      <div class="card">
+        <div class="card-header">
+          <span>Resources</span>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <div class="radio">
             <label>
               <input type="radio" name="reportTarget" value="graph/results.htm" ng-model="endUrl"/>
@@ -80,20 +80,26 @@
           </div>
           <div class="table-responsive">
             <div class="input-group">
-              <span class="input-group-addon">
-                <span class="glyphicon glyphicon-search"></span>
-              </span>
+              <div class="input-group-prepend">
+                <div class="input-group-text">
+                  <i class="fa fa-search"></i>
+                </div>
+
+              </div>
               <input class="form-control" type="text" placeholder="Search/Filter Resources" ng-model="resourceFilter"></input>
             </div>
-            <table class="table table-striped table-condensed table-hover">
+
+            <table class="table table-striped table-sm table-hover">
               <thead>
                 <tr>
                   <th>Resources</th>
                 </tr>
               </thead>
               <tbody>
-                <tr ng-click="goTo(resource.id)" ng-repeat="resource in filteredResources | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
-                  <td>{{ resource.label }}</td>
+                <tr ng-repeat="resource in filteredResources | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
+                  <td>
+                    <a ng-click="goTo(resource.id)" href>{{ resource.label }}</a>
+                  </td>
                 </tr>
              </tbody>
             </table>
@@ -109,11 +115,11 @@
       </div>
     </div>
     <div class="col-md-6">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Network Performance Data</h3>
+      <div class="card">
+        <div class="card-header">
+          <span>Network Performance Data</span>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <p>
           The <strong>Standard Performance Reports</strong> provide a stock way to
           easily visualize the critical SNMP data collected from managed nodes

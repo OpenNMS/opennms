@@ -127,7 +127,7 @@ public class InterfacesOnNodePageIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testNodePage() throws Exception {
         // Verify main banner
-        Assert.assertEquals("TestMachine1", findElementByCss("h4 div.NPnode strong").getText());
+        Assert.assertEquals("TestMachine1", findElementByCss("h5 div.NPnode strong").getText());
 
         // Verify IP Interfaces
         List<WebElement> elements = m_driver.findElements(By.cssSelector("div.tab-pane.ng-scope.active td.ng-binding"));

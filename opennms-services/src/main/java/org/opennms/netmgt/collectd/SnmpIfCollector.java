@@ -161,7 +161,7 @@ public class SnmpIfCollector extends AggregateTracker {
     /** {@inheritDoc} */
     @Override
     protected void storeResult(SnmpResult res) {
-        if(res.getBase().toString().equals(SnmpCollector.IFALIAS_OID) && (res.getValue().isNull() || res.getValue().toDisplayString() == null || res.getValue().toDisplayString().equals(""))) {
+        if(res.getBase().toString().equals(AbstractSnmpCollector.IFALIAS_OID) && (res.getValue().isNull() || res.getValue().toDisplayString() == null || res.getValue().toDisplayString().equals(""))) {
             LOG.debug("Skipping storeResult. Null or zero length ifAlias");
             return;
         }

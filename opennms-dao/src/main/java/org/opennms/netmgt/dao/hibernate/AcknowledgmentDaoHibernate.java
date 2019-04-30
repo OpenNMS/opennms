@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -268,12 +271,17 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
     @Override
     @Transactional
     @SuppressWarnings("unchecked")
-    public List<OnmsAcknowledgment> findLatestAcks() {
-        String hqlQuery = "SELECT acks FROM OnmsAcknowledgment acks WHERE " +
-                "acks.ackTime = (SELECT MAX(filteredAcks.ackTime) FROM OnmsAcknowledgment filteredAcks WHERE " +
-                "filteredAcks.refId = acks.refId) AND acks.id = (SELECT MAX(filteredAcks.id) FROM " +
-                "OnmsAcknowledgment filteredAcks WHERE filteredAcks.refId = acks.refId)";
-        return (List<OnmsAcknowledgment>) getHibernateTemplate().find(hqlQuery);
+    public List<OnmsAcknowledgment> findLatestAcks(Date from) {
+        final String hqlQuery = "SELECT acks FROM OnmsAcknowledgment acks " +
+                "WHERE acks.ackTime = (" +
+                    "SELECT MAX(filteredAcks.ackTime) " +
+                    "FROM OnmsAcknowledgment filteredAcks " +
+                    "WHERE filteredAcks.refId = acks.refId) " +
+                "AND acks.id = (" +
+                    "SELECT MAX(filteredAcks.id) FROM OnmsAcknowledgment filteredAcks " +
+                    "WHERE filteredAcks.refId = acks.refId) " +
+                "AND acks.ackTime >= (:minAckTimeParm)";
+        return (List<OnmsAcknowledgment>) getHibernateTemplate().findByNamedParam(hqlQuery, "minAckTimeParm", from);
     }
 
     @Override

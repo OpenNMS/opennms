@@ -56,7 +56,7 @@
 
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="text-right">
+                        <div class="pull-right">
                             <element:pagedList pagedListHolder="${mapEntry.value}" pagedLink="${pagedLink}"/>
                         </div>
 
@@ -64,11 +64,11 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title"><c:out value="${mapEntry.key.displayName}"/></h3>
+                    <div class="card">
+                        <div class="card-header">
+                            <span><c:out value="${mapEntry.key.displayName}"/></span>
                         </div>
-                        <table class="table table-condensed">
+                        <table class="table table-sm">
                             <thead>
                             <tr>
                                 <th>Name</th>

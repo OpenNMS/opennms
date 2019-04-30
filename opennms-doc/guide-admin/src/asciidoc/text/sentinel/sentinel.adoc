@@ -156,31 +156,31 @@ To automatically start features with the container, the file `${SENTINEL_HOME}/e
 featuresBoot = \
       (aries-blueprint, \
       deployer), \
-      instance/4.1.5, \
-      package/4.1.5, \
-      log/4.1.5, \
-      scv/24.0.0-SNAPSHOT, \
-      ssh/4.1.5, \
-      framework/4.1.5, \
-      system/4.1.5, \
-      eventadmin/4.1.5, \
-      feature/4.1.5, \
-      shell/4.1.5, \
-      management/4.1.5, \
-      service/4.1.5, \
-      system/4.1.5, \
-      eventadmin/4.1.5, \
-      feature/4.1.5, \
-      shell/4.1.5, \
-      management/4.1.5, \
-      service/4.1.5, \
-      jaas/4.1.5, \
-      shell-compat/4.1.5, \
-      diagnostic/4.1.5, \
+      instance/4.2.2, \
+      package/4.2.2, \
+      log/4.2.2, \
+      scv/25.0.0-SNAPSHOT, \
+      ssh/4.2.2, \
+      framework/4.2.2, \
+      system/4.2.2, \
+      eventadmin/4.2.2, \
+      feature/4.2.2, \
+      shell/4.2.2, \
+      management/4.2.2, \
+      service/4.2.2, \
+      system/4.2.2, \
+      eventadmin/4.2.2, \
+      feature/4.2.2, \
+      shell/4.2.2, \
+      management/4.2.2, \
+      service/4.2.2, \
+      jaas/4.2.2, \
+      shell-compat/4.2.2, \
+      diagnostic/4.2.2, \
       wrap, \
-      bundle/4.1.5, \
-      config/4.1.5, \
-      kar/4.1.5, \
+      bundle/4.2.2, \
+      config/4.2.2, \
+      kar/4.2.2, \
       sentinel-jms, \ <1>
       sentinel-flows <2>
 
@@ -221,7 +221,7 @@ $ ssh -p 8301 admin@localhost
 ----
 
 ----
-admin@sentinel> config:edit org.opennms.features.telemetry.adapters-netflow5
+admin@sentinel> config:edit --alias netflow5 --factory org.opennms.features.telemetry.adapters
 admin@sentinel> config:property-set name Netflow-5
 admin@sentinel> config:property-set adapters.0.name Netflow-5-Adapter
 admin@sentinel> config:property-set adapters.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter
@@ -262,7 +262,7 @@ $ ssh -p 8201 admin@localhost
 ----
 
 ----
-admin@minion()> config:edit org.opennms.features.telemetry.listeners-udp-8877
+admin@minion()> config:edit --alias udp-8877 --factory org.opennms.features.telemetry.listeners
 admin@minion()> config:property-set name Netflow-5
 admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.udp.UdpListener
 admin@minion()> config:property-set parameters.port 8877
@@ -418,7 +418,7 @@ $ ssh -p 8301 admin@localhost
 ----
 
 ----
-admin@sentinel> config:edit org.opennms.features.telemetry.adapters-sflow
+admin@sentinel> config:edit --alias sflow --factory org.opennms.features.telemetry.adapters
 admin@sentinel> config:property-set name SFlow-Telemetry
 admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowTelemetryAdapter
 admin@sentinel> config:property-set parameters.script  /opt/sentinel/etc/sflow-host.groovy
@@ -428,7 +428,7 @@ admin@sentinel> config:update
 If SFlow flows and the sample data should be processed, multiple adapters can be configured:
 
 ----
-config:edit org.opennms.features.telemetry.adapters-sflow-telemetry
+config:edit --alias sflow-telemetry --factory org.opennms.features.telemetry.adapters
 config:property-set name SFlow
 config:property-set adapters.1.name SFlow-Adapter
 config:property-set adapters.1.class-name org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowAdapter
@@ -438,7 +438,7 @@ config:property-set adapters.2.parameters.script /opt/sentinel/etc/sflow-host.gr
 config:update
 ----
 
-Please note, that in both cases the file `/opt/sentinel/etc/sflow-host.groofy` must be provided manually, e.g. by manually copying it over from _{opennms-product-name}_.
+Please note, that in both cases the file `/opt/sentinel/etc/sflow-host.groovy` must be provided manually, e.g. by manually copying it over from _{opennms-product-name}_.
 
 ===== NxosGpbAdapter
 
@@ -460,7 +460,7 @@ $ ssh -p 8301 admin@localhost
 ----
 
 ----
-admin@sentinel> config:edit org.opennms.features.telemetry.adapters-nxos
+admin@sentinel> config:edit --alias nxos --factory org.opennms.features.telemetry.adapters
 admin@sentinel> config:property-set name NXOS
 admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.adapters.nxos.NxosGpbAdapter
 admin@sentinel> config:property-set parameters.script /opt/sentinel/etc/cisco-nxos-telemetry-interface.groovy
@@ -490,7 +490,7 @@ $ ssh -p 8301 admin@localhost
 ----
 
 ----
-admin@sentinel> config:edit org.opennms.features.telemetry.adapters-jti
+admin@sentinel> config:edit --alias jti --factory org.opennms.features.telemetry.adapters
 admin@sentinel> config:property-set name JTI
 admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.adapters.jti.JtiGpbAdapter
 admin@sentinel> config:property-set parameters.script /opt/sentinel/etc/junos-telemetry-interface.groovy

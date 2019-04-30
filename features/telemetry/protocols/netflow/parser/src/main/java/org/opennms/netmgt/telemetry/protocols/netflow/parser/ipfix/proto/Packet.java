@@ -39,11 +39,14 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedValue;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Template;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
@@ -51,6 +54,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 
 public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
+    private static final Logger LOG = LoggerFactory.getLogger(Packet.class);
 
     /*
      +----------------------------------------------------+
@@ -144,7 +148,14 @@ public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
 
                 case DATA_SET: {
                     final Session.Resolver resolver = session.getResolver(header.observationDomainId);
-                    final DataSet dataSet = new DataSet(this, setHeader, resolver, payloadBuffer);
+
+                    final DataSet dataSet;
+                    try {
+                        dataSet = new DataSet(this, setHeader, resolver, payloadBuffer);
+                    } catch (final MissingTemplateException ex) {
+                        LOG.debug("Skipping data-set due to missing template: {}", ex.getMessage());
+                        break;
+                    }
 
                     if (dataSet.template.type == Template.Type.OPTIONS_TEMPLATE) {
                         for (final DataRecord record : dataSet) {

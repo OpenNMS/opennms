@@ -121,36 +121,35 @@ function doAddSpecific(){
 }
 </script>
 
-<div class="row">
-  <div class="col-md-12">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Add a specific IP address to discover</h3>
+
+  <div class="card">
+    <div class="card-header">
+      <span>Add a specific IP address to discover</span>
     </div>
-    <div class="panel-body">
-      <form role="form" class="form-horizontal">
-        <div class="form-group">
-          <label for="ipaddress" class="col-sm-2 control-label">IP Address:</label>
+    <div class="card-body">
+      <form role="form" class="form">
+        <div class="form-group form-row">
+          <label for="ipaddress" class="col-sm-2 col-form-label">IP Address</label>
           <div class="col-sm-10">
             <input type="text" class="form-control" id="ipaddress" name="ipaddress"/>
           </div>
         </div>
-        <div class="form-group">
-          <label for="timeout" class="col-sm-2 control-label">Timeout (milliseconds):</label>
+        <div class="form-group form-row">
+          <label for="timeout" class="col-sm-2 col-form-label">Timeout (milliseconds)</label>
           <div class="col-sm-10">
             <input type="text" class="form-control" id="timeout" name="timeout" value="<%=currConfig.getTimeout().orElse(DiscoveryConfigFactory.DEFAULT_TIMEOUT)%>"/>
           </div>
         </div>
-        <div class="form-group">
-          <label for="retries" class="col-sm-2 control-label">Retries:</label>
+        <div class="form-group form-row">
+          <label for="retries" class="col-sm-2 col-form-label">Retries</label>
           <div class="col-sm-10">
             <input type="text" class="form-control" id="retries" name="retries" value="<%=currConfig.getRetries().orElse(DiscoveryConfigFactory.DEFAULT_RETRIES)%>"/>
           </div>
         </div>
-        <div class="form-group">
-          <label for="foreignsource" class="col-sm-2 control-label">Foreign Source:</label>
+        <div class="form-group form-row">
+          <label for="foreignsource" class="col-sm-2 col-form-label">Foreign Source</label>
           <div class="col-sm-10">
-            <select id="foreignsource" class="form-control" name="foreignsource">
+            <select id="foreignsource" class="form-control custom-select" name="foreignsource">
               <option value="" <%if (!currConfig.getForeignSource().isPresent()) out.print("selected");%>>None selected</option>
               <% for (String key : foreignsources.keySet()) { %>
                 <option value="<%=key%>" <%if(key.equals(currConfig.getForeignSource().orElse(null))) out.print("selected");%>><%=foreignsources.get(key)%></option>
@@ -158,27 +157,25 @@ function doAddSpecific(){
             </select>
           </div>
         </div>
-        <div class="form-group">
-          <label for="location" class="col-sm-2 control-label">Location:</label>
+        <div class="form-group form-row">
+          <label for="location" class="col-sm-2 col-form-label">Location</label>
           <div class="col-sm-10">
-            <select id="location" class="form-control" name="location">
+            <select id="location" class="form-control custom-select" name="location">
               <% for (String key : locations.keySet()) { %>
                 <option value="<%=key%>" <%if(key.equals(currConfig.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))) out.print("selected");%>><%=locations.get(key)%></option>
               <% } %>
             </select>
           </div>
         </div>
-        <div class="form-group">
+        <div class="form-group form-row">
           <div class="col-sm-12">
-            <button type="button" class="btn btn-default" name="addSpecific" id="addSpecific" onclick="doAddSpecific();">Add</button>
-            <button type="button" class="btn btn-default" name="cancel" id="cancel" onclick="window.close();opener.document.focus();">Cancel</button>
+            <button type="button" class="btn btn-secondary" name="addSpecific" id="addSpecific" onclick="doAddSpecific();">Add</button>
+            <button type="button" class="btn btn-secondary" name="cancel" id="cancel" onclick="window.close();opener.document.focus();">Cancel</button>
           </div>
         </div>
       </form>
-    </div> <!-- panel-body -->
+    </div> <!-- card-body -->
   </div> <!-- panel -->
-  </div> <!-- column -->
-</div> <!-- row -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" >
   <jsp:param name="quiet" value="true" />

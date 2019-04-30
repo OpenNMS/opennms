@@ -32,19 +32,43 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.opennms.core.utils.LocationUtils;
+import org.opennms.integration.api.v1.model.IpInterface;
+import org.opennms.integration.api.v1.model.MetaData;
 import org.opennms.integration.api.v1.model.Node;
+import org.opennms.integration.api.v1.model.NodeAssetRecord;
 import org.opennms.integration.api.v1.model.SnmpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 public class NodeBean implements Node {
 
     private final OnmsNode node;
+    private final String location;
+    private final NodeAssetRecord assetRecord;
+    private final List<IpInterface> ipInterfaces;
     private final List<SnmpInterface> snmpInterfaces;
+    private final List<MetaData> metaData;
 
     public NodeBean(OnmsNode node) {
         this.node = Objects.requireNonNull(node);
+
+        final OnmsMonitoringLocation monitoringLocation = node.getLocation();
+        if (monitoringLocation != null) {
+            location = LocationUtils.getEffectiveLocationName(monitoringLocation.getLocationName());
+        } else {
+            location = LocationUtils.DEFAULT_LOCATION_NAME;
+        }
+
+        this.assetRecord = new NodeAssetRecordBean(node.getAssetRecord());
+        this.ipInterfaces = node.getIpInterfaces().stream()
+                .map(IpInterfaceBean::new)
+                .collect(Collectors.toList());
         this.snmpInterfaces = node.getSnmpInterfaces().stream()
                 .map(SnmpInterfaceBean::new)
+                .collect(Collectors.toList());
+        this.metaData = node.getMetaData().stream()
+                .map(MetaDataBean::new)
                 .collect(Collectors.toList());
     }
 
@@ -69,7 +93,27 @@ public class NodeBean implements Node {
     }
 
     @Override
+    public String getLocation() {
+        return location;
+    }
+
+    @Override
+    public NodeAssetRecord getAssetRecord() {
+        return assetRecord;
+    }
+
+    @Override
+    public List<IpInterface> getIpInterfaces() {
+        return ipInterfaces;
+    }
+
+    @Override
     public List<SnmpInterface> getSnmpInterfaces() {
         return snmpInterfaces;
+    }
+
+    @Override
+    public List<MetaData> getMetaData() {
+        return metaData;
     }
 }

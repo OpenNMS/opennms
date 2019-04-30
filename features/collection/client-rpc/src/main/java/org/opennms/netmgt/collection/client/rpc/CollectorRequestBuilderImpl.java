@@ -28,18 +28,22 @@
 
 package org.opennms.netmgt.collection.client.rpc;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+
+import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcTarget;
+import org.opennms.core.rpc.utils.mate.FallbackScope;
+import org.opennms.core.rpc.utils.mate.Interpolator;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectorRequestBuilder;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.dto.CollectionAgentDTO;
 import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
 
@@ -54,6 +58,8 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
     private ServiceCollector serviceCollector;
 
     private Long ttlInMs;
+
+    private String className;
 
     public CollectorRequestBuilderImpl(LocationAwareCollectorClientImpl client) {
         this.client = Objects.requireNonNull(client);
@@ -79,6 +85,7 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
 
     @Override
     public CollectorRequestBuilder withCollectorClassName(String className) {
+        this.className = className;
         this.serviceCollector = client.getRegistry().getCollectorByClassName(className);
         return this;
     }
@@ -109,26 +116,38 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
             throw new IllegalArgumentException("Agent is required.");
         }
 
+        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, new FallbackScope(
+                this.client.getEntityScopeProvider().getScopeForNode(agent.getNodeId()),
+                this.client.getEntityScopeProvider().getScopeForInterface(agent.getNodeId(), InetAddressUtils.toIpAddrString(agent.getAddress()))
+        ));
+
         final RpcTarget target = client.getRpcTargetHelper().target()
                 .withNodeId(agent.getNodeId())
                 .withLocation(agent.getLocationName())
                 .withSystemId(systemId)
-                .withServiceAttributes(attributes)
+                .withServiceAttributes(interpolatedAttributes)
                 .withLocationOverride((s) -> serviceCollector.getEffectiveLocation(s))
                 .build();
 
         CollectorRequestDTO request = new CollectorRequestDTO();
         request.setLocation(target.getLocation());
         request.setSystemId(target.getSystemId());
-        request.setClassName(serviceCollector.getClass().getCanonicalName());
+        // For Service collectors that implement integration api will have proxy collectors.
+        // fetching class name from proxy won't match with class name in collector registry so prefer clasName if it present.
+        final String collectorClassName = className != null ? className : serviceCollector.getClass().getCanonicalName();
+        request.setClassName(collectorClassName);
         request.setTimeToLiveMs(ttlInMs);
+        request.addTracingInfo(RpcRequest.TAG_NODE_ID, String.valueOf(agent.getNodeId()));
+        request.addTracingInfo(RpcRequest.TAG_NODE_LABEL, agent.getNodeLabel());
+        request.addTracingInfo(RpcRequest.TAG_CLASS_NAME, collectorClassName);
+        request.addTracingInfo(RpcRequest.TAG_IP_ADDRESS, InetAddressUtils.toIpAddrString(agent.getAddress()));
 
         // Retrieve the runtime attributes, which may include attributes
         // such as the agent details and other state related attributes
         // which should be included in the request
-        final Map<String, Object> runtimeAttributes = serviceCollector.getRuntimeAttributes(agent, attributes);
+        final Map<String, Object> runtimeAttributes = serviceCollector.getRuntimeAttributes(agent, interpolatedAttributes);
         final Map<String, Object> allAttributes = new HashMap<>();
-        allAttributes.putAll(attributes);
+        allAttributes.putAll(interpolatedAttributes);
         allAttributes.putAll(runtimeAttributes);
 
         // The runtime attributes may include objects which need to be marshaled.

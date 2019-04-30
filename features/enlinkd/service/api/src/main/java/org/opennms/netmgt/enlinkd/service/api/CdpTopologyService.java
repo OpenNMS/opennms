@@ -30,14 +30,21 @@ package org.opennms.netmgt.enlinkd.service.api;
 
 
 import java.util.Date;
+import java.util.List;
 
 import org.opennms.netmgt.enlinkd.model.CdpElement;
+import org.opennms.netmgt.enlinkd.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
 
-public interface CdpTopologyService {
+public interface CdpTopologyService extends TopologyService {
         
     void delete(int nodeid);
     void reconcile(int nodeId, Date now);
     void store(int nodeId, CdpElement cdp);
     void store(int nodeId, CdpLink link);
+
+    List<CdpElementTopologyEntity> findAllCdpElements();
+    List<TopologyConnection<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> match();
+
 }

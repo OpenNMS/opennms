@@ -17,7 +17,6 @@ opennms-plugin-provisioning-dns
 opennms-plugin-provisioning-rancid
 opennms-plugin-provisioning-snmp-asset
 opennms-plugin-protocol-cifs
-opennms-plugin-protocol-dhcp
 opennms-plugin-protocol-nsclient
 opennms-plugin-protocol-radius
 opennms-plugin-protocol-xml

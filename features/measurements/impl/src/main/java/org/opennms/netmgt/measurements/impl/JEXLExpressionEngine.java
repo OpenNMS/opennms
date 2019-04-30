@@ -128,7 +128,7 @@ public class JEXLExpressionEngine implements ExpressionEngine {
         jexlValues.put("NaN", Double.NaN);
         jexlValues.put("__E", java.lang.Math.E);
         jexlValues.put("__PI", java.lang.Math.PI);
-        
+
         // Add JexlEvaluateFunctions with current context and jexl engine to allow string constants to be evaluated.
         JexlEvaluateFunctions jexlEvaluateFunctions = new JexlEvaluateFunctions(context, jexl) ;
         jexl.getFunctions().put("jexl", jexlEvaluateFunctions);
@@ -139,6 +139,7 @@ public class JEXLExpressionEngine implements ExpressionEngine {
 
         // Calculate the time span
         jexlValues.put("__diff_time", numRows < 1 ? 0d : timestamps[numRows-1] - timestamps[0]);
+        jexlValues.put("__step", results.getStep());
 
         final double expressionValues[][] = new double[numNonTransientExpression][numRows];
 

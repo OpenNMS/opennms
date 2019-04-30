@@ -11,13 +11,13 @@
       </div>
     </div>
     <div class="table-responsive" ng-show="ipInterfaces.length > 0">
-      <div class="input-group">
-        <span class="input-group-addon">
-          <span class="glyphicon glyphicon-search"></span>
-        </span>
-        <input class="form-control" type="text" placeholder="Search/Filter IP Interfaces" ng-model="filters.ipInterface"></input>
+      <div class="input-group p-3">
+        <input class="form-control" type="text" placeholder="Search/Filter IP Interfaces" ng-model="filters.ipInterface">
+        <div class="input-group-append">
+          <span class="input-group-text"><i class="fa fa-search"></i></span>
+        </div>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <thead>
           <tr>
             <th sort order="'ipAddress'" by="ipOrder" reverse="ipReverse">IP Address</th>
@@ -36,7 +36,7 @@
        </tbody>
       </table>
     </div>
-    <ul uib-pagination class="pagination-sm"
+    <ul uib-pagination class="pagination-sm mx-3"
       total-items="ipInterfacesTotalItems"
       num-pages="ipInterfacesNumPages"
       ng-model="ipInterfacesCurrentPage"
@@ -44,6 +44,7 @@
       boundary-links="true"
       ng-show="filteredIpInterfaces.length > ipInterfacesPageSize"></ul>
   </uib-tab>
+
   <uib-tab heading="SNMP Interfaces" id="tab-ip-interfaces">
     <div class="jumbotron" ng-show="!snmpIfLoaded">
       <div class="container">
@@ -56,13 +57,13 @@
       </div>
     </div>
     <div class="table-responsive" ng-show="snmpInterfaces.length > 0">
-      <div class="input-group">
-        <span class="input-group-addon">
-          <span class="glyphicon glyphicon-search"></span>
-        </span>
-        <input class="form-control" type="text" placeholder="Search/Filter SNMP Interfaces" ng-model="filters.snmpInterface"></input>
+      <div class="input-group p-3">
+        <input class="form-control" type="text" placeholder="Search/Filter SNMP Interfaces" ng-model="filters.snmpInterface">
+        <div class="input-group-append">
+          <span class="input-group-text"><i class="fa fa-search"></i></span>
+        </div>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <thead>
           <tr>
             <th sort order="'ifIndex'" by="snmpOrder" reverse="snmpReverse">SNMP ifIndex</th>
@@ -83,7 +84,7 @@
        </tbody>
       </table>
     </div>
-    <ul uib-pagination class="pagination-sm"
+    <ul uib-pagination class="pagination-sm mx-3"
       total-items="snmpInterfacesTotalItems"
       num-pages="snmpInterfacesNumPages"
       ng-model="snmpInterfacesCurrentPage"

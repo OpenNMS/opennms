@@ -26,10 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+
 package org.opennms.core.ipc.rpc.kafka;
 
 import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.DEFAULT_TTL;
 import static org.opennms.core.ipc.rpc.kafka.KafkaRpcConstants.MAX_BUFFER_SIZE;
+import static org.opennms.core.tracing.api.TracerConstants.TAG_LOCATION;
+import static org.opennms.core.tracing.api.TracerConstants.TAG_SYSTEM_ID;
+import static org.opennms.core.tracing.api.TracerConstants.TAG_TIMEOUT;
 
 import java.math.RoundingMode;
 import java.util.HashSet;
@@ -78,15 +82,22 @@ import org.opennms.core.rpc.api.RpcClientFactory;
 import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
+import org.opennms.core.tracing.api.TracerRegistry;
+import org.opennms.core.tracing.util.TracingInfoCarrier;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.math.IntMath;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
+
+import io.opentracing.Span;
+import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
 
 /**
  * This Client Factory runs on OpenNMS. Whenever a Client receives an RPC request, it generates a unique rpcId and
@@ -126,6 +137,10 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
     // Used to cache responses when large message are involved.
     private Map<String, ByteString> messageCache = new ConcurrentHashMap<>();
 
+    @Autowired
+    private TracerRegistry tracerRegistry;
+    private Tracer tracer;
+
     @Override
     public <S extends RpcRequest, T extends RpcResponse> RpcClient<S, T> getClient(RpcModule<S, T> module) {
         return new RpcClient<S, T>() {
@@ -136,12 +151,18 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                     // The request is for the current location, invoke it directly
                     return module.execute(request);
                 }
+                Span span = tracer.buildSpan(module.getId()).start();
                 final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory(
                         KafkaRpcConstants.RPC_REQUEST_TOPIC_NAME, module.getId(), request.getLocation());
                 String requestTopic = topicNameFactory.getName();
                 String marshalRequest = module.marshalRequest(request);
+                request.getTracingInfo().forEach(span::setTag);
                 // Generate RPC Id for every request to track request/response.
                 String rpcId = UUID.randomUUID().toString();
+                span.setTag(TAG_LOCATION, request.getLocation());
+                if(request.getSystemId() != null) {
+                    span.setTag(TAG_SYSTEM_ID, request.getSystemId());
+                }
                 // Calculate timeout based on ttl and default timeout.
                 Long ttl = request.getTimeToLiveMs();
                 ttl = (ttl != null && ttl > 0) ? ttl : DEFAULT_TTL;
@@ -150,7 +171,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 final CompletableFuture<T> future = new CompletableFuture<>();
                 final Map<String, String> loggingContext = Logging.getCopyOfContextMap();
                 ResponseHandler<S, T> responseHandler = new ResponseHandler<S, T>(future, module, rpcId,
-                        expirationTime, loggingContext);
+                        expirationTime, loggingContext, span);
                 delayQueue.offer(responseHandler);
                 rpcResponseMap.put(rpcId, responseHandler);
                 kafkaConsumerRunner.startConsumingForModule(module.getId());
@@ -177,6 +198,16 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                             }
                         }
                     };
+                    // Add tracing info to message builder.
+                    addTracingInfoToRpcMessage(span, builder);
+                    //Add custom tags to Rpc Message
+                    request.getTracingInfo().forEach((key, value) -> {
+                        RpcMessageProtos.TracingInfo tracingInfo = RpcMessageProtos.TracingInfo.newBuilder()
+                                .setKey(key)
+                                .setValue(value).build();
+                        builder.addTracingInfo(tracingInfo);
+                    });
+                    // Build message.
                     RpcMessageProtos.RpcMessage rpcMessage =  builder.setRpcContent(byteString)
                             .setCurrentChunkNumber(chunk)
                             .setTotalChunks(totalChunks)
@@ -200,6 +231,19 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 }
                 return future;
             }
+
+            private void addTracingInfoToRpcMessage(Span span, RpcMessageProtos.RpcMessage.Builder builder) {
+                TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
+                tracer.inject(span.context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
+                if(tracingInfoCarrier.getTracingInfoMap().size() > 0) {
+                    tracingInfoCarrier.getTracingInfoMap().forEach( (key, value) -> {
+                        RpcMessageProtos.TracingInfo tracingInfo = RpcMessageProtos.TracingInfo.newBuilder()
+                                .setKey(key)
+                                .setValue(value).build();
+                        builder.addTracingInfo(tracingInfo);
+                    });
+                }
+            }
         };
 
     }
@@ -207,6 +251,16 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
     public void setLocation(String location) {
         this.location = location;
     }
+
+    public void setTracerRegistry(TracerRegistry tracerRegistry) {
+        this.tracerRegistry = tracerRegistry;
+    }
+
+    public TracerRegistry getTracerRegistry() {
+        return tracerRegistry;
+    }
+
+
 
     public void start() {
         try (MDCCloseable mdc = Logging.withPrefixCloseable(RpcClientFactory.LOG_PREFIX)) {
@@ -230,6 +284,9 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(kafkaConfig);
             kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConsumer);
             executor.execute(kafkaConsumerRunner);
+            // Initialize tracer from tracer registry.
+            tracerRegistry.init(SystemInfoUtils.getInstanceId());
+            tracer = tracerRegistry.getTracer();
             LOG.info("started  kafka consumer with : {}", kafkaConfig);
             // Start a new thread which handles timeouts from delayQueue and calls response callback.
             timerExecutor.execute(() -> {
@@ -263,14 +320,16 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         private final String rpcId;
         private Map<String, String> loggingContext;
         private boolean isProcessed = false;
+        private Span span;
 
         private ResponseHandler(CompletableFuture<T> responseFuture, RpcModule<S, T> rpcModule, String rpcId,
-                               long timeout, Map<String, String> loggingContext) {
+                               long timeout, Map<String, String> loggingContext, Span span) {
             this.responseFuture = responseFuture;
             this.rpcModule = rpcModule;
             this.expirationTime = timeout;
             this.rpcId = rpcId;
             this.loggingContext = loggingContext;
+            this.span = span;
         }
 
         @Override
@@ -282,13 +341,16 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                    T response = rpcModule.unmarshalResponse(message);
                     if (response.getErrorMessage() != null) {
                         responseFuture.completeExceptionally(new RemoteExecutionException(response.getErrorMessage()));
+                        span.log(response.getErrorMessage());
                     } else {
                         responseFuture.complete(response);
                     }
                     isProcessed = true;
                 } else {
                     responseFuture.completeExceptionally(new RequestTimedOutException(new TimeoutException()));
+                    span.setTag(TAG_TIMEOUT, "true");
                 }
+                span.finish();
                 rpcResponseMap.remove(rpcId);
                 messageCache.remove(rpcId);
             } catch (Exception e) {

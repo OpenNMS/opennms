@@ -30,6 +30,8 @@ package org.opennms.core.ipc.rpc.kafka;
 
 import java.util.Properties;
 
+import org.opennms.core.sysprops.SystemProperties;
+
 /**
  * This handles all the configuration specific to RPC and some utils common to OpenNMS/Minion.
  */
@@ -43,10 +45,10 @@ public interface KafkaRpcConstants {
     public static final int MAX_BUFFER_SIZE_CONFIGURED = 921600;
     public static final String MAX_BUFFER_SIZE_PROPERTY = "max.buffer.size";
     //Configurable buffer size in system properties but it should always be less than MAX_BUFFER_SIZE_CONFIGURED
-    public static final Integer MAX_BUFFER_SIZE = Math.min(MAX_BUFFER_SIZE_CONFIGURED, Integer.getInteger(String.format("%s%s", KAFKA_CONFIG_SYS_PROP_PREFIX, MAX_BUFFER_SIZE_PROPERTY), MAX_BUFFER_SIZE_CONFIGURED));
+    public static final Integer MAX_BUFFER_SIZE = Math.min(MAX_BUFFER_SIZE_CONFIGURED, SystemProperties.getInteger(String.format("%s%s", KAFKA_CONFIG_SYS_PROP_PREFIX, MAX_BUFFER_SIZE_PROPERTY), MAX_BUFFER_SIZE_CONFIGURED));
     public static final long DEFAULT_TTL_CONFIGURED = 30000;
     public static final String DEFAULT_TTL_PROPERTY = "ttl";
-    public static final long DEFAULT_TTL = Long.getLong(String.format("%s%s", KAFKA_CONFIG_SYS_PROP_PREFIX, DEFAULT_TTL_PROPERTY),
+    public static final long DEFAULT_TTL = SystemProperties.getLong(String.format("%s%s", KAFKA_CONFIG_SYS_PROP_PREFIX, DEFAULT_TTL_PROPERTY),
             DEFAULT_TTL_CONFIGURED);
 
 

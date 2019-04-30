@@ -44,10 +44,13 @@ drop table usersNotified cascade;
 drop table notifications cascade;
 drop table outages cascade;
 drop table ifServices cascade;
+drop table ifServices_metadata cascade;
 drop table snmpInterface cascade;
 drop table ipInterface cascade;
+drop table ipInterface_metadata cascade;
 drop table alarms cascade;
 drop table memos cascade;
+drop table node_metadata cascade;
 drop table node cascade;
 drop table service cascade;
 drop table scanreports cascade;
@@ -83,6 +86,7 @@ drop table filterfavorites cascade;
 drop table hwentity cascade;
 drop table hwentityattribute cascade;
 drop table hwentityattributetype cascade;
+drop table user_defined_links cascade;
 
 drop sequence catNxtId;
 drop sequence nodeNxtId;
@@ -851,7 +855,7 @@ create index events_nodeid_display_ackuser on events(nodeid, eventdisplay, event
 
 create table event_parameters (
 	eventID			integer not null,
-	name        varchar(256) not null,
+	name                text not null,
 	value		    text not null,
 	type		    varchar(256) not null,
 
@@ -1256,6 +1260,36 @@ create table assets (
 
 create index assets_nodeid_idx on assets(nodeid);
 CREATE INDEX assets_an_idx ON assets(assetNumber);
+
+CREATE TABLE node_metadata (
+    id integer NOT NULL,
+    context text NOT NULL,
+    key text NOT NULL,
+    value text NOT NULL,
+
+    CONSTRAINT node_metadata_pkey PRIMARY KEY (id, context, key),
+    CONSTRAINT fk_node_metadata_id FOREIGN KEY (id) references node (nodeid) ON DELETE CASCADE
+);
+
+CREATE TABLE ipInterface_metadata (
+    id integer NOT NULL,
+    context text NOT NULL,
+    key text NOT NULL,
+    value text NOT NULL,
+
+    CONSTRAINT ipInterface_metadata_pkey PRIMARY KEY (id, context, key),
+    CONSTRAINT fk_ipInterface_metadata_id FOREIGN KEY (id) references ipInterface ON DELETE CASCADE
+);
+
+CREATE TABLE ifServices_metadata (
+    id integer NOT NULL,
+    context text NOT NULL,
+    key text NOT NULL,
+    value text NOT NULL,
+
+    CONSTRAINT ifServices_metadata_pkey PRIMARY KEY (id, context, key),
+    CONSTRAINT fk_ifServices_metadata_id FOREIGN KEY (id) references ifServices ON DELETE CASCADE
+);
 
 --########################################################################
 --# categories table - Contains list of categories
@@ -1773,6 +1807,7 @@ CREATE TABLE acks (
 
 create index ack_time_idx on acks(ackTime);
 create index ack_user_idx on acks(ackUser);
+create index ack_refid_idx on acks(refId);
 
 --########################################################################
 --#
@@ -1935,6 +1970,9 @@ create table isisLink (
 
 create table ipNetToMedia (
     id                      integer default nextval('opennmsNxtId') not null,
+    nodeid                  integer,
+    ifIndex                 integer,
+    port                    text,
     netAddress              text not null,
     physAddress             varchar(32) not null,
     sourceNodeId            integer not null,
@@ -1942,7 +1980,8 @@ create table ipNetToMedia (
     createTime     timestamp not null,
     lastPollTime   timestamp not null,
     constraint pk_ipnettomedia_id primary key (id),
-    constraint fk_sourcenodeid_ipnettomedia foreign key (sourcenodeid) references node (nodeid) 
+    constraint fk_ipnettomedia_nodeid foreign key (nodeid) references node (nodeid), 
+    constraint fk_ipnettomedia_sourcenodeid foreign key (sourcenodeid) references node (nodeid) 
 );
 
 create table bridgeElement (
@@ -2275,7 +2314,7 @@ create unique index hwEntityAttribute_unique_idx on hwEntityAttribute(hwEntityId
 
 create table hwEntityAlias (
     id          integer default nextval('opennmsNxtId') not null,
-    hwEntityId  integer ,
+    hwEntityId  integer not null,
     index       integer not null,
     oid         text not null,
     constraint pk_hwentityalias PRIMARY KEY (id),
@@ -2659,6 +2698,7 @@ CREATE TABLE classification_rules (
   src_port TEXT,
   exporter_filter TEXT,
   protocol TEXT,
+  omnidirectional BOOLEAN NOT NULL DEFAULT false,
   position integer not null,
   groupid integer NOT NULL,
   CONSTRAINT classification_rules_pkey PRIMARY KEY (id),
@@ -2670,3 +2710,21 @@ ALTER TABLE classification_rules ADD CONSTRAINT classification_rules_unique_defi
 --#          sequence, column, table
 --# install: rulenxtid id classification_rules
 create sequence rulenxtid minvalue 1;
+
+--##################################################################
+--# User defined links
+--##################################################################
+CREATE TABLE user_defined_links (
+    id integer NOT NULL,
+    node_id_a integer NOT NULL,
+    node_id_z integer NOT NULL,
+    component_label_a text,
+    component_label_z text,
+    link_id text NOT NULL,
+    link_label text,
+    owner text NOT NULL
+);
+
+ALTER TABLE ONLY user_defined_links ADD CONSTRAINT user_defined_links_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY user_defined_links ADD CONSTRAINT fk_user_defined_links_node_id_a FOREIGN KEY (node_id_a) REFERENCES node(nodeid) ON DELETE CASCADE;
+ALTER TABLE ONLY user_defined_links ADD CONSTRAINT fk_user_defined_links_node_id_z FOREIGN KEY (node_id_z) REFERENCES node(nodeid) ON DELETE CASCADE;

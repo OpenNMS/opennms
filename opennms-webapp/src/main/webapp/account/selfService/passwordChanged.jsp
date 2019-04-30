@@ -40,7 +40,7 @@
   <jsp:param name="breadcrumb" value="Password Changed" />
 </jsp:include>
 
-<h3>Password successfully changed.</h3>
+<h3 class="alert alert-success">Password successfully changed.</h3>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 

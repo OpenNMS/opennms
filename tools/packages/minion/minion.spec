@@ -16,7 +16,7 @@
 %{!?_descr:%define _descr OpenNMS}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
-%{!?_java:%define _java jre-1.8.0}
+%{!?_java:%define _java jre-11}
 
 %{!?extrainfo:%define extrainfo %{nil}}
 %{!?extrainfo2:%define extrainfo2 %{nil}}
@@ -53,6 +53,8 @@ BuildRequires:	libxslt
 
 Requires(pre): %{name}-features-default = %{version}-%{release}
 Requires:      %{name}-features-default = %{version}-%{release}
+Requires(pre): %{_java}
+Requires:      %{_java}
 
 Prefix:        %{minioninstprefix}
 
@@ -69,8 +71,6 @@ http://www.opennms.org/wiki/Minion
 Summary:       Minion Container
 Group:         Applications/System
 Requires:      openssh
-Requires(pre): %{_java}
-Requires:      %{_java}
 Requires(pre): /usr/bin/getent
 Requires(pre): /usr/sbin/groupadd
 Requires(pre): /usr/sbin/useradd
@@ -213,6 +213,11 @@ if [ -d "${ROOT_INST}/data" ]; then
     if [ -d "${ROOT_INST}/data/tmp"  ]; then
         find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
     fi
+fi
+
+# Clean out .m2 directory
+if [ -d "${ROOT_INST}/.m2" ]; then
+   rm -rf "${ROOT_INST}/.m2"
 fi
 
 # Generate an SSH key if necessary

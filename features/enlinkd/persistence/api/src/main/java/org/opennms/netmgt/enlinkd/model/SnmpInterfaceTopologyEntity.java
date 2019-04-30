@@ -40,6 +40,7 @@ public class SnmpInterfaceTopologyEntity {
     private final Integer id;
     private final Integer ifIndex;
     private final String ifName;
+    private final String ifAlias;
     private final Long ifSpeed;
     private final Integer nodeId;
 
@@ -47,11 +48,13 @@ public class SnmpInterfaceTopologyEntity {
             Integer id,
             Integer ifIndex,
             String ifName,
+            String ifAlias,
             Long ifSpeed,
             Integer nodeId){
         this.id=id;
         this.ifIndex=ifIndex;
         this.ifName=ifName;
+        this.ifAlias=ifAlias;
         this.ifSpeed = ifSpeed;
         this.nodeId= nodeId;
     }
@@ -61,6 +64,7 @@ public class SnmpInterfaceTopologyEntity {
                 snmpInterface.getId(),
                 snmpInterface.getIfIndex(),
                 snmpInterface.getIfName(),
+                snmpInterface.getIfAlias(),
                 snmpInterface.getIfSpeed(),
                 Optional.ofNullable(snmpInterface.getNode()).map(OnmsNode::getId).orElse(null)
         );
@@ -83,6 +87,10 @@ public class SnmpInterfaceTopologyEntity {
 
     public String getIfName() {
         return ifName;
+    }
+
+    public String getIfAlias() {
+        return ifAlias;
     }
 
     public Long getIfSpeed() {

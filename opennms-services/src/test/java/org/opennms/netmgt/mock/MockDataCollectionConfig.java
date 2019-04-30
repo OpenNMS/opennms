@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.opennms.netmgt.collectd.SnmpCollector;
+import org.opennms.netmgt.collectd.AbstractSnmpCollector;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
@@ -185,7 +185,7 @@ public class MockDataCollectionConfig implements DataCollectionConfigDao {
 
     @Override
     public String getSnmpStorageFlag(String collectionName) {
-        return SnmpCollector.SNMP_STORAGE_PRIMARY;
+        return AbstractSnmpCollector.SNMP_STORAGE_PRIMARY;
     }
 
     @Override

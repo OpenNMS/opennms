@@ -64,7 +64,13 @@
     <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
-    
+
+    <bean id="'monitoredServiceDao" class="org.opennms.netmgt.dao.mock.MockMonitoredServiceDao"/>
+
+    <bean id="'filterDao" class="org.opennms.netmgt.dao.mock.MockFilterDao"/>
+
+	<bean id="onmsTopologyDao" class="org.opennms.netmgt.topologies.service.impl.OnmsTopologyDaoInMemoryImpl"/>
+  
      <bean id="cdpLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.CdpLinkDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
@@ -117,8 +123,21 @@
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
   
-      <bean id="nodeTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.NodeTopologyServiceImpl">
+    <bean id="topologyEntityDao" class="org.opennms.netmgt.enlinkd.persistence.impl.TopologyEntityDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+  
+    <bean id="topologyEntityCache" class="org.opennms.netmgt.enlinkd.persistence.impl.TopologyEntityCacheImpl">
+        <property name="topologyEntityDao" ref="topologyEntityDao" />
+    </bean>
+
+    <bean id="userDefinedLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.UserDefinedLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="nodeTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.NodeTopologyServiceImpl">
       <property name="nodeDao" ref="nodeDao" />
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
     </bean>
 
     <bean id="bridgeTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.BridgeTopologyServiceImpl">
@@ -126,36 +145,91 @@
         <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
         <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
         <property name="bridgeStpLinkDao" ref="bridgeStpLinkDao" />
+        <property name="ipNetToMediaDao" ref="ipNetToMediaDao" />
+        <property name="topologyEntityCache" ref="topologyEntityCache" />
     </bean>
 
     <bean id="ipNetToMediaTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.IpNetToMediaTopologyServiceImpl">
         <property name="ipNetToMediaDao" ref="ipNetToMediaDao" />
+        <property name="ipInterfaceDao" ref="ipInterfaceDao" />
     </bean>
         
    <bean id="cdpTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.CdpTopologyServiceImpl">
       <property name="cdpLinkDao" ref="cdpLinkDao" />
       <property name="cdpElementDao" ref="cdpElementDao" />
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
    </bean>
 
    <bean id="isisTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.IsisTopologyServiceImpl">
       <property name="isisLinkDao" ref="isisLinkDao" />
       <property name="isisElementDao" ref="isisElementDao" />
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
    </bean>
 
    <bean id="lldpTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.LldpTopologyServiceImpl">
       <property name="lldpLinkDao" ref="lldpLinkDao" />
       <property name="lldpElementDao" ref="lldpElementDao" />
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
    </bean>
    
    <bean id="ospfTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.OspfTopologyServiceImpl">
       <property name="ospfLinkDao" ref="ospfLinkDao" />
       <property name="ospfElementDao" ref="ospfElementDao" />
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
    </bean>
-   
+
+    <bean id="userDefinedLinkTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.UserDefinedLinkTopologyServiceImpl">
+        <property name="topologyEntityCache" ref="topologyEntityCache" />
+    </bean>
+
     <bean id="linkdConfig" class="org.opennms.netmgt.config.EnhancedLinkdConfigFactory" lazy-init="true"/>
 
+	<bean id ="nodesOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.NodesOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
+    <bean id="userDefinedLinkTopologyUpdater" class="org.opennms.netmgt.enlinkd.UserDefinedLinkTopologyUpdater">
+        <constructor-arg ref="userDefinedLinkTopologyService" />
+        <constructor-arg ref="onmsTopologyDao" />
+        <constructor-arg ref="nodeTopologyService" />
+    </bean>
+
+	<bean id ="bridgeOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.BridgeOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="bridgeTopologyService" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
+	<bean id ="cdpOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.CdpOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="cdpTopologyService" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
+	<bean id ="isisOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.IsisOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="isisTopologyService" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
+	<bean id ="lldpOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.LldpOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="lldpTopologyService" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
+	<bean id ="ospfOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.OspfOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="ospfTopologyService" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
+	<bean id="discoveryBridgeDomain" class="org.opennms.netmgt.enlinkd.DiscoveryBridgeDomains">
+		<constructor-arg ref="bridgeTopologyService" />
+	</bean>
+
     <bean name="daemon" class="org.opennms.netmgt.enlinkd.EnhancedLinkd">
-      <property name="eventForwarder" ref="eventForwarder" />
       <property name="linkdConfig"    ref="linkdConfig" />
       <property name="queryManager"   ref="nodeTopologyService" />
       <property name="bridgeTopologyService"   ref="bridgeTopologyService" />

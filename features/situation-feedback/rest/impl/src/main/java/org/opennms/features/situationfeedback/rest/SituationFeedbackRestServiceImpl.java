@@ -27,22 +27,22 @@
  *******************************************************************************/
 package org.opennms.features.situationfeedback.rest;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.features.situationfeedback.api.FeedbackException;
 import org.opennms.features.situationfeedback.api.FeedbackRepository;
 import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.support.TransactionOperations;
 
 public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestService {
 
@@ -50,17 +50,21 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
 
     private final AlarmDao alarmDao;
 
-    private final AlarmEntityNotifier alarmEntityNotifier;
-
     private final FeedbackRepository repository;
 
-    private final TransactionOperations transactionTemplate;
-
-    public SituationFeedbackRestServiceImpl(AlarmDao alarmDao, AlarmEntityNotifier alarmEntityNotifier, FeedbackRepository feedbackRepository, TransactionOperations transactionOperations) {
+    public SituationFeedbackRestServiceImpl(AlarmDao alarmDao, FeedbackRepository feedbackRepository) {
         this.alarmDao = Objects.requireNonNull(alarmDao);
-        this.alarmEntityNotifier = Objects.requireNonNull(alarmEntityNotifier);
         this.repository = Objects.requireNonNull(feedbackRepository);
-        this.transactionTemplate = Objects.requireNonNull(transactionOperations);
+    }
+
+    @Override
+    public Collection<String> getTags(String prefix) {
+        try {
+            return repository.getTags(prefix);
+        } catch (FeedbackException e) {
+            LOG.error("Error retrieving tags for [{}]: {}", prefix, e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     @Override

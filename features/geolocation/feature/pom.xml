@@ -4,26 +4,13 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.geolocation</artifactId>
-        <version>24.0.0-SNAPSHOT</version>
+        <version>25.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.geolocation</groupId>
     <artifactId>geolocation</artifactId>
     <name>OpenNMS :: Features :: Geolocation :: Feature</name>
     <packaging>pom</packaging>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.opennms.maven.plugins</groupId>
-                <artifactId>features-maven-plugin</artifactId>
-                <configuration>
-                    <features>
-                        <feature>opennms-core-web</feature>
-                    </features>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <dependencies>
         <dependency>
             <groupId>org.opennms.features.geolocation</groupId>

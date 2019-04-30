@@ -143,6 +143,7 @@
   </changeSet>
 
   <changeSet author="seth" id="17.0.0-create-monitoringsystems-table">
+    <validCheckSum>3:6601d08b9e4fd2f54bf98e757611416c</validCheckSum>
     <preConditions onFail="MARK_RAN">
       <not><tableExists tableName="monitoringsystems"/></not>
     </preConditions> 
@@ -159,7 +160,7 @@
         <constraints nullable="false" />
       </column>
       <column name="status" type="TEXT"/>
-      <column name="last_updated" type="DATETIME"/>
+      <column name="last_updated" type="TIMESTAMP WITH TIME ZONE"/>
     </createTable>
   </changeSet>
 
@@ -199,12 +200,13 @@
   </changeSet>
 
   <changeSet author="seth" id="17.0.0-reassociate-alarms-with-monitoringsystems">
+    <validCheckSum>3:6c0eff30634b77f194535a9c8ec8ea6f</validCheckSum>
     <dropColumn tableName="alarms" columnName="dpname"/>
     <addColumn tableName="alarms">
       <column name="systemid" type="TEXT" value="00000000-0000-0000-0000-000000000000"/>
     </addColumn>
     <addNotNullConstraint tableName="alarms" columnName="systemid"/>
-    <addForeignKeyConstraint constraintName="fk_alarms_systemid" baseTableName="alarms" baseColumnNames="systemid" referencedTableName="monitoringsystems" referencedColumnNames="id" deleteCascade="true"/>
+    <addForeignKeyConstraint constraintName="fk_alarms_systemid" baseTableName="alarms" baseColumnNames="systemid" referencedTableName="monitoringsystems" referencedColumnNames="id" onDelete="CASCADE"/>
     <!-- Recreate related indices -->
     <sql>
       CREATE INDEX alarm_reduction_idx ON alarms(alarmID, eventUei, systemId, nodeID, serviceID, reductionKey);
@@ -227,6 +229,7 @@
   </changeSet>
 
   <changeSet author="seth" id="17.0.0-reassociate-loc_spec_status_changes-with-systems">
+    <validCheckSum>3:b92304ea86bee8447f0adbda773c65a0</validCheckSum>
     <!-- Add the systemId column with no constraints -->
     <addColumn tableName="location_specific_status_changes">
       <column name="systemid" type="TEXT">
@@ -241,7 +244,7 @@
       UPDATE location_specific_status_changes SET systemid = locationmonitorid;
     </sql>
     <addNotNullConstraint tableName="location_specific_status_changes" columnName="systemid"/>
-    <addForeignKeyConstraint constraintName="location_specific_status_changes_systemid_fkey" baseTableName="location_specific_status_changes" baseColumnNames="systemid" referencedTableName="monitoringsystems" referencedColumnNames="id" deleteCascade="true"/>
+    <addForeignKeyConstraint constraintName="location_specific_status_changes_systemid_fkey" baseTableName="location_specific_status_changes" baseColumnNames="systemid" referencedTableName="monitoringsystems" referencedColumnNames="id" onDelete="CASCADE"/>
     <!-- Recreate related indices -->
     <sql>
       CREATE INDEX location_specific_status_changes_systemid ON location_specific_status_changes(systemId);

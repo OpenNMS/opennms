@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.enlinkd.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
@@ -100,7 +101,7 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
       }
 
     @Override
-    public List<NodeTopologyEntity> getNodeTopolgyEntities() {
+    public List<NodeTopologyEntity> getNodeTopologyEntities() {
         return this.nodeTopologyEntities.getUnchecked(CACHE_KEY);
     }
 
@@ -155,6 +156,7 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
         cdpLinkTopologyEntities.refresh(CACHE_KEY);
         isIsLinkTopologyEntities.refresh(CACHE_KEY);
         lldpLinkTopologyEntities.refresh(CACHE_KEY);
+        ospfLinkTopologyEntities.refresh(CACHE_KEY);
         cdpElementTopologyEntities.refresh(CACHE_KEY);
         isIsElementTopologyEntities.refresh(CACHE_KEY);
         lldpElementTopologyEntities.refresh(CACHE_KEY);
@@ -163,7 +165,7 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
     }
 
     private int getCacheDuration(){
-        return Integer.getInteger(SYSTEM_PROPERTY_CACHE_DURATION, 300);
+        return SystemProperties.getInteger(SYSTEM_PROPERTY_CACHE_DURATION, 300);
     }
 
     public void setTopologyEntityDao(TopologyEntityDao topologyEntityDao){

@@ -47,11 +47,11 @@
 <div class="row">
   <div class="col-md-6">
     <!-- general info box -->
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">General (Status: ${model.status_general})</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>General (Status: ${model.status_general})</span>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
 		<tr>
 			<th>Node</th>
 	  		<td><a href="element/node.jsp?node=${model.db_id}">${model.id}</a></td>
@@ -67,11 +67,11 @@
       </table>
     </div> <!-- panel -->
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Rancid Info</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Rancid Info</span>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
 	<c:choose>
     <c:when test="${model.permitModifyClogin}">
 		<c:choose>
@@ -90,7 +90,7 @@
 		<tr>
 			<th>Device Type</th>
 			<td>					
-			<select name="deviceTypeName" class="form-control">
+			<select name="deviceTypeName" class="form-control custom-select">
 			 <option value="${model.devicetype}">${model.devicetype}</option>
 			<c:forEach items="${model.devicetypelist}" var="devicetypelem">
 			 <option value="${devicetypelem}">${devicetypelem}</option>
@@ -106,7 +106,7 @@
 		<tr>
 			<th>Status</th>
 			<td><em>
-			<select name="statusName" class="form-control" onChange="switchStatus()">
+			<select name="statusName" class="form-control custom-select" onChange="switchStatus()">
 			<option value="${model.status}">${model.status}</option>
 			<c:choose> 
   				<c:when test="${model.status == 'up'}" >
@@ -122,8 +122,8 @@
 		<tr>
 		<th></th>
 		<th>
-			<input name="updateInput" id="updateButton" class="btn btn-default" type="submit" value="Update"/>
-			<input name="deleteInput" id="deleteButton" class="btn btn-default" type="button" value="Delete" onclick="validateFormDelete()"/>
+			<input name="updateInput" id="updateButton" class="btn btn-secondary" type="submit" value="Update"/>
+			<input name="deleteInput" id="deleteButton" class="btn btn-secondary" type="button" value="Delete" onclick="validateFormDelete()"/>
 </form>
 		</th>
 		</tr>
@@ -143,7 +143,7 @@
 		<tr>
 			<th>Device Type</th>
 			<td>					
-			<select name="deviceTypeName" class="form-control">
+			<select name="deviceTypeName" class="form-control custom-select">
 			 <option value="${model.devicetype}">${model.devicetype}</option>
 			<c:forEach items="${model.devicetypelist}" var="devicetypelem">
 			 <option value="${devicetypelem}">${devicetypelem}</option>
@@ -159,7 +159,7 @@
 		<tr>
 			<th>Status</th>
 			<td><em>
-			<select name="statusName" class="form-control">
+			<select name="statusName" class="form-control custom-select">
 			<option value="up">up</option>
 			<option value="down">down</option>
 			</select>
@@ -168,7 +168,7 @@
 		<tr>
 		<th></th>
 		<th>
-			<input name="createInput" id="createButton" class="btn btn-default" type="submit" value="Create"/>
+			<input name="createInput" id="createButton" class="btn btn-secondary" type="submit" value="Create"/>
 </form>
 		</th>
 		</tr>
@@ -201,7 +201,7 @@
 			 <c:if test="${!empty model.status}">			
 			<em>${model.status}</em>
 	<form id="newUserForm2" method="post" name="newUserForm2" onsubmit="return validateFormInputStatus();">	
-	<input name="newStatus" class="btn btn-default" id="doOKStatus" type="submit" value="Switch"/>
+	<input name="newStatus" class="btn btn-secondary" id="doOKStatus" type="submit" value="Switch"/>
 	<input type="hidden" name="statusName" value="${model.status}"/>
 	<input type="hidden" name="groupName" value="${model.groupname}"/>
 	<input type="hidden" name="deviceName" value="${model.id}"/>
@@ -217,14 +217,14 @@
 
 	<c:choose>
     <c:when test="${model.permitModifyClogin}">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Clogin Info</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Clogin Info</span>
       </div>
 	<form id="newUserForm" method="post" name="newUserForm" onsubmit="return validateFormInput();">
 		 <input type="hidden" name="groupName" value="${model.groupname}"> 
 		 <input type="hidden" name="deviceName" value="${model.id}"> 
-		<table class="table table-condensed">
+		<table class="table table-sm">
 			<tr>
 			    <th><label id="userIDLabel" for="userID">Username:</label></th>
 			    <td><input id="userID" type="text" class="form-control" name="userID" value="${model.cloginuser}"/></td>
@@ -241,7 +241,7 @@
 			 <tr>
 				 <th><label id="loginMethodLabel" for="loginMethod">Connection Method:</label></th>
 				 <td>
-					  <select name="loginM" class="form-control">
+					  <select name="loginM" class="form-control custom-select">
 					  <option value="${model.cloginconnmethod}">${model.cloginconnmethod}</option>
 					  <option value="ssh">ssh</option>
 					  <option value="telnet">telnet</option>
@@ -251,7 +251,7 @@
 			 <tr>
 			 	<th><label id="autoEnableLabel" for="autoEnable">AutoEnable:</label></th>
 			 	<td>
-				  <select name="autoE" class="form-control">
+				  <select name="autoE" class="form-control custom-select">
 				  <option value="${model.cloginautoenable}">${model.cloginautoenable}</option>
 				  <option value="1">1</option>
 				  <option value="0">0</option>
@@ -261,9 +261,9 @@
 		
 			 <tr>
 			 	<th></th>
-			 	<th><input id="doCancel" type="button" class="btn btn-default" value="Cancel" onclick="cancelUser()"/>
-			 		<input id="doOK" type="submit" class="btn btn-default" value="OK"/>
-			 		<input id="doDelete" type="button" class="btn btn-default" value="Delete" onclick="deleteCloginInfo()"/>
+			 	<th><input id="doCancel" type="button" class="btn btn-secondary" value="Cancel" onclick="cancelUser()"/>
+			 		<input id="doOK" type="submit" class="btn btn-secondary" value="OK"/>
+			 		<input id="doDelete" type="button" class="btn btn-secondary" value="Delete" onclick="deleteCloginInfo()"/>
 			 	</th>
 			 </tr>	
 		 </table>
@@ -271,11 +271,11 @@
     </div> <!-- panel -->
 	 </c:when>
 	 <c:otherwise>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Clogin Info (Requisitioned Node)</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Clogin Info (Requisitioned Node)</span>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
 			<tr>
 			 	<th>Requisition: </th>
 			 	<td>${model.foreignSource}
@@ -310,11 +310,11 @@
 	 </c:otherwise>
 	 </c:choose>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Select Group</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Select Group</span>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
 	<tr>
 	<th>Group</th>
 	</tr>
@@ -326,11 +326,11 @@
   </div> <!-- column -->
 
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Descriptions</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Descriptions</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p> 
             Set to <em>true</em> the opennms.rancidIntegrationUseOnlyRancidAdapter property in <em>opennms.properties</em> 
             if you want use only the RancidAdapter to provision nodes to Rancid.
@@ -354,7 +354,7 @@
               Click on the asset page or edit the requisition to modify asset information for the node.
               You must re-synchronize the requisition to modify the Clogin information in Rancid.
           </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

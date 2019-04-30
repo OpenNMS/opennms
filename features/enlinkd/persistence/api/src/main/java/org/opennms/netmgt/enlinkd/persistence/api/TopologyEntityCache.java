@@ -42,12 +42,12 @@ import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 
 /**
- * Caches TopologyEmtities. This is a cache wrapper around @{@link TopologyEntityDao}. See there for an explanation of
- * TopologyEntrities.
+ * Caches TopologyEntities. This is a cache wrapper around @{@link TopologyEntityDao}. See there for an explanation of
+ * TopologyEntities.
  * We use the cache to improve the displaying speed of topologies.
  */
 public interface TopologyEntityCache {
-    List<NodeTopologyEntity> getNodeTopolgyEntities();
+    List<NodeTopologyEntity> getNodeTopologyEntities();
     List<CdpLinkTopologyEntity> getCdpLinkTopologyEntities();
     List<OspfLinkTopologyEntity> getOspfLinkTopologyEntities();
     List<IsIsLinkTopologyEntity> getIsIsLinkTopologyEntities();

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>24.0.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.core</artifactId>
@@ -46,11 +46,13 @@
     <module>soa</module>
     <module>spring</module>
     <module>spring-web</module>
+    <module>sysprops</module>
     <module>tasks</module>
     <module>test-api</module>
     <module>upgrade</module>
     <module>web</module>
     <module>web-assets</module>
     <module>xml</module>
+    <module>tracing</module>
   </modules>
 </project>

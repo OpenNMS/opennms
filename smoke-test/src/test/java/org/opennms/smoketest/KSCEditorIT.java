@@ -102,10 +102,10 @@ public class KSCEditorIT extends OpenNMSSeleniumTestCase {
 
     protected void checkMainPage() throws Exception {
         // main KSC page
-        assertEquals(3, countElementsMatchingCss("h3.panel-title"));
-        findElementByXpath("//h3[text()='Customized Reports']");
-        findElementByXpath("//h3[text()='Node & Domain Interface Reports']");
-        findElementByXpath("//h3[text()='Descriptions']");
+        assertEquals(3, countElementsMatchingCss("div.card-header"));
+        findElementByXpath("//div[@class='card-header']/span[text()='Customized Reports']");
+        findElementByXpath("//div[@class='card-header']/span[text()='Node & Domain Interface Reports']");
+        findElementByXpath("//div[@class='card-header']/span[text()='Descriptions']");
 
         assertElementDoesNotExist(By.name("report:Smoke Test Report 1"));
         assertElementDoesNotExist(By.name("report:Smoke Test Report Uno"));
@@ -147,7 +147,7 @@ public class KSCEditorIT extends OpenNMSSeleniumTestCase {
         Thread.sleep(100);
         clickElementByName("report:Smoke Test Report 1");
         clickElementByXpath("//button[text()='View']");
-        findElementByXpath("//h3[text()='Custom View: Smoke Test Report 1']");
+        findElementByXpath("//div[@class='card-header']/span[text()='Custom View: Smoke Test Report 1']");
         findElementByXpath("//div[contains(@class, 'graph-container')]");
         findElementByXpath("//div[contains(@class, 'graph-container')]//canvas");
     }

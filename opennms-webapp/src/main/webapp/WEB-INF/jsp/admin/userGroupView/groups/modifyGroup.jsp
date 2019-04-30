@@ -289,100 +289,95 @@
     }
 </script>
 
-<form role="form" class="form-horizontal" method="post" id="modifyGroup" name="modifyGroup">
+<form role="form" class="form" method="post" id="modifyGroup" name="modifyGroup">
   <input type="hidden" name="groupName" value="<%=group.getName()%>"/>
   <input type="hidden" name="operation"/>
 
-<div class="row">
-  <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Assignments</h3>
-      </div>
-      <div class="panel-body">
-        <p>Assign and unassign users to the group using the select lists below. Also, change the ordering of the selected users by highlighting a user in the "Currently in Group" list and click the "Move Up" and "Move Down" buttons. The ordering of the users in the group will affect the order that the users are notified if this group is used in a notification.</p>
-        <div class="row">
-          <div class="col-md-6">
-            <table class="table" id="modifyGroupUsers">
-              <tr>
-                <td colspan="3" align="center">
-                  <b>Assign/Unassign Users</b>
-                </td>
-              </tr>
-              <tr>
-                <td align="center">
-                  <label class="control-label">Available Users</label>
-                  <%=createSelectList("availableUsers", availableUsers)%><br/>
-                  <div class="btn-group-vertical" align="center">
-                    <button type="button" class="btn btn-default" name="availableAll" onClick="javascript:selectAllAvailable()">Select All</button>
-                    <button type="button" class="btn btn-default" id="users.doAdd" onClick="javascript:addUsers()">&nbsp;&#155;&#155;&nbsp;</button>
-                  </div>
-                </td>
-                <td align="center">
-                  <label class="control-label">Currently in Group</label>
-                  <%=createSelectList("selectedUsers", selectedUsers)%><br/>
-                  <div class="btn-group-vertical" align="center">
-                    <button type="button" class="btn btn-default" name="selectedAll" onClick="javascript:selectAllSelected()">Select All</button>
-                    <button type="button" class="btn btn-default" id="users.doRemove" onClick="javascript:removeUsers()">&nbsp;&#139;&#139;&nbsp;</button>
-                  </div>
-                </td>
-                <td>
-                  <div class="btn-group-vertical">
-                    <button type="button" class="btn btn-default" onClick="javascript:move(-1)">Move Up</button>
-                    <button type="button" class="btn btn-default" onClick="javascript:move(1)">Move Down</button>
-                  </div>
-                </td>
-              </tr>
-            </table>
-          </div> <!-- column -->
-          <div class="col-md-6">
-	            <table class="table" id="modifyGroupCategories">
-	              <tr>
-	                <td colspan="3" align="center">
-	                  <b>Assign/Unassign Categories</b>
-	                </td>
-	              </tr>
-	              <tr>
-	                <td align="center">
-	                  <label class="control-label">Available Categories</label>
-	                  <%=createSelectList("availableCategories", categoryListNotInGroup)%><br/>
-                    <div class="btn-group-vertical" align="center">
-  	                  <button type="button" class="btn btn-default" name="availableAll" onClick="javascript:selectAllAvailableCategories()">Select All</button>
-  	                  <button type="button" class="btn btn-default" id="categories.doAdd" onClick="javascript:addCategories()">&nbsp;&#155;&#155;&nbsp;</button>
-                    </div>
-	                </td>
-	                <td align="center">
-	                  <label class="control-label">Currently in Group</label>
-	                  <%=createSelectList("selectedCategories", categoryListInGroup)%><br/>
-                    <div class="btn-group-vertical" align="center">
-  	                  <button type="button" class="btn btn-default" name="selectedAll" onClick="javascript:selectAllSelectedCategories()">Select All</button>
-  	                  <button type="button" class="btn btn-default" id="categories.doRemove" onClick="javascript:removeCategories()">&nbsp;&#139;&#139;&nbsp;</button>
-                    </div>
-	                </td>
-	                <td>
-                    <div class="btn-group-vertical">
-  	                  <button type="button" class="btn btn-default" onClick="javascript:moveCat(-1)">Move Up</button>
-  	                  <button type="button" class="btn btn-default" onClick="javascript:moveCat(1)">Move Down</button>
-                    </div>
-	                </td>
-	              </tr>
-	            </table>
-          </div> <!-- column -->
-        </div> <!-- row -->
-      </div> <!-- panel-body -->
+    <div class="card">
+        <div class="card-header">
+            <span>Assignments</span>
+        </div>
+        <div class="card-body">
+            <p>Assign and unassign users to the group using the select lists below. Also, change the ordering of the selected users by highlighting a user in the "Currently in Group" list and click the "Move Up" and "Move Down" buttons. The ordering of the users in the group will affect the order that the users are notified if this group is used in a notification.</p>
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table table-sm" id="modifyGroupUsers">
+                        <tr>
+                            <th colspan="3" align="center">
+                                <span>Assign/Unassign Users</span>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td align="center">
+                                <label class="col-form-label">Available Users</label>
+                                <%=createSelectList("availableUsers", availableUsers)%><br/>
+                                <div class="mt-2" align="center">
+                                    <button type="button" class="btn btn-secondary" name="availableAll" onClick="javascript:selectAllAvailable()">Select All</button>
+                                    <button type="button" class="btn btn-secondary" id="users.doAdd" onClick="javascript:addUsers()">&nbsp;&#155;&#155;&nbsp;</button>
+                                </div>
+                            </td>
+                            <td align="center">
+                                <label class="col-form-label">Currently in Group</label>
+                                <%=createSelectList("selectedUsers", selectedUsers)%><br/>
+                                <div class="mt-2" align="center">
+                                    <button type="button" class="btn btn-secondary" name="selectedAll" onClick="javascript:selectAllSelected()">Select All</button>
+                                    <button type="button" class="btn btn-secondary" id="users.doRemove" onClick="javascript:removeUsers()">&nbsp;&#139;&#139;&nbsp;</button>
+                                </div>
+                            </td>
+                            <td class="align-middle">
+                                <div>
+                                    <button type="button" class="btn btn-secondary" onClick="javascript:move(-1)" title="Move Up"><i class="fa fa-arrow-up"></i></button>
+                                    <button type="button" class="btn btn-secondary" onClick="javascript:move(1)" title="Move Down"><i class="fa fa-arrow-down"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div> <!-- column -->
+                <div class="col-md-6">
+                    <table class="table" id="modifyGroupCategories">
+                        <tr>
+                            <th colspan="3" align="center">
+                                <span>Assign/Unassign Categories</span>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td align="center">
+                                <label class="col-form-label">Available Categories</label>
+                                <%=createSelectList("availableCategories", categoryListNotInGroup)%>
+                                <div class="mt-2" align="center">
+                                    <button type="button" class="btn btn-secondary" name="availableAll" onClick="javascript:selectAllAvailableCategories()">Select All</button>
+                                    <button type="button" class="btn btn-secondary" id="categories.doAdd" onClick="javascript:addCategories()">&nbsp;&#155;&#155;&nbsp;</button>
+                                </div>
+                            </td>
+                            <td align="center">
+                                <label class="col-form-label">Currently in Group</label>
+                                <%=createSelectList("selectedCategories", categoryListInGroup)%>
+                                <div class="mt-2" align="center">
+                                    <button type="button" class="btn btn-secondary" id="categories.doRemove" onClick="javascript:removeCategories()">&nbsp;&#139;&#139;&nbsp;</button>
+                                    <button type="button" class="btn btn-secondary" name="selectedAll" onClick="javascript:selectAllSelectedCategories()">Select All</button>
+                                </div>
+                            </td>
+                            <td class="align-middle">
+                                <div>
+                                    <button type="button" class="btn btn-secondary" onClick="javascript:moveCat(-1)" title="Move Up"><i class="fa fa-arrow-up"></i></button>
+                                    <button type="button" class="btn btn-secondary" onClick="javascript:moveCat(1)" title="Move Down"><i class="fa fa-arrow-down"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div> <!-- column -->
+            </div> <!-- row -->
+        </div> <!-- card-body -->
     </div> <!-- panel -->
-  </div> <!-- column -->
-</div> <!-- row -->
-      
-<div class="row">
-  <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Duty Schedules</h3>
+
+    <div class="card">
+      <div class="card-header">
+        <span>Duty Schedules</span>
       </div>
-      <table class="table table-condensed table-striped table-bordered">
+      <div class="card-body">
+      <table class="table table-sm table-responsive table-striped">
             <tr>
-              <th>&nbsp;</th>
+              <th>#</th>
               <th>Delete</th>
               <th>Mo</th>
               <th>Tu</th>
@@ -424,11 +419,13 @@
                         <% i++; } %>
       </table>
 
-      <div class="form-group top-buffer">
-        <div class="col-sm-12">
+      <div class="form-row mb-2">
+          <button type="button" name="addSchedule" class="btn btn-secondary" onclick="removeGroupDutySchedules()">Remove Checked Schedules</button>
+      </div>
+
+      <div class="form-row">
           <input type="hidden" name="dutySchedules" value="<%=group.getDutySchedules().size()%>"/>
-          <button id="addSchedule" class="btn btn-default" name="addSchedule" onclick="addGroupDutySchedules()">Add This Many Schedules</button>
-          <select name="numSchedules" class="btn btn-default">
+          <select name="numSchedules" class="form-control custom-select col-xs-6 col-sm-2 col-md-1 mr-2">
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3" selected="selected">3</option>
@@ -437,24 +434,15 @@
             <option value="6">6</option>
             <option value="7">7</option>
           </select>
-        </div>
+          <button id="addSchedule" class="btn btn-secondary" name="addSchedule" onclick="addGroupDutySchedules()" title="Add This Many Schedules"><i class="fa fa-plus"></i> New Schedules</button>
       </div>
+      </div> <!-- card-body -->
+    </div> <!-- card -->
 
-      <div class="form-group">
-        <div class="col-sm-12">
-          <button type="button" name="addSchedule" class="btn btn-default" onclick="removeGroupDutySchedules()">Remove Checked Schedules</button>
-        </div>
-      </div>
-    </div> <!-- panel -->
-  </div> <!-- column -->
-</div> <!-- row -->
-
-<div class="row">
-  <div class="col-md-12">
-    <button type="button" class="btn btn-default" name="finish" onclick="saveGroup()">Finish</button>
-    <button type="button" class="btn btn-default" name="cancel" onclick="cancelGroup()">Cancel</button>
-  </div> <!-- column -->
-</div> <!-- row -->
+  <div class="form-group">
+    <button type="button" class="btn btn-secondary" name="finish" onclick="saveGroup()">Finish</button>
+    <button type="button" class="btn btn-secondary" name="cancel" onclick="cancelGroup()">Cancel</button>
+  </div>
 
 </form>
 
@@ -473,7 +461,7 @@
 
 <%!
     private String createSelectList(String name, String[] categories) {
-        StringBuffer buffer = new StringBuffer("<select class=\"form-control\" multiple=\"multiple\" name=\""+name+"\" size=\"10\">");
+        StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" multiple=\"multiple\" name=\""+name+"\" size=\"10\">");
         for(String category : categories){
             buffer.append("<option>" + category + "</option>");
         }

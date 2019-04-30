@@ -31,6 +31,7 @@ package org.opennms.netmgt.dao.api;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Date;
 
 import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -78,10 +79,11 @@ public interface AcknowledgmentDao extends OnmsDao<OnmsAcknowledgment, Integer> 
      * 
      * Finds the latest acknowledgement for each refId. The latest acknowledgement is selected based on the most recent
      * ackTime (and highest Id in the case of multiple occuring at the same time).
-     * 
+     *
+     * @param from limit results to acks created on or after
      * @return the list of latest acks (empty list in the case of no acks found)
      */
-    List<OnmsAcknowledgment> findLatestAcks();
+    List<OnmsAcknowledgment> findLatestAcks(Date from);
 
     /**
      * <p>findLatestAckForRefId</p>

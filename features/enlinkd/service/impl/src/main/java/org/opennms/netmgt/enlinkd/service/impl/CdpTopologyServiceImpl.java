@@ -28,27 +28,42 @@
 
 package org.opennms.netmgt.enlinkd.service.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
+import org.opennms.netmgt.enlinkd.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
+import org.opennms.netmgt.enlinkd.service.api.TopologyConnection;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
-public class CdpTopologyServiceImpl implements CdpTopologyService {
+public class CdpTopologyServiceImpl extends TopologyServiceImpl implements CdpTopologyService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CdpTopologyServiceImpl.class);
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
     
     private CdpLinkDao m_cdpLinkDao;
     private CdpElementDao m_cdpElementDao;
-
+    
     public CdpTopologyServiceImpl() {
     }
 
@@ -93,6 +108,7 @@ public class CdpTopologyServiceImpl implements CdpTopologyService {
         element.setCdpNodeLastPollTime(element.getCdpNodeCreateTime());
         m_cdpElementDao.saveOrUpdate(element);
         m_cdpElementDao.flush();
+        updatesAvailable();
 
     }
 
@@ -100,7 +116,8 @@ public class CdpTopologyServiceImpl implements CdpTopologyService {
     public void store(int nodeId, CdpLink link) {
         if (link == null)
             return;
-        saveCdpLink(nodeId, link);        
+        saveCdpLink(nodeId, link);
+        updatesAvailable();
     }
     
     @Transactional
@@ -134,6 +151,68 @@ public class CdpTopologyServiceImpl implements CdpTopologyService {
             }
 
         }.execute();
+    }
+
+    @Override
+    public List<TopologyConnection<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> match() {
+
+        final Collection<CdpElementTopologyEntity> cdpElements = getTopologyEntityCache().getCdpElementTopologyEntities();
+        final List<CdpLinkTopologyEntity> allLinks = getTopologyEntityCache().getCdpLinkTopologyEntities();
+        // 1. create lookup maps:
+        Map<Integer, CdpElementTopologyEntity> cdpelementmap = new HashMap<Integer, CdpElementTopologyEntity>();
+        for (CdpElementTopologyEntity cdpelement: cdpElements) {
+            cdpelementmap.put(cdpelement.getNodeId(), cdpelement);
+        }
+        Map<CompositeKey, CdpLinkTopologyEntity> targetLinkMap = new HashMap<>();
+        for (CdpLinkTopologyEntity targetLink : allLinks) {
+            CompositeKey key = new CompositeKey(targetLink.getCdpCacheDevicePort(),
+                    targetLink.getCdpInterfaceName(),
+                    cdpelementmap.get(targetLink.getNodeId()).getCdpGlobalDeviceId(),
+                    targetLink.getCdpCacheDeviceId());
+            targetLinkMap.put(key, targetLink);
+        }
+        Set<Integer> parsed = new HashSet<Integer>();
+
+        // 2. iterate
+        List<TopologyConnection<CdpLinkTopologyEntity, CdpLinkTopologyEntity>> results = new ArrayList<>();
+        for (CdpLinkTopologyEntity sourceLink : allLinks) {
+            if (parsed.contains(sourceLink.getId())) {
+                continue;
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getCdpLinks: source: {} ", sourceLink);
+            }
+            CdpElementTopologyEntity sourceCdpElement = cdpelementmap.get(sourceLink.getNodeId());
+
+            CdpLinkTopologyEntity targetLink = targetLinkMap.get(new CompositeKey(sourceLink.getCdpInterfaceName(),
+                    sourceLink.getCdpCacheDevicePort(),
+                    sourceLink.getCdpCacheDeviceId(),
+                    sourceCdpElement.getCdpGlobalDeviceId()));
+
+            if (targetLink == null) {
+                LOG.debug("getCdpLinks: cannot found target for source: '{}'", sourceLink.getId());
+                continue;
+            }
+
+            if (sourceLink.getId().equals(targetLink.getId()) || parsed.contains(targetLink.getId())) {
+                continue;
+            }
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getCdpLinks: cdp: {}, target: {} ", sourceLink.getCdpCacheDevicePort(), targetLink);
+            }
+
+            parsed.add(sourceLink.getId());
+            parsed.add(targetLink.getId());
+            results.add(TopologyConnection.of(sourceLink, targetLink));
+        }
+        return results;
+    }
+
+
+    @Override
+    public List<CdpElementTopologyEntity> findAllCdpElements() {
+        return getTopologyEntityCache().getCdpElementTopologyEntities();
     }
 
     public CdpLinkDao getCdpLinkDao() {

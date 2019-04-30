@@ -36,6 +36,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.features.topology.api.HasExtraComponents;
 import org.opennms.features.topology.api.VerticesUpdateManager.VerticesUpdateEvent;
 import org.opennms.features.topology.api.browsers.SelectionAwareTable;
@@ -108,8 +109,7 @@ import com.vaadin.ui.VerticalSplitPanel;
 @Title("OpenNMS Node Maps")
 @Theme("opennms")
 @JavaScript({
-    "theme://../opennms/assets/node-maps-init.vaadin.js",
-    "//maps.google.com/maps/api/js?sensor=false"
+    "theme://../opennms/assets/node-maps-init.vaadin.js"
 })
 @StyleSheet({
     "theme://../opennms/assets/leaflet.css",
@@ -117,7 +117,7 @@ import com.vaadin.ui.VerticalSplitPanel;
 })
 public class NodeMapsApplication extends UI {
     private static final Logger LOG = LoggerFactory.getLogger(NodeMapsApplication.class);
-    private static final int REFRESH_INTERVAL = Integer.getInteger("org.opennms.features.nodemaps.refresh", 30*1000);
+    private static final int REFRESH_INTERVAL = SystemProperties.getInteger("org.opennms.features.nodemaps.refresh", 30*1000);
     private VerticalLayout m_rootLayout;
     private VerticalLayout m_layout;
 
@@ -242,7 +242,7 @@ public class NodeMapsApplication extends UI {
         Assert.notNull(m_nodeTable);
 
         final String searchString = vaadinRequest.getParameter("search");
-        final Integer maxClusterRadius = Integer.getInteger("gwt.maxClusterRadius", 350);
+        final Integer maxClusterRadius = SystemProperties.getInteger("gwt.maxClusterRadius", 350);
         LOG.info("Starting search string: {}, max cluster radius: {}", searchString, maxClusterRadius);
 
         m_alarmTable.setVaadinApplicationContext(context);

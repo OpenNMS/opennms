@@ -332,7 +332,15 @@ public class DiscoveryBridgeTopology {
         }  
 
         for (Integer failedbridgeid: new HashSet<Integer>(m_failed)) {
+            if (failedbridgeid == null) {
+                LOG.error("calculate: bridge:[null], first iteration on failed");
+                continue;
+            }
             BridgeForwardingTable failedBridgeFT = m_bridgeFtMapUpdate.get(failedbridgeid);
+            if (failedBridgeFT == null) {
+                LOG.error("calculate: bridge:[{}], first iteration on failed. FT is null",failedbridgeid);
+                continue;
+            }
             try {
                 postprocess(failedBridgeFT, rootBft,bridgeFtMapCalcul, new HashSet<Integer>(m_parsed));
             } catch (BridgeTopologyException e) {
@@ -344,8 +352,16 @@ public class DiscoveryBridgeTopology {
         }        
 
         for (Integer failedbridgeid: new HashSet<Integer>(m_failed)) {
+            if (failedbridgeid == null) {
+                LOG.error("calculate: bridge:[null], second iteration on failed");
+                continue;
+            }
             BridgeForwardingTable failedBridgeFT = m_bridgeFtMapUpdate.get(failedbridgeid);
-            try {
+            if (failedBridgeFT == null) {
+                LOG.error("calculate: bridge:[{}], second iteration on failed. FT is null",failedbridgeid);
+                continue;
+            }
+             try {
                 postprocess(failedBridgeFT,rootBft, bridgeFtMapCalcul, new HashSet<Integer>(m_parsed));
             } catch (BridgeTopologyException e) {
                 LOG.warn("calculate: bridge:[{}], second iteration on failed. no topology found. {}, \n{}", failedbridgeid, e.getMessage(),e.printTopology());
@@ -356,12 +372,20 @@ public class DiscoveryBridgeTopology {
         }        
 
         for (Integer postprocessbridgeid: new HashSet<Integer>(postprocessing)) {
+            if (postprocessbridgeid == null) {
+                LOG.error("calculate: bridge:[null], postprocessbridge");
+                continue;
+            }            
             BridgeForwardingTable postprocessBridgeFT = m_bridgeFtMapUpdate.get(postprocessbridgeid);
+            if (postprocessBridgeFT == null) {
+                LOG.error("calculate: bridge:[{}],postprocessbridge. FT is null",postprocessbridgeid);
+                continue;
+            }
             try {
                 down(rootBft, postprocessBridgeFT, BridgeSimpleConnection.createAndRun(rootBft, postprocessBridgeFT), bridgeFtMapCalcul,
                      0);
             } catch (BridgeTopologyException e) {
-                LOG.warn("calculate: bridge:[{}], no topology found for single port node. {}, \n{}", postprocessbridgeid, e.getMessage(),e.printTopology());
+                LOG.warn("calculate: bridge:[{}], postprocessbridge. No topology found for single port node. {}, \n{}", postprocessbridgeid, e.getMessage(),e.printTopology());
                 m_failed.add(postprocessbridgeid);
                 continue;
             }
@@ -369,7 +393,15 @@ public class DiscoveryBridgeTopology {
         }        
 
         for (Integer failedbridgeid: new HashSet<Integer>(m_failed)) {
+            if (failedbridgeid == null) {
+                LOG.error("calculate: bridge:[null], third iteration on failed");
+                continue;
+            }
             BridgeForwardingTable failedBridgeFT = m_bridgeFtMapUpdate.get(failedbridgeid);
+            if (failedBridgeFT == null) {
+                LOG.error("calculate: bridge:[{}], third iteration on failed. FT is null",failedbridgeid);
+                continue;
+            }
             try {
                 postprocess(failedBridgeFT,rootBft, bridgeFtMapCalcul, new HashSet<Integer>(m_parsed));
             } catch (BridgeTopologyException e) {
@@ -430,7 +462,7 @@ public class DiscoveryBridgeTopology {
                     continue;
                 }
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("postprocess: bridge:[{}] <--> bridge:[{}] topology found. \n{}",
+                    LOG.debug("postprocess: bridge:[{}] <--> bridge:[{}] topology found.",
                               postbridgeid, parsedbridgeid);
                 }
                 return;

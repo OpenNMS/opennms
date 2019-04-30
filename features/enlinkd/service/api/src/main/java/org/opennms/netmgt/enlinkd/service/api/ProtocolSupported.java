@@ -33,5 +33,7 @@ public enum ProtocolSupported {
     OSPF,
     ISIS,
     BRIDGE,
-    CDP
+    CDP,
+    NODES,
+    USERDEFINED
 }

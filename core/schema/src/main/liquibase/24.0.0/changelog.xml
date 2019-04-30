@@ -248,6 +248,7 @@
   </changeSet>
 
   <changeSet author="cgorantla" id="24.0.0-add-mapped-time-to-alarm-situations">
+    <validCheckSum>3:e01c4288c19444d61c6bd149ecf6bde7</validCheckSum>
     <createTable tableName="alarm_situations">
       <column name="id" type="integer">
         <constraints primaryKey="true" nullable="false" />
@@ -258,7 +259,7 @@
       <column name="related_alarm_id" type="integer">
         <constraints nullable="false" />
       </column>
-      <column name="mapped_time" type="DATETIME">
+      <column name="mapped_time" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
     </createTable>
@@ -268,6 +269,32 @@
     <addForeignKeyConstraint constraintName="fk_alarm_situations_alarm_id" onDelete="CASCADE"
                              baseTableName="alarm_situations" baseColumnNames="related_alarm_id"
                              referencedTableName="alarms" referencedColumnNames="alarmid"/>
+  </changeSet>
+
+  <!-- NMS-9273: Create Topology Service Updates in enlinkd Add nodeid,idindex and port -->
+  <changeSet author="rssntn67" id="24.0.0-ipnettomedia-add-nodeid-ifindex-port">
+    
+    <addColumn tableName="ipnettomedia">
+      <column name="nodeid" type="integer">
+      </column>
+      <column name="ifindex" type="integer">
+      </column>
+      <column name="port" type="text">
+      </column>
+    </addColumn>
+    
+    <addForeignKeyConstraint constraintName="fk_ipnettomedia_nodeid" 
+    	baseTableName="ipnettomedia" 
+    	baseColumnNames="nodeid" 
+    	referencedTableName="node" 
+    	referencedColumnNames="nodeid" />
+    
+    
+       <rollback>
+            <dropColumn tableName="ipnettomedia" columnName="nodeid" />
+            <dropColumn tableName="ipnettomedia" columnName="ifindex" />
+            <dropColumn tableName="ipnettomedia" columnName="port" />
+        </rollback>
   </changeSet>
 
   <changeSet author="cpape" id="24.0.0-bsm-application-edge">
@@ -288,5 +315,139 @@
                              referencedTableName="applications" referencedColumnNames="id" onDelete="CASCADE"/>
   </changeSet>
 
-</databaseChangeLog>
+  <changeSet author="fooker" id="24.0.0-classification-add-omnidirectional">
+    <addColumn tableName="classification_rules">
+      <column name="omnidirectional"
+              type="BOOLEAN"
+              defaultValue="FALSE">
+        <constraints nullable="false"></constraints>
+      </column>
+    </addColumn>
+    <sql>
+        UPDATE classification_rules
+        SET omnidirectional = TRUE
+        WHERE groupid = 1;
+    </sql>
+  </changeSet>
 
+  <changeSet author="jwhite" id="24.0.0-create-refid-index-on-acks">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="acks"/>
+    </preConditions>
+
+    <!-- Create index-->
+    <sql>
+      CREATE INDEX ack_refid_idx ON acks USING btree (refid);
+    </sql>
+  </changeSet>
+
+  <changeSet author="jwhite" id="24.0.0-node-metadata">
+    <createTable tableName="node_metadata" >
+      <column name="id" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="context" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="key" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="value" type="text">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="node_metadata" columnNames="id, context, key" constraintName="node_metadata_pkey" />
+    <addForeignKeyConstraint constraintName="fk_node_metadata_id"
+                             baseTableName="node_metadata" baseColumnNames="id"
+                             referencedTableName="node" referencedColumnNames="nodeid" />
+
+    <createTable tableName="ipinterface_metadata" >
+      <column name="id" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="context" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="key" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="value" type="text">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="ipinterface_metadata" columnNames="id, context, key" constraintName="ipinterface_metadata_pkey" />
+    <addForeignKeyConstraint constraintName="fk_ipinterface_metadata_id"
+                             baseTableName="ipinterface_metadata" baseColumnNames="id"
+                             referencedTableName="ipinterface" referencedColumnNames="id" />
+
+    <createTable tableName="ifservices_metadata" >
+      <column name="id" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="context" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="key" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="value" type="text">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="ifservices_metadata" columnNames="id, context, key" constraintName="ifservices_metadata_pkey" />
+    <addForeignKeyConstraint constraintName="fk_ifservices_metadata_id"
+                             baseTableName="ifservices_metadata" baseColumnNames="id"
+                             referencedTableName="ifservices" referencedColumnNames="id" />
+
+  </changeSet>
+
+  <changeSet author="jwhite" id="24.0.0-user-defined-links">
+    <createTable tableName="user_defined_links" >
+      <column name="id" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="node_id_a" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="node_id_z" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="component_label_a" type="text" />
+      <column name="component_label_z" type="text" />
+      <column name="link_id" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="link_label" type="text" />
+      <column name="owner" type="text">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="user_defined_links" columnNames="id" constraintName="user_defined_links_pkey" />
+    <addForeignKeyConstraint constraintName="fk_user_defined_links_node_id_a"
+                             baseTableName="user_defined_links" baseColumnNames="node_id_a"
+                             referencedTableName="node" referencedColumnNames="nodeid"
+                             onDelete="CASCADE"/>
+    <addForeignKeyConstraint constraintName="fk_user_defined_links_node_id_z"
+                             baseTableName="user_defined_links" baseColumnNames="node_id_z"
+                             referencedTableName="node" referencedColumnNames="nodeid"
+                             onDelete="CASCADE"/>
+  </changeSet>
+
+  <changeSet author="cpape" id="24.0.0-node-metadata-on-delete-cascade">
+    <dropForeignKeyConstraint baseTableName="node_metadata" constraintName="fk_node_metadata_id"/>
+    <addForeignKeyConstraint constraintName="fk_node_metadata_id"
+                             baseTableName="node_metadata" baseColumnNames="id"
+                             referencedTableName="node" referencedColumnNames="nodeid" onDelete="CASCADE"/>
+
+    <dropForeignKeyConstraint baseTableName="ipinterface_metadata" constraintName="fk_ipinterface_metadata_id"/>
+    <addForeignKeyConstraint constraintName="fk_ipinterface_metadata_id"
+                             baseTableName="ipinterface_metadata" baseColumnNames="id"
+                             referencedTableName="ipinterface" referencedColumnNames="id" onDelete="CASCADE"/>
+
+    <dropForeignKeyConstraint baseTableName="ifservices_metadata" constraintName="fk_ifservices_metadata_id"/>
+    <addForeignKeyConstraint constraintName="fk_ifservices_metadata_id"
+                             baseTableName="ifservices_metadata" baseColumnNames="id"
+                             referencedTableName="ifservices" referencedColumnNames="id" onDelete="CASCADE"/>
+  </changeSet>
+
+</databaseChangeLog>

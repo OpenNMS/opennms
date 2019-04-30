@@ -43,50 +43,49 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
 
     private final String[][] m_adminPageEntries = new String[][] {
         // OpenNMS System
-        new String[] { "System Configuration", "//h3[text()='OpenNMS Configuration']" },
-        new String[] { "Configure Users, Groups and On-Call Roles", "//h3[text()='Users and Groups']" },
+        new String[] { "System Configuration", "//span[text()='OpenNMS Configuration']" },
+        new String[] { "Configure Users, Groups and On-Call Roles", "//span[text()='Users and Groups']" },
 
         // Provisioning
         new String[] { "Manage Provisioning Requisitions", "//h4[contains(text(), 'Requisitions (')]" },
-        new String[] { "Import and Export Asset Information", "//h3[text()='Import and Export Assets']" },
-        new String[] { "Manage Surveillance Categories", "//h3[text()='Surveillance Categories']" },
-        new String[] { "Configure Discovery", "//h3[text()='General Settings']" },
-        new String[] { "Run Single Discovery Scan", "//h3[text()='Exclude Ranges']" },
-        new String[] { "Configure SNMP Community Names by IP Address", "//h3[text()='SNMP Config Lookup']" },
-        new String[] { "Manually Add an Interface", "//h3[text()='Enter IP Address']" },
-        new String[] { "Delete Nodes", "//h3[text()='Delete Nodes']" },
+        new String[] { "Import and Export Asset Information", "//span[text()='Import and Export Assets']" },
+        new String[] { "Manage Surveillance Categories", "//span[text()='Surveillance Categories']" },
+        new String[] { "Configure Discovery", "//span[text()='General Settings']" },
+        new String[] { "Run Single Discovery Scan", "//span[text()='Exclude Ranges']" },
+        new String[] { "Configure SNMP Community Names by IP Address", "//span[text()='SNMP Config Lookup']" },
+        new String[] { "Manually Add an Interface", "//span[text()='Enter IP Address']" },
+        new String[] { "Delete Nodes", "//span[text()='Delete Nodes']" },
 
         // Flow Management
-        new String[] { "Manage Flow Classification", "//div/ol/li[text()='Flow Classification']" },
+        new String[] { "Manage Flow Classification", "//div/nav/ol/li[text()='Flow Classification']" },
 
         // Event Management
-        new String[] { "Manually Send an Event", "//h3[text()='Send Event to OpenNMS']" },
-        new String[] { "Configure Notifications", "//h3[text()='Configure Notifications']" },
+        new String[] { "Manually Send an Event", "//span[text()='Send Event to OpenNMS']" },
+        new String[] { "Configure Notifications", "//span[text()='Configure Notifications']" },
         new String[] { "Customize Event Configurations", "//div[@id='content']//iframe" },
 
         // Service Monitoring
         new String[] { "Configure Scheduled Outages", "//form//input[@value='New Name']" },
-        new String[] { "Manage and Unmanage Interfaces and Services", "//h3[text()='Manage and Unmanage Interfaces and Services']" },
+        new String[] { "Manage and Unmanage Interfaces and Services", "//span[text()='Manage and Unmanage Interfaces and Services']" },
         new String[] { "Manage Business Services", "//div[@id='content']//iframe" },
 
         // Performance Measurement
         new String[] { "Configure SNMP Collections and Data Collection Groups", "//div[@id='content']//iframe" },
-        new String[] { "Configure SNMP Data Collection per Interface", "//h3[text()='Manage SNMP Data Collection per Interface']" },
-        new String[] { "Configure Thresholds", "//h3[text()='Threshold Configuration']" },
+        new String[] { "Configure SNMP Data Collection per Interface", "//span[text()='Manage SNMP Data Collection per Interface']" },
+        new String[] { "Configure Thresholds", "//span[text()='Threshold Configuration']" },
 
         // Distributed Monitoring
-        new String[] { "Manage Monitoring Locations", "//div[contains(@class,'panel')]/table//tr//a[text()='Location Name']" },
-        new String[] { "Manage Applications", "//h3[text()='Applications']" },
-        new String[] { "Manage Remote Pollers", "//h3[contains(text(),'Remote Poller Status')]" },
-        new String[] { "Manage Minions", "//div[contains(@class,'panel')]/table//th/a[text()='Location']" },
+        new String[] { "Manage Monitoring Locations", "//div[contains(@class,'card')]/table//tr//a[text()='Location Name']" },
+        new String[] { "Manage Applications", "//span[text()='Applications']" },
+        new String[] { "Manage Remote Pollers", "//span[contains(text(),'Remote Poller Status')]" },
+        new String[] { "Manage Minions", "//div[contains(@class,'card')]/table//th/a[text()='Location']" },
 
         // Additional Tools
-        new String[] { "Instrumentation Log Reader", "//h3[text()='Filtering']" },
+        new String[] { "Instrumentation Log Reader", "//span[text()='Filtering']" },
         new String[] { "SNMP MIB Compiler", "//div[@id='content']//iframe" },
         new String[] { "Ops Board Configuration", "//div[@id='content']//iframe" },
         new String[] { "Surveillance Views Configuration", "//div[@id='content']//iframe" },
         new String[] { "JMX Configuration Generator", "//div[@id='content']//iframe" },
-        new String[] { "OpenNMS Plugin Manager", "/html/body/iframe" },
         new String[] { "Data Choices", "//*[@id='datachoices-enable']" }
     };
 
@@ -97,24 +96,24 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllTextIsPresent() throws Exception {
-        assertEquals(9, countElementsMatchingCss("h3.panel-title"));
-        findElementByXpath("//h3[text()='OpenNMS System']");
-        findElementByXpath("//h3[text()='Provisioning']");
-        findElementByXpath("//h3[text()='Flow Management']");
-        findElementByXpath("//h3[text()='Event Management']");
-        findElementByXpath("//h3[text()='Service Monitoring']");
-        findElementByXpath("//h3[text()='Performance Measurement']");
-        findElementByXpath("//h3[text()='Distributed Monitoring']");
-        findElementByXpath("//h3[text()='Additional Tools']");
-        findElementByXpath("//h3[text()='Descriptions']");
+        assertEquals(10, countElementsMatchingCss("div.card-header")); // the 10th is the hidden datachoices modal
+        findElementByXpath("//span[text()='OpenNMS System']");
+        findElementByXpath("//span[text()='Provisioning']");
+        findElementByXpath("//span[text()='Flow Management']");
+        findElementByXpath("//span[text()='Event Management']");
+        findElementByXpath("//span[text()='Service Monitoring']");
+        findElementByXpath("//span[text()='Performance Measurement']");
+        findElementByXpath("//span[text()='Distributed Monitoring']");
+        findElementByXpath("//span[text()='Additional Tools']");
+        findElementByXpath("//span[text()='Descriptions']");
     }
 
     @Test
     public void testAllLinks() throws Exception {
         adminPage();
         findElementById("content");
-        findElementByXpath("//div[contains(@class,'panel-body')]");
-        final int count = countElementsMatchingCss("div.panel-body > ul > li > a");
+        findElementByXpath("//div[contains(@class,'card-body')]");
+        final int count = countElementsMatchingCss("div.card-body > ul > li > a");
         assertEquals("We expect " + m_adminPageEntries.length + " link entries on the admin page.", m_adminPageEntries.length, count);
 
         for (final String[] entry : m_adminPageEntries) {

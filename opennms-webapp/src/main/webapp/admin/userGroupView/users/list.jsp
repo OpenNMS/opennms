@@ -124,8 +124,8 @@
   </a>
 </p>
 
-   <div class="panel panel-default">
-     <table class="table table-condensed table-bordered">
+   <div class="card">
+     <table class="table table-sm table-bordered">
         <thead>
           <tr>
           <th width="5%">Delete</th>
@@ -166,9 +166,9 @@
           </td>
           <td rowspan="2" class="text-center">
             <% if ( !curUser.getUserId().equals("admin")) { %>
-                <button id="<%= "users("+curUser.getUserId()+").doRename" %>" class="btn btn-default"  name="rename" onclick="renameUser('<%=curUser.getUserId()%>')">Rename</button>
+                <button id="<%= "users("+curUser.getUserId()+").doRename" %>" class="btn btn-secondary"  name="rename" onclick="renameUser('<%=curUser.getUserId()%>')">Rename</button>
               <% } else { %>
-                <button id="<%= "users("+curUser.getUserId()+").doRename" %>" class="btn btn-default"  name="rename" onclick="alert('Sorry, the admin user cannot be renamed.')">Rename</button>
+                <button id="<%= "users("+curUser.getUserId()+").doRename" %>" class="btn btn-secondary"  name="rename" onclick="alert('Sorry, the admin user cannot be renamed.')">Rename</button>
               <% } %>
           </td>
           <td>

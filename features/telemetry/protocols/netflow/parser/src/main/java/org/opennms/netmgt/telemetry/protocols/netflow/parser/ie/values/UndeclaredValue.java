@@ -33,7 +33,6 @@ import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.bytes;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElement;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
@@ -81,7 +80,7 @@ public class UndeclaredValue extends Value<byte[]> {
                                             final int informationElementId) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) throws InvalidPacketException {
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) {
                 return new UndeclaredValue(enterpriseNumber, informationElementId, bytes(buffer, buffer.remaining()));
             }
 

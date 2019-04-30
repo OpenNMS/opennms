@@ -33,6 +33,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
@@ -62,7 +63,7 @@ public class FetchResultsTest {
         table.put(2L, "y", 99d);
 
         // Create the fetch results using the table
-        FetchResults results = new FetchResults(table, 300, Collections.emptyMap(), null);
+        FetchResults results = new FetchResults(table, 300, new HashMap<String,Object>(), null);
 
         // Verify
         Map<String, double[]> columns = results.getColumns();

@@ -40,6 +40,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 
 import com.google.common.base.Objects;
@@ -55,9 +56,15 @@ public class TcpSession implements Session {
         }
 
         @Override
-        public Optional<Template> lookupTemplate(final int templateId) {
+        public Template lookupTemplate(final int templateId) throws MissingTemplateException {
             final Key key = new Key(this.observationDomainId, templateId);
-            return Optional.ofNullable(TcpSession.this.templates.get(key));
+
+            final Template template = TcpSession.this.templates.get(key);
+            if (template != null) {
+                return template;
+            } else {
+                throw new MissingTemplateException(templateId);
+            }
         }
 
         @Override
@@ -68,7 +75,7 @@ public class TcpSession implements Session {
 
             for (final Map.Entry<Key, Map<Set<Value<?>>, List<Value<?>>>> e : Iterables.filter(TcpSession.this.options.entrySet(),
                                                                                                e -> e.getKey().observationDomainId == this.observationDomainId)) {
-                final Template template = this.lookupTemplate(e.getKey().templateId).get();
+                final Template template = TcpSession.this.templates.get(e.getKey());
 
                 final Set<String> scopes = template.scopes.stream().map(Scope::getName).collect(Collectors.toSet());
 

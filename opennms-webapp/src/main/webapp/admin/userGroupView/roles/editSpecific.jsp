@@ -49,29 +49,29 @@
 	<jsp:param name="breadcrumb" value="Edit Entry" />
 </jsp:include>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Edit Schedule Entry</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Edit Schedule Entry</span>
   </div>
-  <div class="panel-body">
-    <p class="lead">${error}</p>
-    <form role="form" class="form-horizontal" action="<c:url value='${reqUrl}'/>" method="post" name="saveEntryForm">
+  <div class="card-body">
+    <p class="alert alert-danger">${error}</p>
+    <form role="form" class="form" action="<c:url value='${reqUrl}'/>" method="post" name="saveEntryForm">
       <input type="hidden" name="operation" value="saveEntry"/>
       <input type="hidden" name="role" value="${fn:escapeXml(role.name)}"/>
       <input type="hidden" name="schedIndex" value="${schedIndex}"/>
       <input type="hidden" name="timeIndex" value="${timeIndex}" /> 
 
-      <div class="form-group">
+      <div class="form-group form-row">
         <label class="col-sm-2">On-Call Role</label>
         <div class="col-sm-4">
           <p class="form-control-static"><c:out value="${role.name}"/></p>
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group form-row">
         <label for="input_roleUser" class="col-sm-2">User</label>
         <div class="col-sm-4">
-          <select class="form-control" id="input_roleUser" name="roleUser">
+          <select class="form-control custom-select" id="input_roleUser" name="roleUser">
           <c:forEach var="user" items="${role.membershipGroup.users}">
             <c:choose>
               <c:when test="${user == scheduledUser}"><option selected>${user}</option></c:when>
@@ -82,7 +82,7 @@
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group form-row">
         <label class="col-sm-2">Start Date</label>
         <div class="col-sm-4">
           <c:import url="/includes/dateControl.jsp">
@@ -99,7 +99,7 @@
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group form-row">
         <label class="col-sm-2">End Date</label>
         <div class="col-sm-4">
           <c:import url="/includes/dateControl.jsp">
@@ -116,10 +116,10 @@
         </div>
       </div>
 
-      <button type="submit" class="btn btn-default" name="save">Save</button>
-      <button type="submit" class="btn btn-default" name="cancel">Cancel</button>
+      <button type="submit" class="btn btn-secondary" name="save">Save</button>
+      <button type="submit" class="btn btn-secondary" name="cancel">Cancel</button>
     </form>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

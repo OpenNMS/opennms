@@ -44,12 +44,12 @@
 
   <div class="row">
     <div class="col-md-5">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Database Reports</h3>
+        <div class="card">
+            <div class="card-header">
+                <span>Database Reports</span>
             </div>
-            <div class="panel-body">
-                <ul class="list-unstyled">
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
                     <li><a href="report/database/reportList.htm">List reports</a></li>
                     <li><a href="report/database/manage.htm">View and manage pre-run reports</a></li>
                     <li><a href="report/database/manageSchedule.htm">Manage the batch report schedule</a></li>
@@ -61,11 +61,11 @@
     </div>
 
   <div class="col-md-7">
-      <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Descriptions</h3>
+      <div class="card">
+          <div class="card-header">
+            <span>Descriptions</span>
           </div>
-          <div class="panel-body">
+          <div class="card-body">
               <p>These reports provide graphical or numeric
                   view of your service level metrics for the current
                   month-to-date, previous month, and last twelve months by categories.

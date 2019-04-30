@@ -3,7 +3,7 @@
 
 === Overview
 
-The _Kafka Producer feature_ allows events, alarms, nodes and metrics from _{opennms-product-name}_ to be forwarded to _Kafka_.
+The _Kafka Producer feature_ allows events, alarms, nodes, topologies and metrics from _{opennms-product-name}_ to be forwarded to _Kafka_.
 
 These objects are stored in different topics and the payloads are encoded using link:https://developers.google.com/protocol-buffers/[Google Protocol Buffers (GPB)].
 See `opennms-kafka-producer.proto` and `collectionset.proto` in the corresponding source distribution for the model definitions.
@@ -44,6 +44,17 @@ IMPORTANT: The node topic is not intended to include all of the nodes in the sys
 The _node criteria_ is a string representation of the unique identifier for a given node.
 If the node is associated with a _foreign source (fs)_  and _foreign id (fid)_, the node criteria resulting node criteria will be the name of the _foreign source_, followed by a colon (:) and then the foreign id i.e. (fs:fid).
 If the node is not associated with both a _foreign source_ and _foreign id_, then the node id (database id) will be used.
+
+==== Topologies
+
+The _Kafka Producer_ listens for changes made to the current set of topologies (bridge, cdp, isis, lldp and ospf) and forwards the resulting messages to _Kafka_ topics. A topic is defined either for Topology Vertex Update Message and another topic is defined for Topology Edge Update Message.
+The topologies are provided by the _enhanced linkd updaters_ via the OnmsTopology API. 
+An _Updater_ send OnmsTopologyMessage to the subscribers.  
+The records are keyed by _GPB_ encoded key of protocol and TopologyRef and contain a _GPB_ encoded model of the Vertex or Edge.
+When a Vertex or an Edge is deleted, a _null_ value is sent with the corresponding encoded _GBP_ key.
+Publishing records in this fashion allows the topic to be used as a link:https://docs.confluent.io/current/streams/concepts.html#ktable[KTable].
+
+IMPORTANT: The topologies topic are not intended to include all of the vertices in the system, it only includes records for vertex that relate to topology messages that have been forwarded. 
 
 ==== Metrics
 
@@ -96,6 +107,9 @@ The _Kafka Producer_ exposes the following options to help fine tune its behavio
                                                    Set this to an empty string to disable forwarding alarm feedback.                                                   
 | `nodeTopic`             | `nodes`              | Name of the topic used for nodes.
                                                    Set this to an empty string to disable forwarding nodes.
+                                                   Set this to an empty string to disable forwarding topologies.
+| `topologyVertexTopic`             | `vertices`              | Name of the topic used for topology vertices.
+| `topologyEdgeTopic`             | `edges`              | Name of the topic used for topology edges.
 | `metricTopic`           | `metrics`            | Name of the topic used for metrics.
 | `eventFilter`           | `-`                  | A _Spring SpEL expression_ (see bellow) used to filter events.
                                                    Set this to an empty string to disable filtering, and forward all events.
@@ -176,7 +190,7 @@ echo 'org.opennms.timeseries.strategy=osgi' > "$OPENNMS_HOME/etc/opennms.propert
 
 ==== Configuring Topic Names
 
-By default three topics are created i.e. `events`, `alarms`, `nodes`.
+By default five topics are created i.e. `events`, `alarms`, `nodes`,`vertices`, and `edges` .
 To change these, you can use:
 
 [source]
@@ -190,6 +204,18 @@ admin@opennms()> config:update
 ----
 
 In the example above, we disable event forwarding by setting an empty topic name and change the node topic name to `opennms-nodes`.
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.kafka.producer
+admin@opennms()> config:property-set topologyVertexTopic "opennms-bridge-vertex"
+admin@opennms()> config:property-set topologyEdgeTopic "opennms-edge-vertex"
+admin@opennms()> config:update
+----
+
+In the example above, we set the vertex and edge topics to be different to default.
 
 === Shell Commands
 

@@ -13,6 +13,7 @@ target
 .project
 .settings
 .springBeans
+.vscode
 .DS_Store
 build.properties
 *.iml

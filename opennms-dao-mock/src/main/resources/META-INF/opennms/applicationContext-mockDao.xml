@@ -48,6 +48,9 @@
     </bean>
     <onmsgi:service interface="org.springframework.transaction.support.TransactionOperations" ref="transactionTemplate" />
 
+    <bean id="sessionUtils" class="org.opennms.netmgt.dao.mock.MockSessionUtils" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.SessionUtils" ref="sessionUtils" />
+
     <bean id="acknowledgmentDao" class="org.opennms.netmgt.dao.mock.MockAcknowledgmentDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.AcknowledgmentDao" ref="acknowledgmentDao" />
 

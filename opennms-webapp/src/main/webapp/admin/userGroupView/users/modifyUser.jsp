@@ -201,7 +201,7 @@
 
     function resetPassword()
     {
-        newUserWin = window.open("<%= Util.calculateUrlBase(request, "admin/userGroupView/users/newPassword.jsp") %>", "", "fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no,width=500,height=300");
+        newUserWin = window.open("<%= Util.calculateUrlBase(request, "admin/userGroupView/users/newPassword.jsp") %>", "", "fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no,width=500,height=450");
     }
 
     function addDutySchedules()
@@ -259,15 +259,15 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Modify User: <%=userid%></h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Modify User: <%=userid%></span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <h3>User Password</h3>
-        <div class="col-sm-10 col-sm-offset-2">
-          <button type="button" class="btn btn-default" onClick="resetPassword()">Reset Password</button>
-        </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-secondary" onClick="resetPassword()">Reset Password</button>
+          </div>
 
         <h3>User Information</h3>
 	<%
@@ -340,124 +340,127 @@
 
         %>
 
-	<div class="form-group">
-          <label for="fullName" class="col-sm-2 control-label">Full Name:</label>
+	<div class="form-row form-group">
+          <label for="fullName" class="col-sm-2 col-form-label">Full Name</label>
           <div class="col-sm-10">
             <input id="fullName" type="text" class="form-control" size="35" name="fullName" value="<%= (fullName == null? "" : fullName) %>" />
           </div>
         </div>
 
-	<div class="form-group">
-          <label for="userComments" class="col-sm-2 control-label">Comments:</label>
+	<div class="form-row form-group">
+          <label for="userComments" class="col-sm-2 col-form-label">Comments</label>
           <div class="col-sm-10">
             <textarea class="form-control" rows="5" id="userComments" name="userComments"><%= (comments == null? "" : comments) %></textarea>
           </div>
         </div>
 
-	<div class="form-group">
-          <label for="securityRoles" class="col-sm-2 control-label">Security Roles:</label>
-          <div class="col-sm-5">
-              <label class="control-label">Available Roles</label>
-              <%=createSelectList("availableRoles", availableRoles)%><br/>
-              <button type="button" class="btn btn-default" id="roles.doAdd" onClick="javascript:addRoles()">&nbsp;&#155;&#155;&nbsp; Add</button>
+      <div class="form-row form-group">
+          <label for="tuiPin" class="col-sm-2 col-form-label">Telephone PIN</label>
+          <div class="col-sm-10">
+              <input class="form-control" id="tuiPin" type="text" name="tuiPin" value="<%= (tuiPin == null? "" : tuiPin) %>" />
           </div>
-          <div class="col-sm-5">
-              <label class="control-label">Currently in User</label>
-              <%=createSelectList("configuredRoles", configuredRoles)%><br/>
-              <button type="button" class="btn btn-default" id="roles.doRemove" onClick="javascript:removeRoles()">&nbsp;&#139;&#139;&nbsp; Remove</button>
-          </div>
-        </div>
+      </div>
 
 	<div class="form-group">
-          <label for="tuiPin" class="col-sm-2 control-label">Telephone PIN:</label>
-          <div class="col-sm-10">
-            <input class="form-control" id="tuiPin" type="text" name="tuiPin" value="<%= (tuiPin == null? "" : tuiPin) %>" />
-          </div>
+        <h3>Security Roles</h3>
+        <div class="row">
+              <div class="col-sm-6">
+                  <label class="col-form-label">Available Roles</label>
+                  <%=createSelectList("availableRoles", availableRoles)%><br/>
+                  <button type="button" class="btn btn-secondary" id="roles.doAdd" onClick="javascript:addRoles()">Add &nbsp;&#155;&#155;&nbsp;</button>
+              </div>
+              <div class="col-sm-6">
+                  <label class="col-form-label">Currently in User</label>
+                  <%=createSelectList("configuredRoles", configuredRoles)%><br/>
+                  <button type="button" class="btn btn-secondary" id="roles.doRemove" onClick="javascript:removeRoles()">&nbsp;&#139;&#139;&nbsp; Remove</button>
+              </div>
         </div>
+    </div>
 
         <h3>Notification Information</h3>
 
-	<div class="form-group">
-          <label for="email" class="col-sm-2 control-label">Email:</label>
+	<div class="form-row form-group">
+          <label for="email" class="col-sm-2 col-form-label">Email</label>
           <div class="col-sm-10">
             <input class="form-control" id="email" type="text" name="email" value='<%= (email == null ? "":email) %>'/>
           </div>
         </div>
 
-	<div class="form-group">
-          <label for="pemail" class="col-sm-2 control-label">Pager Email:</label>
+	<div class="form-row form-group">
+          <label for="pemail" class="col-sm-2 col-form-label">Pager Email</label>
           <div class="col-sm-10">
             <input class="form-control" type="text" id="pemail" name="pemail" value='<%=(pagerEmail == null ? "":pagerEmail)%>'/>
           </div>
         </div>
 
-	<div class="form-group">
-          <label for="xmppAddress" class="col-sm-2 control-label">XMPP Address:</label>
+	<div class="form-row form-group">
+          <label for="xmppAddress" class="col-sm-2 col-form-label">XMPP Address</label>
           <div class="col-sm-10">
             <input class="form-control" id="xmppAddress" type="text" name="xmppAddress" value='<%=(xmppAddress == null ? "":xmppAddress)%>'/>
           </div>
         </div>
 
-	<div class="form-group">
-          <label for="microblog" class="col-sm-2 control-label">Microblog Username:</label>
+	<div class="form-row form-group">
+          <label for="microblog" class="col-sm-2 col-form-label">Microblog Username</label>
           <div class="col-sm-10">
             <input class="form-control" type="text" id="microblog" name="microblog" value='<%=(microblog == null ? "":microblog)%>'/>
           </div>
         </div>
 
-	<div class="form-group">
-          <label for="numericalService" class="col-sm-2 control-label">Numeric Service:</label>
+	<div class="form-row form-group">
+          <label for="numericalService" class="col-sm-2 col-form-label">Numeric Service</label>
           <div class="col-sm-10">
             <input class="form-control" type="text" id="numericalService" name="numericalService" value='<%=(numericPage == null ? "":numericPage) %>'/>
           </div>
         </div>
 
-	<div class="form-group">
-          <label for="numericalPin" class="col-sm-2 control-label">Numeric PIN:</label>
+	<div class="form-row form-group">
+          <label for="numericalPin" class="col-sm-2 col-form-label">Numeric PIN</label>
           <div class="col-sm-10">
             <input class="form-control" type="text" id="numericalPin" name="numericalPin" value='<%= (numericPin == null ? "":numericPin)%>'/>
           </div>
         </div>
 
-	<div class="form-group">
-          <label for="textService" class="col-sm-2 control-label">Text Service:</label>
+	<div class="form-row form-group">
+          <label for="textService" class="col-sm-2 col-form-label">Text Service</label>
           <div class="col-sm-10">
             <input class="form-control" type="text" id="textService" name="textService" value='<%= (textPage == null ? "":textPage)%>'/>
           </div>
         </div>
 
-	<div class="form-group">
-          <label for="textPin" class="col-sm-2 control-label">Text PIN:</label>
+	<div class="form-row form-group">
+          <label for="textPin" class="col-sm-2 col-form-label">Text PIN</label>
           <div class="col-sm-10">
             <input class="form-control" type="text" id="textPin" name="textPin" value='<%=(textPin == null ? "":textPin)%>'/>
           </div>
         </div>
 
-	<div class="form-group">
-          <label for="workPhone" class="col-sm-2 control-label">Work Phone:</label>
+	<div class="form-row form-group">
+          <label for="workPhone" class="col-sm-2 col-form-label">Work Phone</label>
           <div class="col-sm-10">
             <input class="form-control" type="text" id="workPhone" name="workPhone" value='<%=(workPhone == null ? "":workPhone)%>'/>
           </div>
         </div>
 
-	<div class="form-group">
-          <label for="mobilePhone" class="col-sm-2 control-label">Mobile Phone:</label>
+	<div class="form-row form-group">
+          <label for="mobilePhone" class="col-sm-2 col-form-label">Mobile Phone</label>
           <div class="col-sm-10">
             <input class="form-control" type="text" id="mobilePhone" name="mobilePhone" value='<%=(mobilePhone == null ? "":mobilePhone)%>'/>
           </div>
         </div>
 
-	<div class="form-group">
-          <label for="homePhone" class="col-sm-2 control-label">Home Phone:</label>
+	<div class="form-row form-group">
+          <label for="homePhone" class="col-sm-2 col-form-label">Home Phone</label>
           <div class="col-sm-10">
             <input class="form-control" type="text" id="homePhone" name="homePhone" value='<%=(homePhone == null ? "":homePhone)%>'/>
           </div>
         </div>
+
     <h3>Date/Time Preferences</h3>
-    <div class="form-group">
-          <label for="timeZoneId" class="col-sm-2 control-label">Time Zone:</label>
+    <div class="form-row form-group">
+          <label for="timeZoneId" class="col-sm-2 col-form-label">Time Zone</label>
           <div class="col-sm-10">
-            <select class="form-control" id="timeZoneId" name="timeZoneId">
+            <select class="form-control custom-select" id="timeZoneId" name="timeZoneId">
 <%
               List<String> zones = new ArrayList<>();
               zones.add("");
@@ -476,16 +479,16 @@
           </div>
     </div>
 
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">User Properties</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>User Properties</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
           This panel allows you to modify information for each user, including
           their name, notification information, and duty schedules.
@@ -530,7 +533,7 @@
         <p>
          To save your configuration, click on <b>[Finish]</b>.
         </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
@@ -540,16 +543,15 @@ Collection<String> dutySchedules = user.getDutySchedules();
 %>
 <input type="hidden" name="dutySchedules" value="<%=user.getDutySchedules().size()%>"/>
 
-<div class="row">
-  <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Duty Schedule</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Duty Schedule</span>
       </div>
-      <table class="table table-condensed table-striped table-bordered">
+      <div class="card-body">
+      <table class="table table-sm table-striped">
         <thead>
           <tr>
-          <th>&nbsp;</th>
+          <th>#</th>
           <th>Delete</th>
           <th>Mo</th>
           <th>Tu</th>
@@ -597,10 +599,12 @@ Collection<String> dutySchedules = user.getDutySchedules();
          </tbody>
        </table>
 
-       <div class="form-group top-buffer">
-         <div class="col-sm-12">
-           <button id="addSchedulesButton" type="button" class="btn btn-default" name="addSchedule" onclick="addDutySchedules()">Add This Many Schedules</button>
-           <select name="numSchedules" class="btn btn-default" value="3">
+        <div class="form-row mt-2">
+            <button id="removeSchedulesButton" type="button" class="btn btn-secondary" name="addSchedule" onclick="removeDutySchedules()">Remove Checked Schedules</button>
+        </div>
+
+       <div class="form-row mt-2">
+           <select name="numSchedules" class="form-control custom-select col-xs-6 col-sm-2 col-md-1 mr-2" value="3">
                  <option value="1">1</option>
                  <option value="2">2</option>
                  <option value="3">3</option>
@@ -609,25 +613,16 @@ Collection<String> dutySchedules = user.getDutySchedules();
                  <option value="6">6</option>
                  <option value="7">7</option>
            </select>
-         </div>
+           <button id="addSchedulesButton" type="button" class="btn btn-secondary" name="addSchedule" onclick="addDutySchedules()" title="Add This Many Schedules"><i class="fa fa-plus"></i> Add Schedules</button>
        </div>
 
-       <div class="form-group">
-         <div class="col-sm-12">
-           <button id="removeSchedulesButton" type="button" class="btn btn-default" name="addSchedule" onclick="removeDutySchedules()">Remove Checked Schedules</button>
-         </div>
-       </div>
-   </div> <!-- panel -->
-  </div> <!-- column -->
-</div> <!-- row -->
+   </div>
+   </div> <!-- card -->
 
-<div class="row">
-  <div class="col-md-12">
-    <button id="saveUserButton" type="submit" class="btn btn-default" name="finish" onclick="saveUser()">Finish</button>
-    <button id="cancelButton" type="button" class="btn btn-default" name="cancel" onclick="cancelUser()">Cancel</button>
-  </div> <!-- column -->
-</div> <!-- row -->
-
+    <div class="form-group">
+        <button id="saveUserButton" type="submit" class="btn btn-secondary" name="finish" onclick="saveUser()">Finish</button>
+        <button id="cancelButton" type="button" class="btn btn-secondary" name="cancel" onclick="cancelUser()">Cancel</button>
+    </div>
 </form>
 
 <script type="text/javascript" >

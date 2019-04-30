@@ -34,7 +34,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcTarget;
+import org.opennms.core.rpc.utils.mate.FallbackScope;
+import org.opennms.core.rpc.utils.mate.Interpolator;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerRequestBuilder;
@@ -121,25 +125,36 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
             throw new IllegalArgumentException("Monitored service is required.");
         }
 
+        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, new FallbackScope(
+            this.client.getEntityScopeProvider().getScopeForNode(service.getNodeId()),
+            this.client.getEntityScopeProvider().getScopeForInterface(service.getNodeId(), service.getIpAddr()),
+            this.client.getEntityScopeProvider().getScopeForService(service.getNodeId(), service.getAddress(), service.getSvcName())
+        ));
+
         final RpcTarget target = client.getRpcTargetHelper().target()
                 .withNodeId(service.getNodeId())
                 .withLocation(service.getNodeLocation())
                 .withSystemId(systemId)
-                .withServiceAttributes(attributes)
+                .withServiceAttributes(interpolatedAttributes)
                 .withLocationOverride((s) -> serviceMonitor.getEffectiveLocation(s))
                 .build();
 
         final PollerRequestDTO request = new PollerRequestDTO();
         request.setLocation(target.getLocation());
         request.setSystemId(target.getSystemId());
-        request.setClassName(className != null ? className : serviceMonitor.getClass().getCanonicalName());
+        final String pollerClassName = className != null ? className : serviceMonitor.getClass().getCanonicalName();
+        request.setClassName(pollerClassName);
         request.setServiceName(service.getSvcName());
         request.setAddress(service.getAddress());
         request.setNodeId(service.getNodeId());
         request.setNodeLabel(service.getNodeLabel());
         request.setNodeLocation(service.getNodeLocation());
         request.setTimeToLiveMs(ttlInMs);
-        request.addAttributes(attributes);
+        request.addAttributes(interpolatedAttributes);
+        request.addTracingInfo(RpcRequest.TAG_NODE_ID, String.valueOf(service.getNodeId()));
+        request.addTracingInfo(RpcRequest.TAG_NODE_LABEL, service.getNodeLabel());
+        request.addTracingInfo(RpcRequest.TAG_CLASS_NAME, pollerClassName);
+        request.addTracingInfo(RpcRequest.TAG_IP_ADDRESS, InetAddressUtils.toIpAddrString(service.getAddress()));
 
         // Retrieve the runtime attributes, which may include attributes
         // such as the agent details and other state related attributes
@@ -153,7 +168,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
             // Invoke the adapters in the same order as which they were added
             for (ServiceMonitorAdaptor adaptor : adaptors) {
                 // The adapters may update the status
-                pollStatus = adaptor.handlePollResult(service, attributes, pollStatus);
+                pollStatus = adaptor.handlePollResult(service, interpolatedAttributes, pollStatus);
             }
             results.setPollStatus(pollStatus);
             return results;

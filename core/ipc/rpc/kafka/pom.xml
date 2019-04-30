@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.opennms.core.ipc</groupId>
         <artifactId>org.opennms.core.ipc.rpc</artifactId>
-        <version>24.0.0-SNAPSHOT</version>
+        <version>25.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.core.ipc.rpc</groupId>
@@ -45,6 +45,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.sysprops</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.logging</artifactId>
       </dependency>
       <dependency>
@@ -65,7 +70,7 @@
         <artifactId>rate-limited-logger</artifactId>
         <version>${rateLimitedLoggerVersion}</version>
       </dependency>
-      <dependency>
+     <dependency>
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.lib</artifactId>
         <scope>test</scope>

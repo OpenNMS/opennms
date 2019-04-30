@@ -25,7 +25,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-lldpelement">
-    <validCheckSum>ANY</validCheckSum>
+    <validCheckSum>3:2fbef27da3e4abc343ba16534b885646</validCheckSum>
 
     <createTable tableName="lldpelement">
       <column name="id" type="integer">
@@ -43,10 +43,10 @@
       <column name="lldpsysname" type="varchar(255)">
         <constraints nullable="false" />
       </column>
-      <column name="lldpnodecreatetime" type="DATETIME">
+      <column name="lldpnodecreatetime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
-      <column name="lldpnodelastpolltime" type="DATETIME">
+      <column name="lldpnodelastpolltime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
     </createTable>
@@ -70,7 +70,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-lldplink">
-    <validCheckSum>ANY</validCheckSum>
+    <validCheckSum>3:0290a5d326305cd038452341453b5542</validCheckSum>
 
     <createTable tableName="lldplink">
       <column name="id" type="integer">
@@ -110,10 +110,10 @@
       <column name="lldpremportdescr" type="varchar(255)">
         <constraints nullable="false" />
       </column>
-      <column name="lldplinkcreatetime" type="DATETIME">
+      <column name="lldplinkcreatetime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
-      <column name="lldplinklastpolltime" type="DATETIME">
+      <column name="lldplinklastpolltime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
     </createTable>
@@ -138,7 +138,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-ospfelement">
-    <validCheckSum>ANY</validCheckSum>
+    <validCheckSum>3:d947c2aca7e7a4b371bfe5ddfffd63de</validCheckSum>
 
     <createTable tableName="ospfelement">
       <column name="id" type="integer">
@@ -168,10 +168,10 @@
       <column name="ospfrouteridifindex" type="integer">
         <constraints nullable="false" />
       </column>
-      <column name="ospfnodecreatetime" type="DATETIME">
+      <column name="ospfnodecreatetime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
-      <column name="ospfnodelastpolltime" type="DATETIME">
+      <column name="ospfnodelastpolltime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
     </createTable>
@@ -192,7 +192,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-ospflink">
-    <validCheckSum>ANY</validCheckSum>
+    <validCheckSum>3:3ff4df8a0ccd6cc917057dcf7f4d14fa</validCheckSum>
 
     <createTable tableName="ospflink">
       <column name="id" type="integer">
@@ -222,10 +222,10 @@
       <column name="ospfremaddresslessindex" type="integer">
         <constraints nullable="false" />
       </column>
-      <column name="ospflinkcreatetime" type="DATETIME">
+      <column name="ospflinkcreatetime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
-      <column name="ospflinklastpolltime" type="DATETIME">
+      <column name="ospflinklastpolltime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
     </createTable>
@@ -252,7 +252,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-isiselement">
-    <validCheckSum>ANY</validCheckSum>
+    <validCheckSum>3:8a1cf505adf3f64c636a5ed704916809</validCheckSum>
 
     <createTable tableName="isiselement">
       <column name="id" type="integer">
@@ -267,10 +267,10 @@
       <column name="isissysadminstate" type="integer">
         <constraints nullable="false" />
       </column>
-      <column name="isisnodecreatetime" type="DATETIME">
+      <column name="isisnodecreatetime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
-      <column name="isisnodelastpolltime" type="DATETIME">
+      <column name="isisnodelastpolltime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
     </createTable>
@@ -291,7 +291,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-isislink">
-    <validCheckSum>ANY</validCheckSum>
+    <validCheckSum>3:a5bce6d95d7ae18b7b51132a3695bc8f</validCheckSum>
 
     <createTable tableName="isislink">
       <column name="id" type="integer">
@@ -327,10 +327,10 @@
       <column name="isisisadjnbrextendedcircid" type="integer">
         <constraints nullable="false" />
       </column>
-      <column name="isislinkcreatetime" type="DATETIME">
+      <column name="isislinkcreatetime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
-      <column name="isislinklastpolltime" type="DATETIME">
+      <column name="isislinklastpolltime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
     </createTable>
@@ -356,7 +356,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-ipnettomedia">
-    <validCheckSum>ANY</validCheckSum>
+    <validCheckSum>3:a3fa9576f6482f550f0ae623d2982161</validCheckSum>
 
     <createTable tableName="ipnettomedia">
       <column name="id" type="integer">
@@ -374,10 +374,10 @@
       <column name="sourceifindex" type="integer">
         <constraints nullable="false" />
       </column>
-      <column name="createtime" type="DATETIME">
+      <column name="createtime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
-      <column name="lastpolltime" type="DATETIME">
+      <column name="lastpolltime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
     </createTable>
@@ -402,7 +402,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-bridgeelement">
-    <validCheckSum>ANY</validCheckSum>
+    <validCheckSum>3:398332b3378bf46905288fe4d6e6f2a1</validCheckSum>
 
     <createTable tableName="bridgeelement">
       <column name="id" type="integer">
@@ -441,10 +441,10 @@
       <column name="stprootport" type="integer">
         <constraints nullable="true" />
       </column>
-      <column name="bridgenodecreatetime" type="DATETIME">
+      <column name="bridgenodecreatetime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
-      <column name="bridgenodelastpolltime" type="DATETIME">
+      <column name="bridgenodelastpolltime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
     </createTable>
@@ -469,7 +469,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-bridgemaclink">
-    <validCheckSum>ANY</validCheckSum>
+    <validCheckSum>3:5d784d7cd0c1182def7f07076b339b11</validCheckSum>
 
     <createTable tableName="bridgemaclink">
       <column name="id" type="integer">
@@ -493,10 +493,10 @@
       <column name="macaddress" type="varchar(12)">
         <constraints nullable="false" />
       </column>
-      <column name="bridgemaclinkcreatetime" type="DATETIME">
+      <column name="bridgemaclinkcreatetime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
-      <column name="bridgemaclinklastpolltime" type="DATETIME">
+      <column name="bridgemaclinklastpolltime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
     </createTable>
@@ -524,7 +524,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-bridgestplink">
-    <validCheckSum>ANY</validCheckSum>
+    <validCheckSum>3:622413e697e2696373fbc141e38a5854</validCheckSum>
 
     <createTable tableName="bridgestplink">
       <column name="id" type="integer">
@@ -569,10 +569,10 @@
       <column name="designatedport" type="varchar(4)">
         <constraints nullable="false" />
       </column>
-      <column name="bridgestplinkcreatetime" type="DATETIME">
+      <column name="bridgestplinkcreatetime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
-      <column name="bridgestplinklastpolltime" type="DATETIME">
+      <column name="bridgestplinklastpolltime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
     </createTable>
@@ -600,7 +600,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-bridgebridgelink">
-    <validCheckSum>ANY</validCheckSum>
+    <validCheckSum>3:e32e8df5eca2525ae24f71c6dc1c49db</validCheckSum>
 
     <createTable tableName="bridgebridgelink">
       <column name="id" type="integer">
@@ -636,10 +636,10 @@
       <column name="designatedvlan" type="integer">
         <constraints nullable="true" />
       </column>
-      <column name="bridgebridgelinkcreatetime" type="DATETIME">
+      <column name="bridgebridgelinkcreatetime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
-      <column name="bridgebridgelinklastpolltime" type="DATETIME">
+      <column name="bridgebridgelinklastpolltime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
     </createTable>
@@ -665,7 +665,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-cdpelement">
-    <validCheckSum>ANY</validCheckSum>
+    <validCheckSum>3:678a2c6c98829a7f22c701a07b484dcb</validCheckSum>
 
     <createTable tableName="cdpelement">
       <column name="id" type="integer">
@@ -680,10 +680,10 @@
       <column name="cdpglobaldeviceid" type="varchar(255)">
         <constraints nullable="false" />
       </column>
-      <column name="cdpnodecreatetime" type="DATETIME">
+      <column name="cdpnodecreatetime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
-      <column name="cdpnodelastpolltime" type="DATETIME">
+      <column name="cdpnodelastpolltime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
     </createTable>
@@ -704,7 +704,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-cdplink">
-    <validCheckSum>ANY</validCheckSum>
+    <validCheckSum>3:19a1ed61d590d9db80a91766a519ad6e</validCheckSum>
 
     <createTable tableName="cdplink">
       <column name="id" type="integer">
@@ -737,10 +737,10 @@
       <column name="cdpcachedeviceplatform" type="varchar(96)">
         <constraints nullable="false" />
       </column>
-      <column name="cdplinkcreatetime" type="DATETIME">
+      <column name="cdplinkcreatetime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
-      <column name="cdplinklastpolltime" type="DATETIME">
+      <column name="cdplinklastpolltime" type="TIMESTAMP WITH TIME ZONE">
         <constraints nullable="false" />
       </column>
     </createTable>

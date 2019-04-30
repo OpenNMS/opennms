@@ -28,20 +28,33 @@
 
 package org.opennms.netmgt.enlinkd.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
+import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.TopologyConnection;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
-public class OspfTopologyServiceImpl implements OspfTopologyService {
+public class OspfTopologyServiceImpl extends TopologyServiceImpl implements OspfTopologyService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OspfTopologyServiceImpl.class);
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
@@ -92,6 +105,7 @@ public class OspfTopologyServiceImpl implements OspfTopologyService {
         element.setOspfNodeLastPollTime(element.getOspfNodeCreateTime());
         m_ospfElementDao.saveOrUpdate(element);
         m_ospfElementDao.flush();
+        updatesAvailable();
 
     }
 
@@ -100,6 +114,7 @@ public class OspfTopologyServiceImpl implements OspfTopologyService {
         if (link == null)
             return;
         saveOspfLink(nodeId, link);
+        updatesAvailable();
     }
     
     private void saveOspfLink(final int nodeId, final OspfLink saveMe) {
@@ -153,4 +168,46 @@ public class OspfTopologyServiceImpl implements OspfTopologyService {
         m_ospfElementDao = ospfElementDao;
     }
 
+    @Override
+    public List<OspfElement> findAllOspfElements() {
+        return m_ospfElementDao.findAll();
+    }
+
+    @Override
+    public List<TopologyConnection<OspfLinkTopologyEntity, OspfLinkTopologyEntity>> match() {
+        List<OspfLinkTopologyEntity> allLinks = getTopologyEntityCache().getOspfLinkTopologyEntities();
+        List<TopologyConnection<OspfLinkTopologyEntity, OspfLinkTopologyEntity>> results = new ArrayList<>();
+        Set<Integer> parsed = new HashSet<Integer>();
+
+        // build mapping:
+        Map<CompositeKey, OspfLinkTopologyEntity> targetLinks = new HashMap<>();
+        for(OspfLinkTopologyEntity targetLink : allLinks){
+            targetLinks.put(new CompositeKey(targetLink.getOspfIpAddr(), targetLink.getOspfRemIpAddr()) , targetLink);
+        }
+
+        for(OspfLinkTopologyEntity sourceLink : allLinks) {
+            if (parsed.contains(sourceLink.getId())) {
+                continue;
+            }
+            parsed.add(sourceLink.getId());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getOspfLinks: source: {}", sourceLink);
+            }
+            OspfLinkTopologyEntity targetLink = targetLinks.get(new CompositeKey(sourceLink.getOspfRemIpAddr() , sourceLink.getOspfIpAddr()));
+            if(targetLink == null) {
+                LOG.debug("getOspfLinks: cannot find target for source: '{}'", sourceLink.getId());
+                continue;
+            }
+
+            if (sourceLink.getId().equals(targetLink.getId()) || parsed.contains(targetLink.getId())) {
+                    continue;
+            }
+
+            LOG.debug("getOspfLinks: target: {}", targetLink);
+            parsed.add(targetLink.getId());
+            results.add(TopologyConnection.of(sourceLink, targetLink));
+        }
+        return results;
+
+    }
 }

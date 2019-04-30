@@ -29,7 +29,6 @@
 package org.opennms.netmgt.nb;
 
 
-import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
@@ -37,7 +36,6 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
 public class Nms7918NetworkBuilder extends NmsNetworkBuilder {
 
 	NodeDao m_nodeDao;
-	IpNetToMediaDao m_ipNetToMediaDao;
 	
     public void buildNetwork7918() {
         NetworkBuilder nb = getNetworkBuilder();
@@ -79,15 +77,5 @@ public class Nms7918NetworkBuilder extends NmsNetworkBuilder {
 
 	public void setNodeDao(NodeDao nodeDao) {
 		m_nodeDao = nodeDao;
-	}
-	
-       public IpNetToMediaDao getIpNetToMediaDao() {
-	           return m_ipNetToMediaDao;
-	       }
-
-	       public void setIpNetToMediaDao(IpNetToMediaDao ipNetToMediaDao) {
-	           m_ipNetToMediaDao = ipNetToMediaDao;
-	       }
-
-	
+	}	
 }

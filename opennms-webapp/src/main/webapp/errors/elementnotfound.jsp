@@ -69,14 +69,14 @@
   <p>
   To search again by <%=enfe.getElemType()%> ID, enter the ID here:
   </p>
-  <form role="form" method="get" action="<%=enfe.getDetailUri()%>">
+  <form role="form" method="get" action="<%=enfe.getDetailUri()%>" class="form">
     <div class="row">
       <div class="form-group col-md-2">
-        <label for="input_text">Get&nbsp;details&nbsp;for&nbsp;<%=enfe.getElemType()%>&nbsp;:</label>
+        <label for="input_text">Get&nbsp;details&nbsp;for&nbsp;<%=enfe.getElemType()%></label>
         <input type="text" class="form-control" id="input_text" name="<%=enfe.getDetailParam()%>"/>
       </div>
     </div>
-    <button type="submit" class="btn btn-default">Search</button>
+    <button type="submit" class="btn btn-secondary">Search</button>
   </form>
   <% } %>
   

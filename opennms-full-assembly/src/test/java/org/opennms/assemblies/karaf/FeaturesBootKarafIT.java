@@ -93,7 +93,6 @@ public class FeaturesBootKarafIT extends OnmsKarafTestCase {
 			"dashlet-surveillance",
 			"vaadin-surveillance-views",
 			"vaadin-jmxconfiggenerator",
-			"vaadin-opennms-pluginmanager",
 			"vaadin-adminpage",
 			"org.opennms.features.bsm.shell-commands"
 		}) {

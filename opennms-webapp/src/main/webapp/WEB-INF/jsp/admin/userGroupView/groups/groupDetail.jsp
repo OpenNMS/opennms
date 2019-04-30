@@ -58,11 +58,11 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h2 class="panel-title">Details for Group: <%=group.getName()%></h2>
+    <div class="card">
+      <div class="card-header">
+        <span>Details for Group: <%=group.getName()%></span>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <tr>
           <th>Comments:</th>
           <td width="75%">
@@ -92,12 +92,17 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h2 class="panel-title">Duty Schedules</h2>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Duty Schedules</span>
       </div>
-      <table class="table table-condensed table-striped table-bordered">
-        <thead>
+
+      <% Collection<String> dutySchedules = group.getDutySchedules(); %>
+      <% if (dutySchedules.isEmpty()) { %>
+          <div class="card-body">No schedule(s) defined yet.</div>
+      <% } else { %>
+
+      <table class="table table-sm table-striped">
           <tr>
           <th>Mo</th>
           <th>Tu</th>
@@ -109,8 +114,7 @@
           <th>Begin Time</th>
           <th>End Time</th>
           </tr>
-        </thead>
-        <% Collection<String> dutySchedules = group.getDutySchedules(); %>
+
         <%
           for (String dutySchedule : dutySchedules) {
           DutySchedule tmp = new DutySchedule(dutySchedule);
@@ -135,6 +139,7 @@
         </tr>
         <% } %>
       </table>
+      <% } %>
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

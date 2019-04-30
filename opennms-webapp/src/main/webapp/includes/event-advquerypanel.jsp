@@ -71,31 +71,31 @@
 
 	<div class="row">
 	<div class="form-group col-sm-6">
-		<label for="msgsub">Event ID:</label>
+		<label for="eventid">Event ID</label>
 		<input class="form-control" type="text" name="eventid" />
 	</div>
 	<div class="form-group col-sm-6">
-		<label for="nodenamelike">Node Label Contains:</label>
+		<label for="nodenamelike">Node Label Contains</label>
 		<input class="form-control" type="text" name="nodenamelike" />
 	</div>
 	</div>
 
 	<div class="row">
 	<div class="form-group col-sm-6">
-		<label for="msgsub">Event Text Contains:</label>
-		<input class="form-control" type="text" name="msgsub" />
+		<label for="eventtext">Event Text Contains</label>
+		<input class="form-control" type="text" name="eventtext" />
 	</div>
 
 	<div class="form-group col-sm-6">
-		<label for="iplike">TCP/IP Address Like:</label>
+		<label for="iplike">TCP/IP Address Like</label>
 		<input class="form-control" type="text" name="iplike" value="" />
 	</div>
 	</div>
 
 	<div class="row">
 		<div class="form-group col-sm-6">
-			<label for="nodelocation">Node Location:</label>
-			<select class="form-control" name="nodelocation">
+			<label for="nodelocation">Node Location</label>
+			<select class="form-control custom-select" name="nodelocation">
 				<option selected="selected">Any</option>
 				<% for (OnmsMonitoringLocation onmsMonitoringLocation : monitoringLocations ) { %>
 				<option value="<%= onmsMonitoringLocation.getLocationName() %>">
@@ -105,8 +105,8 @@
 			</select>
 		</div>
 		<div class="form-group col-sm-6">
-			<label for="systemId">System-ID:</label>
-			<select class="form-control" name="systemId">
+			<label for="systemId">System-ID</label>
+			<select class="form-control custom-select" name="systemId">
 				<option selected>Any</option>
 				<% for (OnmsMonitoringSystem onmsMonitoringSystem : monitoringSystems ) { %>
 				<option value="<%= onmsMonitoringSystem.getId() %>">
@@ -119,8 +119,8 @@
 
 	<div class="row">
 	<div class="form-group col-sm-6">
-		<label for="severity">Severity:</label>
-		<select class="form-control" name="severity">
+		<label for="severity">Severity</label>
+		<select class="form-control custom-select" name="severity">
 			<option selected="selected">Any</option>
 			<% for (OnmsSeverity severity : OnmsSeverity.values() ) { %>
 			<option value="<%= severity.getId() %>">
@@ -130,8 +130,8 @@
 		</select>
 	</div>
 	<div class="form-group col-sm-6">
-		<label for="service">Service:</label>
-		<select class="form-control" name="service">
+		<label for="service">Service</label>
+		<select class="form-control custom-select" name="service">
 			<option selected>Any</option>
 			<% for (String name : serviceNameSet) { %>
 				<option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
@@ -142,14 +142,14 @@
 
 	<div class="row">
 	<div class="form-group col-sm-12">
-		<label for="exactuei">Exact Event UEI:</label>
+		<label for="exactuei">Exact Event UEI</label>
 		<input class="form-control" type="text" name="exactuei" size="64" maxsize="128" />
 	</div>
 	</div>
 
 	<div class="row">
 		<div class="form-group col-sm-4">
-			<label for="relativetime">Relative Time:</label> <select class="form-control"
+			<label for="relativetime">Relative Time</label> <select class="form-control custom-select"
 				name="relativetime">
 				<option value="0" selected>Any</option>
 				<option value="1">Last hour</option>
@@ -162,8 +162,8 @@
 			</select>
 		</div>
 		<div class="form-group col-sm-4">
-			<label class="control-label" for="sortby">Sort By:</label> <select
-				class="form-control" name="sortby">
+			<label class="col-form-label" for="sortby">Sort By</label>
+			<select class="form-control custom-select" name="sortby">
 				<option value="id">Event ID (Descending)</option>
 				<option value="rev_id">Event ID (Ascending)</option>
 				<option value="severity">Severity (Descending)</option>
@@ -180,8 +180,8 @@
 		</div>
 
 		<div class="form-group col-sm-4">
-			<label for="limit">Number&nbsp;of&nbsp;Events&nbsp;Per&nbsp;Page:</label>
-			<select class="form-control" name="limit">
+			<label for="limit">Number&nbsp;of&nbsp;Events&nbsp;Per&nbsp;Page</label>
+			<select class="form-control custom-select" name="limit">
 				<option value="10">10 events</option>
 				<option value="20">20 events</option>
 				<option value="30">30 events</option>
@@ -195,7 +195,7 @@
 	<div class="row">
 	<div class="col-sm-6">
 		<label>
-			<input type="checkbox" name="useaftertime" value="1" /> Events After:
+			<input type="checkbox" name="useaftertime" value="1" /> Events After
 		</label>
 		<!-- 
 		<input type="date" name="afterdate"/>
@@ -204,7 +204,7 @@
 		<br/>
 		<div class="row">
 			<div class="col-xs-4 col-sm-4 col-md-3">
-				<select class="form-control" name="afterhour">
+				<select class="form-control custom-select" name="afterhour">
 					<c:forEach var="i" begin="1" end="12">
 						<form:option value="${i}" selected="${nowHour==i}">${i}</form:option>
 					</c:forEach>
@@ -214,7 +214,7 @@
 				<input class="form-control" type="text" name="afterminute" maxlength="2" value="${formattedNowMinute}" />
 			</div>
 			<div class="col-xs-4 col-sm-4 col-md-3">
-				<select class="form-control" name="afterampm">
+				<select class="form-control custom-select" name="afterampm">
 					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
 						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==amPmText}">${dayTime}</form:option>
 					</c:forEach>
@@ -223,7 +223,7 @@
 		</div>
 		<div class="row">
 			<div class="col-xs-4 col-sm-4 col-md-3">
-				<select class="form-control" name="aftermonth">
+				<select class="form-control custom-select" name="aftermonth">
 					<c:forEach var="month" items="${months}" varStatus="status">
 						<form:option value="${status.index}" selected="${status.count == nowMonth}">${month}</form:option>
 					</c:forEach>
@@ -249,7 +249,7 @@
 		<br/>
 		<div class="row">
 			<div class="col-xs-4 col-sm-4 col-md-3">
-				<select class="form-control" name="beforehour">
+				<select class="form-control custom-select" name="beforehour">
 					<c:forEach var="i" begin="1" end="12">
 						<form:option value="${i}" selected="${nowHour==i}">${i}</form:option>
 					</c:forEach>
@@ -259,7 +259,7 @@
 				<input class="form-control" type="text" name="beforeminute" maxlength="2" value="${formattedNowMinute}" />
 			</div>
 			<div class="col-xs-4 col-sm-4 col-md-3">
-				<select class="form-control" name="beforeampm">
+				<select class="form-control custom-select" name="beforeampm">
 					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
 						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==amPmText}">${dayTime}</form:option>
 					</c:forEach>
@@ -268,7 +268,7 @@
 		</div>
 		<div class="row">
 			<div class="col-xs-4 col-sm-4 col-md-3">
-				<select class="form-control" name="beforemonth">
+				<select class="form-control custom-select" name="beforemonth">
 					<c:forEach var="month" items="${months}" varStatus="status">
 						<form:option value="${status.index}"
 							selected="${status.count == nowMonth}">${month}</form:option>
@@ -287,6 +287,6 @@
 
 	<br/>
 
-	<button class="btn btn-default" type="submit">Search</button>
+	<button class="btn btn-secondary" type="submit">Search</button>
 
 </form>

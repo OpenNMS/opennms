@@ -78,24 +78,24 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">User Account Self-Service</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>User Account Self-Service</span>
       </div>
-      <div class="panel-body">
-        <ul class="list-unstyled">
+      <div class="card-body">
+        <ul class="list-unstyled mb-0">
           <li><a href="javascript:changePassword()">Change Password</a></li>
         </ul>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Account Self-Service Options</h3>
+    <div class="card">
+      <div class="card-header">
+        <span>Account Self-Service Options</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
          Currently, account self-service is limited to password changes. Note that in environments using a
          reduced sign-on system such as LDAP, changing your password here may have no effect and may not even be
@@ -105,7 +105,7 @@
          If you require further changes to your account, please contact the person within your organization responsible for
          maintaining OpenNMS.
          </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

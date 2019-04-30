@@ -28,7 +28,7 @@
 
 package org.opennms.features.apilayer.pollers;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.features.apilayer.utils.InterfaceMapper;
@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ServicePollerManager extends InterfaceMapper<ServicePollerFactory, ServiceMonitor> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(InterfaceMapper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ServicePollerManager.class);
 
     public ServicePollerManager(BundleContext bundleContext) {
         super(ServiceMonitor.class, bundleContext);
@@ -54,20 +54,12 @@ public class ServicePollerManager extends InterfaceMapper<ServicePollerFactory, 
         return new ServicePollerImpl(ext);
     }
 
-    // Had to override as registry needs poller class name in properties.
+    // override as registry needs poller class name in properties.
     @Override
-    public synchronized void onBind(ServicePollerFactory extension, Map properties) {
-        LOG.debug("bind called with {}: {}", extension, properties);
-        if (extension != null) {
-            extServiceRegistrationMap.computeIfAbsent(extension, (ext) -> {
-                final ServiceMonitor mappedExt = map(ext);
-                final Hashtable<String, Object> props = new Hashtable<>();
-                // Make the service available to any Spring-based listeners
-                props.put("registration.export", Boolean.TRUE.toString());
-                // Registry needs type of poller class.
-                props.put("type", ext.getPollerClassName());
-                return bundleContext.registerService(clazz, mappedExt, props);
-            });
-        }
+    public Map<String, Object> getServiceProperties(ServicePollerFactory extension) {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("type", extension.getPollerClassName());
+        return properties;
     }
+
 }

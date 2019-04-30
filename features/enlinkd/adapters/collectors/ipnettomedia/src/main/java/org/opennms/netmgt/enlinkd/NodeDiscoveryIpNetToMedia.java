@@ -33,12 +33,12 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
+import org.opennms.netmgt.enlinkd.common.NodeCollector;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia.IpNetToMediaType;
 import org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
+public final class NodeDiscoveryIpNetToMedia extends NodeCollector {
     
 	private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIpNetToMedia.class);
 	
@@ -64,63 +64,38 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
 	 * @param EnhancedLinkd linkd
 	 * @param LinkableNode node
 	 */
-	public NodeDiscoveryIpNetToMedia(final EventForwarder eventForwarder,
+	public NodeDiscoveryIpNetToMedia(
 	            final IpNetToMediaTopologyService ipNetToMediaTopologyService,
 	            final LocationAwareSnmpClient locationAwareSnmpClient,
 	            final long interval,final long initial,
 	            final Node node) {
-	        super(eventForwarder, locationAwareSnmpClient, interval, initial,node);
+	        super(locationAwareSnmpClient, interval, initial,node);
     	m_ipNetToMediaTopologyService = ipNetToMediaTopologyService;
     }
 
-    protected void runNodeDiscovery() {
+    public void collect() {
 
     	final Date now = new Date(); 
 
         IpNetToMediaTableTracker ipNetToMediaTableTracker = new IpNetToMediaTableTracker() {
             public void processIpNetToMediaRow(final IpNetToMediaRow row) {
                 IpNetToMedia macep = row.getIpNetToMedia();
-                if (macep.getPhysAddress() != null && 
-                        macep.getNetAddress() != null && 
-                        macep.getSourceIfIndex() != null &&
-                        (macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC
-                        || macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_STATIC)) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("processIpNetToMediaRow: node [{}], mac address {} and ip {} mediatype {}. saving",
-                              getNodeId(),
-                              macep.getPhysAddress(), 
-                              str(macep.getNetAddress()),
-                              macep.getIpNetToMediaType());
-                    }
-                    m_ipNetToMediaTopologyService.store(getNodeId(), macep);
+
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("processIpNetToMediaRow: node [{}], {}:{}:{}. ",
+                          getNodeId(),
+                          macep.getPhysAddress(),
+                          str(macep.getNetAddress()),
+                          macep.getIpNetToMediaType());
+                }
+                
+                if (macep.getPhysAddress() == null
+                        || macep.getNetAddress() == null
+                        || macep.getIpNetToMediaType() == null
+                        || macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_INVALID) {
                     return;
-                } 
-                if (macep.getPhysAddress() == null && macep.getNetAddress() == null) {
-                    LOG.debug("processIpNetToMediaRow: node [{}], null:null:{}. ip and mac addresses null. skipping",
-                              getNodeId(),
-                              macep.getIpNetToMediaType());
-                    return;
-                } 
-                if (macep.getPhysAddress() == null) {
-                        LOG.debug("processIpNetToMediaRow: node [{}], null:{}:{}. mac address null. skipping",
-                                  getNodeId(),
-                                  str(macep.getNetAddress()),
-                                  macep.getIpNetToMediaType());
-                        return;
-                } 
-                if (macep.getNetAddress() == null) {
-                    LOG.debug("processIpNetToMediaRow: node [{}], {}:null:{}. ip address null. skipping",
-                             getNodeId(),
-                             macep.getPhysAddress(), 
-                             macep.getIpNetToMediaType());
-                    return;
-                } 
-                LOG.debug("processIpNetToMediaRow: node [{}],  {}:{}:{}:{}. not valid. skipping",
-                             getNodeId(),
-                             macep.getPhysAddress(), 
-                             str(macep.getNetAddress()),
-                             macep.getIpNetToMediaType(),
-                             macep.getSourceIfIndex());
+                }
+                m_ipNetToMediaTopologyService.store(getNodeId(), macep);
             }
         };
 		

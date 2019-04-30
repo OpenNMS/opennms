@@ -3,15 +3,241 @@
 
 === System Requirements
 
-* *Java 8*: OpenNMS Horizon 24 requires Java 8 as the runtime environment.
-  To run Horizon 24, we recommend the most recent version of Oracle JDK 8 for your platform.
+* *Java 8 through 11*: OpenNMS Horizon 24 requires at least Java 8 as the runtime environment and now supports running on JDK 11 as well.
+  To run Horizon 24, we recommend the most recent version of Oracle JDK 8 for your platform, or the latest OpenJDK 11.
 * *PostgreSQL 9 or higher*: Horizon 24 requires Any supported version PostgreSQL 9 or higher.
   As of this writing, PostgreSQL 9.3 is the earliest version under active support, but OpenNMS is known to work with at least PostgreSQL 9.1 and up.
 
 === Breaking Changes
 
-=== New Features
+==== Package Dependencies
 
-=== Other Improvements
+The dependencies for the OpenNMS packages have changed such that the JDK is no longer a hard dependency of the `opennms-core` (RPM) or `libopennms-java` and `libopennmsdeps-java` (Debian/Ubuntu).  This allows you to install OpenNMS without package management forcing an install of a particular JDK, if you wish to run an alternate JDK or a JDK installed from tarball rather than packaging.
 
-* list of notable issues not covered elsewhere
+The `opennms` packages are a convenience wrapper that depend on a JDK for runtime to give you a simple starting point if you don't care which JDK you use.
+
+==== Karaf Container
+
+The embedded Karaf has been upgraded to 4.2.
+
+This changes the default `users.properties` file.
+Ensure that the `admingroup` in `${OPENNMS_HOME}/etc/users.properties` contains the role `ssh`.
+You can use the link:https://github.com/OpenNMS/opennms/blob/release-24.0.0/container/karaf/src/main/filtered-resources/etc/users.properties[new default users.properties file] for comparison.
+
+Other notable Karaf and OSGi-related changes include:
+
+* We now support link:https://issues.opennms.org/browse/HZN-1436[adding OSGi-capable code at runtime] by putting a `.kar` file in the `deploy/` directory and adding relevant features to boot files in `etc/featuresBoot.d/`.
+* The usage of `config:edit` has changed in some cases.
+  This affects all configuration edits, where the configuration contains a `-`, e.g. `org.opennms.features.telemetry.listeners-udp-50003`.
+  If you are using Minion or Sentinel, you will most likely be affected (e.g. for Telemetry Listeners/Adapters).
++
+For example, this set of configuration commands:
++
+----
+config:edit org.opennms.features.telemetry.listeners-udp-50003
+config:property-set key value
+config:update
+----
++
+...should now be written as:
++
+----
+config:edit --alias udp-50003 --factory org.opennms.features.telemetry.listeners
+config:property-set key value
+config:update
+----
+
+==== Flows
+
+===== Flows Grouped By Conversation
+
+Flows are now grouped by conversations using applications instead of ports.
+This changes the way statistics about flows are presented and grouped.
+
+Thus, the elasticsearch storage has changed and old data must be converted to the new format.
+To adopt existing flows, the following command can be used (please be aware that this can take a long time and put your CPU and disk under high stress):
+
+[source,shell]
+----
+curl -v -X POST -H 'Content-Type: application/json' "http://${ES_HOST}:${ES_PORT}/netflow-*/_update_by_query?refresh=true" -d @- << EOF
+{
+  "script": {
+    "lang": "painless",
+    "source": "ctx._source['netflow.convo_key'] = '[\"' + ctx._source['location'] + '\",' + ctx._source['netflow.protocol'] + ',\"' + ((Objects.compare(ctx._source['netflow.src_addr'], ctx._source['netflow.src_addr'], String::compareTo) < 0) ? ctx._source['netflow.src_addr'] : ctx._source['netflow.dst_addr']) + '\",\"' + ((Objects.compare(ctx._source['netflow.src_addr'], ctx._source['netflow.src_addr'], String::compareTo) < 0) ? ctx._source['netflow.dst_addr'] : ctx._source['netflow.src_addr']) + '\",' + ((ctx._source['netflow.application'] != null) ? ('\"' + ctx._source['netflow.application'] + '\"') : 'null') + ']'"
+  },
+  "query": {
+    "match_all": {}
+  }
+}
+EOF
+----
+
+===== Telemetryd Configuration Format Change
+
+Since we have added support for more dynamic telemetryd configurations to support more complex listeners and adapters, the configuration format for telemetryd has changed.
+
+The new configuration defines listeners containing parsers and queues containing adapters which are linked by the queues name.
+
+For example, this old configuration:
+
+```
+<telemetryd-config>
+  <protocol name="Netflow-5" description="Listener for Netflow 5 UDP packets" enabled="false">
+    <listener name="Netflow-5-UDP-8877" class-name="org.opennms.netmgt.telemetry.listeners.udp.UdpListener">
+      <parameter key="port" value="8877"/>
+    </listener>
+
+    <adapter name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5Adapter">
+    </adapter>
+  </protocol>
+</telemetryd-config>
+```
+
+...should now be written as:
+
+```
+<telemetryd-config>
+  <listener name="Netflow-5-UDP-8877" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="false">
+    <parameter key="port" value="8877"/>
+
+    <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser" queue="Netflow-5" />
+  </listener>
+
+  <queue name="Netflow-5">
+    <adapter name="Netflow-5-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter" enabled="false">
+    </adapter>
+  </queue>
+</telemetryd-config>
+```
+
+As you can see, the ``listener``s become independent elements which contain ``parser``s whereas the ``protocol``s are renamed to ``queue``s.
+Each parser must reference a queue by name to define which adapters are used to pick up the parsed data.
+
+In addition, the listener configuration for minions has changed.
+The new minion configuration looks like the following and adapts the same set of structural changes:
+
+```
+admin@minion()> config:edit --alias Netflow-5-UDP-8877 --factory org.opennms.features.telemetry.listeners
+admin@minion()> config:property-set name Netflow-5-UDP-8877
+admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener
+admin@minion()> config:property-set parameters.port 8877
+admin@minion()> config:property-set parser.0.name Netflow-5-Parser
+admin@minion()> config:property-set parser.0.queue Netflow-5
+```
+
+==== Plugins, Parsers, and Services
+
+* *Cassandra JMX*: The `cassandra30x.xml` datacollection config for thread pool metrics has been modified to be of type `counter` rather than type `gauge`.  If you are using RRD or JRobin storage, you will need to delete any `.jrb` or `.rrd` files with both `path_request` and `CurrentlyBlockedTasks` in their filename (eg, `org_apache_cassandra_metrics_type_ThreadPools_path_request_scope_MutationStage_name_CurrentlyBlockedTasks.jrb`).
+* *Pollerd and Collectd*: Additional attributes for thread pool graphs have been added to the Pollerd and Collectd mbeans.
+  If you are using `storeByGroup=true` with RRD or JRobin, you will need to delete the `OpenNMS_Name_Pollerd` and `OpenNMS_Name_Collectd` `.jrb` or `.rrd` files and let them be reinitialized.
+  Newts and `storeByGroup=false` should be unaffected.
+* *Dhcpd*: The _Dhcpd_ plugin (and its configuration) was removed in favor of a Minion-capable implementation.
+  The new _DhcpMonitor_ options can be set in the `poller-configuration.xml` file.
+* *Syslog*: The default parser used for _Syslog_ messages has been switched from the `CustomSyslogParser` to the `RadixTreeSyslogParser`.
+* *Plugins*: The _Plugin Manager_ is no longer distributed with OpenNMS.
+  Features or bundles should be installed via the Karaf Shell.
+
+==== Removed from Horizon 24
+
+* The Centric Trouble Ticketer plugin has been removed.
+* The NCS-Alarm page and the NCS-Topology-Plugin have been removed. See issue link:https://issues.opennms.org/browse/HZN-1422[HZN-1422].
+* The remote poller map has been removed.
+
+==== Developer Considerations
+
+* The `HttpService` can no longer be consumed.
+  This will only affect custom implementations of HTTP Servlets and Resources, but only if they are exposed via `httpServices.register(...)`.
+  If you need those, please expose the according services via the OSGi Service Registration.
+  Refer to the link:https://osgi.org/specification/osgi.cmpn/7.0.0/service.http.whiteboard.html[OSGi Http Whiteboard Specification] for more details.
+
+* Exposing Servlets now follow the OSGi Specification.
+  Refer to the  link:https://osgi.org/specification/osgi.cmpn/7.0.0/service.http.whiteboard.html[OSGi Http Whiteboard Specification] for more details.
+
+* Properties to expose Vaadin Applications have changed:
+  ** `init.widgetset` becomes `servlet.init.widgetset`
+  ** `alias` becomes `osgi.http.whiteboard.servlet.pattern`
+
+
+=== New Features and Improvements
+
+==== Correlation (ALEC, formerly OCE/Sextant)
+
+The correlation feature introduced in Horizon 23 has been vastly improved and given a new name: ALEC (Architecture for Learning Enabled Correlation).  Detailed documentation is available at link:https://alec.opennms.com/[the ALEC site].
+
+It has a ton of bugfixes, as well as a host of new features, including:
+
+* Smart propagation of acknowledgements.
+* Support for embedding directly in OpenNMS's Karaf.
+* ML-guided alarm correlation using Tensorflow.
+* APIs for user feedback training, including root cause (support for feedback will be a part of a future Helm release)
+* The web UI has been updated to show and filter situations in the alarm browser, and outstanding situations show on the front page.
+
+==== Events and Alarms
+
+* The event correlator now supports a `default` parameter on `<assignment>` tags as a fallback when a value cannot be generated.
+* Event XML files now support an optional `<priority>` tag to allow easier customization/overriding of default events.
+* Syslogd can now be optionally configured to include the raw syslog message in resulting events as a parameter.
+
+==== Datacollection, Thresholding, and Reporting
+
+* `ssCpuRawSteal`, `ssCpuRawGuest`, `ssCpuRawGuestNice`, and `ssCpuNumCpus` are now supported from Net-SNMP agents version 5.7.3 and higher.
+* A number of new views have been added to the database to facilitate SQL-based reporting:
+  ** `node_categories`: Nodes with categories
+  ** `node_alarms`: Alarm status from nodes and allow filtering on categories
+  ** `node_outages`: Outages of nodes and allow filtering on categories
+  ** `node_ip_services`: Denormalise Nodes and IP services
+* *SnmpCollectorNG*: An alternative to the SnmpCollector has been added which implements the internal `CollectionSet` APIs and is meant to eventually replace the existing SnmpCollector.
+
+==== Karaf Command Line
+
+A number of Karaf commands have been added or updated:
+
+* `enlinkd:generate-topology`: generates a test topology
+* `enlinkd:delete-topology`: delete generated topology
+* `events:show-event-config`: dumps events to XML (including those read from `eventconf.xml` as well as OSGi plugins that provide event configuration)
+* `kafka-producer:push-topology-edges`: push topology edges to a Kafka topic
+* `meta:test`: test a node/interface metadata query
+
+==== Node and Interface Metadata
+
+There is now experimental support for associating arbitrary metadata with nodes and interfaces.  A full user-facing interface to configuring metadata in the provisioning UI should be available by Horizon 25.
+
+In this release, there is no default metadata being collected, but there is a ReST interface to manipulate metadata, and metadata can be assigned to nodes and interfaces in requisitions.
+
+For details on using the metadata APIs, see link:http://docs.opennms.org/opennms/releases/24.0.0/guide-admin/guide-admin.html#ga-meta-data[the Admin Guide] and link:http://docs.opennms.org/opennms/releases/24.0.0/guide-development/guide-development.html#_meta_data[the Developer Guide].
+
+==== Provisioning
+
+A new adapter (`WsManAssetProvisioningAdapter`) has been added which can update asset information during provisioning based on WS-Man data.  (Note: It does not currently support running on Minions.)
+
+==== ReST
+
+* *Measurements*: Resource metadata is now returned along with measurements results.
+* *Topology*: User Defined Links (`/opennms/api/v2/userdefinedlinks`)
++
+Support was added for user defined links (UDLs) in the Enhanced Linkd topology.
+Users may now programitically (using the REST API) create "manual" links between node and have them appear in the topology UI.
+
+==== Topology and Business Services
+
+* Enlinkd and other topology information have been refactored into a more generalized graph service that also includes other information like ALEC alarm and situation topology.
+  This also means that topology data can be sent to Kafka alongside nodes, events, and alarms.
+* *Performance*: Huge improvements have been made to performance in Enhanced Linkd, including responsiveness of the Topology web UI.
+* *BSM*: Applications can now be added as an edge to a Business Service.  This allows you to aggregate IP services.
+
+==== Web UI
+
+The web UI has gone through a major refresh.
+The HTML has been simplified, the UI wastes less space, and the login page features a fancy new look featuring our mascot, Ulf. ;)
+
+* *Notifications*: Browser notifications are now supported in the Web UI.
+  The browser notification can be added to a notification path and desktop notifications will pop-up for currently logged in users if a notice is delivered.
+* *Sessions*: Browser session timeout is now disabled by default.
+
+==== Other Core Changes
+
+Support was added for OpenTracing distributed tracing for RPC/Sink requests.
+
+==== Developer APIs
+
+A new API ("OpenNMS Integration API") has been introduced that presents a simplified interface to a number of integration points including subscribing to events and alarms, writing custom detectors and pollers, and more.

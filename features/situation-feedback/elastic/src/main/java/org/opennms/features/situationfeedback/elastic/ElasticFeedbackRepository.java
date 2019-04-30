@@ -54,6 +54,8 @@ import io.searchbox.core.Index;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 import io.searchbox.core.SearchResult.Hit;
+import io.searchbox.core.search.aggregation.MetricAggregation;
+import io.searchbox.core.search.aggregation.TermsAggregation;
 
 public class ElasticFeedbackRepository implements FeedbackRepository {
 
@@ -125,6 +127,42 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
         return search(query);
     }
 
+    @Override
+    public List<String> getTags(String prefix) throws FeedbackException {
+        String query = "{\n" + 
+                "  \"size\": 0,\n" + 
+                "  \"aggs\": {\n" + 
+                "    \"terms\": {\n" + 
+                "      \"terms\": {\n" + 
+                "        \"field\": \"tags\",\n" + 
+                "        \"include\": \"" + gson.toJson(prefix) + ".*\"\n" + 
+                "      }\n" + 
+                "    }\n" + 
+                "  }\n" + 
+                "}";
+
+        Search.Builder builder = new Search.Builder(query).addType(TYPE);
+        Search search = builder.build();
+        SearchResult result;
+        try {
+            result = client.execute(search);
+        } catch (IOException e) {
+            throw new FeedbackException("Failed to execute Tags search", e);
+        }
+        if (result == null) {
+            return Collections.emptyList();
+        }
+        final MetricAggregation aggregations = result.getAggregations();
+        if (aggregations == null) {
+            return Collections.emptyList();
+        }
+        final TermsAggregation terms = aggregations.getTermsAggregation("terms");
+        if (terms == null) {
+            return Collections.emptyList();
+        }
+        return terms.getBuckets().stream().map(TermsAggregation.Entry::getKey).collect(Collectors.toList());
+    }
+
     /**
      * Add listeners to {@link #alarmFeedbackListeners} during runtime as they become available.
      */
@@ -186,4 +224,5 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
             initializer.initialize();
         }
     }
+
 }

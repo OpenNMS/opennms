@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.enlinkd;
 
+import static org.opennms.core.utils.InetAddressUtils.getBridgeAddressFromStpBridgeId;
 import static org.opennms.core.utils.InetAddressUtils.isValidBridgeAddress;
 import static org.opennms.core.utils.InetAddressUtils.isValidStpBridgeId;
-import static org.opennms.core.utils.InetAddressUtils.getBridgeAddressFromStpBridgeId;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,13 +41,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
+import org.opennms.netmgt.enlinkd.common.NodeCollector;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
-import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
 import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dBaseType;
+import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
+import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
-import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.enlinkd.snmp.CiscoVtpTracker;
 import org.opennms.netmgt.enlinkd.snmp.CiscoVtpVlanTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker;
@@ -55,7 +56,6 @@ import org.opennms.netmgt.enlinkd.snmp.Dot1dBaseTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dStpPortTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dTpFdbTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1qTpFdbTableTracker;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public final class NodeDiscoveryBridge extends NodeDiscovery {
+public final class NodeDiscoveryBridge extends NodeCollector {
     private static final Logger LOG = LoggerFactory.getLogger(NodeDiscoveryBridge.class);
 
     // public final static String CISCO_ENTERPRISE_OID = ".1.3.6.1.4.1.9";
@@ -84,17 +84,17 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
      * @param LinkableNode
      *            node
      */
-    public NodeDiscoveryBridge(final EventForwarder eventForwarder,
+    public NodeDiscoveryBridge(
             final BridgeTopologyService bridgeTopologyService,
             final int maxSize,
             final LocationAwareSnmpClient locationAwareSnmpClient,
             final long interval,final long initial, final Node node) {
-        super(eventForwarder, locationAwareSnmpClient, interval, initial,node);
+        super(locationAwareSnmpClient, interval, initial,node);
         m_bridgeTopologyService = bridgeTopologyService;
         m_maxSize = maxSize;
     }
 
-    protected void runNodeDiscovery() {
+    public void collect() {
         final Date now = new Date();
 
         SnmpAgentConfig peer = getSnmpAgentConfig();

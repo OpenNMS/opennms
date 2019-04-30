@@ -138,11 +138,11 @@ public class BusinessServiceVertexStatusInfoPanelItemProvider extends VertexInfo
 
             rootLayout.addComponent(createStatusLabel(childVertex.getLabel(),
                                                       edgeStatus,
-                                                      String.format("%s &times; %d <i class=\"pull-right glyphicon %s\"></i>",
+                                                      String.format("%s &times; %d <i class=\"pull-right fa %s\"></i>",
                                                                     edgeStatus.getLabel(),
                                                                     edge.getWeight(),
                                                                     impactingVertices.contains(graph.getVertexByEdgeId(edge.getId()))
-                                                                    ? "glyphicon-flash"
+                                                                    ? "fa-bolt"
                                                                     : "")));
         }
 

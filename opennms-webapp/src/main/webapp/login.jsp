@@ -1,6 +1,6 @@
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
   <jsp:param name="title" value="Login" />
-  <jsp:param name="nonavbar" value="true" />
+  <jsp:param name="quiet" value="true" />
 </jsp:include>
 <%@ taglib prefix='c' uri='http://java.sun.com/jsp/jstl/core'%>
 <%--
@@ -34,57 +34,84 @@
 --%>
 <jsp:include page="/includes/mobile-app-promo.jsp" flush="false" />
 
-<%-- this form-login-page form is also used as the 
-         form-error-page to ask for a login again.
-         --%>
-<c:if test="${not empty param.login_error}">
-  <blockquote>
-    <p id="login-attempt-failed" class="lead text-danger">
-      Your log-in attempt failed, please try again.
-    </p>
+<style type="text/css">
 
-    <%-- This is: AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY --%>
-    <p id="login-attempt-failed-reason">Reason: ${SPRING_SECURITY_LAST_EXCEPTION.message}</p>
-  </blockquote>
-</c:if>
+  .login-page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /*overflow: auto;*/
+    background-image: url('images/wallpapers/IMG_9269-X2.jpg');
+    background-size: cover;
+  }
 
-<div class="row row-centered login">
-  <div class="col-md-6 col-centered">
-    <form class="form-horizontal" role="form" action="<c:url value='j_spring_security_check'/>" method="post">
-      <div class="form-group">
-        <label for="input_j_username" class="col-sm-4 control-label">Username</label>
-        <div class="col-sm-8">
-          <input type="text" class="form-control" id="input_j_username" name="j_username"
+  .login-form {
+    max-width: 360px;
+  }
+
+  .card {
+    background-color: #F7F7F7;
+    /* just in case there no content*/
+    padding: 20px 25px 30px;
+    margin: 0 auto 25px;
+    margin-top: 50px;
+    /* shadows and rounded borders */
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+  }
+
+
+</style>
+
+<div class="login-page">
+  <div class="" style=""> <!-- this way it appears a bit above center which feels more natural -->
+    <div class="card login-form rounded">
+      <div style="padding-bottom: 50px; padding-top: 20px">
+        <img src="images/opennms-logo.png" class="" width="170px" />
+        <span style="font-size: 100%" class="badge badge-horizon pull-right">Horizon</span>
+      </div>
+      <form class="" name="loginForm" role="form" method="post" action="<c:url value='j_spring_security_check'/>">
+        <div class="form-content">
+          <div class="form-group">
+            <label for="input_j_username" class="sr-only">Username</label>
+            <input type="text" class="form-control input-underline form-control-lg" id="input_j_username" name="j_username"
             <%-- This is deprecated and requires a custom AuthenticationFailureHandler to function properly --%>
-            <c:if test="${not empty param.login_error}">value='<c:out value="${SPRING_SECURITY_LAST_USERNAME}"/>'</c:if>
-            placeholder="Username" autofocus="autofocus" autocomplete="username" />
+                   <c:if test="${not empty param.login_error}">value='<c:out value="${SPRING_SECURITY_LAST_USERNAME}"/>'</c:if>
+                   placeholder="Username" autofocus="autofocus" autocomplete="username" required />
+          </div>
+
+          <div class="form-group">
+            <label for="j_password" class="sr-only">Password</label>
+            <input type="password" class="form-control input-underline form-control-lg" id="input_j_password" name="j_password" placeholder="Password" autocomplete="current-password" required>
+          </div>
+
+          <c:if test="${not empty param.login_error}">
+            <div id="login-attempt-failed" class="alert alert-danger">
+              Your log-in attempt failed, please try again.
+
+                <%-- This is: AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY --%>
+              <p id="login-attempt-failed-reason">Reason: ${SPRING_SECURITY_LAST_EXCEPTION.message}</p>
+            </div>
+          </c:if>
+
+          <div class="form-group">
+            <input name="j_usergroups" type="hidden" value=""/>
+            <button name="Login" type="submit" class="btn btn-primary"><i class="fa fa-sign-in"></i> Login</button>
+          </div>
         </div>
-      </div>
+      </form>
+    </div>
+  </div>
 
-      <div class="form-group">
-        <label for="j_password" class="col-sm-4 control-label">Password</label>
-        <div class="col-sm-8">
-          <input type="password" class="form-control" id="input_j_password" name="j_password" placeholder="Password" autocomplete="current-password" >
-        </div>
-      </div>
+  <div class="" style="position: absolute; bottom: 0px; right: 0px; font-size: 3em; padding: 20pt 20pt 5pt 20pt">
+    <a href="https://docs.opennms.org/opennms" class="text-light" style="padding: 0.5rem" title="Show documentation"><i class="fa fa-book" aria-hidden="true"></i></a>
+    <a href="https://github.com/OpenNMS/opennms.git" class="text-light" style="padding: 0.5rem" title="Fork us on Github"><i class="fa fa-github" aria-hidden="true"></i></a>
+  </div>
+</div>
 
-      <div class="form-group">
-        <div class="col-sm-offset-4 col-sm-8">
-          <button type="submit" name="Login" class="btn btn-default">Login</button>
-        </div>
-      </div>
-
-      <input name="j_usergroups" type="hidden" value=""/>
-
-      <script type="text/javascript">
-        if (document.getElementById) {
-          document.getElementById('input_j_username').focus();
-        }
-      </script>
-    </form>
-  </div> <!-- End Column -->
-</div> <!-- End Row -->
-
-<hr />
-
-<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

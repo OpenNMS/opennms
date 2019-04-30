@@ -78,6 +78,7 @@ public class DetectorsCommandIT {
             .put("BSF", "org.opennms.netmgt.provision.detector.bsf.BSFDetector")
             .put("CITRIX", "org.opennms.netmgt.provision.detector.simple.CitrixDetector")
             .put("Cisco_IP_SLA", "org.opennms.netmgt.provision.detector.snmp.CiscoIpSlaDetector")
+            .put("DHCP", "org.opennms.netmgt.provision.detector.dhcp.DhcpDetector")
             .put("DNS", "org.opennms.netmgt.provision.detector.datagram.DnsDetector")
             .put("Dell_OpenManageChassis", "org.opennms.netmgt.provision.detector.snmp.OpenManageChassisDetector")
             .put("DiskUsage", "org.opennms.netmgt.provision.detector.snmp.DiskUsageDetector")

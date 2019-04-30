@@ -88,18 +88,26 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
+import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
-import org.opennms.netmgt.enlinkd.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
+import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
+import org.opennms.netmgt.topologies.service.api.OnmsTopology;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage.TopologyMessageStatus;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
+import org.opennms.netmgt.topologies.service.impl.OnmsTopologyLogger;
 
 public class Nms17216EnIT extends EnLinkdBuilderITCase {
         
-	Nms17216NetworkBuilder builder = new Nms17216NetworkBuilder();    
+    Nms17216NetworkBuilder builder = new Nms17216NetworkBuilder();    
     /*
      * These are the links among the following nodes discovered using 
      * only the lldp protocol
@@ -737,6 +745,18 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertTrue(!m_linkdConfig.useBridgeDiscovery());
         assertTrue(!m_linkdConfig.useIsisDiscovery());
 
+        //update configuration to support only CDP updates
+        //need to reload daemon
+        m_linkd.reload();
+        assertEquals(3, getSupportedProtocolsAsProtocolSupported().size());
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NODES));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.BRIDGE));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.CDP));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.ISIS));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.LLDP));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.OSPF));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.USERDEFINED));
+
         final OnmsNode switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME);
         final OnmsNode switch2 = m_nodeDao.findByForeignId("linkd", SWITCH2_NAME);
 
@@ -745,10 +765,191 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
 
         assertTrue(m_linkd.runSingleSnmpCollection(switch1.getId()));
         assertEquals(5, m_cdpLinkDao.countAll());
+        assertTrue(m_cdpTopologyService.hasUpdates());
         
         assertTrue(m_linkd.runSingleSnmpCollection(switch2.getId()));
         assertEquals(11, m_cdpLinkDao.countAll());
-                
+        assertTrue(m_cdpTopologyService.hasUpdates());
+        
+        m_cdpTopologyService.updatesAvailable();
+        assertEquals(2, m_nodeTopologyService.findAllSnmpNode().size());
+        assertEquals(2, m_nodeTopologyService.findAllNode().size());
+        assertEquals(6, m_nodeTopologyService.findAllIp().size());
+        
+        m_nodeTopologyService.findAllNode().stream().forEach( node -> {
+            System.err.println(node);
+            assertNotNull(node.getId());
+            assertNotNull(node.getLabel());
+        });
+
+        m_nodeTopologyService.findAllIp().stream().forEach( ip -> {
+            System.err.println(ip);
+            assertNotNull(ip.getId());
+            assertNotNull(ip.getIpAddress());
+            assertNotNull(ip.getIsSnmpPrimary());
+            assertTrue(ip.isManaged());
+        });
+
+        CdpOnmsTopologyUpdater cdptopology = m_linkd.getCdpTopologyUpdater();
+        assertNotNull(cdptopology);
+        //Test buildTopology method, just 
+        // build the topology but no updates
+        OnmsTopology topology = cdptopology.buildTopology();
+        assertEquals(2, topology.getVertices().size());
+        assertEquals(4, topology.getEdges().size());
+        
+        //Testing updates
+        OnmsTopologyLogger tl = createAndSubscribe(
+                  ProtocolSupported.CDP.name());
+        assertEquals("CDP:Consumer:Logger", tl.getName());
+        //No updates not yet runned 
+        assertEquals(0, tl.getQueue().size());        
+        assertTrue(m_cdpTopologyService.hasUpdates());
+        System.err.println("--------Printing new start----------");
+        m_linkd.runTopologyUpdater(ProtocolSupported.CDP);
+        System.err.println("--------Printing new end----------");
+        assertTrue(!m_cdpTopologyService.hasUpdates());
+        assertTrue(!m_cdpTopologyService.parseUpdates());
+        assertEquals(6, tl.getQueue().size());
+        for (OnmsTopologyMessage m: tl.getQueue()) {
+            assertEquals(TopologyUpdater.create(ProtocolSupported.CDP), m.getProtocol());
+            assertEquals(TopologyMessageStatus.UPDATE, m.getMessagestatus());
+            if (m.getMessagebody() instanceof OnmsTopologyVertex) {
+                OnmsTopologyVertex vertex = (OnmsTopologyVertex) m.getMessagebody();
+                assertNotNull(vertex.getId());
+                assertNotNull(vertex.getNodeid());
+                assertNotNull(vertex.getLabel());
+                assertNotNull(vertex.getAddress());
+                assertNotNull(vertex.getIconKey());
+                assertNotNull(vertex.getToolTipText());
+            } else if (m.getMessagebody() instanceof OnmsTopologyEdge ) {
+                OnmsTopologyEdge edge = (OnmsTopologyEdge) m.getMessagebody();
+                assertNotNull(edge.getId());
+                assertNotNull(edge.getSource().getVertex());
+                assertNotNull(edge.getTarget().getVertex());
+            } else {
+                assertTrue(false);
+            }
+        }
+        System.err.println("--------no updates start----------");
+        m_linkd.runTopologyUpdater(ProtocolSupported.CDP);
+        System.err.println("--------no updates end----------");
+        m_cdpTopologyService.updatesAvailable();
+        assertTrue(m_cdpTopologyService.parseUpdates());
+        assertTrue(!m_cdpTopologyService.hasUpdates());
+        assertEquals(6, tl.getQueue().size());
     }
+    
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource=SWITCH1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource=SWITCH2_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource=SWITCH3_SNMP_RESOURCE)
+    })
+    public void testNetwork17216LldpTopology() throws Exception {
+        m_nodeDao.save(builder.getSwitch1());
+        m_nodeDao.save(builder.getSwitch2());
+        m_nodeDao.save(builder.getSwitch3());
+        
+        m_nodeDao.flush();
+
+        m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseLldpDiscovery(true);
+        m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
+
+        assertTrue(m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
+        assertTrue(!m_linkdConfig.useBridgeDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        
+        // reload daemon and support only: LLDP updates
+        m_linkd.reload();
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NODES));
+        assertEquals(3, getSupportedProtocolsAsProtocolSupported().size());
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.BRIDGE));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.CDP));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.ISIS));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.LLDP));
+        assertTrue(!getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.OSPF));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.USERDEFINED));
+
+        final OnmsNode switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME);
+        final OnmsNode switch2 = m_nodeDao.findByForeignId("linkd", SWITCH2_NAME);
+        final OnmsNode switch3 = m_nodeDao.findByForeignId("linkd", SWITCH3_NAME);
+
+        assertTrue(m_linkd.scheduleNodeCollection(switch1.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(switch2.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(switch3.getId()));
+
+        assertTrue(m_linkd.runSingleSnmpCollection(switch1.getId()));
+        assertEquals(4, m_lldpLinkDao.countAll());
+        assertTrue(m_lldpTopologyService.hasUpdates());
+        
+        assertTrue(m_linkd.runSingleSnmpCollection(switch2.getId()));
+        assertEquals(10, m_lldpLinkDao.countAll());
+        assertTrue(m_lldpTopologyService.hasUpdates());
+                
+        LldpOnmsTopologyUpdater lldptopology = m_linkd.getLldpTopologyUpdater();
+        assertNotNull(lldptopology);
+        OnmsTopology topology = lldptopology.buildTopology();
+        assertEquals(2, topology.getVertices().size());
+        assertEquals(4, topology.getEdges().size());
+        
+        OnmsTopologyLogger tl = createAndSubscribe(
+                  ProtocolSupported.LLDP.name());
+        assertEquals("LLDP:Consumer:Logger", tl.getName());
+                
+        System.err.println("--------Printing new start----------");
+        m_linkd.runTopologyUpdater(ProtocolSupported.LLDP);
+        System.err.println("--------Printing new end----------");
+        assertEquals(6, tl.getQueue().size());
+
+        OnmsTopology lldptopo2 = m_topologyDao.getTopology(ProtocolSupported.LLDP.name());
+        assertEquals(2, lldptopo2.getVertices().size());
+        assertEquals(4, lldptopo2.getEdges().size());
+
+        assertTrue(m_linkd.runSingleSnmpCollection(switch3.getId()));
+        assertEquals(3, m_lldpElementDao.countAll());
+        assertEquals(12, m_lldpLinkDao.countAll());
+        assertTrue(m_lldpTopologyService.hasUpdates());
+        System.err.println("-------- updates start----------");
+        m_linkd.runTopologyUpdater(ProtocolSupported.LLDP);
+        System.err.println("-------- updates end----------");
+        assertEquals(9, tl.getQueue().size());
+        int vertices = 0;
+        int edges = 0;
+        for (OnmsTopologyMessage m: tl.getQueue()) {
+            assertEquals(TopologyUpdater.create(ProtocolSupported.LLDP), m.getProtocol());
+            assertEquals(TopologyMessageStatus.UPDATE, m.getMessagestatus());
+            if (m.getMessagebody() instanceof OnmsTopologyVertex) {
+                OnmsTopologyVertex vertex = (OnmsTopologyVertex) m.getMessagebody();
+                assertNotNull(vertex.getId());
+                assertNotNull(vertex.getNodeid());
+                assertNotNull(vertex.getLabel());
+                assertNotNull(vertex.getAddress());
+                assertNotNull(vertex.getIconKey());
+                assertNotNull(vertex.getToolTipText());
+                vertices++;
+            } else if (m.getMessagebody() instanceof OnmsTopologyEdge ) {
+                OnmsTopologyEdge edge = (OnmsTopologyEdge) m.getMessagebody();
+                assertNotNull(edge.getId());
+                assertNotNull(edge.getSource().getVertex());
+                assertNotNull(edge.getTarget().getVertex());
+                edges++;
+            } else {
+                assertTrue(false);
+            }
+        }
+        assertEquals(3, vertices);
+        assertEquals(6, edges);
+
+        OnmsTopology lldptopo3 = m_topologyDao.getTopology(ProtocolSupported.LLDP.name());
+        assertEquals(3, lldptopo3.getVertices().size());
+        assertEquals(6, lldptopo3.getEdges().size());
+    }
+
 
 }

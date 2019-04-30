@@ -32,12 +32,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 
 public interface Session {
 
     interface Resolver {
-        Optional<Template> lookupTemplate(final int templateId);
+        Template lookupTemplate(final int templateId) throws MissingTemplateException;
         List<Value<?>> lookupOptions(final List<Value<?>> values);
     }
 

@@ -33,7 +33,9 @@ import static java.math.MathContext.DECIMAL64;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -65,6 +67,8 @@ public class PingSweepRequestDTO implements RpcRequest {
 
     @XmlAttribute(name = "packets-per-second")
     private Double packetsPerSecond;
+
+    private Map<String, String> tracingInfo = new HashMap<>();
 
     @Override
     public String getLocation() {
@@ -110,6 +114,15 @@ public class PingSweepRequestDTO implements RpcRequest {
 
     public void setIpRanges(List<IPRangeDTO> ipRanges) {
         this.ipRanges = ipRanges;
+    }
+
+    @Override
+    public Map<String, String> getTracingInfo() {
+        return tracingInfo;
+    }
+
+    public void addTracingInfo(String key, String value) {
+        tracingInfo.put(key, value);
     }
 
     @Override

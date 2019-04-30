@@ -57,15 +57,15 @@
 <div id="graph-results">
 
 <div class="row">
-  <div class="col-md-10 text-center">
+  <div class="col-md-10">
     <%@ include file="/WEB-INF/jspf/relativetimeform.jspf" %>
 
     <c:set var="showCustom"></c:set>
     <c:if test="${results.relativeTime != 'custom'}">
         <c:set var="showCustom">style="display: none;"</c:set>
     </c:if>
-    <div id="customTimeForm" name="customTimeForm" ${showCustom}>
-        <form role="form" class="form-inline top-buffer" id="range_form" action="${requestScope.relativeRequestPath}" method="get">
+    <div id="customTimeForm" class="mb-3" name="customTimeForm" ${showCustom}>
+        <form role="form" class="form top-buffer" id="range_form" action="${requestScope.relativeRequestPath}" method="get">
             <c:forEach var="resultSet" items="${results.graphResultSets}">
                 <input type="hidden" name="resourceId" value="${resultSet.resource.id}"/>
             </c:forEach>
@@ -75,10 +75,9 @@
             <input type="hidden" name="relativetime" value="custom"/>
             <input type="hidden" name="zoom" value="${param.zoom}"/>
 
-            <div class="row">
-            <div class="form-group">
-                <label>Start Time</label>
-                <select class="form-control" name="startMonth">
+            <div class="form-row form-group mb-1">
+                <label class="col-form-label col-lg-1 col-md-2 col-4">Start Time</label>
+                <select class="form-control custom-select col-lg-1 col-2" name="startMonth">
                     <c:forEach var="month" items="${results.monthMap}">
                         <c:choose>
                             <c:when test="${month.key == results.startCalendar.month}">
@@ -92,10 +91,10 @@
                     </c:forEach>
                 </select>
 
-                <input type="text" class="form-control" name="startDate" size="4" maxlength="2" value="${results.startCalendar.date}" />
-                <input type="text" class="form-control" name="startYear" size="6" maxlength="4" value="${results.startCalendar.year}" />
+                <input type="text" class="form-control col-lg-1 col-2" name="startDate" size="4" maxlength="2" value="${results.startCalendar.date}" />
+                <input type="text" class="form-control col-lg-1 col-2" name="startYear" size="6" maxlength="4" value="${results.startCalendar.year}" />
 
-                <select class="form-control" name="startHour">
+                <select class="form-control custom-select col-lg-1 col-2" name="startHour">
                     <c:forEach var="hour" items="${results.hourMap}">
                         <c:choose>
                             <c:when test="${hour.key == results.startCalendar.hourOfDay}">
@@ -108,13 +107,11 @@
                         <option value="${hour.key}" ${selected}>${hour.value}</option>
                     </c:forEach>
                 </select>
-              </div> <!-- form-group -->
-              </div> <!-- row -->
+            </div> <!-- row -->
 
-              <div class="row">
-              <div class="form-group">
-                <label>End Time</label>
-                <select class="form-control" name="endMonth">
+            <div class="form-row form-group mb-1">
+                <label class="col-form-label col-lg-1 col-md-2 col-4">End Time</label>
+                <select class="form-control custom-select col-lg-1 col-2" name="endMonth">
                     <c:forEach var="month" items="${results.monthMap}">
                         <c:choose>
                             <c:when test="${month.key == results.endCalendar.month}">
@@ -128,10 +125,10 @@
                     </c:forEach>
                 </select>
 
-                <input type="text" class="form-control" name="endDate" size="4" maxlength="2" value="${results.endCalendar.date}" />
-                <input type="text" class="form-control" name="endYear" size="6" maxlength="4" value="${results.endCalendar.year}" />
+                <input type="text" class="form-control col-lg-1 col-2" name="endDate" size="4" maxlength="2" value="${results.endCalendar.date}" />
+                <input type="text" class="form-control col-lg-1 col-2" name="endYear" size="6" maxlength="4" value="${results.endCalendar.year}" />
 
-                <select class="form-control" name="endHour">
+                <select class="form-control custom-select col-lg-1 col-2" name="endHour">
                     <c:forEach var="hour" items="${results.hourMap}">
                         <c:choose>
                             <c:when test="${hour.key == results.endCalendar.hourOfDay}">
@@ -144,18 +141,24 @@
                         <option value="${hour.key}" ${selected}>${hour.value}</option>
                     </c:forEach>
                 </select>
-            </div> <!-- form-group -->
             </div> <!-- row -->
-            <button type="submit" class="btn btn-default">Apply Custom Time Period</button>
+            <button type="submit" class="btn btn-secondary btn-sm col-lg-5 col-md-10 col-12">Apply Custom Time Period</button>
         </form>
     </div>
-
-    <p>
-        <strong>From</strong> ${results.start} <br/>
-        <strong>To</strong> ${results.end} <br/>
-    </p>
   </div> <!-- column -->
 </div> <!-- row -->
+<div class="row">
+    <div class="row col-md-10">
+        <label class="col-form-label col-lg-1 col-md-2 col-4"><strong>From</strong></label>
+        <span class="col-lg-11 col-md-10 col-8 form-control-plaintext">${results.start}</span>
+    </div>
+</div>
+<div class="row">
+    <div class="row col-md-10">
+        <label class="col-form-label col-lg-1 col-md-2 col-4"><strong>To</strong></label>
+        <span class="col-lg-11 col-md-10 col-8 form-control-plaintext">${results.end}</span>
+    </div>
+</div>
 
 <c:set var="showFootnote1" value="false"/>
 
@@ -164,9 +167,9 @@
 
 	<div class="col-md-10">
 	<c:forEach var="resultSet" items="${results.graphResultSets}">
-    <div class="panel panel-default text-center" id="panel-resource${resultSet.index}">
-      <div class="panel-heading">
-        <h3 class="panel-title">
+    <div class="card text-center" id="panel-resource${resultSet.index}">
+      <div class="card-header">
+        <span>
             ${resultSet.resource.parent.resourceType.label}:
             <c:choose>
                 <c:when test="${(!empty resultSet.resource.parent.link) && loggedIn}">
@@ -197,9 +200,9 @@
                     </c:otherwise>
                 </c:choose>
             </c:if>
-        </h3>
-     </div> <!-- panel-heading -->
-     <div class="panel-body">
+        </span>
+     </div> <!-- card-header -->
+     <div class="card-body">
         <div growl></div>
         <!-- NRTG Starter script 'window'+resourceId+report -->
         <script type="text/javascript">
@@ -238,22 +241,22 @@
                     <div>
 	                    <div class="graph-aux-controls" style="padding-bottom: 5px" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}">
                             <a style="padding-right: 3px" title="Add ${graph.title} to KSC Report">
-                                <button type="button" class="btn btn-default btn-xs" ng-click="open('${resultSet.resource.id}','${resultSet.resource.label}','${graph.name}','${graph.title}')">
+                                <button type="button" class="btn btn-secondary btn-sm" ng-click="open('${resultSet.resource.id}','${resultSet.resource.label}','${graph.name}','${graph.title}')">
                                     <i class="fa fa-plus" aria-hidden="true"></i>
                                 </button>
                             </a>
 		                    <c:if test="${fn:length(resultSet.graphs) > 1}">
-		                        <a href="${specificGraphUrl}" style="padding-right: 3px" title="Open ${graph.title}"><button type="button" class="btn btn-default btn-xs"><i class="fa fa-binoculars" aria-hidden="true"></i></span></button></a>
+		                        <a href="${specificGraphUrl}" style="padding-right: 3px" title="Open ${graph.title}"><button type="button" class="btn btn-secondary btn-sm"><i class="fa fa-binoculars" aria-hidden="true"></i></span></button></a>
 		                    </c:if>
-                                    <a href="javascript:popUp('${forecastGraphUrl}')" style="padding-right: 3px" title="Forecast ${graph.title}"><button type="button" class="btn btn-default btn-xs"><i class="fa fa-line-chart" aria-hidden="true"></i></span></button></a>
+                                    <a href="javascript:popUp('${forecastGraphUrl}')" style="padding-right: 3px" title="Forecast ${graph.title}"><button type="button" class="btn btn-secondary btn-sm"><i class="fa fa-line-chart" aria-hidden="true"></i></span></button></a>
 		                    <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP') || fn:contains(resultSet.resource.resourceType.label, 'TCA') }">
 		                        <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
-		                            <a href="javascript:popUp('${nrtgGraphUrl}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-default btn-xs" aria-label="Start NRT-Graphing for ${graph.title}"><span class="glyphicon glyphicon-flash" aria-hidden="true"></span></button></a>
+		                            <a href="javascript:popUp('${nrtgGraphUrl}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-secondary btn-sm" aria-label="Start NRT-Graphing for ${graph.title}"><span class="fa fa-bolt" aria-hidden="true"></span></button></a>
 		                        </c:if>
 		                    </c:if>
                               <div style="display: inline" ng-if="flowsEnabled">
                                 <a ng-href="{{flowGraphUrl}}" target="_blank" style="padding-right: 3px" title="{{ hasFlows ? 'Open flow graphs' : 'No flows were found in current time range'}}">
-                                <span> <button type="button" ng-disabled="!hasFlows" class="btn btn-default btn-xs">
+                                <span> <button type="button" ng-disabled="!hasFlows" class="btn btn-secondary btn-sm">
                                   <i class="fa fa-exchange" aria-hidden="true"></i>
                                   </button>
                                 </span>
@@ -273,21 +276,21 @@
                 </p>
             </c:otherwise>
         </c:choose>
-    </div> <!-- panel-body -->
+    </div> <!-- card-body -->
     </div> <!-- panel -->
     </c:forEach>
 
 	</div> <!-- col-md-10 -->
 
 	<div class="col-md-2">
-	<div id="results-sidebar" class="resource-graphs-sidebar hidden-print hidden-xs hidden-sm sidebar-fixed">
-        <ul class="nav nav-stacked">
+	<div id="results-sidebar" class="resource-graphs-sidebar d-print-none d-none d-sm-block d-md-block sidebar-fixed">
+        <ul class="nav flex-column">
             <c:forEach var="resourceType" items="${results.resourceTypes}">
-            <li>
-                <a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${results.graphResultMap[resourceType][0].index}" data-target="#panel-resource${results.graphResultMap[resourceType][0].index}">${resourceType}</a>
+            <li class="nav-item">
+                <a class="nav-link" href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${results.graphResultMap[resourceType][0].index}" data-target="#panel-resource${results.graphResultMap[resourceType][0].index}">${resourceType}</a>
                 <ul class="nav">
                     <c:forEach var="resultSet" items="${results.graphResultMap[resourceType]}">
-                    <li><a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${resultSet.index}" data-target="#panel-resource${resultSet.index}">${resultSet.resource.label}</a></li>
+                    <li class="nav-item"><a class="nav-link" href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${resultSet.index}" data-target="#panel-resource${resultSet.index}">${resultSet.resource.label}</a></li>
                     </c:forEach>
                 </ul>
             </li>
@@ -309,7 +312,8 @@
 </c:url>
 
 <script type="text/javascript">
-    function relativeTimeFormChange() {
+
+     function relativeTimeFormChange() {
         for (i = 0; i < document.reltimeform.rtstatus.length; i++) {
             if (document.reltimeform.rtstatus[i].selected) {
                 var value = document.reltimeform.rtstatus[i].value;

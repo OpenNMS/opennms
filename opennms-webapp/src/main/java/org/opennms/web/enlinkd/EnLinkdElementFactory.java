@@ -49,6 +49,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.enlinkd.persistence.api.BridgeElementDao;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
@@ -349,8 +350,8 @@ public class EnLinkdElementFactory implements InitializingBean,
                                                null));
         
         OnmsSnmpInterface snmpiface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeid, link.getCdpCacheIfIndex());
-        Set<OnmsIpInterface> ipifaces = snmpiface.getIpInterfaces();
         if (snmpiface != null) {
+        Set<OnmsIpInterface> ipifaces = snmpiface.getIpInterfaces();
             if (ipifaces.isEmpty() || ipifaces.size() > 1) {
                 linknode.setCdpLocalPort(getPortString(snmpiface,null,null));
             } else {
@@ -482,7 +483,7 @@ public class EnLinkdElementFactory implements InitializingBean,
             linknode.setLldpRemChassisIdUrl(getNodeUrl(remNode.getId()));
             if (link.getLldpRemPortIdSubType() == LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL) {
                 try {
-                    Integer remIfIndex = Integer.getInteger(link.getLldpRemPortId());
+                    Integer remIfIndex = SystemProperties.getInteger(link.getLldpRemPortId());
                     linknode.setLldpRemPortUrl(getSnmpInterfaceUrl(Integer.valueOf(remNode.getId()),
                                                                    remIfIndex));
                 } catch (Exception e) {
@@ -773,14 +774,14 @@ public class EnLinkdElementFactory implements InitializingBean,
         
         Map<String, List<OnmsIpInterface>> mactoIpNodeMap = new HashMap<String, List<OnmsIpInterface>>();
         m_ipInterfaceDao.findByNodeId(nodeId).stream().forEach( ip -> {
-            LOG.debug("getBridgeLinks: node:[{}] is host found {} ip:{}", nodeId, str(ip.getIpAddress()));
+            LOG.debug("getBridgeLinks: node:[{}] is host found ip:{}", nodeId, str(ip.getIpAddress()));
             m_ipNetToMediaDao.findByNetAddress(ip.getIpAddress()).stream().forEach( ipnettomedia -> {
                 if (!mactoIpNodeMap.containsKey(ipnettomedia.getPhysAddress())) {
                     mactoIpNodeMap.put(ipnettomedia.getPhysAddress(),
                                    new ArrayList<OnmsIpInterface>());
                 }
                 mactoIpNodeMap.get(ipnettomedia.getPhysAddress()).add(ip);
-                LOG.debug("getBridgeLinks: node:[{}] is host found {} ip:{} mac:{}", nodeId, str(ip.getIpAddress()),ipnettomedia.getPhysAddress());
+                LOG.debug("getBridgeLinks: node:[{}] is host found ip:{} mac:{}", nodeId, str(ip.getIpAddress()),ipnettomedia.getPhysAddress());
             });
         });
 

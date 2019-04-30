@@ -41,19 +41,20 @@
 --%>
 
 <%@page language="java"
-	contentType="text/html"
-	session="true"
-	import="
+        contentType="text/html"
+        session="true"
+        import="
 		org.opennms.core.utils.TimeSeries,
 		org.opennms.web.api.Util,
-		org.opennms.netmgt.config.NotifdConfigFactory
+		org.opennms.netmgt.config.NotifdConfigFactory,
+		org.owasp.encoder.Encode
 	"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%
-	final String baseHref = Util.calculateUrlBase( request );
+  final String baseHref = Util.calculateUrlBase( request );
 %>
 <%-- The <html> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
@@ -78,7 +79,7 @@
   <meta name="apple-itunes-app" content="app-id=968875097">
 
   <!-- Set GWT property to get browsers locale -->
-  <meta name="gwt:property" content="locale=<%=request.getLocale()%>">
+  <meta name="gwt:property" content="locale=<%= Encode.forHtmlAttribute(request.getLocale().toString()) %>">
 
   <c:forEach var="meta" items="${paramValues.meta}">
     <c:out value="${meta}" escapeXml="false"/>
@@ -126,64 +127,80 @@
     <jsp:param name="asset" value="global" />
   </jsp:include>
 
-    <c:if test="${param.storageAdmin == 'true'}">
-      <jsp:include page="/assets/load-assets.jsp" flush="false">
-        <jsp:param name="asset" value="rws-storage" />
-      </jsp:include>
-    </c:if>
+  <c:if test="${param.storageAdmin == 'true'}">
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="rws-storage" />
+    </jsp:include>
+  </c:if>
 
-    <c:if test="${param.renderGraphs == 'true'}">
+  <%--
+   Vaadin uses the window.name property to implement the preserveOnRefresh functionality.
+   However if now window.name is set, a random name is generated.
+   As most vaadin applications are embedded via <iframe src=...></iframe> the name is always random.
+   This results in a new UI creation per each refresh of the page - even if preserveOnRefresh is enabled,
+   which breaks the functionality. See NMS-10601 for more details.
+  --%>
+  <script type="text/javascript">
+    // If no window.name is set, define one, to ensure it is not empty.
+    // This is required for Vaadin to work properly (especially for @PreserveOnRefresh UIs).
+    // The random bits ensure that multiple windows have a different name, as well as different versions of OpenNMS
+    // can be used in parallel.
+    if (!window.name) {
+      window.name = "opennms-" + Math.random();
+    }
+  </script>
+
+  <c:if test="${param.renderGraphs == 'true'}">
       <!-- Graphing -->
       <script type="text/javascript">
         // Global scope
         window.onmsGraphContainers = {
-          'engine': '<%= TimeSeries.getGraphEngine() %>',
-          'baseHref': '<%= baseHref %>'
+            'engine': '<%= TimeSeries.getGraphEngine() %>',
+            'baseHref': '<%= baseHref %>'
         };
-      </script>
-	  <jsp:include page="/assets/load-assets.jsp" flush="false">
-	    <jsp:param name="asset" value="onms-graph" />
-	  </jsp:include>
-	</c:if>
+    </script>
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="onms-graph" />
+    </jsp:include>
+  </c:if>
 
-<c:if test="${param.usebackshift == 'true'}">
-  <%-- This allows pages to explicitly use Backshift instead of relying on graph.js (which may not use Backshift) --%>
-  <jsp:include page="/assets/load-assets.jsp" flush="false">
-    <jsp:param name="asset" value="d3-js" />
-  </jsp:include>
-  <jsp:include page="/assets/load-assets.jsp" flush="false">
-    <jsp:param name="asset" value="flot-js" />
-  </jsp:include>
-  <jsp:include page="/assets/load-assets.jsp" flush="false">
-    <jsp:param name="asset" value="backshift-js" />
-  </jsp:include>
-</c:if>
+  <c:if test="${param.usebackshift == 'true'}">
+    <%-- This allows pages to explicitly use Backshift instead of relying on graph.js (which may not use Backshift) --%>
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="d3-js" />
+    </jsp:include>
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="flot-js" />
+    </jsp:include>
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="backshift-js" />
+    </jsp:include>
+  </c:if>
 
-<c:if test="${param.useionicons == 'true'}">
-  <jsp:include page="/assets/load-assets.jsp" flush="false">
-    <jsp:param name="asset" value="ionicons-css" />
-  </jsp:include>
-</c:if>
+  <c:if test="${param.useionicons == 'true'}">
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="ionicons-css" />
+    </jsp:include>
+  </c:if>
 
-<c:if test="${not empty param.script}">
-</c:if>
-<c:forEach var="script" items="${paramValues.script}">
+  <c:if test="${not empty param.script}">
+  </c:if>
+  <c:forEach var="script" items="${paramValues.script}">
     <!-- WARNING: "script" parameters are deprecated. Remove the next line from your JSP. -->
     <c:out value="${script}" escapeXml="false" />
   </c:forEach>
 
-<c:forEach var="extras" items="${paramValues.extras}">
+  <c:forEach var="extras" items="${paramValues.extras}">
     <!-- WARNING: "extras" parameters are deprecated. Remove the next line from your JSP. -->
-  <c:out value="${extras}" escapeXml="false" />
-</c:forEach>
+    <c:out value="${extras}" escapeXml="false" />
+  </c:forEach>
 
-<c:if test="${param.vaadinEmbeddedStyles == 'true'}">
-  <!-- embedded Vaadin app, fix container to leave room for headers -->
-  <style type="text/css">
-    div#footer { position:absolute; bottom:0; width:100%; }
-    div#content { position:absolute; top:50px; left:0px; right:0px; bottom:90px; }
-  </style>
-</c:if>
+  <c:if test="${param.vaadinEmbeddedStyles == 'true'}">
+    <!-- embedded Vaadin app, fix container to leave room for headers -->
+    <style type="text/css">
+      footer#footer { position:absolute; bottom:0; width:100%; }
+    </style>
+  </c:if>
 
 </head>
 
@@ -219,14 +236,31 @@
 <%-- This <div> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain.  See bug #1728. --%>
-<%= "<div id=\"content\" class=\"container-fluid\">" %>
+<c:choose>
+  <c:when test="${param.superQuiet == 'true'}">
+
+  </c:when>
+  <c:otherwise>
+    <%= "<div id=\"content\" class=\"container-fluid\">" %>
+  </c:otherwise>
+</c:choose>
 <c:if test="${((param.nonavbar != 'true') && (!empty pageContext.request.remoteUser)) && param.nobreadcrumbs != 'true'}">
+  <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li><a href="<%= baseHref %>index.jsp">Home</a></li>
-    <c:forEach var="breadcrumb" items="${paramValues.breadcrumb}">
+    <li class="breadcrumb-item"><a href="<%= baseHref %>index.jsp">Home</a></li>
+    <c:forEach var="breadcrumb" items="${paramValues.breadcrumb}" varStatus="loop">
       <c:if test="${breadcrumb != ''}">
-        <li><c:out value="${breadcrumb}" escapeXml="false"/></li>
+          <c:choose>
+            <c:when test="${loop.last}">
+              <li class="breadcrumb-item active"><c:out value="${breadcrumb}" escapeXml="false"/></li>
+            </c:when>
+            <c:otherwise>
+              <li class="breadcrumb-item"><c:out value="${breadcrumb}" escapeXml="false"/></li>
+            </c:otherwise>
+          </c:choose>
+
       </c:if>
     </c:forEach>
   </ol>
+  </nav>
 </c:if>

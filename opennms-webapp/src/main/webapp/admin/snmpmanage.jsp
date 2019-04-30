@@ -72,20 +72,11 @@
   <jsp:param name="breadcrumb" value="Manage SNMP by Interface" />
 </jsp:include>
 
-<%
-  int midNodeIndex = 1;
-  
-  if (nodes.size() > 1)
-  {
-    midNodeIndex = nodes.size()/2;
-  }
-%>
-
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Manage SNMP Data Collection per Interface</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Manage SNMP Data Collection per Interface</span>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <p>
       In the datacollection-config.xml file, for each different collection
       scheme there is a parameter called <code>snmpStorageFlag</code>.  If
@@ -107,33 +98,24 @@
       on the following page.
     </p>
 
-    <div class="row">
        <% if (nodes.size() > 0) { %>
-       <div class="col-md-6">
-              <table class="table table-condensed table-bordered">
+              <table class="table table-sm table-responsive">
+                  <thead>
                 <tr class="text-center">
                   <th>Node ID</th>
                   <th>Node Label</th>
                 </tr>
-                <%=buildTableRows(nodes, 0, midNodeIndex)%>
+                  </thead>
+                  <tbody>
+                <%=buildTableRows(nodes, 0, nodes.size())%>
+                  </tbody>
               </table>
-       </div>
-              <% } /*end if*/ %>
-
-          <!--see if there is a second column to draw-->
-          <% if (midNodeIndex < nodes.size()) { %>
-        <div class="col-md-6">
-              <table class="table table-condensed table-bordered">
-                <tr class="text-center">
-                  <th>Node ID</th>
-                  <th>Node Label</th>
-                </tr>
-                <%=buildTableRows(nodes, midNodeIndex, nodes.size())%>
-              </table>
-        </div>
-            <% } /*end if */ %>
-    </div> <!-- row -->
-  </div> <!-- panel-body -->
+      <% }else{ %>
+      <div class="alert alert-primary" role="alert">
+          There are no SNMP Nodes
+      </div>
+      <% } /*end if-else*/ %>
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

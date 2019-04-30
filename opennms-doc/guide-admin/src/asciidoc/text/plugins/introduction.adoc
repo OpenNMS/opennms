@@ -12,7 +12,8 @@ Once installed, the plugins will always start when OpenNMS is restarted. If the 
 Each internal plugin supplied with _{opennms-product-name}_ is described in its own section below.
 
 === Installing Plugins with the Karaf Consol
-The easiest way to install a plugin is to use the Plugin Manager UI described in the Plugin Manager section. However plugins can also be installed using the _Karaf_ consol. To use the _Karaf_ consol, you need to open the karaf command prompt using
+Plugins should be installed by using the _Karaf_ console.
+To use the _Karaf_ console, you need to open the _Karaf Command Prompt_ using
 ----
 ssh -p 8101 admin@localhost
 (or ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no if no host checking is wanted)

@@ -106,7 +106,6 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
 
             final QueryResource resourceInfo = getResourceInfo(resource, source);
             resources.add(resourceInfo);
-            System.err.println("resource=" + resourceInfo);
 
             // Grab the attribute
             RrdGraphAttribute rrdGraphAttribute = resource.getRrdGraphAttributes().get(source.getAttribute());

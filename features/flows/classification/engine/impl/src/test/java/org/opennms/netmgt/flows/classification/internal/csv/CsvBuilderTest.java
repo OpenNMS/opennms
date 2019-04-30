@@ -46,7 +46,7 @@ public class CsvBuilderTest {
                         .withName("opennms-monitor")
                         .withSrcAddress("10.0.0.1").withSrcPort(10000)
                         .withDstAddress("10.0.0.2").withDstPort(8980))
-                .withRule(new RuleBuilder().withName("http").withProtocol("TCP"))
+                .withRule(new RuleBuilder().withName("http").withProtocol("TCP").withOmnidirectional(true))
                 .withRule(new RuleBuilder()
                         .withName("xxx")
                         .withProtocol("tcp,udp")
@@ -58,12 +58,12 @@ public class CsvBuilderTest {
 
         final StringBuilder builder = new StringBuilder();
         builder.append(CsvServiceImpl.HEADERS_STRING);
-        builder.append("http2;TCP,UDP;;;127.0.0.1;;\n");
-        builder.append("google;;;;8.8.8.8;;\n");
-        builder.append("opennms;;;;;8980;\n");
-        builder.append("opennms-monitor;;10.0.0.1;10000;10.0.0.2;8980;\n");
-        builder.append("http;TCP;;;;;\n");
-        builder.append("xxx;tcp,udp;10.0.0.1;10000;10.0.0.2;8980;some-filter-value");
+        builder.append("http2;TCP,UDP;;;127.0.0.1;;;false\n");
+        builder.append("google;;;;8.8.8.8;;;false\n");
+        builder.append("opennms;;;;;8980;;false\n");
+        builder.append("opennms-monitor;;10.0.0.1;10000;10.0.0.2;8980;;false\n");
+        builder.append("http;TCP;;;;;;true\n");
+        builder.append("xxx;tcp,udp;10.0.0.1;10000;10.0.0.2;8980;some-filter-value;false");
 
         final String actualCsv = builder.toString();
         assertEquals(expectedCsv, actualCsv);

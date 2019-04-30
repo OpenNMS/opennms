@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>24.0.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -42,83 +42,6 @@
           </instructions>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>features-maven-plugin</artifactId>
-        <configuration>
-          <name>opennms-es-rest</name>
-          <features>
-            <feature version="${project.version}">opennms-jest</feature>
-          </features>
-          <bundles>
-            <!-- dropwizard-metrics feature -->
-            <bundle>mvn:io.dropwizard.metrics/metrics-core/3.1.2</bundle>
-
-            <!-- rate-limited-logger feature -->
-            <bundle>mvn:joda-time/joda-time/${jodaTimeVersion}</bundle>
-            <bundle>wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}</bundle>
-
-            <!-- opennms-core-ipc-sink-api feature -->
-            <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.api/${project.version}</bundle>
-            <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.common/${project.version}</bundle>
-            <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.xml/${project.version}</bundle>
-
-            <!-- actual plugin -->
-            <bundle>mvn:${project.groupId}/${project.artifactId}/${project.version}</bundle>
-          </bundles>
-        </configuration>
-      </plugin>
-
-      <!-- ElasticSearch maven plugin goals -->
-      <!-- elasticsearch:help Display help information on elasticsearch-maven-plugin. -->
-      <!-- Call mvn elasticsearch:help -Ddetail=true -Dgoal=<goal-name> to display parameter details. -->
-      <!-- elasticsearch:load (phase: pre-integration-test) -->
-      <!-- elasticsearch:stop (phase: post-integration-test) Goal which stops the local Elasticsearch node. -->
-      <!-- elasticsearch:start (phase: pre-integration-test) Goal which starts a local Elasticsearch node. -->
-      <!-- elasticsearch:run (phase: pre-integration-test) Starts a local instance of ElasticSearch indefinitely. -->
-      <!-- In order to kill it a CTRL+C has to be made. -->
-      <plugin>
-        <groupId>com.github.alexcojocaru</groupId>
-        <artifactId>elasticsearch-maven-plugin</artifactId>
-        <version>6.1</version>
-        <configuration>
-          <clusterName>test</clusterName>
-          <!-- set not to clash with normal ES ports 9300 9200 -->
-          <tcpPort>9300</tcpPort>
-          <httpPort>9200</httpPort>
-          <skip>${skipTests}</skip>
-        </configuration>
-        <executions>
-          <!-- The elasticsearch plugin is by default bound to the -->
-          <!-- pre-integration-test and post-integration-test phases -->
-          <!-- here we are binding into the normal unit test phases -->
-          <execution>
-            <id>start-elasticsearch</id>
-            <!-- <phase>pre-integration-test</phase> -->
-            <phase>test-compile</phase>
-            <goals>
-              <goal>runforked</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>stop-elasticsearch</id>
-            <!-- <phase>post-integration-test</phase> -->
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>stop</goal>
-            </goals>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.elasticsearch</groupId>
-            <artifactId>elasticsearch</artifactId>
-            <!-- REPLACE THE FOLLOWING WITH THE ES VERSION USED IN TESTS -->
-            <version>6.2.4</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -225,6 +148,66 @@
     </dependency>
 
     <!-- Test Scope -->
+    <!--
+      A parent module defines netty-all with a specific verison, but Elastic requires
+      a different version. We overwrite it here manually so that the proper dependencies
+      are pulled in.
+    -->
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-all</artifactId>
+      <version>${elasticsearchNettyVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-codec</artifactId>
+      <version>${elasticsearchNettyVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-codec-http</artifactId>
+      <version>${elasticsearchNettyVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-transport</artifactId>
+      <version>${elasticsearchNettyVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-resolver</artifactId>
+      <version>${elasticsearchNettyVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-handler</artifactId>
+      <version>${elasticsearchNettyVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-buffer</artifactId>
+      <version>${elasticsearchNettyVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-common</artifactId>
+      <version>${elasticsearchNettyVersion}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.elasticsearch</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpasyncclient</artifactId>

@@ -21,7 +21,6 @@ A rule has the following fields:
 | `mandatory`
 | The name the flow is classified with, e.g. `http`
 
-
 | `dstPort`
 | `optional`
 | The `dstPort` of the flow must match this port.
@@ -56,6 +55,10 @@ Even if all fields (besides `name`) are optional, at least one of them must be d
 A list of pre-defined rules already exist.
 The pre-defined rules are inspired by the https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml[IANA Service Name and Transport Protocol Port Number Registry].
 New rules can be defined using the _Classification UI_ which can be found in the Admin Menu: *Admin -> Configure OpenNMS -> Manage Flow Classification*
+
+==== Omnidirectional Rules
+Rules can be marked as omnidirectional which additionally evaluates the rules with interchanged endpoint addresses and ports.
+This is helpfull if traffic related to a matching classification should be classified the same way.
 
 ==== Rule Priority
 User-defined rules always have a higher priority than the pre-defined rules.

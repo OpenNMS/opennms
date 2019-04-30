@@ -5,7 +5,7 @@
         <relativePath>../topology-map/poms/compiled/</relativePath>
         <groupId>org.opennms.features.topology.build</groupId>
         <artifactId>compiled-bundle-settings</artifactId>
-        <version>24.0.0-SNAPSHOT</version>
+        <version>25.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.osgi</groupId>
@@ -20,26 +20,6 @@
         <bundle.namespace>org.opennms.osgi.core.rest</bundle.namespace>
         <bundle.symbolicName>${bundle.namespace}</bundle.symbolicName>
     </properties>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.opennms.maven.plugins</groupId>
-                <artifactId>features-maven-plugin</artifactId>
-                <configuration>
-                    <repositories>
-                        <repository>mvn:com.eclipsesource.jaxrs/features/${osgiJaxRsVersion}/xml/features</repository>
-                    </repositories>
-                    <features>
-                        <!-- Capability to listen for ReST Services -->
-                        <feature>jax-rs-connector</feature>
-
-                        <!-- Capability to unmarshal/marshal json/xml -->
-                        <feature>jax-rs-provider-jackson</feature>
-                    </features>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -66,6 +46,11 @@
         <dependency>
             <groupId>org.opennms.features</groupId>
             <artifactId>org.opennms.features.rest-provider</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.container.bridge</groupId>
+            <artifactId>org.opennms.container.bridge.rest</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

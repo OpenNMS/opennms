@@ -37,12 +37,12 @@
 	<jsp:param name="breadcrumb" value="Dashboards" />
 </jsp:include>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">OpenNMS Dashboards</h3>
+<div class="card">
+  <div class="card-header">
+    <span>OpenNMS Dashboards</span>
   </div>
-  <div class="panel-body">
-    <ul class="list-unstyled">
+  <div class="card-body">
+    <ul class="list-unstyled mb-0">
       <c:forEach var="entry" items="${entries.entries}">
       	<c:choose>
       		<c:when test="${empty entry.url}">
@@ -54,7 +54,7 @@
       	</c:choose>
       </c:forEach>
     </ul>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" >

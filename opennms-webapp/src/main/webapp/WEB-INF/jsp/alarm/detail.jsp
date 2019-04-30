@@ -81,15 +81,18 @@
 
     String action = null;
     String ackButtonName = null;
+    String ackButtonIcon = null;
     boolean showEscalate = false;
     boolean showClear = false;
 
     if (alarm.getAckTime() == null) {
-        ackButtonName = "Acknowledge this alarm";
+        ackButtonName = "Acknowledge";
         action = AcknowledgeType.ACKNOWLEDGED.getShortName();
+        ackButtonIcon = "fa fa-check-square-o";
     } else {
-        ackButtonName = "Unacknowledge this alarm";
+        ackButtonName = "Unacknowledge";
         action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
+        ackButtonIcon = "fa fa-square-o";
     }
 
     String escalateAction = AlarmSeverityChangeController.ESCALATE_ACTION;
@@ -122,19 +125,17 @@
     <jsp:param name="breadcrumb" value='<%= (alarm.isSituation() ? "Situation " : "Alarm ") + alarm.getId()%>' />
 </jsp:include>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">
-        <%= (alarm.isSituation() ? "Situation " : "Alarm ") + alarm.getId()%>
-    </h3>
+<div class="card">
+  <div class="card-header">
+    <span><%= (alarm.isSituation() ? "Situation " : "Alarm ") + alarm.getId()%></span>
   </div>
 
-<table class="table table-condensed severity">
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
-        <th class="col-md-1">Severity</th>
-        <td class="col-md3 bright"><%=alarm.getSeverity().getLabel()%></td>
-        <th class="col-md-1">Node</th>
-        <td class="col-md-3">
+<table class="table table-sm severity">
+    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+        <th class="col-2">Severity</th>
+        <td class="col-4 bright"><%=alarm.getSeverity().getLabel()%></td>
+        <th class="col-2">Node</th>
+        <td class="col-4">
             <% if (alarm.getNodeId() != null && alarm.getNodeId() > 0) {%>
             <c:url var="nodeLink" value="element/node.jsp">
                 <c:param name="node" value="<%=String.valueOf(alarm.getNodeId())%>"/>
@@ -145,11 +146,11 @@
             <% }%>
         </td>
     </tr>
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
-        <th class="col-md-1">Last&nbsp;Event</th>
-        <td class="col-md-3"><span title="Event <%= alarm.getLastEvent().getId()%>"><a href="event/detail.jsp?id=<%= alarm.getLastEvent().getId()%>"><onms:datetime date="<%=alarm.getLastEventTime()%>" /></a></span></td>
-        <th class="col-md-1">Interface</th>
-        <td class="col-md-3">
+    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+        <th class="col-2">Last&nbsp;Event</th>
+        <td class="col-4"><span title="Event <%= alarm.getLastEvent().getId()%>"><a href="event/detail.jsp?id=<%= alarm.getLastEvent().getId()%>"><onms:datetime date="<%=alarm.getLastEventTime()%>" /></a></span></td>
+        <th class="col-2">Interface</th>
+        <td class="col-4">
             <% if (alarm.getIpAddr() != null) {%>
             <% if (alarm.getNodeId() != null && alarm.getNodeId() > 0) {%>
             <c:url var="interfaceLink" value="element/interface.jsp">
@@ -165,11 +166,11 @@
             <% }%>
         </td>
     </tr>
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
-        <th class="col-md-1">First&nbsp;Event</th>
-        <td class="col-md-3"><onms:datetime date="<%=alarm.getFirstEventTime()%>" /></td>
-        <th class="col-md-1">Service</th>
-        <td class="col-md-3">
+    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+        <th class="col-2">First&nbsp;Event</th>
+        <td class="col-4"><onms:datetime date="<%=alarm.getFirstEventTime()%>" /></td>
+        <th class="col-2">Service</th>
+        <td class="col-4">
             <% if (alarm.getServiceType() != null) {%>
             <% if (alarm.getIpAddr() != null && alarm.getNodeId() > 0) {%>
             <c:url var="serviceLink" value="element/service.jsp">
@@ -186,17 +187,17 @@
             <% }%>
         </td>
     </tr> 
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
-        <th class="col-md-1">Event Source Location</th>
-        <td class="col-md-3"><%= eventLocation == null? "&nbsp;" : eventLocation %>
-        <th class="col-md-1">Node Location</th>
-        <td class="col-md-3"><%= nodeLocation == null? "&nbsp;" : nodeLocation %>
+    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+        <th class="col-2">Event Source Location</th>
+        <td class="col-4"><%= eventLocation == null? "&nbsp;" : eventLocation %>
+        <th class="col-2">Node Location</th>
+        <td class="col-4"><%= nodeLocation == null? "&nbsp;" : nodeLocation %>
     </tr>
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
-        <th class="col-md-1">Count</th>
-        <td class="col-md-3"><%=alarm.getCounter()%></td>
-        <th class="col-md-1">UEI</th>
-        <td class="col-md-3">
+    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+        <th class="col-2">Count</th>
+        <td class="col-4"><%=alarm.getCounter()%></td>
+        <th class="col-2">UEI</th>
+        <td class="col-4">
             <% if (alarm.getUei() != null) {%>
             <%=alarm.getUei()%>
             <% } else {%>
@@ -204,25 +205,43 @@
             <% }%>
         </td>
     </tr>
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
-        <th class="col-md-1">Ticket&nbsp;ID</th>
-        <td class="col-md-3"><% if (alarm.getTTicketId() == null) {%>
+    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+        <th class="col-2">Managed Object Type</th>
+        <td class="col-4">
+            <% if (alarm.getManagedObjectType() != null) {%>
+            <%=alarm.getManagedObjectType()%>
+            <% } else {%>
+            &nbsp;
+            <% }%>
+        </td>
+        <th class="col-2">Managed Object Instance</th>
+        <td class="col-4">
+            <% if (alarm.getManagedObjectInstance() != null) {%>
+            <%=alarm.getManagedObjectInstance()%>
+            <% } else {%>
+            &nbsp;
+            <% }%>
+        </td>
+    </tr>
+    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+        <th class="col-2">Ticket&nbsp;ID</th>
+        <td class="col-4"><% if (alarm.getTTicketId() == null) {%>
             &nbsp;
             <% } else {%>
             <%= alarmTicketLink(alarm)%> 
             <% }%>
         </td>
-        <th class="col-md-1">Ticket&nbsp;State</th>
-        <td class="col-md-3"><% if (alarm.getTTicketState() == null) {%>
+        <th class="col-2">Ticket&nbsp;State</th>
+        <td class="col-4"><% if (alarm.getTTicketState() == null) {%>
             &nbsp;
             <% } else {%>
             <%= alarm.getTTicketState()%> 
             <% }%>
         </td>
     </tr>
-    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
-        <th class="col-md-1">Reduction&nbsp;Key</th>
-        <td class="col-md-11" colspan="3">
+    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+        <th class="col-2">Reduction&nbsp;Key</th>
+        <td class="col-10" colspan="3">
             <% if (alarm.getReductionKey() != null) {%>
             <%=alarm.getReductionKey()%>
             <% } else {%>
@@ -233,39 +252,39 @@
 </table>
 </div>
 
-<div class="panel panel-default severity">
-  <div class="panel-heading">
-    <h3 class="panel-title">Log&nbsp;Message</h3>
+<div class="card severity">
+  <div class="card-header">
+    <span>Log&nbsp;Message</span>
   </div>
-  <div class="panel-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
+  <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
     <%=WebSecurityUtils.sanitizeString(alarm.getLogMsg(), true)%>
   </div>
 </div>
 
-<div class="panel panel-default severity">
-  <div class="panel-heading">
-    <h3 class="panel-title">Description</h3>
+<div class="card severity">
+  <div class="card-header">
+    <span>Description</span>
   </div>
-  <div class="panel-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
+  <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
     <%=WebSecurityUtils.sanitizeString(alarm.getDescription(), true)%>
   </div>
 </div>
 
 <% if (alarm.isPartOfSituation()) { %>
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Parent Situation(s)</h3>
+<div class="card">
+    <div class="card-header">
+        <span>Parent Situation(s)</span>
     </div>
-    <table class="table table-condensed severity">
+    <table class="table table-sm severity">
         <thead>
-            <tr>
-                <th width="2%">ID</th>
-                <th width="6%">Severity</th>
-                <th width="20%">Node</th>
-                <th width="4%">Count</th>
-                <th width="14%">Last</th>
-                <th width="54%">Log Msg</th>
-            </tr>
+        <tr>
+            <th width="2%">ID</th>
+            <th width="6%">Severity</th>
+            <th width="20%">Node</th>
+            <th width="4%">Count</th>
+            <th width="14%">Last</th>
+            <th width="54%">Log Msg</th>
+        </tr>
         </thead>
         <%
             final TreeSet<OnmsAlarm> sortedSet = new TreeSet<OnmsAlarm>(new Comparator<OnmsAlarm>() {
@@ -284,26 +303,26 @@
                 </td>
                 <td class="divider bright" valign="middle">
                     <nobr>
-                    <strong>${relatedVar.severityLabel}</strong>
+                        <strong>${relatedVar.severityLabel}</strong>
                     </nobr>
                 </td>
                 <td class="divider" valign="middle">
                     <a href="element/node.jsp?node=${relatedVar.nodeId}">${relatedVar.nodeLabel}</a>
                 </td>
                 <td class="divider" valign="middle">
-                    ${relatedVar.counter}
+                        ${relatedVar.counter}
                 </td>
                 <td class="divider" valign="middle">
                     <c:if test="${relatedVar.lastEvent != null }">
-                        <span title="Event ${relatedVar.lastEvent.id}">
-                            <a href="event/detail.htm?id=${relatedVar.lastEvent.id}">
-                                <onms:datetime date="${relatedVar.lastEventTime}" />
-                            </a>
-                        </span>
+	                        <span title="Event ${relatedVar.lastEvent.id}">
+	                            <a href="event/detail.htm?id=${relatedVar.lastEvent.id}">
+	                                <onms:datetime date="${relatedVar.lastEventTime}" />
+	                            </a>
+	                        </span>
                     </c:if>
                 </td>
                 <td class="divider" valign="middle">
-                    ${relatedVar.logMsg}
+                        ${relatedVar.logMsg}
                 </td>
             </tr>
         </c:forEach>
@@ -312,21 +331,21 @@
 <% } %>
 
 <% if (alarm.isSituation()) { %>
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Related Alarm(s)</h3>
+<div class="card">
+    <div class="card-header">
+        <span>Related Alarm(s)</span>
     </div>
-    <table class="table table-condensed severity">
+    <table class="table table-sm severity">
         <thead>
-            <tr>
-                <th width="2%">ID</th>
-                <th width="4%">Situation</th>
-                <th width="6%">Severity</th>
-                <th width="20%">Node</th>
-                <th width="4%">Count</th>
-                <th width="14%">Last</th>
-                <th width="50%">Log Msg</th>
-            </tr>
+        <tr>
+            <th width="2%">ID</th>
+            <th width="4%">Situation</th>
+            <th width="6%">Severity</th>
+            <th width="20%">Node</th>
+            <th width="4%">Count</th>
+            <th width="14%">Last</th>
+            <th width="50%">Log Msg</th>
+        </tr>
         </thead>
         <%
             final TreeSet<OnmsAlarm> sortedSet = new TreeSet<OnmsAlarm>(new Comparator<OnmsAlarm>() {
@@ -366,11 +385,11 @@
                 </td>
                 <td class="divider" valign="middle">
                     <c:if test="${relatedVar.lastEvent != null }">
-                        <span title="Event ${relatedVar.lastEvent.id}">
-                            <a href="event/detail.htm?id=${relatedVar.lastEvent.id}">
-                                <onms:datetime date="${relatedVar.lastEventTime}" />
-                            </a>
-                        </span>
+	                        <span title="Event ${relatedVar.lastEvent.id}">
+	                            <a href="event/detail.htm?id=${relatedVar.lastEvent.id}">
+	                                <onms:datetime date="${relatedVar.lastEventTime}" />
+	                            </a>
+	                        </span>
                     </c:if>
                 </td>
                 <td class="divider" valign="middle">
@@ -383,11 +402,11 @@
 <% } %>
 
 <% if (acks != null && acks.size() > 0) {%>
-<div class="panel panel-default severity">
-  <div class="panel-heading">
-    <h3 class="panel-title">Acknowledgements</h3>
+<div class="card severity">
+  <div class="card-header">
+    <span>Acknowledgements</span>
   </div>
-<table class="table table-condensed severity">
+<table class="table table-sm severity">
     <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
         <th>Acknowledged&nbsp;By</th>
         <th>Acknowledged&nbsp;Type</th>
@@ -406,18 +425,16 @@
 
 <div class="row">
 <div class="col-md-6">
-<div class="panel panel-default severity">
-  <div class="panel-heading">
-    <h3 class="panel-title">Sticky&nbsp;Memo</h3>
+<div class="card severity">
+  <div class="card-header">
+    <span>Sticky&nbsp;Memo</span>
   </div>
-  <div class="panel-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
+  <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
 	         <form class="form" method="post" action="alarm/saveStickyMemo.htm">
-				<textarea style="width:100%" name="stickyMemoBody" ><%=(alarm.getStickyMemo() != null && alarm.getStickyMemo().getBody() != null) ? alarm.getStickyMemo().getBody() : ""%></textarea>
+				<textarea class="w-100 mb-1" name="stickyMemoBody" ><%=(alarm.getStickyMemo() != null && alarm.getStickyMemo().getBody() != null) ? alarm.getStickyMemo().getBody() : ""%></textarea>
 				<input type="hidden" name="alarmId" value="<%=alarm.getId() %>"/>
-                <div class="btn-group btn-group-sm">
-                <form:input class="btn btn-default" type="submit" value="Save" />
-                <form:input class="btn btn-default" type="button" value="Delete" onclick="document.getElementById('deleteStickyForm').submit();"/>
-                </div>
+                <form:input class="btn btn-sm btn-secondary" type="submit" value="Save" />
+                <form:input class="btn btn-sm btn-secondary" type="button" value="Delete" onclick="document.getElementById('deleteStickyForm').submit();"/>
 	         </form>
 	         <form id="deleteStickyForm" method="post" action="alarm/removeStickyMemo.htm">
 				<input type="hidden" name="alarmId" value="<%=alarm.getId() %>"/>
@@ -444,18 +461,16 @@
 </div>
 
 <div class="col-md-6">
-<div class="panel panel-default severity">
-  <div class="panel-heading">
-    <h3 class="panel-title">Journal&nbsp;Memo</h3>
+<div class="card severity">
+  <div class="card-header">
+    <span>Journal&nbsp;Memo</span>
   </div>
-  <div class="panel-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
+  <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
             <form class="form" method="post" action="alarm/saveJournalMemo.htm">
-                <textarea style="width:100%" name="journalMemoBody" ><%=(alarm.getReductionKeyMemo() != null && alarm.getReductionKeyMemo().getBody() != null) ? alarm.getReductionKeyMemo().getBody() : ""%></textarea>
+                <textarea class="w-100 mb-1" name="journalMemoBody" ><%=(alarm.getReductionKeyMemo() != null && alarm.getReductionKeyMemo().getBody() != null) ? alarm.getReductionKeyMemo().getBody() : ""%></textarea>
                 <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
-                <div class="btn-group btn-group-sm">
-                <form:input class="btn btn-default" type="submit" value="Save" />
-                <form:input class="btn btn-default" type="button" value="Delete" onclick="document.getElementById('deleteJournalForm').submit();"/>
-                </div>
+                <form:input class="btn btn-sm btn-secondary" type="submit" value="Save" />
+                <form:input class="btn btn-sm btn-secondary" type="button" value="Delete" onclick="document.getElementById('deleteJournalForm').submit();"/>
             </form>
             <form id="deleteJournalForm" method="post" action="alarm/removeJournalMemo.htm">
                 <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
@@ -484,11 +499,11 @@
 
 </div>
 
-<div class="panel panel-default severity">
-  <div class="panel-heading">
-    <h3 class="panel-title">Operator&nbsp;Instructions</h3>
+<div class="card severity">
+  <div class="card-header">
+    <span>Operator&nbsp;Instructions</span>
   </div>
-  <div class="panel-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
+  <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
             <%if (alarm.getOperInstruct() == null) {%>
             No instructions available.
             <% } else {%>
@@ -498,85 +513,86 @@
 </div>
 
 <% if (request.isUserInRole(Authentication.ROLE_ADMIN) || !request.isUserInRole(Authentication.ROLE_READONLY)) {%>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="input-group mt-2">
+            <form class="form-inline mr-1" method="post" action="alarm/acknowledge">
+                <input type="hidden" name="actionCode" value="<%=action%>" />
+                <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
+                <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
+                <button class="form-control btn btn-secondary" type="submit">
+                    <i class="<%=ackButtonIcon%>"></i> <%=ackButtonName%>
+                </button>
+            </form>
 
-<div class="row">
-<div class="col-md-6">
-
-                <form class="form-inline" method="post" action="alarm/acknowledge">
-                    <input type="hidden" name="actionCode" value="<%=action%>" />
+            <%if (showEscalate) {%>
+                <form class="form-inline mr-1" method="post" action="alarm/changeSeverity?actionCode=<%=escalateAction%>">
                     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
                     <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
-                    <input class="form-control btn btn-default" type="submit" value="<%=ackButtonName%>" />
+                    <button class="form-control btn btn-secondary" type="submit">
+                        <i class="fa fa-arrow-up"></i> Escalate
+                    </button>
                 </form>
+            <%}%>
 
-        <%if (showEscalate || showClear) {%>
-
-                <form class="form-inline" method="post" action="alarm/changeSeverity">
+            <%if (showClear) {%>
+                <form class="form-inline" method="post" action="alarm/changeSeverity?actionCode=<%=clearAction%>">
                     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-                    <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />	  
-                    <select class="form-control" name="actionCode">
-                        <%if (showEscalate) {%>
-                        <option value="<%=escalateAction%>">Escalate this alarm</option>
-                        <% }%>
-                        <%if (showClear) {%>
-                        <option value="<%=clearAction%>">Clear this alarm</option>
-                        <% }%>
-                    </select>
-                    <input class="form-control btn btn-default" type="submit" value="Go"/>
+                    <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
+                    <button class="form-control btn btn-secondary" type="submit" value="Clear">
+                        <i class="fa fa-thumbs-up"></i> Clear
+                    </button>
                 </form>
+            <%}%>
+            </div>
+        </div>
+        <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.alarmTroubleTicketEnabled"))) {%>
+        <div class="col-md-6">
+            <div class="input-group mt-2">
+            <form class="form-inline mr-1" method="post" action="alarm/ticket/create.htm">
+                <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
+                <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
+                <form:input class="form-control btn btn-secondary" type="submit" value="Create Ticket" disabled="<%=((alarm.getTTicketState() != null) && (alarm.getTTicketState() != TroubleTicketState.CREATE_FAILED)) ? true : false %>" />
+                <%-- Remedy Specific TroubleTicket - Start --%>
+                <% if ("org.opennms.netmgt.ticketer.remedy.RemedyTicketerPlugin".equalsIgnoreCase(Vault.getProperty("opennms.ticketer.plugin")) && (alarm.getTTicketState() == null || alarm.getTTicketState().toString().equals("CREATE_FAILED") )) { %>
+                  <input type="hidden" name="nodelabel" value="<%=alarm.getNodeLabel()%>"/>
+                  <input class="form-control" type="text" name="remedy.user.comment" value="Add a Comment here"/>
+                  <select class="form-control" name="remedy.urgency">
+                    <option value="1-Critical">1-Critical</option>
+                    <option value="2-High">2-High</option>
+                    <option value="3-Medium">3-Medium</option>
+                    <option value="4-Low" selected="selected">4-Low</option>
+                  </select>
+                  <select class="form-control" name="remedy.assignedgroup">
+                    <% String propsFile = new String(Vault.getProperty("opennms.home") + "/etc/remedy.properties");
+                       Configuration remedyConfig = null;
+                       try {
+                         remedyConfig = new PropertiesConfiguration(propsFile);
+                       } catch (final ConfigurationException e) {}
+                       for (String group: remedyConfig.getString("remedy.targetgroups").split(":")) { %>
+                         <option value="<%=group%>"><%=group%></option>
+                    <% }  %>
+                  </select>
+                <% } %>
+                <%-- Remedy Specific TroubleTicket - End --%>
+            </form>
 
-        <% } // showEscalate || showClear %>
+            <form class="form-inline mr-1" method="post" action="alarm/ticket/update.htm">
+                <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
+                <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
+                <form:input class="form-control btn btn-secondary" type="submit" value="Update Ticket" disabled="<%=(alarm.getTTicketState() == null || alarm.getTTicketId() == null) %>"/>
+            </form>
 
-<% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.alarmTroubleTicketEnabled"))) {%>
-
-</div>
-<div class="col-md-6">
-
-<form class="form-inline" method="post" action="alarm/ticket/create.htm">
-    <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-    <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input class="form-control btn btn-default" type="submit" value="Create Ticket" disabled="<%=((alarm.getTTicketState() != null) && (alarm.getTTicketState() != TroubleTicketState.CREATE_FAILED)) ? true : false %>" />
-    <%-- Remedy Specific TroubleTicket - Start --%>
-    <% if ("org.opennms.netmgt.ticketer.remedy.RemedyTicketerPlugin".equalsIgnoreCase(Vault.getProperty("opennms.ticketer.plugin")) && (alarm.getTTicketState() == null || alarm.getTTicketState().toString().equals("CREATE_FAILED") )) { %>
-      <input type="hidden" name="nodelabel" value="<%=alarm.getNodeLabel()%>"/>
-      <input class="form-control" type="text" name="remedy.user.comment" value="Add a Comment here"/>
-      <select class="form-control" name="remedy.urgency">
-        <option value="1-Critical">1-Critical</option>
-        <option value="2-High">2-High</option>
-        <option value="3-Medium">3-Medium</option>
-        <option value="4-Low" selected="selected">4-Low</option>
-      </select>
-      <select class="form-control" name="remedy.assignedgroup">
-        <% String propsFile = new String(Vault.getProperty("opennms.home") + "/etc/remedy.properties");
-           Configuration remedyConfig = null;
-           try {
-             remedyConfig = new PropertiesConfiguration(propsFile);
-           } catch (final ConfigurationException e) {}
-           for (String group: remedyConfig.getString("remedy.targetgroups").split(":")) { %>
-             <option value="<%=group%>"><%=group%></option>
-        <% }  %>
-      </select>
-    <% } %>
-    <%-- Remedy Specific TroubleTicket - End --%>
-</form>
-
-<form class="form-inline" method="post" action="alarm/ticket/update.htm">
-    <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-    <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input class="form-control btn btn-default" type="submit" value="Update Ticket" disabled="<%=(alarm.getTTicketState() == null || alarm.getTTicketId() == null) %>"/>
-</form>
-
-<form class="form-inline" method="post" action="alarm/ticket/close.htm">
-    <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-    <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input class="form-control btn btn-default" type="submit" value="Close Ticket" disabled="<%=((alarm.getTTicketState() == null) || ((alarm.getTTicketState() != TroubleTicketState.OPEN) && (alarm.getTTicketState() != TroubleTicketState.CLOSE_FAILED))) ? true : false %>" />
-</form>
-
-</div>
-</div>
+            <form class="form-inline" method="post" action="alarm/ticket/close.htm">
+                <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
+                <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
+                <form:input class="form-control btn btn-secondary" type="submit" value="Close Ticket" disabled="<%=((alarm.getTTicketState() == null) || ((alarm.getTTicketState() != TroubleTicketState.OPEN) && (alarm.getTTicketState() != TroubleTicketState.CLOSE_FAILED))) ? true : false %>" />
+            </form>
+            </div>
+        </div>
+        <% } // alarmTroubleTicketEnabled %>
+    </div>
 <br/>
-
-<% } // alarmTroubleTicketEnabled %>
 <% } // isUserInRole %>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

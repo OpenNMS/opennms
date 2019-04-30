@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.features</artifactId>
-        <version>24.0.0-SNAPSHOT</version>
+        <version>25.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features</groupId>
@@ -23,20 +23,6 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                     </instructions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.opennms.maven.plugins</groupId>
-                <artifactId>features-maven-plugin</artifactId>
-                <configuration>
-                    <name>ifttt-integration</name>
-                    <bundles>
-                        <bundle>mvn:org.opennms.features/org.opennms.features.ifttt/${project.version}</bundle>
-                    </bundles>
-                    <features>
-                        <feature>opennms-dao-api</feature>
-                        <feature>guava</feature>
-                    </features>
                 </configuration>
             </plugin>
             <plugin>

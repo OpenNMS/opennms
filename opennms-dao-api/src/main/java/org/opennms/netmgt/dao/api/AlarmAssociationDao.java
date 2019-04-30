@@ -28,10 +28,15 @@
 
 package org.opennms.netmgt.dao.api;
 
+import java.util.List;
+
 import org.opennms.netmgt.model.AlarmAssociation;
 
 /**
  * <p> {@link AlarmDao} manages all persistence. Never need to call this dao to persist elements </p>
  */
 public interface AlarmAssociationDao extends OnmsDao<AlarmAssociation, Integer>{
+
+    List<AlarmAssociation> getAssociationsForSituation(int situationId);
+
 }

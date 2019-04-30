@@ -57,14 +57,14 @@
   outages</a> to find the outage you are looking for.
 </p>
 
-<form role="form" method="get" action="outage/detail.htm">
+<form role="form" method="get" action="outage/detail.htm" class="form mb-4">
   <div class="row">
     <div class="form-group col-md-2">
-      <label for="input_id">Get&nbsp;details&nbsp;for&nbsp;Outage&nbsp;ID:</label>
-      <input type="text" class="form-control" name="id"/>
+      <label for="input_id">Get&nbsp;details&nbsp;for&nbsp;Outage&nbsp;ID</label>
+      <input type="text" class="form-control" id="input_id" name="id"/>
     </div>
   </div>
-  <button type="submit" class="btn btn-default">Search</button>
+  <button type="submit" class="btn btn-secondary">Search</button>
 </form>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

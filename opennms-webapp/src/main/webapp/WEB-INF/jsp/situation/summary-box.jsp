@@ -51,20 +51,20 @@
 
 <!-- alarm/summary-box.htm -->
 <c:url var="headingLink" value="alarm/list.htm"/>
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title"><a href="${headingLink}">Pending Situations</a></h3>
+<div class="card">
+  <div class="card-header">
+    <span><a href="${headingLink}">Pending Situations</a></span>
   </div>
   <c:choose>
     <c:when test="${empty summaries}">
-      <div class="panel-body">
-        <p class="noBottomMargin">
+      <div class="card-body">
+        <p class="mb-0">
           There are no pending problems.
         </p>
       </div>
     </c:when>
     <c:otherwise>
-      <table class="table table-condensed severity">
+      <table class="table table-sm severity mb-0">
         <c:forEach var="summary" items="${summaries}">
           <tr class="severity-${summary.situationSeverity.label} nodivider">
             <td class="bright">
@@ -99,7 +99,7 @@
         </c:forEach>
       </table>
       <c:if test="${moreCount > 0}">
-        <div class="panel-footer text-right">
+        <div class="card-footer text-right">
           <c:url var="moreLink" value="alarm/list.htm"/>
           <a href="alarm/list.htm?filter=situation%3Dtrue">All pending problems...</a>
         </div>

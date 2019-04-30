@@ -59,7 +59,7 @@
 
 <form method="get" action="event/detail.jsp">
   <p>
-    Get&nbsp;details&nbsp;for&nbsp;Event&nbsp;ID:
+    Get&nbsp;details&nbsp;for&nbsp;Event&nbsp;ID
     <br/>
     <input type="text" name="id"/>
     <input type="submit" value="Search"/>

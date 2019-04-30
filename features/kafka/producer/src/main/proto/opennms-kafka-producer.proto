@@ -147,3 +147,42 @@ message Node {
   repeated SnmpInterface snmp_interface = 12;
   HwEntity hw_inventory = 13;
 }
+
+message TopologyRef {
+  string id = 1;
+  enum Protocol {
+    LLDP = 0;
+    OSPF = 1;
+    ISIS = 2;
+    BRIDGE = 3;
+    CDP = 4;
+    USERDEFINED = 5;
+  }
+  Protocol protocol = 2;
+}
+
+message TopologySegment {
+  TopologyRef ref = 1;
+}
+
+message TopologyPort {
+  string vertex_id = 1;
+  uint64 if_index = 2;
+  string if_name = 3;
+  string address = 4;
+  NodeCriteria node_criteria = 5;
+}
+
+message TopologyEdge {
+  TopologyRef ref = 1;
+  oneof source {
+    TopologyPort sourcePort = 3;
+    TopologySegment sourceSegment = 4;
+    Node sourceNode = 5;
+  }
+  oneof target {
+    TopologyPort targetPort = 6;
+    TopologySegment targetSegment = 7;
+    Node targetNode = 8;
+  }
+}

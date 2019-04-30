@@ -6,7 +6,7 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>24.0.0-SNAPSHOT</version>
+        <version>25.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>jmxconfiggenerator</artifactId>
@@ -34,26 +34,6 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
             </plugin>
-            <!-- don't generate this, because we need to have some dependencies scoped differently
-                 between the features and the onejar maven plugin -->
-            <!--
-            <plugin>
-                <groupId>org.opennms.maven.plugins</groupId>
-                <artifactId>features-maven-plugin</artifactId>
-                <configuration>
-                    <features>
-                        <feature>guava</feature>
-                        <feature>commons-io</feature>
-                    </features>
-                    <bundles>
-                        <bundle>mvn:org.opennms.features/jmxconfiggenerator/${project.version}</bundle>
-                        <bundle>wrap:mvn:args4j/args4j/${args4jVersion}</bundle>
-                        <bundle>wrap:mvn:org.jvnet.opendmk/jmxremote_optional/${jmxremote.optional.version}</bundle>
-                        <bundle>mvn:org.apache.velocity/velocity/${velocity.version}</bundle>
-                    </bundles>
-                </configuration>
-            </plugin>
-            -->
 
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

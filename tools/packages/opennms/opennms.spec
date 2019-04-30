@@ -27,7 +27,7 @@
 %{!?_descr:%define _descr "OpenNMS"}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
-%{!?jdk:%define jdk java-1.8.0}
+%{!?jdk:%define jdk java-11-openjdk-devel}
 
 %{!?extrainfo:%define extrainfo }
 %{!?extrainfo2:%define extrainfo2 }
@@ -64,6 +64,8 @@ Requires(pre):		%{name}-core        = %{version}-%{release}
 Requires:		%{name}-core        = %{version}-%{release}
 Requires(pre):		postgresql-server  >= 9.1
 Requires:		postgresql-server  >= 9.1
+Requires(pre):		%{jdk}
+Requires:		%{jdk}
 
 # don't worry about buildrequires, the shell script will bomb quick  =)
 #BuildRequires:		%{jdk}
@@ -92,11 +94,11 @@ Requires(pre):	jicmp >= 2.0.0
 Requires:	jicmp >= 2.0.0
 Requires(pre):	jicmp6 >= 2.0.0
 Requires:	jicmp6 >= 2.0.0
-Requires(pre):	%{jdk}
-Requires:	%{jdk}
 Obsoletes:	opennms < 1.3.11
 Provides:	%{name}-plugin-protocol-xml = %{version}-%{release}
 Obsoletes:	%{name}-plugin-protocol-xml < %{version}
+Provides:	%{name}-plugin-protocol-dhcp = %{version}-%{release}
+Obsoletes:	%{name}-plugin-protocol-dhcp < %{version}
 
 %description core
 The core backend.  This package contains the main daemon responsible
@@ -145,8 +147,6 @@ This package contains the API and user documentation.
 %package remote-poller
 Summary:	Remote (Distributed) Poller for %{_descr}
 Group:		Applications/System
-Requires(pre):	%{jdk}
-Requires:	%{jdk}
 
 %description remote-poller
 The distributed monitor.  For details, see:
@@ -159,8 +159,6 @@ The distributed monitor.  For details, see:
 %package jmx-config-generator
 Summary:	Generate JMX Configuration
 Group:		Applications/System
-Requires(pre):	%{jdk}
-Requires:	%{jdk}
 Requires:	%{name}-core = %{version}-%{release}
 
 %description jmx-config-generator
@@ -237,8 +235,6 @@ Requires(pre):	%{name}-plugin-ticketer-rt
 Requires:	%{name}-plugin-ticketer-rt
 Requires(pre):	%{name}-plugin-protocol-cifs
 Requires:	%{name}-plugin-protocol-cifs
-Requires(pre):	%{name}-plugin-protocol-dhcp
-Requires:	%{name}-plugin-protocol-dhcp
 Requires(pre):	%{name}-plugin-protocol-nsclient
 Requires:	%{name}-plugin-protocol-nsclient
 Requires(pre):	%{name}-plugin-protocol-radius
@@ -422,20 +418,6 @@ Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-protocol-cifs
 The CIFS protocol plugin provides a poller monitor for CIFS network shares.
-
-%{extrainfo}
-%{extrainfo2}
-
-
-%package plugin-protocol-dhcp
-Summary:	DHCP Poller and Detector Plugin
-Group:		Applications/System
-Requires(pre):	%{name}-core = %{version}-%{release}
-Requires:	%{name}-core = %{version}-%{release}
-
-%description plugin-protocol-dhcp
-The DHCP protocol plugin provides a daemon, provisioning detector, capsd plugin, and
-poller monitor for DHCP.
 
 %{extrainfo}
 %{extrainfo2}
@@ -641,7 +623,6 @@ find %{buildroot}%{instprefix}/etc ! -type d | \
 	sed -e "s,^%{buildroot},%config(noreplace) ," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
-	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'jira.properties' | \
 	grep -v 'jms-northbounder-configuration.xml' | \
 	grep -v 'juniper-tca' | \
@@ -662,7 +643,6 @@ find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
 	sed -e "s,^%{buildroot},," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
-	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'jira.properties' | \
 	grep -v 'jms-northbounder-configuration.xml' | \
 	grep -v 'juniper-tca' | \
@@ -699,7 +679,6 @@ find %{buildroot}%{instprefix}/contrib ! -type d | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/lib ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
-	grep -v 'dhcp4java' | \
 	grep -v 'jradius' | \
 	grep -v 'opennms-alarm-northbounder-jms' | \
 	grep -v 'opennms-integration-otrs' | \
@@ -707,7 +686,6 @@ find %{buildroot}%{instprefix}/lib ! -type d | \
 	grep -v 'opennms_jmx_config_generator' | \
 	grep -v 'org.opennms.features.juniper-tca-collector' | \
 	grep -v 'org.opennms.protocols.cifs' | \
-	grep -v 'org.opennms.protocols.dhcp' | \
 	grep -v 'org.opennms.protocols.nsclient' | \
 	grep -v 'org.opennms.protocols.radius' | \
 	grep -v 'org.opennms.protocols.xmp' | \
@@ -859,14 +837,6 @@ rm -rf %{buildroot}
 %{instprefix}/lib/opennms-integration-rt-*.jar
 %config(noreplace) %{instprefix}/etc/rt.properties
 %{sharedir}/etc-pristine/rt.properties
-
-%files plugin-protocol-dhcp
-%defattr(664 root root 775)
-%config(noreplace) %{instprefix}/etc/dhcp*.xml
-%{instprefix}/lib/dhcp4java-*.jar
-%{instprefix}/lib/org.opennms.protocols.dhcp*.jar
-%{sharedir}/etc-pristine/dhcp*.xml
-%{sharedir}/xsds/dhcp*.xsd
 
 %files plugin-protocol-nsclient
 %defattr(664 root root 775)
@@ -1055,7 +1025,7 @@ done
 
 printf -- "- cleaning up \$OPENNMS_HOME/data... "
 if [ -d "$ROOT_INST/data" ]; then
-	find "$ROOT_INST/data/"* -maxdepth 0 -name tmp -prune -o -print0 | xargs -0 rm -rf
+	find "$ROOT_INST/data/"* -maxdepth 0 -name tmp -o -name history.txt -prune -o -print0 | xargs -0 rm -rf
 	if [ -d "$ROOT_INST/data/tmp" ]; then
 		find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
 	fi

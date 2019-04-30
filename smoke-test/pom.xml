@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>24.0.0-SNAPSHOT</version>
+  <version>25.0.0-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <properties>
     <skipITs>true</skipITs>
@@ -13,7 +13,7 @@
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <jackson2Version>2.6.6</jackson2Version>
     <jestVersion>5.3.3</jestVersion>
-    <karafVersion>4.1.5</karafVersion>
+    <karafVersion>4.2.3</karafVersion>
     <test.fork.count>1</test.fork.count>
   </properties>
   <build>
@@ -337,7 +337,7 @@
     <dependency>
       <groupId>net.lightbody.bmp</groupId>
       <artifactId>browsermob-core-littleproxy</artifactId>
-      <version>2.1.0-beta-2</version>
+      <version>2.1.0-beta-6</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -366,6 +366,12 @@
     <dependency>
       <groupId>org.opennms.features.distributed</groupId>
       <artifactId>org.opennms.features.distributed.dao-test</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.sink</groupId>
+      <artifactId>org.opennms.core.ipc.sink.common</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
