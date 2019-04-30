@@ -38,8 +38,10 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.smoketest.utils.RestClient;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -74,6 +76,7 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
 
     @Before
     public void setUp() {
+        resetConfiguration();
         uiPage = new Page(getBaseUrl());
         expectedTabs = Lists.newArrayList( // TODO MVR tabdata
                 new SettingsTab(uiPage),
@@ -82,10 +85,15 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
                 new NominatimTab(uiPage)
         );
         uiPage.open();
+    }
 
-        // Disable geocoders
-        final SettingsTab settingsTab = new SettingsTab(uiPage);
-        settingsTab.setActiveGeocoder(null);
+    @After
+    public void tearDown() {
+        resetConfiguration();
+    }
+
+    private void resetConfiguration() {
+        new RestClient(getServerAddress(), getServerHttpPort()).resetGeocoderConfiguration();
     }
 
     @Test
