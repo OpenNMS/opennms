@@ -38,8 +38,6 @@ public interface GeocoderService {
      */
     String getId();
 
-    // TODO MVR remove Exception
-
     /**
      * Resolves the given address string to valid coordinates.
      * Originally it returned only the {@link Coordinates} but that makes it hard to distinguish

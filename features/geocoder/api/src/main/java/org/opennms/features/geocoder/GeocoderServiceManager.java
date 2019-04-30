@@ -34,15 +34,12 @@ import java.util.Map;
 
 public interface GeocoderServiceManager {
 
-    // TODO MVR no exception ???
     void updateConfiguration(GeocoderServiceManagerConfiguration configuration) throws IOException;
 
-    // TODO MVR no exception ???
     GeocoderServiceManagerConfiguration getConfiguration() throws IOException;
 
     GeocoderService getActiveGeocoderService();
 
-    // TODO MVR no exception ???
     void updateGeocoderConfiguration(String geocoderId, Map<String, Object> newProperties) throws IOException;
 
     List<GeocoderService> getGeocoderServices();
