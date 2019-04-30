@@ -51,7 +51,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 
-// TODO MVR a lot of the stuff used here, is similar to the ClassificationRulePageIT :-(
 public class GeocoderServiceConfigurationPageIT extends UiPageTest {
 
     private static class Geocoder {
@@ -70,7 +69,7 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
         Geocoder NOMINATIM = new Geocoder("nominatim","Nominatim");
     }
 
-    private ArrayList<Tab> expectedTabs;
+    private ArrayList<TabData> expectedTabs;
 
     private Page uiPage;
 
@@ -78,11 +77,11 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
     public void setUp() {
         resetConfiguration();
         uiPage = new Page(getBaseUrl());
-        expectedTabs = Lists.newArrayList( // TODO MVR tabdata
-                new SettingsTab(uiPage),
-                new GoogleTab(uiPage),
-                new MapquestTab(uiPage),
-                new NominatimTab(uiPage)
+        expectedTabs = Lists.newArrayList(
+                new TabData("settings", "Settings", true),
+                new TabData(Geocoders.GOOGLE.id, Geocoders.GOOGLE.label, false),
+                new TabData(Geocoders.MAPQUEST.id, Geocoders.MAPQUEST.label, false),
+                new TabData(Geocoders.NOMINATIM.id, Geocoders.NOMINATIM.label, false)
         );
         uiPage.open();
     }
@@ -99,18 +98,18 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
     @Test
     public void verifyTabs() {
         // Verify expectation
-        for (Tab expectedTab : expectedTabs) {
-            Tab actualTab = uiPage.getTab(expectedTab.getName());
-            assertThat(expectedTab.getName(), is(actualTab.getName()));
-            assertThat(expectedTab.getLabel(), is(actualTab.getLabel()));
-            assertThat(expectedTab.isActive(), is(actualTab.isActive()));
+        for (TabData expectedTab : expectedTabs) {
+            Tab actualTab = uiPage.getTab(expectedTab.name);
+            assertThat(expectedTab.name, is(actualTab.getName()));
+            assertThat(expectedTab.label, is(actualTab.getLabel()));
+            assertThat(expectedTab.active, is(actualTab.isActive()));
         }
 
         assertThat(uiPage.getActiveTab().getName(), is("settings"));
 
         // Ensure clicking works as well
-        for (Tab tab : expectedTabs) {
-            uiPage.getTab(tab.getName()).click();
+        for (TabData tab : expectedTabs) {
+            uiPage.getTab(tab.name).click();
         }
     }
 
@@ -250,6 +249,18 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
                     return new Tab(this, name.trim(), label.trim());
                 }).collect(Collectors.toList());
             });
+        }
+    }
+
+    private class TabData {
+        private String name;
+        private String label;
+        private boolean active;
+
+        public TabData(String name, String label, boolean active) {
+            this.name = Objects.requireNonNull(name);
+            this.label = Objects.requireNonNull(label);
+            this.active = active;
         }
     }
 
