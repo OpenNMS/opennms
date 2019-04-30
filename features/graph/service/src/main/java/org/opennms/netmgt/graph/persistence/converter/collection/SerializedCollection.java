@@ -28,45 +28,59 @@
 
 package org.opennms.netmgt.graph.persistence.converter.collection;
 
+import java.util.List;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
-public class PersistedCollectionEntry<T> {
-    private Class<T> type;
-    private String value;
+/**
+ * Represents a {@link java.util.Collection} to be persisted as Json string.
+ * This class contains the serialized objects of the original Java object,
+ * as well as the collection type, to later de-serialize accordingly.
+ *
+ * @see org.opennms.netmgt.graph.persistence.converter.CollectionConverter
+ */
+public class SerializedCollection {
+    // The type of the collection
+    private Class type;
+    // Each entry of the original collection, but serialized
+    private List<SerializedCollectionEntry> entries;
 
-    public PersistedCollectionEntry(Class<T> type, String value) {
-        this.type = type;
-        this.value = value;
-    }
-
-    public Class<T> getType() {
+    public Class getType() {
         return type;
     }
 
-    public String getValue() {
-        return value;
+    public void setType(Class type) {
+        this.type = type;
+    }
+
+    public List<SerializedCollectionEntry> getEntries() {
+        return entries;
+    }
+
+    public void setEntries(List<SerializedCollectionEntry> entries) {
+        this.entries = entries;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PersistedCollectionEntry<?> that = (PersistedCollectionEntry<?>) o;
+        final SerializedCollection that = (SerializedCollection) o;
         return Objects.equal(type, that.type) &&
-                Objects.equal(value, that.value);
+                Objects.equal(entries, that.entries);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(type, value);
+        return Objects.hashCode(type, entries);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("type", type)
-                .add("value", value)
+                .add("entries", entries)
                 .toString();
     }
 }
