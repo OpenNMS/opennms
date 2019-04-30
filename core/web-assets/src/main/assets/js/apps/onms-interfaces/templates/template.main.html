@@ -24,6 +24,7 @@
             <th sort order="'hostName'"  by="ipOrder" reverse="ipReverse">IP Host Name</th>
             <th sort order="'ifIndex'"   by="ipOrder" reverse="ipReverse">SNMP ifIndex</th>
             <th sort order="'isManaged'" by="ipOrder" reverse="ipReverse">Managed</th>
+            <th sort order="'hasFlows'" by="ipOrder" reverse="ipReverse">Flows</th>
           </tr>
         </thead>
         <tbody>
@@ -32,6 +33,7 @@
             <td>{{ intf.hostName || 'N/A' }}</td>
             <td>{{ intf.ifIndex || 'N/A' }}</td>
             <td>{{ intf.isManaged }}</td>
+            <td><i class="fa fa-exchange" ng-if="intf.hasflows"></i></td>
           </tr>
        </tbody>
       </table>
@@ -71,6 +73,7 @@
             <th sort order="'ifName'"  by="snmpOrder" reverse="snmpReverse">SNMP ifName</th>
             <th sort order="'ifAlias'" by="snmpOrder" reverse="snmpReverse">SNMP ifAlias</th>
             <th sort order="'ifSpeed'" by="snmpOrder" reverse="snmpReverse">SNMP ifSpeed</th>
+            <th sort order="'hasFlows'" by="snmpOrder" reverse="snmpReverse">Flows</th>
           </tr>
         </thead>
         <tbody>
@@ -80,6 +83,7 @@
             <td>{{ intf.ifName  || 'N/A' }}</td>
             <td>{{ intf.ifAlias || 'N/A' }}</td>
             <td>{{ intf.ifSpeed || 'N/A' }}</td>
+            <td><i class="fa fa-exchange" ng-if="intf.hasflows"></i></td>
           </tr>
        </tbody>
       </table>
