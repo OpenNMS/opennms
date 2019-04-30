@@ -1450,6 +1450,7 @@
         <feature>opennms-graph-api</feature>
         <feature>opennms-graph-updates</feature>
         <feature>opennms-graph-simple</feature>
+        <bundle>wrap:mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
         <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.service/${project.version}</bundle>
 
         <!-- The service implements the persistence as well -->
