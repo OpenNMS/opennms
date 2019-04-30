@@ -63,10 +63,11 @@ public class GeocodingRestServiceImpl implements GeocodingRestService {
 
     @Override
     public Response updateConfiguration(InputStream inputStream) throws IOException {
-        JSONTokener jsonTokener = new JSONTokener(inputStream);
-        JSONObject configuration = new JSONObject(jsonTokener);
-        // TODO MVR from JSON
-        geocoderServiceManager.updateConfiguration(new GeocoderServiceManagerConfiguration(configuration.toMap()));
+        final JSONTokener jsonTokener = new JSONTokener(inputStream);
+        final JSONObject configuration = new JSONObject(jsonTokener);
+        final Map<String, Object> configurationProperties = configuration.toMap();
+        final GeocoderServiceManagerConfiguration geocoderServiceManagerConfiguration = new GeocoderServiceManagerConfiguration(configurationProperties);
+        geocoderServiceManager.updateConfiguration(geocoderServiceManagerConfiguration);
         return Response.accepted().build();
     }
 
@@ -78,7 +79,7 @@ public class GeocodingRestServiceImpl implements GeocodingRestService {
         }
         final JSONArray serviceArray = new JSONArray();
         services.stream().forEach(geocoderService -> {
-            JSONObject eachService = new JSONObject();
+            final JSONObject eachService = new JSONObject();
             eachService.put("id", geocoderService.getId());
             eachService.put("config", geocoderService.getConfiguration().asMap());
 
@@ -86,9 +87,7 @@ public class GeocodingRestServiceImpl implements GeocodingRestService {
             try {
                 geocoderService.getConfiguration().validate();
             } catch (GeocoderConfigurationException ex) {
-                eachService.put("error", new JSONObject()
-                        .put("message", ex.getRawMessage())
-                        .put("context", ex.getContext()));
+                eachService.put("error", createErrorObject(ex));
             }
             serviceArray.put(eachService);
         });
@@ -103,18 +102,31 @@ public class GeocodingRestServiceImpl implements GeocodingRestService {
             try {
                 geocoderServiceManager.updateGeocoderConfiguration(geocoderId, properties);
             } catch (GeocoderConfigurationException ex) {
-                final JSONObject errorObject = new JSONObject()
-                        .put("message", ex.getRawMessage())
-                        .put("context", ex.getContext());
+                final JSONObject errorObject = createErrorObject(ex);
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(errorObject.toString())
                         .build();
             }
             return Response.noContent().build();
         } catch (IOException ex) {
-            // TODO MVR add data
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(createErrorObject(ex))
                     .build();
         }
+    }
+
+    private static JSONObject createErrorObject(Exception ex) {
+        return createErrorObject(ex.getMessage(), "entity");
+    }
+
+    private static JSONObject createErrorObject(GeocoderConfigurationException ex) {
+        return createErrorObject(ex.getRawMessage(), ex.getContext());
+    }
+
+    private static JSONObject createErrorObject(String message, String context) {
+        final JSONObject errorObject = new JSONObject()
+                .put("message", message)
+                .put("context", context);
+        return errorObject;
     }
 }
