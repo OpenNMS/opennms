@@ -142,7 +142,7 @@
                   <span class="fa fa-search"></span>
                 </div>
               </div>
-              <input class="form-control" type="text" placeholder="Search/Filter Resources" ng-model="domainFilter"></input>
+              <input class="form-control" type="text" placeholder="Search/Filter Resources" ng-model="resourceFilter"></input>
             </div>
             <table class="table table-sm" name="resources">
               <thead>

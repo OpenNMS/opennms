@@ -462,7 +462,7 @@ public class DiscoveryBridgeTopology {
                     continue;
                 }
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("postprocess: bridge:[{}] <--> bridge:[{}] topology found. \n{}",
+                    LOG.debug("postprocess: bridge:[{}] <--> bridge:[{}] topology found.",
                               postbridgeid, parsedbridgeid);
                 }
                 return;

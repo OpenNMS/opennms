@@ -159,7 +159,7 @@ featuresBoot = \
       instance/4.2.2, \
       package/4.2.2, \
       log/4.2.2, \
-      scv/24.0.0-SNAPSHOT, \
+      scv/24.1.0-SNAPSHOT, \
       ssh/4.2.2, \
       framework/4.2.2, \
       system/4.2.2, \
@@ -264,7 +264,7 @@ $ ssh -p 8201 admin@localhost
 ----
 admin@minion()> config:edit --alias udp-8877 --factory org.opennms.features.telemetry.listeners
 admin@minion()> config:property-set name Netflow-5
-admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.udp.UdpListener
+admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener
 admin@minion()> config:property-set parameters.port 8877
 admin@minion()> config:property-set parsers.0.name Netflow-5-Parser
 admin@minion()> config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser
@@ -321,7 +321,7 @@ Simply copy it to `${SENTINEL_HOME}/deploy/`.
         -->
         <config name="org.opennms.features.telemetry.adapters-netflow5">
             name = Netflow-5
-            class-name = org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5Adapter
+            class-name = org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter
         </config>
         <!-- Point sentinel to the correct elastic endpoint -->
         <config name="org.opennms.features.flows.persistence.elastic">
@@ -369,7 +369,7 @@ Simply copy it to `${SENTINEL_HOME}/deploy/`.
         -->
         <config name="org.opennms.features.telemetry.adapters-netflow5">
             name = Netflow-5
-            class-name = org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5Adapter
+            class-name = org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter
         </config>
         <!-- Point sentinel to the correct elastic endpoint -->
         <config name="org.opennms.features.flows.persistence.elastic">

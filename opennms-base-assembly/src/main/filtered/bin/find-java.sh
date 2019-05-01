@@ -192,6 +192,7 @@ main() {
 					current_java_version="${version_string}"
 				fi
 			done < /tmp/$$.javabins
+			rm -f /tmp/$$.javabins
 		fi
 	done
 

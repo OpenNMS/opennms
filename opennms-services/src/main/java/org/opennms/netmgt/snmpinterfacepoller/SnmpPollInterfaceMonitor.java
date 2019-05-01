@@ -128,7 +128,7 @@ public class SnmpPollInterfaceMonitor {
                 return mifaces;
             }
             if (operationalSnmpValues.size() != mifaces.size()) {
-                LOG.warn("Snmp Interface Operational statuses collection failed for interfaces in '{}' at location \", ipAddress, m_location");
+                LOG.warn("Snmp Interface Operational statuses collection failed for interfaces in '{}' at location {}", ipAddress, m_location);
                 return mifaces;
             }
             LOG.debug("Received admin/operational statuses for interfaces in '{}' at location {}", ipAddress, m_location);
