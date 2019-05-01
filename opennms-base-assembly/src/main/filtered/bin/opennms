@@ -863,13 +863,14 @@ case "$COMMAND" in
 	start|spawn)
 		$opennms_echo "Starting ${install.package.description}: \c"
 
-		if [ -f /etc/SuSE-release ]; then
-			doStart "$@"
+		doStart "$@"
+		__ret="$?"
 
+		if [ -f /etc/SuSE-release ]; then
 			# Remember status and be verbose
 			rc_status -v
 		elif [ "$FUNCTIONS_LOADED" -ne 0 ]; then
-			if doStart "$@"; then
+			if [ "$__ret" -eq 0 ]; then
 				echo_success
 				if [ -w /var/lock/subsys ]; then
 					touch /var/lock/subsys/${NAME}
@@ -879,25 +880,31 @@ case "$COMMAND" in
 			fi
 			echo ""
 		else
-			if doStart "$@"; then
+			if [ "$__ret" -eq 0 ]; then
 				echo "ok"
 			else
 				echo "failed"
 			fi
 		fi
+		exit "$__ret"
 		;;
 
 	stop)
 		$opennms_echo "Stopping ${install.package.description}: \c"
-		if [ -f /etc/SuSE-release ]; then
-			doStop "$@"
 
+		doStop "$@"
+		__ret="$?"
+
+		if [ "$__ret" -gt 0 ]; then
+			doKill "$@"
+			__ret="$?"
+		fi
+
+		if [ -f /etc/SuSE-release ]; then
 			# Remember status and be verbose
 			rc_status -v
-
-			doKill "$@"
 		elif [ "$FUNCTIONS_LOADED" -ne 0 ]; then
-			if doStop "$@"; then
+			if [ "$__ret" -eq 0 ]; then
 				echo_success
 			else
 				echo_failure
@@ -906,17 +913,14 @@ case "$COMMAND" in
 				rm -f /var/lock/subsys/${NAME}
 			fi
 			echo ""
-
-			doKill "$@"
 		else
-			if doStop "$@"; then
+			if [ "$__ret" -eq 0 ]; then
 				echo "stopped"
 			else
 				echo "failed"
 			fi
-
-			doKill "$@"
 		fi
+		exit "$__ret"
 		;;
 
 	restart)

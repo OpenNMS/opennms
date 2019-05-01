@@ -29,7 +29,7 @@ setUp() {
 	done
 
 	"$INSTPREFIX/bin/runjava" "-q" "-s"
-	assertEquals 'runjava should have succeeded' "$?" 0
+	assertEquals 'runjava should have succeeded' 0 "$?"
 
 	touch "$INSTPREFIX/etc/configured"
 	echo "STATUS_WAIT=1" > "$INSTPREFIX/etc/opennms.conf"
@@ -161,6 +161,33 @@ testJessieJavaConf() {
 	assertContains "$output" "'-XX:NumberOfGCLogFiles=4'"
 	assertContains "$output" "'-XX:GCLogFileSize=20M'"
 	assertContains "$output" "'-Xmx8196m'"
+}
+
+testRpmnewFailure() {
+	export OPENNMS_UNIT_TEST_STATUS=3
+	touch "$INSTPREFIX/etc/foo.rpmnew"
+	output="$(runOpennms -f start 2>&1)"
+	assertContains "$output" "The format of the original files may have changed since"
+	runOpennms -f start >/dev/null 2>&1
+	assertEquals '"opennms start" should have failed' 6 "$?"
+}
+
+testRpmsaveFailure() {
+	export OPENNMS_UNIT_TEST_STATUS=3
+	touch "$INSTPREFIX/etc/foo.rpmsave"
+	output="$(runOpennms -f start 2>&1)"
+	assertContains "$output" "The format of the original files may have changed since"
+	runOpennms -f start >/dev/null 2>&1
+	assertEquals '"opennms start" should have failed' 6 "$?"
+}
+
+testDpkgDistFailure() {
+	export OPENNMS_UNIT_TEST_STATUS=3
+	touch "$INSTPREFIX/etc/foo.dpkg-dist"
+	output="$(runOpennms -f start 2>&1)"
+	assertContains "$output" "The format of the original files may have changed since"
+	runOpennms -f start >/dev/null 2>&1
+	assertEquals '"opennms start" should have failed' 6 "$?"
 }
 
 . ../shunit2
