@@ -44,16 +44,19 @@ import org.junit.rules.TemporaryFolder;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.dao.api.IfLabel;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockPollerConfig;
+import org.opennms.netmgt.mock.MockThresholdingService;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.netmgt.rrd.RrdStrategy;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -63,12 +66,14 @@ import com.google.common.collect.Maps;
  *
  * @author jwhite
  */
+@Transactional
 public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
 
     @Rule
     public TemporaryFolder m_tempFolder = new TemporaryFolder();
 
     private RrdPersisterFactory m_persisterFactory;
+
     private FilesystemResourceStorageDao m_resourceStorageDao;
     private RrdStrategy<Object, Object> m_rrdStrategy;
 
@@ -126,7 +131,7 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         pollerConfig.setRRAList(pkg, Lists.newArrayList("RRA:AVERAGE:0.5:1:2016"));
 
         LatencyStoringServiceMonitorAdaptor lssma = new LatencyStoringServiceMonitorAdaptor(
-                pollerConfig, pkg, m_persisterFactory, m_resourceStorageDao);
+                pollerConfig, pkg, m_persisterFactory, new MockThresholdingService(), null);
 
         MonitoredService monitoredService = new MockMonitoredService(3, "Firewall", locationName,
                 InetAddress.getByName("192.168.1.5"), "SMTP");

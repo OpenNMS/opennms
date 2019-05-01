@@ -35,6 +35,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.InetAddress;
@@ -64,6 +65,7 @@ import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.dao.api.IfLabel;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
@@ -85,6 +87,7 @@ import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.ScheduleTimer;
 import org.opennms.netmgt.scheduler.mock.MockScheduler;
 import org.opennms.netmgt.scheduler.mock.MockTimer;
+import org.opennms.netmgt.threshd.ThresholdingService;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -155,10 +158,13 @@ public class PollablesIT {
     private MockTimer m_timer;
 
     private PersisterFactory m_persisterFactory = null;
+    private ThresholdingService m_thresholdingService = null;
     private ResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
 
     @Autowired
     private LocationAwarePollerClient m_locationAwarePollerClient;
+
+    private IfLabel m_ifLabelDao = mock(IfLabel.class);
 
     @Before
     public void setUp() throws Exception {
@@ -1517,7 +1523,8 @@ public class PollablesIT {
 
         Package pkg = m_pollerConfig.getPackage("TestPackage");
         PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig, pkg,
-                m_timer, m_persisterFactory, m_resourceStorageDao, m_locationAwarePollerClient);
+                                                                     m_timer, m_persisterFactory, m_thresholdingService, m_resourceStorageDao, m_locationAwarePollerClient,
+                                                                     m_ifLabelDao);
 
         m_timer.setCurrentTime(1000L);
         pDot1Smtp.updateStatus(PollStatus.down());
@@ -1550,7 +1557,8 @@ public class PollablesIT {
         // mDot3Http/pDot3Http
         final Package pkg = m_pollerConfig.getPackage("TestPkg2");
         final PollableServiceConfig pollConfig = new PollableServiceConfig(pDot3Http, m_pollerConfig, m_pollerConfig,
-                pkg, m_timer, m_persisterFactory, m_resourceStorageDao, m_locationAwarePollerClient);
+                                                                           pkg, m_timer, m_persisterFactory, m_thresholdingService, m_resourceStorageDao,
+                                                                           m_locationAwarePollerClient, m_ifLabelDao);
 
         m_timer.setCurrentTime(1000L);
         pDot3Http.updateStatus(PollStatus.down());
@@ -1729,7 +1737,8 @@ public class PollablesIT {
         Package pkg = m_pollerConfig.getPackage("TestPackage");
         m_pollerConfig.addScheduledOutage(pkg, "first", 3000, 5000, "192.168.1.1");
         PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig,
-                pkg, m_timer, m_persisterFactory, m_resourceStorageDao, m_locationAwarePollerClient);
+                                                                     pkg, m_timer, m_persisterFactory, m_thresholdingService, m_resourceStorageDao, m_locationAwarePollerClient,
+                                                                     m_ifLabelDao);
 
         m_timer.setCurrentTime(2000L);
 
@@ -2760,7 +2769,8 @@ public class PollablesIT {
 
         PollableService svc = pNetwork.createService(nodeId, nodeLabel, nodeLocation, addr, serviceName);
         PollableServiceConfig pollConfig = new PollableServiceConfig(svc, pollerConfig, pollOutageConfig, pkg,
-                scheduler, m_persisterFactory, m_resourceStorageDao, m_locationAwarePollerClient);
+                                                                     scheduler, m_persisterFactory, m_thresholdingService, m_resourceStorageDao, m_locationAwarePollerClient,
+                                                                     m_ifLabelDao);
 
         svc.setPollConfig(pollConfig);
         synchronized (svc) {

@@ -54,6 +54,7 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
+import org.opennms.netmgt.dao.api.IfLabel;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -63,6 +64,7 @@ import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.scheduler.Timer;
+import org.opennms.netmgt.threshd.ThresholdingService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -107,8 +109,11 @@ public class PollableServiceConfigIT {
         final PollOutagesConfig pollOutagesConfig = mock(PollOutagesConfig.class);
         final Package pkg = factory.getPackage("MapQuest");
         final Timer timer = mock(Timer.class);
+        final ThresholdingService thresholdingService = mock(ThresholdingService.class);
+        IfLabel ifLabelDao = mock(IfLabel.class);
         final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pollOutagesConfig, pkg, timer,
-                persisterFactory, resourceStorageDao, m_locationAwarePollerClient);
+                                                                    persisterFactory, thresholdingService, resourceStorageDao,
+                                                                    m_locationAwarePollerClient, ifLabelDao);
         PollStatus pollStatus = psc.poll();
         assertThat(pollStatus.getReason(), not(containsString("Unexpected exception")));
     }
@@ -126,6 +131,8 @@ public class PollableServiceConfigIT {
         // Create a future that fails with a RequestTimedOutException
         CompletableFuture<PollerResponse> future = new CompletableFuture<>();
         future.completeExceptionally(new RequestTimedOutException(new Exception("Test")));
+
+        ResourceStorageDao resourceStorageDao = new FilesystemResourceStorageDao();
 
         // Now mock the client to always return the future we created above
         LocationAwarePollerClient client = mock(LocationAwarePollerClient.class, Mockito.RETURNS_DEEP_STUBS);
@@ -153,11 +160,12 @@ public class PollableServiceConfigIT {
         PollOutagesConfig pollOutagesConfig = mock(PollOutagesConfig.class);
         Timer timer = mock(Timer.class);
         PersisterFactory persisterFactory = mock(PersisterFactory.class);
-        ResourceStorageDao resourceStorageDao = mock(ResourceStorageDao.class);
+        ThresholdingService thresholdingService = mock(ThresholdingService.class);
+        IfLabel ifLabelDao = mock(IfLabel.class);
 
         final PollableServiceConfig psc = new PollableServiceConfig(pollableSvc, pollerConfig,
-                pollOutagesConfig, pkg, timer,
-                persisterFactory, resourceStorageDao, client);
+                pollOutagesConfig, pkg, timer, persisterFactory, thresholdingService,
+                resourceStorageDao, client, ifLabelDao);
 
         // Trigger the poll
         PollStatus pollStatus = psc.poll();
