@@ -56,6 +56,8 @@ import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
 import org.opennms.core.ipc.sink.model.SinkMessageProtos;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.logging.Logging.MDCCloseable;
+import org.opennms.core.tracing.api.TracerRegistry;
+import org.opennms.core.tracing.util.TracingInfoCarrier;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -63,6 +65,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.math.IntMath;
 import com.google.protobuf.ByteString;
+
+import io.opentracing.propagation.Format;
 
 public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatcherFactory<String> {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaRemoteMessageDispatcherFactory.class);
@@ -74,6 +78,8 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
     private BundleContext bundleContext;
 
     private KafkaProducer<String, byte[]> producer;
+
+    private TracerRegistry tracerRegistry;
 
     private int maxBufferSize;
 
@@ -116,6 +122,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
                         }
                     }
                 }
+                tracer.activeSpan().finish();
             }
         }
     }
@@ -124,13 +131,21 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
         // Calculate remaining bufferSize for each chunk.
         int bufferSize = getRemainingBufferSize(sinkMessageContent.length, chunk);
         ByteString byteString = ByteString.copyFrom(sinkMessageContent, chunk * maxBufferSize, bufferSize);
-        SinkMessageProtos.SinkMessage sinkMessage = SinkMessageProtos.SinkMessage.newBuilder()
+        SinkMessageProtos.SinkMessage.Builder sinkMessageBuilder = SinkMessageProtos.SinkMessage.newBuilder()
                 .setMessageId(messageId)
                 .setCurrentChunkNumber(chunk)
                 .setTotalChunks(totalChunks)
-                .setContent(byteString)
-                .build();
-        return sinkMessage.toByteArray();
+                .setContent(byteString);
+        // Add tracing info
+        TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
+        tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
+        tracingInfoCarrier.getTracingInfoMap().forEach((key, value) -> {
+            SinkMessageProtos.TracingInfo tracingInfo = SinkMessageProtos.TracingInfo.newBuilder()
+                    .setKey(key).setValue(value).build();
+            sinkMessageBuilder.addTracingInfo(tracingInfo);
+        });
+
+        return sinkMessageBuilder.build().toByteArray();
     }
 
     public void init() throws IOException {
@@ -145,6 +160,9 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             LOG.info("KafkaRemoteMessageDispatcherFactory: initializing the Kafka producer with: {}", kafkaConfig);
             producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
             maxBufferSize = getMaxBufferSize();
+            //TODO: Instrument minionId
+            tracerRegistry.init("minion");
+            tracer = tracerRegistry.getTracer();
             onInit();
         }
     }

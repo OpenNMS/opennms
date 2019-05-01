@@ -46,6 +46,9 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.MetricSet;
 import com.codahale.metrics.Timer.Context;
 
+import io.opentracing.Span;
+import io.opentracing.Tracer;
+
 /**
  * This class does all the hard work of building and maintaining the state of the message
  * dispatchers so that concrete implementations only need to focus on dispatching the messages.
@@ -65,6 +68,8 @@ public abstract class AbstractMessageDispatcherFactory<W> implements MessageDisp
     private JmxReporter metricsJmxRepoter = null;
 
     private ServiceRegistration<MetricSet> metricsServiceRegistration = null;
+
+    protected Tracer tracer;
 
     public abstract <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, W metadata, T message);
 
@@ -125,6 +130,14 @@ public abstract class AbstractMessageDispatcherFactory<W> implements MessageDisp
                     super.close();
                     state.close();
                 }
+
+                @Override
+                public void send(S message) {
+                    if(tracer.activeSpan() == null) {
+                        Span span = tracer.buildSpan(module.getId()).start();
+                    }
+                    super.send(message);
+                }
             };
         } else {
             // No aggregation strategy is set, dispatch directly to reduce overhead
@@ -144,6 +157,9 @@ public abstract class AbstractMessageDispatcherFactory<W> implements MessageDisp
         public void send(S message) {
             // Cast S to T, modules that do not use an AggregationPolicty
             // must have the same types for S and T
+            if(tracer.activeSpan() == null) {
+                Span span = tracer.buildSpan(state.getModule().getId()).start();
+            }
             AbstractMessageDispatcherFactory.this.timedDispatch(state, (T)message);
         }
 
