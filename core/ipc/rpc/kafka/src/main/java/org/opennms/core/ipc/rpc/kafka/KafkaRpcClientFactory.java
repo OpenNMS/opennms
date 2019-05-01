@@ -141,7 +141,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
     // Used to cache responses when large message are involved.
     private Map<String, ByteString> messageCache = new ConcurrentHashMap<>();
     private MetricRegistry metrics = new MetricRegistry();
-    private JmxReporter metricsRepoter = null;
+    private JmxReporter metricsReporter = null;
 
 
     @Autowired
@@ -296,9 +296,9 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConsumer);
             executor.execute(kafkaConsumerRunner);
             // Initialize metrics reporter.
-            metricsRepoter = JmxReporter.forRegistry(metrics).
+            metricsReporter = JmxReporter.forRegistry(metrics).
                     inDomain(JMX_DOMAIN_RPC).build();
-            metricsRepoter.start();
+            metricsReporter.start();
             // Initialize tracer from tracer registry.
             tracerRegistry.init(SystemInfoUtils.getInstanceId());
             tracer = tracerRegistry.getTracer();
@@ -519,7 +519,9 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
 
     public void stop() {
         LOG.info("stop kafka consumer runner");
-        metricsRepoter.close();
+        if (metricsReporter != null) {
+            metricsReporter.close();
+        }
         kafkaConsumerRunner.stop();
         executor.shutdown();
         timerExecutor.shutdown();

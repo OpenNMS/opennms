@@ -53,7 +53,7 @@ public class CamelRpcClientPreProcessor implements Processor {
     protected final Long CAMEL_JMS_REQUEST_TIMEOUT;
 
     private MetricRegistry metrics = new MetricRegistry();
-    private JmxReporter metricsRepoter = null;
+    private JmxReporter metricsReporter = null;
 
     public CamelRpcClientPreProcessor() {
         long camelJmsRequestTimeout = PropertiesUtils.getProperty(System.getProperties(), CAMEL_JMS_REQUEST_TIMEOUT_PROPERTY, CAMEL_JMS_REQUEST_TIMEOUT_DEFAULT);
@@ -94,12 +94,14 @@ public class CamelRpcClientPreProcessor implements Processor {
 
     public void start() {
         // Initialize metrics reporter.
-        metricsRepoter = JmxReporter.forRegistry(metrics).
+        metricsReporter = JmxReporter.forRegistry(metrics).
                 inDomain(JMX_DOMAIN_RPC).build();
-        metricsRepoter.start();
+        metricsReporter.start();
     }
 
     public void stop() {
-        metricsRepoter.close();
+        if (metricsReporter != null) {
+            metricsReporter.close();
+        }
     }
 }

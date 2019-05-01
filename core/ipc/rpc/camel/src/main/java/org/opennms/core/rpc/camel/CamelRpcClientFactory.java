@@ -87,7 +87,7 @@ public class CamelRpcClientFactory implements RpcClientFactory {
     private Tracer tracer;
 
     private MetricRegistry metrics = new MetricRegistry();
-    private JmxReporter metricsRepoter = null;
+    private JmxReporter metricsReporter = null;
 
 
     @Override
@@ -206,13 +206,14 @@ public class CamelRpcClientFactory implements RpcClientFactory {
         tracerRegistry.init(SystemInfoUtils.getInstanceId());
         tracer = tracerRegistry.getTracer();
         // Initialize metrics reporter.
-        metricsRepoter = JmxReporter.forRegistry(metrics).
+        metricsReporter = JmxReporter.forRegistry(metrics).
                 inDomain(JMX_DOMAIN_RPC).build();
-        metricsRepoter.start();
+        metricsReporter.start();
     }
 
     public void stop() {
-        //pass
-        metricsRepoter.close();
+        if (metricsReporter != null) {
+            metricsReporter.close();
+        }
     }
 }
