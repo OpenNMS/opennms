@@ -1239,8 +1239,12 @@
     </feature>
     <feature name="opennms-topology-runtime-application" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: Application">
         <details>Generated using Pax-Construct</details>
+        <!-- TODO: patrick , mvr fix dependency problems -->
+        <!-- bundle>mvn:com.vaadin/vaadin-client-compiled/${vaadinVersion}</bundle> -->
         <feature>opennms-topology-runtime-base</feature>
-        <bundle>mvn:org.opennms.features.topology.plugins.topo/org.opennms.features.topology.plugins.topo.application/${project.version}</bundle>
+        <feature>opennms-graph-service</feature>
+        <!-- <bundle>mvn:org.opennms.features.topology.plugins/org.opennms.features.topology.plugins.browsers/${project.version}</bundle> -->
+        <!-- <bundle>mvn:org.opennms.features.topology.plugins.topo/org.opennms.features.topology.plugins.topo.application/${project.version}</bundle> -->
     </feature>
     <feature name="opennms-topology-runtime-bsm" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: BSM">
         <details>Generated using Pax-Construct</details>
