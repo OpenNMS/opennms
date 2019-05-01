@@ -25,9 +25,9 @@
     <repository>
       <snapshots><enabled>false</enabled></snapshots>
       <releases><enabled>true</enabled></releases>
-      <id>jboss-repo</id>
-      <name>JBoss Repository</name>
-      <url>http://maven.opennms.org/content/repositories/jboss-repo/</url>
+      <id>thirdparty-releases</id>
+      <name>JBoss 3rd Party Releases</name>
+      <url>http://maven.opennms.org/content/repositories/jboss-3rdparty</url>
     </repository>
   </repositories>
 </project>
