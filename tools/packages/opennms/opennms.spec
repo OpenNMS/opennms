@@ -621,6 +621,8 @@ cd %{buildroot}
 # core package files
 find %{buildroot}%{instprefix}/etc ! -type d | \
 	sed -e "s,^%{buildroot},%config(noreplace) ," | \
+	grep -v -E 'etc/.*.cfg$' | \
+	grep -v 'etc/custom.properties' | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
 	grep -v 'jira.properties' | \
@@ -639,6 +641,14 @@ find %{buildroot}%{instprefix}/etc ! -type d | \
 	grep -v 'xmp-datacollection-config.xml' | \
 	grep -v 'tca-datacollection-config.xml' | \
 	sort > %{_tmppath}/files.main
+find %{buildroot}%{instprefix}/etc ! -type d -name \*.cfg | \
+	grep -v 'etc/org.opennms' | \
+	sed -e "s,^%{buildroot},%config ," | \
+	sort >> %{_tmppath}/files.main
+find %{buildroot}%{instprefix}/etc ! -type d -name \*.cfg | \
+	grep 'etc/org.opennms' | \
+	sed -e "s,^%{buildroot},%config(noreplace) ," | \
+	sort >> %{_tmppath}/files.main
 find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
 	sed -e "s,^%{buildroot},," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
@@ -739,6 +749,7 @@ rm -rf %{buildroot}
 %defattr(664 root root 775)
 %attr(755,root,root)	%{profiledir}/%{name}.sh
 %attr(755,root,root)	%{logdir}
+                        %config %{instprefix}/etc/custom.properties
 %attr(640,root,root)	%config(noreplace) %{instprefix}/etc/users.xml
 			%{instprefix}/data
 			%{instprefix}/deploy
