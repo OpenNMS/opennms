@@ -152,7 +152,9 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         public void shutdown() {
             closed.set(true);
             consumer.wakeup();
-            jmxReporter.close();
+            if (jmxReporter != null) {
+                jmxReporter.close();
+            }
         }
     }
 
