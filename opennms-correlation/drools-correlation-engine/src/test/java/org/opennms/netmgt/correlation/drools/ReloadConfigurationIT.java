@@ -41,12 +41,13 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.opennms.netmgt.correlation.Correlator;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
@@ -86,8 +87,7 @@ public class ReloadConfigurationIT {
 
     /** The event IPC manager. */
     @Autowired
-    @Qualifier("eventProxy")
-    private EventIpcManager m_eventIpcMgr;
+    private MockEventIpcManager m_eventIpcMgr;
 
     /**
      * Sets the up.
@@ -209,7 +209,37 @@ public class ReloadConfigurationIT {
         engines = m_correlator.getEngines();
         Assert.assertEquals(1, engines.size()); // Instead of 2
     }
+    
+    
+    @Test
+    public void testExceptionInDroolsReloadsEngine() throws Exception {
+        Collection<CorrelationEngine> engines = m_correlator.getEngines();
+        Assert.assertNotNull(engines);
+        Assert.assertEquals(1, engines.size());
+        FileUtils.copyDirectory(new File(DROOLS_SRC, "droolsFusion"), new File(DROOLS_HOME, "droolsFusion"));
+        sendReloadDaemonConfig();
+        engines = m_correlator.getEngines();
+        Assert.assertEquals(2, engines.size());
+        // Reset anticipated events, verify everything here after.
+        m_eventIpcMgr.getEventAnticipator().reset();
+        // Anticipate reload and engine exception related events.
+        anticipate(new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "Junit").getEvent());
+        anticipate(new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "droolsFusion").getEvent());
+        anticipate(new EventBuilder(EventConstants.DROOLS_ENGINE_ENCOUNTERED_EXCEPTION, "droolsFusion").getEvent());
+        // Correlate event that will throw exception and cause engine to reload.
+        DroolsCorrelationEngine engine = findEngineByName("droolsFusion");
+        Event event = new EventBuilder("uei.opennms.org/triggerTestForFusion", "Junit").getEvent();
+        engine.correlate(event);
+        // verify
+        m_eventIpcMgr.getEventAnticipator().verifyAnticipated(5000, 0, 0, 0, 0);
+        // Engine reloaded, sending NodeLostEvent should create NodeUp Event on from rule.
+        anticipate(createNodeUpEvent(1));
+        engine.correlate(createNodeLostServiceEvent(1, "ICMP"));
+        // verify again for NodeUp Event
+        m_eventIpcMgr.getEventAnticipator().verifyAnticipated(3000, 0, 0, 0, 0);
+    }
 
+     
     /**
      * Send reload daemon configuration.
      *
@@ -220,5 +250,36 @@ public class ReloadConfigurationIT {
         eb.addParam("daemonName", "DroolsCorrelationEngine");
         m_eventIpcMgr.send(eb.getEvent());
         Thread.sleep(1000);
+    }
+    
+    protected DroolsCorrelationEngine findEngineByName(String engineName) {
+        return (DroolsCorrelationEngine) m_correlator.findEngineByName(engineName);
+    }
+    
+
+    private void sendNodeLostServiceEvent(int nodeid, String serviceName) throws EventProxyException {
+        Event event = createNodeLostServiceEvent(nodeid, serviceName);
+        m_eventIpcMgr.send(event);
+    }
+    private Event createNodeLostServiceEvent(int nodeid, String serviceName) {
+        return new EventBuilder(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, serviceName)
+                .setNodeid(nodeid)
+                .getEvent();
+    }
+    
+    private Event createNodeUpEvent(int nodeid) {
+        return new EventBuilder(EventConstants.NODE_UP_EVENT_UEI, "test")
+            .setNodeid(nodeid)
+            .getEvent();
+    }
+    
+    private void anticipate(Event event) {
+        m_eventIpcMgr.getEventAnticipator().anticipateEvent(event);
+    }
+    
+    
+    void sendEvent(String  eventUei) throws EventProxyException {
+        Event event = new EventBuilder(eventUei, "Junit").getEvent();
+        m_eventIpcMgr.send(event);
     }
 }
