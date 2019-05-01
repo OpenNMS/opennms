@@ -122,7 +122,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     private byte[] wrapMessageToProto(String messageId, int chunk, int totalChunks, byte[] sinkMessageContent) {
         // Calculate remaining bufferSize for each chunk.
-        int bufferSize = getBufferSize(sinkMessageContent.length, chunk);
+        int bufferSize = getRemainingBufferSize(sinkMessageContent.length, chunk);
         ByteString byteString = ByteString.copyFrom(sinkMessageContent, chunk * maxBufferSize, bufferSize);
         SinkMessageProtos.SinkMessage sinkMessage = SinkMessageProtos.SinkMessage.newBuilder()
                 .setMessageId(messageId)
@@ -144,7 +144,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             kafkaConfig.putAll(configProvider.getProperties());
             LOG.info("KafkaRemoteMessageDispatcherFactory: initializing the Kafka producer with: {}", kafkaConfig);
             producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
-            maxBufferSize = getMaxBufferSize(kafkaConfig.getProperty(MAX_BUFFER_SIZE_PROPERTY));
+            maxBufferSize = getMaxBufferSize();
             onInit();
         }
     }
@@ -176,7 +176,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
     }
 
     // Calculate remaining buffer size for each chunk.
-    private int getBufferSize(int messageSize, int chunk) {
+    private int getRemainingBufferSize(int messageSize, int chunk) {
         int bufferSize = messageSize;
         if (messageSize > maxBufferSize) {
             int remaining = messageSize - chunk * maxBufferSize;
@@ -185,9 +185,9 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
         return bufferSize;
     }
 
-    //Configurable buffer size as config property but it should always be less than DEFAULT_MAX_BUFFER_SIZE
-    public static Integer getMaxBufferSize(String  bufferSize) {
+    public Integer getMaxBufferSize() {
         int maxBufferSize = DEFAULT_MAX_BUFFER_SIZE;
+        String bufferSize = kafkaConfig.getProperty(MAX_BUFFER_SIZE_PROPERTY);
         if (bufferSize != null) {
             try {
                 maxBufferSize = Integer.parseInt(bufferSize);

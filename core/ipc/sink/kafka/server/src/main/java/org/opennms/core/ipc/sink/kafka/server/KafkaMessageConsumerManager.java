@@ -28,6 +28,9 @@
 
 package org.opennms.core.ipc.sink.kafka.server;
 
+import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.DEFAULT_MESSAGEID_CONFIG;
+import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.MESSAGEID_CACHE_CONFIG;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,20 +50,22 @@ import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.opennms.core.camel.JmsQueueNameFactory;
+import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
+import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
+import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
+import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageConsumerManager;
-import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
-import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
-import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
-import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.core.ipc.sink.model.SinkMessageProtos;
 import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -79,13 +84,15 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
 
     private final Properties kafkaConfig = new Properties();
     private final KafkaConfigProvider configProvider;
+    // Cache that stores chunks in large message.
+    private Cache<String, ByteString> largeMessageCache;
 
     private class KafkaConsumerRunner implements Runnable {
         private final SinkModule<?, Message> module;
         private final AtomicBoolean closed = new AtomicBoolean(false);
         private final KafkaConsumer<String, byte[]> consumer;
         private final String topic;
-        private Map<String, ByteString> largeMessageCache = new ConcurrentHashMap<>();
+
 
         public KafkaConsumerRunner(SinkModule<?, Message> module) {
             this.module = module;
@@ -111,7 +118,11 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                             // Handle large message where there are multiple chunks of message.
                             if (sinkMessage.getTotalChunks() > 1) {
                                 String messageId = sinkMessage.getMessageId();
-                                ByteString byteString = largeMessageCache.get(messageId);
+                                if (largeMessageCache == null) {
+                                    LOG.error("LargeMessageCache config {}={} is invalid", MESSAGEID_CACHE_CONFIG, kafkaConfig.getProperty(MESSAGEID_CACHE_CONFIG));
+                                    continue;
+                                }
+                                ByteString byteString = largeMessageCache.getIfPresent(messageId);
                                 if(byteString != null) {
                                     largeMessageCache.put(messageId, byteString.concat(sinkMessage.getContent()));
                                 } else {
@@ -121,8 +132,8 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                                 if (sinkMessage.getTotalChunks() > sinkMessage.getCurrentChunkNumber() + 1) {
                                     continue;
                                 }
-                                messageInBytes = largeMessageCache.get(messageId).toByteArray();
-                                largeMessageCache.remove(messageId);
+                                messageInBytes = largeMessageCache.getIfPresent(messageId).toByteArray();
+                                largeMessageCache.invalidate(messageId);
                             }
                             dispatch(module, module.unmarshal(messageInBytes));
                         } catch (RuntimeException e) {
@@ -196,5 +207,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         kafkaConfig.put("auto.commit.interval.ms", "1000");
         kafkaConfig.putAll(configProvider.getProperties()); // e.g. groupId, and such
         LOG.info("KafkaMessageConsumerManager: consuming from Kafka using: {}", kafkaConfig);
+        String cacheConfig = kafkaConfig.getProperty(MESSAGEID_CACHE_CONFIG, DEFAULT_MESSAGEID_CONFIG);
+        largeMessageCache =  CacheBuilder.from(cacheConfig).build();
     }
 }

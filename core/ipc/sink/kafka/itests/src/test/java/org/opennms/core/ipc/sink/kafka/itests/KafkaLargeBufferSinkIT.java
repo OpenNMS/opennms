@@ -103,8 +103,6 @@ public class KafkaLargeBufferSinkIT {
 
         System.setProperty(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX + ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
         System.setProperty(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX + ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        // To test large buffer size, keeping max buffer size as 1KB.
-        System.setProperty(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX + KafkaSinkConstants.MAX_BUFFER_SIZE_PROPERTY, "1000");
 
         consumerManager.afterPropertiesSet();
     }
