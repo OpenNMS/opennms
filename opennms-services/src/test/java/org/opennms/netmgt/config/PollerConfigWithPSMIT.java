@@ -103,6 +103,7 @@ public class PollerConfigWithPSMIT {
     }
 
     @Test
+    @org.junit.Ignore("Accesses external Mapquest site that no longer works")
     public void testPSM() throws Exception {
         InputStream is = new FileInputStream(new File("src/test/resources/etc/psm-poller-configuration.xml"));
         PollerConfigFactory factory = new PollerConfigFactory(0, is);
