@@ -108,8 +108,8 @@ public class InitializingFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationsSeries(int N, long step, boolean includeOther, List<Filter> filters) {
-        return delegate.getTopNApplicationsSeries(N, step, includeOther, filters);
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationSeries(int N, long step, boolean includeOther, List<Filter> filters) {
+        return delegate.getTopNApplicationSeries(N, step, includeOther, filters);
     }
 
     @Override
@@ -120,6 +120,34 @@ public class InitializingFlowRepository implements FlowRepository {
     @Override
     public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationsSeries(int N, long step, List<Filter> filters) {
         return delegate.getTopNConversationsSeries(N, step, filters);
+    }
+
+    @Override
+    public CompletableFuture<List<String>> getHosts(String prefix, long limit, List<Filter> filters) {
+        return delegate.getHosts(prefix, limit, filters);
+    }
+
+    @Override
+    public CompletableFuture<List<TrafficSummary<String>>> getTopNHostSummaries(int N, boolean includeOther,
+                                                                                List<Filter> filters) {
+        return delegate.getTopNHostSummaries(N, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<List<TrafficSummary<String>>> getHostSummaries(Set<String> hosts, boolean includeOther, List<Filter> filters) {
+        return delegate.getHostSummaries(hosts, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getHostSeries(Set<String> hosts, long step,
+                                                                                     boolean includeOther,
+                                                                                     List<Filter> filters) {
+        return delegate.getHostSeries(hosts, step, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNHostSeries(int N, long step, boolean includeOther, List<Filter> filters) {
+        return delegate.getTopNHostSeries(N, step, includeOther, filters);
     }
 
     private void ensureInitialized() {

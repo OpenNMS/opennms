@@ -128,6 +128,43 @@ public interface FlowRestService {
             @Context final UriInfo uriInfo
     );
 
+    /**
+     * Retrieve the list of hosts.
+     *
+     * Supports filtering.
+     *
+     * @param prefix a string prefix that can be used to further filter the results
+     * @param limit the maximum number of hosts to return
+     * @return the list of hosts
+     */
+    @GET
+    @Path("hosts/enumerate")
+    @Produces(MediaType.APPLICATION_JSON)
+    List<String> getHosts(@DefaultValue("") @QueryParam("pattern") final String pattern,
+                          @DefaultValue(DEFAULT_LIMIT) @QueryParam("limit") final long limit,
+                          @Context UriInfo uriInfo);
+
+    @GET
+    @Path("hosts")
+    @Produces(MediaType.APPLICATION_JSON)
+    FlowSummaryResponse getHostSummary(
+            @QueryParam("N") final Integer N,
+            @QueryParam("host") final Set<String> hosts,
+            @DefaultValue("false") @QueryParam("includeOther") boolean includeOther,
+            @Context UriInfo uriInfo
+    );
+
+    @GET
+    @Path("hosts/series")
+    @Produces(MediaType.APPLICATION_JSON)
+    FlowSeriesResponse getHostSeries(
+            @DefaultValue(DEFAULT_STEP_MS) @QueryParam("step") final long step,
+            @QueryParam("N") final Integer N,
+            @QueryParam("host") final Set<String> hosts,
+            @DefaultValue("false") @QueryParam("includeOther") boolean includeOther,
+            @Context final UriInfo uriInfo
+    );
+    
     @GET
     @Path("conversations")
     @Produces(MediaType.APPLICATION_JSON)

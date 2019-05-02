@@ -12,11 +12,14 @@ NOTE: Unless specific otherwise, all unit of time are expressed in milliseconds.
 | `/flows/count`                    | Retrieve the number of flows available
 | `/flows/exporters`                | Retrieve basic information for the exporter nodes that have flows available
 | `/flows/exporters/{nodeCriteria}` | Retrieve detailed information about a specific exporter node
-| `/flows/applications`             | Retrieve traffic summary statistics for the top N applications
+| `/flows/applications`             | Retrieve traffic summary statistics for the top N applications or specific applications
 | `/flows/applications/enumerate`   | Retrieve a list of the applications with flows
 | `/flows/applications/series`      | Retrieve time series metrics for the top N applications or specific applications
 | `/flows/conversations`            | Retrieve traffic summary statistics for the top N conversations
 | `/flows/conversations/series`     | Retrieve time series metrics for the top N conversations
+| `/flows/hosts`                    | Retrieve traffic summary statistics for the top N hosts or specific hosts
+| `/flows/hosts/enumerate`          | Retrieve a list of the hosts with flows
+| `/flows/hosts/series`             | Retrieve time series metrics for the top N hosts or specific hosts
 |===
 
 All of the endpoints support the following query string parameters to help filter the results:
@@ -82,6 +85,31 @@ The `converstations/series` endpoint also supports:
 | name               | default   | comment
 | step               | 300000    | Requested time interval between rows.
 |===
+
+The `hosts/enumerate` endpoint also supports:
+
+[options="header"]
+|===
+| name               | default   | comment
+| limit              | 10        | Number of hosts with flows to return
+| pattern            | ""        | If provided, filters the results to only include hosts with names that match the given
+regex pattern
+|===
+
+The `hosts` and `hosts/series` endpoints also support:
+
+[options="header"]
+|===
+| name               | default   | comment
+| N                  | none      | Number of top entries (determined by total bytes transferred) to return
+| includeOther       | false     | When set to `true` the results will also include an additional row or column that contains
+                                   the bytes transferred for the flows that fall outside of the Top N.
+| host               | none      | If provided, returns only flow series that match the given host(s). This field
+                                   can be repeated for any number of hosts to be included in the query.
+|===
+
+Both endpoints requires one of `N` or `host` query parameters to be set and will return an error if neither or
+both are set.
 
 ====== Examples
 

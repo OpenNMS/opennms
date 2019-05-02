@@ -119,59 +119,43 @@ public class FlowRestServiceImpl implements FlowRestService {
     }
 
     @Override
-    public FlowSummaryResponse getApplicationSummary(Integer N, Set<String> applications, boolean includeOther, UriInfo uriInfo) {
-        validateNOrSetQueryParameters(N, applications, "application");
-        
+    public List<String> getApplications(String matchingPrefix, long limit, UriInfo uriInfo) {
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
-        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
-
-        final List<TrafficSummary<String>> summary;
-        
-        if (N != null) {
-            summary =  waitForFuture(flowRepository.getTopNApplicationSummaries(N, includeOther, filters));
-        } else {
-            summary =  waitForFuture(flowRepository.getApplicationSummaries(applications, includeOther, filters));
-        }
-
-        final FlowSummaryResponse response = new FlowSummaryResponse();
-        response.setStart(timeRangeFilter.getStart());
-        response.setEnd(timeRangeFilter.getEnd());
-        response.setHeaders(Lists.newArrayList("Application", "Bytes In", "Bytes Out"));
-        response.setRows(summary.stream()
-                .map(sum -> Arrays.asList((Object)sum.getEntity(), sum.getBytesIn(), sum.getBytesOut()))
-                .collect(Collectors.toList()));
-        return response;
+        return waitForFuture(flowRepository.getApplications(matchingPrefix, limit, filters));
     }
-    
+
+    @Override
+    public FlowSummaryResponse getApplicationSummary(Integer N, Set<String> applications, boolean includeOther,
+                                                     UriInfo uriInfo) {
+        return getSummary(N, applications, includeOther, uriInfo, "application",
+                flowRepository::getTopNApplicationSummaries, flowRepository::getApplicationSummaries);
+    }
+
     @Override
     public FlowSeriesResponse getApplicationSeries(long step, Integer N, Set<String> applications,
                                                    boolean includeOther, UriInfo uriInfo) {
-        validateNOrSetQueryParameters(N, applications, "application");
-        
+        return getSeries(step, N, applications, includeOther, uriInfo, "application",
+                flowRepository::getTopNApplicationSeries,
+                flowRepository::getApplicationSeries);
+    }
+
+    @Override
+    public List<String> getHosts(String pattern, long limit, UriInfo uriInfo) {
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
-        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
+        return waitForFuture(flowRepository.getHosts(pattern, limit, filters));
+    }
 
-        final Table<Directional<String>, Long, Double> series;
+    @Override
+    public FlowSummaryResponse getHostSummary(Integer N, Set<String> hosts, boolean includeOther, UriInfo uriInfo) {
+        return getSummary(N, hosts, includeOther, uriInfo, "host", flowRepository::getTopNHostSummaries,
+                flowRepository::getHostSummaries);
+    }
 
-        if (N != null) {
-            series = waitForFuture(flowRepository.getTopNApplicationsSeries(N, step, includeOther, filters));
-        } else {
-            series = waitForFuture(flowRepository.getApplicationSeries(applications, step, includeOther, filters));
-        }
-
-        final FlowSeriesResponse response = new FlowSeriesResponse();
-        response.setStart(timeRangeFilter.getStart());
-        response.setEnd(timeRangeFilter.getEnd());
-        response.setColumns(series.rowKeySet().stream()
-                .map(d -> {
-                    final FlowSeriesColumn column = new FlowSeriesColumn();
-                    column.setLabel(d.getValue());
-                    column.setIngress(d.isIngress());
-                    return column;
-                })
-                .collect(Collectors.toList()));
-        populateResponseFromTable(series, response);
-        return response;
+    @Override
+    public FlowSeriesResponse getHostSeries(long step, Integer N, Set<String> hosts, boolean includeOther,
+                                            UriInfo uriInfo) {
+        return getSeries(step, N, hosts, includeOther, uriInfo, "host", flowRepository::getTopNHostSeries,
+                flowRepository::getHostSeries);
     }
 
     @Override
@@ -347,12 +331,6 @@ public class FlowRestServiceImpl implements FlowRestService {
         this.flowGraphUrl = flowGraphUrl;
     }
 
-    @Override
-    public List<String> getApplications(String matchingPrefix, long limit, UriInfo uriInfo) {
-        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
-        return waitForFuture(flowRepository.getApplications(matchingPrefix, limit, filters));
-    }
-
     private boolean isNullOrEmptyOrContainsNullOrEmpty(Collection<String> collection) {
         return collection == null || collection.isEmpty() || collection.contains(null) || collection.contains("");
     }
@@ -368,4 +346,84 @@ public class FlowRestServiceImpl implements FlowRestService {
                     .entity(String.format("Only one of 'N' or '%s' query parameters should be set", collectionName)).build());
         }
     }
+
+    private interface TopNSeriesProvider {
+        CompletableFuture<Table<Directional<String>, Long, Double>> getSeries(Integer N, long step,
+                                                                              boolean includeOther,
+                                                                              List<Filter> filters);
+    }
+
+    private interface SpecificEntitiesSeriesProvider {
+        CompletableFuture<Table<Directional<String>, Long, Double>> getSeries(Set<String> entities, long step,
+                                                                              boolean includeOther,
+                                                                              List<Filter> filters);
+    }
+
+    private interface TopNSummaryProvider {
+        CompletableFuture<List<TrafficSummary<String>>> getSummary(Integer N, boolean includeOther,
+                                                                   List<Filter> filters);
+    }
+
+    private interface SpecificEntitiesSummaryProvider {
+        CompletableFuture<List<TrafficSummary<String>>> getSummary(Set<String> entities, boolean includeOther,
+                                                                   List<Filter> filters);
+    }
+
+    private FlowSummaryResponse getSummary(Integer N, Set<String> entities, boolean includeOther, UriInfo uriInfo,
+                                           String entitiesLabel, TopNSummaryProvider topNSummaryProvider,
+                                           SpecificEntitiesSummaryProvider specificEntitiesSummaryProvider) {
+        validateNOrSetQueryParameters(N, entities, entitiesLabel);
+
+        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
+        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
+
+        final List<TrafficSummary<String>> summary;
+
+        if (N != null) {
+            summary = waitForFuture(topNSummaryProvider.getSummary(N, includeOther, filters));
+        } else {
+            summary = waitForFuture(specificEntitiesSummaryProvider.getSummary(entities, includeOther, filters));
+        }
+
+        final FlowSummaryResponse response = new FlowSummaryResponse();
+        response.setStart(timeRangeFilter.getStart());
+        response.setEnd(timeRangeFilter.getEnd());
+        response.setHeaders(Lists.newArrayList(entitiesLabel, "Bytes In", "Bytes Out"));
+        response.setRows(summary.stream()
+                .map(sum -> Arrays.asList((Object) sum.getEntity(), sum.getBytesIn(), sum.getBytesOut()))
+                .collect(Collectors.toList()));
+        return response;
+    }
+
+    private FlowSeriesResponse getSeries(long step, Integer N, Set<String> entities, boolean includeOther,
+                                         UriInfo uriInfo, String entitiesLabel, TopNSeriesProvider topNSeriesProvider
+            , SpecificEntitiesSeriesProvider specificEntitiesSeriesProvider) {
+        validateNOrSetQueryParameters(N, entities, entitiesLabel);
+
+        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
+        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
+
+        final Table<Directional<String>, Long, Double> series;
+
+        if (N != null) {
+            series = waitForFuture(topNSeriesProvider.getSeries(N, step, includeOther, filters));
+        } else {
+            series = waitForFuture(specificEntitiesSeriesProvider.getSeries(entities, step, includeOther, filters));
+        }
+
+        final FlowSeriesResponse response = new FlowSeriesResponse();
+        response.setStart(timeRangeFilter.getStart());
+        response.setEnd(timeRangeFilter.getEnd());
+        response.setColumns(series.rowKeySet().stream()
+                .map(d -> {
+                    final FlowSeriesColumn column = new FlowSeriesColumn();
+                    column.setLabel(d.getValue());
+                    column.setIngress(d.isIngress());
+                    return column;
+                })
+                .collect(Collectors.toList()));
+        populateResponseFromTable(series, response);
+        return response;
+    }
+
 }

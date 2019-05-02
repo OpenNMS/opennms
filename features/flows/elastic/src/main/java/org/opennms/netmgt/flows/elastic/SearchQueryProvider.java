@@ -31,10 +31,10 @@ package org.opennms.netmgt.flows.elastic;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
@@ -99,23 +99,12 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .build());
     }
 
-    public String getSeriesFromQuery(List<String> from, long step, long start, long end,
+    public String getSeriesFromQuery(Collection<String> from, long step, long start, long end,
                                      String groupByTerm, List<Filter> filters) {
         return render("series_for_terms.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .put("from", from)
                 .put("groupByTerm", groupByTerm)
-                .put("step", step)
-                .put("start", start)
-                .put("end", end)
-                .build());
-    }
-
-    public String getSeriesForApplicationQuery(Set<String> applications, long step, long start, long end,
-                                               List<Filter> filters) {
-        return render("series_for_applications.ftl", ImmutableMap.builder()
-                .put("filters", getFilterQueries(filters))
-                .put("applications", applications)
                 .put("step", step)
                 .put("start", start)
                 .put("end", end)
@@ -134,7 +123,7 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .build());
     }
 
-    public String getSeriesFromOthersQuery(List<String> from, long step, long start, long end,
+    public String getSeriesFromOthersQuery(Collection<String> from, long step, long start, long end,
                                            String groupByTerm, boolean excludeMissing,
                                            List<Filter> filters) {
         return render("series_for_others.ftl", ImmutableMap.builder()
@@ -142,17 +131,6 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .put("from", from)
                 .put("groupByTerm", groupByTerm)
                 .put("excludeMissing", excludeMissing)
-                .put("step", step)
-                .put("start", start)
-                .put("end", end)
-                .build());
-    }
-
-    public String getSeriesFromOtherApplicationsQuery(Set<String> applications, long step, long start, long end,
-                                                      List<Filter> filters) {
-        return render("series_for_others_applications.ftl", ImmutableMap.builder()
-                .put("filters", getFilterQueries(filters))
-                .put("applications", applications)
                 .put("step", step)
                 .put("start", start)
                 .put("end", end)
@@ -167,6 +145,16 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .put("N", limit)
                 .put("field", "netflow.application")
                 .put("prefix", prefix)
+                .build());
+    }
+
+    public String getHostsQuery(String regex, long limit, List<Filter> filters) {
+        Objects.requireNonNull(filters);
+
+        return render("aggregate_by_hosts.ftl", ImmutableMap.builder()
+                .put("filters", getFilterQueries(filters))
+                .put("regex", regex)
+                .put("limit", limit)
                 .build());
     }
 

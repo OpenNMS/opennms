@@ -16,6 +16,7 @@
     "grouped_by": {
       "terms": {
         "field": "${groupByTerm?json_string}",
+        "include": [<#list from as fromTerm>"${fromTerm?json_string}"<#sep>,</#list>],
         "size": ${from?size?long?c}
       },
       "aggs": {

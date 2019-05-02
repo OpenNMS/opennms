@@ -150,7 +150,7 @@ public class FlowQueryIT {
     }
     
     @Test
-    public void canGetTopNApplications() throws ExecutionException, InterruptedException {
+    public void canGetTopNApplicationSummaries() throws ExecutionException, InterruptedException {
         // Retrieve the Top N applications over the entire time range
         List<TrafficSummary<String>> appTrafficSummary = flowRepository.getTopNApplicationSummaries(10, true, getFilters()).get();
 
@@ -207,6 +207,72 @@ public class FlowQueryIT {
     }
 
     @Test
+    public void canGetAppSummaries() throws ExecutionException, InterruptedException {
+        List<TrafficSummary<String>> appTrafficSummary =
+                flowRepository.getApplicationSummaries(Collections.singleton("https"), false, getFilters()).get();
+        assertThat(appTrafficSummary, hasSize(1));
+
+        appTrafficSummary =
+                flowRepository.getApplicationSummaries(ImmutableSet.of("https", "http"), false, getFilters()).get();
+
+        assertThat(appTrafficSummary, hasSize(2));
+        TrafficSummary<String> https = appTrafficSummary.get(0);
+        assertThat(https.getEntity(), equalTo("https"));
+        assertThat(https.getBytesIn(), equalTo(210L));
+        assertThat(https.getBytesOut(), equalTo(2100L));
+
+        TrafficSummary<String> http = appTrafficSummary.get(1);
+        assertThat(http.getEntity(), equalTo("http"));
+        assertThat(http.getBytesIn(), equalTo(10L));
+        assertThat(http.getBytesOut(), equalTo(100L));
+    }
+
+    @Test
+    public void canGetTopNAppsSeries() throws ExecutionException, InterruptedException {
+        // Top 10
+        Table<Directional<String>, Long, Double> appTraffic = flowRepository.getTopNApplicationSeries(10, 10, false,
+                getFilters()).get();
+        assertThat(appTraffic.rowKeySet(), hasSize(6));
+
+        // Top 2 with others
+        appTraffic = flowRepository.getTopNApplicationSeries(2, 10, true, getFilters()).get();
+        assertThat(appTraffic.rowKeySet(), hasSize(6));
+
+        // Top 1
+        appTraffic = flowRepository.getTopNApplicationSeries(1, 10, false, getFilters()).get();
+        assertThat(appTraffic.rowKeySet(), hasSize(2));
+        assertThat(appTraffic.rowKeySet(), containsInAnyOrder(new Directional<>("https", true),
+                new Directional<>("https", false)));
+
+        verifyHttpsSeries(appTraffic, "https");
+    }
+    
+    @Test
+    public void canGetAppSeries() throws ExecutionException, InterruptedException {
+        // Get just https
+        Table<Directional<String>, Long, Double> appTraffic =
+                flowRepository.getApplicationSeries(Collections.singleton("https"), 10,
+                        false, getFilters()).get();
+        assertThat(appTraffic.rowKeySet(), hasSize(2));
+        verifyHttpsSeries(appTraffic, "https");
+
+        // Get just https and include others
+        appTraffic = flowRepository.getApplicationSeries(Collections.singleton("https"), 10,
+                true, getFilters()).get();
+        assertThat(appTraffic.rowKeySet(), hasSize(4));
+
+        // Get https and http
+        appTraffic = flowRepository.getApplicationSeries(ImmutableSet.of("http", "https"), 10,
+                false, getFilters()).get();
+        assertThat(appTraffic.rowKeySet(), hasSize(4));
+
+        // Get https and http and include others
+        appTraffic = flowRepository.getApplicationSeries(ImmutableSet.of("http", "https"), 10,
+                true, getFilters()).get();
+        assertThat(appTraffic.rowKeySet(), hasSize(6));
+    }
+
+    @Test
     public void canGetTopNApplicationsWithPartialSums() throws ExecutionException, InterruptedException {
         // Retrieve the Top N applications over a subset of the range
         final List<TrafficSummary<String>> appTrafficSummary = flowRepository.getTopNApplicationSummaries(1, false,
@@ -243,77 +309,158 @@ public class FlowQueryIT {
     }
 
     @Test
-    public void canGetAppSeries() throws ExecutionException, InterruptedException {
-        // Get just https
-        Table<Directional<String>, Long, Double> appTraffic =
-                flowRepository.getApplicationSeries(Collections.singleton("https"), 10,
-                false, getFilters()).get();
-        assertThat(appTraffic.rowKeySet(), hasSize(2));
-        verifyHttpsSeries(appTraffic);
+    public void canGetHosts() throws ExecutionException, InterruptedException {
+        // Get only the first host
+        List<String> hosts = flowRepository.getHosts("", 1, getFilters()).get();
+        assertThat(hosts, equalTo(Collections.singletonList("10.1.1.11")));
 
-        // Get just https and include others
-        appTraffic = flowRepository.getApplicationSeries(Collections.singleton("https"), 10,
-                true, getFilters()).get();
-        assertThat(appTraffic.rowKeySet(), hasSize(4));
+        // Get first 10 hosts
+        hosts = flowRepository.getHosts("", 10, getFilters()).get();
+        assertThat(hosts, equalTo(Arrays.asList("10.1.1.11", "10.1.1.12", "10.1.1.13", "192.168.1.100",
+                "192.168.1.101", "192.168.1.102")));
 
-        // Get https and http
-        appTraffic = flowRepository.getApplicationSeries(ImmutableSet.of("http", "https"), 10,
-                false, getFilters()).get();
-        assertThat(appTraffic.rowKeySet(), hasSize(4));
+        // Get the first 10 hosts with a prefix
+        hosts = flowRepository.getHosts("10.1.1.", 10, getFilters()).get();
+        assertThat(hosts, equalTo(Arrays.asList("10.1.1.11", "10.1.1.12", "10.1.1.13")));
 
-        // Get https and http and include others
-        appTraffic = flowRepository.getApplicationSeries(ImmutableSet.of("http", "https"), 10,
-                true, getFilters()).get();
-        assertThat(appTraffic.rowKeySet(), hasSize(6));
+        // Find all the hosts using a regex
+        hosts = flowRepository.getHosts("10.1.*|192.168.*", 10, getFilters()).get();
+        assertThat(hosts, equalTo(Arrays.asList("10.1.1.11", "10.1.1.12", "10.1.1.13", "192.168.1.100",
+                "192.168.1.101", "192.168.1.102")));
     }
 
     @Test
-    public void canGetAppSummaries() throws ExecutionException, InterruptedException {
-        List<TrafficSummary<String>> appTrafficSummary =  
-                flowRepository.getApplicationSummaries(Collections.singleton("https"), false, getFilters()).get();
-        assertThat(appTrafficSummary, hasSize(1));
+    public void canGetTopNHostSummaries() throws ExecutionException, InterruptedException {
+        // Retrieve the Top N applications over the entire time range
+        List<TrafficSummary<String>> hostTrafficSummary = flowRepository.getTopNHostSummaries(10, false, getFilters()).get();
 
-        //
-        appTrafficSummary =
-                flowRepository.getApplicationSummaries(ImmutableSet.of("https", "http"), false, getFilters()).get();
+        // Expect all of the hosts, with the sum of all the bytes from all the flows
+        assertThat(hostTrafficSummary, hasSize(6));
+        TrafficSummary<String> top = hostTrafficSummary.get(0);
+        assertThat(top.getEntity(), equalTo("10.1.1.12"));
+        assertThat(top.getBytesIn(), equalTo(210L));
+        assertThat(top.getBytesOut(), equalTo(2100L));
 
-        assertThat(appTrafficSummary, hasSize(2));
-        TrafficSummary<String> https = appTrafficSummary.get(0);
-        assertThat(https.getEntity(), equalTo("https"));
-        assertThat(https.getBytesIn(), equalTo(210L));
-        assertThat(https.getBytesOut(), equalTo(2100L));
+        TrafficSummary<String> bottom = hostTrafficSummary.get(5);
+        assertThat(bottom.getEntity(), equalTo("10.1.1.11"));
+        assertThat(bottom.getBytesIn(), equalTo(10L));
+        assertThat(bottom.getBytesOut(), equalTo(100L));
 
-        TrafficSummary<String> http = appTrafficSummary.get(1);
-        assertThat(http.getEntity(), equalTo("http"));
-        assertThat(http.getBytesIn(), equalTo(10L));
-        assertThat(http.getBytesOut(), equalTo(100L));
+        // Now decrease N, expect all of the counts to pool up in "Other"
+        hostTrafficSummary = flowRepository.getTopNHostSummaries(1, true, getFilters()).get();
+
+        // Expect two summaries
+        assertThat(hostTrafficSummary, hasSize(2));
+        top = hostTrafficSummary.get(0);
+        assertThat(top.getEntity(), equalTo("10.1.1.12"));
+        assertThat(top.getBytesIn(), equalTo(210L));
+        assertThat(top.getBytesOut(), equalTo(2100L));
+
+        TrafficSummary<String> other = hostTrafficSummary.get(1);
+        assertThat(other.getEntity(), equalTo("Other"));
+        assertThat(other.getBytesIn(), equalTo(210L));
+        assertThat(other.getBytesOut(), equalTo(200L));
+
+        // Now set N to zero
+        hostTrafficSummary = flowRepository.getTopNHostSummaries(0, false, getFilters()).get();
+        assertThat(hostTrafficSummary, hasSize(0));
+
+        // N=0, but include other
+        hostTrafficSummary = flowRepository.getTopNHostSummaries(0, true, getFilters()).get();
+        assertThat(hostTrafficSummary, hasSize(1));
+        other = hostTrafficSummary.get(0);
+        assertThat(other.getEntity(), equalTo("Other"));
+        assertThat(other.getBytesIn(), equalTo(420L));
+        assertThat(other.getBytesOut(), equalTo(2300L));
+    }
+    
+    @Test
+    public void canGetHostSummaries() throws ExecutionException, InterruptedException {
+        // Get one specific host and no others
+        List<TrafficSummary<String>> hostTrafficSummary =
+                flowRepository.getHostSummaries(Collections.singleton("10.1.1.12"), false, getFilters()).get();
+        assertThat(hostTrafficSummary, hasSize(1));
+
+        // Get summaries for two specific hosts
+        hostTrafficSummary =
+                flowRepository.getHostSummaries(ImmutableSet.of("10.1.1.11", "10.1.1.12"), false, getFilters()).get();
+
+        assertThat(hostTrafficSummary, hasSize(2));
+        TrafficSummary<String> first = hostTrafficSummary.get(0);
+        assertThat(first.getEntity(), equalTo("10.1.1.11"));
+        assertThat(first.getBytesIn(), equalTo(10L));
+        assertThat(first.getBytesOut(), equalTo(100L));
+
+        TrafficSummary<String> second = hostTrafficSummary.get(1);
+        assertThat(second.getEntity(), equalTo("10.1.1.12"));
+        assertThat(second.getBytesIn(), equalTo(210L));
+        assertThat(second.getBytesOut(), equalTo(2100L));
+
+        // Try with only one host to let Others accumulate the rest
+        hostTrafficSummary =
+                flowRepository.getHostSummaries(ImmutableSet.of("10.1.1.11"), true, getFilters()).get();
+        assertThat(hostTrafficSummary, hasSize(2));
+        first = hostTrafficSummary.get(0);
+        assertThat(first.getEntity(), equalTo("10.1.1.11"));
+        assertThat(first.getBytesIn(), equalTo(10L));
+        assertThat(first.getBytesOut(), equalTo(100L));
+
+        second = hostTrafficSummary.get(1);
+        assertThat(second.getEntity(), equalTo("Other"));
+        assertThat(second.getBytesIn(), equalTo(410L));
+        assertThat(second.getBytesOut(), equalTo(2200L));
     }
 
     @Test
-    public void canGetTopNAppsSeries() throws ExecutionException, InterruptedException {
+    public void canGetTopNHostSeries() throws ExecutionException, InterruptedException {
         // Top 10
-        Table<Directional<String>, Long, Double> appTraffic = flowRepository.getTopNApplicationsSeries(10, 10, false,
+        Table<Directional<String>, Long, Double> hostTraffic = flowRepository.getTopNHostSeries(10, 10, false,
                 getFilters()).get();
-        assertThat(appTraffic.rowKeySet(), hasSize(6));
+        // 6 hosts in two directions should yield 12 rows
+        assertThat(hostTraffic.rowKeySet(), hasSize(12));
 
         // Top 2 with others
-        appTraffic = flowRepository.getTopNApplicationsSeries(2, 10, true, getFilters()).get();
-        assertThat(appTraffic.rowKeySet(), hasSize(6));
+        hostTraffic = flowRepository.getTopNHostSeries(2, 10, true, getFilters()).get();
+        assertThat(hostTraffic.rowKeySet(), hasSize(6));
 
         // Top 1
-        appTraffic = flowRepository.getTopNApplicationsSeries(1, 10, false, getFilters()).get();
-        assertThat(appTraffic.rowKeySet(), hasSize(2));
-        assertThat(appTraffic.rowKeySet(), containsInAnyOrder(new Directional<>("https", true),
-                new Directional<>("https", false)));
-
-        verifyHttpsSeries(appTraffic);
+        hostTraffic = flowRepository.getTopNHostSeries(1, 10, false, getFilters()).get();
+        assertThat(hostTraffic.rowKeySet(), hasSize(2));
+        assertThat(hostTraffic.rowKeySet(), containsInAnyOrder(new Directional<>("10.1.1.12", true),
+                new Directional<>("10.1.1.12", false)));
+        verifyHttpsSeries(hostTraffic, "10.1.1.12");
     }
 
-    private void verifyHttpsSeries(Table<Directional<String>, Long, Double> appTraffic) {
+    @Test
+    public void canGetHostSeries() throws ExecutionException, InterruptedException {
+        // Get just https
+        Table<Directional<String>, Long, Double> hostTraffic =
+                flowRepository.getHostSeries(Collections.singleton("10.1.1.12"), 10,
+                        false, getFilters()).get();
+        assertThat(hostTraffic.rowKeySet(), hasSize(2));
+        verifyHttpsSeries(hostTraffic, "10.1.1.12");
+
+        // Get just 10.1.1.12 and include others
+        hostTraffic = flowRepository.getHostSeries(Collections.singleton("10.1.1.12"), 10,
+                true, getFilters()).get();
+        assertThat(hostTraffic.rowKeySet(), hasSize(4));
+
+        // Get 10.1.1.12 and 192.168.1.100
+        hostTraffic = flowRepository.getHostSeries(ImmutableSet.of("10.1.1.12", "192.168.1.100"), 10,
+                false, getFilters()).get();
+        assertThat(hostTraffic.rowKeySet(), hasSize(4));
+
+        // Get 10.1.1.12 and 192.168.1.100 and include others
+        hostTraffic = flowRepository.getHostSeries(ImmutableSet.of("10.1.1.12", "192.168.1.100"), 10,
+                true, getFilters()).get();
+        assertThat(hostTraffic.rowKeySet(), hasSize(6));
+    }
+
+    private void verifyHttpsSeries(Table<Directional<String>, Long, Double> appTraffic, String label) {
         // Pull the values from the table into arrays for easy comparision and validate
         List<Long> timestamps = getTimestampsFrom(appTraffic);
-        List<Double> httpsIngressValues = getValuesFor(new Directional<>("https", true), appTraffic);
-        List<Double> httpsEgressValues = getValuesFor(new Directional<>("https", false), appTraffic);
+        List<Double> httpsIngressValues = getValuesFor(new Directional<>(label, true), appTraffic);
+        List<Double> httpsEgressValues = getValuesFor(new Directional<>(label, false), appTraffic);
 
         // In the range t=[10,20) there are 2 active flows with dstport=443:
         //   100 bytes from [13,26]
