@@ -73,7 +73,6 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -96,7 +95,7 @@ import io.searchbox.core.search.aggregation.TermsAggregation;
 
 public class ElasticFlowRepository implements FlowRepository {
 
-    public static final String OTHER_APPLICATION_NAME = "Other";
+    public static final String OTHER_NAME = "Other";
     public static final String UNKNOWN_APPLICATION_NAME = "Unknown";
     public static final String TRACER_FLOW_MODULE = "ElasticFlow";
 
@@ -314,7 +313,8 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getTopNApplicationSummaries(int N, boolean includeOther, List<Filter> filters) {
+    public CompletableFuture<List<TrafficSummary<String>>> getTopNApplicationSummaries(int N, boolean includeOther,
+                                                                                       List<Filter> filters) {
         return getTotalBytesFromTopN(N, "netflow.application", UNKNOWN_APPLICATION_NAME, includeOther, filters);
     }
 
@@ -322,37 +322,83 @@ public class ElasticFlowRepository implements FlowRepository {
     public CompletableFuture<List<TrafficSummary<String>>> getApplicationSummaries(Set<String> applications,
                                                                                    boolean includeOther,
                                                                                    List<Filter> filters) {
-        return getTotalBytesFromApplications(applications, includeOther, filters);
+        return getTotalBytesFrom(applications, "netflow.application", null, includeOther,
+                filters);
     }
 
     @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getApplicationSeries(Set<String> applications, long step, boolean includeOther, List<Filter> filters) {
-        return getSeriesForApplications(applications, step, includeOther, filters).thenApply((res) -> mapTable(res, s -> s));
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getApplicationSeries(Set<String> applications,
+                                                                                            long step,
+                                                                                            boolean includeOther,
+                                                                                            List<Filter> filters) {
+        return getSeriesFor(applications, "netflow.application", step, includeOther, filters)
+                .thenApply((res) -> mapTable(res, s -> s));
     }
 
     @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationsSeries(int N, long step, boolean includeOther, List<Filter> filters) {
-        return getSeriesFromTopN(N, step, "netflow.application", UNKNOWN_APPLICATION_NAME, includeOther, filters).thenApply((res) -> mapTable(res, s -> s));
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationSeries(int N, long step,
+                                                                                                boolean includeOther,
+                                                                                                List<Filter> filters) {
+        return getSeriesFromTopN(N, step, "netflow.application", UNKNOWN_APPLICATION_NAME, includeOther, filters)
+                .thenApply((res) -> mapTable(res, s -> s));
     }
 
     @Override
     public CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversations(int N, List<Filter> filters) {
         return getTotalBytesFromTopN(N, "netflow.convo_key", null, false, filters)
                 .thenApply((res) -> res.stream()
-                .map(summary -> {
-                    final ConversationKey conversation = ConversationKeyUtils.fromJsonString(summary.getEntity());
-                    final TrafficSummary<ConversationKey> out = new TrafficSummary<>(conversation);
-                    out.setBytesIn(summary.getBytesIn());
-                    out.setBytesOut(summary.getBytesOut());
-                    return out;
-                })
-                .collect(Collectors.toList()));
+                        .map(summary -> {
+                            final ConversationKey conversation =
+                                    ConversationKeyUtils.fromJsonString(summary.getEntity());
+                            final TrafficSummary<ConversationKey> out = new TrafficSummary<>(conversation);
+                            out.setBytesIn(summary.getBytesIn());
+                            out.setBytesOut(summary.getBytesOut());
+                            return out;
+                        })
+                        .collect(Collectors.toList()));
     }
 
     @Override
-    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationsSeries(int N, long step, List<Filter> filters) {
+    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationsSeries(int N,
+                                                                                                           long step,
+                                                                                                           List<Filter> filters) {
         return getSeriesFromTopN(N, step, "netflow.convo_key", null, false, filters)
                 .thenApply((res) -> mapTable(res, (key) -> ConversationKeyUtils.fromJsonString(key)));
+    }
+
+    @Override
+    public CompletableFuture<List<String>> getHosts(String prefix, long limit, List<Filter> filters) {
+        // Append a '.*' to the end of the prefix to turn it into a prefix regex
+        final String hostsQuery = searchQueryProvider.getHostsQuery(prefix + ".*", limit, filters);
+        return searchAsync(hostsQuery, extractTimeRangeFilter(filters)).thenApply(res -> processGroupedByResult(res,
+                limit));
+    }
+
+    @Override
+    public CompletableFuture<List<TrafficSummary<String>>> getTopNHostSummaries(int N, boolean includeOther,
+                                                                                List<Filter> filters) {
+        return getTotalBytesFromTopN(N, "hosts", null, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<List<TrafficSummary<String>>> getHostSummaries(Set<String> hosts,
+                                                                            boolean includeOther,
+                                                                            List<Filter> filters) {
+        return getTotalBytesFrom(hosts, "hosts", null, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getHostSeries(Set<String> hosts, long step,
+                                                                                     boolean includeOther,
+                                                                                     List<Filter> filters) {
+        return getSeriesFor(hosts, "hosts", step, includeOther, filters).thenApply((res) -> mapTable(res, s -> s));
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNHostSeries(int N, long step,
+                                                                                         boolean includeOther,
+                                                                                         List<Filter> filters) {
+        return getSeriesFromTopN(N, step, "hosts", null, includeOther, filters);
     }
 
     private CompletableFuture<List<String>> getTopN(int N, String groupByTerm, String keyForMissingTerm, List<Filter> filters) {
@@ -369,19 +415,21 @@ public class ElasticFlowRepository implements FlowRepository {
                 .thenApply(res -> processGroupedByResult(res, N));
     }
 
-    private CompletableFuture<Table<Directional<String>, Long, Double>> getSeriesForApplications(Set<String> applications,
-                                                                                                 long step,
-                                                                                                 boolean includeOther,
-                                                                                                 List<Filter> filters) {
-        if (applications == null || applications.isEmpty()) {
+    private CompletableFuture<Table<Directional<String>, Long, Double>> getSeriesFor(Set<String> entities,
+                                                                                     String groupByTerm,
+                                                                                     long step,
+                                                                                     boolean includeOther,
+                                                                                     List<Filter> filters) {
+        Objects.requireNonNull(groupByTerm);
+
+        if (entities == null || entities.isEmpty()) {
             return CompletableFuture.completedFuture(null);
         }
-        
+
         final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
         final ImmutableTable.Builder<Directional<String>, Long, Double> builder = ImmutableTable.builder();
-        final String seriesFromApplicationQuery = searchQueryProvider.getSeriesForApplicationQuery(applications, step,
-                timeRangeFilter.getStart(),
-                timeRangeFilter.getEnd(), filters);
+        final String seriesFromApplicationQuery = searchQueryProvider.getSeriesFromQuery(entities, step,
+                timeRangeFilter.getStart(), timeRangeFilter.getEnd(), groupByTerm, filters);
         CompletableFuture<Void> seriesFuture;
 
         seriesFuture = searchAsync(seriesFromApplicationQuery, timeRangeFilter)
@@ -389,15 +437,15 @@ public class ElasticFlowRepository implements FlowRepository {
                     toTable(builder, res);
                     return null;
                 });
-        
+
         if (includeOther) {
             // We also want to gather series for all other terms
-            final String seriesFromOthersQuery = searchQueryProvider.getSeriesFromOtherApplicationsQuery(applications, step,
-                    timeRangeFilter.getStart(), timeRangeFilter.getEnd(), filters);
+            final String seriesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(entities, step,
+                    timeRangeFilter.getStart(), timeRangeFilter.getEnd(), groupByTerm, false, filters);
             seriesFuture = seriesFuture.thenCombine(searchAsync(seriesFromOthersQuery, timeRangeFilter),
-                    (ignored,res) -> processOthersResult(res, builder));
+                    (ignored, res) -> processOthersResult(res, builder));
         }
-        
+
         return seriesFuture.thenApply(ignored -> builder.build());
     }
 
@@ -461,7 +509,7 @@ public class ElasticFlowRepository implements FlowRepository {
             final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes",
                     ProportionalSumAggregation.class);
             for (ProportionalSumAggregation.DateHistogram dateHistogram : sumAgg.getBuckets()) {
-                builder.put(new Directional<>(OTHER_APPLICATION_NAME, isIngress), dateHistogram.getTime(),
+                builder.put(new Directional<>(OTHER_NAME, isIngress), dateHistogram.getTime(),
                         dateHistogram.getValue());
             }
         }
@@ -498,7 +546,7 @@ public class ElasticFlowRepository implements FlowRepository {
                 .thenCompose((topN) -> getSeriesFromTopN(topN, step, groupByTerm, keyForMissingTerm, includeOther, filters));
     }
 
-    private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesFrom(List<String> from, String groupByTerm,
+    private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesFrom(Collection<String> from, String groupByTerm,
                                                                               String keyForMissingTerm,
                                                                               boolean includeOther, List<Filter> filters) {
         final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
@@ -543,7 +591,7 @@ public class ElasticFlowRepository implements FlowRepository {
                     // No results
                     return summaries;
                 }
-                final TrafficSummary<String> trafficSummary = new TrafficSummary<>(OTHER_APPLICATION_NAME);
+                final TrafficSummary<String> trafficSummary = new TrafficSummary<>(OTHER_NAME);
                 for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
                     final boolean isIngress = isIngress(directionBucket);
                     final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
@@ -559,7 +607,7 @@ public class ElasticFlowRepository implements FlowRepository {
                         trafficSummary.setBytesIn(sum.longValue());
                     }
                 }
-                summaries.put(OTHER_APPLICATION_NAME, trafficSummary);
+                summaries.put(OTHER_NAME, trafficSummary);
                 return summaries;
             });
         }
@@ -618,13 +666,6 @@ public class ElasticFlowRepository implements FlowRepository {
     private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesFromTopN(int N, String groupByTerm, String keyForMissingTerm, boolean includeOther, List<Filter> filters) {
         return getTopN(N, groupByTerm, keyForMissingTerm, filters)
                 .thenCompose((topN) -> getTotalBytesFrom(topN, groupByTerm, keyForMissingTerm, includeOther, filters));
-    }
-
-    private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesFromApplications(Set<String> applications,
-                                                                                          boolean includeOther,
-                                                                                          List<Filter> filters) {
-        return getTotalBytesFrom(ImmutableList.copyOf(applications), "netflow.application", null, includeOther,
-                filters);
     }
 
     private CompletableFuture<SearchResult> searchAsync(String query, TimeRangeFilter timeRangeFilter) {

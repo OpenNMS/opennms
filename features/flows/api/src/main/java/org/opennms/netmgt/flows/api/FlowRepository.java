@@ -51,10 +51,19 @@ public interface FlowRepository {
 
     CompletableFuture<Table<Directional<String>, Long, Double>> getApplicationSeries(Set<String> applications, long step, boolean includeOther, List<Filter> filters);
     
-    CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationsSeries(int N, long step, boolean includeOther, List<Filter> filters);
+    CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationSeries(int N, long step, boolean includeOther, List<Filter> filters);
 
     CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversations(int N, List<Filter> filters);
 
     CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationsSeries(int N, long step, List<Filter> filters);
 
+    CompletableFuture<List<String>> getHosts(String prefix, long limit, List<Filter> filters);
+
+    CompletableFuture<List<TrafficSummary<String>>> getTopNHostSummaries(int N, boolean includeOther, List<Filter> filters);
+
+    CompletableFuture<List<TrafficSummary<String>>> getHostSummaries(Set<String> hosts, boolean includeOther, List<Filter> filters);
+
+    CompletableFuture<Table<Directional<String>, Long, Double>> getHostSeries(Set<String> hosts, long step, boolean includeOther, List<Filter> filters);
+
+    CompletableFuture<Table<Directional<String>, Long, Double>> getTopNHostSeries(int N, long step, boolean includeOther, List<Filter> filters);
 }
