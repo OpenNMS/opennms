@@ -204,7 +204,7 @@
           <%-- Search by flow data --%>
           <form role="form" class="form-group" action="element/nodeList.htm" method="get">
               <input type="hidden" name="listInterfaces" value="false"/>
-              <label for="byflows_flows">Flows:</label>
+              <label for="byflows_flows">Flows</label>
               <div class="input-group">
                   <select class="custom-select" id="byflows_flows" name="flows">
                       <option value="true">Nodes with flow data</option>

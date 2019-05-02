@@ -163,9 +163,6 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     }
 
     private void addCriteriaForFlows(final OnmsCriteria criteria, final Boolean hasFlows) {
-        if (hasFlows == null) {
-            return;
-        }
         criteria.add(Restrictions.eq("node.hasFlows", hasFlows));
     }
 

@@ -94,14 +94,14 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testNodesWithFlows() {
-        this.m_driver.get(this.getBaseUrl() + "opennms/element/nodeList.htm?flows=true");
+        m_driver.get(this.getBaseUrl() + "opennms/element/nodeList.htm?flows=true");
         assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
                 containsInAnyOrder("TestMachine loc1node2", "TestMachine loc2node2"));
     }
 
     @Test
     public void testNodesWithoutFlows() {
-        this.m_driver.get(this.getBaseUrl() + "opennms/element/nodeList.htm?flows=false");
+        m_driver.get(this.getBaseUrl() + "opennms/element/nodeList.htm?flows=false");
         assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
                 containsInAnyOrder("TestMachine loc1node1", "TestMachine loc2node1"));
     }
