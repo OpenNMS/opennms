@@ -192,12 +192,21 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
                         aliases.add(wqlobj.getAlias());
                         wqls.add(wqlobj.getWql());
                         resourceUris.add(wqlobj.getResourceUri());
-			client.enumerateAndPullUsingFilter(wqlobj.getResourceUri(), WSManConstants.XML_NS_WQL_DIALECT, wqlobj.getWql(), nodes, true);
+			String combinedResult;
+                        client.enumerateAndPullUsingFilter(wqlobj.getResourceUri(), WSManConstants.XML_NS_WQL_DIALECT, wqlobj.getWql(), nodes, true);
                         if (!nodes.isEmpty()) {
-                        	values.add(nodes.get(0).getTextContent());
+                                for(int num=0; num<nodes.size(); num++) {
+                                        if (num > 0) {
+                                                combinedResult = combinedResult + "\n " + nodes.get(num).getTextContent();
+                                        }
+                                        else {
+                                                combinedResult = nodes.get(num).getTextContent();
+                                        }
+                                }
+                                values.add(combinedResult);
                         } else {
-				values.add(null);
-			}
+                                values.add(null);
+                        }
                 }
                 if (values.size() == aliases.size() && values.size() == resourceUris.size() && values.size() == wqls.size()) {
                         final Properties substitutions = new Properties();
