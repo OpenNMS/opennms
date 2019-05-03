@@ -57,24 +57,17 @@ The `applications` and `applications/series` endpoints also support:
 [options="header"]
 |===
 | name               | default   | comment
-| N                  | 10        | Number of top entries (determined by total bytes transferred) to return
+| N                  | none      | Number of top entries (determined by total bytes transferred) to return
 | includeOther       | false     | When set to `true` the results will also include an additional row or column that contains
                                    the bytes transferred for the flows that fall outside of the Top N.
-|===
-
-The `applications/series` endpoint also supports:
-
-[options="header"]
-|===
-| name               | default   | comment
 | application        | none      | If provided, returns only flow series that match the given application(s). This field
                                    can be repeated for any number of applications to be included in the query.
 |===
 
-The `application/series` endpoint requires one of `N` or `application` query parameters to be set and will return an
-error if neither or both are set.
+Both endpoints requires one of `N` or `application` query parameters to be set and will return an error if neither or
+both are set.
 
-The `applications` and `conversations` endpoints also support:
+The `conversations` endpoint also supports:
 
 [options="header"]
 |===
@@ -82,7 +75,7 @@ The `applications` and `conversations` endpoints also support:
 | N                  | 10        | Number of top entries (determined by total bytes transferred) to return
 |===
 
-The `series` endpoints also support:
+The `converstations/series` endpoint also supports:
 
 [options="header"]
 |===
