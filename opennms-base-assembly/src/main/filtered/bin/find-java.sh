@@ -158,7 +158,7 @@ main() {
 	for dir in "${JAVA_SEARCH_DIRS[@]}"; do
 		if [ -e "${dir}" ]; then
 			[ -n "$DEBUG" ] && (>&2 printf 'Scanning: %s\n' "${dir}")
-			find "$dir" -type f -name java 2>/dev/null | grep -E '/bin/java$' | sort -u > /tmp/$$.javabins
+			find -L "$dir" -type f -name java 2>/dev/null | grep -E '/bin/java$' | sort -u > /tmp/$$.javabins
 			while read -r javabin; do
 				javabin="$(get_real_path "${javabin}")"
 				javahome="$(printf '%s' "${javabin}" | sed -e 's,/bin/java$,,')"

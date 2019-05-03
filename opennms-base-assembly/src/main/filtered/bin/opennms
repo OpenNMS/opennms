@@ -204,7 +204,7 @@ checkXmlFiles(){
 
 	if [ -n "$XMLLINT" ] && [ -x "$XMLLINT" ]; then
 		TEMPFILE="$(getTempFile)"
-		find "$OPENNMS_HOME/etc" -type f -name \*.xml 2>/dev/null | while read -r "FILE"; do
+		find -L "$OPENNMS_HOME/etc" -type f -name \*.xml 2>/dev/null | while read -r "FILE"; do
 			if ! "$XMLLINT" "$FILE" >/dev/null 2>&1; then
 				echo "ERROR: XML validation failed: $FILE"
 				echo "	   run '$XMLLINT $FILE' for details"
@@ -229,7 +229,7 @@ checkXmlFiles(){
 	fi
 
 	TEMPFILE="$(getTempFile)"
-	find "$OPENNMS_HOME/etc/imports" -type f -name \*.xml 2>/dev/null | while read -r "FILE"; do
+	find -L "$OPENNMS_HOME/etc/imports" -type f -name \*.xml 2>/dev/null | while read -r "FILE"; do
 		if grep "non-ip-snmp-primary" "$FILE" >/dev/null 2>&1 || grep "non-ip-interfaces" "$FILE" >/dev/null 2>&1; then
 			echo "$FILE" >&2
 		fi
@@ -268,7 +268,7 @@ checkRpmFiles(){
 	done
 
 	for EXTENSION in rpmnew rpmsave dpkg-dist; do
-		if [ "$(find "$CHECKDIRS" -name \*."$EXTENSION" 2>/dev/null | wc -l)" -gt 0 ]; then
+		if [ "$(find -L "$CHECKDIRS" -name \*."$EXTENSION" 2>/dev/null | wc -l)" -gt 0 ]; then
 			cat <<END >&2
 
 WARNING!  You have files that end in .$EXTENSION in your
