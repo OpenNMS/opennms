@@ -29,6 +29,7 @@
 package org.opennms.netmgt.flows.rest;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -109,8 +110,9 @@ public interface FlowRestService {
     @GET
     @Path("applications")
     @Produces(MediaType.APPLICATION_JSON)
-    FlowSummaryResponse getTopNApplications(
-            @DefaultValue(DEFAULT_TOP_N) @QueryParam("N") final int N,
+    FlowSummaryResponse getApplicationSummary(
+            @QueryParam("N") final Integer N,
+            @QueryParam("application") final Set<String> applications,
             @DefaultValue("false") @QueryParam("includeOther") boolean includeOther,
             @Context UriInfo uriInfo
     );
@@ -121,7 +123,7 @@ public interface FlowRestService {
     FlowSeriesResponse getApplicationSeries(
             @DefaultValue(DEFAULT_STEP_MS) @QueryParam("step") final long step,
             @QueryParam("N") final Integer N,
-            @QueryParam("application") final List<String> applications,
+            @QueryParam("application") final Set<String> applications,
             @DefaultValue("false") @QueryParam("includeOther") boolean includeOther,
             @Context final UriInfo uriInfo
     );

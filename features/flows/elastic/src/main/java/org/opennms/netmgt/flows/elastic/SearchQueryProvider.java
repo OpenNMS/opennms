@@ -34,6 +34,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
@@ -98,11 +99,11 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .build());
     }
 
-    public String getSeriesFromTopNQuery(List<String> topN, long step, long start, long end,
-                                         String groupByTerm, List<Filter> filters) {
+    public String getSeriesFromQuery(List<String> from, long step, long start, long end,
+                                     String groupByTerm, List<Filter> filters) {
         return render("series_for_terms.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
-                .put("topN", topN)
+                .put("from", from)
                 .put("groupByTerm", groupByTerm)
                 .put("step", step)
                 .put("start", start)
@@ -110,7 +111,7 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .build());
     }
 
-    public String getSeriesForApplicationQuery(List<String> applications, long step, long start, long end,
+    public String getSeriesForApplicationQuery(Set<String> applications, long step, long start, long end,
                                                List<Filter> filters) {
         return render("series_for_applications.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
@@ -133,12 +134,12 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .build());
     }
 
-    public String getSeriesFromOthersQuery(List<String> topN, long step, long start, long end,
+    public String getSeriesFromOthersQuery(List<String> from, long step, long start, long end,
                                            String groupByTerm, boolean excludeMissing,
                                            List<Filter> filters) {
         return render("series_for_others.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
-                .put("topN", topN)
+                .put("from", from)
                 .put("groupByTerm", groupByTerm)
                 .put("excludeMissing", excludeMissing)
                 .put("step", step)
@@ -147,8 +148,8 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .build());
     }
 
-    public String getSeriesFromOthersQuery(List<String> applications, long step, long start, long end,
-                                           List<Filter> filters) {
+    public String getSeriesFromOtherApplicationsQuery(Set<String> applications, long step, long start, long end,
+                                                      List<Filter> filters) {
         return render("series_for_others_applications.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .put("applications", applications)

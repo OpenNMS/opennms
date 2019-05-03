@@ -73,6 +73,7 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -313,12 +314,19 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getTopNApplications(int N, boolean includeOther, List<Filter> filters) {
+    public CompletableFuture<List<TrafficSummary<String>>> getTopNApplicationSummaries(int N, boolean includeOther, List<Filter> filters) {
         return getTotalBytesFromTopN(N, "netflow.application", UNKNOWN_APPLICATION_NAME, includeOther, filters);
     }
 
     @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getApplicationSeries(List<String> applications, long step, boolean includeOther, List<Filter> filters) {
+    public CompletableFuture<List<TrafficSummary<String>>> getApplicationSummaries(Set<String> applications,
+                                                                                   boolean includeOther,
+                                                                                   List<Filter> filters) {
+        return getTotalBytesFromApplications(applications, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getApplicationSeries(Set<String> applications, long step, boolean includeOther, List<Filter> filters) {
         return getSeriesForApplications(applications, step, includeOther, filters).thenApply((res) -> mapTable(res, s -> s));
     }
 
@@ -361,7 +369,7 @@ public class ElasticFlowRepository implements FlowRepository {
                 .thenApply(res -> processGroupedByResult(res, N));
     }
 
-    private CompletableFuture<Table<Directional<String>, Long, Double>> getSeriesForApplications(List<String> applications,
+    private CompletableFuture<Table<Directional<String>, Long, Double>> getSeriesForApplications(Set<String> applications,
                                                                                                  long step,
                                                                                                  boolean includeOther,
                                                                                                  List<Filter> filters) {
@@ -384,7 +392,7 @@ public class ElasticFlowRepository implements FlowRepository {
         
         if (includeOther) {
             // We also want to gather series for all other terms
-            final String seriesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(applications, step,
+            final String seriesFromOthersQuery = searchQueryProvider.getSeriesFromOtherApplicationsQuery(applications, step,
                     timeRangeFilter.getStart(), timeRangeFilter.getEnd(), filters);
             seriesFuture = seriesFuture.thenCombine(searchAsync(seriesFromOthersQuery, timeRangeFilter),
                     (ignored,res) -> processOthersResult(res, builder));
@@ -403,7 +411,7 @@ public class ElasticFlowRepository implements FlowRepository {
             // If there are no entries, skip the query
             seriesFuture = CompletableFuture.completedFuture(null);
         } else {
-            final String seriesFromTopNQuery = searchQueryProvider.getSeriesFromTopNQuery(topN, step, timeRangeFilter.getStart(),
+            final String seriesFromTopNQuery = searchQueryProvider.getSeriesFromQuery(topN, step, timeRangeFilter.getStart(),
                     timeRangeFilter.getEnd(), groupByTerm, filters);
             seriesFuture = searchAsync(seriesFromTopNQuery, timeRangeFilter)
                     .thenApply(res -> {
@@ -490,9 +498,9 @@ public class ElasticFlowRepository implements FlowRepository {
                 .thenCompose((topN) -> getSeriesFromTopN(topN, step, groupByTerm, keyForMissingTerm, includeOther, filters));
     }
 
-    private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesFromTopN(List<String> topN, String groupByTerm,
-                                                                                  String keyForMissingTerm,
-                                                                                  boolean includeOther, List<Filter> filters) {
+    private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesFrom(List<String> from, String groupByTerm,
+                                                                              String keyForMissingTerm,
+                                                                              boolean includeOther, List<Filter> filters) {
         final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
         final long start = timeRangeFilter.getStart();
         // Remove 1 from the end to make sure we have a single bucket
@@ -501,16 +509,16 @@ public class ElasticFlowRepository implements FlowRepository {
         final long step = timeRangeFilter.getEnd() - timeRangeFilter.getStart();
 
         CompletableFuture<Map<String, TrafficSummary<String>>> summariesFuture;
-        if (topN.size() < 1) {
+        if (from.size() < 1) {
             // If there are no entries, skip the query
             summariesFuture = CompletableFuture.completedFuture(new LinkedHashMap<>());
         } else {
-            final String bytesFromTopNQuery = searchQueryProvider.getSeriesFromTopNQuery(topN, step, start, end, groupByTerm, filters);
-            summariesFuture = searchAsync(bytesFromTopNQuery, timeRangeFilter).thenApply(ElasticFlowRepository::toTrafficSummaries);
+            final String bytesFromQuery = searchQueryProvider.getSeriesFromQuery(from, step, start, end, groupByTerm, filters);
+            summariesFuture = searchAsync(bytesFromQuery, timeRangeFilter).thenApply(ElasticFlowRepository::toTrafficSummaries);
         }
 
-        final boolean missingTermIncludedInTopN = keyForMissingTerm != null && topN.contains(keyForMissingTerm);
-        if (missingTermIncludedInTopN) {
+        final boolean missingTermIncluded = keyForMissingTerm != null && from.contains(keyForMissingTerm);
+        if (missingTermIncluded) {
             // We also need to query for items with a missing term, this will require a separate query
             final String bytesFromMissingQuery = searchQueryProvider.getSeriesFromMissingQuery(step, start, end,
                     groupByTerm, keyForMissingTerm, filters);
@@ -522,8 +530,8 @@ public class ElasticFlowRepository implements FlowRepository {
 
         if (includeOther) {
             // We also want to tally up traffic from other elements not part of the Top N
-            final String bytesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(topN, step, start, end,
-                    groupByTerm, missingTermIncludedInTopN, filters);
+            final String bytesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(from, step, start, end,
+                    groupByTerm, missingTermIncluded, filters);
             summariesFuture = summariesFuture.thenCombine(searchAsync(bytesFromOthersQuery, timeRangeFilter), (summaries,results) -> {
                 final MetricAggregation aggs = results.getAggregations();
                 if (aggs == null) {
@@ -558,8 +566,8 @@ public class ElasticFlowRepository implements FlowRepository {
 
         return summariesFuture.thenApply(summaries -> {
             // Now build a list in the same order as the given top N list
-            final List<TrafficSummary<String>> topNRes = new ArrayList<>(topN.size());
-            for (String topNEntry : topN) {
+            final List<TrafficSummary<String>> topNRes = new ArrayList<>(from.size());
+            for (String topNEntry : from) {
                 final TrafficSummary<String> summary = summaries.remove(topNEntry);
                 if (summary != null) {
                     topNRes.add(summary);
@@ -609,7 +617,14 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesFromTopN(int N, String groupByTerm, String keyForMissingTerm, boolean includeOther, List<Filter> filters) {
         return getTopN(N, groupByTerm, keyForMissingTerm, filters)
-                .thenCompose((topN) -> getTotalBytesFromTopN(topN, groupByTerm, keyForMissingTerm, includeOther, filters));
+                .thenCompose((topN) -> getTotalBytesFrom(topN, groupByTerm, keyForMissingTerm, includeOther, filters));
+    }
+
+    private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesFromApplications(Set<String> applications,
+                                                                                          boolean includeOther,
+                                                                                          List<Filter> filters) {
+        return getTotalBytesFrom(ImmutableList.copyOf(applications), "netflow.application", null, includeOther,
+                filters);
     }
 
     private CompletableFuture<SearchResult> searchAsync(String query, TimeRangeFilter timeRangeFilter) {

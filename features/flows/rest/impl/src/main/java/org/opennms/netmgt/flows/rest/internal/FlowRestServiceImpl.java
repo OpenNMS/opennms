@@ -37,6 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -118,12 +119,19 @@ public class FlowRestServiceImpl implements FlowRestService {
     }
 
     @Override
-    public FlowSummaryResponse getTopNApplications(int N, boolean includeOther, UriInfo uriInfo) {
+    public FlowSummaryResponse getApplicationSummary(Integer N, Set<String> applications, boolean includeOther, UriInfo uriInfo) {
+        validateNOrSetQueryParameters(N, applications, "application");
+        
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
         final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
 
-        final List<TrafficSummary<String>> summary =
-                waitForFuture(flowRepository.getTopNApplications(N, includeOther, filters));
+        final List<TrafficSummary<String>> summary;
+        
+        if (N != null) {
+            summary =  waitForFuture(flowRepository.getTopNApplicationSummaries(N, includeOther, filters));
+        } else {
+            summary =  waitForFuture(flowRepository.getApplicationSummaries(applications, includeOther, filters));
+        }
 
         final FlowSummaryResponse response = new FlowSummaryResponse();
         response.setStart(timeRangeFilter.getStart());
@@ -134,23 +142,11 @@ public class FlowRestServiceImpl implements FlowRestService {
                 .collect(Collectors.toList()));
         return response;
     }
-
-    private boolean isNullOrEmptyOrContainsNullOrEmpty(List<String> list) {
-        return list == null || list.isEmpty() || list.contains(null) || list.contains("");
-    }
     
     @Override
-    public FlowSeriesResponse getApplicationSeries(long step, Integer N, List<String> applications,
+    public FlowSeriesResponse getApplicationSeries(long step, Integer N, Set<String> applications,
                                                    boolean includeOther, UriInfo uriInfo) {
-        if (N == null && isNullOrEmptyOrContainsNullOrEmpty(applications)) {
-            // If neither the top N or the application are set that is an error
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_PLAIN)
-                    .entity("One of 'N' or 'application' query parameters must be present").build());
-        } else if (N != null && !isNullOrEmptyOrContainsNullOrEmpty(applications)) {
-            // If both are set that is also an error
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_PLAIN)
-                    .entity("Only one of 'N' or 'application' query parameters should be set").build());
-        }
+        validateNOrSetQueryParameters(N, applications, "application");
         
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
         final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
@@ -355,5 +351,21 @@ public class FlowRestServiceImpl implements FlowRestService {
     public List<String> getApplications(String matchingPrefix, long limit, UriInfo uriInfo) {
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
         return waitForFuture(flowRepository.getApplications(matchingPrefix, limit, filters));
+    }
+
+    private boolean isNullOrEmptyOrContainsNullOrEmpty(Collection<String> collection) {
+        return collection == null || collection.isEmpty() || collection.contains(null) || collection.contains("");
+    }
+
+    private void validateNOrSetQueryParameters(Integer N, Collection<String> collection, String collectionName) {
+        if (N == null && isNullOrEmptyOrContainsNullOrEmpty(collection)) {
+            // If neither the top N or the collection are set that is an error
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_PLAIN)
+                    .entity(String.format("One of 'N' or '%s' query parameters must be present", collectionName)).build());
+        } else if (N != null && !isNullOrEmptyOrContainsNullOrEmpty(collection)) {
+            // If both are set that is also an error
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_PLAIN)
+                    .entity(String.format("Only one of 'N' or '%s' query parameters should be set", collectionName)).build());
+        }
     }
 }

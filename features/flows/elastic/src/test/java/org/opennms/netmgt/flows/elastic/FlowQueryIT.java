@@ -75,6 +75,7 @@ import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 
@@ -152,7 +153,7 @@ public class FlowQueryIT {
     @Test
     public void canGetTopNApplications() throws ExecutionException, InterruptedException {
         // Retrieve the Top N applications over the entire time range
-        List<TrafficSummary<String>> appTrafficSummary = flowRepository.getTopNApplications(10, true, getFilters()).get();
+        List<TrafficSummary<String>> appTrafficSummary = flowRepository.getTopNApplicationSummaries(10, true, getFilters()).get();
 
         // Expect all of the applications, with the sum of all the bytes from all the flows
         assertThat(appTrafficSummary, hasSize(4));
@@ -178,7 +179,7 @@ public class FlowQueryIT {
         assertThat(other.getBytesOut(), equalTo(0L));
 
         // Now decrease N, expect all of the counts to pool up in "Other"
-        appTrafficSummary = flowRepository.getTopNApplications(1, true, getFilters()).get();
+        appTrafficSummary = flowRepository.getTopNApplicationSummaries(1, true, getFilters()).get();
 
         // Expect all of the applications, with the sum of all the bytes from all the flows
         assertThat(appTrafficSummary, hasSize(2));
@@ -193,11 +194,11 @@ public class FlowQueryIT {
         assertThat(other.getBytesOut(), equalTo(200L));
 
         // Now set N to zero
-        appTrafficSummary = flowRepository.getTopNApplications(0, false, getFilters()).get();
+        appTrafficSummary = flowRepository.getTopNApplicationSummaries(0, false, getFilters()).get();
         assertThat(appTrafficSummary, hasSize(0));
 
         // N=0, but include other
-        appTrafficSummary = flowRepository.getTopNApplications(0, true, getFilters()).get();
+        appTrafficSummary = flowRepository.getTopNApplicationSummaries(0, true, getFilters()).get();
         assertThat(appTrafficSummary, hasSize(1));
 
         other = appTrafficSummary.get(0);
@@ -209,7 +210,7 @@ public class FlowQueryIT {
     @Test
     public void canGetTopNApplicationsWithPartialSums() throws ExecutionException, InterruptedException {
         // Retrieve the Top N applications over a subset of the range
-        final List<TrafficSummary<String>> appTrafficSummary = flowRepository.getTopNApplications(1, false,
+        final List<TrafficSummary<String>> appTrafficSummary = flowRepository.getTopNApplicationSummaries(1, false,
                 Lists.newArrayList(new TimeRangeFilter(10,  20))).get();
 
         // Expect the top application with a partial sum of all the bytes
@@ -246,25 +247,47 @@ public class FlowQueryIT {
     public void canGetAppSeries() throws ExecutionException, InterruptedException {
         // Get just https
         Table<Directional<String>, Long, Double> appTraffic =
-                flowRepository.getApplicationSeries(Collections.singletonList("https"), 10,
+                flowRepository.getApplicationSeries(Collections.singleton("https"), 10,
                 false, getFilters()).get();
         assertThat(appTraffic.rowKeySet(), hasSize(2));
         verifyHttpsSeries(appTraffic);
 
         // Get just https and include others
-        appTraffic = flowRepository.getApplicationSeries(Collections.singletonList("https"), 10,
+        appTraffic = flowRepository.getApplicationSeries(Collections.singleton("https"), 10,
                 true, getFilters()).get();
         assertThat(appTraffic.rowKeySet(), hasSize(4));
 
         // Get https and http
-        appTraffic = flowRepository.getApplicationSeries(Arrays.asList("http", "https"), 10,
+        appTraffic = flowRepository.getApplicationSeries(ImmutableSet.of("http", "https"), 10,
                 false, getFilters()).get();
         assertThat(appTraffic.rowKeySet(), hasSize(4));
 
         // Get https and http and include others
-        appTraffic = flowRepository.getApplicationSeries(Arrays.asList("http", "https"), 10,
+        appTraffic = flowRepository.getApplicationSeries(ImmutableSet.of("http", "https"), 10,
                 true, getFilters()).get();
         assertThat(appTraffic.rowKeySet(), hasSize(6));
+    }
+
+    @Test
+    public void canGetAppSummaries() throws ExecutionException, InterruptedException {
+        List<TrafficSummary<String>> appTrafficSummary =  
+                flowRepository.getApplicationSummaries(Collections.singleton("https"), false, getFilters()).get();
+        assertThat(appTrafficSummary, hasSize(1));
+
+        //
+        appTrafficSummary =
+                flowRepository.getApplicationSummaries(ImmutableSet.of("https", "http"), false, getFilters()).get();
+
+        assertThat(appTrafficSummary, hasSize(2));
+        TrafficSummary<String> https = appTrafficSummary.get(0);
+        assertThat(https.getEntity(), equalTo("https"));
+        assertThat(https.getBytesIn(), equalTo(210L));
+        assertThat(https.getBytesOut(), equalTo(2100L));
+
+        TrafficSummary<String> http = appTrafficSummary.get(1);
+        assertThat(http.getEntity(), equalTo("http"));
+        assertThat(http.getBytesIn(), equalTo(10L));
+        assertThat(http.getBytesOut(), equalTo(100L));
     }
 
     @Test

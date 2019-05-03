@@ -31,6 +31,7 @@ package org.opennms.netmgt.flows.elastic;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.flows.api.ConversationKey;
@@ -87,7 +88,7 @@ public class InitializingFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getApplicationSeries(List<String> applications,
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getApplicationSeries(Set<String> applications,
                                                                                             long step,
                                                                                             boolean includeOther,
                                                                                             List<Filter> filters) {
@@ -95,8 +96,15 @@ public class InitializingFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getTopNApplications(int N, boolean includeOther, List<Filter> filters) {
-        return delegate.getTopNApplications(N, includeOther, filters);
+    public CompletableFuture<List<TrafficSummary<String>>> getTopNApplicationSummaries(int N, boolean includeOther, List<Filter> filters) {
+        return delegate.getTopNApplicationSummaries(N, includeOther, filters);
+    }
+
+    @Override
+    public CompletableFuture<List<TrafficSummary<String>>> getApplicationSummaries(Set<String> applications,
+                                                                                   boolean includeOther,
+                                                                                   List<Filter> filters) {
+        return delegate.getApplicationSummaries(applications, includeOther, filters);
     }
 
     @Override
