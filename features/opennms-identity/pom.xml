@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <groupId>org.opennms.core.ipc</groupId>
-    <artifactId>org.opennms.core.ipc.sink</artifactId>
+    <artifactId>org.opennms.features</artifactId>
+    <groupId>org.opennms</groupId>
     <version>24.1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms.core.ipc.sink</groupId>
-  <artifactId>org.opennms.core.ipc.sink.api</artifactId>
-  <name>OpenNMS :: Core :: IPC :: Sink :: API</name>
+
+  <groupId>org.opennms.features</groupId>
+  <artifactId>org.opennms.features.opennms-identity</artifactId>
+  <name>OpenNMS :: Features :: Identity</name>
   <packaging>bundle</packaging>
+
   <build>
     <plugins>
       <plugin>
@@ -26,16 +30,18 @@
       </plugin>
     </plugins>
   </build>
+
   <dependencies>
-    <dependency>
-      <groupId>org.opennms.core.tracing</groupId>
-      <artifactId>org.opennms.core.tracing.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
     <dependency>
       <groupId>org.opennms.features.distributed</groupId>
       <artifactId>core-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
+
 </project>

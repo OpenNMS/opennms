@@ -32,10 +32,13 @@ import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
 import org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager;
+import org.opennms.core.tracing.api.TracerRegistry;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import io.opentracing.Tracer;
 
 /**
  * Dispatches the messages directly the consumers.
@@ -46,6 +49,9 @@ public class KafkaLocalMessageDispatcherFactory extends AbstractMessageDispatche
 
     @Autowired
     private KafkaMessageConsumerManager messageConsumerManager;
+
+    @Autowired
+    private TracerRegistry tracerRegistry;
 
     public <S extends Message, T extends Message> void dispatch(final SinkModule<S, T> module, final Void metadata, final T message) {
         messageConsumerManager.dispatch(module, message);
@@ -59,6 +65,19 @@ public class KafkaLocalMessageDispatcherFactory extends AbstractMessageDispatche
     @Override
     public BundleContext getBundleContext() {
         return null;
+    }
+
+    public TracerRegistry getTracerRegistry() {
+        return tracerRegistry;
+    }
+
+    @Override
+    public Tracer getTracer() {
+        return getTracerRegistry().getTracer();
+    }
+
+    public void setTracerRegistry(TracerRegistry tracerRegistry) {
+        this.tracerRegistry = tracerRegistry;
     }
 
     @Override

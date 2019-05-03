@@ -37,6 +37,9 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
+
 /**
  * Dispatches the messages directly the consumers.
  *
@@ -76,6 +79,11 @@ public class AmazonSQSLocalMessageDispatcherFactory extends AbstractMessageDispa
     @Override
     public BundleContext getBundleContext() {
         return null;
+    }
+
+    @Override
+    public Tracer getTracer() {
+        return GlobalTracer.get();
     }
 
 }

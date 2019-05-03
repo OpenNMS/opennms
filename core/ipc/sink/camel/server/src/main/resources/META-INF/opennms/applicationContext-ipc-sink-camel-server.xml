@@ -12,7 +12,8 @@
 
   <context:annotation-config />
 
-  <bean id="camelMessageConsumerManager" class="org.opennms.core.ipc.sink.camel.server.CamelMessageConsumerManager" >
+  <bean id="camelMessageConsumerManager" class="org.opennms.core.ipc.sink.camel.server.CamelMessageConsumerManager"
+        init-method="start">
     <constructor-arg ref="sinkServer"/>
   </bean>
 

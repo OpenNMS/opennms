@@ -35,4 +35,6 @@ public interface TracerConstants {
     public static final String TAG_LOCATION = "location";
     public static final String TAG_TIMEOUT = "timeout";
     public static final String TAG_RPC_FAILED = "failed";
+    public static final String TAG_MESSAGE_SIZE = "messageSize";
+    public static final String TAG_SOURCE_ADDRESS = "sourceAddress";
 }

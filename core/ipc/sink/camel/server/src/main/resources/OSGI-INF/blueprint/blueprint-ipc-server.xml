@@ -19,7 +19,12 @@
 
     <reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=opennms.broker)" />
 
-    <bean id="camelMessageConsumerManager" class="org.opennms.core.ipc.sink.camel.server.CamelMessageConsumerManager" >
+    <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
+
+    <reference id="identity" interface="org.opennms.distributed.core.api.Identity"/>
+
+    <bean id="camelMessageConsumerManager" class="org.opennms.core.ipc.sink.camel.server.CamelMessageConsumerManager"
+          init-method="start" >
         <argument ref="sinkServer"/>
     </bean>
 

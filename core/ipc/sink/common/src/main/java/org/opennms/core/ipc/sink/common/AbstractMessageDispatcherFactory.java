@@ -46,7 +46,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.MetricSet;
 import com.codahale.metrics.Timer.Context;
 
-import io.opentracing.Span;
+import io.opentracing.Scope;
 import io.opentracing.Tracer;
 
 /**
@@ -69,19 +69,20 @@ public abstract class AbstractMessageDispatcherFactory<W> implements MessageDisp
 
     private ServiceRegistration<MetricSet> metricsServiceRegistration = null;
 
-    protected Tracer tracer;
-
     public abstract <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, W metadata, T message);
 
     public abstract String getMetricDomain();
 
     public abstract BundleContext getBundleContext();
 
+    public abstract Tracer getTracer();
+
     /**
      * Invokes dispatch within a timer context.
      */
     private <S extends Message, T extends Message> void timedDispatch(DispatcherState<W, S,T> state, T message) {
-        try (Context ctx = state.getDispatchTimer().time()) {
+        try (Context ctx = state.getDispatchTimer().time();
+             Scope scope = getTracer().buildSpan(state.getModule().getId()).startActive(true)) {
             dispatch(state.getModule(), state.getMetaData(), message);
         }
     }
@@ -131,13 +132,6 @@ public abstract class AbstractMessageDispatcherFactory<W> implements MessageDisp
                     state.close();
                 }
 
-                @Override
-                public void send(S message) {
-                    if(tracer.activeSpan() == null) {
-                        Span span = tracer.buildSpan(module.getId()).start();
-                    }
-                    super.send(message);
-                }
             };
         } else {
             // No aggregation strategy is set, dispatch directly to reduce overhead
@@ -157,10 +151,7 @@ public abstract class AbstractMessageDispatcherFactory<W> implements MessageDisp
         public void send(S message) {
             // Cast S to T, modules that do not use an AggregationPolicty
             // must have the same types for S and T
-            if(tracer.activeSpan() == null) {
-                Span span = tracer.buildSpan(state.getModule().getId()).start();
-            }
-            AbstractMessageDispatcherFactory.this.timedDispatch(state, (T)message);
+            AbstractMessageDispatcherFactory.this.timedDispatch(state, (T) message);
         }
 
         @Override

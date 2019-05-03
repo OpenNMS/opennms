@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,11 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.camel;
+package org.opennms.features.identity.impl;
 
-public interface CamelSinkConstants {
-    String JMS_QUEUE_PREFIX = "Sink";
-    String JMS_QUEUE_NAME_HEADER = "JmsQueueName";
-    String CAMEL_JMS_REQUEST_TIMEOUT_HEADER = "CamelJmsRequestTimeout";
-    String JMS_SINK_TRACING_INFO = "SinkTracingInfo";
+import org.opennms.core.utils.SystemInfoUtils;
+import org.opennms.distributed.core.api.Identity;
+import org.opennms.distributed.core.api.SystemType;
+
+/**
+ * Expose OpenNMS Instance Id through a common Identity interface.
+ */
+public class OpenNMSIdentityImpl implements Identity {
+    @Override
+    public String getId() {
+        return SystemInfoUtils.getInstanceId();
+    }
+
+    @Override
+    public String getLocation() {
+        return "Default";
+    }
+
+    @Override
+    public String getType() {
+        return SystemType.OpenNMS.name();
+    }
 }

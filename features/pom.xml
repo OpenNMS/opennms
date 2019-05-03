@@ -176,5 +176,6 @@
     <module>ifttt</module>
 
     <module>jest</module>
+    <module>opennms-identity</module>
   </modules>
 </project>
