@@ -5,7 +5,7 @@
       "filter": [
         {
           "terms": {
-            "${groupByTerm?json_string}": [<#list topN as topNTerm>"${topNTerm?json_string}"<#sep>,</#list>]
+            "${groupByTerm?json_string}": [<#list from as fromTerm>"${fromTerm?json_string}"<#sep>,</#list>]
           }
         },
 <#list filters as filter>${filter}<#sep>,</#list>
@@ -16,7 +16,7 @@
     "grouped_by": {
       "terms": {
         "field": "${groupByTerm?json_string}",
-        "size": ${topN?size?long?c}
+        "size": ${from?size?long?c}
       },
       "aggs": {
         "direction": {
