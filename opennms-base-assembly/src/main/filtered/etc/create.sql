@@ -1980,8 +1980,8 @@ create table ipNetToMedia (
     createTime     timestamp not null,
     lastPollTime   timestamp not null,
     constraint pk_ipnettomedia_id primary key (id),
-    constraint fk_ipnettomedia_nodeid foreign key (nodeid) references node (nodeid), 
-    constraint fk_ipnettomedia_sourcenodeid foreign key (sourcenodeid) references node (nodeid) 
+    constraint fk_ipnettomedia_nodeid foreign key (nodeid) references node (nodeid) on delete cascade,
+    constraint fk_ipnettomedia_sourcenodeid foreign key (sourcenodeid) references node (nodeid) on delete cascade
 );
 
 create table bridgeElement (
