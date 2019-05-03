@@ -140,7 +140,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean, DisposableBea
     public void afterPropertiesSet() {
         Assert.state(m_dataSource != null, "property dataSource cannot be null");
         Assert.state(m_databaseSchemaConfigFactory != null, "property databaseSchemaConfigFactory cannot be null");
-        jmxReporter = JmxReporter.forRegistry(metricRegistry).inDomain("org.opennms.netmgt.config.FilterDao").build();
+        jmxReporter = JmxReporter.forRegistry(metricRegistry).inDomain("org.opennms.netmgt.config.filterdao").build();
         jmxReporter.start();
     }
 
