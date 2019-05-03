@@ -284,11 +284,18 @@
     </addColumn>
     
     <addForeignKeyConstraint constraintName="fk_ipnettomedia_nodeid" 
-    	baseTableName="ipnettomedia" 
-    	baseColumnNames="nodeid" 
-    	referencedTableName="node" 
-    	referencedColumnNames="nodeid" />
+        baseTableName="ipnettomedia"
+        baseColumnNames="nodeid"
+        referencedTableName="node"
+        referencedColumnNames="nodeid"
+        onDelete="CASCADE" />
     
+    <addForeignKeyConstraint constraintName="fk_ipnettomedia_sourcenodeid"
+        baseTableName="ipnettomedia"
+        baseColumnNames="sourcenodeid"
+        referencedTableName="node"
+        referencedColumnNames="nodeid"
+        onDelete="CASCADE" />
     
        <rollback>
             <dropColumn tableName="ipnettomedia" columnName="nodeid" />
