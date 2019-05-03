@@ -58,6 +58,7 @@ import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.filter.api.FilterParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -75,7 +76,7 @@ import com.codahale.metrics.Timer;
  * @version $Id: $
  */
 @Transactional
-public class JdbcFilterDao implements FilterDao, InitializingBean {
+public class JdbcFilterDao implements FilterDao, InitializingBean, DisposableBean {
     private static final Logger LOG = LoggerFactory.getLogger(JdbcFilterDao.class);
     private static final Pattern SQL_KEYWORD_PATTERN = Pattern.compile("\\s+(?:AND|OR|(?:NOT )?(?:LIKE|IN)|IS (?:NOT )?DISTINCT FROM)\\s+|(?:\\s+IS (?:NOT )?NULL|::(?:TIMESTAMP|INET))(?!\\w)|(?<!\\w)(?:NOT\\s+|IPLIKE(?=\\())", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     private static final Pattern SQL_QUOTE_PATTERN = Pattern.compile("'(?:[^']|'')*'|\"(?:[^\"]|\"\")*\"");
@@ -88,13 +89,12 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     private DatabaseSchemaConfig m_databaseSchemaConfigFactory;
 
     private final static MetricRegistry metricRegistry = new MetricRegistry();
-    private final JmxReporter jmxReporter;
+
+    private JmxReporter jmxReporter;
     private final Timer getIpListTimer;
 
     public JdbcFilterDao() {
-        getIpListTimer = metricRegistry.timer("getIPAddressList");
-        jmxReporter = JmxReporter.forRegistry(metricRegistry).inDomain("org.opennms.netmgt.config").build();
-        jmxReporter.start();
+        getIpListTimer = metricRegistry.timer("getIPAddressListForFilter");
     }
 
     /**
@@ -140,6 +140,16 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     public void afterPropertiesSet() {
         Assert.state(m_dataSource != null, "property dataSource cannot be null");
         Assert.state(m_databaseSchemaConfigFactory != null, "property databaseSchemaConfigFactory cannot be null");
+        jmxReporter = JmxReporter.forRegistry(metricRegistry).inDomain("org.opennms.netmgt.config.FilterDao").build();
+        jmxReporter.start();
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        if (jmxReporter != null) {
+            jmxReporter.stop();
+            jmxReporter = null;
+        }
     }
 
     /**
