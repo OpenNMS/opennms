@@ -1,0 +1,5 @@
+<snmp-config xmlns="http://xmlns.opennms.org/xsd/config/snmp" version="v2c" read-community="public" timeout="1800" retry="1">
+    <definition proxy-host="127.0.0.1" port="${port}" write-community="writepwd" read-community="readpwd">
+        <specific>169.254.1.1</specific>
+    </definition>
+</snmp-config>
