@@ -774,14 +774,14 @@ public class EnLinkdElementFactory implements InitializingBean,
         
         Map<String, List<OnmsIpInterface>> mactoIpNodeMap = new HashMap<String, List<OnmsIpInterface>>();
         m_ipInterfaceDao.findByNodeId(nodeId).stream().forEach( ip -> {
-            LOG.debug("getBridgeLinks: node:[{}] is host found {} ip:{}", nodeId, str(ip.getIpAddress()));
+            LOG.debug("getBridgeLinks: node:[{}] is host found ip:{}", nodeId, str(ip.getIpAddress()));
             m_ipNetToMediaDao.findByNetAddress(ip.getIpAddress()).stream().forEach( ipnettomedia -> {
                 if (!mactoIpNodeMap.containsKey(ipnettomedia.getPhysAddress())) {
                     mactoIpNodeMap.put(ipnettomedia.getPhysAddress(),
                                    new ArrayList<OnmsIpInterface>());
                 }
                 mactoIpNodeMap.get(ipnettomedia.getPhysAddress()).add(ip);
-                LOG.debug("getBridgeLinks: node:[{}] is host found {} ip:{} mac:{}", nodeId, str(ip.getIpAddress()),ipnettomedia.getPhysAddress());
+                LOG.debug("getBridgeLinks: node:[{}] is host found ip:{} mac:{}", nodeId, str(ip.getIpAddress()),ipnettomedia.getPhysAddress());
             });
         });
 

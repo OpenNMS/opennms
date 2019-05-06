@@ -50,7 +50,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 public class DefaultAlarmService implements AlarmService {
-    private static final Logger LOG = LoggerFactory.getLogger(AlarmService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultAlarmService.class);
 
     protected static final String DEFAULT_USER = "admin";
 

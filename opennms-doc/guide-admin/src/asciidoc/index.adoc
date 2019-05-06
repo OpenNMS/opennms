@@ -10,7 +10,7 @@
 
 [[ga]]
 = Administrators Guide
-:author: Copyright (c) 2015-2018 The OpenNMS Group, Inc.
+:author: Copyright (c) 2015-2019 The OpenNMS Group, Inc.
 :revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
@@ -212,6 +212,7 @@ include::text/provisioning/getting-started.adoc[]
 include::text/provisioning/import-handler.adoc[]
 include::text/provisioning/examples.adoc[]
 include::text/provisioning/adapters.adoc[]
+include::text/provisioning/meta-data.adoc[]
 include::text/provisioning/integration.adoc[]
 include::text/provisioning/single-node.adoc[]
 include::text/provisioning/fine-grained.adoc[]
@@ -219,6 +220,7 @@ include::text/provisioning/api-examples.adoc[]
 
 [[ga-provisioning-detectors]]
 === Service Detectors
+include::text/provisioning/detectors.adoc[]
 include::text/provisioning/detectors/HttpDetector.adoc[]
 include::text/provisioning/detectors/HttpsDetector.adoc[]
 include::text/provisioning/detectors/SnmpDetector.adoc[]
@@ -267,6 +269,11 @@ include::text/enlinkd/layer-2/bridge-discovery.adoc[]
 include::text/enlinkd/layer-3-discovery.adoc[]
 include::text/enlinkd/layer-3/ospf-discovery.adoc[]
 include::text/enlinkd/layer-3/is-is-discovery.adoc[]
+
+
+[[ga-opennms-opentracing]]
+== OpenTracing
+include::text/opentracing/setup.adoc[]
 
 [[ga-opennms-operation]]
 == Operation
@@ -321,15 +328,6 @@ endif::opennms-prime[]
 [[ga-sentinel]]
 == Sentinel
 include::text/sentinel/sentinel.adoc[]
-
-[[ga-opennms-plugin-manager]]
-== Plugin Manager
-include::text/plugin-manager/introduction.adoc[]
-include::text/plugin-manager/setting-karaf-instance-data.adoc[]
-include::text/plugin-manager/installing-available-plugins.adoc[]
-include::text/plugin-manager/internal-plugins-repository.adoc[]
-include::text/plugin-manager/installing-licences.adoc[]
-include::text/plugin-manager/licence-structure.adoc[]
 
 == Internal Plugins
 include::text/plugins/introduction.adoc[]
@@ -389,3 +387,7 @@ include::text/kafka-producer/kafka-producer.adoc[]
 [[ga-alarm-correlation]]
 == Alarm Correlation
 include::text/alarm-correlation/situation-feedback.adoc[]
+
+[[ga-meta-data]]
+== Meta-Data
+include::text/meta-data.adoc[]

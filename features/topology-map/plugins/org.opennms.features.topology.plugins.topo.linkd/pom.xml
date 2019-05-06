@@ -148,37 +148,43 @@
       <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.adapters.common</artifactId>
       <version>${project.version}</version>
-          <scope>test</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.adapters.updaters.nodes</artifactId>
       <version>${project.version}</version>
-          <scope>test</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.adapters.updaters.lldp</artifactId>
       <version>${project.version}</version>
-          <scope>test</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.adapters.updaters.cdp</artifactId>
       <version>${project.version}</version>
-          <scope>test</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.adapters.updaters.isis</artifactId>
       <version>${project.version}</version>
-          <scope>test</scope>
+      <scope>test</scope>
     </dependency>
         <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.adapters.updaters.ospf</artifactId>
       <version>${project.version}</version>
-          <scope>test</scope>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.adapters.updaters.bridge</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>

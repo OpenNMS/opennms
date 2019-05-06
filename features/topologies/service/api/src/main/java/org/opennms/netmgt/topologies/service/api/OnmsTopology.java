@@ -62,12 +62,20 @@ public class OnmsTopology {
         return m_vertices;
     }
 
+    public void addVertex(OnmsTopologyVertex v) {
+        m_vertices.add(v);
+    }
+
     public void setVertices(Set<OnmsTopologyVertex> vertices) {
         m_vertices = vertices;
     }
 
     public Set<OnmsTopologyEdge> getEdges() {
         return m_edges;
+    }
+
+    public void addEdge(OnmsTopologyEdge e) {
+        m_edges.add(e);
     }
 
     public void setEdges(Set<OnmsTopologyEdge> edges) {

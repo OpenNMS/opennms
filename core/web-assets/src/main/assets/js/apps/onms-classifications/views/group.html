@@ -43,9 +43,9 @@
     <h5 class="pt-2">{{group.description}} <span class="badge badge-secondary" ng-if="group.readOnly">read-only</span></h5>
     <div class="text-center mt-4" ng-show="rules.length == 0"><pre>No rules defined.</pre></div>
     <pagination model="query" ng-show="rules.length > 0" position="bottom" on-change="refresh">
-        <table class="table table-striped table-sm">
+        <table class="table table-striped">
             <thead>
-            <tr>
+            <tr class="d-flex">
                 <th class="col-md-1 text-nowrap">
                     <a ng-click="changeOrderBy('position')">Position</a>
                     <i ng-show="query.orderBy === 'position' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
@@ -98,19 +98,21 @@
             </thead>
 
             <tbody>
-            <tr ng-repeat="rule in rules">
-                <td>{{rule['position']}}</td>
-                <td>{{rule['name']}}</td>
-                <td>
+            <tr ng-repeat="rule in rules" class="d-flex">
+                <td class="col-md-1 text-nowrap">{{rule['position']}}</td>
+                <td class="col-md-1 text-nowrap">{{rule['name']}}</td>
+                <td class="col-md-1 text-nowrap">
                     <span ng-repeat="protocol in rule.protocols" class="badge badge-secondary mr-2">{{protocol}}</span>
                 </td>
-                <td>{{rule['srcAddress']}}</td>
-                <td>{{rule['srcPort']}}</td>
-                <td>{{rule['dstAddress']}}</td>
-                <td>{{rule['dstPort']}}</td>
-                <td>{{rule['exporterFilter']}}</td>
-                <td><span class="fa fa-exchange" ng-if="rule['omnidirectional'] === true" aria-hidden="true"></span></td>
-                <td ng-if="group.readOnly === false">
+                <td class="col-md-2 text-nowrap">{{rule['srcAddress']}}</td>
+                <td class="col-md-1 text-nowrap">{{rule['srcPort']}}</td>
+                <td class="col-md-2 text-nowrap">{{rule['dstAddress']}}</td>
+                <td class="col-md-1 text-nowrap">{{rule['dstPort']}}</td>
+                <td ng-class="{'col-md-1': group.readOnly === false, 'col-md-2': group.readOnly === true}" class="text-nowrap">
+                    {{rule['exporterFilter']}}
+                </td>
+                <td class="col-md-1 text-nowrap"><span class="fa fa-exchange" ng-if="rule['omnidirectional'] === true" aria-hidden="true"></span></td>
+                <td class="col-md-1" ng-if="group.readOnly === false">
                     <div class="pull-right">
                         <button id="action.{{rule.position}}.edit" class="btn btn-sm btn-secondary" ng-click="editRule(rule)" title="edit rule"><i class="fa fa-edit"></i></button>
                         <button id="action.{{rule.position}}.delete" class="btn btn-sm btn-secondary" ng-click="deleteRule(rule)" title="delete rule"><i class="fa fa-trash-o"></i></button>

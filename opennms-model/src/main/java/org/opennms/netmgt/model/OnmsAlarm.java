@@ -1202,7 +1202,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
 
     @XmlTransient
-    @OneToMany(mappedBy = "situationAlarm", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "situationAlarm", orphanRemoval = true, cascade = CascadeType.ALL)
     public Set<AlarmAssociation> getAssociatedAlarms() {
         return m_associatedAlarms;
     }

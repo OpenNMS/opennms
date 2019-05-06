@@ -18,6 +18,7 @@ require('../lib/scripts/model/QuickNode.js');
 require('../lib/scripts/model/Requisition.js');
 require('../lib/scripts/model/RequisitionInterface.js');
 require('../lib/scripts/model/RequisitionNode.js');
+require('../lib/scripts/model/RequisitionService.js');
 require('../lib/scripts/model/RequisitionsData.js');
 require('../lib/scripts/services/Requisitions.js');
 require('../lib/scripts/services/Synchronize.js');

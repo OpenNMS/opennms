@@ -53,5 +53,6 @@
     <module>web</module>
     <module>web-assets</module>
     <module>xml</module>
+    <module>tracing</module>
   </modules>
 </project>

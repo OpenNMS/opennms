@@ -41,6 +41,7 @@ import org.opennms.netmgt.enlinkd.api.ReloadableTopologyDaemon;
 
 /**
  * Generate a enlinkd topology via karaf command.
+ * Log into console via: ssh -p 8101 admin@localhost
  * Install: feature:install opennms-enlinkd-shell
  * Usage: type 'enlinkd:generate-topology' in karaf console
  */
@@ -66,7 +67,7 @@ public class GenerateTopologyCommand implements Action {
     @Option(name = "--topology", description = "type of topology (complete | ring | random). Default: random.")
     private String topology;
 
-    @Option(name = "--protocol", description = "type of protocol (cdp | isis | lldp | ospf). Default: cdp.")
+    @Option(name = "--protocol", description = "type of protocol (cdp | isis | lldp | ospf | bridge | userdefined). Default: cdp.")
     private String protocol;
 
     @Reference

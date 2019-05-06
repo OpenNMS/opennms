@@ -49,7 +49,7 @@
                 <span>Database Reports</span>
             </div>
             <div class="card-body">
-                <ul class="list-unstyled">
+                <ul class="list-unstyled mb-0">
                     <li><a href="report/database/reportList.htm">List reports</a></li>
                     <li><a href="report/database/manage.htm">View and manage pre-run reports</a></li>
                     <li><a href="report/database/manageSchedule.htm">Manage the batch report schedule</a></li>

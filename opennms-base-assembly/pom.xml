@@ -831,6 +831,16 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.tracing</groupId>
+      <artifactId>org.opennms.core.tracing.registry</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.tracing</groupId>
+      <artifactId>org.opennms.core.tracing.jaeger-tracer</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.snmp</groupId>
       <artifactId>org.opennms.core.snmp.proxy.rpc-impl</artifactId>
       <version>${project.version}</version>
@@ -1028,6 +1038,12 @@
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.daemon</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- HTTP Rest-Bridge -->
+    <dependency>
+      <groupId>org.opennms.container.bridge</groupId>
+      <artifactId>org.opennms.container.bridge.api</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

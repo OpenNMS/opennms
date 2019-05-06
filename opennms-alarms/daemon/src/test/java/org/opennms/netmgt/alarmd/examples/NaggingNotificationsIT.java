@@ -32,38 +32,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.alarmd.drools.DefaultAlarmService;
-import org.opennms.netmgt.alarmd.drools.DroolsAlarmContext;
-import org.opennms.netmgt.dao.api.AcknowledgmentDao;
-import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
-import org.opennms.netmgt.dao.support.AlarmEntityNotifierImpl;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -71,8 +52,6 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
-
-import com.google.common.io.Resources;
 
 /**
  * Verify that the Drools engine can be extended by with additional rules
@@ -87,60 +66,11 @@ import com.google.common.io.Resources;
         "classpath:/META-INF/opennms/emptyContext.xml"
 })
 @JUnitConfigurationEnvironment
-public class NaggingNotificationsIT {
+public class NaggingNotificationsIT extends DroolsExampleIT {
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    private DroolsAlarmContext dac;
-    private AlarmDao alarmDao;
-    private EventForwarder eventForwarder;
-
-    @Before
-    public void setUp() throws IOException {
-        // Copy default set of rules to a new folder
-        File rulesFolder = temporaryFolder.newFolder("rules");
-        FileUtils.copyDirectory(DroolsAlarmContext.getDefaultRulesFolder(), rulesFolder);
-
-        // Copy the rules from the example folder alongside the rules in our temporary folder
-        FileUtils.copyFile(Paths.get(ConfigFileConstants.getHome(), "etc", "examples",
-                "alarmd", "drools-rules.d", "nag.drl").toFile(),
-                new File(rulesFolder, "nag.drl"));
-
-        // Wire up the engine with mocks
-        dac = new DroolsAlarmContext(rulesFolder);
-        dac.setUsePseudoClock(true);
-        dac.setUseManualTick(true);
-
-        MockTransactionTemplate transactionTemplate = new MockTransactionTemplate();
-        transactionTemplate.afterPropertiesSet();
-        dac.setTransactionTemplate(transactionTemplate);
-
-        alarmDao = mock(AlarmDao.class);
-        dac.setAlarmDao(alarmDao);
-
-        DefaultAlarmService alarmService = new DefaultAlarmService();
-        alarmService.setAlarmDao(alarmDao);
-        eventForwarder = mock(EventForwarder.class);
-        alarmService.setEventForwarder(eventForwarder);
-
-        AcknowledgmentDao acknowledgmentDao = mock(AcknowledgmentDao.class);
-        when(acknowledgmentDao.findLatestAckForRefId(any(Integer.class))).thenReturn(Optional.empty());
-        alarmService.setAcknowledgmentDao(acknowledgmentDao);
-
-        AlarmEntityNotifierImpl alarmEntityNotifier = mock(AlarmEntityNotifierImpl.class);
-        alarmService.setAlarmEntityNotifier(alarmEntityNotifier);
-        dac.setAlarmService(alarmService);
-        dac.setAcknowledgmentDao(acknowledgmentDao);
-
-        dac.start();
-    }
-
-    @After
-    public void tearDown() {
-        if (dac != null) {
-            dac.stop();
-        }
+    @Override
+    public String getRulesFile() {
+        return "nag.drl";
     }
 
     @Test

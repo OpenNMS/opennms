@@ -205,8 +205,8 @@
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
         <bundle>mvn:org.jolokia/jolokia-client-java/1.3.3</bundle>
     </feature>
-    <feature name="jrobin" version="1.6.0-SNAPSHOT" description="JRobin">
-        <bundle>mvn:org.jrobin/jrobin/1.6.0-SNAPSHOT</bundle>
+    <feature name="jrobin" version="1.6.0" description="JRobin">
+        <bundle>mvn:org.jrobin/jrobin/1.6.0</bundle>
     </feature>
     <feature name="json-lib" version="2.2.3" description="json-lib">
         <bundle>wrap:mvn:net.sf.ezmorph/ezmorph/1.0.6</bundle>
@@ -270,6 +270,23 @@
     <feature name="twitter4j" version="${twitter4jVersion}" description="Twitter4J">
         <bundle>wrap:mvn:org.twitter4j/twitter4j-core/${twitter4jVersion}</bundle>
     </feature>
+    <feature name="opentracing-api" version="${opentracingVersion}" description="OpenTracing API">
+        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-api/${opentracingVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-noop/${opentracingVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-util/${opentracingVersion}</bundle>
+    </feature>
+    <feature name="opennms-core-tracing" version="${project.version}" description="OpenNMS :: Core :: Tracing">
+        <feature>opentracing-api</feature>
+        <bundle>mvn:org.opennms.core.tracing/org.opennms.core.tracing.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.tracing/org.opennms.core.tracing.registry/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.xml/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-core-tracing-jaeger" version="${project.version}" description="OpenNMS :: Core :: Tracing :: Jeager Tracer">
+        <feature>opennms-core-tracing</feature>
+        <bundle>mvn:org.opennms.core.tracing/org.opennms.core.tracing.jaeger-osgi/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.tracing/org.opennms.core.tracing.jaeger-tracer/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-activemq-pool" version="${project.version}" description="OpenNMS :: Features :: ActiveMQ :: Pool">
         <feature>activemq-client</feature>
         <feature>camel-core</feature>
@@ -436,6 +453,7 @@
         <feature>org.json</feature>
         <feature>rate-limited-logger</feature>
         <feature>opennms-core</feature>
+        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.xml/${project.version}</bundle>
@@ -493,7 +511,10 @@
         <feature>javax.mail</feature>
         <feature>opennms-core-camel</feature>
         <feature>opennms-distributed-core-api</feature>
+        <feature>opennms-dao-api</feature>
+        <feature>opennms-core-tracing</feature>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.xml/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.camel/${project.version}</bundle>
@@ -695,7 +716,7 @@
         <bundle>mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}</bundle>
     </feature>
     <feature name="tsrm-troubleticketer" version="${project.version}" description="OpenNMS :: Features :: Ticketing :: Tivoli Service Request Manager (TSRM)">
-        <feature version="3.1.11">cxf-jaxws</feature>
+        <feature version="${cxfVersion}">cxf-jaxws</feature>
         <feature>javax.servlet</feature>
         <bundle>mvn:org.opennms.features.ticketing/org.opennms.features.ticketing.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features/opennms-integration-tsrm/${project.version}</bundle>
@@ -860,7 +881,7 @@
     <feature name="opennms-alarm-history-elastic" description="OpenNMS :: Features :: Alarms :: History :: Elasticsearch" version="${project.version}">
         <feature>opennms-alarm-history-rest</feature>
         <feature>opennms-jest</feature>
-        <bundle>mvn:org.mapstruct/mapstruct-jdk8/${mapstructVersion}</bundle>
+        <bundle dependency="true">mvn:org.mapstruct/mapstruct/${mapstructVersion}</bundle>
         <bundle>mvn:org.opennms.features.alarms.history/org.opennms.features.alarms.history.elastic/${project.version}</bundle>
     </feature>
 
@@ -987,6 +1008,7 @@
         <feature>opennms-health</feature>
         <feature>opennms-situation-feedback-api</feature>
         <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
+        <bundle dependency="true">mvn:org.mapstruct/mapstruct/${mapstructVersion}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.api-layer/${project.version}</bundle>
     </feature>
     <feature name="opennms-enlinkd-shell" version="${project.version}" description="OpenNMS :: Features :: Enlinkd :: Shell">
@@ -1012,6 +1034,7 @@
         <feature>jax-rs-connector</feature>
         <feature>jax-rs-provider-jackson</feature>
         <bundle>mvn:org.opennms.features/org.opennms.features.rest-provider/${project.version}</bundle>
+        <bundle>mvn:org.opennms.container.bridge/org.opennms.container.bridge.rest/${project.version}</bundle>
     </feature>
     <feature name="opennms-jaas-login-module" version="${project.version}" description="OpenNMS :: OSGi Container :: Karaf JAAS Login Module">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
@@ -1341,37 +1364,6 @@
         <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
         <bundle>mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
     </feature>
-    <feature name="org.opennms.plugin.licencemanager" version="1.2.0" description="org.opennms.plugin.licencemanager">
-        <feature>http</feature>
-        <feature>http-whiteboard</feature>
-        <bundle start-level="50" dependency="true">mvn:com.sun.jersey/jersey-server/1.19.3</bundle>
-        <bundle start-level="50" dependency="true">mvn:com.sun.jersey/jersey-servlet/1.19.3</bundle>
-        <bundle start-level="50" dependency="true">mvn:com.sun.jersey/jersey-core/1.19.3</bundle>
-        <bundle start-level="50" dependency="true">mvn:com.sun.jersey/jersey-client/1.19.3</bundle>
-        <bundle start-level="50" dependency="true">mvn:javax.ws.rs/jsr311-api/1.1.1</bundle>
-        <bundle>mvn:org.opennms.plugins/org.opennms.plugin.licencemanager/1.2.0</bundle>
-    </feature>
-    <feature name="org.opennms.plugin.featuremanager" version="1.2.0" description="org.opennms.plugin.featuremanager">
-        <feature>http</feature>
-        <feature>http-whiteboard</feature>
-        <bundle start-level="50" dependency="true">mvn:com.sun.jersey/jersey-server/1.19.3</bundle>
-        <bundle start-level="50" dependency="true">mvn:com.sun.jersey/jersey-servlet/1.19.3</bundle>
-        <bundle start-level="50" dependency="true">mvn:com.sun.jersey/jersey-core/1.19.3</bundle>
-        <bundle start-level="50" dependency="true">mvn:com.sun.jersey/jersey-client/1.19.3</bundle>
-        <bundle start-level="50" dependency="true">mvn:javax.ws.rs/jsr311-api/1.1.1</bundle>
-        <bundle>mvn:org.opennms.plugins/org.opennms.plugin.featuremanager/1.2.0</bundle>
-    </feature>
-    <feature name="vaadin-opennms-pluginmanager" version="${project.version}" description="OpenNMS :: Plugins :: Admin UI">
-        <details>OpenNMS Vaadin Administration UI for installing Plugin modules.</details>
-        <feature>opennms-core</feature>
-        <feature>vaadin</feature>
-        <feature>org.opennms.plugin.licencemanager</feature>
-        <feature>org.opennms.plugin.featuremanager</feature>
-        <bundle>mvn:org.opennms.plugins/vaadin-opennms-pluginmanager/${project.version}</bundle>
-        <bundle>mvn:org.opennms.plugins/org.opennms.plugin.pluginmanager.pluginmanager-core/${pluginmanagerVersion}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/core/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/widgetset/${project.version}</bundle>
-    </feature>
     <feature name="alarm-change-notifier" version="${project.version}" description="alarm-change-notifier">
         <details>Feature definition for alarm-change-notifier</details>
         <bundle>mvn:com.impossibl.pgjdbc-ng/pgjdbc-ng/0.7.1</bundle>
@@ -1383,7 +1375,6 @@
         <bundle>mvn:io.netty/netty-codec/${netty4Version}</bundle>
         <bundle>mvn:org.opennms.plugins/alarm-change-notifier.pg-jdbc-utils/${project.version}</bundle>
         <bundle>mvn:org.opennms.plugins/alarm-change-notifier.main-module/${project.version}</bundle>
-        <bundle>mvn:org.opennms.plugins/alarm-change-notifier.product-descriptor/${project.version}</bundle>
         <bundle>mvn:com.googlecode.json-simple/json-simple/1.1.1</bundle>
     </feature>
     <feature name="opennms-es-rest" version="${project.version}" description="OpenNMS :: Features :: ElasticSearch Rest">
@@ -1398,11 +1389,6 @@
         <bundle>mvn:org.opennms.features/org.opennms.features.opennms-es-rest/${project.version}</bundle>
         <bundle>mvn:com.googlecode.json-simple/json-simple/1.1.1</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
-    </feature>
-    <feature name="internal-plugins-descriptor" version="${project.version}">
-        <details>Module to generate list of internal plugins which can be installed</details>
-        <feature>org.opennms.plugin.licencemanager</feature>
-        <bundle>mvn:org.opennms.plugins/internal-plugins-descriptor/${project.version}</bundle>
     </feature>
     <feature name="opennms-jest" version="${project.version}" description="OpenNMS :: Features :: Jest :: Feature definition">
         <details>Feature definition for Jest (ElasticSearch Java ReST Client)</details>

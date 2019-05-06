@@ -201,8 +201,8 @@
 
 	<service id="nodeMapsService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="nodeMapsApplicationFactory">
 		<service-properties>
-			<entry key="alias" value="/node-maps" />
-			<entry key="init.widgetset" value="org.opennms.features.vaadin.nodemaps.internal.gwt.NodeMapsWidgetset" />
+			<entry key="osgi.http.whiteboard.servlet.pattern" value="/node-maps/*" />
+			<entry key="servlet.init.widgetset" value="org.opennms.features.vaadin.nodemaps.internal.gwt.NodeMapsWidgetset" />
 		</service-properties>
 	</service>
 

@@ -43,23 +43,27 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.apilayer.collectors.CollectionSetMapper;
 import org.opennms.integration.api.v1.collectors.CollectionSet;
-import org.opennms.integration.api.v1.collectors.resource.AttributeBuilder;
-import org.opennms.integration.api.v1.collectors.resource.CollectionSetBuilder;
+import org.opennms.integration.api.v1.collectors.immutables.ImmutableNumericAttribute;
+import org.opennms.integration.api.v1.collectors.immutables.ImmutableStringAttribute;
 import org.opennms.integration.api.v1.collectors.resource.CollectionSetResource;
-import org.opennms.integration.api.v1.collectors.resource.CollectionSetResourceBuilder;
 import org.opennms.integration.api.v1.collectors.resource.GenericTypeResource;
 import org.opennms.integration.api.v1.collectors.resource.IpInterfaceResource;
 import org.opennms.integration.api.v1.collectors.resource.NodeResource;
 import org.opennms.integration.api.v1.collectors.resource.NumericAttribute;
 import org.opennms.integration.api.v1.collectors.resource.Resource;
-import org.opennms.integration.api.v1.collectors.resource.ResourceBuilder;
 import org.opennms.integration.api.v1.collectors.resource.StringAttribute;
+import org.opennms.integration.api.v1.collectors.resource.immutables.ImmutableCollectionSet;
+import org.opennms.integration.api.v1.collectors.resource.immutables.ImmutableCollectionSetResource;
+import org.opennms.integration.api.v1.collectors.resource.immutables.ImmutableGenericTypeResource;
+import org.opennms.integration.api.v1.collectors.resource.immutables.ImmutableIpInterfaceResource;
+import org.opennms.integration.api.v1.collectors.resource.immutables.ImmutableNodeResource;
 import org.opennms.integration.api.v1.dao.NodeDao;
 import org.opennms.integration.api.v1.model.Node;
-import org.opennms.integration.api.v1.model.SnmpInterface;
+import org.opennms.integration.api.v1.model.immutables.ImmutableNode;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.ResourceType;
 import org.opennms.netmgt.collection.api.ResourceTypeMapper;
@@ -77,13 +81,25 @@ public class CollectionSetMapperTest {
     private static final double COUNTER_VALUE = 45.0;
     private static final String STRING_VALUE = "collection";
 
+    private Node node;
+
+    @Before
+    public void setUp() {
+        node = ImmutableNode.newBuilder()
+                .setId(36)
+                .setForeignSource("fs")
+                .setForeignId("fid")
+                .setLabel(NODE_LABEL)
+                .build();
+    }
+
     @Test
     @SuppressWarnings("unchecked")
     public void testCollectionSetMappingFromIntegrationAPI() {
 
         // Mock NodeDao.
         NodeDao nodeDao = mock(NodeDao.class);
-        when(nodeDao.getNodeByCriteria(anyString())).thenReturn(new NodeImpl());
+        when(nodeDao.getNodeByCriteria(anyString())).thenReturn(node);
         // Mock the ResourceType and other storage strategies.
         ResourceType rt = mock(ResourceType.class, RETURNS_DEEP_STUBS);
         when(rt.getName()).thenReturn(RESOURCE_NAME);
@@ -93,16 +109,17 @@ public class CollectionSetMapperTest {
         when(rt.getPersistenceSelectorStrategy().getParameters()).thenReturn(Collections.emptyList());
         ResourceTypeMapper.getInstance().setResourceTypeMapper(type -> rt);
 
-
         // Create a CollectionSet From Integration API.
         CollectionSet collectionSet = createCollectionSetFromIntegrationAPI();
         org.opennms.netmgt.collection.support.builder.CollectionSetBuilder builder =
                 new org.opennms.netmgt.collection.support.builder.CollectionSetBuilder(new CollectionAgentImpl());
         // Map CollectionSet from Integration API to  default CollectionSet
-        org.opennms.netmgt.collection.api.CollectionSet collectionSet1 = CollectionSetMapper.buildCollectionSet(builder, collectionSet);
+        org.opennms.netmgt.collection.api.CollectionSet collectionSet1 =
+                CollectionSetMapper.buildCollectionSet(builder, collectionSet);
 
         CollectionSetMapper collectionSetMapper = new CollectionSetMapper(nodeDao);
-        CollectionSet collectionSetResult = collectionSetMapper.buildCollectionSet(new CollectionSetBuilder(), collectionSet1);
+        CollectionSet collectionSetResult =
+                collectionSetMapper.buildCollectionSet(ImmutableCollectionSet.newBuilder(), collectionSet1);
 
         assertThat(collectionSetResult.getCollectionSetResources().size(), is(3));
         for (CollectionSetResource collectionSetResource : collectionSetResult.getCollectionSetResources()) {
@@ -133,95 +150,68 @@ public class CollectionSetMapperTest {
     @SuppressWarnings("unchecked")
     private CollectionSet createCollectionSetFromIntegrationAPI() {
         // Every resource needs a node resource.
-        Node node = new NodeImpl();
-        NodeResource nodeResource = new ResourceBuilder()
-                .withNodeId(node.getId())
-                .withNodeLabel(node.getLabel())
-                .withForeignId(node.getForeignId())
-                .withForeignSource(node.getForeignSource())
-                .buildNodeResource();
-        IpInterfaceResource ipInterfaceResource = new ResourceBuilder()
-                .withInstance(IP_INSTANCE)
-                .buildIpInterfaceResource(nodeResource);
-        GenericTypeResource genericTypeResource = new ResourceBuilder()
-                .withType(RESOURCE_NAME)
-                .withInstance(GENERIC_INSTANCE)
-                .buildGenericTypeResource(nodeResource);
-
-        NumericAttribute numericAttribute1 = new AttributeBuilder()
-                .withName("snmp")
-                .withGroup("group")
-                .withType(NumericAttribute.Type.GAUGE)
-                .withNumericValue(5.89)
-                .buildNumeric();
-        NumericAttribute numericAttribute2 = new AttributeBuilder()
-                .withName("jmx")
-                .withGroup("group2")
-                .withType(NumericAttribute.Type.GAUGE)
-                .withNumericValue(GAUGE_VALUE)
-                .buildNumeric();
-        NumericAttribute numericAttribute3 = new AttributeBuilder()
-                .withName("jdbc")
-                .withGroup("group3")
-                .withType(NumericAttribute.Type.COUNTER)
-                .withNumericValue(COUNTER_VALUE)
-                .buildNumeric();
-
-        StringAttribute stringAttribute = new AttributeBuilder()
-                .withName(STRING_VALUE)
-                .withGroup("group4")
-                .withStringValue("kafka")
-                .buildString();
-
-        CollectionSetResource<NodeResource> nodeCollectionSet = new CollectionSetResourceBuilder<NodeResource>()
-                .withResource(nodeResource)
-                .withNumericAttribute(numericAttribute1)
+        NodeResource nodeResource = ImmutableNodeResource.newBuilder()
+                .setNodeId(node.getId())
+                .setNodeLabel(node.getLabel())
+                .setForeignId(node.getForeignId())
+                .setForeignSource(node.getForeignSource())
                 .build();
-        CollectionSetResource<IpInterfaceResource> ipInterfaceCollectionSet = new CollectionSetResourceBuilder<IpInterfaceResource>()
-                .withResource(ipInterfaceResource)
-                .withNumericAttribute(numericAttribute2)
-                .build();
-        CollectionSetResource<GenericTypeResource> genericTypeCollectionSet = new CollectionSetResourceBuilder<GenericTypeResource>()
-                .withResource(genericTypeResource)
-                .withNumericAttribute(numericAttribute3)
-                .withStringAttribute(stringAttribute)
+        IpInterfaceResource ipInterfaceResource = ImmutableIpInterfaceResource.newInstance(nodeResource, IP_INSTANCE);
+        GenericTypeResource genericTypeResource = ImmutableGenericTypeResource.newBuilder()
+                .setType(RESOURCE_NAME)
+                .setInstance(GENERIC_INSTANCE)
+                .setNodeResource(nodeResource)
                 .build();
 
-        CollectionSet collectionSet = new CollectionSetBuilder().withCollectionSetResource(nodeCollectionSet)
-                .withCollectionSetResource(ipInterfaceCollectionSet)
-                .withCollectionSetResource(genericTypeCollectionSet)
-                .withTimeStamp(System.currentTimeMillis())
-                .withStatus(CollectionSet.Status.SUCCEEDED)
+        NumericAttribute numericAttribute1 = ImmutableNumericAttribute.newBuilder()
+                .setName("snmp")
+                .setGroup("group")
+                .setType(NumericAttribute.Type.GAUGE)
+                .setValue(5.89)
+                .build();
+        NumericAttribute numericAttribute2 = ImmutableNumericAttribute.newBuilder()
+                .setName("jmx")
+                .setGroup("group2")
+                .setType(NumericAttribute.Type.GAUGE)
+                .setValue(GAUGE_VALUE)
+                .build();
+        NumericAttribute numericAttribute3 = ImmutableNumericAttribute.newBuilder()
+                .setName("jdbc")
+                .setGroup("group3")
+                .setType(NumericAttribute.Type.COUNTER)
+                .setValue(COUNTER_VALUE)
+                .build();
+
+        StringAttribute stringAttribute = ImmutableStringAttribute.newBuilder()
+                .setName(STRING_VALUE)
+                .setGroup("group4")
+                .setValue("kafka")
+                .build();
+
+        CollectionSetResource<NodeResource> nodeCollectionSet =
+                ImmutableCollectionSetResource.newBuilder(NodeResource.class)
+                .setResource(nodeResource)
+                .addNumericAttribute(numericAttribute1)
+                .build();
+        CollectionSetResource<IpInterfaceResource> ipInterfaceCollectionSet =
+                ImmutableCollectionSetResource.newBuilder(IpInterfaceResource.class)
+                .setResource(ipInterfaceResource)
+                .addNumericAttribute(numericAttribute2)
+                .build();
+        CollectionSetResource<GenericTypeResource> genericTypeCollectionSet =
+                ImmutableCollectionSetResource.newBuilder(GenericTypeResource.class)
+                .setResource(genericTypeResource)
+                .addNumericAttribute(numericAttribute3)
+                .addStringAttribute(stringAttribute)
+                .build();
+
+        CollectionSet collectionSet = ImmutableCollectionSet.newBuilder().addCollectionSetResource(nodeCollectionSet)
+                .addCollectionSetResource(ipInterfaceCollectionSet)
+                .addCollectionSetResource(genericTypeCollectionSet)
+                .setTimestamp(System.currentTimeMillis())
+                .setStatus(CollectionSet.Status.SUCCEEDED)
                 .build();
         return collectionSet;
-    }
-
-    public static class NodeImpl implements Node {
-
-        @Override
-        public Integer getId() {
-            return 36;
-        }
-
-        @Override
-        public String getForeignSource() {
-            return "fs";
-        }
-
-        @Override
-        public String getForeignId() {
-            return "fid";
-        }
-
-        @Override
-        public String getLabel() {
-            return NODE_LABEL;
-        }
-
-        @Override
-        public List<SnmpInterface> getSnmpInterfaces() {
-            return null;
-        }
     }
 
     public static class CollectionAgentImpl implements CollectionAgent {

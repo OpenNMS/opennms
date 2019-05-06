@@ -63,6 +63,12 @@
                     "type": "text",
                     "norms": false
                 },
+                "root_cause": {
+                    "type": "boolean"
+                },
+                "tags": {
+                    "type": "keyword"
+                },
                 "user": {
                     "type": "keyword",
                     "norms": false

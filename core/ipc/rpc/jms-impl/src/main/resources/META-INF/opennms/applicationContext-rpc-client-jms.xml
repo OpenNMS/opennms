@@ -26,13 +26,15 @@
     <property name="targetMethod" value="getLocation"/>
   </bean>
 
-  <bean id="camelRpcClientFactory" class="org.opennms.core.rpc.camel.CamelRpcClientFactory" primary="true" >
+  <bean id="camelRpcClientFactory" class="org.opennms.core.rpc.camel.CamelRpcClientFactory" primary="true"
+        init-method="start" destroy-method="stop" >
      <property name="location" ref="location"/>
   </bean>
 
   <onmsgi:service ref="camelRpcClientFactory" interface="org.opennms.core.rpc.api.RpcClientFactory" />
 
-  <bean id="camelRpcClientPreProcessor" class="org.opennms.core.rpc.camel.CamelRpcClientPreProcessor"/>
+  <bean id="camelRpcClientPreProcessor" class="org.opennms.core.rpc.camel.CamelRpcClientPreProcessor"
+        init-method="start" destroy-method="stop" />
 
    <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
   <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">

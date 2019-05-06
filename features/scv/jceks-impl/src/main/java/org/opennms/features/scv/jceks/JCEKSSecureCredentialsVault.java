@@ -94,7 +94,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
         try {
             m_keystore = KeyStore.getInstance("JCEKS");
             if (!m_keystoreFile.isFile()) {
-                LOG.info("No existing keystore found at: {}. Using empty keystore.");
+                LOG.info("No existing keystore found at: {}. Using empty keystore.", m_keystoreFile);
                 m_keystore.load(null, m_password);
             } else {
                 LOG.info("Loading existing keystore from: {}", m_keystoreFile);

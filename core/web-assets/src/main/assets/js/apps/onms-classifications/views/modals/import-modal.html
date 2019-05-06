@@ -46,14 +46,14 @@
     <pagination model="pagination" position="bottom" on-change="navigateWithinErrors">
       <table class="table table-bordered table-striped">
         <tbody>
-        <tr>
-          <th class="col-md-1 text-nowrap">Row Index</th>
-          <th class="col-md-11 text-nowrap">Error Message</th>
+        <tr class="d-flex">
+          <th class="col-md-1">Row Index</th>
+          <th class="col-md-11">Error Message</th>
         </tr>
 
-        <tr ng-repeat="failedRow in failedRows">
-          <td class="text-nowwrap">{{failedRow['index']}}</td>
-          <td class="text-nowwrap">{{failedRow['message']}}</td>
+        <tr class="d-flex" ng-repeat="failedRow in failedRows">
+          <td class="col-md-1">{{failedRow['index']}}</td>
+          <td class="col-md-11">{{failedRow['message']}}</td>
         </tr>
         </tbody>
       </table>

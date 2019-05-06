@@ -42,13 +42,13 @@ import org.opennms.web.event.filter.AfterDateFilter;
 import org.opennms.web.event.filter.AlarmIDFilter;
 import org.opennms.web.event.filter.BeforeDateFilter;
 import org.opennms.web.event.filter.EventIdFilter;
+import org.opennms.web.event.filter.EventTextFilter;
 import org.opennms.web.event.filter.ExactUEIFilter;
 import org.opennms.web.event.filter.IPAddrLikeFilter;
 import org.opennms.web.event.filter.IfIndexFilter;
 import org.opennms.web.event.filter.InterfaceFilter;
 import org.opennms.web.event.filter.LocationFilter;
 import org.opennms.web.event.filter.LogMessageMatchesAnyFilter;
-import org.opennms.web.event.filter.LogMessageSubstringFilter;
 import org.opennms.web.event.filter.NegativeAcknowledgedByFilter;
 import org.opennms.web.event.filter.NegativeExactUEIFilter;
 import org.opennms.web.event.filter.NegativeInterfaceFilter;
@@ -138,8 +138,8 @@ public abstract class EventUtil {
             filter = new EventIdFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(IPAddrLikeFilter.TYPE)) {
             filter = new IPAddrLikeFilter(value);
-        } else if (type.equals(LogMessageSubstringFilter.TYPE)) {
-            filter = new LogMessageSubstringFilter(value);
+        } else if (type.equals(EventTextFilter.TYPE)) {
+            filter = new EventTextFilter(value);
         } else if (type.equals(LogMessageMatchesAnyFilter.TYPE)) {
             filter = new LogMessageMatchesAnyFilter(value);
         } else if (type.equals(BeforeDateFilter.TYPE)) {

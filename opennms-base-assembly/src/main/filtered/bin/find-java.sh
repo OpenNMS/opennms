@@ -4,10 +4,12 @@ MYDIR="$(dirname "$0")"
 MYDIR="$(cd "$MYDIR" || exit 1; pwd)"
 
 # shellcheck disable=SC1090
-. "${MYDIR}/_lib.sh"
+if [ -e "${MYDIR}/_lib.sh" ]; then
+	. "${MYDIR}/_lib.sh"
 
-# if $JAVA_SEARCH_DIRS is already set, make sure it is treated as an array
-__onms_convert_to_array JAVA_SEARCH_DIRS
+	# if $JAVA_SEARCH_DIRS is already set, make sure it is treated as an array
+	__onms_convert_to_array JAVA_SEARCH_DIRS
+fi
 
 compare_versions() {
 	a="$(printf '%s.0.0.0' "${1}" | sed -e 's,^1\.\([123456789]\),\1.0,' -e 's,_,.,g')"
@@ -35,7 +37,7 @@ get_java_version_string() {
 	home="$1"; shift
 	full_version_string="$("${home}"/bin/java -version 2>&1 | grep ' version ')"
 	#version_string="$(printf '%s' "${full_version_string}" | sed -e 's,^.* version ,,' -e 's,^"\(.*\)"$,\1,' -e 's,-[A-Za-z]*$,,' -e 's,^1\.,,')"
-	version_string="$(printf '%s' "${full_version_string}" | sed -e 's,^.* version ,,' -e 's, [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$,,' -e 's,^"\(.*\)"$,\1,' -e 's,-[A-Za-z]*$,,')"
+	version_string="$(printf '%s' "${full_version_string}" | sed -e 's,^.* version ,,' -e 's, LTS$,,' -e 's, [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$,,' -e 's,^"\(.*\)"$,\1,' -e 's,-[A-Za-z]*$,,')"
 	if (printf '%s' "${version_string}" | grep -Eq '^[0-9\._]+$'); then
 		# valid parsed version string, only numbers and periods
 		printf '%s\n' "${version_string}"
@@ -190,6 +192,7 @@ main() {
 					current_java_version="${version_string}"
 				fi
 			done < /tmp/$$.javabins
+			rm -f /tmp/$$.javabins
 		fi
 	done
 

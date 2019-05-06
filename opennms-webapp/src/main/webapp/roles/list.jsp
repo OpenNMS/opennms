@@ -95,11 +95,11 @@
 
   <table class="table table-sm severity">
          <tr>
-          <th class="col-md-2">Name</th>
-          <th class="col-md-2">Supervisor</th>
-          <th class="col-md-2">Currently On Call</th>
-          <th class="col-md-2">Membership Group</th>
-          <th class="col-md-4">Description</th>
+          <th>Name</th>
+          <th>Supervisor</th>
+          <th>Currently On Call</th>
+          <th>Membership Group</th>
+          <th>Description</th>
 
 			<c:forEach var="role" items="${roleManager.roles}">
 				<c:set var="viewUrl" value="javascript:doView('${role.name}')" />

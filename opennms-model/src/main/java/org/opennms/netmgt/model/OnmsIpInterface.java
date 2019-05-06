@@ -30,15 +30,21 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -101,6 +107,8 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     private Set<OnmsMonitoredService> m_monitoredServices = new LinkedHashSet<>();
 
     private OnmsSnmpInterface m_snmpInterface;
+
+    private List<OnmsMetaData> m_metaData = new ArrayList<>();
 
     /**
      * <p>Constructor for OnmsIpInterface.</p>
@@ -332,6 +340,63 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     @XmlTransient
     public boolean isPrimary(){
         return m_isSnmpPrimary.equals(PrimaryType.PRIMARY);
+    }
+
+    @JsonIgnore
+    @XmlTransient
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name="ipInterface_metadata", joinColumns = @JoinColumn(name = "id"))
+    public List<OnmsMetaData> getMetaData() {
+        return m_metaData;
+    }
+
+    public void setMetaData(final List<OnmsMetaData> metaData) {
+        m_metaData = metaData;
+    }
+
+    public void addMetaData(final String context, final String key, final String value) {
+        Objects.requireNonNull(context);
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(value);
+
+        final Optional<OnmsMetaData> entry = getMetaData().stream()
+                .filter(m -> m.getContext().equals(context))
+                .filter(m -> m.getKey().equals(key))
+                .findFirst();
+
+        // Update the value if present, otherwise create a new entry
+        if (entry.isPresent()) {
+            entry.get().setValue(value);
+        } else {
+            getMetaData().add(new OnmsMetaData(context, key, value));
+        }
+    }
+
+    public void removeMetaData(final String context, final String key) {
+        Objects.requireNonNull(context);
+        Objects.requireNonNull(key);
+        final Iterator<OnmsMetaData> iterator = getMetaData().iterator();
+
+        while (iterator.hasNext()) {
+            final OnmsMetaData onmsNodeMetaData = iterator.next();
+
+            if (context.equals(onmsNodeMetaData.getContext()) && key.equals(onmsNodeMetaData.getKey())) {
+                iterator.remove();
+            }
+        }
+    }
+
+    public void removeMetaData(final String context) {
+        Objects.requireNonNull(context);
+        final Iterator<OnmsMetaData> iterator = getMetaData().iterator();
+
+        while (iterator.hasNext()) {
+            final OnmsMetaData onmsNodeMetaData = iterator.next();
+
+            if (context.equals(onmsNodeMetaData.getContext())) {
+                iterator.remove();
+            }
+        }
     }
 
     /**
@@ -600,6 +665,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             else {
                 // otherwice update the service attributes
                 svc.mergeServiceAttributes(imported);
+                svc.mergeMetaData(imported);
             }
             
             // mark the service is updated
@@ -612,6 +678,12 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             svc.setIpInterface(this);
             getMonitoredServices().add(svc);
             svc.visit(new AddEventVisitor(eventForwarder));
+        }
+    }
+
+    public void mergeMetaData(OnmsIpInterface scanned) {
+        if (!getMetaData().equals(scanned.getMetaData())) {
+            setMetaData(scanned.getMetaData());
         }
     }
 
@@ -654,6 +726,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         updateSnmpInterface(scannedIface);
         mergeInterfaceAttributes(scannedIface);
         mergeMonitoredServices(scannedIface, eventForwarder, deleteMissing);
+        mergeMetaData(scannedIface);
     }
 
     @Transient

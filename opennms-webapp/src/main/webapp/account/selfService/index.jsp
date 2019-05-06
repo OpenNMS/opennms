@@ -83,7 +83,7 @@
         <span>User Account Self-Service</span>
       </div>
       <div class="card-body">
-        <ul class="list-unstyled">
+        <ul class="list-unstyled mb-0">
           <li><a href="javascript:changePassword()">Change Password</a></li>
         </ul>
       </div> <!-- card-body -->

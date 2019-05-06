@@ -30,10 +30,12 @@ package org.opennms.enlinkd.generator;
 
 import java.util.function.Consumer;
 
+import org.opennms.enlinkd.generator.protocol.BridgeProtocol;
 import org.opennms.enlinkd.generator.protocol.CdpProtocol;
 import org.opennms.enlinkd.generator.protocol.IsIsProtocol;
 import org.opennms.enlinkd.generator.protocol.LldpProtocol;
 import org.opennms.enlinkd.generator.protocol.OspfProtocol;
+import org.opennms.enlinkd.generator.protocol.UserDefinedProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +67,7 @@ public class TopologyGenerator {
     }
 
     public enum Protocol {
-        cdp, isis, lldp, ospf
+        cdp, isis, lldp, ospf, bridge, userdefined
     }
 
     private TopologyContext topologyContext;
@@ -78,9 +80,9 @@ public class TopologyGenerator {
 
 
     public void generateTopology(TopologySettings topologySettings) {
-        topologySettings.verify();
+        org.opennms.enlinkd.generator.protocol.Protocol protocol = getProtocol(topologySettings);
         deleteTopology(); // Let's first get rid of old generated topologies
-        getProtocol(topologySettings).createAndPersistNetwork();
+        protocol.createAndPersistNetwork();
     }
 
     public void deleteTopology() {
@@ -97,6 +99,10 @@ public class TopologyGenerator {
             return new LldpProtocol(topologySettings, topologyContext);
         } else if (Protocol.ospf == protocol) {
             return new OspfProtocol(topologySettings, topologyContext);
+        } else if (Protocol.bridge == protocol) {
+            return new BridgeProtocol(topologySettings, topologyContext);
+        } else if (Protocol.userdefined == protocol) {
+            return new UserDefinedProtocol(topologySettings, topologyContext);
         } else {
             throw new IllegalArgumentException("Don't know this protocol: " + topologySettings.getProtocol());
         }

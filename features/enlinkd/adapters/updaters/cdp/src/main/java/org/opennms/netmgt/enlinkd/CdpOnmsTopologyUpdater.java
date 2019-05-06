@@ -30,6 +30,7 @@ package org.opennms.netmgt.enlinkd;
 
 import java.util.Map;
 
+import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
 import org.opennms.netmgt.enlinkd.model.CdpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.CdpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;

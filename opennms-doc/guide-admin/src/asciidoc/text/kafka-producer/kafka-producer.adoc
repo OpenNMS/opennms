@@ -107,7 +107,6 @@ The _Kafka Producer_ exposes the following options to help fine tune its behavio
                                                    Set this to an empty string to disable forwarding alarm feedback.                                                   
 | `nodeTopic`             | `nodes`              | Name of the topic used for nodes.
                                                    Set this to an empty string to disable forwarding nodes.
-| `topologyProtocols`             | `bridge,cdp,isis,lldp,ospf`              | Comma separated list of topologies supported protocols.
                                                    Set this to an empty string to disable forwarding topologies.
 | `topologyVertexTopic`             | `vertices`              | Name of the topic used for topology vertices.
 | `topologyEdgeTopic`             | `edges`              | Name of the topic used for topology edges.
@@ -211,36 +210,12 @@ In the example above, we disable event forwarding by setting an empty topic name
 $ ssh -p 8101 admin@localhost
 ...
 admin@opennms()> config:edit org.opennms.features.kafka.producer
-admin@opennms()> config:property-set topologyProtocols ""
-admin@opennms()> config:update
-----
-
-In the example above, we disable topology forwarding.
-
-
-[source]
-----
-$ ssh -p 8101 admin@localhost
-...
-admin@opennms()> config:edit org.opennms.features.kafka.producer
-admin@opennms()> config:property-set topologyProtocols "cdp,ospf"
-admin@opennms()> config:update
-----
-
-In the example above, we limit topology forwarding to only cdp and ospf protocol.
-
-[source]
-----
-$ ssh -p 8101 admin@localhost
-...
-admin@opennms()> config:edit org.opennms.features.kafka.producer
-admin@opennms()> config:property-set topologyProtocols "bridge"
 admin@opennms()> config:property-set topologyVertexTopic "opennms-bridge-vertex"
 admin@opennms()> config:property-set topologyEdgeTopic "opennms-edge-vertex"
 admin@opennms()> config:update
 ----
 
-In the example above, we limit topology forwarding to only bridge protocol and set vertex and edge topic to be different to default.
+In the example above, we set the vertex and edge topics to be different to default.
 
 === Shell Commands
 

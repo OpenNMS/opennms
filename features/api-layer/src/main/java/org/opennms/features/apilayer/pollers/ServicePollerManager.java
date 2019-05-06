@@ -61,4 +61,5 @@ public class ServicePollerManager extends InterfaceMapper<ServicePollerFactory, 
         properties.put("type", extension.getPollerClassName());
         return properties;
     }
+
 }

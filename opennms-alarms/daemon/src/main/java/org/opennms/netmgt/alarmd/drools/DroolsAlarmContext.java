@@ -413,6 +413,10 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             // The last event may be null in unit tests
             Hibernate.initialize(alarm.getLastEvent().getEventParameters());
         }
+        if (alarm.getNode() != null) {
+            // Allow rules to use the categories on the associated node
+            Hibernate.initialize(alarm.getNode().getCategories());
+        }
         final AlarmAndFact alarmAndFact = alarmsById.get(alarm.getId());
         if (alarmAndFact == null) {
             LOG.debug("Inserting alarm into session: {}", alarm);

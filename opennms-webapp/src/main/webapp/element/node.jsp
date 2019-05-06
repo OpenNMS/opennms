@@ -263,6 +263,7 @@
     }
 
 	pageContext.setAttribute("schedOutages", schedOutages.isEmpty() ? null : StringUtils.collectionToDelimitedString(schedOutages, ", "));
+    pageContext.setAttribute("maxInterfaceCount", System.getProperty("org.opennms.interfaceAvailabilityBox.maxInterfaceCount", "10"));
 %>
 
 <%@page import="org.opennms.core.resource.Vault"%>
@@ -339,6 +340,13 @@ function confirmAssetEdit() {
     </c:url>
     <li class="list-inline-item">
       <a href="<c:out value="${assetLink}"/>" onclick="return confirmAssetEdit()">Asset Info</a>
+    </li>
+
+    <c:url var="metaDataLink" value="element/node-metadata.jsp">
+        <c:param name="node" value="${model.id}"/>
+    </c:url>
+    <li class="list-inline-item">
+      <a href="<c:out value="${metaDataLink}"/>">Meta-Data</a>
     </li>
 
     <c:url var="hardwareLink" value="hardware/list.jsp">
@@ -507,7 +515,7 @@ function confirmAssetEdit() {
       <span>Path Outage - Critical Path</span>
     </div>
     <div class="card-body">
-      <ul class="list-unstyled">
+      <ul class="list-unstyled mb-0">
         <li class="list-inline-item">
           ${model.criticalPath}
         </li>
@@ -517,7 +525,7 @@ function confirmAssetEdit() {
   </c:if>
 	
   <!-- Availability box -->
-  <c:if test="${fn:length( model.intfs ) < 10}">
+  <c:if test="${fn:length( model.intfs ) <= maxInterfaceCount}">
     <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" >
       <jsp:param name="node" value="${model.id}" />
     </jsp:include>
@@ -623,7 +631,7 @@ function confirmAssetEdit() {
   	<span>General (Status: ${model.status})</span>
     </div>
   <div class="card-body">
-    <ul class="list-unstyled">
+    <ul class="list-unstyled mb-0">
       <c:if test="${model.showRancid}">
         <c:url var="rancidLink" value="inventory/rancid.htm">
           <c:param name="node" value="${model.id}"/>

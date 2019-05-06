@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.opennms.enlinkd.generator.TopologyContext;
 import org.opennms.enlinkd.generator.TopologyGenerator;
@@ -59,19 +60,12 @@ public abstract class Protocol<Element> {
     final Map<Integer, Integer> nodeIfIndexes = new HashMap<>();
 
     public Protocol(TopologySettings topologySettings, TopologyContext context) {
-        this.topologySettings = topologySettings;
+        this.topologySettings = adoptAndVerifySettings(topologySettings);
         this.context = context;
     }
 
     public void createAndPersistNetwork() {
-        this.context.currentProgress("%nCreating %s %s topology with %s Nodes, %s Elements, %s Links, %s SnmpInterfaces, %s IpInterfaces:",
-                topologySettings.getTopology(),
-                this.getProtocol(),
-                topologySettings.getAmountNodes(),
-                topologySettings.getAmountElements(),
-                topologySettings.getAmountElements(),
-                topologySettings.getAmountSnmpInterfaces(),
-                topologySettings.getAmountIpInterfaces());
+        printProtocolSpecificMessage();
         OnmsCategory category = createCategory();
         context.getTopologyPersister().persist(category);
         List<OnmsNode> nodes = createNodes(topologySettings.getAmountNodes(), category);
@@ -84,11 +78,27 @@ public abstract class Protocol<Element> {
         createAndPersistProtocolSpecificEntities(nodes);
     }
 
+    protected void printProtocolSpecificMessage() {
+        this.context.currentProgress("%nCreating %s %s topology with %s Nodes, %s Elements, %s Links, %s SnmpInterfaces, %s IpInterfaces:",
+                topologySettings.getTopology(),
+                this.getProtocol(),
+                topologySettings.getAmountNodes(),
+                topologySettings.getAmountElements(),
+                topologySettings.getAmountElements(),
+                topologySettings.getAmountSnmpInterfaces(),
+                topologySettings.getAmountIpInterfaces());
+    }
+
     protected abstract void createAndPersistProtocolSpecificEntities(List<OnmsNode> nodes);
 
     protected abstract TopologyGenerator.Protocol getProtocol();
 
-    private OnmsCategory createCategory() {
+    protected TopologySettings adoptAndVerifySettings(TopologySettings topologySettings) {
+        topologySettings.verify();
+        return topologySettings;
+    }
+
+    protected OnmsCategory createCategory() {
         OnmsCategory category = new OnmsCategory();
         category.setName(TopologyGenerator.CATEGORY_NAME);
         return category;
@@ -130,7 +140,7 @@ public abstract class Protocol<Element> {
         return interfaces;
     }
 
-    private OnmsSnmpInterface createSnmpInterface(int ifIndex, OnmsNode node) {
+    protected OnmsSnmpInterface createSnmpInterface(int ifIndex, OnmsNode node) {
         OnmsSnmpInterface onmsSnmpInterface = new OnmsSnmpInterface();
         onmsSnmpInterface.setId((node.getId() * topologySettings.getAmountSnmpInterfaces()) + ifIndex);
         onmsSnmpInterface.setNode(node);
@@ -155,12 +165,12 @@ public abstract class Protocol<Element> {
         return interfaces;
     }
 
-    private OnmsIpInterface createIpInterface(OnmsSnmpInterface snmp, InetAddress inetAddress) {
+    protected OnmsIpInterface createIpInterface(OnmsSnmpInterface snmp, InetAddress inetAddress) {
         OnmsIpInterface ip = new OnmsIpInterface();
         ip.setId(snmp.getId());
         ip.setSnmpInterface(snmp);
         ip.setIpLastCapsdPoll(new Date());
-        ip.setNode(snmp.getNode());
+        ip.setNode(Optional.ofNullable(snmp).map(OnmsSnmpInterface::getNode).orElse(null));
         ip.setIpAddress(inetAddress);
         return ip;
     }

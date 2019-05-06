@@ -8,7 +8,7 @@
 :numbered:
 
 = Developers Guide
-:author: Copyright (c) 2015-2018 The OpenNMS Group, Inc.
+:author: Copyright (c) 2015-2019 The OpenNMS Group, Inc.
 :revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
@@ -60,6 +60,7 @@ include::text/rest/ifservices.adoc[]
 include::text/rest/ksc_reports.adoc[]
 include::text/rest/maps.adoc[]
 include::text/rest/measurements.adoc[]
+include::text/rest/meta-data.adoc[]
 include::text/rest/nodes.adoc[]
 include::text/rest/notifications.adoc[]
 include::text/rest/outage_timeline.adoc[]
@@ -70,6 +71,7 @@ include::text/rest/rtc.adoc[]
 include::text/rest/scheduled_outages.adoc[]
 include::text/rest/snmp_configuration.adoc[]
 include::text/rest/users.adoc[]
+include::text/rest/user-defined-links.adoc[]
 include::text/rest/snmptrapnbi-config.adoc[]
 include::text/rest/emailnbi-config.adoc[]
 include::text/rest/javamail-config.adoc[]

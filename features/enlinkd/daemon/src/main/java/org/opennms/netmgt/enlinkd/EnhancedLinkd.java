@@ -42,6 +42,8 @@ import org.opennms.netmgt.config.EnhancedLinkdConfig;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.enlinkd.api.ReloadableTopologyDaemon;
+import org.opennms.netmgt.enlinkd.common.NodeCollector;
+import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
@@ -119,6 +121,8 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     private OspfOnmsTopologyUpdater m_ospfTopologyUpdater;
     @Autowired    
     private DiscoveryBridgeDomains m_discoveryBridgeDomains;
+    @Autowired
+    private UserDefinedLinkTopologyUpdater m_userDefinedLinkTopologyUpdater;
 
     /**
      * <p>
@@ -157,6 +161,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         LOG.debug("init: Bridge Topology loaded.");
 
         scheduleAndRegisterOnmsTopologyUpdater(m_nodesTopologyUpdater);
+        scheduleAndRegisterOnmsTopologyUpdater(m_userDefinedLinkTopologyUpdater);
 
         if (m_linkdConfig.useBridgeDiscovery()) {
             scheduleDiscoveryBridgeDomain();
@@ -416,6 +421,10 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             m_nodesTopologyUpdater.forceRun();
             break;
 
+        case USERDEFINED:
+            m_userDefinedLinkTopologyUpdater.forceRun();
+            break;
+
         default:
             break;
         
@@ -457,6 +466,10 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
 
             case NODES:
                 m_nodesTopologyUpdater.runDiscovery();
+                break;
+
+            case USERDEFINED:
+                m_userDefinedLinkTopologyUpdater.runDiscovery();
                 break;
 
             default:
@@ -772,6 +785,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     @Override
     public void reloadTopology() {
         LOG.info("reloadTopology: reload enlinkd topology updaters");
+        LOG.debug("reloadTopology: Loading Bridge Topology.....");
+        m_bridgeTopologyService.load();
+        LOG.debug("reloadTopology: Bridge Topology Loaded");
         for (ProtocolSupported protocol :ProtocolSupported.values()) {
             forceTopologyUpdaterRun(protocol);
             runTopologyUpdater(protocol);

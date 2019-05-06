@@ -42,7 +42,7 @@
     <span>OpenNMS Dashboards</span>
   </div>
   <div class="card-body">
-    <ul class="list-unstyled">
+    <ul class="list-unstyled mb-0">
       <c:forEach var="entry" items="${entries.entries}">
       	<c:choose>
       		<c:when test="${empty entry.url}">

@@ -46,6 +46,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.detector.snmp.DiskUsageDetector;
 import org.opennms.netmgt.provision.detector.snmp.DiskUsageDetectorFactory;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -53,9 +54,11 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/detectors.xml"
 })
+@JUnitConfigurationEnvironment
 @JUnitSnmpAgent(host=DiskUsageDetectorTest.TEST_IP_ADDRESS, resource="classpath:/org/opennms/netmgt/provision/detector/diskUsageDetectorTestData.properties")
 public class DiskUsageDetectorTest implements InitializingBean {
     static final String TEST_IP_ADDRESS = "192.0.2.205";

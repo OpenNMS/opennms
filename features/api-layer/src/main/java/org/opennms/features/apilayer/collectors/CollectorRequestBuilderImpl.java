@@ -31,15 +31,13 @@ package org.opennms.features.apilayer.collectors;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import org.opennms.integration.api.v1.collectors.CollectionRequest;
 import org.opennms.integration.api.v1.collectors.CollectionSet;
 import org.opennms.integration.api.v1.collectors.CollectorRequestBuilder;
-import org.opennms.integration.api.v1.collectors.resource.CollectionSetBuilder;
+import org.opennms.integration.api.v1.collectors.resource.immutables.ImmutableCollectionSet;
 import org.opennms.integration.api.v1.dao.NodeDao;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
-import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.LocationAwareCollectorClient;
 import org.slf4j.Logger;
@@ -114,18 +112,17 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
         CompletableFuture<CollectionSet> future = new CompletableFuture<>();
         try {
             org.opennms.netmgt.collection.api.CollectionSet collectionSet = result.get();
-            CollectionSetBuilder builder = new CollectionSetBuilder();
+            ImmutableCollectionSet.Builder builder = ImmutableCollectionSet.newBuilder();
             if (collectionSet.getStatus().equals(CollectionStatus.FAILED)) {
-                CollectionSet collectionSetResult = builder.withTimeStamp(collectionSet.getCollectionTimestamp().getTime())
-                        .withStatus(CollectionSet.Status.FAILED).build();
+                CollectionSet collectionSetResult = builder.setTimestamp(collectionSet.getCollectionTimestamp().getTime())
+                        .setStatus(CollectionSet.Status.FAILED).build();
                 future.complete(collectionSetResult);
             } else {
                 CollectionSetMapper collectionSetMapper = new CollectionSetMapper(nodeDao);
                 future.complete(collectionSetMapper.buildCollectionSet(builder, collectionSet));
             }
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.error("Collection encountered error", e);
-            throw new CollectionException("Collection encountered error", e);
+        } catch (Exception e) {
+            future.completeExceptionally(e);
         }
         return future;
     }

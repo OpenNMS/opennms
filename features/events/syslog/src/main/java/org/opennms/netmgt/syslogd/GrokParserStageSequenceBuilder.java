@@ -31,6 +31,7 @@ package org.opennms.netmgt.syslogd;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
+import java.time.zone.ZoneRulesException;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.BiConsumer;
@@ -72,6 +73,7 @@ public abstract class GrokParserStageSequenceBuilder {
 	}
 
 	enum GrokPattern {
+		CHAR,
 		HOSTNAME,
 		HOSTNAMEORIP,
 		INT,
@@ -410,7 +412,15 @@ public abstract class GrokParserStageSequenceBuilder {
 				};
 			case timezone:
 				return (s,v) -> {
-					s.message.setZoneId(ZonedDateTimeBuilder.parseZoneId(v));
+					ZoneId zoneId;
+					try {
+						zoneId = ZonedDateTimeBuilder.parseZoneId(v);
+					} catch (ZoneRulesException zre) {
+						// Zone was not found, attempt to convert the zone to uppercase
+						// i.e. if the string is 'cst', then the lookup will fail unless we query for 'CST'
+						zoneId = ZonedDateTimeBuilder.parseZoneId(v.toUpperCase());
+					}
+					s.message.setZoneId(zoneId);
 				};
 			default:
 				throw new IllegalArgumentException(String.format("Semantic type %s does not have a string value", semanticString));
@@ -484,6 +494,8 @@ public abstract class GrokParserStageSequenceBuilder {
 				switch(c) {
 				case '\\':
 					switch(patternType) {
+					case CHAR:
+						throw new UnsupportedOperationException("Cannot support escape sequence directly after a CHAR pattern yet");
 					case HOSTNAME:
 					case HOSTNAMEORIP:
 					case IPADDRESS:
@@ -520,6 +532,9 @@ public abstract class GrokParserStageSequenceBuilder {
 					continue;
 				case '%':
 					switch(patternType) {
+					case CHAR:
+						factory.character(semanticStringToField(semanticString));
+						break;
 					case NOSPACE:
 						// This is probably not an intended behavior
 						LOG.warn("NOSPACE pattern followed immediately by another pattern will greedily consume until whitespace is encountered");
@@ -548,6 +563,9 @@ public abstract class GrokParserStageSequenceBuilder {
 					continue;
 				case ' ':
 					switch(patternType) {
+					case CHAR:
+						factory.character(semanticStringToField(semanticString));
+						break;
 					case NOSPACE:
 					case STRING:
 						factory.stringUntilWhitespace(semanticStringToField(semanticString));
@@ -573,6 +591,9 @@ public abstract class GrokParserStageSequenceBuilder {
 					break;
 				default:
 					switch(patternType) {
+					case CHAR:
+						factory.character(semanticStringToField(semanticString));
+						break;
 					case NOSPACE:
 						factory.stringUntil(MatchUntil.WHITESPACE + c, semanticStringToField(semanticString));
 						factory.character(c);

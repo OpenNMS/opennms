@@ -34,11 +34,13 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -51,12 +53,15 @@ import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
+import org.opennms.netmgt.enlinkd.BridgeOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.CdpOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.IsisOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.LldpOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.NodesOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.OspfOnmsTopologyUpdater;
+import org.opennms.netmgt.enlinkd.UserDefinedLinkTopologyUpdater;
 import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
+import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +105,16 @@ public class LinkdTopologyProviderTestIT {
     
     @Autowired
     OspfOnmsTopologyUpdater ospfOnmsTopologyUpdater;
-    
+
+    @Autowired
+    BridgeOnmsTopologyUpdater bridgeOnmsTopologyUpdater;
+
+    @Autowired
+    UserDefinedLinkTopologyUpdater userDefinedLinkTopologyUpdater;
+
+    @Autowired
+    BridgeTopologyService bridgeTopologyService;
+
     private TopologyGenerator generator;
 
     @BeforeTransaction
@@ -110,7 +124,9 @@ public class LinkdTopologyProviderTestIT {
         isisOnmsTopologyUpdater.register();
         lldpOnmsTopologyUpdater.register();
         ospfOnmsTopologyUpdater.register();
-        
+        bridgeOnmsTopologyUpdater.register();
+        userDefinedLinkTopologyUpdater.register();
+
         TopologyGenerator.ProgressCallback progressCallback = new TopologyGenerator.ProgressCallback(LOG::info);
         TopologyPersister persister = new TopologyPersister(genericPersistenceAccessor, progressCallback);
         generator = TopologyGenerator.builder()
@@ -142,12 +158,104 @@ public class LinkdTopologyProviderTestIT {
         test(TopologyGenerator.Protocol.ospf);
     }
 
+    @Test
+    @Transactional
+    public void testUserDefined() {
+        test(TopologyGenerator.Protocol.userdefined, false);
+    }
+
+    /**
+     * We expect the following topology:
+     *
+     *                      bridge0
+     *                         |
+     *           ------------------------------------------------
+     *           |          |          |        |       |       |
+     *        bridge1    bridge3    bridge4  bridge5  Macs/Ip bridge10
+     *           |          |                         no node
+     *        -------    --------
+     *        |          |      |
+     *     Segment     host8    host9
+     *   -----------
+     *   |         |
+     * Macs/Ip  bridge2
+     * no node  -------
+     *             |
+     *          Segment
+     */
+
+    @Test
+    @Transactional
+    public void testBridge() {
+        // The testing of bridge topologies is a bit different than for the other protocols since we have a hierarchical
+        // topology with different node types.
+
+        // 1.) Generate Topology
+        TopologySettings settings = TopologySettings.builder()
+                .protocol(TopologyGenerator.Protocol.bridge)
+                .amountNodes(10)
+                .amountIpInterfaces(0)
+                .amountSnmpInterfaces(0)
+                .build();
+        generateTopologyAndRefreshCaches(settings);
+
+        // 2.) map the nodes by it's label name.
+        final Map<String, Vertex> vertices = new HashMap<>();
+        final Map<Integer,Vertex> verticesById = new HashMap<>();
+        for(Vertex vertex : linkdTopologyProvider.getVerticesWithoutGroups()) {
+            String label = vertex.getLabel();
+            if("Segment".equals(label)) { // enhance Segment to make it unique
+                label = StringUtils.substringAfter(vertex.getTooltipText(), "nodeid:["); // Shared Segment': nodeid:[13561], bridgeport
+                label = StringUtils.substringBefore(label, "]");
+                label = verticesById.get(Integer.parseInt(label)).getLabel(); // get label by id of node
+                label = "Segment["+label+"]";
+            } else if (label.contains("without node")) {
+                // shared addresses: ([000000000007, 000000000008]ip:[0.0.0.1 ], mac:[000000000005]ip:[0.0.0.2 ], mac:[000000000006])(Unknown/Not an OpenNMS Node)
+                label = StringUtils.substringAfter(vertex.getTooltipText(), "shared addresses: ([");
+                label = StringUtils.substringBefore(label, ",");
+                label = "NoNode["+label+"]";
+            } else {
+                verticesById.put(vertex.getNodeID(), vertex);
+            }
+            vertices.put(label, vertex);
+        }
+
+
+        // 3.) Check linking:
+        // Level 0 -> 1
+        verifyLinkingBetweenNodes(vertices.get("Node0"), vertices.get("Node1"));
+        verifyLinkingBetweenNodes(vertices.get("Node0"), vertices.get("Node3"));
+        verifyLinkingBetweenNodes(vertices.get("Node0"), vertices.get("Node4"));
+        verifyLinkingBetweenNodes(vertices.get("Node0"), vertices.get("Node5"));
+        verifyLinkingBetweenNodes(vertices.get("Node0"), vertices.get("NoNode[000000000007]"));
+        verifyLinkingBetweenNodes(vertices.get("Node0"), vertices.get("Node10"));
+
+        // Level 1 -> 2
+        verifyLinkingBetweenNodes(vertices.get("Node1"), vertices.get("Segment[Node1]"));
+        verifyLinkingBetweenNodes(vertices.get("Node3"), vertices.get("Node8"));
+        verifyLinkingBetweenNodes(vertices.get("Node3"), vertices.get("Node9"));
+
+        // Level 2 -> 3
+        verifyLinkingBetweenNodes(vertices.get("Segment[Node1]"), vertices.get("NoNode[00000000000e]"));
+        verifyLinkingBetweenNodes(vertices.get("Segment[Node1]"), vertices.get("Node2"));
+
+        // Level 3 -> 4
+        verifyLinkingBetweenNodes(vertices.get("Node2"), vertices.get("Segment[Node2]"));
+        verifyLinkingBetweenNodes(vertices.get("Segment[Node2]"), vertices.get("Node6"));
+        verifyLinkingBetweenNodes(vertices.get("Segment[Node2]"), vertices.get("Node7"));
+
+    }
+
     private void test(TopologyGenerator.Protocol protocol) {
-        testAmounts(protocol);
+        test(protocol, true);
+    }
+
+    private void test(TopologyGenerator.Protocol protocol, boolean linksAreCached) {
+        testAmounts(protocol, linksAreCached);
         testLinkingBetweenNodes(protocol);
     }
 
-    private void testAmounts(TopologyGenerator.Protocol protocol) {
+    private void testAmounts(TopologyGenerator.Protocol protocol, boolean linksAreCached) {
 
         TopologySettings settings = TopologySettings.builder()
                 .protocol(protocol)
@@ -159,7 +267,9 @@ public class LinkdTopologyProviderTestIT {
 
         // 2.) Delete the topology. The TopologyProvider should still find it due to the cache:
         generator.deleteTopology();
-        verifyAmounts(settings);
+        if (linksAreCached) {
+            verifyAmounts(settings);
+        }
 
         // 3.) Invalidate cache - nothing should be found:
         entityCache.refresh();
@@ -173,6 +283,9 @@ public class LinkdTopologyProviderTestIT {
         isisOnmsTopologyUpdater.setTopology(isisOnmsTopologyUpdater.buildTopology());
         lldpOnmsTopologyUpdater.setTopology(lldpOnmsTopologyUpdater.buildTopology());
         ospfOnmsTopologyUpdater.setTopology(ospfOnmsTopologyUpdater.buildTopology());
+        userDefinedLinkTopologyUpdater.setTopology(userDefinedLinkTopologyUpdater.buildTopology());
+        bridgeTopologyService.load();
+        bridgeOnmsTopologyUpdater.setTopology(bridgeOnmsTopologyUpdater.buildTopology());
         linkdTopologyProvider.refresh();
     }
 

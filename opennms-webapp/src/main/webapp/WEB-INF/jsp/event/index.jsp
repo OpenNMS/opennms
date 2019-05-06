@@ -88,7 +88,7 @@
         <c:choose>
             <c:when test="${!empty favorites}">
                 <!-- Filters -->
-                <ul class="list-unstyled">
+                <ul class="list-unstyled mb-0">
                     <c:forEach var="eachFavorite" items="${favorites}">
                       	<%
                       		OnmsFilterFavorite current = (OnmsFilterFavorite) pageContext.getAttribute("eachFavorite");

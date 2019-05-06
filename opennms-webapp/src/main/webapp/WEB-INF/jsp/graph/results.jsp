@@ -57,15 +57,15 @@
 <div id="graph-results">
 
 <div class="row">
-  <div class="col-md-10 text-center">
+  <div class="col-md-10">
     <%@ include file="/WEB-INF/jspf/relativetimeform.jspf" %>
 
     <c:set var="showCustom"></c:set>
     <c:if test="${results.relativeTime != 'custom'}">
         <c:set var="showCustom">style="display: none;"</c:set>
     </c:if>
-    <div id="customTimeForm" name="customTimeForm" ${showCustom}>
-        <form role="form" class="form-inline top-buffer" id="range_form" action="${requestScope.relativeRequestPath}" method="get">
+    <div id="customTimeForm" class="mb-3" name="customTimeForm" ${showCustom}>
+        <form role="form" class="form top-buffer" id="range_form" action="${requestScope.relativeRequestPath}" method="get">
             <c:forEach var="resultSet" items="${results.graphResultSets}">
                 <input type="hidden" name="resourceId" value="${resultSet.resource.id}"/>
             </c:forEach>
@@ -75,10 +75,9 @@
             <input type="hidden" name="relativetime" value="custom"/>
             <input type="hidden" name="zoom" value="${param.zoom}"/>
 
-            <div class="row">
-            <div class="form-group">
-                <label>Start Time</label>
-                <select class="form-control" name="startMonth">
+            <div class="form-row form-group mb-1">
+                <label class="col-form-label col-lg-1 col-md-2 col-4">Start Time</label>
+                <select class="form-control custom-select col-lg-1 col-2" name="startMonth">
                     <c:forEach var="month" items="${results.monthMap}">
                         <c:choose>
                             <c:when test="${month.key == results.startCalendar.month}">
@@ -92,10 +91,10 @@
                     </c:forEach>
                 </select>
 
-                <input type="text" class="form-control" name="startDate" size="4" maxlength="2" value="${results.startCalendar.date}" />
-                <input type="text" class="form-control" name="startYear" size="6" maxlength="4" value="${results.startCalendar.year}" />
+                <input type="text" class="form-control col-lg-1 col-2" name="startDate" size="4" maxlength="2" value="${results.startCalendar.date}" />
+                <input type="text" class="form-control col-lg-1 col-2" name="startYear" size="6" maxlength="4" value="${results.startCalendar.year}" />
 
-                <select class="form-control" name="startHour">
+                <select class="form-control custom-select col-lg-1 col-2" name="startHour">
                     <c:forEach var="hour" items="${results.hourMap}">
                         <c:choose>
                             <c:when test="${hour.key == results.startCalendar.hourOfDay}">
@@ -108,13 +107,11 @@
                         <option value="${hour.key}" ${selected}>${hour.value}</option>
                     </c:forEach>
                 </select>
-              </div> <!-- form-group -->
-              </div> <!-- row -->
+            </div> <!-- row -->
 
-              <div class="row">
-              <div class="form-group">
-                <label>End Time</label>
-                <select class="form-control" name="endMonth">
+            <div class="form-row form-group mb-1">
+                <label class="col-form-label col-lg-1 col-md-2 col-4">End Time</label>
+                <select class="form-control custom-select col-lg-1 col-2" name="endMonth">
                     <c:forEach var="month" items="${results.monthMap}">
                         <c:choose>
                             <c:when test="${month.key == results.endCalendar.month}">
@@ -128,10 +125,10 @@
                     </c:forEach>
                 </select>
 
-                <input type="text" class="form-control" name="endDate" size="4" maxlength="2" value="${results.endCalendar.date}" />
-                <input type="text" class="form-control" name="endYear" size="6" maxlength="4" value="${results.endCalendar.year}" />
+                <input type="text" class="form-control col-lg-1 col-2" name="endDate" size="4" maxlength="2" value="${results.endCalendar.date}" />
+                <input type="text" class="form-control col-lg-1 col-2" name="endYear" size="6" maxlength="4" value="${results.endCalendar.year}" />
 
-                <select class="form-control" name="endHour">
+                <select class="form-control custom-select col-lg-1 col-2" name="endHour">
                     <c:forEach var="hour" items="${results.hourMap}">
                         <c:choose>
                             <c:when test="${hour.key == results.endCalendar.hourOfDay}">
@@ -144,18 +141,24 @@
                         <option value="${hour.key}" ${selected}>${hour.value}</option>
                     </c:forEach>
                 </select>
-            </div> <!-- form-group -->
             </div> <!-- row -->
-            <button type="submit" class="btn btn-secondary">Apply Custom Time Period</button>
+            <button type="submit" class="btn btn-secondary btn-sm col-lg-5 col-md-10 col-12">Apply Custom Time Period</button>
         </form>
     </div>
-
-    <p>
-        <strong>From</strong> ${results.start} <br/>
-        <strong>To</strong> ${results.end} <br/>
-    </p>
   </div> <!-- column -->
 </div> <!-- row -->
+<div class="row">
+    <div class="row col-md-10">
+        <label class="col-form-label col-lg-1 col-md-2 col-4"><strong>From</strong></label>
+        <span class="col-lg-11 col-md-10 col-8 form-control-plaintext">${results.start}</span>
+    </div>
+</div>
+<div class="row">
+    <div class="row col-md-10">
+        <label class="col-form-label col-lg-1 col-md-2 col-4"><strong>To</strong></label>
+        <span class="col-lg-11 col-md-10 col-8 form-control-plaintext">${results.end}</span>
+    </div>
+</div>
 
 <c:set var="showFootnote1" value="false"/>
 
@@ -310,23 +313,7 @@
 
 <script type="text/javascript">
 
-    $(document).ready(function() {
-        // Hide all sub elements
-        $("ul.nav ul.nav").css("display", "none");
-
-        // For each navigation click, ensure the child navigation is visible
-        $('.nav .nav-link').click(function() {
-            $("ul.nav ul.nav").css("display", "none"); // Hide all sub-elements on click
-
-            if ($(this).parent("li").children("ul").length == 0) { // nested element
-                $(this).parent("li").parent("ul").css("display", "block"); // show parent element
-            } else { // parent element
-                $(this).parent("li").children("ul").css("display", "block"); // show child element
-            }
-        });
-    });
-
-    function relativeTimeFormChange() {
+     function relativeTimeFormChange() {
         for (i = 0; i < document.reltimeform.rtstatus.length; i++) {
             if (document.reltimeform.rtstatus[i].selected) {
                 var value = document.reltimeform.rtstatus[i].value;

@@ -86,7 +86,7 @@ public class AlarmsPageIT extends OpenNMSSeleniumTestCase {
 
         alarmsPage();
         findElementByLink("Advanced Search").click();
-        findElementByName("msgsub");
+        findElementByName("alarmtext");
         findElementByName("iplike");
     }
 

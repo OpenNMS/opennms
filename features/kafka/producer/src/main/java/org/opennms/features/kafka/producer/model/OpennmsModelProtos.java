@@ -16120,6 +16120,10 @@ public final class OpennmsModelProtos {
        * <code>CDP = 4;</code>
        */
       CDP(4),
+      /**
+       * <code>USERDEFINED = 5;</code>
+       */
+      USERDEFINED(5),
       UNRECOGNIZED(-1),
       ;
 
@@ -16143,6 +16147,10 @@ public final class OpennmsModelProtos {
        * <code>CDP = 4;</code>
        */
       public static final int CDP_VALUE = 4;
+      /**
+       * <code>USERDEFINED = 5;</code>
+       */
+      public static final int USERDEFINED_VALUE = 5;
 
 
       public final int getNumber() {
@@ -16168,6 +16176,7 @@ public final class OpennmsModelProtos {
           case 2: return ISIS;
           case 3: return BRIDGE;
           case 4: return CDP;
+          case 5: return USERDEFINED;
           default: return null;
         }
       }
@@ -18387,43 +18396,84 @@ public final class OpennmsModelProtos {
     org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyRefOrBuilder getRefOrBuilder();
 
     /**
-     * <code>.TopologyPort source = 2;</code>
+     * <code>.TopologyPort sourcePort = 3;</code>
      */
-    boolean hasSource();
+    boolean hasSourcePort();
     /**
-     * <code>.TopologyPort source = 2;</code>
+     * <code>.TopologyPort sourcePort = 3;</code>
      */
-    org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort getSource();
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort getSourcePort();
     /**
-     * <code>.TopologyPort source = 2;</code>
+     * <code>.TopologyPort sourcePort = 3;</code>
      */
-    org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPortOrBuilder getSourceOrBuilder();
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPortOrBuilder getSourcePortOrBuilder();
 
     /**
-     * <code>.TopologyPort targetPort = 3;</code>
+     * <code>.TopologySegment sourceSegment = 4;</code>
+     */
+    boolean hasSourceSegment();
+    /**
+     * <code>.TopologySegment sourceSegment = 4;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment getSourceSegment();
+    /**
+     * <code>.TopologySegment sourceSegment = 4;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegmentOrBuilder getSourceSegmentOrBuilder();
+
+    /**
+     * <code>.Node sourceNode = 5;</code>
+     */
+    boolean hasSourceNode();
+    /**
+     * <code>.Node sourceNode = 5;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node getSourceNode();
+    /**
+     * <code>.Node sourceNode = 5;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.NodeOrBuilder getSourceNodeOrBuilder();
+
+    /**
+     * <code>.TopologyPort targetPort = 6;</code>
      */
     boolean hasTargetPort();
     /**
-     * <code>.TopologyPort targetPort = 3;</code>
+     * <code>.TopologyPort targetPort = 6;</code>
      */
     org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort getTargetPort();
     /**
-     * <code>.TopologyPort targetPort = 3;</code>
+     * <code>.TopologyPort targetPort = 6;</code>
      */
     org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPortOrBuilder getTargetPortOrBuilder();
 
     /**
-     * <code>.TopologySegment targetSegment = 4;</code>
+     * <code>.TopologySegment targetSegment = 7;</code>
      */
     boolean hasTargetSegment();
     /**
-     * <code>.TopologySegment targetSegment = 4;</code>
+     * <code>.TopologySegment targetSegment = 7;</code>
      */
     org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment getTargetSegment();
     /**
-     * <code>.TopologySegment targetSegment = 4;</code>
+     * <code>.TopologySegment targetSegment = 7;</code>
      */
     org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegmentOrBuilder getTargetSegmentOrBuilder();
+
+    /**
+     * <code>.Node targetNode = 8;</code>
+     */
+    boolean hasTargetNode();
+    /**
+     * <code>.Node targetNode = 8;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node getTargetNode();
+    /**
+     * <code>.Node targetNode = 8;</code>
+     */
+    org.opennms.features.kafka.producer.model.OpennmsModelProtos.NodeOrBuilder getTargetNodeOrBuilder();
+
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyEdge.SourceCase getSourceCase();
 
     public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyEdge.TargetCase getTargetCase();
   }
@@ -18486,22 +18536,51 @@ public final class OpennmsModelProtos {
 
               break;
             }
-            case 18: {
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.Builder subBuilder = null;
-              if (source_ != null) {
-                subBuilder = source_.toBuilder();
-              }
-              source_ = input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(source_);
-                source_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
             case 26: {
               org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.Builder subBuilder = null;
-              if (targetCase_ == 3) {
+              if (sourceCase_ == 3) {
+                subBuilder = ((org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) source_).toBuilder();
+              }
+              source_ =
+                  input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom((org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) source_);
+                source_ = subBuilder.buildPartial();
+              }
+              sourceCase_ = 3;
+              break;
+            }
+            case 34: {
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.Builder subBuilder = null;
+              if (sourceCase_ == 4) {
+                subBuilder = ((org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) source_).toBuilder();
+              }
+              source_ =
+                  input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom((org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) source_);
+                source_ = subBuilder.buildPartial();
+              }
+              sourceCase_ = 4;
+              break;
+            }
+            case 42: {
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.Builder subBuilder = null;
+              if (sourceCase_ == 5) {
+                subBuilder = ((org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node) source_).toBuilder();
+              }
+              source_ =
+                  input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom((org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node) source_);
+                source_ = subBuilder.buildPartial();
+              }
+              sourceCase_ = 5;
+              break;
+            }
+            case 50: {
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.Builder subBuilder = null;
+              if (targetCase_ == 6) {
                 subBuilder = ((org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) target_).toBuilder();
               }
               target_ =
@@ -18510,12 +18589,12 @@ public final class OpennmsModelProtos {
                 subBuilder.mergeFrom((org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) target_);
                 target_ = subBuilder.buildPartial();
               }
-              targetCase_ = 3;
+              targetCase_ = 6;
               break;
             }
-            case 34: {
+            case 58: {
               org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.Builder subBuilder = null;
-              if (targetCase_ == 4) {
+              if (targetCase_ == 7) {
                 subBuilder = ((org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) target_).toBuilder();
               }
               target_ =
@@ -18524,7 +18603,21 @@ public final class OpennmsModelProtos {
                 subBuilder.mergeFrom((org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) target_);
                 target_ = subBuilder.buildPartial();
               }
-              targetCase_ = 4;
+              targetCase_ = 7;
+              break;
+            }
+            case 66: {
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.Builder subBuilder = null;
+              if (targetCase_ == 8) {
+                subBuilder = ((org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node) target_).toBuilder();
+              }
+              target_ =
+                  input.readMessage(org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom((org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node) target_);
+                target_ = subBuilder.buildPartial();
+              }
+              targetCase_ = 8;
               break;
             }
           }
@@ -18551,12 +18644,53 @@ public final class OpennmsModelProtos {
               org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyEdge.class, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyEdge.Builder.class);
     }
 
+    private int sourceCase_ = 0;
+    private java.lang.Object source_;
+    public enum SourceCase
+        implements com.google.protobuf.Internal.EnumLite {
+      SOURCEPORT(3),
+      SOURCESEGMENT(4),
+      SOURCENODE(5),
+      SOURCE_NOT_SET(0);
+      private final int value;
+      private SourceCase(int value) {
+        this.value = value;
+      }
+      /**
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static SourceCase valueOf(int value) {
+        return forNumber(value);
+      }
+
+      public static SourceCase forNumber(int value) {
+        switch (value) {
+          case 3: return SOURCEPORT;
+          case 4: return SOURCESEGMENT;
+          case 5: return SOURCENODE;
+          case 0: return SOURCE_NOT_SET;
+          default: return null;
+        }
+      }
+      public int getNumber() {
+        return this.value;
+      }
+    };
+
+    public SourceCase
+    getSourceCase() {
+      return SourceCase.forNumber(
+          sourceCase_);
+    }
+
     private int targetCase_ = 0;
     private java.lang.Object target_;
     public enum TargetCase
         implements com.google.protobuf.Internal.EnumLite {
-      TARGETPORT(3),
-      TARGETSEGMENT(4),
+      TARGETPORT(6),
+      TARGETSEGMENT(7),
+      TARGETNODE(8),
       TARGET_NOT_SET(0);
       private final int value;
       private TargetCase(int value) {
@@ -18572,8 +18706,9 @@ public final class OpennmsModelProtos {
 
       public static TargetCase forNumber(int value) {
         switch (value) {
-          case 3: return TARGETPORT;
-          case 4: return TARGETSEGMENT;
+          case 6: return TARGETPORT;
+          case 7: return TARGETSEGMENT;
+          case 8: return TARGETNODE;
           case 0: return TARGET_NOT_SET;
           default: return null;
         }
@@ -18610,77 +18745,160 @@ public final class OpennmsModelProtos {
       return getRef();
     }
 
-    public static final int SOURCE_FIELD_NUMBER = 2;
-    private org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort source_;
+    public static final int SOURCEPORT_FIELD_NUMBER = 3;
     /**
-     * <code>.TopologyPort source = 2;</code>
+     * <code>.TopologyPort sourcePort = 3;</code>
      */
-    public boolean hasSource() {
-      return source_ != null;
+    public boolean hasSourcePort() {
+      return sourceCase_ == 3;
     }
     /**
-     * <code>.TopologyPort source = 2;</code>
+     * <code>.TopologyPort sourcePort = 3;</code>
      */
-    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort getSource() {
-      return source_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.getDefaultInstance() : source_;
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort getSourcePort() {
+      if (sourceCase_ == 3) {
+         return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) source_;
+      }
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.getDefaultInstance();
     }
     /**
-     * <code>.TopologyPort source = 2;</code>
+     * <code>.TopologyPort sourcePort = 3;</code>
      */
-    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPortOrBuilder getSourceOrBuilder() {
-      return getSource();
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPortOrBuilder getSourcePortOrBuilder() {
+      if (sourceCase_ == 3) {
+         return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) source_;
+      }
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.getDefaultInstance();
     }
 
-    public static final int TARGETPORT_FIELD_NUMBER = 3;
+    public static final int SOURCESEGMENT_FIELD_NUMBER = 4;
     /**
-     * <code>.TopologyPort targetPort = 3;</code>
+     * <code>.TopologySegment sourceSegment = 4;</code>
+     */
+    public boolean hasSourceSegment() {
+      return sourceCase_ == 4;
+    }
+    /**
+     * <code>.TopologySegment sourceSegment = 4;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment getSourceSegment() {
+      if (sourceCase_ == 4) {
+         return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) source_;
+      }
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.getDefaultInstance();
+    }
+    /**
+     * <code>.TopologySegment sourceSegment = 4;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegmentOrBuilder getSourceSegmentOrBuilder() {
+      if (sourceCase_ == 4) {
+         return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) source_;
+      }
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.getDefaultInstance();
+    }
+
+    public static final int SOURCENODE_FIELD_NUMBER = 5;
+    /**
+     * <code>.Node sourceNode = 5;</code>
+     */
+    public boolean hasSourceNode() {
+      return sourceCase_ == 5;
+    }
+    /**
+     * <code>.Node sourceNode = 5;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node getSourceNode() {
+      if (sourceCase_ == 5) {
+         return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node) source_;
+      }
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.getDefaultInstance();
+    }
+    /**
+     * <code>.Node sourceNode = 5;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.NodeOrBuilder getSourceNodeOrBuilder() {
+      if (sourceCase_ == 5) {
+         return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node) source_;
+      }
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.getDefaultInstance();
+    }
+
+    public static final int TARGETPORT_FIELD_NUMBER = 6;
+    /**
+     * <code>.TopologyPort targetPort = 6;</code>
      */
     public boolean hasTargetPort() {
-      return targetCase_ == 3;
+      return targetCase_ == 6;
     }
     /**
-     * <code>.TopologyPort targetPort = 3;</code>
+     * <code>.TopologyPort targetPort = 6;</code>
      */
     public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort getTargetPort() {
-      if (targetCase_ == 3) {
+      if (targetCase_ == 6) {
          return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) target_;
       }
       return org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.getDefaultInstance();
     }
     /**
-     * <code>.TopologyPort targetPort = 3;</code>
+     * <code>.TopologyPort targetPort = 6;</code>
      */
     public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPortOrBuilder getTargetPortOrBuilder() {
-      if (targetCase_ == 3) {
+      if (targetCase_ == 6) {
          return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) target_;
       }
       return org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.getDefaultInstance();
     }
 
-    public static final int TARGETSEGMENT_FIELD_NUMBER = 4;
+    public static final int TARGETSEGMENT_FIELD_NUMBER = 7;
     /**
-     * <code>.TopologySegment targetSegment = 4;</code>
+     * <code>.TopologySegment targetSegment = 7;</code>
      */
     public boolean hasTargetSegment() {
-      return targetCase_ == 4;
+      return targetCase_ == 7;
     }
     /**
-     * <code>.TopologySegment targetSegment = 4;</code>
+     * <code>.TopologySegment targetSegment = 7;</code>
      */
     public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment getTargetSegment() {
-      if (targetCase_ == 4) {
+      if (targetCase_ == 7) {
          return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) target_;
       }
       return org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.getDefaultInstance();
     }
     /**
-     * <code>.TopologySegment targetSegment = 4;</code>
+     * <code>.TopologySegment targetSegment = 7;</code>
      */
     public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegmentOrBuilder getTargetSegmentOrBuilder() {
-      if (targetCase_ == 4) {
+      if (targetCase_ == 7) {
          return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) target_;
       }
       return org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.getDefaultInstance();
+    }
+
+    public static final int TARGETNODE_FIELD_NUMBER = 8;
+    /**
+     * <code>.Node targetNode = 8;</code>
+     */
+    public boolean hasTargetNode() {
+      return targetCase_ == 8;
+    }
+    /**
+     * <code>.Node targetNode = 8;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node getTargetNode() {
+      if (targetCase_ == 8) {
+         return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node) target_;
+      }
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.getDefaultInstance();
+    }
+    /**
+     * <code>.Node targetNode = 8;</code>
+     */
+    public org.opennms.features.kafka.producer.model.OpennmsModelProtos.NodeOrBuilder getTargetNodeOrBuilder() {
+      if (targetCase_ == 8) {
+         return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node) target_;
+      }
+      return org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.getDefaultInstance();
     }
 
     private byte memoizedIsInitialized = -1;
@@ -18698,14 +18916,23 @@ public final class OpennmsModelProtos {
       if (ref_ != null) {
         output.writeMessage(1, getRef());
       }
-      if (source_ != null) {
-        output.writeMessage(2, getSource());
+      if (sourceCase_ == 3) {
+        output.writeMessage(3, (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) source_);
       }
-      if (targetCase_ == 3) {
-        output.writeMessage(3, (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) target_);
+      if (sourceCase_ == 4) {
+        output.writeMessage(4, (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) source_);
       }
-      if (targetCase_ == 4) {
-        output.writeMessage(4, (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) target_);
+      if (sourceCase_ == 5) {
+        output.writeMessage(5, (org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node) source_);
+      }
+      if (targetCase_ == 6) {
+        output.writeMessage(6, (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) target_);
+      }
+      if (targetCase_ == 7) {
+        output.writeMessage(7, (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) target_);
+      }
+      if (targetCase_ == 8) {
+        output.writeMessage(8, (org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node) target_);
       }
       unknownFields.writeTo(output);
     }
@@ -18719,17 +18946,29 @@ public final class OpennmsModelProtos {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, getRef());
       }
-      if (source_ != null) {
+      if (sourceCase_ == 3) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, getSource());
+          .computeMessageSize(3, (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) source_);
       }
-      if (targetCase_ == 3) {
+      if (sourceCase_ == 4) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) target_);
+          .computeMessageSize(4, (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) source_);
       }
-      if (targetCase_ == 4) {
+      if (sourceCase_ == 5) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) target_);
+          .computeMessageSize(5, (org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node) source_);
+      }
+      if (targetCase_ == 6) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(6, (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) target_);
+      }
+      if (targetCase_ == 7) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(7, (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) target_);
+      }
+      if (targetCase_ == 8) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(8, (org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node) target_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -18752,22 +18991,40 @@ public final class OpennmsModelProtos {
         result = result && getRef()
             .equals(other.getRef());
       }
-      result = result && (hasSource() == other.hasSource());
-      if (hasSource()) {
-        result = result && getSource()
-            .equals(other.getSource());
+      result = result && getSourceCase().equals(
+          other.getSourceCase());
+      if (!result) return false;
+      switch (sourceCase_) {
+        case 3:
+          result = result && getSourcePort()
+              .equals(other.getSourcePort());
+          break;
+        case 4:
+          result = result && getSourceSegment()
+              .equals(other.getSourceSegment());
+          break;
+        case 5:
+          result = result && getSourceNode()
+              .equals(other.getSourceNode());
+          break;
+        case 0:
+        default:
       }
       result = result && getTargetCase().equals(
           other.getTargetCase());
       if (!result) return false;
       switch (targetCase_) {
-        case 3:
+        case 6:
           result = result && getTargetPort()
               .equals(other.getTargetPort());
           break;
-        case 4:
+        case 7:
           result = result && getTargetSegment()
               .equals(other.getTargetSegment());
+          break;
+        case 8:
+          result = result && getTargetNode()
+              .equals(other.getTargetNode());
           break;
         case 0:
         default:
@@ -18787,18 +19044,34 @@ public final class OpennmsModelProtos {
         hash = (37 * hash) + REF_FIELD_NUMBER;
         hash = (53 * hash) + getRef().hashCode();
       }
-      if (hasSource()) {
-        hash = (37 * hash) + SOURCE_FIELD_NUMBER;
-        hash = (53 * hash) + getSource().hashCode();
+      switch (sourceCase_) {
+        case 3:
+          hash = (37 * hash) + SOURCEPORT_FIELD_NUMBER;
+          hash = (53 * hash) + getSourcePort().hashCode();
+          break;
+        case 4:
+          hash = (37 * hash) + SOURCESEGMENT_FIELD_NUMBER;
+          hash = (53 * hash) + getSourceSegment().hashCode();
+          break;
+        case 5:
+          hash = (37 * hash) + SOURCENODE_FIELD_NUMBER;
+          hash = (53 * hash) + getSourceNode().hashCode();
+          break;
+        case 0:
+        default:
       }
       switch (targetCase_) {
-        case 3:
+        case 6:
           hash = (37 * hash) + TARGETPORT_FIELD_NUMBER;
           hash = (53 * hash) + getTargetPort().hashCode();
           break;
-        case 4:
+        case 7:
           hash = (37 * hash) + TARGETSEGMENT_FIELD_NUMBER;
           hash = (53 * hash) + getTargetSegment().hashCode();
+          break;
+        case 8:
+          hash = (37 * hash) + TARGETNODE_FIELD_NUMBER;
+          hash = (53 * hash) + getTargetNode().hashCode();
           break;
         case 0:
         default:
@@ -18938,12 +19211,8 @@ public final class OpennmsModelProtos {
           ref_ = null;
           refBuilder_ = null;
         }
-        if (sourceBuilder_ == null) {
-          source_ = null;
-        } else {
-          source_ = null;
-          sourceBuilder_ = null;
-        }
+        sourceCase_ = 0;
+        source_ = null;
         targetCase_ = 0;
         target_ = null;
         return this;
@@ -18973,25 +19242,49 @@ public final class OpennmsModelProtos {
         } else {
           result.ref_ = refBuilder_.build();
         }
-        if (sourceBuilder_ == null) {
-          result.source_ = source_;
-        } else {
-          result.source_ = sourceBuilder_.build();
+        if (sourceCase_ == 3) {
+          if (sourcePortBuilder_ == null) {
+            result.source_ = source_;
+          } else {
+            result.source_ = sourcePortBuilder_.build();
+          }
         }
-        if (targetCase_ == 3) {
+        if (sourceCase_ == 4) {
+          if (sourceSegmentBuilder_ == null) {
+            result.source_ = source_;
+          } else {
+            result.source_ = sourceSegmentBuilder_.build();
+          }
+        }
+        if (sourceCase_ == 5) {
+          if (sourceNodeBuilder_ == null) {
+            result.source_ = source_;
+          } else {
+            result.source_ = sourceNodeBuilder_.build();
+          }
+        }
+        if (targetCase_ == 6) {
           if (targetPortBuilder_ == null) {
             result.target_ = target_;
           } else {
             result.target_ = targetPortBuilder_.build();
           }
         }
-        if (targetCase_ == 4) {
+        if (targetCase_ == 7) {
           if (targetSegmentBuilder_ == null) {
             result.target_ = target_;
           } else {
             result.target_ = targetSegmentBuilder_.build();
           }
         }
+        if (targetCase_ == 8) {
+          if (targetNodeBuilder_ == null) {
+            result.target_ = target_;
+          } else {
+            result.target_ = targetNodeBuilder_.build();
+          }
+        }
+        result.sourceCase_ = sourceCase_;
         result.targetCase_ = targetCase_;
         onBuilt();
         return result;
@@ -19037,8 +19330,22 @@ public final class OpennmsModelProtos {
         if (other.hasRef()) {
           mergeRef(other.getRef());
         }
-        if (other.hasSource()) {
-          mergeSource(other.getSource());
+        switch (other.getSourceCase()) {
+          case SOURCEPORT: {
+            mergeSourcePort(other.getSourcePort());
+            break;
+          }
+          case SOURCESEGMENT: {
+            mergeSourceSegment(other.getSourceSegment());
+            break;
+          }
+          case SOURCENODE: {
+            mergeSourceNode(other.getSourceNode());
+            break;
+          }
+          case SOURCE_NOT_SET: {
+            break;
+          }
         }
         switch (other.getTargetCase()) {
           case TARGETPORT: {
@@ -19047,6 +19354,10 @@ public final class OpennmsModelProtos {
           }
           case TARGETSEGMENT: {
             mergeTargetSegment(other.getTargetSegment());
+            break;
+          }
+          case TARGETNODE: {
+            mergeTargetNode(other.getTargetNode());
             break;
           }
           case TARGET_NOT_SET: {
@@ -19079,6 +19390,21 @@ public final class OpennmsModelProtos {
         }
         return this;
       }
+      private int sourceCase_ = 0;
+      private java.lang.Object source_;
+      public SourceCase
+          getSourceCase() {
+        return SourceCase.forNumber(
+            sourceCase_);
+      }
+
+      public Builder clearSource() {
+        sourceCase_ = 0;
+        source_ = null;
+        onChanged();
+        return this;
+      }
+
       private int targetCase_ = 0;
       private java.lang.Object target_;
       public TargetCase
@@ -19212,149 +19538,440 @@ public final class OpennmsModelProtos {
         return refBuilder_;
       }
 
-      private org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort source_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPortOrBuilder> sourceBuilder_;
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPortOrBuilder> sourcePortBuilder_;
       /**
-       * <code>.TopologyPort source = 2;</code>
+       * <code>.TopologyPort sourcePort = 3;</code>
        */
-      public boolean hasSource() {
-        return sourceBuilder_ != null || source_ != null;
+      public boolean hasSourcePort() {
+        return sourceCase_ == 3;
       }
       /**
-       * <code>.TopologyPort source = 2;</code>
+       * <code>.TopologyPort sourcePort = 3;</code>
        */
-      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort getSource() {
-        if (sourceBuilder_ == null) {
-          return source_ == null ? org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.getDefaultInstance() : source_;
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort getSourcePort() {
+        if (sourcePortBuilder_ == null) {
+          if (sourceCase_ == 3) {
+            return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) source_;
+          }
+          return org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.getDefaultInstance();
         } else {
-          return sourceBuilder_.getMessage();
+          if (sourceCase_ == 3) {
+            return sourcePortBuilder_.getMessage();
+          }
+          return org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.getDefaultInstance();
         }
       }
       /**
-       * <code>.TopologyPort source = 2;</code>
+       * <code>.TopologyPort sourcePort = 3;</code>
        */
-      public Builder setSource(org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort value) {
-        if (sourceBuilder_ == null) {
+      public Builder setSourcePort(org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort value) {
+        if (sourcePortBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
           source_ = value;
           onChanged();
         } else {
-          sourceBuilder_.setMessage(value);
+          sourcePortBuilder_.setMessage(value);
         }
-
+        sourceCase_ = 3;
         return this;
       }
       /**
-       * <code>.TopologyPort source = 2;</code>
+       * <code>.TopologyPort sourcePort = 3;</code>
        */
-      public Builder setSource(
+      public Builder setSourcePort(
           org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.Builder builderForValue) {
-        if (sourceBuilder_ == null) {
+        if (sourcePortBuilder_ == null) {
           source_ = builderForValue.build();
           onChanged();
         } else {
-          sourceBuilder_.setMessage(builderForValue.build());
+          sourcePortBuilder_.setMessage(builderForValue.build());
         }
-
+        sourceCase_ = 3;
         return this;
       }
       /**
-       * <code>.TopologyPort source = 2;</code>
+       * <code>.TopologyPort sourcePort = 3;</code>
        */
-      public Builder mergeSource(org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort value) {
-        if (sourceBuilder_ == null) {
-          if (source_ != null) {
-            source_ =
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.newBuilder(source_).mergeFrom(value).buildPartial();
+      public Builder mergeSourcePort(org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort value) {
+        if (sourcePortBuilder_ == null) {
+          if (sourceCase_ == 3 &&
+              source_ != org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.getDefaultInstance()) {
+            source_ = org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.newBuilder((org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) source_)
+                .mergeFrom(value).buildPartial();
           } else {
             source_ = value;
           }
           onChanged();
         } else {
-          sourceBuilder_.mergeFrom(value);
+          if (sourceCase_ == 3) {
+            sourcePortBuilder_.mergeFrom(value);
+          }
+          sourcePortBuilder_.setMessage(value);
         }
-
+        sourceCase_ = 3;
         return this;
       }
       /**
-       * <code>.TopologyPort source = 2;</code>
+       * <code>.TopologyPort sourcePort = 3;</code>
        */
-      public Builder clearSource() {
-        if (sourceBuilder_ == null) {
-          source_ = null;
-          onChanged();
+      public Builder clearSourcePort() {
+        if (sourcePortBuilder_ == null) {
+          if (sourceCase_ == 3) {
+            sourceCase_ = 0;
+            source_ = null;
+            onChanged();
+          }
         } else {
-          source_ = null;
-          sourceBuilder_ = null;
+          if (sourceCase_ == 3) {
+            sourceCase_ = 0;
+            source_ = null;
+          }
+          sourcePortBuilder_.clear();
         }
-
         return this;
       }
       /**
-       * <code>.TopologyPort source = 2;</code>
+       * <code>.TopologyPort sourcePort = 3;</code>
        */
-      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.Builder getSourceBuilder() {
-        
-        onChanged();
-        return getSourceFieldBuilder().getBuilder();
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.Builder getSourcePortBuilder() {
+        return getSourcePortFieldBuilder().getBuilder();
       }
       /**
-       * <code>.TopologyPort source = 2;</code>
+       * <code>.TopologyPort sourcePort = 3;</code>
        */
-      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPortOrBuilder getSourceOrBuilder() {
-        if (sourceBuilder_ != null) {
-          return sourceBuilder_.getMessageOrBuilder();
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPortOrBuilder getSourcePortOrBuilder() {
+        if ((sourceCase_ == 3) && (sourcePortBuilder_ != null)) {
+          return sourcePortBuilder_.getMessageOrBuilder();
         } else {
-          return source_ == null ?
-              org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.getDefaultInstance() : source_;
+          if (sourceCase_ == 3) {
+            return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) source_;
+          }
+          return org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.getDefaultInstance();
         }
       }
       /**
-       * <code>.TopologyPort source = 2;</code>
+       * <code>.TopologyPort sourcePort = 3;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPortOrBuilder> 
-          getSourceFieldBuilder() {
-        if (sourceBuilder_ == null) {
-          sourceBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+          getSourcePortFieldBuilder() {
+        if (sourcePortBuilder_ == null) {
+          if (!(sourceCase_ == 3)) {
+            source_ = org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.getDefaultInstance();
+          }
+          sourcePortBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPortOrBuilder>(
-                  getSource(),
+                  (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) source_,
                   getParentForChildren(),
                   isClean());
           source_ = null;
         }
-        return sourceBuilder_;
+        sourceCase_ = 3;
+        onChanged();;
+        return sourcePortBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegmentOrBuilder> sourceSegmentBuilder_;
+      /**
+       * <code>.TopologySegment sourceSegment = 4;</code>
+       */
+      public boolean hasSourceSegment() {
+        return sourceCase_ == 4;
+      }
+      /**
+       * <code>.TopologySegment sourceSegment = 4;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment getSourceSegment() {
+        if (sourceSegmentBuilder_ == null) {
+          if (sourceCase_ == 4) {
+            return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) source_;
+          }
+          return org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.getDefaultInstance();
+        } else {
+          if (sourceCase_ == 4) {
+            return sourceSegmentBuilder_.getMessage();
+          }
+          return org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.TopologySegment sourceSegment = 4;</code>
+       */
+      public Builder setSourceSegment(org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment value) {
+        if (sourceSegmentBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          source_ = value;
+          onChanged();
+        } else {
+          sourceSegmentBuilder_.setMessage(value);
+        }
+        sourceCase_ = 4;
+        return this;
+      }
+      /**
+       * <code>.TopologySegment sourceSegment = 4;</code>
+       */
+      public Builder setSourceSegment(
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.Builder builderForValue) {
+        if (sourceSegmentBuilder_ == null) {
+          source_ = builderForValue.build();
+          onChanged();
+        } else {
+          sourceSegmentBuilder_.setMessage(builderForValue.build());
+        }
+        sourceCase_ = 4;
+        return this;
+      }
+      /**
+       * <code>.TopologySegment sourceSegment = 4;</code>
+       */
+      public Builder mergeSourceSegment(org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment value) {
+        if (sourceSegmentBuilder_ == null) {
+          if (sourceCase_ == 4 &&
+              source_ != org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.getDefaultInstance()) {
+            source_ = org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.newBuilder((org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) source_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            source_ = value;
+          }
+          onChanged();
+        } else {
+          if (sourceCase_ == 4) {
+            sourceSegmentBuilder_.mergeFrom(value);
+          }
+          sourceSegmentBuilder_.setMessage(value);
+        }
+        sourceCase_ = 4;
+        return this;
+      }
+      /**
+       * <code>.TopologySegment sourceSegment = 4;</code>
+       */
+      public Builder clearSourceSegment() {
+        if (sourceSegmentBuilder_ == null) {
+          if (sourceCase_ == 4) {
+            sourceCase_ = 0;
+            source_ = null;
+            onChanged();
+          }
+        } else {
+          if (sourceCase_ == 4) {
+            sourceCase_ = 0;
+            source_ = null;
+          }
+          sourceSegmentBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.TopologySegment sourceSegment = 4;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.Builder getSourceSegmentBuilder() {
+        return getSourceSegmentFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.TopologySegment sourceSegment = 4;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegmentOrBuilder getSourceSegmentOrBuilder() {
+        if ((sourceCase_ == 4) && (sourceSegmentBuilder_ != null)) {
+          return sourceSegmentBuilder_.getMessageOrBuilder();
+        } else {
+          if (sourceCase_ == 4) {
+            return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) source_;
+          }
+          return org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.TopologySegment sourceSegment = 4;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegmentOrBuilder> 
+          getSourceSegmentFieldBuilder() {
+        if (sourceSegmentBuilder_ == null) {
+          if (!(sourceCase_ == 4)) {
+            source_ = org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.getDefaultInstance();
+          }
+          sourceSegmentBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegmentOrBuilder>(
+                  (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) source_,
+                  getParentForChildren(),
+                  isClean());
+          source_ = null;
+        }
+        sourceCase_ = 4;
+        onChanged();;
+        return sourceSegmentBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.NodeOrBuilder> sourceNodeBuilder_;
+      /**
+       * <code>.Node sourceNode = 5;</code>
+       */
+      public boolean hasSourceNode() {
+        return sourceCase_ == 5;
+      }
+      /**
+       * <code>.Node sourceNode = 5;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node getSourceNode() {
+        if (sourceNodeBuilder_ == null) {
+          if (sourceCase_ == 5) {
+            return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node) source_;
+          }
+          return org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.getDefaultInstance();
+        } else {
+          if (sourceCase_ == 5) {
+            return sourceNodeBuilder_.getMessage();
+          }
+          return org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.Node sourceNode = 5;</code>
+       */
+      public Builder setSourceNode(org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node value) {
+        if (sourceNodeBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          source_ = value;
+          onChanged();
+        } else {
+          sourceNodeBuilder_.setMessage(value);
+        }
+        sourceCase_ = 5;
+        return this;
+      }
+      /**
+       * <code>.Node sourceNode = 5;</code>
+       */
+      public Builder setSourceNode(
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.Builder builderForValue) {
+        if (sourceNodeBuilder_ == null) {
+          source_ = builderForValue.build();
+          onChanged();
+        } else {
+          sourceNodeBuilder_.setMessage(builderForValue.build());
+        }
+        sourceCase_ = 5;
+        return this;
+      }
+      /**
+       * <code>.Node sourceNode = 5;</code>
+       */
+      public Builder mergeSourceNode(org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node value) {
+        if (sourceNodeBuilder_ == null) {
+          if (sourceCase_ == 5 &&
+              source_ != org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.getDefaultInstance()) {
+            source_ = org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.newBuilder((org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node) source_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            source_ = value;
+          }
+          onChanged();
+        } else {
+          if (sourceCase_ == 5) {
+            sourceNodeBuilder_.mergeFrom(value);
+          }
+          sourceNodeBuilder_.setMessage(value);
+        }
+        sourceCase_ = 5;
+        return this;
+      }
+      /**
+       * <code>.Node sourceNode = 5;</code>
+       */
+      public Builder clearSourceNode() {
+        if (sourceNodeBuilder_ == null) {
+          if (sourceCase_ == 5) {
+            sourceCase_ = 0;
+            source_ = null;
+            onChanged();
+          }
+        } else {
+          if (sourceCase_ == 5) {
+            sourceCase_ = 0;
+            source_ = null;
+          }
+          sourceNodeBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.Node sourceNode = 5;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.Builder getSourceNodeBuilder() {
+        return getSourceNodeFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.Node sourceNode = 5;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.NodeOrBuilder getSourceNodeOrBuilder() {
+        if ((sourceCase_ == 5) && (sourceNodeBuilder_ != null)) {
+          return sourceNodeBuilder_.getMessageOrBuilder();
+        } else {
+          if (sourceCase_ == 5) {
+            return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node) source_;
+          }
+          return org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.Node sourceNode = 5;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.NodeOrBuilder> 
+          getSourceNodeFieldBuilder() {
+        if (sourceNodeBuilder_ == null) {
+          if (!(sourceCase_ == 5)) {
+            source_ = org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.getDefaultInstance();
+          }
+          sourceNodeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.NodeOrBuilder>(
+                  (org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node) source_,
+                  getParentForChildren(),
+                  isClean());
+          source_ = null;
+        }
+        sourceCase_ = 5;
+        onChanged();;
+        return sourceNodeBuilder_;
       }
 
       private com.google.protobuf.SingleFieldBuilderV3<
           org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPortOrBuilder> targetPortBuilder_;
       /**
-       * <code>.TopologyPort targetPort = 3;</code>
+       * <code>.TopologyPort targetPort = 6;</code>
        */
       public boolean hasTargetPort() {
-        return targetCase_ == 3;
+        return targetCase_ == 6;
       }
       /**
-       * <code>.TopologyPort targetPort = 3;</code>
+       * <code>.TopologyPort targetPort = 6;</code>
        */
       public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort getTargetPort() {
         if (targetPortBuilder_ == null) {
-          if (targetCase_ == 3) {
+          if (targetCase_ == 6) {
             return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) target_;
           }
           return org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.getDefaultInstance();
         } else {
-          if (targetCase_ == 3) {
+          if (targetCase_ == 6) {
             return targetPortBuilder_.getMessage();
           }
           return org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.getDefaultInstance();
         }
       }
       /**
-       * <code>.TopologyPort targetPort = 3;</code>
+       * <code>.TopologyPort targetPort = 6;</code>
        */
       public Builder setTargetPort(org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort value) {
         if (targetPortBuilder_ == null) {
@@ -19366,11 +19983,11 @@ public final class OpennmsModelProtos {
         } else {
           targetPortBuilder_.setMessage(value);
         }
-        targetCase_ = 3;
+        targetCase_ = 6;
         return this;
       }
       /**
-       * <code>.TopologyPort targetPort = 3;</code>
+       * <code>.TopologyPort targetPort = 6;</code>
        */
       public Builder setTargetPort(
           org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.Builder builderForValue) {
@@ -19380,15 +19997,15 @@ public final class OpennmsModelProtos {
         } else {
           targetPortBuilder_.setMessage(builderForValue.build());
         }
-        targetCase_ = 3;
+        targetCase_ = 6;
         return this;
       }
       /**
-       * <code>.TopologyPort targetPort = 3;</code>
+       * <code>.TopologyPort targetPort = 6;</code>
        */
       public Builder mergeTargetPort(org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort value) {
         if (targetPortBuilder_ == null) {
-          if (targetCase_ == 3 &&
+          if (targetCase_ == 6 &&
               target_ != org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.getDefaultInstance()) {
             target_ = org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.newBuilder((org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) target_)
                 .mergeFrom(value).buildPartial();
@@ -19397,26 +20014,26 @@ public final class OpennmsModelProtos {
           }
           onChanged();
         } else {
-          if (targetCase_ == 3) {
+          if (targetCase_ == 6) {
             targetPortBuilder_.mergeFrom(value);
           }
           targetPortBuilder_.setMessage(value);
         }
-        targetCase_ = 3;
+        targetCase_ = 6;
         return this;
       }
       /**
-       * <code>.TopologyPort targetPort = 3;</code>
+       * <code>.TopologyPort targetPort = 6;</code>
        */
       public Builder clearTargetPort() {
         if (targetPortBuilder_ == null) {
-          if (targetCase_ == 3) {
+          if (targetCase_ == 6) {
             targetCase_ = 0;
             target_ = null;
             onChanged();
           }
         } else {
-          if (targetCase_ == 3) {
+          if (targetCase_ == 6) {
             targetCase_ = 0;
             target_ = null;
           }
@@ -19425,32 +20042,32 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.TopologyPort targetPort = 3;</code>
+       * <code>.TopologyPort targetPort = 6;</code>
        */
       public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.Builder getTargetPortBuilder() {
         return getTargetPortFieldBuilder().getBuilder();
       }
       /**
-       * <code>.TopologyPort targetPort = 3;</code>
+       * <code>.TopologyPort targetPort = 6;</code>
        */
       public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPortOrBuilder getTargetPortOrBuilder() {
-        if ((targetCase_ == 3) && (targetPortBuilder_ != null)) {
+        if ((targetCase_ == 6) && (targetPortBuilder_ != null)) {
           return targetPortBuilder_.getMessageOrBuilder();
         } else {
-          if (targetCase_ == 3) {
+          if (targetCase_ == 6) {
             return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort) target_;
           }
           return org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.getDefaultInstance();
         }
       }
       /**
-       * <code>.TopologyPort targetPort = 3;</code>
+       * <code>.TopologyPort targetPort = 6;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPortOrBuilder> 
           getTargetPortFieldBuilder() {
         if (targetPortBuilder_ == null) {
-          if (!(targetCase_ == 3)) {
+          if (!(targetCase_ == 6)) {
             target_ = org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyPort.getDefaultInstance();
           }
           targetPortBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -19460,7 +20077,7 @@ public final class OpennmsModelProtos {
                   isClean());
           target_ = null;
         }
-        targetCase_ = 3;
+        targetCase_ = 6;
         onChanged();;
         return targetPortBuilder_;
       }
@@ -19468,29 +20085,29 @@ public final class OpennmsModelProtos {
       private com.google.protobuf.SingleFieldBuilderV3<
           org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegmentOrBuilder> targetSegmentBuilder_;
       /**
-       * <code>.TopologySegment targetSegment = 4;</code>
+       * <code>.TopologySegment targetSegment = 7;</code>
        */
       public boolean hasTargetSegment() {
-        return targetCase_ == 4;
+        return targetCase_ == 7;
       }
       /**
-       * <code>.TopologySegment targetSegment = 4;</code>
+       * <code>.TopologySegment targetSegment = 7;</code>
        */
       public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment getTargetSegment() {
         if (targetSegmentBuilder_ == null) {
-          if (targetCase_ == 4) {
+          if (targetCase_ == 7) {
             return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) target_;
           }
           return org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.getDefaultInstance();
         } else {
-          if (targetCase_ == 4) {
+          if (targetCase_ == 7) {
             return targetSegmentBuilder_.getMessage();
           }
           return org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.getDefaultInstance();
         }
       }
       /**
-       * <code>.TopologySegment targetSegment = 4;</code>
+       * <code>.TopologySegment targetSegment = 7;</code>
        */
       public Builder setTargetSegment(org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment value) {
         if (targetSegmentBuilder_ == null) {
@@ -19502,11 +20119,11 @@ public final class OpennmsModelProtos {
         } else {
           targetSegmentBuilder_.setMessage(value);
         }
-        targetCase_ = 4;
+        targetCase_ = 7;
         return this;
       }
       /**
-       * <code>.TopologySegment targetSegment = 4;</code>
+       * <code>.TopologySegment targetSegment = 7;</code>
        */
       public Builder setTargetSegment(
           org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.Builder builderForValue) {
@@ -19516,15 +20133,15 @@ public final class OpennmsModelProtos {
         } else {
           targetSegmentBuilder_.setMessage(builderForValue.build());
         }
-        targetCase_ = 4;
+        targetCase_ = 7;
         return this;
       }
       /**
-       * <code>.TopologySegment targetSegment = 4;</code>
+       * <code>.TopologySegment targetSegment = 7;</code>
        */
       public Builder mergeTargetSegment(org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment value) {
         if (targetSegmentBuilder_ == null) {
-          if (targetCase_ == 4 &&
+          if (targetCase_ == 7 &&
               target_ != org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.getDefaultInstance()) {
             target_ = org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.newBuilder((org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) target_)
                 .mergeFrom(value).buildPartial();
@@ -19533,26 +20150,26 @@ public final class OpennmsModelProtos {
           }
           onChanged();
         } else {
-          if (targetCase_ == 4) {
+          if (targetCase_ == 7) {
             targetSegmentBuilder_.mergeFrom(value);
           }
           targetSegmentBuilder_.setMessage(value);
         }
-        targetCase_ = 4;
+        targetCase_ = 7;
         return this;
       }
       /**
-       * <code>.TopologySegment targetSegment = 4;</code>
+       * <code>.TopologySegment targetSegment = 7;</code>
        */
       public Builder clearTargetSegment() {
         if (targetSegmentBuilder_ == null) {
-          if (targetCase_ == 4) {
+          if (targetCase_ == 7) {
             targetCase_ = 0;
             target_ = null;
             onChanged();
           }
         } else {
-          if (targetCase_ == 4) {
+          if (targetCase_ == 7) {
             targetCase_ = 0;
             target_ = null;
           }
@@ -19561,32 +20178,32 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>.TopologySegment targetSegment = 4;</code>
+       * <code>.TopologySegment targetSegment = 7;</code>
        */
       public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.Builder getTargetSegmentBuilder() {
         return getTargetSegmentFieldBuilder().getBuilder();
       }
       /**
-       * <code>.TopologySegment targetSegment = 4;</code>
+       * <code>.TopologySegment targetSegment = 7;</code>
        */
       public org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegmentOrBuilder getTargetSegmentOrBuilder() {
-        if ((targetCase_ == 4) && (targetSegmentBuilder_ != null)) {
+        if ((targetCase_ == 7) && (targetSegmentBuilder_ != null)) {
           return targetSegmentBuilder_.getMessageOrBuilder();
         } else {
-          if (targetCase_ == 4) {
+          if (targetCase_ == 7) {
             return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment) target_;
           }
           return org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.getDefaultInstance();
         }
       }
       /**
-       * <code>.TopologySegment targetSegment = 4;</code>
+       * <code>.TopologySegment targetSegment = 7;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegmentOrBuilder> 
           getTargetSegmentFieldBuilder() {
         if (targetSegmentBuilder_ == null) {
-          if (!(targetCase_ == 4)) {
+          if (!(targetCase_ == 7)) {
             target_ = org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologySegment.getDefaultInstance();
           }
           targetSegmentBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -19596,9 +20213,145 @@ public final class OpennmsModelProtos {
                   isClean());
           target_ = null;
         }
-        targetCase_ = 4;
+        targetCase_ = 7;
         onChanged();;
         return targetSegmentBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.NodeOrBuilder> targetNodeBuilder_;
+      /**
+       * <code>.Node targetNode = 8;</code>
+       */
+      public boolean hasTargetNode() {
+        return targetCase_ == 8;
+      }
+      /**
+       * <code>.Node targetNode = 8;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node getTargetNode() {
+        if (targetNodeBuilder_ == null) {
+          if (targetCase_ == 8) {
+            return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node) target_;
+          }
+          return org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.getDefaultInstance();
+        } else {
+          if (targetCase_ == 8) {
+            return targetNodeBuilder_.getMessage();
+          }
+          return org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.Node targetNode = 8;</code>
+       */
+      public Builder setTargetNode(org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node value) {
+        if (targetNodeBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          target_ = value;
+          onChanged();
+        } else {
+          targetNodeBuilder_.setMessage(value);
+        }
+        targetCase_ = 8;
+        return this;
+      }
+      /**
+       * <code>.Node targetNode = 8;</code>
+       */
+      public Builder setTargetNode(
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.Builder builderForValue) {
+        if (targetNodeBuilder_ == null) {
+          target_ = builderForValue.build();
+          onChanged();
+        } else {
+          targetNodeBuilder_.setMessage(builderForValue.build());
+        }
+        targetCase_ = 8;
+        return this;
+      }
+      /**
+       * <code>.Node targetNode = 8;</code>
+       */
+      public Builder mergeTargetNode(org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node value) {
+        if (targetNodeBuilder_ == null) {
+          if (targetCase_ == 8 &&
+              target_ != org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.getDefaultInstance()) {
+            target_ = org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.newBuilder((org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node) target_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            target_ = value;
+          }
+          onChanged();
+        } else {
+          if (targetCase_ == 8) {
+            targetNodeBuilder_.mergeFrom(value);
+          }
+          targetNodeBuilder_.setMessage(value);
+        }
+        targetCase_ = 8;
+        return this;
+      }
+      /**
+       * <code>.Node targetNode = 8;</code>
+       */
+      public Builder clearTargetNode() {
+        if (targetNodeBuilder_ == null) {
+          if (targetCase_ == 8) {
+            targetCase_ = 0;
+            target_ = null;
+            onChanged();
+          }
+        } else {
+          if (targetCase_ == 8) {
+            targetCase_ = 0;
+            target_ = null;
+          }
+          targetNodeBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.Node targetNode = 8;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.Builder getTargetNodeBuilder() {
+        return getTargetNodeFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.Node targetNode = 8;</code>
+       */
+      public org.opennms.features.kafka.producer.model.OpennmsModelProtos.NodeOrBuilder getTargetNodeOrBuilder() {
+        if ((targetCase_ == 8) && (targetNodeBuilder_ != null)) {
+          return targetNodeBuilder_.getMessageOrBuilder();
+        } else {
+          if (targetCase_ == 8) {
+            return (org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node) target_;
+          }
+          return org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.Node targetNode = 8;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.NodeOrBuilder> 
+          getTargetNodeFieldBuilder() {
+        if (targetNodeBuilder_ == null) {
+          if (!(targetCase_ == 8)) {
+            target_ = org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.getDefaultInstance();
+          }
+          targetNodeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node, org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node.Builder, org.opennms.features.kafka.producer.model.OpennmsModelProtos.NodeOrBuilder>(
+                  (org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node) target_,
+                  getParentForChildren(),
+                  isClean());
+          target_ = null;
+        }
+        targetCase_ = 8;
+        onChanged();;
+        return targetNodeBuilder_;
       }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -19786,23 +20539,27 @@ public final class OpennmsModelProtos {
       "ys_description\030\t \001(\t\022\025\n\rsys_object_id\030\n " +
       "\001(\t\022\"\n\014ip_interface\030\013 \003(\0132\014.IpInterface\022" +
       "&\n\016snmp_interface\030\014 \003(\0132\016.SnmpInterface\022" +
-      "\037\n\014hw_inventory\030\r \001(\0132\t.HwEntity\"\201\001\n\013Top" +
+      "\037\n\014hw_inventory\030\r \001(\0132\t.HwEntity\"\222\001\n\013Top" +
       "ologyRef\022\n\n\002id\030\001 \001(\t\022\'\n\010protocol\030\002 \001(\0162\025" +
-      ".TopologyRef.Protocol\"=\n\010Protocol\022\010\n\004LLD" +
+      ".TopologyRef.Protocol\"N\n\010Protocol\022\010\n\004LLD" +
       "P\020\000\022\010\n\004OSPF\020\001\022\010\n\004ISIS\020\002\022\n\n\006BRIDGE\020\003\022\007\n\003C" +
-      "DP\020\004\",\n\017TopologySegment\022\031\n\003ref\030\001 \001(\0132\014.T" +
-      "opologyRef\"{\n\014TopologyPort\022\021\n\tvertex_id\030" +
-      "\001 \001(\t\022\020\n\010if_index\030\002 \001(\004\022\017\n\007if_name\030\003 \001(\t" +
-      "\022\017\n\007address\030\004 \001(\t\022$\n\rnode_criteria\030\005 \001(\013" +
-      "2\r.NodeCriteria\"\242\001\n\014TopologyEdge\022\031\n\003ref\030" +
-      "\001 \001(\0132\014.TopologyRef\022\035\n\006source\030\002 \001(\0132\r.To" +
-      "pologyPort\022#\n\ntargetPort\030\003 \001(\0132\r.Topolog" +
-      "yPortH\000\022)\n\rtargetSegment\030\004 \001(\0132\020.Topolog" +
-      "ySegmentH\000B\010\n\006target*g\n\010Severity\022\021\n\rINDE" +
-      "TERMINATE\020\000\022\013\n\007CLEARED\020\001\022\n\n\006NORMAL\020\002\022\013\n\007" +
-      "WARNING\020\003\022\t\n\005MINOR\020\004\022\t\n\005MAJOR\020\005\022\014\n\010CRITI" +
-      "CAL\020\006B?\n)org.opennms.features.kafka.prod" +
-      "ucer.modelB\022OpennmsModelProtosb\006proto3"
+      "DP\020\004\022\017\n\013USERDEFINED\020\005\",\n\017TopologySegment" +
+      "\022\031\n\003ref\030\001 \001(\0132\014.TopologyRef\"{\n\014TopologyP" +
+      "ort\022\021\n\tvertex_id\030\001 \001(\t\022\020\n\010if_index\030\002 \001(\004" +
+      "\022\017\n\007if_name\030\003 \001(\t\022\017\n\007address\030\004 \001(\t\022$\n\rno" +
+      "de_criteria\030\005 \001(\0132\r.NodeCriteria\"\227\002\n\014Top" +
+      "ologyEdge\022\031\n\003ref\030\001 \001(\0132\014.TopologyRef\022#\n\n" +
+      "sourcePort\030\003 \001(\0132\r.TopologyPortH\000\022)\n\rsou" +
+      "rceSegment\030\004 \001(\0132\020.TopologySegmentH\000\022\033\n\n" +
+      "sourceNode\030\005 \001(\0132\005.NodeH\000\022#\n\ntargetPort\030" +
+      "\006 \001(\0132\r.TopologyPortH\001\022)\n\rtargetSegment\030" +
+      "\007 \001(\0132\020.TopologySegmentH\001\022\033\n\ntargetNode\030" +
+      "\010 \001(\0132\005.NodeH\001B\010\n\006sourceB\010\n\006target*g\n\010Se" +
+      "verity\022\021\n\rINDETERMINATE\020\000\022\013\n\007CLEARED\020\001\022\n" +
+      "\n\006NORMAL\020\002\022\013\n\007WARNING\020\003\022\t\n\005MINOR\020\004\022\t\n\005MA" +
+      "JOR\020\005\022\014\n\010CRITICAL\020\006B?\n)org.opennms.featu" +
+      "res.kafka.producer.modelB\022OpennmsModelPr" +
+      "otosb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -19899,7 +20656,7 @@ public final class OpennmsModelProtos {
     internal_static_TopologyEdge_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TopologyEdge_descriptor,
-        new java.lang.String[] { "Ref", "Source", "TargetPort", "TargetSegment", "Target", });
+        new java.lang.String[] { "Ref", "SourcePort", "SourceSegment", "SourceNode", "TargetPort", "TargetSegment", "TargetNode", "Source", "Target", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

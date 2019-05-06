@@ -341,5 +341,113 @@
     </sql>
   </changeSet>
 
-</databaseChangeLog>
+  <changeSet author="jwhite" id="24.0.0-node-metadata">
+    <createTable tableName="node_metadata" >
+      <column name="id" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="context" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="key" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="value" type="text">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="node_metadata" columnNames="id, context, key" constraintName="node_metadata_pkey" />
+    <addForeignKeyConstraint constraintName="fk_node_metadata_id"
+                             baseTableName="node_metadata" baseColumnNames="id"
+                             referencedTableName="node" referencedColumnNames="nodeid" />
 
+    <createTable tableName="ipinterface_metadata" >
+      <column name="id" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="context" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="key" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="value" type="text">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="ipinterface_metadata" columnNames="id, context, key" constraintName="ipinterface_metadata_pkey" />
+    <addForeignKeyConstraint constraintName="fk_ipinterface_metadata_id"
+                             baseTableName="ipinterface_metadata" baseColumnNames="id"
+                             referencedTableName="ipinterface" referencedColumnNames="id" />
+
+    <createTable tableName="ifservices_metadata" >
+      <column name="id" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="context" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="key" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="value" type="text">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="ifservices_metadata" columnNames="id, context, key" constraintName="ifservices_metadata_pkey" />
+    <addForeignKeyConstraint constraintName="fk_ifservices_metadata_id"
+                             baseTableName="ifservices_metadata" baseColumnNames="id"
+                             referencedTableName="ifservices" referencedColumnNames="id" />
+
+  </changeSet>
+
+  <changeSet author="jwhite" id="24.0.0-user-defined-links">
+    <createTable tableName="user_defined_links" >
+      <column name="id" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="node_id_a" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="node_id_z" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="component_label_a" type="text" />
+      <column name="component_label_z" type="text" />
+      <column name="link_id" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="link_label" type="text" />
+      <column name="owner" type="text">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="user_defined_links" columnNames="id" constraintName="user_defined_links_pkey" />
+    <addForeignKeyConstraint constraintName="fk_user_defined_links_node_id_a"
+                             baseTableName="user_defined_links" baseColumnNames="node_id_a"
+                             referencedTableName="node" referencedColumnNames="nodeid"
+                             onDelete="CASCADE"/>
+    <addForeignKeyConstraint constraintName="fk_user_defined_links_node_id_z"
+                             baseTableName="user_defined_links" baseColumnNames="node_id_z"
+                             referencedTableName="node" referencedColumnNames="nodeid"
+                             onDelete="CASCADE"/>
+  </changeSet>
+
+  <changeSet author="cpape" id="24.0.0-node-metadata-on-delete-cascade">
+    <dropForeignKeyConstraint baseTableName="node_metadata" constraintName="fk_node_metadata_id"/>
+    <addForeignKeyConstraint constraintName="fk_node_metadata_id"
+                             baseTableName="node_metadata" baseColumnNames="id"
+                             referencedTableName="node" referencedColumnNames="nodeid" onDelete="CASCADE"/>
+
+    <dropForeignKeyConstraint baseTableName="ipinterface_metadata" constraintName="fk_ipinterface_metadata_id"/>
+    <addForeignKeyConstraint constraintName="fk_ipinterface_metadata_id"
+                             baseTableName="ipinterface_metadata" baseColumnNames="id"
+                             referencedTableName="ipinterface" referencedColumnNames="id" onDelete="CASCADE"/>
+
+    <dropForeignKeyConstraint baseTableName="ifservices_metadata" constraintName="fk_ifservices_metadata_id"/>
+    <addForeignKeyConstraint constraintName="fk_ifservices_metadata_id"
+                             baseTableName="ifservices_metadata" baseColumnNames="id"
+                             referencedTableName="ifservices" referencedColumnNames="id" onDelete="CASCADE"/>
+  </changeSet>
+
+</databaseChangeLog>

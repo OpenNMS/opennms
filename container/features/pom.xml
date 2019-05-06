@@ -381,19 +381,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.plugins</groupId>
-      <artifactId>vaadin-opennms-pluginmanager</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.ws.rs</groupId>
-          <artifactId>jsr311-api</artifactId>
-        </exclusion>
-      </exclusions> 
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.plugins</groupId>
       <artifactId>alarm-change-notifier</artifactId>
       <version>${project.version}</version>
       <type>pom</type>

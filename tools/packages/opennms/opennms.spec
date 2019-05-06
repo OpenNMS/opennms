@@ -27,7 +27,7 @@
 %{!?_descr:%define _descr "OpenNMS"}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
-%{!?jdk:%define jdk java-1.8.0}
+%{!?jdk:%define jdk java-11-openjdk-devel}
 
 %{!?extrainfo:%define extrainfo }
 %{!?extrainfo2:%define extrainfo2 }
@@ -64,6 +64,8 @@ Requires(pre):		%{name}-core        = %{version}-%{release}
 Requires:		%{name}-core        = %{version}-%{release}
 Requires(pre):		postgresql-server  >= 9.1
 Requires:		postgresql-server  >= 9.1
+Requires(pre):		%{jdk}
+Requires:		%{jdk}
 
 # don't worry about buildrequires, the shell script will bomb quick  =)
 #BuildRequires:		%{jdk}
@@ -92,8 +94,6 @@ Requires(pre):	jicmp >= 2.0.0
 Requires:	jicmp >= 2.0.0
 Requires(pre):	jicmp6 >= 2.0.0
 Requires:	jicmp6 >= 2.0.0
-Requires(pre):	%{jdk}
-Requires:	%{jdk}
 Obsoletes:	opennms < 1.3.11
 Provides:	%{name}-plugin-protocol-xml = %{version}-%{release}
 Obsoletes:	%{name}-plugin-protocol-xml < %{version}
@@ -147,8 +147,6 @@ This package contains the API and user documentation.
 %package remote-poller
 Summary:	Remote (Distributed) Poller for %{_descr}
 Group:		Applications/System
-Requires(pre):	%{jdk}
-Requires:	%{jdk}
 
 %description remote-poller
 The distributed monitor.  For details, see:
@@ -161,8 +159,6 @@ The distributed monitor.  For details, see:
 %package jmx-config-generator
 Summary:	Generate JMX Configuration
 Group:		Applications/System
-Requires(pre):	%{jdk}
-Requires:	%{jdk}
 Requires:	%{name}-core = %{version}-%{release}
 
 %description jmx-config-generator
@@ -1029,7 +1025,7 @@ done
 
 printf -- "- cleaning up \$OPENNMS_HOME/data... "
 if [ -d "$ROOT_INST/data" ]; then
-	find "$ROOT_INST/data/"* -maxdepth 0 -name tmp -prune -o -print0 | xargs -0 rm -rf
+	find "$ROOT_INST/data/"* -maxdepth 0 -name tmp -o -name history.txt -prune -o -print0 | xargs -0 rm -rf
 	if [ -d "$ROOT_INST/data/tmp" ]; then
 		find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
 	fi

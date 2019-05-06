@@ -64,6 +64,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private final Timer m_loadCdpLinksTimer;
     private final Timer m_loadIsisLinksTimer;
     private final Timer m_loadBridgeLinksTimer;
+    private final Timer m_loadUserDefinedLinksTimer;
     private final Timer m_loadVerticesTimer;
     private final Timer m_loadEdgesTimer;
 
@@ -78,6 +79,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         m_loadCdpLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "cdp"));
         m_loadIsisLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "isis"));
         m_loadBridgeLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "bridge"));
+        m_loadUserDefinedLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "userdefined"));
         m_loadVerticesTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "vertices", "none"));
         m_loadEdgesTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "edges", "none"));
     }
@@ -140,6 +142,16 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             LOG.info("loadEdges: BridgeLink loaded");
         } catch (Exception e){
             LOG.error("Loading BridgeLink failed", e);
+        } finally {
+            context.stop();
+        }
+
+        context = m_loadUserDefinedLinksTimer.time();
+        try{
+            loadTopology(ProtocolSupported.USERDEFINED);
+            LOG.info("loadEdges: User defined loaded");
+        } catch (Exception e){
+            LOG.error("Loading user defined link failed", e);
         } finally {
             context.stop();
         }

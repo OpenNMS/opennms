@@ -64,7 +64,11 @@
     <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
-  
+
+    <bean id="'monitoredServiceDao" class="org.opennms.netmgt.dao.mock.MockMonitoredServiceDao"/>
+
+    <bean id="'filterDao" class="org.opennms.netmgt.dao.mock.MockFilterDao"/>
+
 	<bean id="onmsTopologyDao" class="org.opennms.netmgt.topologies.service.impl.OnmsTopologyDaoInMemoryImpl"/>
   
      <bean id="cdpLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.CdpLinkDaoHibernate">
@@ -126,7 +130,11 @@
     <bean id="topologyEntityCache" class="org.opennms.netmgt.enlinkd.persistence.impl.TopologyEntityCacheImpl">
         <property name="topologyEntityDao" ref="topologyEntityDao" />
     </bean>
-  
+
+    <bean id="userDefinedLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.UserDefinedLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
     <bean id="nodeTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.NodeTopologyServiceImpl">
       <property name="nodeDao" ref="nodeDao" />
       <property name="topologyEntityCache" ref="topologyEntityCache" />
@@ -169,13 +177,23 @@
       <property name="ospfElementDao" ref="ospfElementDao" />
       <property name="topologyEntityCache" ref="topologyEntityCache" />
    </bean>
-   
+
+    <bean id="userDefinedLinkTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.UserDefinedLinkTopologyServiceImpl">
+        <property name="topologyEntityCache" ref="topologyEntityCache" />
+    </bean>
+
     <bean id="linkdConfig" class="org.opennms.netmgt.config.EnhancedLinkdConfigFactory" lazy-init="true"/>
 
 	<bean id ="nodesOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.NodesOnmsTopologyUpdater">
 		<constructor-arg ref="onmsTopologyDao" />
 		<constructor-arg ref="nodeTopologyService" />
 	</bean>
+
+    <bean id="userDefinedLinkTopologyUpdater" class="org.opennms.netmgt.enlinkd.UserDefinedLinkTopologyUpdater">
+        <constructor-arg ref="userDefinedLinkTopologyService" />
+        <constructor-arg ref="onmsTopologyDao" />
+        <constructor-arg ref="nodeTopologyService" />
+    </bean>
 
 	<bean id ="bridgeOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.BridgeOnmsTopologyUpdater">
 		<constructor-arg ref="onmsTopologyDao" />

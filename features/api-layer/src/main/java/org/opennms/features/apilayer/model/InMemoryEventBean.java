@@ -30,6 +30,7 @@ package org.opennms.features.apilayer.model;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.opennms.features.apilayer.utils.ModelMappers;
@@ -45,11 +46,13 @@ public class InMemoryEventBean implements InMemoryEvent {
 
     private final Event event;
     private final Severity severity;
+    private final Integer nodeId;
     private final List<EventParameter> parameters;
 
     public InMemoryEventBean(Event event) {
         this.event = Objects.requireNonNull(event);
         this.severity = ModelMappers.toSeverity(OnmsSeverity.get(event.getSeverity()));
+        this.nodeId = event.getNodeid() != null ? event.getNodeid().intValue() : null;
         this.parameters = ImmutableList.copyOf(event.getParmCollection().stream()
                 .filter(Objects::nonNull) // Skip null parameters
                 .map(EventParameterBean::new)
@@ -72,8 +75,21 @@ public class InMemoryEventBean implements InMemoryEvent {
     }
 
     @Override
+    public Integer getNodeId() {
+        return nodeId;
+    }
+
+    @Override
     public List<EventParameter> getParameters() {
         return parameters;
+    }
+
+    @Override
+    public Optional<String> getParameterValue(String name) {
+        return parameters.stream()
+                .filter(p -> Objects.equals(name, p.getName()))
+                .map(EventParameter::getValue)
+                .findFirst();
     }
 
     @Override

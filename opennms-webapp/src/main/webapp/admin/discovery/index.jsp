@@ -50,7 +50,7 @@
         <span>Discovery</span>
       </div>
       <div class="card-body">
-        <ul class="list-unstyled">
+        <ul class="list-unstyled mb-0">
           <li><a href="admin/discovery/edit-config.jsp">Configure Discovery</a></li>
           <li><a href="admin/discovery/edit-scan.jsp">Run Single Discovery Scan</a></li>
         </ul>

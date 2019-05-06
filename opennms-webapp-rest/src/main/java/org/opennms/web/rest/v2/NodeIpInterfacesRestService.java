@@ -29,10 +29,19 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.Status;
@@ -44,6 +53,8 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpInterfaceList;
+import org.opennms.netmgt.model.OnmsMetaData;
+import org.opennms.netmgt.model.OnmsMetaDataList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
@@ -158,4 +169,127 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
         return context.getResource(NodeMonitoredServiceRestService.class);
     }
 
+    protected OnmsIpInterface getInterface(final UriInfo uriInfo, final String ipAddress) {
+        final OnmsNode node = getNode(uriInfo);
+        return node.getIpInterfaceByIpAddress(ipAddress);
+    }
+
+    @GET
+    @Path("{ipAddress}/metadata")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public JaxbListWrapper<OnmsMetaData> getMetaData(@Context final UriInfo uriInfo, @PathParam("ipAddress") String ipAddress) {
+        final OnmsIpInterface intf = getInterface(uriInfo, ipAddress);
+
+        if (intf == null) {
+            throw getException(Status.BAD_REQUEST, "getMetaData: Can't find interface " + ipAddress);
+        }
+
+        return new OnmsMetaDataList(intf.getMetaData());
+    }
+
+    @GET
+    @Path("{ipAddress}/metadata/{context}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public JaxbListWrapper<OnmsMetaData> getMetaData(@Context final UriInfo uriInfo, @PathParam("ipAddress") String ipAddress, @PathParam("context") String context) {
+        final OnmsIpInterface intf = getInterface(uriInfo, ipAddress);
+
+        if (intf == null) {
+            throw getException(Status.BAD_REQUEST, "getMetaData: Can't find interface " + ipAddress);
+        }
+
+        return new OnmsMetaDataList(intf.getMetaData().stream()
+                .filter(e -> context.equals(e.getContext()))
+                .collect(Collectors.toList()));
+    }
+
+    @GET
+    @Path("{ipAddress}/metadata/{context}/{key}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public JaxbListWrapper<OnmsMetaData> getMetaData(@Context final UriInfo uriInfo, @PathParam("ipAddress") String ipAddress, @PathParam("context") String context, @PathParam("key") String key) {
+        final OnmsIpInterface intf = getInterface(uriInfo, ipAddress);
+
+        if (intf == null) {
+            throw getException(Status.BAD_REQUEST, "getMetaData: Can't find interface " + ipAddress);
+        }
+
+        return new OnmsMetaDataList(intf.getMetaData().stream()
+                .filter(e -> context.equals(e.getContext()) && key.equals(e.getKey()))
+                .collect(Collectors.toList()));
+    }
+
+    @DELETE
+    @Path("{ipAddress}/metadata/{context}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response deleteMetaData(@Context final UriInfo uriInfo, @PathParam("ipAddress") String ipAddress, @PathParam("context") String context) {
+        writeLock();
+        try {
+            final OnmsIpInterface intf = getInterface(uriInfo, ipAddress);
+
+            if (intf == null) {
+                throw getException(Status.BAD_REQUEST, "getMetaData: Can't find interface " + ipAddress);
+            }
+            intf.removeMetaData(context);
+            getDao().update(intf);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @DELETE
+    @Path("{ipAddress}/metadata/{context}/{key}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response deleteMetaData(@Context final UriInfo uriInfo, @PathParam("ipAddress") String ipAddress, @PathParam("context") String context, @PathParam("key") String key) {
+        writeLock();
+        try {
+            final OnmsIpInterface intf = getInterface(uriInfo, ipAddress);
+
+            if (intf == null) {
+                throw getException(Status.BAD_REQUEST, "getMetaData: Can't find interface " + ipAddress);
+            }
+            intf.removeMetaData(context, key);
+            getDao().update(intf);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @POST
+    @Path("{ipAddress}/metadata")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response postMetaData(@Context final UriInfo uriInfo, @PathParam("ipAddress") String ipAddress, OnmsMetaData entity) {
+        writeLock();
+        try {
+            final OnmsIpInterface intf = getInterface(uriInfo, ipAddress);
+
+            if (intf == null) {
+                throw getException(Status.BAD_REQUEST, "getMetaData: Can't find interface " + ipAddress);
+            }
+            intf.addMetaData(entity.getContext(), entity.getKey(), entity.getValue());
+            getDao().update(intf);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @PUT
+    @Path("{ipAddress}/metadata/{context}/{key}/{value}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response putMetaData(@Context final UriInfo uriInfo, @PathParam("ipAddress") String ipAddress, @PathParam("context") String context, @PathParam("key") String key, @PathParam("value") String value) {
+        writeLock();
+        try {
+            final OnmsIpInterface intf = getInterface(uriInfo, ipAddress);
+
+            if (intf == null) {
+                throw getException(Status.BAD_REQUEST, "getMetaData: Can't find interface " + ipAddress);
+            }
+            intf.addMetaData(context, key, value);
+            getDao().update(intf);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
 }

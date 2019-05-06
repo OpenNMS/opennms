@@ -59,6 +59,8 @@
                                 <feature>minion-icmp-proxy</feature>
                                 <feature>minion-telemetryd-receivers</feature>
                                 <feature>hawtio-offline</feature>
+				                <feature>cxf-commands/${cxfVersion}</feature>
+                                <feature>opennms-core-tracing-jaeger</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
@@ -280,6 +282,16 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.core.tracing</groupId>
+            <artifactId>org.opennms.core.tracing.jaeger-osgi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.tracing</groupId>
+            <artifactId>org.opennms.core.tracing.jaeger-tracer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.distributed</groupId>
             <artifactId>org.opennms.features.distributed.dao-api</artifactId>
 	    <version>${project.version}</version>
@@ -305,6 +317,12 @@
             <groupId>org.opennms.protocols</groupId>
             <artifactId>org.opennms.protocols.xml</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf.karaf</groupId>
+            <artifactId>cxf-karaf-commands</artifactId>
+            <version>${cxfVersion}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

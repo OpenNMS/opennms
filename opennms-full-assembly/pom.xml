@@ -292,7 +292,6 @@
               <goal>features-add-to-repository</goal>
             </goals>
             <configuration>
-              <karafVersion>${karafVersion}</karafVersion>
               <descriptors>
                 <!-- 
                   All of these feature files need to be added to the featuresRepositories parameter in the
@@ -301,6 +300,8 @@
 
                 <!-- Karaf framework features -->
                 <descriptor>mvn:org.apache.karaf.features/framework/${karafVersion}/xml/features</descriptor>
+                <!-- Karaf enterprise features -->
+                <descriptor>mvn:org.apache.karaf.features/enterprise/${karafVersion}/xml/features</descriptor>
                 <!-- Karaf standard and Spring features, replaced by our modified versions -->
                 <!-- <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor> -->
                 <!-- <descriptor>mvn:org.apache.karaf.features/spring/${karafVersion}/xml/features</descriptor> -->
@@ -398,7 +399,6 @@
 
                 <!-- All of the OpenNMS features -->
                 <feature>activemq-broker</feature>
-                <feature>framework</feature>
                 <feature>aries-blueprint</feature>
                 <feature>aries-proxy</feature>
                 <feature>blueprint-web</feature>
@@ -574,10 +574,8 @@
                 <feature>org.opennms.features.bsm.shell-commands</feature>
                 <feature>vaadin-adminpage</feature>
                 <feature>opennms-jest</feature>
-                <feature>vaadin-opennms-pluginmanager</feature>
                 <feature>alarm-change-notifier</feature>
                 <feature>opennms-es-rest</feature>
-                <feature>internal-plugins-descriptor</feature>
                 <feature>ifttt-integration</feature>
                 <feature>opennms-flows</feature>
                 <feature>opennms-api-layer</feature>
@@ -600,7 +598,6 @@
               <goal>features-add-to-repository</goal>
             </goals>
             <configuration>
-              <karafVersion>${karafVersion}</karafVersion>
               <descriptors>
                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring</descriptor>
                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
@@ -925,6 +922,12 @@
       <version>${karafVersion}</version>
       <classifier>features</classifier>
       <type>xml</type>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.exam</groupId>
@@ -1016,20 +1019,6 @@
       <id>sonatype-public-repo</id>
       <name>Sonatype Public Maven Repository</name>
       <url>http://maven.opennms.org/content/repositories/sonatype-public-repo/</url>
-    </repository>
-    <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <id>coova</id>
-      <name>Coova Repository</name>
-      <url>http://maven.opennms.org/content/repositories/coova/</url>
-    </repository>
-    <repository>
-      <id>sonatype.org-snapshot</id>
-      <name>Sonatype OSS Snapshots Repository</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      <releases><enabled>false</enabled></releases>
-      <snapshots><enabled>true</enabled></snapshots>
     </repository>
   </repositories>
 </project>

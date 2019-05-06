@@ -105,7 +105,7 @@
       </div>
       <table class="table">
         <tr>
-          <td align="right" class="col-md-4">
+          <td align="right" class="w-25">
             ${resultSet.title}
             <br/>
               <c:if test="${!empty resultSet.resource.parent}">
@@ -134,7 +134,7 @@
             <br/>
             <b>To</b> ${resultSet.end}
           </td>
-          <td align="left" class="col-md-8">
+          <td align="left" class="w-75">
             <div class="graph-container" data-graph-zoomable="true" data-resource-id="${resultSet.resource.id}" data-graph-name="${resultSet.prefabGraph.name}" data-graph-title="${resultSet.prefabGraph.title}" data-graph-start="${resultSet.start.time}" data-graph-end="${resultSet.end.time}"></div>
           </td>
         </tr>
@@ -145,18 +145,16 @@
         <span>Choose graph options</span>
       </div>
       <div class="card-body">
-        <form class="form-horizontal" name="customize_graph" method="get" action="<%= baseHref %>KSC/formProcGraph.htm">
-          <input type="hidden" name="<%=FormProcGraphController.Parameters.action%>" value="none" />
-          <div class="form-group">
-            <label class="col-md-2 label-control">Title</label>
-            <div class="col-md-4">
+        <div class="col-lg-5 col-md-8 col-sm-12 col-xs-12">
+          <form class="form" name="customize_graph" method="get" action="<%= baseHref %>KSC/formProcGraph.htm">
+            <input type="hidden" name="<%=FormProcGraphController.Parameters.action%>" value="none" />
+            <div class="form-group">
+              <label>Title</label>
               <input class="form-control" type="text" name="<%=FormProcGraphController.Parameters.title%>" value="${resultSet.title}" size="40" maxlength="40"/>
             </div>
-          </div>
-          <div class="form-group">
-            <label class="col-md-2 label-control">Timespan</label>
-            <div class="col-md-4">
-              <select class="form-control" name="<%=FormProcGraphController.Parameters.timespan%>">
+            <div class="form-group">
+              <label>Timespan</label>
+              <select class="form-control custom-select" name="<%=FormProcGraphController.Parameters.timespan%>">
                 <c:forEach var="option" items="${timeSpans}">
                   <c:choose>
                     <c:when test="${timeSpan == option.key}">
@@ -171,11 +169,9 @@
               </select>
               <span class="form-text text-muted">This selects the relative start and stop times for the report</span>
             </div>
-          </div>
-          <div class="form-group">
-            <label class="col-md-2 label-control">Prefabricated Report</label>
-            <div class="col-md-4">
-              <select class="form-control col-md-4" name="<%=FormProcGraphController.Parameters.graphtype%>">
+            <div class="form-group">
+              <label>Prefabricated Report</label>
+              <select class="form-control custom-select" name="<%=FormProcGraphController.Parameters.graphtype%>">
                 <c:forEach var="prefabGraph" items="${prefabGraphs}">
                   <c:choose>
                     <c:when test="${resultSet.prefabGraph.name == prefabGraph.name}">
@@ -190,11 +186,9 @@
               </select>
               <span class="form-text text-muted">This selects the relative start and stop times for the report</span>
             </div>
-          </div>
-          <div class="form-group">
-            <label class="col-md-2 label-control">Graph Index</label>
-            <div class="col-md-4">
-              <select class="form-control col-md-4" name="<%=FormProcGraphController.Parameters.graphindex%>">
+            <div class="form-group">
+            <label>Graph Index</label>
+              <select class="form-control custom-select" name="<%=FormProcGraphController.Parameters.graphindex%>">
                 <c:forEach var="index" begin="1" end="${maxGraphIndex}">
                   <c:choose>
                     <c:when test="${index == (graphIndex + 1)}">
@@ -209,14 +203,14 @@
               </select>
               <span class="form-text text-muted">This selects the relative start and stop times for the report</span>
             </div>
-          </div>
-          <div class="btn-group">
-            <button type="button" class="btn btn-secondary" onclick="cancelGraph()" alt="Cancel this graph configuration">Cancel edits to this graph</button>
-            <button type="button" class="btn btn-secondary" onclick="updateGraph()" alt="Update changes to sample graph">Refresh sample view</button>
-            <button type="button" class="btn btn-secondary" onclick="chooseResource()" alt="Choose a different resource to graph">Choose different resource</button>
-            <button type="button" class="btn btn-secondary" onclick="saveGraph()" alt="Done with this graph configuration">Done with edits to this graph</button>
-          </div>
-        </form>
+            <div class="btn-group">
+              <button type="button" class="btn btn-secondary" onclick="cancelGraph()" alt="Cancel this graph configuration">Cancel edits to this graph</button>
+              <button type="button" class="btn btn-secondary" onclick="updateGraph()" alt="Update changes to sample graph">Refresh sample view</button>
+              <button type="button" class="btn btn-secondary" onclick="chooseResource()" alt="Choose a different resource to graph">Choose different resource</button>
+              <button type="button" class="btn btn-secondary" onclick="saveGraph()" alt="Done with this graph configuration">Done with edits to this graph</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </c:otherwise>
