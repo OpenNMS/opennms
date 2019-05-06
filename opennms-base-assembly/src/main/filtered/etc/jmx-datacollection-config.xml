@@ -432,7 +432,43 @@
             <attrib name="999thPercentile" alias="MessageSize999" type="gauge"/>
          </mbean>
 
+         
+         <!-- RPC Metrics -->
+         <mbean name="org.opennms.core.ipc.rpc.requestSent" resource-type="rpcMetrics" objectname="org.opennms.core.ipc.rpc:name=*.requestSent">
+            <attrib name="FiveMinuteRate" alias="RequestSentPer5Min" type="gauge"/>
+         </mbean>
 
+         <mbean name="org.opennms.core.ipc.rpc.requestFailed" resource-type="rpcMetrics" objectname="org.opennms.core.ipc.rpc:name=*.requestFailed">
+            <attrib name="FiveMinuteRate" alias="RequestFailed5Min" type="gauge"/>
+         </mbean>
+
+         <mbean name="org.opennms.core.ipc.rpc.requestSize" resource-type="rpcMetrics" objectname="org.opennms.core.ipc.rpc:name=*.requestSize">
+            <attrib name="50thPercentile" alias="RequestSize50" type="gauge"/>
+            <attrib name="75thPercentile" alias="RequestSize75" type="gauge"/>
+            <attrib name="95thPercentile" alias="RequestSize95" type="gauge"/>
+            <attrib name="98thPercentile" alias="RequestSize98" type="gauge"/>
+            <attrib name="99thPercentile" alias="RequestSize99" type="gauge"/>
+            <attrib name="999thPercentile" alias="RequestSize999" type="gauge"/>
+         </mbean>
+
+         <mbean name="org.opennms.core.ipc.rpc.responseSize" resource-type="rpcMetrics" objectname="org.opennms.core.ipc.rpc:name=*.responseSize">
+            <attrib name="50thPercentile" alias="ResponseSize50" type="gauge"/>
+            <attrib name="75thPercentile" alias="ResponseSize75" type="gauge"/>
+            <attrib name="95thPercentile" alias="ResponseSize95" type="gauge"/>
+            <attrib name="98thPercentile" alias="ResponseSize98" type="gauge"/>
+            <attrib name="99thPercentile" alias="ResponseSize99" type="gauge"/>
+            <attrib name="999thPercentile" alias="ResponseSize999" type="gauge"/>
+         </mbean>
+
+         <mbean name="org.opennms.core.ipc.rpc.duration" resource-type="rpcMetrics" objectname="org.opennms.core.ipc.rpc:name=*.duration">
+            <attrib name="50thPercentile" alias="Duration50" type="gauge"/>
+            <attrib name="75thPercentile" alias="Duration75" type="gauge"/>
+            <attrib name="95thPercentile" alias="Duration95" type="gauge"/>
+            <attrib name="98thPercentile" alias="Duration98" type="gauge"/>
+            <attrib name="99thPercentile" alias="Duration99" type="gauge"/>
+            <attrib name="999thPercentile" alias="Duration999" type="gauge"/>
+         </mbean>
+         
       </mbeans>
    </jmx-collection>
 </jmx-datacollection-config>
