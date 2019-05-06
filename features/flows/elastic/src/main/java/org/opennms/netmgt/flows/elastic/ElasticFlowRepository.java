@@ -110,6 +110,12 @@ public class ElasticFlowRepository implements FlowRepository {
     private final ClassificationEngine classificationEngine;
 
     private final int bulkRetryCount;
+    
+    private static String eventIndexName = "cert-opennms";
+    
+    public static void setEventIndexName(String eventIndexName) {
+		ElasticFlowRepository.eventIndexName = eventIndexName;
+	}
 
     /**
      * Flows/second throughput
@@ -219,7 +225,9 @@ public class ElasticFlowRepository implements FlowRepository {
             final BulkRequest<FlowDocument> bulkRequest = new BulkRequest<>(client, flowDocuments, (documents) -> {
                 final Bulk.Builder bulkBuilder = new Bulk.Builder();
                 for (FlowDocument flowDocument : documents) {
-                   final String index = indexStrategy.getIndex(TYPE, Instant.ofEpochMilli(flowDocument.getTimestamp()));
+                	final String index = new StringBuffer().append(eventIndexName).append("-")
+							.append(indexStrategy.getIndex(TYPE, Instant.ofEpochMilli(flowDocument.getTimestamp())))
+							.toString();
                    final Index.Builder indexBuilder = new Index.Builder(flowDocument)
                         .index(index)
                         .type(TYPE);

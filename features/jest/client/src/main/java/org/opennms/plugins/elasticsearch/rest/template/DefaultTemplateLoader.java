@@ -28,9 +28,12 @@
 
 package org.opennms.plugins.elasticsearch.rest.template;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +52,7 @@ public class DefaultTemplateLoader implements TemplateLoader {
             final String versionSuffix = i == 0 ? "" : String.format(".es%d", i);
             final String resourceWithSuffix = String.format("%s%s.json", resource, versionSuffix);
             LOG.debug("Attempting to find template with resource name: {} (requested: {})", resourceWithSuffix, resource);
-            final String template = getResource(resourceWithSuffix);
+            final String template = getTemplate(resourceWithSuffix);
             if (template != null) {
                 LOG.info("Using template with resource name: {} (requested: {})", resourceWithSuffix, resource);
                 return template;
@@ -59,6 +62,16 @@ public class DefaultTemplateLoader implements TemplateLoader {
         throw new NullPointerException(String.format("No template found for server version %s and resource %s.",
                 serverVersion, resource));
     }
+    
+    protected String getTemplate(String resource) throws IOException {
+		try (InputStream input = new FileInputStream(ConfigFileConstants.getConfigFileByName(resource))) {
+			final byte[] bytes = new byte[input.available()];
+			ByteStreams.readFully(input, bytes);
+			return new String(bytes);
+		} catch (FileNotFoundException exception) {
+			return getResource(resource);
+		}
+	}
 
     protected String getResource(String resource) throws IOException {
         try (InputStream inputStream = getResourceAsStream(resource)) {

@@ -148,7 +148,8 @@ public class EventToIndex implements AutoCloseable {
 	private static final String ALARM_CLEAR_DURATION="alarmclearduration"; //duration from alarm raise to clear
 	private static final String ALARM_DELETED_TIME="alarmdeletedtime";
 
-
+	private static String eventIndexName = "cert-opennms";
+	
 	private static final int DEFAULT_NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors() * 2;
 
 	private boolean logEventDescription = false;
@@ -251,6 +252,10 @@ public class EventToIndex implements AutoCloseable {
 
 	public void setGroupOidParameters(boolean groupOidParameters) {
 		this.groupOidParameters = groupOidParameters;
+	}
+	
+	public void seteventIndexName(String eventIndexName) {
+		this.eventIndexName = eventIndexName;
 	}
 
 	@Override
@@ -400,6 +405,7 @@ public class EventToIndex implements AutoCloseable {
 		// Include alarm data, which allows us to correlate events to alarms
 		final AlarmData alarmData = event.getAlarmData();
 		if (alarmData != null) {
+			body.put("EventForwarder", eventIndexName);
 			body.put("alarmreductionkey", alarmData.getReductionKey());
 			body.put("alarmclearkey", alarmData.getClearKey());
 			body.put("alarmtype", alarmData.getAlarmType());
@@ -440,7 +446,11 @@ public class EventToIndex implements AutoCloseable {
 			}
 		}
 
-		String completeIndexName = indexStrategy.getIndex(indexAndType.getIndexPrefix(), cal.toInstant());
+		String Modifiedindex = new StringBuffer().append(eventIndexName).append("-")
+				.append(indexAndType.getIndexPrefix()).toString();
+
+		String completeIndexName = indexStrategy.getIndex(Modifiedindex, cal.toInstant());
+
 
 		if (LOG.isDebugEnabled()){
 			String str = "populateEventIndexBodyFromEvent - index:"
@@ -725,7 +735,10 @@ public class EventToIndex implements AutoCloseable {
 			body.put("hour",Integer.toString(alarmCreationCal.get(Calendar.HOUR_OF_DAY)));
 			body.put("dom", Integer.toString(alarmCreationCal.get(Calendar.DAY_OF_MONTH))); 
 
-			String completeIndexName= indexStrategy.getIndex(indexAndType.getIndexPrefix(), alarmCreationCal.toInstant());
+			String Modifiedindex = new StringBuffer().append(eventIndexName).append("-")
+					.append(indexAndType.getIndexPrefix()).toString();
+
+			String completeIndexName = indexStrategy.getIndex(Modifiedindex, alarmCreationCal.toInstant());
 
 			if (LOG.isDebugEnabled()){
 				String str = "populateAlarmIndexBodyFromAlarmChangeEvent - index:"

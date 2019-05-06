@@ -72,6 +72,8 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
     private final int bulkRetryCount;
 
     private IndexStrategy indexStrategy;
+    
+    private static String eventIndexName = "cert-opennms";
 
     /**
      * The collection of listeners interested in alarm feedback, populated via runtime binding.
@@ -98,7 +100,7 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
         BulkRequest<FeedbackDocument> bulkRequest = new BulkRequest<>(client, feedbackDocuments, (documents) -> {
             final Bulk.Builder bulkBuilder = new Bulk.Builder();
             for (FeedbackDocument document : documents) {
-                final String index = indexStrategy.getIndex(TYPE, Instant.ofEpochMilli(document.getTimestamp()));
+            	final String index = new StringBuffer().append(eventIndexName).append("-").append(indexStrategy.getIndex(TYPE, Instant.ofEpochMilli(document.getTimestamp()))).toString();
                 final Index.Builder indexBuilder = new Index.Builder(document).index(index).type(TYPE);
                 bulkBuilder.addAction(indexBuilder.build());
             }
