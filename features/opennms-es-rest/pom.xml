@@ -68,6 +68,10 @@
       <artifactId>org.opennms.core.cache</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
+    </dependency>
 
     <!-- Provided Scope -->
     <dependency>

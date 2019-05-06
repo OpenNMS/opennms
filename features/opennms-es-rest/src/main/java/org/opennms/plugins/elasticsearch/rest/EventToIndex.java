@@ -78,7 +78,22 @@ public class EventToIndex implements AutoCloseable {
 	private static final String INDEX_PREFIX = "opennms-events-raw";
 	private static final String INDEX_TYPE = "eventdata";
 
-	private static final String NODE_LABEL_PARAM="nodelabel";
+	private static final String NODE_LABEL_PARAM = "nodelabel";
+	private static final String INITIAL_SEVERITY_PARAM = "initialseverity";
+	private static final String INITIAL_SEVERITY_PARAM_TEXT = "initialseverity_text";
+	private static final String SEVERITY_TEXT = "severity_text";
+	private static final String SEVERITY = "severity";
+	private static final String ALARM_SEVERITY_PARAM = "alarmseverity";
+	private static final String FIRST_EVENT_TIME = "firsteventtime";
+	private static final String EVENT_PARAMS = "eventparms";
+	private static final String ALARM_ACK_TIME_PARAM = "alarmacktime";
+	private static final String ALARM_ACK_USER_PARAM = "alarmackuser";
+	private static final String ALARM_ACK_DURATION = "alarmackduration"; // duration from alarm raise to acknowledge
+	private static final String ALARM_CLEAR_TIME = "alarmcleartime";
+	private static final String ALARM_CLEAR_DURATION = "alarmclearduration"; // duration from alarm raise to clear
+	private static final String ALARM_DELETED_TIME = "alarmdeletedtime";
+
+	private static String eventIndexName = "cert-opennms";
 
 	private static final int DEFAULT_NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors() * 2;
 
@@ -98,21 +113,18 @@ public class EventToIndex implements AutoCloseable {
 
 	private IndexStrategy indexStrategy = IndexStrategy.MONTHLY;
 
-	private final ThreadPoolExecutor executor = new ThreadPoolExecutor(
-			threads,
-			threads,
-			0L, TimeUnit.MILLISECONDS,
-			new SynchronousQueue<>(true),
-			new ThreadFactory() {
+	private final ThreadPoolExecutor executor = new ThreadPoolExecutor(threads, threads, 0L, TimeUnit.MILLISECONDS,
+			new SynchronousQueue<>(true), new ThreadFactory() {
 				final AtomicInteger index = new AtomicInteger();
+
 				@Override
 				public Thread newThread(Runnable r) {
-					return new Thread(r, EventToIndex.class.getSimpleName() + "-Thread-" + String.valueOf(index.incrementAndGet()));
+					return new Thread(r,
+							EventToIndex.class.getSimpleName() + "-Thread-" + String.valueOf(index.incrementAndGet()));
 				}
 			},
 			// Throttle incoming tasks by running them on the caller thread
-			new ThreadPoolExecutor.CallerRunsPolicy()
-	);
+			new ThreadPoolExecutor.CallerRunsPolicy());
 
 	public EventToIndex(JestClient jestClient, int bulkRetryCount) {
 		this.jestClient = Objects.requireNonNull(jestClient);
@@ -154,8 +166,12 @@ public class EventToIndex implements AutoCloseable {
 		this.groupOidParameters = groupOidParameters;
 	}
 
+	public void seteventIndexName(String eventIndexName) {
+		this.eventIndexName = eventIndexName;
+	}
+
 	@Override
-	public void close(){
+	public void close() {
 		// Shutdown the thread pool
 		executor.shutdown();
 	}
@@ -163,8 +179,7 @@ public class EventToIndex implements AutoCloseable {
 	public void forwardEvents(final List<Event> events) {
 		CompletableFuture.completedFuture(events)
 				// Send the events to Elasticsearch
-				.thenAcceptAsync(this::sendEvents, executor)
-				.exceptionally(e -> {
+				.thenAcceptAsync(this::sendEvents, executor).exceptionally(e -> {
 					LOG.error("Unexpected exception during task completion: " + e.getMessage(), e);
 					return null;
 				});
@@ -195,7 +210,9 @@ public class EventToIndex implements AutoCloseable {
 	}
 
 	/**
-	 * <p>This method converts events into a sequence of Elasticsearch index/update commands.
+	 * <p>
+	 * This method converts events into a sequence of Elasticsearch index/update
+	 * commands.
 	 *
 	 * @param events
 	 */
@@ -207,12 +224,15 @@ public class EventToIndex implements AutoCloseable {
 
 			refreshCacheIfNecessary(event);
 
-			// Only send events to ES if they are persisted to database or logAllEvents is set to true
-			if(logAllEvents || (event.getDbid() !=null && event.getDbid()!=0)) {
+			// Only send events to ES if they are persisted to database or logAllEvents is
+			// set to true
+			if (logAllEvents || (event.getDbid() != null && event.getDbid() != 0)) {
 				Index eventIndex = createEventIndexFromEvent(event);
 				retval.add(eventIndex);
 			} else {
-				LOG.debug("Not Sending Event to ES. Event is not persisted to database, or logAllEvents is false. Event: {}", event);
+				LOG.debug(
+						"Not Sending Event to ES. Event is not persisted to database, or logAllEvents is false. Event: {}",
+						event);
 			}
 		}
 
@@ -229,7 +249,7 @@ public class EventToIndex implements AutoCloseable {
 		body.put("id", Integer.toString(id));
 		body.put("eventuei", event.getUei());
 
-		final Calendar cal=Calendar.getInstance();
+		final Calendar cal = Calendar.getInstance();
 		if (event.getTime() == null) {
 			LOG.debug("using local time because no event creation time for event.getTime: {}", event);
 			cal.setTime(new Date());
@@ -238,22 +258,23 @@ public class EventToIndex implements AutoCloseable {
 		}
 		body.put("@timestamp", DatatypeConverter.printDateTime(cal));
 		body.put("dow", Integer.toString(cal.get(Calendar.DAY_OF_WEEK)));
-		body.put("hour",Integer.toString(cal.get(Calendar.HOUR_OF_DAY)));
+		body.put("hour", Integer.toString(cal.get(Calendar.HOUR_OF_DAY)));
 		body.put("dom", Integer.toString(cal.get(Calendar.DAY_OF_MONTH)));
 		body.put("eventsource", event.getSource());
-		body.put("ipaddr", event.getInterfaceAddress()!=null ? event.getInterfaceAddress().toString() : null );
+		body.put("ipaddr", event.getInterfaceAddress() != null ? event.getInterfaceAddress().toString() : null);
 		body.put("servicename", event.getService());
 		// params are exported as attributes, see below
 		body.put("eventseverity_text", event.getSeverity());
 		body.put("eventseverity", Integer.toString(OnmsSeverity.get(event.getSeverity()).getId()));
 
-		if(isLogEventDescription()) {
+		if (isLogEventDescription()) {
 			body.put("eventdescr", event.getDescr());
 		}
 
-		body.put("host",event.getHost());
+		body.put("host", event.getHost());
 
-		// Include the time at which the event was actually created, which may differ from the time of the event
+		// Include the time at which the event was actually created, which may differ
+		// from the time of the event
 		if (event.getCreationTime() != null) {
 			cal.setTime(event.getCreationTime());
 			body.put("eventcreationtime", DatatypeConverter.printDateTime(cal));
@@ -262,6 +283,7 @@ public class EventToIndex implements AutoCloseable {
 		// Include alarm data, which allows us to correlate events to alarms
 		final AlarmData alarmData = event.getAlarmData();
 		if (alarmData != null) {
+			body.put("EventForwarder", eventIndexName);
 			body.put("alarmreductionkey", alarmData.getReductionKey());
 			body.put("alarmclearkey", alarmData.getClearKey());
 			body.put("alarmtype", alarmData.getAlarmType());
@@ -271,20 +293,20 @@ public class EventToIndex implements AutoCloseable {
 		handleParameters(event, body);
 
 		body.put("interface", event.getInterface());
-		body.put("logmsg", ( event.getLogmsg()!=null ? event.getLogmsg().getContent() : null ));
-		body.put("logmsgdest", ( event.getLogmsg()!=null ? event.getLogmsg().getDest() : null ));
+		body.put("logmsg", (event.getLogmsg() != null ? event.getLogmsg().getContent() : null));
+		body.put("logmsgdest", (event.getLogmsg() != null ? event.getLogmsg().getDest() : null));
 
-		if(event.getNodeid()!=null){
+		if (event.getNodeid() != null) {
 			body.put("nodeid", Long.toString(event.getNodeid()));
 
 			// if the event contains nodelabel parameter then do not use node cache
-			if(body.containsKey("p_"+NODE_LABEL_PARAM)){
-				body.put(NODE_LABEL_PARAM,body.get("p_"+NODE_LABEL_PARAM));
+			if (body.containsKey("p_" + NODE_LABEL_PARAM)) {
+				body.put(NODE_LABEL_PARAM, body.get("p_" + NODE_LABEL_PARAM));
 			} else {
 				// add node details from cache
-				if (nodeCache != null){
+				if (nodeCache != null) {
 					Map nodedetails = nodeCache.getEntry(event.getNodeid());
-					for (Object key: nodedetails.keySet()){
+					for (Object key : nodedetails.keySet()) {
 						String keyStr = (String) key;
 						String value = (String) nodedetails.get(key);
 						body.put(keyStr, value);
@@ -292,21 +314,17 @@ public class EventToIndex implements AutoCloseable {
 				}
 			}
 		}
+		String Modifiedindex = new StringBuffer().append(eventIndexName).append("-").append(INDEX_PREFIX).toString();
 
-		String completeIndexName = indexStrategy.getIndex(INDEX_PREFIX, cal.toInstant());
+		String completeIndexName = indexStrategy.getIndex(Modifiedindex, cal.toInstant());
 
-		if (LOG.isDebugEnabled()){
-			String str = "populateEventIndexBodyFromEvent - index:"
-					+ "/"+completeIndexName
-					+ "/"+INDEX_TYPE
-					+ "/"+id
-					+ "\n   body: \n" + body.toJSONString();
+		if (LOG.isDebugEnabled()) {
+			String str = "populateEventIndexBodyFromEvent - index:" + "/" + completeIndexName + "/" + INDEX_TYPE + "/"
+					+ id + "\n   body: \n" + body.toJSONString();
 			LOG.debug(str);
 		}
 
-		Index.Builder builder = new Index.Builder(body)
-				.index(completeIndexName)
-				.type(INDEX_TYPE);
+		Index.Builder builder = new Index.Builder(body).index(completeIndexName).type(INDEX_TYPE);
 
 		// NMS-9015: If the event is a database event, set the ID of the
 		// document to the event's database ID. Otherwise, allow ES to
@@ -323,7 +341,8 @@ public class EventToIndex implements AutoCloseable {
 	private void handleParameters(Event event, JSONObject body) {
 		// Decide if oids should be grouped in a single JsonArray or flattened
 		if (groupOidParameters) {
-			final List<Parm> oidParameters = event.getParmCollection().stream().filter(p -> isOID(p.getParmName())).collect(Collectors.toList());
+			final List<Parm> oidParameters = event.getParmCollection().stream().filter(p -> isOID(p.getParmName()))
+					.collect(Collectors.toList());
 			final List<Parm> normalParameters = event.getParmCollection();
 			normalParameters.removeAll(oidParameters);
 
@@ -349,7 +368,7 @@ public class EventToIndex implements AutoCloseable {
 
 	private void handleParameters(Event event, List<Parm> parameters, JSONObject body) {
 		final JSONParser jsonParser = new JSONParser();
-		for(Parm parm : parameters) {
+		for (Parm parm : parameters) {
 			final String parmName = "p_" + parm.getParmName().replaceAll("\\.", "_");
 
 			// Some parameter values are of type json and should be decoded properly.
@@ -372,32 +391,28 @@ public class EventToIndex implements AutoCloseable {
 
 	private void refreshCacheIfNecessary(Event event) {
 		final String uei = event.getUei();
-		if(uei != null && uei.startsWith("uei.opennms.org/nodes/")) {
-			if (uei.endsWith("Added")
-					|| uei.endsWith("Deleted")
-					|| uei.endsWith("Updated")
+		if (uei != null && uei.startsWith("uei.opennms.org/nodes/")) {
+			if (uei.endsWith("Added") || uei.endsWith("Deleted") || uei.endsWith("Updated")
 					|| uei.endsWith("Changed")) {
 				nodeCache.refreshEntry(event.getNodeid());
 			}
 		}
 	}
 
-	private static final void logEsError(String operation, String index, String type, String result, int responseCode, String errorMessage) {
-		LOG.error("Error while performing {} on Elasticsearch index: {}, type: {}\n" +
-						"   received result: {}\n" +
-						"   response code: {}\n" +
-						"   error message: {}",
-				operation, index, type, result, responseCode, errorMessage
-		);
+	private static final void logEsError(String operation, String index, String type, String result, int responseCode,
+			String errorMessage) {
+		LOG.error(
+				"Error while performing {} on Elasticsearch index: {}, type: {}\n" + "   received result: {}\n"
+						+ "   response code: {}\n" + "   error message: {}",
+				operation, index, type, result, responseCode, errorMessage);
 	}
 
-	private static final void logEsDebug(String operation, String index, String type, String result, int responseCode, String errorMessage) {
-		LOG.debug("Performed {} on Elasticsearch index: {}, type: {}\n" +
-						"   received result: {}\n" +
-						"   response code: {}\n" +
-						"   error message: {}",
-				operation, index, type, result, responseCode, errorMessage
-		);
+	private static final void logEsDebug(String operation, String index, String type, String result, int responseCode,
+			String errorMessage) {
+		LOG.debug(
+				"Performed {} on Elasticsearch index: {}, type: {}\n" + "   received result: {}\n"
+						+ "   response code: {}\n" + "   error message: {}",
+				operation, index, type, result, responseCode, errorMessage);
 	}
 
 	protected static boolean isOID(String input) {
