@@ -31,6 +31,11 @@ package org.opennms.features.geocoder;
 import java.text.MessageFormat;
 import java.util.Objects;
 
+/**
+ * In case a {@link GeocoderService} is not configured properly, it should throw this exception.
+ *
+ * @author mvrueden
+ */
 public class GeocoderConfigurationException extends RuntimeException {
     private final String context;
 

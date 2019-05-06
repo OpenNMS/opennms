@@ -31,7 +31,7 @@ package org.opennms.features.geocoder;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GeocoderServiceManagerConfiguration extends Configuration {
+public class GeocoderServiceManagerConfiguration {
 
     private static final String ACTIVE_GEOCODER_ID_KEY = "activeGeocoderId";
 
@@ -42,7 +42,7 @@ public class GeocoderServiceManagerConfiguration extends Configuration {
     }
 
     public GeocoderServiceManagerConfiguration(Map<String, Object> fromMap) {
-        setActiveGeocoderId(getValue(fromMap, ACTIVE_GEOCODER_ID_KEY, null));
+        setActiveGeocoderId(ConfigurationUtils.getValue(fromMap, ACTIVE_GEOCODER_ID_KEY, null));
     }
 
     public String getActiveGeocoderId() {

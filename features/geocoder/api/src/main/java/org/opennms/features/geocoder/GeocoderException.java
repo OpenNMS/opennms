@@ -28,6 +28,10 @@
 
 package org.opennms.features.geocoder;
 
+/**
+ * In case resolving an address to its geocoordinates was not successful this exception should be thrown.
+ *
+ */
 public class GeocoderException extends Exception {
     private static final long serialVersionUID = -7626277979425116924L;
 

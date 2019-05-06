@@ -28,6 +28,12 @@
 
 package org.opennms.features.geocoder;
 
+/**
+ * The resolution result of the {@link GeocoderService}.
+ * This allows to distinguish between no and unsuccessful result.
+ *
+ * @author mvrueden
+ */
 public class GeocoderResult {
     private String address;
     private Coordinates coordinates;

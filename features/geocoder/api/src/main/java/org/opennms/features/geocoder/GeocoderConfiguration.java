@@ -31,7 +31,12 @@ package org.opennms.features.geocoder;
 import java.util.Map;
 import java.util.Objects;
 
-public abstract class GeocoderConfiguration extends Configuration {
+/**
+ * Common (abstract) class for all {@@ink GeocoderConfiguration}s.
+ *
+ * @author mvrueden
+ */
+public abstract class GeocoderConfiguration {
 
     public abstract void validate() throws GeocoderConfigurationException;
 

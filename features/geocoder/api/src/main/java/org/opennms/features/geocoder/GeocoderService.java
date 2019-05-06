@@ -30,6 +30,11 @@ package org.opennms.features.geocoder;
 
 import java.util.Map;
 
+/**
+ * A {@link GeocoderService} capable of resolving an address string to actual coordinates.
+ *
+ * @author mvrueden
+ */
 public interface GeocoderService {
 
     /**
@@ -56,5 +61,11 @@ public interface GeocoderService {
      */
     GeocoderConfiguration getConfiguration();
 
+    /**
+     * Validates the provided configuration properties.
+     *
+     * @param properties to validate
+     * @throws GeocoderConfigurationException in case the configuration is invalid.
+     */
     void validateConfiguration(Map<String, Object> properties) throws GeocoderConfigurationException;
 }

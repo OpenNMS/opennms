@@ -28,6 +28,11 @@
 
 package org.opennms.features.geocoder.mapquest;
 
+import static org.opennms.features.geocoder.ConfigurationUtils.PROVIDE_A_VALUE_TEXT;
+import static org.opennms.features.geocoder.ConfigurationUtils.URL_NOT_VALID_TEMPLATE;
+import static org.opennms.features.geocoder.ConfigurationUtils.getBoolean;
+import static org.opennms.features.geocoder.ConfigurationUtils.getValue;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -75,16 +80,16 @@ public class MapquestConfiguration extends GeocoderConfiguration {
     @Override
     public void validate() throws GeocoderConfigurationException {
         if (Strings.isNullOrEmpty(urlTemplate)) {
-            throw new GeocoderConfigurationException(URL_KEY, "Please provide a value");
+            throw new GeocoderConfigurationException(URL_KEY, PROVIDE_A_VALUE_TEXT);
         }
         if (Strings.isNullOrEmpty(apiKey)) {
-            throw new GeocoderConfigurationException(API_KEY_KEY, "Please provide a value");
+            throw new GeocoderConfigurationException(API_KEY_KEY, PROVIDE_A_VALUE_TEXT);
         }
         // Try parsing the URL
         try {
             new URL(urlTemplate);
         } catch (MalformedURLException e) {
-            throw new GeocoderConfigurationException(URL_KEY, "The provided URL ''{0}'' is not valid: ''{1}''", urlTemplate, e.getMessage());
+            throw new GeocoderConfigurationException(URL_KEY, URL_NOT_VALID_TEMPLATE, urlTemplate, e.getMessage());
         }
     }
 

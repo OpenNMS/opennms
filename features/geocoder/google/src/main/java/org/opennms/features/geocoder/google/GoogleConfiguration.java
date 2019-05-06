@@ -28,6 +28,11 @@
 
 package org.opennms.features.geocoder.google;
 
+import static org.opennms.features.geocoder.ConfigurationUtils.PROVIDE_A_VALUE_TEXT;
+import static org.opennms.features.geocoder.ConfigurationUtils.getBoolean;
+import static org.opennms.features.geocoder.ConfigurationUtils.getInteger;
+import static org.opennms.features.geocoder.ConfigurationUtils.getValue;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -104,13 +109,13 @@ public class GoogleConfiguration extends GeocoderConfiguration {
     public void validate() throws GeocoderConfigurationException {
         if (isUseEnterpriseCredentials()) {
             if (Strings.isNullOrEmpty(clientId)) {
-                throw new GeocoderConfigurationException(CLIENT_ID_KEY, "Please provide a value");
+                throw new GeocoderConfigurationException(CLIENT_ID_KEY, PROVIDE_A_VALUE_TEXT);
             }
             if (Strings.isNullOrEmpty(signature)) {
-                throw new GeocoderConfigurationException(SIGNATURE_KEY, "Please provide a value");
+                throw new GeocoderConfigurationException(SIGNATURE_KEY, PROVIDE_A_VALUE_TEXT);
             }
         } else if (Strings.isNullOrEmpty(apiKey)) {
-            throw new GeocoderConfigurationException(API_KEY_KEY, "Please provide a value");
+            throw new GeocoderConfigurationException(API_KEY_KEY, PROVIDE_A_VALUE_TEXT);
         }
         if (timeout < 0) {
             throw new GeocoderConfigurationException(TIMEOUT_KEY, "The provided value must be >= 0");

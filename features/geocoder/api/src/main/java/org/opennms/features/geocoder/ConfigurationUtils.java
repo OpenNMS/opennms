@@ -30,8 +30,17 @@ package org.opennms.features.geocoder;
 
 import java.util.Map;
 
-public class Configuration {
+/**
+ * Helper class to deal with String values.
+ *
+ * @author mvrueden
+ */
+public abstract class ConfigurationUtils {
 
+    public static final String PROVIDE_A_VALUE_TEXT = "Please provide a value";
+    public static final String URL_NOT_VALID_TEMPLATE = "The provided URL ''{0}'' is not valid: ''{1}''";
+
+    private ConfigurationUtils() {}
 
     public static <T> T getValue(Map<String, Object> properties, String key, T defaultValue) {
         final Object value = properties.get(key);
@@ -68,6 +77,4 @@ public class Configuration {
         }
         return defaultValue;
     }
-
-
 }
