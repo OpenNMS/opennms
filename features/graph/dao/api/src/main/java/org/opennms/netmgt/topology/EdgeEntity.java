@@ -41,32 +41,33 @@ public class EdgeEntity extends AbstractGraphEntity {
     // Advantage: we can use the current implementation for storage.
     // Disadvantage: we need to filter out the source/target properties when converting to GenericEdge since these are
     // there object attributes not properties (and should be since an edge is defined by them)
+    // sourceVertexRef als Embeddable VertexRef speichern
 
     public final static String PROPERTY_SOURCE = "sourceVertexRef";
     public final static String PROPERTY_TARGET = "targetVertexRef";
 
-    public VertexRef getSource() {
-        return new VertexRef(getPropertyValue(PROPERTY_SOURCE));
+    public VertexRefEntity getSource() {
+        return new VertexRefEntity(getPropertyValue(PROPERTY_SOURCE));
     }
 
     public void setSource(String namespace, String id) {
-        setSource(new VertexRef(namespace, id));
+        setSource(new VertexRefEntity(namespace, id));
     }
 
-    public void setSource(VertexRef source) {
+    public void setSource(VertexRefEntity source) {
         Objects.requireNonNull(source, "source can not be null");
         this.setProperty(PROPERTY_SOURCE, String.class, source.asStringRepresentation());
     }
 
-    public VertexRef getTarget() {
-        return new VertexRef(getPropertyValue(PROPERTY_TARGET));
+    public VertexRefEntity getTarget() {
+        return new VertexRefEntity(getPropertyValue(PROPERTY_TARGET));
     }
 
     public void setTarget(String namespace, String id) {
-        setTarget(new VertexRef(namespace, id));
+        setTarget(new VertexRefEntity(namespace, id));
     }
 
-    public void setTarget(VertexRef target) {
+    public void setTarget(VertexRefEntity target) {
         Objects.requireNonNull(target, "target can not be null");
         this.setProperty(PROPERTY_TARGET, String.class, target.toString());
     }

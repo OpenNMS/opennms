@@ -64,7 +64,6 @@ public abstract class GenericElement {
         return properties;
     }
 
-    // TODO: patrick: discuss with mvr if we don't want to have the namespace as a dedicated attribute in graph, vertex, edge
     public String getNamespace() {
         return getProperty(GenericProperties.NAMESPACE);
     }

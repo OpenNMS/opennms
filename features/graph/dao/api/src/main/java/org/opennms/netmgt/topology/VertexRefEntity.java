@@ -33,25 +33,26 @@ import com.google.common.base.Objects;
 
 // TODO: Patrick discuss with mvr if the mapping from and to a property shouldn't happen through the converter service
 // leaving it like it is for now since we also might move it to a dedicated column
-public class VertexRef {
+// rebase zu 25.
+public class VertexRefEntity {
     private final String namespace;
     private final String id;
 
 
-    public VertexRef(String propertyValue) {
+    public VertexRefEntity(String propertyValue) {
         java.util.Objects.requireNonNull(propertyValue);
         String[] string = propertyValue.split(":");
         this.namespace = string[0];
         this.id = string[1];
     }
 
-    public VertexRef(String namespace, String id) {
+    public VertexRefEntity(String namespace, String id) {
         this.namespace = namespace;
         this.id = id;
     }
 
     /** Copy constructor */
-    public VertexRef(VertexRef genericVertexRef){
+    public VertexRefEntity(VertexRefEntity genericVertexRef){
         this(genericVertexRef.namespace, genericVertexRef.id);
     }
 
@@ -67,7 +68,7 @@ public class VertexRef {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        VertexRef that = (VertexRef) o;
+        VertexRefEntity that = (VertexRefEntity) o;
         return Objects.equal(namespace, that.namespace) &&
                 Objects.equal(id, that.id);
     }

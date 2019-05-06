@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.graph.api.generic;
 
-import static org.opennms.netmgt.graph.api.generic.Assertions.assertThrowsException;
+import static org.opennms.core.test.OnmsAssert.assertThrowsException;
 
 import java.util.HashMap;
 

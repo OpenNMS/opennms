@@ -203,15 +203,16 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
                     String.format("The namespace of the edge (%s) doesn't match the namespace of this graph (%s). Edge: %s ",
                     edge.getNamespace(), this.getNamespace(), edge.toString()));
         }
-        // TODO patrick: discuss with mvr: the following casting won't work anymore since we are operating on actual Vertexrefs.
-        // do we need a replacement? E.g. we could make a check if the graph contains the vertices (with the same namespace)
-        // and throw an exception if not.
-//        if (edge.getSource().getNamespace().equalsIgnoreCase(getNamespace()) && getVertex(edge.getSource().getId()) == null) {
-//            addVertex((GenericVertex) edge.getSource());
-//        }
-//        if (edge.getTarget().getNamespace().equalsIgnoreCase(getNamespace()) && getVertex(edge.getTarget().getId()) == null) {
-//            addVertex((GenericVertex) edge.getTarget());
-//        }
+        if (edge.getSource().getNamespace().equalsIgnoreCase(getNamespace()) && getVertex(edge.getSource().getId()) == null) {
+            throw new IllegalArgumentException(
+                    String.format("Adding an VertexRef to an unknown Vertex with id=%s in our namespace (%s). Please add the Vertex first to the graph",
+                            edge.getSource().getId(), this.getNamespace()));
+        }
+        if (edge.getTarget().getNamespace().equalsIgnoreCase(getNamespace()) && getVertex(edge.getTarget().getId()) == null) {
+            throw new IllegalArgumentException(
+                    String.format("Adding an VertexRef to an unknown Vertex with id=%s in our namespace (%s). Please add the Vertex first to the graph",
+                            edge.getTarget().getId(), this.getNamespace()));
+        }
         jungGraph.addEdge(edge, edge.getSource(), edge.getTarget());
         edgeToIdMap.put(edge.getId(), edge);
     }

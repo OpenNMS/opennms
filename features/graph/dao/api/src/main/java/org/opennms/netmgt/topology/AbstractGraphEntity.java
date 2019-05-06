@@ -61,7 +61,7 @@ public class AbstractGraphEntity {
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "opennmsSequence")
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Long dbId;
 
     @Column(name = "namespace", nullable = false)
     private String namespace;
@@ -71,12 +71,12 @@ public class AbstractGraphEntity {
     @BatchSize(size=1000)
     private List<PropertyEntity> properties = new ArrayList<>();
 
-    public Long getId() {
-        return id;
+    public Long getDbId() {
+        return dbId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setDbId(Long id) {
+        this.dbId = id;
     }
 
     public String getNamespace() {
