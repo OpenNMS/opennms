@@ -140,7 +140,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
             this.client.getEntityScopeProvider().getScopeForNode(service.getNodeId()),
             this.client.getEntityScopeProvider().getScopeForInterface(service.getNodeId(), service.getIpAddr()),
             this.client.getEntityScopeProvider().getScopeForService(service.getNodeId(), service.getAddress(), service.getSvcName()),
-            MapScope.singeContext("pattern", this.patternVariables)
+            MapScope.singleContext("pattern", this.patternVariables)
         ));
 
         final RpcTarget target = client.getRpcTargetHelper().target()

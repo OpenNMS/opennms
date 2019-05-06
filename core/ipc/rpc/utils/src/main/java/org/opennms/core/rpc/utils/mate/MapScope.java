@@ -51,7 +51,7 @@ public class MapScope implements Scope {
         return this.values.keySet();
     }
 
-    public static MapScope singeContext(final String context, final Map<String, String> values) {
+    public static MapScope singleContext(final String context, final Map<String, String> values) {
         return new MapScope(
                 values.entrySet().stream()
                 .collect(Collectors.toMap(
