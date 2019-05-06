@@ -31,8 +31,8 @@
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
     <jsp:param name="norequirejs" value="true" />
 
-    <jsp:param name="title" value="Flow Classification" />
-    <jsp:param name="headTitle" value="Flow Classification" />
+    <jsp:param name="title" value="Geocoder Configuration" />
+    <jsp:param name="headTitle" value="Geocoder Configuration" />
     <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
     <jsp:param name="breadcrumb" value="Geocoder Configuration" />
 </jsp:include>
