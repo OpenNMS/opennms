@@ -202,7 +202,7 @@ public class LinkdTopologyProviderTestIT {
         // 2.) map the nodes by it's label name.
         final Map<String, Vertex> vertices = new HashMap<>();
         final Map<Integer,Vertex> verticesById = new HashMap<>();
-        for(Vertex vertex : linkdTopologyProvider.getVerticesWithoutGroups()) {
+        for(Vertex vertex : linkdTopologyProvider.getCurrentGraph().getVertices()) {
             String label = vertex.getLabel();
             if("Segment".equals(label)) { // enhance Segment to make it unique
                 label = StringUtils.substringAfter(vertex.getTooltipText(), "nodeid:["); // Shared Segment': nodeid:[13561], bridgeport
