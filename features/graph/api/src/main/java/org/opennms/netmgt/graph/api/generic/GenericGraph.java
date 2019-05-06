@@ -78,7 +78,6 @@ public class GenericGraph extends GenericElement implements Graph<GenericVertex,
                 .withProperties(copyMe.properties)
                 .withProperty(GenericProperties.NAMESPACE, newNamespace)
                 .build());
-
         this.setFocusStrategy(copyMe.focusStrategy);
         for(GenericVertex originalVertex : copyMe.vertexToIdMap.values()){
             this.addVertex(new GenericVertex(originalVertex, newNamespace));

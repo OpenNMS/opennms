@@ -123,7 +123,6 @@ public class GenericEdge extends GenericElement implements Edge {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(super.hashCode(), source, target);
     }
 }

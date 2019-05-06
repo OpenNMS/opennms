@@ -37,7 +37,9 @@ import org.opennms.netmgt.graph.api.VertexRef;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
-/** A immutable composite key to reference a vertex. */
+/**
+ * An immutable composite key to reference a vertex.
+ */
 public class GenericVertexRef implements VertexRef {
 
     private final String namespace;
