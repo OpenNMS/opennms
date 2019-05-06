@@ -43,6 +43,7 @@ import java.util.concurrent.Executors;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -72,6 +73,11 @@ public class SnmpProxyIT {
     private LocationAwareSnmpClient locationAwareSnmpClient;
     private ExecutorService executorService;
     private File tmpFile;
+
+    @BeforeClass
+    public static void setup() {
+        System.setProperty("opennms.home", "../../../opennms-dao/src/test/opennms-home");
+    }
 
     @Before
     public void setUp() {
