@@ -29,7 +29,9 @@
 package org.opennms.netmgt.poller;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.regex.Matcher;
 
 public interface PollerRequestBuilder {
 

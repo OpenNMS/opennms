@@ -15,7 +15,7 @@
       <rra>RRA:MAX:0.5:288:366</rra>
       <rra>RRA:MIN:0.5:288:366</rra>
     </rrd>
-    <service name="HTTP" interval="60000" user-defined="false" status="on" pattern="HTTP-{vhost}">
+    <service name="HTTP" interval="60000" user-defined="false" status="on" pattern="^HTTP-(?&lt;vhost&gt;.*)$">
       <parameter key="sequence-retry" value="10"/>
       <parameter key="timeout" value="5000"/>
       <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>

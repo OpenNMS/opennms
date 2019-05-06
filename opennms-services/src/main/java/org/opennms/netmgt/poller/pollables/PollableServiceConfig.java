@@ -35,10 +35,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.opennms.core.rpc.api.RpcExceptionHandler;
 import org.opennms.core.rpc.api.RpcExceptionUtils;
-import org.opennms.core.rpc.utils.pattern.Template;
+import org.opennms.core.utils.RegexUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
@@ -58,6 +60,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 
 /**
  * Represents a PollableServiceConfig
@@ -129,11 +132,11 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                     continue;
                 }
 
-                final Template template = Template.parse(s.getPattern());
-                final Optional<Map<String, String>> match = template.match(m_service.getSvcName());
-                if (match.isPresent()) {
+                final Pattern pattern = Pattern.compile(s.getPattern());
+                final Matcher matcher = pattern.matcher(m_service.getSvcName());
+                if (matcher.matches()) {
                     configService = s;
-                    patternVariables = match.get();
+                    patternVariables = Maps.uniqueIndex(RegexUtils.getNamedCaptureGroupsFromPattern(s.getPattern()), matcher::group);
                     break;
                 }
             }
