@@ -1364,19 +1364,6 @@
         <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
         <bundle>mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
     </feature>
-    <feature name="alarm-change-notifier" version="${project.version}" description="alarm-change-notifier">
-        <details>Feature definition for alarm-change-notifier</details>
-        <bundle>mvn:com.impossibl.pgjdbc-ng/pgjdbc-ng/0.7.1</bundle>
-        <bundle>mvn:io.netty/netty-common/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-transport/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-buffer/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-handler/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-resolver/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-codec/${netty4Version}</bundle>
-        <bundle>mvn:org.opennms.plugins/alarm-change-notifier.pg-jdbc-utils/${project.version}</bundle>
-        <bundle>mvn:org.opennms.plugins/alarm-change-notifier.main-module/${project.version}</bundle>
-        <bundle>mvn:com.googlecode.json-simple/json-simple/1.1.1</bundle>
-    </feature>
     <feature name="opennms-es-rest" version="${project.version}" description="OpenNMS :: Features :: ElasticSearch Rest">
         <details>OpenNMS :: Features :: ElasticSearch Rest</details>
         <feature>opennms-jest</feature>

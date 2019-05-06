@@ -1,3 +1,13 @@
+[[releasenotes-25]]
+== What's New in OpenNMS Horizon 25
+
+=== Breaking Changes
+
+==== Alarm Change Notifier Plugin is gone
+The Alarm Change Notifier plugin has been removed due to performance problems.
+Use the Alarm History function instead.
+
+
 [[releasenotes-24]]
 == What's New in OpenNMS Horizon 24
 

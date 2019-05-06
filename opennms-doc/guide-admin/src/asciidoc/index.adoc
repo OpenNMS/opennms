@@ -331,7 +331,6 @@ include::text/sentinel/sentinel.adoc[]
 
 == Internal Plugins
 include::text/plugins/introduction.adoc[]
-include::text/plugins/alarm-change-notifier.adoc[]
 include::text/plugins/opennms-es-rest.adoc[]
 
 [[ga-special-cases-and-workarounds]]
@@ -367,9 +366,9 @@ include::text/elasticsearch/introduction.adoc[]
 [[ga-elasticsearch-integration-features]]
 === Features
 include::text/elasticsearch/features/introduction.adoc[]
-include::text/elasticsearch/features/alarm-event-forwarder.adoc[]
-include::text/elasticsearch/features/alarm-event-forwarder-mapping.adoc[]
-include::text/elasticsearch/features/alarm-event-forwarder-mapping-table.adoc[]
+include::text/elasticsearch/features/event-forwarder.adoc[]
+include::text/elasticsearch/features/event-forwarder-mapping.adoc[]
+include::text/elasticsearch/features/event-forwarder-mapping-table.adoc[]
 include::text/elasticsearch/features/flows.adoc[]
 include::text/elasticsearch/features/situation-feedback.adoc[]
 include::text/elasticsearch/features/alarm-history.adoc[]
