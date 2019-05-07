@@ -2712,7 +2712,6 @@ ALTER TABLE classification_rules ADD CONSTRAINT classification_rules_unique_defi
 create sequence rulenxtid minvalue 1;
 
 --##################################################################
-<<<<<<< HEAD
 --# Graph tables
 --##################################################################
 CREATE TABLE graph_elements (
@@ -2745,6 +2744,7 @@ CREATE TABLE graph_element_relations (
   CONSTRAINT graph_element_relations_pkey PRIMARY KEY (parent_id, child_id)
 );
 
+--##################################################################
 --# User defined links
 --##################################################################
 CREATE TABLE user_defined_links (
