@@ -28,9 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.application;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -42,16 +40,18 @@ import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.graph.api.Graph;
+import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.service.GraphService;
 import org.opennms.netmgt.graph.provider.application.ApplicationGraph;
 import org.opennms.netmgt.graph.provider.application.ApplicationGraphProvider;
 import org.opennms.netmgt.graph.provider.application.ApplicationVertex;
+import org.opennms.netmgt.graph.provider.application.ApplicationVertexType;
 import org.opennms.netmgt.graph.simple.SimpleEdge;
-
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -70,63 +70,42 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
     private void load() {
         graph.resetContainer();
 
-        Graph genericGraph = graphService.getGraph(ApplicationGraphProvider.TOPOLOGY_NAMESPACE);
-        ApplicationGraph applicationGraph = new ApplicationGraph(genericGraph.asGenericGraph());
-
-        // we take the Domain Graph and converts its elements (Vertex & Edge) into Gui elements and add it to the
-        // backend graph. This is an intermediate step until the gui can consume our domain graph directly:
-
-        Map<org.opennms.netmgt.graph.api.VertexRef, ApplicationVertex> allKnownVertices = new HashMap<>();
-        Map<org.opennms.netmgt.graph.api.VertexRef, GuiApplicationVertex> allCreatedGuiVertices = new HashMap<>();
-        for (ApplicationVertex vertex : applicationGraph.getVertices()) {
-            allKnownVertices.put(vertex.getVertexRef(), vertex);
-            final GuiApplicationVertex vertexGui = new GuiApplicationVertex(vertex);
-            allCreatedGuiVertices.put(vertex.getVertexRef(), vertexGui);
-            graph.addVertices(vertexGui);
+        final GenericGraph genericGraph = graphService.getGraph(ApplicationGraphProvider.TOPOLOGY_NAMESPACE);
+        final ApplicationGraph applicationGraph = new ApplicationGraph(genericGraph);
+        for (ApplicationVertex eachApplicationVertex : applicationGraph.getVertices()) {
+            OnmsApplicationVertex applicationVertex = new OnmsApplicationVertex(eachApplicationVertex);
+            graph.addVertices(applicationVertex);
         }
-
         for (SimpleEdge edge : applicationGraph.getEdges()) {
-            AbstractEdge guiEdge = DomainToGuiConverter.convert(edge, allKnownVertices);
-            graph.addEdges(guiEdge);
+            final VertexRef sourceRef = new DefaultVertexRef(edge.getSource().getNamespace(), edge.getSource().getId());
+            final VertexRef targetRef = new DefaultVertexRef(edge.getTarget().getNamespace(), edge.getTarget().getId());
+            final AbstractEdge convertedEdge = new AbstractEdge(edge.getId(), edge.getNamespace(), sourceRef, targetRef);
+            graph.addEdges(convertedEdge);
         }
 
         // recreate children relationship.
         // Assumption: each application can have many services, each service can have 1 application
-        for (ApplicationVertex vertex : applicationGraph.getVertices()) {
-            if(vertex.getVertexType() == ApplicationVertex.VertexType.service) {
+        for (ApplicationVertex serviceVertex : applicationGraph.getVertices()) {
+            if(serviceVertex.getVertexType() == ApplicationVertexType.Service) {
                 // this should return exactly one edge:
                 // the one connecting the service to its application
-                SimpleEdge edge = applicationGraph.getConnectingEdges(vertex).stream().findFirst()
+                final SimpleEdge edge = applicationGraph.getConnectingEdges(serviceVertex).stream().findFirst()
                         .orElseThrow(()-> new IllegalStateException("corrupt graph, each service should be connected to an application"));
                 // find the other side of the edge:
-                org.opennms.netmgt.graph.api.VertexRef applicationRef = Stream.of(edge.getSource(), edge.getTarget())
-                        .filter(ref -> !ref.equals(vertex.getVertexRef())).findFirst().get();
-                GuiApplicationVertex parent = allCreatedGuiVertices.get(applicationRef);
-                GuiApplicationVertex child = allCreatedGuiVertices.get(vertex.getVertexRef());
+                org.opennms.netmgt.graph.api.VertexRef parentRef = Stream.of(edge.getSource(), edge.getTarget())
+                        .filter(ref -> !ref.equals(serviceVertex.getVertexRef())).findFirst().get();
+                OnmsApplicationVertex parent = (OnmsApplicationVertex) graph.getVertex(new DefaultVertexRef(parentRef.getNamespace(), parentRef.getId()));
+                OnmsApplicationVertex child = (OnmsApplicationVertex) graph.getVertex(new DefaultVertexRef(serviceVertex.getNamespace(), serviceVertex.getId()));
+                if (parent == null) {
+                    throw new IllegalStateException("Parent vertex [namespace='"+ parentRef.getNamespace() +"', id='" + parentRef.getId() +"'] was not found in graph.");
+                }
+                if (child == null) {
+                    throw new IllegalStateException("Child vertex [namespace='"+ serviceVertex.getNamespace() +"', id='" + serviceVertex.getId() +"'] was not found in graph.");
+                }
                 parent.addChildren(child);
             }
         }
     }
-
-    // TODO: patrick delete when done
-//    private void loadOld() {
-//        graph.resetContainer();
-//        for (OnmsApplication application : applicationDao.findAll()) {
-//            final GuiApplicationVertex applicationVertex = new GuiApplicationVertex(application);
-//            graph.addVertices(applicationVertex);
-//
-//            for (OnmsMonitoredService eachMonitoredService : application.getMonitoredServices()) {
-//                final GuiApplicationVertex serviceVertex = new GuiApplicationVertex(eachMonitoredService);
-//                applicationVertex.addChildren(serviceVertex);
-//                graph.addVertices(serviceVertex);
-//
-//                // connect with application
-//                final String id = String.format("connection:%s:%s", applicationVertex.getId(), serviceVertex.getId());
-//                final Edge edge = new AbstractEdge(getNamespace(), id, applicationVertex, serviceVertex);
-//                graph.addEdges(edge);
-//            }
-//        }
-//    }
 
     @Override
     public void refresh() {
@@ -142,10 +121,10 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
                     Graph genericGraph = graphService.getGraph(ApplicationGraphProvider.TOPOLOGY_NAMESPACE);
                     ApplicationGraph applicationGraph = new ApplicationGraph(genericGraph.asGenericGraph());
                     Optional<ApplicationVertex> firstVertex = applicationGraph.getVertices().stream()
-                            .filter( v -> v.getVertexType() == ApplicationVertex.VertexType.application)
+                            .filter( v -> v.getVertexType() == ApplicationVertexType.Application)
                             .findFirst();
                     if (firstVertex.isPresent()) {
-                        return Lists.newArrayList(new DefaultVertexHopCriteria(new GuiApplicationVertex(firstVertex.get())));
+                        return Lists.newArrayList(new DefaultVertexHopCriteria(new OnmsApplicationVertex(firstVertex.get())));
                     }
                     return null;
                 });
@@ -153,9 +132,9 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
 
     @Override
     public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType contentType) {
-        Set<GuiApplicationVertex> filteredVertices = selectedVertices.stream()
+        Set<OnmsApplicationVertex> filteredVertices = selectedVertices.stream()
                 .filter(v -> TOPOLOGY_NAMESPACE.equals(v.getNamespace()))
-                .map(v -> (GuiApplicationVertex) v)
+                .map(v -> (OnmsApplicationVertex) v)
                 .collect(Collectors.toSet());
         Set<Integer> nodeIds = extractNodeIds(filteredVertices);
         switch (contentType) {
@@ -165,8 +144,8 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
                 return new SelectionChangedListener.IdSelection<>(nodeIds);
             case Application:
                 final Set<Integer> applicationIds = filteredVertices.stream()
-                        .filter(GuiApplicationVertex::isRoot)
-                        .map(GuiApplicationVertex::getId)
+                        .filter(OnmsApplicationVertex::isRoot)
+                        .map(OnmsApplicationVertex::getId)
                         .map(Integer::valueOf)
                         .collect(Collectors.toSet());
                 return new SelectionChangedListener.IdSelection<>(applicationIds);
@@ -182,10 +161,10 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
                 ContentType.Node).contains(type);
     }
 
-    private Set<Integer> extractNodeIds(Set<GuiApplicationVertex> applicationVertices) {
+    private Set<Integer> extractNodeIds(Set<OnmsApplicationVertex> applicationVertices) {
         return applicationVertices.stream()
                 .filter(eachVertex -> TOPOLOGY_NAMESPACE.equals(eachVertex.getNamespace()) && eachVertex.getNodeID() != null)
-                .map(GuiApplicationVertex::getNodeID)
+                .map(OnmsApplicationVertex::getNodeID)
                 .collect(Collectors.toSet());
     }
 }

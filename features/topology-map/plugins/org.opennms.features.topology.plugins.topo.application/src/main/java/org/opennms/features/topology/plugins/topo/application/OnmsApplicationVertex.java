@@ -31,18 +31,16 @@ package org.opennms.features.topology.plugins.topo.application;
 import org.opennms.features.topology.api.topo.AbstractLevelAwareVertex;
 import org.opennms.features.topology.api.topo.LevelAware;
 import org.opennms.netmgt.graph.provider.application.ApplicationVertex;
+import org.opennms.netmgt.graph.provider.application.ApplicationVertexType;
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsServiceType;
 
-public class GuiApplicationVertex extends AbstractLevelAwareVertex implements LevelAware {
+public class OnmsApplicationVertex extends AbstractLevelAwareVertex implements LevelAware {
 
     private Integer serviceTypeId;
 
-    public GuiApplicationVertex(ApplicationVertex vertex) {
+    public OnmsApplicationVertex(org.opennms.netmgt.graph.provider.application.ApplicationVertex vertex) {
         this(vertex.getId(), vertex.getName());
-
-        final boolean isApplication = (vertex.getVertexType() == ApplicationVertex.VertexType.application);
+        final boolean isApplication = (vertex.getVertexType() == ApplicationVertexType.Application);
         if(isApplication) {
             setTooltipText(String.format("Application '%s'", vertex.getName()));
             setIconKey("application.application");
@@ -55,26 +53,17 @@ public class GuiApplicationVertex extends AbstractLevelAwareVertex implements Le
         }
     }
 
-    public GuiApplicationVertex(OnmsApplication application) {
+    public OnmsApplicationVertex(OnmsApplication application) {
         this(application.getId().toString(), application.getName());
         setTooltipText(String.format("Application '%s'", application.getName()));
         setIconKey("application.application");
     }
 
-    public GuiApplicationVertex(OnmsMonitoredService monitoredService) {
-        this(monitoredService.getId().toString(), monitoredService.getServiceName());
-        setTooltipText(String.format("Service '%s', IP: %s", monitoredService.getServiceName(), monitoredService.getIpAddress().toString()));
-        setIpAddress(monitoredService.getIpAddress().toString());
-        setNodeID(monitoredService.getNodeId());
-        setServiceTypeId(monitoredService.getServiceType().getId());
-        setIconKey("application.monitored-service");
-    }
-
     /**
-     * Creates a new {@link GuiApplicationVertex}.
+     * Creates a new {@link ApplicationVertex}.
      * @param id the unique id of this vertex. Must be unique overall the namespace.
      */
-    public GuiApplicationVertex(String id, String label) {
+    public OnmsApplicationVertex(String id, String label) {
         super(ApplicationTopologyProvider.TOPOLOGY_NAMESPACE, id, label);
     }
     
@@ -98,11 +87,11 @@ public class GuiApplicationVertex extends AbstractLevelAwareVertex implements Le
         return applicationId != null && applicationId.equals(getRoot().getId());
     }
 
-    public GuiApplicationVertex getRoot() {
+    public OnmsApplicationVertex getRoot() {
         if (isRoot()) {
             return this;
         }
-        return ((GuiApplicationVertex)getParent()).getRoot();
+        return ((OnmsApplicationVertex)getParent()).getRoot();
     }
 
     @Override

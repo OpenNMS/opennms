@@ -36,8 +36,6 @@ import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.service.GraphProvider;
 import org.opennms.netmgt.graph.simple.SimpleEdge;
-import org.opennms.netmgt.graph.simple.SimpleGraph;
-import org.opennms.netmgt.graph.simple.SimpleVertex;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.slf4j.Logger;
@@ -73,9 +71,8 @@ public class ApplicationGraphProvider implements GraphProvider {
         graph.setLabel(GRAPH_LABEL);
         graph.setDescription(GRAPH_DESCRIPTION);
 
-
         for (OnmsApplication application : applicationDao.findAll()) {
-            ApplicationVertex applicationVertex = new ApplicationVertex(application);
+            final ApplicationVertex applicationVertex = new ApplicationVertex(application);
             applicationVertex.setName(application.getName());
             graph.addVertex(applicationVertex);
 

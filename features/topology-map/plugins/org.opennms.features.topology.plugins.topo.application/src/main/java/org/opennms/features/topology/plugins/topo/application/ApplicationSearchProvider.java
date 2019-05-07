@@ -94,7 +94,7 @@ public class ApplicationSearchProvider extends AbstractSearchProvider implements
 
         // TODO: patrick do we want to replace the dao call also with a call to GraphService?
         for (OnmsApplication application : applicationDao.findMatching(dbQueryCriteria)) {
-            final GuiApplicationVertex applicationVertex = new GuiApplicationVertex(application);
+            final OnmsApplicationVertex applicationVertex = new OnmsApplicationVertex(application);
             SearchResult searchResult = new SearchResult(applicationVertex, true, false);
             results.add(searchResult);
         }

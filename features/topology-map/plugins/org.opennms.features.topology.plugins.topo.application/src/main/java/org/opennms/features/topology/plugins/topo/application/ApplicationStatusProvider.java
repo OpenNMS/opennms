@@ -34,17 +34,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultStatus;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.ApplicationStatusEntity;
 import org.opennms.netmgt.model.OnmsSeverity;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
 public class ApplicationStatusProvider implements StatusProvider {
@@ -74,7 +73,7 @@ public class ApplicationStatusProvider implements StatusProvider {
 
         // calculate status for children
         for (VertexRef eachVertex : vertexRefs) {
-            GuiApplicationVertex applicationVertex = (GuiApplicationVertex) eachVertex;
+            OnmsApplicationVertex applicationVertex = (OnmsApplicationVertex) eachVertex;
             Status alarmStatus = statusMap.get(createKey(applicationVertex));
             if (alarmStatus == null) {
                 alarmStatus = createStatus(OnmsSeverity.NORMAL, 0);
@@ -84,11 +83,11 @@ public class ApplicationStatusProvider implements StatusProvider {
 
         // calculate status for root
         for (VertexRef eachRoot : vertexRefsRoot) {
-            GuiApplicationVertex eachRootApplication = (GuiApplicationVertex) eachRoot;
+            OnmsApplicationVertex eachRootApplication = (OnmsApplicationVertex) eachRoot;
             OnmsSeverity maxSeverity = OnmsSeverity.NORMAL;
             int count = 0;
             for (VertexRef eachChild : eachRootApplication.getChildren()) {
-                GuiApplicationVertex eachChildApplication = (GuiApplicationVertex) eachChild;
+                OnmsApplicationVertex eachChildApplication = (OnmsApplicationVertex) eachChild;
                 ApplicationStatusEntity.Key childKey = createKey(eachChildApplication);
                 Status childStatus = statusMap.get(childKey);
                 if (childStatus != null && maxSeverity.isLessThan(createSeverity(childStatus.computeStatus()))) {
@@ -111,7 +110,7 @@ public class ApplicationStatusProvider implements StatusProvider {
         return null;
     }
 
-    private ApplicationStatusEntity.Key createKey(GuiApplicationVertex vertex) {
+    private ApplicationStatusEntity.Key createKey(OnmsApplicationVertex vertex) {
         return new ApplicationStatusEntity.Key(String.valueOf(vertex.getNodeID()), String.valueOf(vertex.getServiceTypeId()), vertex.getIpAddress());
     }
 
@@ -126,12 +125,7 @@ public class ApplicationStatusProvider implements StatusProvider {
     }
 
     private Collection<VertexRef> getRootElements(Collection<VertexRef> vertices) {
-        return Collections2.filter(vertices, new Predicate<VertexRef>() {
-            @Override
-            public boolean apply(VertexRef input) {
-                return ((GuiApplicationVertex) input).isRoot();
-            }
-        });
+        return Collections2.filter(vertices, input -> ((OnmsApplicationVertex) input).isRoot());
     }
 
     private List<VertexRef> getVertexRefsForNamespace(Collection<VertexRef> vertices) {
