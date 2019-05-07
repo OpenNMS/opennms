@@ -56,17 +56,13 @@ public class GraphRestServiceImpl implements GraphRestService {
 
     @Override
     public Response listContainerInfo(String acceptHeader) {
-        // TODO MVR a Graph implements GraphInfo and some of them return the graph (e.g. GraphML) as they are static anyways
-        // and contain the information. However if that object is returned here, the whole graph is returned instead of just label,namespace,description,etc.
-        // We should probably find a way to NOT do that
-        final List<GraphContainerInfo> graphContainerInfos = graphService.getGraphContainerInfos();
-        if (graphContainerInfos.isEmpty()) {
-            return Response.noContent().build();
-        }
-        // TODO MVR duplicate code
         final MediaType contentType = parseContentType(acceptHeader);
         if (contentType == null) {
             return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build();
+        }
+        final List<GraphContainerInfo> graphContainerInfos = graphService.getGraphContainerInfos();
+        if (graphContainerInfos.isEmpty()) {
+            return Response.noContent().build();
         }
         final String rendered = render(contentType, graphContainerInfos);
         return Response.ok(rendered).type(contentType).build();
@@ -78,7 +74,6 @@ public class GraphRestServiceImpl implements GraphRestService {
         if (container == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        // TODO MVR duplicate code
         final MediaType contentType = parseContentType(acceptHeader);
         if (contentType == null) {
             return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build();
@@ -108,6 +103,9 @@ public class GraphRestServiceImpl implements GraphRestService {
         final MediaType mediaType = MediaType.valueOf(type);
         if (mediaType.equals(MediaType.APPLICATION_JSON_TYPE) || mediaType.equals(MediaType.APPLICATION_XML_TYPE)) {
             return mediaType;
+        }
+        if (mediaType.equals(MediaType.WILDCARD_TYPE)) {
+            return MediaType.APPLICATION_JSON_TYPE;
         }
         return null;
     }

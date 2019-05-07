@@ -87,14 +87,15 @@ public class JsonGraphRenderer implements GraphRenderer {
                         final Map<String, Object> edgeProperties = genericEdge.getProperties();
                         edgeProperties.put("source", genericEdge.getSource().getId());
                         edgeProperties.put("target", genericEdge.getTarget().getId());
-                        jsonEdgesArray.put(edgeProperties);
+                        final JSONObject jsonEdge = new JSONObject(edgeProperties);
+                        jsonEdgesArray.put(jsonEdge);
                     });
 
                     // TODO MVR enrich me
 //                    enrichmentService.enrich(graph.getVertices());
                     graph.getVertices().stream().forEach(vertex -> {
                         final JSONObject jsonVertex = new JSONObject(vertex.asGenericVertex().getProperties());
-                        jsonVerticesArray.put(vertex.asGenericVertex().getProperties());
+                        jsonVerticesArray.put(jsonVertex);
                     });
                 }
                 jsonGraphArray.put(jsonGraph);

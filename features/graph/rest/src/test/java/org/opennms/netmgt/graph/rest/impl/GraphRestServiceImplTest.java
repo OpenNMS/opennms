@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.graph.rest.impl;
 
+import static org.opennms.netmgt.graph.rest.impl.GraphRestServiceImpl.parseContentType;
+
 import javax.ws.rs.core.MediaType;
 
 import org.junit.Assert;
@@ -37,18 +39,25 @@ public class GraphRestServiceImplTest {
 
     @Test
     public void verifyParseSupportedContentType() {
-        Assert.assertEquals(MediaType.APPLICATION_JSON_TYPE, GraphRestServiceImpl.parseContentType("application/json"));
-        Assert.assertEquals(MediaType.APPLICATION_XML_TYPE, GraphRestServiceImpl.parseContentType("application/xml"));
+        Assert.assertEquals(MediaType.APPLICATION_JSON_TYPE, parseContentType("application/json"));
+        Assert.assertEquals(MediaType.APPLICATION_XML_TYPE, parseContentType("application/xml"));
     }
 
     @Test
     public void verifyParseMultiValueSupportedContentType() {
-        Assert.assertEquals(MediaType.APPLICATION_JSON_TYPE, GraphRestServiceImpl.parseContentType("text/html,application/json"));
+        Assert.assertEquals(MediaType.APPLICATION_JSON_TYPE, parseContentType("text/html,application/json"));
     }
 
     @Test
     public void verifyParseNotSupportedContentType() {
-        Assert.assertNull(GraphRestServiceImpl.parseContentType("text/html"));
+        Assert.assertNull(parseContentType("text/html"));
+        Assert.assertNull(parseContentType(""));
+        Assert.assertNull(parseContentType(null));
     }
 
+    @Test
+    public void verifyUseJsonIfWildcard() {
+        Assert.assertEquals(MediaType.APPLICATION_JSON_TYPE, parseContentType("*"));
+        Assert.assertEquals(MediaType.APPLICATION_JSON_TYPE, parseContentType("*/*"));
+    }
 }
