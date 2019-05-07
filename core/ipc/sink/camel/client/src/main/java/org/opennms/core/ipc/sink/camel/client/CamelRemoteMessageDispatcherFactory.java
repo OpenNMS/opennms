@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.sink.camel.client;
 
+import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_PRODUCER_DOMAIN;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,8 +43,6 @@ import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.camel.CamelSinkConstants;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
 import org.osgi.framework.BundleContext;
-
-import com.codahale.metrics.JmxReporter;
 
 /**
  * Message dispatcher that sends messages via JMS.
@@ -75,7 +75,7 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     @Override
     public String getMetricDomain() {
-        return CamelLocalMessageDispatcherFactory.class.getPackage().getName();
+        return SINK_METRIC_PRODUCER_DOMAIN;
     }
 
     @Override

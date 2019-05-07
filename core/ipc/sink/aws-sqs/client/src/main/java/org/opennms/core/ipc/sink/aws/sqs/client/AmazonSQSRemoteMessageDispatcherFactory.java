@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.sink.aws.sqs.client;
 
+import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_PRODUCER_DOMAIN;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
@@ -108,7 +110,7 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
 
     @Override
     public String getMetricDomain() {
-        return AmazonSQSLocalMessageDispatcherFactory.class.getPackage().getName();
+        return SINK_METRIC_PRODUCER_DOMAIN;
     }
 
     @Override

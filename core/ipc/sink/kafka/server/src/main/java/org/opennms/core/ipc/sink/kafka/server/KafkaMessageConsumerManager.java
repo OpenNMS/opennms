@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.sink.kafka.server;
 
+import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_CONSUMER_DOMAIN;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,20 +49,24 @@ import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.opennms.core.camel.JmsQueueNameFactory;
+import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
+import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
+import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
+import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageConsumerManager;
-import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
-import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
-import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
-import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.core.ipc.sink.model.SinkMessageProtos;
 import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -84,7 +90,10 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         private final AtomicBoolean closed = new AtomicBoolean(false);
         private final KafkaConsumer<String, byte[]> consumer;
         private final String topic;
-
+        private final MetricRegistry metricRegistry = new MetricRegistry();
+        private JmxReporter jmxReporter = null;
+        private Histogram messageSize;
+        private Timer dispatchTime;
         public KafkaConsumerRunner(SinkModule<?, Message> module) {
             this.module = module;
             
@@ -92,6 +101,12 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             topic = topicNameFactory.getName();
 
             consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(kafkaConfig), KafkaConsumer.class.getClassLoader());
+            jmxReporter = JmxReporter.forRegistry(metricRegistry).
+                    inDomain(SINK_METRIC_CONSUMER_DOMAIN).build();
+            jmxReporter.start();
+            messageSize = metricRegistry.histogram(MetricRegistry.name(module.getId(), METRIC_MESSAGE_SIZE));
+            dispatchTime = metricRegistry.timer(MetricRegistry.name(module.getId(), METRIC_DISPATCH_TIME));
+
         }
 
         @Override
@@ -104,7 +119,12 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                     for (ConsumerRecord<String, byte[]> record : records) {
                         try {
                             byte[] messageInBytes = getSinkMessageFromProto(record.value());
-                            dispatch(module, module.unmarshal(messageInBytes));
+                            // Update metrics.
+                            messageSize.update(messageInBytes.length);
+                            // dispatchTime is a metric which measures time taken to dispatch
+                            try (Timer.Context context = dispatchTime.time()) {
+                                dispatch(module, module.unmarshal(messageInBytes));
+                            }
                         } catch (RuntimeException e) {
                             LOG.warn("Unexpected exception while dispatching message", e);
                         } catch (InvalidProtocolBufferException e) {
@@ -132,6 +152,9 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         public void shutdown() {
             closed.set(true);
             consumer.wakeup();
+            if (jmxReporter != null) {
+                jmxReporter.close();
+            }
         }
     }
 
