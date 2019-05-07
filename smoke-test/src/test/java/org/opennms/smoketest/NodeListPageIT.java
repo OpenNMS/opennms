@@ -51,9 +51,9 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
         createLocation("Fulda");
 
         createNode("loc1node1", "Pittsboro");
-        createNode("loc1node2", "Pittsboro");
+        createNode("loc1node2", "Pittsboro", true);
         createNode("loc2node1", "Fulda");
-        createNode("loc2node2", "Fulda");
+        createNode("loc2node2", "Fulda", true);
 
         nodePage();
     }
@@ -74,7 +74,11 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
     }
 
     private void createNode(final String foreignId, final String location) throws Exception {
-        final String node = "<node type=\"A\" label=\"TestMachine " + foreignId + "\" foreignSource=\""+ REQUISITION_NAME +"\" foreignId=\"" + foreignId + "\">" +
+        createNode(foreignId, location, false);
+    }
+
+    private void createNode(final String foreignId, final String location, boolean hasFlows) throws Exception {
+        final String node = "<node type=\"A\" hasFlows=\"" + hasFlows + "\" label=\"TestMachine " + foreignId + "\" foreignSource=\""+ REQUISITION_NAME +"\" foreignId=\"" + foreignId + "\">" +
         "<labelSource>H</labelSource>" +
         "<sysContact>The Owner</sysContact>" +
         "<sysDescription>" +
@@ -86,6 +90,20 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
         "<location>" + location + "</location>" +
         "</node>";
         sendPost("/rest/nodes", node, 201);
+    }
+
+    @Test
+    public void testNodesWithFlows() {
+        m_driver.get(this.getBaseUrl() + "opennms/element/nodeList.htm?flows=true");
+        assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
+                containsInAnyOrder("TestMachine loc1node2", "TestMachine loc2node2"));
+    }
+
+    @Test
+    public void testNodesWithoutFlows() {
+        m_driver.get(this.getBaseUrl() + "opennms/element/nodeList.htm?flows=false");
+        assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
+                containsInAnyOrder("TestMachine loc1node1", "TestMachine loc2node1"));
     }
 
     @Test

@@ -151,6 +151,8 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
             addCriteriaForForeignSource(criteria, command.getForeignSource());
         } else if(command.hasMonitoringLocation()) {
             addCriteriaForMonitoringLocation(criteria, command.getMonitoringLocation());
+        } else if(command.hasFlows()) {
+                addCriteriaForFlows(criteria, command.getFlows());
         } else {
             // Do nothing.... don't add any restrictions other than the default ones
         }
@@ -158,6 +160,10 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         if (command.getNodesWithOutages()) {
             addCriteriaForCurrentOutages(criteria);
         }
+    }
+
+    private void addCriteriaForFlows(final OnmsCriteria criteria, final Boolean hasFlows) {
+        criteria.add(Restrictions.eq("node.hasFlows", hasFlows));
     }
 
     private void addCriteriaForMonitoringLocation(OnmsCriteria criteria, String monitoringLocation) {
