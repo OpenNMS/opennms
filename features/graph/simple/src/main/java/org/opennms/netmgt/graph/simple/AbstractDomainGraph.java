@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.netmgt.graph.api.Graph;
 import org.opennms.netmgt.graph.api.Vertex;
+import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
@@ -69,16 +70,14 @@ public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends Simp
         return this.delegate.getVertices().stream().map(this::convert).collect(Collectors.toList());
     }
 
-    protected abstract V convert(GenericVertex vertex);
-
     @Override
     public List<E> getEdges() {
         return this.delegate.getEdges().stream().map(this::convert).collect(Collectors.toList());
     }
 
-    protected abstract E convert(GenericEdge edge);
-
     protected abstract Graph<V, E> convert(GenericGraph graph);
+    protected abstract V convert(GenericVertex vertex);
+    protected abstract E convert(GenericEdge edge);
 
     @Override
     public void addEdges(Collection<E> edges) {
@@ -151,6 +150,15 @@ public abstract class AbstractDomainGraph<V extends SimpleVertex, E extends Simp
     public List<V> resolveVertices(Collection<String> vertexIds) {
         return delegate.resolveVertices(vertexIds).stream()
                 .map(this::convert).collect(Collectors.toList());
+    }
+
+    @Override
+    public V resolveVertex(VertexRef vertexRef) {
+       final GenericVertex vertex = delegate.resolveVertex(vertexRef);
+       if (vertex != null) {
+           return convert(vertex);
+       }
+       return null;
     }
 
     @Override

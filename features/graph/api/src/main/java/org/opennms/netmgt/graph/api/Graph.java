@@ -65,6 +65,8 @@ public interface Graph<V extends Vertex, E extends Edge> extends GraphInfo {
 
     List<V> resolveVertices(Collection<String> vertexIds);
 
+    V resolveVertex(VertexRef vertexRef);
+
     List<E> resolveEdges(Collection<String> edgeIds);
 
     Collection<V> getNeighbors(V eachVertex);

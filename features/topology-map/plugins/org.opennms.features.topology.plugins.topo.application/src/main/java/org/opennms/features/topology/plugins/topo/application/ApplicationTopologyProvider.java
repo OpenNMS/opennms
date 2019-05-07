@@ -79,7 +79,8 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
         for (SimpleEdge edge : applicationGraph.getEdges()) {
             final VertexRef sourceRef = new DefaultVertexRef(edge.getSource().getNamespace(), edge.getSource().getId());
             final VertexRef targetRef = new DefaultVertexRef(edge.getTarget().getNamespace(), edge.getTarget().getId());
-            final AbstractEdge convertedEdge = new AbstractEdge(edge.getId(), edge.getNamespace(), sourceRef, targetRef);
+            final String id = String.format("connection:%s:%s", edge.getSource().getId(), edge.getTarget().getId());
+            final AbstractEdge convertedEdge = new AbstractEdge(edge.getNamespace(), id, sourceRef, targetRef);
             graph.addEdges(convertedEdge);
         }
 

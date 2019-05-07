@@ -51,8 +51,6 @@ import org.opennms.netmgt.model.OnmsCategory;
 
 public class CategorySearchProvider extends AbstractSearchProvider implements HistoryAwareSearchProvider {
 
-    private final static String CONTRIBUTES_TO_NAMESPACE = "nodes";
-
     private final CategoryProvider categoryProvider;
 
     private String m_hiddenCategoryPrefix = null;

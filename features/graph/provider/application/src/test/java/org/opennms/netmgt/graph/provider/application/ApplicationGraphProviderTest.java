@@ -30,7 +30,6 @@ package org.opennms.netmgt.graph.provider.application;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -40,13 +39,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.graph.api.Graph;
-import org.opennms.netmgt.graph.api.Vertex;
-import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.simple.SimpleEdge;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -54,94 +52,77 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 
-import com.google.common.net.InetAddresses;
-
 public class ApplicationGraphProviderTest {
-
-    private Graph<ApplicationVertex, SimpleEdge> graph;
-    private int id;
-    @Before
-    public void setUp(){
-        id = 0;
-    }
 
     @Test
     public void shouldCreateProperGraph() {
-        List<OnmsApplication> applications = generateApplications();
-        ApplicationDao dao = Mockito.mock(ApplicationDao.class);
+        final List<OnmsApplication> applications = generateApplications();
+        final ApplicationDao dao = Mockito.mock(ApplicationDao.class);
         when(dao.findAll()).thenReturn(applications);
-        ApplicationGraphProvider provider = new ApplicationGraphProvider(dao);
-        graph = provider.loadGraph();
+
+        final ApplicationGraphProvider provider = new ApplicationGraphProvider(new MockSessionUtils(), dao);
+        final Graph<ApplicationVertex, SimpleEdge> graph = provider.loadGraph();
         assertEquals(30, graph.getVertices().size());
+
         for(OnmsApplication app: applications) {
             for(OnmsMonitoredService service : app.getMonitoredServices()) {
-                verifyLinkingBetweenNodes(graph.getVertex(app.getId().toString()), graph.getVertex(service.getId().toString()));
+                verifyLinkingBetweenNodes(graph, graph.getVertex(app.getId().toString()), graph.getVertex(service.getId().toString()));
             }
         }
     }
 
     private List<OnmsApplication> generateApplications() {
-        List<OnmsApplication> applications = new ArrayList<>();
+        final List<OnmsApplication> applications = new ArrayList<>();
         for(int i = 0 ; i < 5; i++){
-            applications.add(generateApplication());
+            applications.add(generateApplication(i + 1));
         }
         return applications;
     }
 
-    private OnmsApplication generateApplication() {
-        OnmsApplication app = new OnmsApplication();
-        app.setId(id++);
-        app.setName(UUID.randomUUID().toString());
-        app.setMonitoredServices(generateMonitoredServices());
+    private OnmsApplication generateApplication(final int applicationId) {
+        final OnmsApplication app = new OnmsApplication();
+        app.setId(applicationId);
+        app.setName("Application " + applicationId);
+        final Set<OnmsMonitoredService> monitoredServices = new HashSet<>();
+        monitoredServices.add(generateMonitoredService(1, new OnmsServiceType("ICMP")));
+        monitoredServices.add(generateMonitoredService(2, new OnmsServiceType("HTTP")));
+        monitoredServices.add(generateMonitoredService(3, new OnmsServiceType("HTTPS")));
+        monitoredServices.add(generateMonitoredService(4, new OnmsServiceType("SNMP")));
+        monitoredServices.add(generateMonitoredService(5, new OnmsServiceType("SSH")));
+        app.setMonitoredServices(monitoredServices);
         return app;
     }
 
-    private Set<OnmsMonitoredService> generateMonitoredServices() {
-        Set<OnmsMonitoredService> monitoredServices = new HashSet<>();
-        for(int i = 0; i < 5; i++) {
-            monitoredServices.add(generateMonitoredService());
-        }
-        return monitoredServices;
-    }
-
-    private OnmsMonitoredService generateMonitoredService() {
-        OnmsMonitoredService service = new OnmsMonitoredService();
-        service.setId(id++);
-        service.setQualifier(UUID.randomUUID().toString());
+    private OnmsMonitoredService generateMonitoredService(int serviceId, OnmsServiceType serviceType) {
+        final OnmsMonitoredService service = new OnmsMonitoredService();
+        service.setId(serviceId);
+        service.setQualifier("Service " + serviceId);
         service.setServiceType(new OnmsServiceType(UUID.randomUUID().toString()));
-        OnmsServiceType serviceType = mock(OnmsServiceType.class);
-        when(serviceType.getId()).thenReturn(42);
         service.setServiceType(serviceType);
-        OnmsIpInterface ipInterface = mock(OnmsIpInterface.class);
-        when(ipInterface.getIpAddress()).thenReturn(InetAddresses.forString("12.0.0.1"));
-        OnmsNode node = mock(OnmsNode.class);
-        when(node.getId()).thenReturn(123);
-        when(ipInterface.getNode()).thenReturn(node);
-        service.setIpInterface(ipInterface);
+        final OnmsIpInterface ipInterface = new OnmsIpInterface();
+        ipInterface.setIpAddress(InetAddressUtils.addr("127.0.0.1"));
+        ipInterface.addMonitoredService(service);
+        final OnmsNode node = new OnmsNode();
+        node.setId(123);
+        node.addIpInterface(ipInterface);
         return service;
     }
 
-    private void verifyLinkingBetweenNodes(ApplicationVertex left, ApplicationVertex right) {
+    private static void verifyLinkingBetweenNodes(Graph<ApplicationVertex, SimpleEdge>  graph, ApplicationVertex left, ApplicationVertex right) {
+        final Collection<SimpleEdge> edgesLeft = graph.getConnectingEdges(left);
+        final Collection<SimpleEdge> edgesRight = graph.getConnectingEdges(right);
 
-        Collection<SimpleEdge> edgesLeft = this.graph.getConnectingEdges(left);
-        Collection<SimpleEdge> edgesRight = this.graph.getConnectingEdges(right);
-
-        // 1.) get the EdgeRef that connects the 2 vertices
-        Set<SimpleEdge> intersection = intersect(edgesLeft, edgesRight);
+        // 1. get the EdgeRef that connects the 2 vertices
+        final Set<SimpleEdge> intersection = intersect(edgesLeft, edgesRight);
         assertEquals(1, intersection.size());
         SimpleEdge edge = intersection.iterator().next();
 
-        // 2.) get the Edge and check if it really connects the 2 Vertices
-
+        // 2. get the Edge and check if it really connects the 2 Vertices
         // we don't know the direction it is connected so we have to test both ways:
         assertTrue(
-                (resolveVertex(edge.getSource()).equals(left) || resolveVertex(edge.getSource()).equals(right)) // source side
-                        && (resolveVertex(edge.getTarget()).equals(left) || resolveVertex(edge.getTarget()).equals(right)) // target side
-                        && !resolveVertex(edge.getSource()).equals(resolveVertex(edge.getTarget()))); // make sure it doesn't connect the same node
-    }
-
-    private Vertex resolveVertex(VertexRef ref) {
-        return this.graph.getVertex(ref.getId());
+                (graph.resolveVertex(edge.getSource()).equals(left) || graph.resolveVertex(edge.getSource()).equals(right)) // source side
+                        && (graph.resolveVertex(edge.getTarget()).equals(left) || graph.resolveVertex(edge.getTarget()).equals(right)) // target side
+                        && !graph.resolveVertex(edge.getSource()).equals(graph.resolveVertex(edge.getTarget()))); // make sure it doesn't connect the same node
     }
 
     /**
@@ -149,7 +130,7 @@ public class ApplicationGraphProviderTest {
      * - only elements that are contained in both collections will be retained
      * - double elements are removed
      */
-    private <E> Set<E> intersect(final Collection<E> left, final Collection<E> right){
+    private static <E> Set<E> intersect(final Collection<E> left, final Collection<E> right){
         Set<E> set = new HashSet<>(left);
         set.retainAll(new HashSet<>(right));
         return set;

@@ -9,8 +9,12 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
-    <service interface="org.opennms.netmgt.graph.api.service.GraphContainerProvider">
-        <bean class="org.opennms.netmgt.graph.provider.application.ApplicationGraphContainerProvider"/>
-    </service>
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory" />
+    <reference id="applicationDao" interface="org.opennms.netmgt.dao.api.ApplicationDao" availability="mandatory" />
 
+    <bean id="applicationGraphProvider" class="org.opennms.netmgt.graph.provider.application.ApplicationGraphProvider">
+        <argument ref="sessionUtils" />
+        <argument ref="applicationDao" />
+    </bean>
+    <service interface="org.opennms.netmgt.graph.api.service.GraphProvider" ref="applicationGraphProvider"/>
 </blueprint>

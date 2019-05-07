@@ -31,6 +31,7 @@ package org.opennms.netmgt.graph.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -86,7 +87,12 @@ public class DefaultGraphService implements GraphService {
 
     @Override
     public GenericGraph getGraph(String namespace) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        final Optional<GraphContainerInfo> anyContainer = getGraphContainerInfos().stream().filter(container -> container.getNamespaces().contains(namespace)).findAny();
+        if (anyContainer.isPresent()) {
+            final GenericGraph graph = getGraphContainer(anyContainer.get().getId()).getGraph(namespace);
+            return graph;
+        }
+        throw new NoSuchElementException("Could not find a Graph with namespace '" + namespace + "'.");
     }
 
     public void onBind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {

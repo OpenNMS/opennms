@@ -31,6 +31,7 @@ package org.opennms.netmgt.graph.provider.application;
 import java.util.Objects;
 
 import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.graph.api.Graph;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
@@ -44,16 +45,19 @@ import org.slf4j.LoggerFactory;
 public class ApplicationGraphProvider implements GraphProvider {
 
     public static final String TOPOLOGY_NAMESPACE = "application";
-    static final String GRAPH_LABEL = "Application Graph";
-    static final String GRAPH_DESCRIPTION = "This Topology Provider displays all defined Applications and their calculated states.";
 
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationGraphProvider.class);
+    private static final String GRAPH_LABEL = "Application Graph";
+    private static final String GRAPH_DESCRIPTION = "This Topology Provider displays all defined Applications and their calculated states.";
 
-    private ApplicationDao applicationDao;
+    private final ApplicationDao applicationDao;
+    private final SessionUtils sessionUtils;
 
-    public ApplicationGraphProvider(ApplicationDao applicationDao) {
+    public ApplicationGraphProvider(SessionUtils sessionUtils, ApplicationDao applicationDao) {
         Objects.requireNonNull(applicationDao);
+        Objects.requireNonNull(sessionUtils);
         this.applicationDao = applicationDao;
+        this.sessionUtils = sessionUtils;
         LOG.debug("Creating a new {} with namespace {}", getClass().getSimpleName(), TOPOLOGY_NAMESPACE);
     }
 
@@ -67,28 +71,30 @@ public class ApplicationGraphProvider implements GraphProvider {
 
     @Override
     public Graph<ApplicationVertex, SimpleEdge> loadGraph() {
-        final ApplicationGraph graph = new ApplicationGraph(TOPOLOGY_NAMESPACE);
-        graph.setLabel(GRAPH_LABEL);
-        graph.setDescription(GRAPH_DESCRIPTION);
+        return sessionUtils.withReadOnlyTransaction(() -> {
+            final ApplicationGraph graph = new ApplicationGraph(TOPOLOGY_NAMESPACE);
+            graph.setLabel(GRAPH_LABEL);
+            graph.setDescription(GRAPH_DESCRIPTION);
 
-        for (OnmsApplication application : applicationDao.findAll()) {
-            final ApplicationVertex applicationVertex = new ApplicationVertex(application);
-            applicationVertex.setName(application.getName());
-            graph.addVertex(applicationVertex);
-
-            for (OnmsMonitoredService eachMonitoredService : application.getMonitoredServices()) {
-                final ApplicationVertex serviceVertex = new ApplicationVertex(eachMonitoredService);
-                serviceVertex.setIpAddress(eachMonitoredService.getIpAddress().toString());
-                serviceVertex.setName(eachMonitoredService.getServiceName());
-                serviceVertex.setServiceTypeId(eachMonitoredService.getServiceType().getId());
-                serviceVertex.setNodeRefString(Integer.toString(eachMonitoredService.getNodeId()));
+            for (OnmsApplication application : applicationDao.findAll()) {
+                final ApplicationVertex applicationVertex = new ApplicationVertex(application);
+                applicationVertex.setName(application.getName());
                 graph.addVertex(applicationVertex);
 
-                // connect with application
-                SimpleEdge edge = new SimpleEdge(applicationVertex, serviceVertex);
-                graph.addEdge(edge);
+                for (OnmsMonitoredService eachMonitoredService : application.getMonitoredServices()) {
+                    final ApplicationVertex serviceVertex = new ApplicationVertex(eachMonitoredService);
+                    serviceVertex.setIpAddress(eachMonitoredService.getIpAddress().toString());
+                    serviceVertex.setName(eachMonitoredService.getServiceName());
+                    serviceVertex.setServiceTypeId(eachMonitoredService.getServiceType().getId());
+                    serviceVertex.setNodeRefString(Integer.toString(eachMonitoredService.getNodeId()));
+                    graph.addVertex(applicationVertex);
+
+                    // connect with application
+                    SimpleEdge edge = new SimpleEdge(applicationVertex, serviceVertex);
+                    graph.addEdge(edge);
+                }
             }
-        }
-        return graph;
+            return graph;
+        });
     }
 }
