@@ -49,7 +49,6 @@ import org.slf4j.LoggerFactory;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 
-
 public class RawEventToIndexTest extends AbstractEventToIndexTest {
 	private static final Logger LOG = LoggerFactory.getLogger(RawEventToIndexTest.class);
 
@@ -57,101 +56,106 @@ public class RawEventToIndexTest extends AbstractEventToIndexTest {
 
 	private static final String EVENT_SOURCE_NAME = "AlarmChangeNotifier";
 
-	private static final String NODE_LOST_SERVICE_EVENT="uei.opennms.org/nodes/nodeLostService";
+	private static final String NODE_LOST_SERVICE_EVENT = "uei.opennms.org/nodes/nodeLostService";
 
 	/**
-	 * simple test to create a raw event in the raw event index and test that the event is added
+	 * simple test to create a raw event in the raw event index and test that the
+	 * event is added
 	 */
 	@Test
 	public void jestClientRawEventToESTest() throws Exception {
 		LOG.debug("***************** start of test jestClientRawEventToESTestt");
 
-			final NodeCache nodeCache = new MockNodeCache();
+		final NodeCache nodeCache = new MockNodeCache();
 
-			eventToIndex.setNodeCache(nodeCache);
-			eventToIndex.setIndexStrategy(IndexStrategy.MONTHLY);
-			eventToIndex.setLogEventDescription(true);
+		eventToIndex.setNodeCache(nodeCache);
+		eventToIndex.setIndexStrategy(IndexStrategy.MONTHLY);
+		eventToIndex.setLogEventDescription(true);
 
-			EventBuilder eb = new EventBuilder( NODE_LOST_SERVICE_EVENT, EVENT_SOURCE_NAME);
+		EventBuilder eb = new EventBuilder(NODE_LOST_SERVICE_EVENT, EVENT_SOURCE_NAME);
 
-			//raw json="{"alarmid":806,"eventuei":"uei.opennms.org/nodes/nodeLostService","nodeid":36,"ipaddr":"142.34.5.19","serviceid":2,"reductionkey":"uei.opennms.org/nodes/nodeLostService::36:142.34.5.19:HTTP","alarmtype":1,"counter":1,"severity":5,"lasteventid":7003,"firsteventtime":"2016-07-27 22:20:52.282+01","lasteventtime":"2016-07-27 22:20:52.282+01","firstautomationtime":null,"lastautomationtime":null,"description":"<p>A HTTP outage was identified on interface\n      142.34.5.19.</p> <p>A new Outage record has been\n      created and service level availability calculations will be\n      impacted until this outage is resolved.</p>","logmsg":"HTTP outage identified on interface 142.34.5.19 with reason code: Unknown.","operinstruct":null,"tticketid":null,"tticketstate":null,"mouseovertext":null,"suppresseduntil":"2016-07-27 22:20:52.282+01","suppresseduser":null,"suppressedtime":"2016-07-27 22:20:52.282+01","alarmackuser":null,"alarmacktime":null,"managedobjectinstance":null,"managedobjecttype":null,"applicationdn":null,"ossprimarykey":null,"x733alarmtype":null,"x733probablecause":0,"qosalarmstate":null,"clearkey":null,"ifindex":null,"eventparms":"eventReason=Unknown(string,text)","stickymemo":null,"systemid":"00000000-0000-0000-0000-000000000000"}";
+		// raw
+		// json="{"alarmid":806,"eventuei":"uei.opennms.org/nodes/nodeLostService","nodeid":36,"ipaddr":"142.34.5.19","serviceid":2,"reductionkey":"uei.opennms.org/nodes/nodeLostService::36:142.34.5.19:HTTP","alarmtype":1,"counter":1,"severity":5,"lasteventid":7003,"firsteventtime":"2016-07-27
+		// 22:20:52.282+01","lasteventtime":"2016-07-27
+		// 22:20:52.282+01","firstautomationtime":null,"lastautomationtime":null,"description":"<p>A
+		// HTTP outage was identified on interface\n 142.34.5.19.</p> <p>A new Outage
+		// record has been\n created and service level availability calculations will
+		// be\n impacted until this outage is resolved.</p>","logmsg":"HTTP outage
+		// identified on interface 142.34.5.19 with reason code:
+		// Unknown.","operinstruct":null,"tticketid":null,"tticketstate":null,"mouseovertext":null,"suppresseduntil":"2016-07-27
+		// 22:20:52.282+01","suppresseduser":null,"suppressedtime":"2016-07-27
+		// 22:20:52.282+01","alarmackuser":null,"alarmacktime":null,"managedobjectinstance":null,"managedobjecttype":null,"applicationdn":null,"ossprimarykey":null,"x733alarmtype":null,"x733probablecause":0,"qosalarmstate":null,"clearkey":null,"ifindex":null,"eventparms":"eventReason=Unknown(string,text)","stickymemo":null,"systemid":"00000000-0000-0000-0000-000000000000"}";
 
-			eb.setUei("uei.opennms.org/nodes/nodeLostService");
-			eb.setNodeid(36);
-			InetAddress ipAddress = InetAddressUtils.getInetAddress("142.34.5.19");
-			eb.setInterface(ipAddress);
-			eb.setSource("mock event test");
-			eb.setHost("localhost");
-			eb.setLogDest("logndisplay");
-			eb.setLogMessage("this is a test log message");
-			eb.setDescription("this is a test description");
-			eb.setTime(new Date());
-			eb.setUuid("00000000-0000-0000-0000-000000000000");		
+		eb.setUei("uei.opennms.org/nodes/nodeLostService");
+		eb.setNodeid(36);
+		InetAddress ipAddress = InetAddressUtils.getInetAddress("142.34.5.19");
+		eb.setInterface(ipAddress);
+		eb.setSource("mock event test");
+		eb.setHost("localhost");
+		eb.setLogDest("logndisplay");
+		eb.setLogMessage("this is a test log message");
+		eb.setDescription("this is a test description");
+		eb.setTime(new Date());
+		eb.setUuid("00000000-0000-0000-0000-000000000000");
 
-			Event event = eb.getEvent();
-			event.setDbid(101);
+		Event event = eb.getEvent();
+		event.setDbid(101);
 
-			LOG.debug("ecreated node lost service event:"+event.toString());
+		LOG.debug("ecreated node lost service event:" + event.toString());
 
-			// forward event to Elasticsearch
-			eventToIndex.forwardEvents(Collections.singletonList(event));
+		// forward event to Elasticsearch
+		eventToIndex.forwardEvents(Collections.singletonList(event));
 
-			// waiting 5 seconds for index 
-			try {
-				TimeUnit.SECONDS.sleep(5);
-			} catch (InterruptedException e) { }
+		// waiting 5 seconds for index
+		try {
+			TimeUnit.SECONDS.sleep(5);
+		} catch (InterruptedException e) {
+		}
 
-			// send query to check that event has been created
-			// search for resulting event
-			String eventquery = "{\n" 
-					+"\n       \"query\": {"
-					+ "\n         \"match\": {"
-					+ "\n         \"id\": \"101\""
-					+ "\n          }"
-					+ "\n        }"
-					+ "\n     }";
+		// send query to check that event has been created
+		// search for resulting event
+		String eventquery = "{\n" + "\n       \"query\": {" + "\n         \"match\": {" + "\n         \"id\": \"101\""
+				+ "\n          }" + "\n        }" + "\n     }";
 
-			LOG.debug("event check search query: "+eventquery);
+		LOG.debug("event check search query: " + eventquery);
 
-			Search eventsearch = new Search.Builder(eventquery)
-			// multiple index or types can be added.
-			.addIndex("opennms-*")
-			.build();
+		Search eventsearch = new Search.Builder(eventquery)
+				// multiple index or types can be added.
+				.addIndex("cert-opennms-*").build();
 
-			SearchResult eventsresult = jestClient.execute(eventsearch);
+		SearchResult eventsresult = jestClient.execute(eventsearch);
 
-			LOG.debug("received search eventsresult: "+eventsresult.getJsonString()
-					+ "\n   response code:" +eventsresult.getResponseCode() 
-					+ "\n   error message: "+eventsresult.getErrorMessage());
+		LOG.debug("received search eventsresult: " + eventsresult.getJsonString() + "\n   response code:"
+				+ eventsresult.getResponseCode() + "\n   error message: " + eventsresult.getErrorMessage());
 
-			assertEquals(200, eventsresult.getResponseCode());
+		assertEquals(200, eventsresult.getResponseCode());
 
-			JSONParser parser = new JSONParser();
-			Object obj2 = parser.parse(eventsresult.getJsonString());
-			JSONObject eventsresultValues = (JSONObject) obj2;
+		JSONParser parser = new JSONParser();
+		Object obj2 = parser.parse(eventsresult.getJsonString());
+		JSONObject eventsresultValues = (JSONObject) obj2;
 
-			JSONObject eventhits = (JSONObject) eventsresultValues.get("hits");
-			LOG.debug("search result event hits:total="+eventhits.get("total"));
-			assertEquals(Long.valueOf(1), eventhits.get("total"));
+		JSONObject eventhits = (JSONObject) eventsresultValues.get("hits");
+		LOG.debug("search result event hits:total=" + eventhits.get("total"));
+		assertEquals(Long.valueOf(1), eventhits.get("total"));
 
-			JSONArray eventhitsvalues = (JSONArray) eventhits.get("hits");
-			LOG.debug("   eventhitsvalues: "+eventhitsvalues.toJSONString());
+		JSONArray eventhitsvalues = (JSONArray) eventhits.get("hits");
+		LOG.debug("   eventhitsvalues: " + eventhitsvalues.toJSONString());
 
-			JSONObject hitObj = (JSONObject) eventhitsvalues.get(0);
-			LOG.debug("   hitsObj: "+hitObj.toJSONString());
-			
-			String typeStr =  hitObj.get("_type").toString();
+		JSONObject hitObj = (JSONObject) eventhitsvalues.get(0);
+		LOG.debug("   hitsObj: " + hitObj.toJSONString());
 
-			LOG.debug("search result index type="+typeStr);
-			assertEquals(EVENT_INDEX_TYPE, typeStr);
+		String typeStr = hitObj.get("_type").toString();
 
-			JSONObject sourceObj = (JSONObject) hitObj.get("_source");
-			LOG.debug("   sourceObj: "+sourceObj.toJSONString());
+		LOG.debug("search result index type=" + typeStr);
+		assertEquals(EVENT_INDEX_TYPE, typeStr);
 
-			String eventUeiStr =  sourceObj.get("eventuei").toString();
+		JSONObject sourceObj = (JSONObject) hitObj.get("_source");
+		LOG.debug("   sourceObj: " + sourceObj.toJSONString());
 
-			LOG.debug("search result event eventueistr="+eventUeiStr);
-			assertEquals(NODE_LOST_SERVICE_EVENT, eventUeiStr);
+		String eventUeiStr = sourceObj.get("eventuei").toString();
+
+		LOG.debug("search result event eventueistr=" + eventUeiStr);
+		assertEquals(NODE_LOST_SERVICE_EVENT, eventUeiStr);
 
 		LOG.debug("***************** end of test jestClientRawEventToESTest");
 	}
