@@ -219,7 +219,7 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
 
     protected Criteria getCriteria(UriInfo uriInfo, SearchContext searchContext) {
         final CriteriaBuilder builder = getCriteriaBuilder(uriInfo);
-        if (searchContext != null && !Strings.isNullOrEmpty(searchContext.getSearchExpression()) {
+        if (searchContext != null && !Strings.isNullOrEmpty(searchContext.getSearchExpression())) {
             try {
                 SearchCondition<Q> condition = searchContext.getCondition(getQueryBeanClass(), getSearchBeanPropertyMap());
                 if (condition != null) {
