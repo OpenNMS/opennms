@@ -52,8 +52,6 @@ import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.rest.impl.renderer.GraphRenderer;
 
-// TODO MVR graphml node id => namespace + id or only id
-// TODO MVR graphml
 public class XmlGraphRenderer implements GraphRenderer {
 
     @Override
@@ -80,8 +78,6 @@ public class XmlGraphRenderer implements GraphRenderer {
         return new String(outputStream.toByteArray());
     }
 
-    // TODO MVR collection properties are not convertable to graphml :-/
-    // TODO MVR verify id of all elements (see docs for this). vertex id (namespace + id) or just the id?
     @Override
     public String render(GraphContainer graphContainer) {
         // Container
@@ -138,8 +134,19 @@ public class XmlGraphRenderer implements GraphRenderer {
 
     private static void addProperties(Map<String, Object> properties, GraphMLElement graphMLElement) {
         properties.keySet().forEach(eachKey -> {
-            if (properties.get(eachKey) != null) {
-                graphMLElement.setProperty(eachKey, properties.get(eachKey));
+            final Object value = properties.get(eachKey);
+            if (value != null && !"".equals(value)) {
+                final boolean supportedProperty = value instanceof Boolean
+                        || value instanceof Double
+                        || value instanceof Float
+                        || value instanceof Integer
+                        || value instanceof Long
+                        || value instanceof String;
+                if (supportedProperty) {
+                    graphMLElement.setProperty(eachKey, value);
+                } else {
+                    graphMLElement.setProperty(eachKey, String.valueOf(value));
+                }
             }
         });
     }
