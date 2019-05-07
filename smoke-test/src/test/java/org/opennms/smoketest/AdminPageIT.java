@@ -55,6 +55,7 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
         new String[] { "Configure SNMP Community Names by IP Address", "//span[text()='SNMP Config Lookup']" },
         new String[] { "Manually Add an Interface", "//span[text()='Enter IP Address']" },
         new String[] { "Delete Nodes", "//span[text()='Delete Nodes']" },
+        new String[] { "Configure Geocoder Service", "//div/nav/ol/li[text()='Geocoder Configuration']" },
 
         // Flow Management
         new String[] { "Manage Flow Classification", "//div/nav/ol/li[text()='Flow Classification']" },

@@ -30,6 +30,7 @@ package org.opennms.core.ipc.sink.kafka.client;
 
 import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.DEFAULT_MAX_BUFFER_SIZE;
 import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.MAX_BUFFER_SIZE_PROPERTY;
+import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_PRODUCER_DOMAIN;
 
 import java.io.IOException;
 import java.math.RoundingMode;
@@ -159,7 +160,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     @Override
     public String getMetricDomain() {
-        return KafkaLocalMessageDispatcherFactory.class.getPackage().getName();
+        return SINK_METRIC_PRODUCER_DOMAIN;
     }
 
     @Override

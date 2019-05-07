@@ -20,7 +20,7 @@ The following keys are available under this context:
 
 [options="header, autowidth"]
 |===
-| Context:Key            | Description |
+| Context:Key            | Description
 | `node:label`           | The label of the node
 | `node:foreign-source`  | The node's foreign source name
 | `node:foreign-id`      | The node's foreigne ID
@@ -40,14 +40,14 @@ The following keys are available under this context:
 
 [options="header, autowidth"]
 |===
-| Context:Key               | Description |
-| `interface:hostname       | The hostname associated with the IP address of the interface
-| `interface:address        | The IP address if the interface
-| `interface:netmask        | The netmask of the interface
-| `interface:if-index       | The SNMP interface index
-| `interface:if-alias       | The SNMP interface alias
-| `interface:if-description | The SNMP interface description
-| `interface:phy-addr       | The physical address of the interface
+| Context:Key                | Description
+| `interface:hostname`       | The hostname associated with the IP address of the interface
+| `interface:address`        | The IP address if the interface
+| `interface:netmask`        | The netmask of the interface
+| `interface:if-index`       | The SNMP interface index
+| `interface:if-alias`       | The SNMP interface alias
+| `interface:if-description` | The SNMP interface description
+| `interface:phy-addr`       | The physical address of the interface
 |===
 
 The `service` context provides details about the service currently processed.
@@ -55,8 +55,8 @@ The following keys are available under this context:
 
 [options="header, autowidth"]
 |===
-| Context:Key        | Description |
-| `service:name      | The full name of the service
+| Context:Key        | Description
+| `service:name`     | The full name of the service
 |===
 
 [[ga-meta-data-dsl]]
