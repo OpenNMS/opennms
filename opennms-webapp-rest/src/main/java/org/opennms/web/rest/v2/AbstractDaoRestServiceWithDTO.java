@@ -103,6 +103,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.base.Strings;
 import com.googlecode.concurentlocks.ReadWriteUpdateLock;
 import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
 
@@ -218,7 +219,7 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
 
     protected Criteria getCriteria(UriInfo uriInfo, SearchContext searchContext) {
         final CriteriaBuilder builder = getCriteriaBuilder(uriInfo);
-        if (searchContext != null) {
+        if (searchContext != null && !Strings.isNullOrEmpty(searchContext.getSearchExpression()) {
             try {
                 SearchCondition<Q> condition = searchContext.getCondition(getQueryBeanClass(), getSearchBeanPropertyMap());
                 if (condition != null) {
