@@ -137,10 +137,10 @@
         <argument ref="transactionOperations"/>
         <argument ref="nodeDao"/>
         <argument ref="snmpInterfaceDao"/>
+        <argument ref="identity"/>
+        <argument ref="tracerRegistry"/>
         <argument value="${bulkRetryCount}" />
         <argument value="${maxFlowDurationMs}" />
-        <property name="tracerRegistry" ref="tracerRegistry"/>
-        <property name="identity" ref="identity"/>
     </bean>
     <!-- Proxy it, to ensure initialization on first call of any method -->
     <bean id="initializingElasticFlowRepository" class="org.opennms.netmgt.flows.elastic.InitializingFlowRepository">

@@ -28,7 +28,6 @@
 
 package org.opennms.core.ipc.sink.camel.client;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +39,7 @@ import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.camel.CamelSinkConstants;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
+import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.tracing.util.TracingInfoCarrier;
 import org.opennms.distributed.core.api.MinionIdentity;
@@ -75,7 +75,7 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
                 CamelSinkConstants.JMS_QUEUE_PREFIX, module.getId());
         Map<String, Object> headers = new HashMap<>();
         headers.put(CamelSinkConstants.JMS_QUEUE_NAME_HEADER, queueNameFactory.getName());
-        return Collections.unmodifiableMap(headers);
+        return headers;
     }
 
     @Override
@@ -85,6 +85,7 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
         if (tracer.activeSpan() != null) {
             TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
             tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
+            tracer.activeSpan().setTag(TracerConstants.TAG_LOCATION, minionIdentity.getLocation());
             String tracingInfo = TracingInfoCarrier.marshalTracingInfo(tracingInfoCarrier.getTracingInfoMap());
             if (tracingInfo != null) {
                 headers.put(CamelSinkConstants.JMS_SINK_TRACING_INFO, tracingInfo);

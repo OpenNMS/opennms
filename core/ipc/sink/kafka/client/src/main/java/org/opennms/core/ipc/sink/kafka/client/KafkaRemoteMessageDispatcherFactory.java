@@ -104,6 +104,11 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             for (int chunk = 0; chunk < totalChunks; chunk++) {
                 byte[] messageInBytes = wrapMessageToProto(messageId, chunk, totalChunks, sinkMessageContent);
                 final ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, messageId, messageInBytes);
+                // Add tags to tracer active span.
+                if (getTracer().activeSpan() != null && (chunk + 1 == totalChunks)) {
+                    getTracer().activeSpan().setTag(TracerConstants.TAG_TOPIC, topic);
+                    getTracer().activeSpan().setTag(TracerConstants.TAG_MESSAGE_SIZE, sinkMessageContent.length);
+                }
                 // Keep sending record till it delivers successfully.
                 while (true) {
                     try {
@@ -141,17 +146,18 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
                 .setTotalChunks(totalChunks)
                 .setContent(byteString);
         // Add tracing info
-        TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
-        final Tracer tracer = tracerRegistry.getTracer();
-        if (tracer.activeSpan() != null) {
+        final Tracer tracer = getTracer();
+        if (tracer.activeSpan() != null && (chunk + 1 == totalChunks)) {
+            TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
             tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
             tracer.activeSpan().setTag(TracerConstants.TAG_LOCATION, minionIdentity.getLocation());
+            tracingInfoCarrier.getTracingInfoMap().forEach((key, value) -> {
+                SinkMessageProtos.TracingInfo tracingInfo = SinkMessageProtos.TracingInfo.newBuilder()
+                        .setKey(key).setValue(value).build();
+                sinkMessageBuilder.addTracingInfo(tracingInfo);
+            });
+
         }
-        tracingInfoCarrier.getTracingInfoMap().forEach((key, value) -> {
-            SinkMessageProtos.TracingInfo tracingInfo = SinkMessageProtos.TracingInfo.newBuilder()
-                    .setKey(key).setValue(value).build();
-            sinkMessageBuilder.addTracingInfo(tracingInfo);
-        });
 
         return sinkMessageBuilder.build().toByteArray();
     }

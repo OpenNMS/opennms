@@ -103,6 +103,21 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     private TracerRegistry tracerRegistry;
     private Identity identity;
 
+
+    public KafkaMessageConsumerManager() {
+        this(new OnmsKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX));
+    }
+
+    public KafkaMessageConsumerManager(KafkaConfigProvider configProvider, Identity identity, TracerRegistry tracerRegistry) {
+        this.configProvider = Objects.requireNonNull(configProvider);
+        this.identity = identity;
+        this.tracerRegistry = tracerRegistry;
+    }
+    public KafkaMessageConsumerManager(KafkaConfigProvider configProvider) {
+        this.configProvider = Objects.requireNonNull(configProvider);
+    }
+
+
     private class KafkaConsumerRunner implements Runnable {
         private final SinkModule<?, Message> module;
         private final AtomicBoolean closed = new AtomicBoolean(false);
@@ -154,6 +169,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                             Tracer.SpanBuilder spanBuilder = buildSpanFromSinkMessage(sinkMessage);
                             try(Scope scope = spanBuilder.startActive(true)) {
                                 scope.span().setTag(TracerConstants.TAG_MESSAGE_SIZE, sinkMessage.getSerializedSize());
+                                scope.span().setTag(TracerConstants.TAG_TOPIC, topic);
                                 dispatch(module, module.unmarshal(messageInBytes));
                             }
                         } catch (RuntimeException e) {
@@ -176,7 +192,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
 
         private Tracer.SpanBuilder buildSpanFromSinkMessage(SinkMessageProtos.SinkMessage sinkMessage) {
 
-            final Tracer tracer = tracerRegistry.getTracer();
+            Tracer tracer = tracerRegistry.getTracer();
             Tracer.SpanBuilder spanBuilder;
             Map<String, String> tracingInfoMap = new HashMap<>();
             sinkMessage.getTracingInfoList().forEach(tracingInfo -> {
@@ -184,6 +200,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             });
             SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(tracingInfoMap));
             if (context != null) {
+                // Span on consumer side will follow the span from producer (minion).
                 spanBuilder = tracer.buildSpan(module.getId()).addReference(References.FOLLOWS_FROM, context);
             } else {
                 spanBuilder = tracer.buildSpan(module.getId());
@@ -198,13 +215,6 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         }
     }
 
-    public KafkaMessageConsumerManager() {
-        this(new OnmsKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX));
-    }
-
-    public KafkaMessageConsumerManager(KafkaConfigProvider configProvider) {
-        this.configProvider = Objects.requireNonNull(configProvider);
-    }
 
     @Override
     protected void startConsumingForModule(SinkModule<?, Message> module) throws Exception {

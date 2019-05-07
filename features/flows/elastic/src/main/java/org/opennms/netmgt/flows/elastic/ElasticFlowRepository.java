@@ -165,6 +165,7 @@ public class ElasticFlowRepository implements FlowRepository {
     public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy,
                                  DocumentEnricher documentEnricher, ClassificationEngine classificationEngine,
                                  TransactionOperations transactionOperations, NodeDao nodeDao, SnmpInterfaceDao snmpInterfaceDao,
+                                 Identity identity, TracerRegistry tracerRegistry,
                                  int bulkRetryCount, long maxFlowDurationMs) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
@@ -175,6 +176,8 @@ public class ElasticFlowRepository implements FlowRepository {
         this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
         this.bulkRetryCount = bulkRetryCount;
         this.indexSelector = new IndexSelector(TYPE, indexStrategy, maxFlowDurationMs);
+        this.identity = identity;
+        this.tracerRegistry = tracerRegistry;
 
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
         logConversionTimer = metricRegistry.timer("logConversion");

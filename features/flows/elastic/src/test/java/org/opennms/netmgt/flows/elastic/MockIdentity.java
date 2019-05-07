@@ -26,16 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.tracing.api;
+package org.opennms.netmgt.flows.elastic;
 
-public interface TracerConstants {
+import org.opennms.distributed.core.api.Identity;
+import org.opennms.distributed.core.api.SystemType;
 
-    // Common tags for RPC.
-    public static final String TAG_SYSTEM_ID = "systemId";
-    public static final String TAG_LOCATION = "location";
-    public static final String TAG_TIMEOUT = "timeout";
-    public static final String TAG_RPC_FAILED = "failed";
-    public static final String TAG_MESSAGE_SIZE = "messageSize";
-    public static final String TAG_SOURCE_ADDRESS = "sourceAddress";
-    public static final String TAG_TOPIC = "topic";
+public class MockIdentity implements Identity {
+    @Override
+    public String getId() {
+        return "Sentinel";
+    }
+
+    @Override
+    public String getLocation() {
+        return "Default";
+    }
+
+    @Override
+    public String getType() {
+        return SystemType.Sentinel.name();
+    }
 }

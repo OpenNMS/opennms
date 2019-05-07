@@ -34,8 +34,8 @@
     <!-- ConsumerManager -->
     <bean id="kafkaMessageConsumerManager" class="org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager" init-method="afterPropertiesSet">
         <argument ref="kafkaConfigProvider" />
-        <property name="identity" ref="identity"/>
-        <property name="tracerRegistry" ref="tracerRegistry"/>
+        <argument ref="identity"/>
+        <argument ref="tracerRegistry"/>
     </bean>
     <service ref="kafkaMessageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager" />
 

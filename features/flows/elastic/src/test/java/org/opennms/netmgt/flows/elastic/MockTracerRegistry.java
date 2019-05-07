@@ -26,16 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.tracing.api;
+package org.opennms.netmgt.flows.elastic;
 
-public interface TracerConstants {
+import org.opennms.core.tracing.api.TracerRegistry;
 
-    // Common tags for RPC.
-    public static final String TAG_SYSTEM_ID = "systemId";
-    public static final String TAG_LOCATION = "location";
-    public static final String TAG_TIMEOUT = "timeout";
-    public static final String TAG_RPC_FAILED = "failed";
-    public static final String TAG_MESSAGE_SIZE = "messageSize";
-    public static final String TAG_SOURCE_ADDRESS = "sourceAddress";
-    public static final String TAG_TOPIC = "topic";
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
+
+public class MockTracerRegistry implements TracerRegistry {
+    @Override
+    public Tracer getTracer() {
+        return GlobalTracer.get();
+    }
+
+    @Override
+    public void init(String serviceName) {
+
+    }
 }
