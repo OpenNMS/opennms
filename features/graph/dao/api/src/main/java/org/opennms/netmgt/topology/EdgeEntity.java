@@ -30,45 +30,58 @@ package org.opennms.netmgt.topology;
 
 import java.util.Objects;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("edge")
 public class EdgeEntity extends AbstractGraphEntity {
 
-    // TODO: Patrick: discuss with Markus if we want to have source and target as properties?
-    // Advantage: we can use the current implementation for storage.
-    // Disadvantage: we need to filter out the source/target properties when converting to GenericEdge since these are
-    // there object attributes not properties (and should be since an edge is defined by them)
-    // sourceVertexRef als Embeddable VertexRef speichern
+    @Embedded
+    @AttributeOverrides(value = {
+            @AttributeOverride(name = "namespace", column = @Column(name = "source_vertex_namespace")),
+            @AttributeOverride(name = "id", column = @Column(name = "target_vertex_id"))
+    })
+    private VertexRefEntity source;
 
-    public final static String PROPERTY_SOURCE = "sourceVertexRef";
-    public final static String PROPERTY_TARGET = "targetVertexRef";
+    @Embedded
+    @AttributeOverrides(value = {
+            @AttributeOverride(name = "namespace", column = @Column(name = "target_vertex_namespace")),
+            @AttributeOverride(name = "id", column = @Column(name = "target_vertex_id"))
+    })
+    private VertexRefEntity target;
 
     public VertexRefEntity getSource() {
-        return new VertexRefEntity(getPropertyValue(PROPERTY_SOURCE));
+        return source;
     }
 
     public void setSource(String namespace, String id) {
+        Objects.requireNonNull(namespace);
+        Objects.requireNonNull(id);
         setSource(new VertexRefEntity(namespace, id));
     }
 
     public void setSource(VertexRefEntity source) {
         Objects.requireNonNull(source, "source can not be null");
-        this.setProperty(PROPERTY_SOURCE, String.class, source.asStringRepresentation());
+        this.source = source;
     }
 
     public VertexRefEntity getTarget() {
-        return new VertexRefEntity(getPropertyValue(PROPERTY_TARGET));
+        return target;
     }
 
     public void setTarget(String namespace, String id) {
+        Objects.requireNonNull(namespace);
+        Objects.requireNonNull(id);
         setTarget(new VertexRefEntity(namespace, id));
     }
 
     public void setTarget(VertexRefEntity target) {
         Objects.requireNonNull(target, "target can not be null");
-        this.setProperty(PROPERTY_TARGET, String.class, target.toString());
+        this.target = target;
     }
 }

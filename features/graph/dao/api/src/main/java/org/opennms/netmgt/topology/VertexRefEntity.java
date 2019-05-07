@@ -29,22 +29,14 @@
 package org.opennms.netmgt.topology;
 
 
+import javax.persistence.Embeddable;
+
 import com.google.common.base.Objects;
 
-// TODO: Patrick discuss with mvr if the mapping from and to a property shouldn't happen through the converter service
-// leaving it like it is for now since we also might move it to a dedicated column
-// rebase zu 25.
+@Embeddable
 public class VertexRefEntity {
     private final String namespace;
     private final String id;
-
-
-    public VertexRefEntity(String propertyValue) {
-        java.util.Objects.requireNonNull(propertyValue);
-        String[] string = propertyValue.split(":");
-        this.namespace = string[0];
-        this.id = string[1];
-    }
 
     public VertexRefEntity(String namespace, String id) {
         this.namespace = namespace;
@@ -80,10 +72,6 @@ public class VertexRefEntity {
 
     @Override
     public String toString() {
-        return asStringRepresentation();
-    }
-
-    public String asStringRepresentation(){
         return namespace + ":" + id;
     }
 }

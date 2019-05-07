@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.topology;
 
+import java.util.Objects;
+
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
@@ -37,10 +39,15 @@ import org.opennms.netmgt.graph.dao.api.EntityProperties;
 @DiscriminatorValue("vertex")
 public class VertexEntity extends AbstractGraphEntity {
 
-    // TODO: Patrick: discuss with mvr: we reuse "id" for 2 different things: databaseid and an identifier (part of VertexRef)
-    // we should come up with a better naming to reduce confusion?
-    public String getIdentifier() {
+    /** returns the business id of the VertexEntity. For the database id call VertexEntity#getDbId. */
+    public String getId() {
         return this.getPropertyValue(EntityProperties.ID);
+    }
+
+    /** returns the business id of the VertexEntity. For the database id call VertexEntity#getDbId. */
+    public void setId(String id) {
+        Objects.requireNonNull(id);
+        this.setProperty(EntityProperties.ID, String.class, id);
     }
 
 }

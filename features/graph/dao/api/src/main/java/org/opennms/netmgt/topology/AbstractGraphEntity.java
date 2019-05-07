@@ -71,14 +71,6 @@ public class AbstractGraphEntity {
     @BatchSize(size=1000)
     private List<PropertyEntity> properties = new ArrayList<>();
 
-    public Long getDbId() {
-        return dbId;
-    }
-
-    public void setDbId(Long id) {
-        this.dbId = id;
-    }
-
     public String getNamespace() {
         return namespace;
     }
@@ -99,7 +91,7 @@ public class AbstractGraphEntity {
         return properties.stream().filter(p -> p.getName().equalsIgnoreCase(key)).findFirst().orElse(null);
     }
 
-    // TODO MVR we could simplyfy this b just removing all and then reinsert?
+    // TODO MVR we could simplyfy this by just removing all and then reinsert?
     public void mergeProperties(List<PropertyEntity> propertyEntities) {
         for (PropertyEntity propertyEntity : propertyEntities) {
             final PropertyEntity alreadyExisting = getProperty(propertyEntity.getName());

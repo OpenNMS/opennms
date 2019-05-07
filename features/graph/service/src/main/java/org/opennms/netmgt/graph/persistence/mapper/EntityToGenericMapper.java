@@ -79,9 +79,6 @@ public class EntityToGenericMapper {
                     new GenericVertexRef(edgeEntity.getSource().getNamespace(), edgeEntity.getSource().getId()),
                     new GenericVertexRef(edgeEntity.getTarget().getNamespace(), edgeEntity.getTarget().getId()));
             edgeEntity.getProperties().stream()
-                    // filter source & target properties since they are object attributes in GenericEdge
-                    .filter(prop -> !prop.getName().equals(EdgeEntity.PROPERTY_SOURCE))
-                    .filter(prop -> !prop.getName().equals(EdgeEntity.PROPERTY_TARGET))
                     .forEach(property -> {
                 final Object value = convert(property);
                 genericEdge.setProperty(property.getName(), value);
