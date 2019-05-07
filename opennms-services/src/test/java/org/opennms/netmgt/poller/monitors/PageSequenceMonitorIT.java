@@ -224,7 +224,6 @@ public class PageSequenceMonitorIT {
     }
 
     @Test
-    @Ignore("JDK 7 doesn't understand Let's Encrypt certificates")
     public void testVirtualHost() throws Exception {
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +
