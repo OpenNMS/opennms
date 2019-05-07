@@ -32,7 +32,7 @@ The embedded Karaf has been upgraded to 4.2.
 
 This changes the default `users.properties` file.
 Ensure that the `admingroup` in `${OPENNMS_HOME}/etc/users.properties` contains the role `ssh`.
-You can use the link:https://github.com/OpenNMS/opennms/blob/release-24.0.0/container/karaf/src/main/filtered-resources/etc/users.properties[new default users.properties file] for comparison.
+You can use the link:https://github.com/OpenNMS/opennms/blob/c51bddef095a0ad23e31be13c241dc9d862950b7/container/karaf/src/main/filtered-resources/etc/users.properties[new default users.properties file] for comparison.
 
 Other notable Karaf and OSGi-related changes include:
 
@@ -243,6 +243,12 @@ The HTML has been simplified, the UI wastes less space, and the login page featu
 * *Notifications*: Browser notifications are now supported in the Web UI.
   The browser notification can be added to a notification path and desktop notifications will pop-up for currently logged in users if a notice is delivered.
 * *Sessions*: Browser session timeout is now disabled by default.
+
+==== Geocoder Services
+
+The _Geocoder Service_s have been reworked and must be re-configured.
+The recommended way for this is to delete all `etc/org.opennms.features.geocoder*.cfg` files and
+Navigate the `Configure Geocoder Services` page from the Admin page and configure the _Geocoder Service_ of your choice.
 
 ==== Other Core Changes
 

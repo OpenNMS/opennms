@@ -12,8 +12,15 @@ $table-border-color: #ddd !default;
 
 // Add custom colors to the theme
 $theme-colors: (
-    "horizon": $color_horizon,
-    "meridian": $color_meridian,
+    "horizon":                      $color_horizon,
+    "meridian":                     $color_meridian,
+
+    // Some bootstrap 3 components are still used.
+    // Usually they work properly, but they use mostly -default stylings, which
+    // are no longer available with bootstrap 4.
+    // Here default is defined the same as "light".
+    "default":                      #f8f9fa,
+
     // Additional colors may be added here, e.g. "severity-normal"
     // to allow alerts, badges, buttons, etc to be colored accordingly
 );

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,23 +28,35 @@
 
 package org.opennms.features.geocoder;
 
-public class TemporaryGeocoderException extends GeocoderException {
-    private static final long serialVersionUID = 3223954497897809589L;
+import java.util.HashMap;
+import java.util.Map;
 
-    public TemporaryGeocoderException() {
-        super();
+public class GeocoderServiceManagerConfiguration {
+
+    private static final String ACTIVE_GEOCODER_ID_KEY = "activeGeocoderId";
+
+    private String activeGeocoderId;
+
+    public GeocoderServiceManagerConfiguration() {
+
     }
 
-    public TemporaryGeocoderException(final String message) {
-        super(message);
+    public GeocoderServiceManagerConfiguration(Map<String, Object> fromMap) {
+        setActiveGeocoderId(ConfigurationUtils.getValue(fromMap, ACTIVE_GEOCODER_ID_KEY, null));
     }
 
-    public TemporaryGeocoderException(final Throwable throwable) {
-        super(throwable);
+    public String getActiveGeocoderId() {
+        return activeGeocoderId;
     }
 
-    public TemporaryGeocoderException(final String message, final Throwable throwable) {
-        super(message, throwable);
+    public void setActiveGeocoderId(String activeGeocoderId) {
+        this.activeGeocoderId = activeGeocoderId;
+    }
+
+    public Map<String, Object> asMap() {
+        final Map<String, Object> properties =  new HashMap<>();
+        properties.put(ACTIVE_GEOCODER_ID_KEY, getActiveGeocoderId());
+        return properties;
     }
 
 }
