@@ -44,8 +44,8 @@ public class DefaultTemplateLoaderTest {
     public void canLoadTemplateForVersion() throws IOException {
         DefaultTemplateLoader loader = mock(DefaultTemplateLoader.class);
         when(loader.load(any(), any())).thenCallRealMethod();
-        when(loader.getResource("/template.es6.json")).thenReturn("ES6!");
-        when(loader.getResource("/template.json")).thenReturn("ES!");
+        when(loader.getTemplate("/template.es6.json")).thenReturn("ES6!");
+        when(loader.getTemplate("/template.json")).thenReturn("ES!");
 
         // ES 6 template
         String template = loader.load(new Version(6,2,3), "/template");

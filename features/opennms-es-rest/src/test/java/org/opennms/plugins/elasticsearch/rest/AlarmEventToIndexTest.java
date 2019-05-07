@@ -140,7 +140,7 @@ public class AlarmEventToIndexTest extends AbstractEventToIndexTest {
 
 			Search search = new Search.Builder(query)
 			// multiple index or types can be added.
-			.addIndex("opennms-*")
+			.addIndex("cert-opennms-*")
 			.build();
 
 			SearchResult sresult = jestClient.execute(search);
@@ -172,7 +172,7 @@ public class AlarmEventToIndexTest extends AbstractEventToIndexTest {
 
 			Search eventsearch = new Search.Builder(eventquery)
 			// multiple index or types can be added.
-			.addIndex("opennms-*")
+			.addIndex("cert-opennms-*")
 			.build();
 
 			SearchResult eventsresult = jestClient.execute(eventsearch);
@@ -222,7 +222,7 @@ public class AlarmEventToIndexTest extends AbstractEventToIndexTest {
 
 		final String query = buildSearchQuery(eventId);
 		final Search search = new Search.Builder(query)
-				.addIndex("opennms-events-raw-*")
+				.addIndex("cert-opennms-opennms-events-raw-*")
 				.build();
 		final SearchResult result = jestClient.execute(search);
 		assertEquals(200, result.getResponseCode());
@@ -243,7 +243,7 @@ public class AlarmEventToIndexTest extends AbstractEventToIndexTest {
 
 		final String query = buildSearchQuery(eventId);
 		final Search search = new Search.Builder(query)
-				.addIndex("opennms-events-raw-*")
+				.addIndex("cert-opennms-opennms-events-raw-*")
 				.build();
 		final SearchResult result = jestClient.execute(search);
 		assertEquals(200, result.getResponseCode());
@@ -291,7 +291,7 @@ public class AlarmEventToIndexTest extends AbstractEventToIndexTest {
 		// ... and verify that the json was actually persisted as json and not as string
 		final String query = buildSearchQuery(eventId);
 		final Search search = new Search.Builder(query)
-				.addIndex("opennms-events-raw-*")
+				.addIndex("cert-opennms-opennms-events-raw-*")
 				.build();
 		final SearchResult result = jestClient.execute(search);
 		assertEquals(200, result.getResponseCode());
