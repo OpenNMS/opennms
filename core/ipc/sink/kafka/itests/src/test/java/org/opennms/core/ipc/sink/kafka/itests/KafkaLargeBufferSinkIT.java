@@ -72,7 +72,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/applicationContext-test-ipc-sink-kafka.xml"
+        "classpath:/applicationContext-test-ipc-sink-kafka.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml"
 })
 @JUnitConfigurationEnvironment
 public class KafkaLargeBufferSinkIT {
@@ -99,6 +100,7 @@ public class KafkaLargeBufferSinkIT {
         when(configAdmin.getConfiguration(KafkaSinkConstants.KAFKA_CONFIG_PID).getProperties())
                 .thenReturn(kafkaConfig);
         remoteMessageDispatcherFactory.setConfigAdmin(configAdmin);
+        remoteMessageDispatcherFactory.setTracerRegistry(new MockTracerRegistry());
         remoteMessageDispatcherFactory.init();
 
         System.setProperty(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX + ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());

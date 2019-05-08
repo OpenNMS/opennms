@@ -84,7 +84,8 @@ import com.google.common.util.concurrent.RateLimiter;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/applicationContext-test-ipc-sink-kafka.xml"
+        "classpath:/applicationContext-test-ipc-sink-kafka.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml"
 })
 @JUnitConfigurationEnvironment
 public class HeartbeatSinkPerfIT {
@@ -116,6 +117,7 @@ public class HeartbeatSinkPerfIT {
         when(configAdmin.getConfiguration(KafkaSinkConstants.KAFKA_CONFIG_PID).getProperties())
             .thenReturn(kafkaConfig);
         messageDispatcherFactory.setConfigAdmin(configAdmin);
+        messageDispatcherFactory.setTracerRegistry(new MockTracerRegistry());
         messageDispatcherFactory.init();
 
         System.setProperty(String.format("%sbootstrap.servers", KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),

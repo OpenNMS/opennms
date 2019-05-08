@@ -28,8 +28,6 @@
 
 package org.opennms.core.ipc.sink.camel.itests;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
@@ -67,7 +65,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-server.xml",
-        "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-client.xml"
+        "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-client.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml"
 })
 @JUnitConfigurationEnvironment
 @org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")

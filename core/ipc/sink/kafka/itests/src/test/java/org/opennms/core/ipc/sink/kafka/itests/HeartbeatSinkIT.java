@@ -70,7 +70,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/applicationContext-test-ipc-sink-kafka.xml"
+        "classpath:/applicationContext-test-ipc-sink-kafka.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml"
 })
 @JUnitConfigurationEnvironment
 public class HeartbeatSinkIT {
@@ -95,6 +96,7 @@ public class HeartbeatSinkIT {
         when(configAdmin.getConfiguration(KafkaSinkConstants.KAFKA_CONFIG_PID).getProperties())
             .thenReturn(kafkaConfig);
         remoteMessageDispatcherFactory.setConfigAdmin(configAdmin);
+        remoteMessageDispatcherFactory.setTracerRegistry(new MockTracerRegistry());
         remoteMessageDispatcherFactory.init();
 
         System.setProperty(String.format("%sbootstrap.servers", KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),
