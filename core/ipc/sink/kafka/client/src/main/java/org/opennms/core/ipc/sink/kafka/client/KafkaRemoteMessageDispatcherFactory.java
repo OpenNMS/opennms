@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.sink.kafka.client;
 
+import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_PRODUCER_DOMAIN;
+
 import java.io.IOException;
 import java.util.Properties;
 import java.util.UUID;
@@ -142,7 +144,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     @Override
     public String getMetricDomain() {
-        return KafkaLocalMessageDispatcherFactory.class.getPackage().getName();
+        return SINK_METRIC_PRODUCER_DOMAIN;
     }
 
     @Override
