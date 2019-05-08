@@ -47,7 +47,7 @@ public class LegacyApplicationVertex extends AbstractLevelAwareVertex implements
         } else {
             setTooltipText(String.format("Service '%s', IP: %s", vertex.getName(), vertex.getIpAddress()));
             setIpAddress(vertex.getIpAddress());
-            setNodeID(Integer.valueOf(vertex.getNodeRefString()));
+            setNodeID(Integer.valueOf(vertex.getNodeRefString())); // TODO MVR ensure that this is actually an id and not fs:fid
             setServiceTypeId(vertex.getServiceTypeId());
             setIconKey("application.monitored-service");
         }
