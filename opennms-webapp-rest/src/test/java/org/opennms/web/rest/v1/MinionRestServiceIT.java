@@ -118,4 +118,13 @@ public class MinionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertFalse(xml, xml.contains("id=\"12345\""));
         assertEquals("Bar", xml);
     }
+
+    @Test
+    public void testEmptySearchString() throws Exception {
+        String xml = sendRequest(GET, "/minions?_s=&limit=20&offset=0&order=asc&orderBy=label", 200);
+        assertTrue(xml, xml.contains("id=\"12345\""));
+        assertTrue(xml, xml.contains("id=\"23456\""));
+        assertTrue(xml, xml.contains("<key>Foo</key>"));
+        assertTrue(xml, xml.contains("<value>Bar</value>"));
+    }
 }
