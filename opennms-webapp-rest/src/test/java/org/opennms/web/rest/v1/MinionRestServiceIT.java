@@ -119,6 +119,7 @@ public class MinionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals("Bar", xml);
     }
 
+    // See NMS-10670
     @Test
     public void testEmptySearchString() throws Exception {
         String xml = sendRequest(GET, "/minions?_s=&limit=20&offset=0&order=asc&orderBy=label", 200);
